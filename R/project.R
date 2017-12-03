@@ -1,0 +1,129 @@
+
+
+
+#' project data by grouping, summarizing, and adding more columns.
+#'
+#' @param source source to select from.
+#' @param groupby grouping columns.
+#' @param assignments new column assignment expressions.
+#' @return project node.
+#'
+#' @examples
+#'
+#' my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#' d <- dbi_copy_to(my_db, 'd',
+#'                 data.frame(AUC = 0.6, R2 = 0.2))
+#' eqn <- project(d, "AUC", "v" := "max(R2)")
+#' print(eqn)
+#' sql <- to_sql(eqn, my_db)
+#' cat(sql)
+#' DBI::dbGetQuery(my_db, sql)
+#'
+#' @export
+#'
+project <- function(source, groupby, assignments) {
+  if(length(assignments)<=0) {
+    stop("rquery::project must generate at least 1 column")
+  }
+  if(length(assignments)!=length(unique(assignments))) {
+    stop("rquery::project generated column names must be unique")
+  }
+  syms <- lapply(assignments,
+                 function(ai) {
+                  find_symbols(parse(text=ai))
+                 })
+  needs <- unique(c(groupby, unlist(syms)))
+  have <- column_names(source)
+  missing <- setdiff(needs, have)
+  if(length(missing)>0) {
+    stop(paste("rquery::project missing columns",
+               paste(missing, collapse = ", ")))
+  }
+  gint <- intersect(names(assignments), groupby)
+  if(length(gint)>0) {
+    stop(paste("rquery::project grouping and derived columns overlap:",
+               paste(gint, collapse = ", ")))
+
+  }
+  r <- list(source = list(source),
+            groupby = groupby,
+            columns = c(groupby, names(assignments)),
+            assignments = assignments)
+  class(r) <- "relop_project"
+  r
+}
+
+
+
+#' @export
+column_names.relop_project <- function (x, ...) {
+  x$columns
+}
+
+
+#' @export
+format.relop_project <- function(x, ...) {
+  aterms <- paste(paste(names(x$assignments),
+                        ":=",
+                        x$assignments), collapse = ", ")
+  paste0(format(x$source[[1]]),
+         " %.>% ",
+         "project(., ",
+         aterms,
+         ";g ",
+         paste(x$groupby, collapse = ", "),
+         ")")
+}
+
+#' @export
+print.relop_project <- function(x, ...) {
+  print(format(x),...)
+}
+
+
+#' @export
+to_sql.relop_project <- function(x,
+                                 db,
+                                 indent_level = 0,
+                                 tnum = cdata::makeTempNameGenerator('tsql'),
+                                 append_cr = TRUE,
+                                 ...) {
+  cols1 <- x$groupby
+  cols <- NULL
+  if(length(cols1)>0) {
+    cols <- vapply(cols1,
+                   function(ci) {
+                     DBI::dbQuoteIdentifier(db, ci)
+                   }, character(1))
+  }
+  derived <- NULL
+  if(length(x$assignments)>0) {
+    derived <- vapply(names(x$assignments),
+                      function(ni) {
+                        ei <- x$assignments[[ni]]
+                        paste(ei, "AS", DBI::dbQuoteIdentifier(db, ni))
+                      }, character(1))
+  }
+  subsql <- to_sql(x$source[[1]],
+                   db = db,
+                   indent_level = indent_level + 1,
+                   tnum = tnum,
+                   append_cr = FALSE)
+  tab <- tnum()
+  prefix <- paste(rep(' ', indent_level), collapse = '')
+  q <- paste0(prefix, "SELECT ",
+              paste(c(cols, derived), collapse = ", "),
+              " FROM (\n",
+              subsql,
+              " ) ", tab)
+  if(length(cols)>0) {
+    q <- paste0(q,
+               "\n",
+               prefix, "GROUP BY\n",
+               prefix, " ", paste(cols, collapse = " AND "))
+  }
+  if(append_cr) {
+    q <- paste0(q, "\n")
+  }
+  q
+}
