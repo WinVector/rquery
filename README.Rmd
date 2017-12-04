@@ -172,10 +172,16 @@ cat(to_sql(dq, my_db))
 Part of the hope is the additional record keeping in the operator nodes would 
 let a very powerful query optimizer work over the flow before it gets translated
 to `SQL`.  At the very least restricting to columns later used and folding selects
-together would be achievable.  One should have a good changes at optimization as
+together would be achievable.  One should have a good chance at optimization as
 the representation is fairly high-level, and many of the operators are relational 
 (meaning there are known legal transforms a query optimizer can use).  The flow itself
 is represented as follows:
+
+```{r pqp, comment=''}
+print(dq)
+```
+
+We can even pretty-format it:
 
 ```{r pq, comment=''}
 cat(gsub("%.>%", "%.>%\n   ", format(dq), fixed = TRUE))

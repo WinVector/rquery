@@ -199,15 +199,23 @@ cat(to_sql(dq, my_db))
           count(1)  OVER (  PARTITION BY "subjectID" ) AS "count"
          FROM (
           SELECT * FROM "d"
-         ) tsql_wzgra4icyzqzhfdgmfrq_0000000000
-        ) tsql_wzgra4icyzqzhfdgmfrq_0000000001
-       ) tsql_wzgra4icyzqzhfdgmfrq_0000000002
-      ) tsql_wzgra4icyzqzhfdgmfrq_0000000003
+         ) tsql_icplfroyvbvxzod4rdse_0000000000
+        ) tsql_icplfroyvbvxzod4rdse_0000000001
+       ) tsql_icplfroyvbvxzod4rdse_0000000002
+      ) tsql_icplfroyvbvxzod4rdse_0000000003
       WHERE isdiagnosis
-     ) tsql_wzgra4icyzqzhfdgmfrq_0000000004
-    ) tsql_wzgra4icyzqzhfdgmfrq_0000000005 ORDER BY "subjectID"
+     ) tsql_icplfroyvbvxzod4rdse_0000000004
+    ) tsql_icplfroyvbvxzod4rdse_0000000005 ORDER BY "subjectID"
 
-Part of the hope is the additional record keeping in the operator nodes would let a very powerful query optimizer work over the flow before it gets translated to `SQL`. At the very least restricting to columns later used and folding selects together would be achievable. One should have a good changes at optimization as the representation is fairly high-level, and many of the operators are relational (meaning there are known legal transforms a query optimizer can use). The flow itself is represented as follows:
+Part of the hope is the additional record keeping in the operator nodes would let a very powerful query optimizer work over the flow before it gets translated to `SQL`. At the very least restricting to columns later used and folding selects together would be achievable. One should have a good chance at optimization as the representation is fairly high-level, and many of the operators are relational (meaning there are known legal transforms a query optimizer can use). The flow itself is represented as follows:
+
+``` r
+print(dq)
+```
+
+    [1] "dbi_table('d') %.>% extend(., probability := exp(\"assessmentTotal\" * 0.237) / sum(exp(\"assessmentTotal\" * 0.237)), count := count(1); p: subjectID) %.>% extend(., rank := rank(); p: subjectID; o: probability) %.>% extend(., isdiagnosis := \"rank\" >= \"count\", diagnosis := \"surveyCategory\") %.>% select_rows(., isdiagnosis) %.>% select_columns(., subjectID, diagnosis, probability) %.>% order_by(., subjectID)"
+
+We can even pretty-format it:
 
 ``` r
 cat(gsub("%.>%", "%.>%\n   ", format(dq), fixed = TRUE))
