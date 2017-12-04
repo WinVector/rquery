@@ -129,22 +129,29 @@ scale <- 0.237
 dq <- seval(
   c(scale = scale),
   d %.>%
-    extend(., c("probability" :=
-                  "exp(\"assessmentTotal\" * scale)/sum(exp(\"assessmentTotal\" * scale))",
-                "count" := "count(1)"),
+    extend(., qae(probability :=
+                    exp("assessmentTotal" * scale)/
+                    sum(exp("assessmentTotal" * scale)),
+                  count := count(1)),
            partitionby = 'subjectID') %.>%
-    extend(., "rank" := "rank()",
+    extend(., qae(rank := rank()),
            partitionby = 'subjectID',
            orderby = "probability")  %.>%
-    extend(., c("isdiagnosis" := "rank = count",
-                "diagnosis" := "\"surveyCategory\"")) %.>%
-    select_rows(., "isdiagnosis") %.>%
-    select_columns(., c('subjectID', 'diagnosis', 'probability')) %.>%
+    extend(., qae(isdiagnosis := rank >= count,
+                  diagnosis := "surveyCategory")) %.>%
+    select_rows(., qc(isdiagnosis)) %.>%
+    select_columns(., qc(subjectID, 
+                         diagnosis, 
+                         probability)) %.>%
     order_by(., 'subjectID')
 )
 ```
 
-And we then have our result!
+All of the non-standard expression capture (`wrapr::qc()`, `wrapr::qae()`,
+substituting in the `scale`, and avoiding the quoted `SQL` column names) could easily
+be incorporated into the relation nodes.
+
+We then have our result:
 
 ```{r res}
 dq %.>%
