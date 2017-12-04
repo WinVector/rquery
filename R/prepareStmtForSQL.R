@@ -1,8 +1,6 @@
 
 #' Prepare a statement for SQL.
 #'
-#' TODO: return a more complete structure listing all used variables,
-#' all created variables, and statement.  Also need more care on string constants.
 #'
 #' @param lepxr item from  \code{substitute}
 #' @param colnames column names of table
@@ -73,7 +71,7 @@ prepForSQL <- function(lexpr, colnames, db,
   }
   # now have n==1
   # re-map quoted strings (except above)
-  if(is.character(nexpr) || is.name(nexpr)) {
+  if(is.name(nexpr)) {
     nexpr <- as.character(nexpr)
     if(nexpr %in% colnames) {
       return(as.character(DBI::dbQuoteIdentifier(db, nexpr)))
@@ -89,6 +87,9 @@ prepForSQL <- function(lexpr, colnames, db,
     },
     error = function(e) { NULL })
     return(nexpr)
+  }
+  if(is.character(nexpr)) {
+    return(as.character(DBI::dbQuoteString(db, nexpr)))
   }
   # fall-back
   return(paste(as.character(nexpr), collapse = " "))
