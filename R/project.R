@@ -3,6 +3,8 @@
 
 #' project data by grouping, summarizing, and adding more columns.
 #'
+#' TODO: re-factor to look like extend().
+#'
 #' @param source source to select from.
 #' @param groupby grouping columns.
 #' @param assignments new column assignment expressions.

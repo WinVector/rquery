@@ -1,6 +1,90 @@
 
 
 
+#' Extend data by adding more columns.
+#'
+#' partitionby and orderby can only be used with a database that supports window-functions
+#' (such as PostgreSQL).
+#'
+#' @param source source to select from.
+#' @param parsed parsed assignment expressions.
+#' @param ... force later arguments to bind by name
+#' @param partitionby partitioning (window function) terms.
+#' @param orderby ordering (window function) terms.
+#' @param desc reverse order
+#' @return extend node.
+#'
+#' @examples
+#'
+#' my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#' d <- dbi_copy_to(my_db, 'd',
+#'                 data.frame(AUC = 0.6, R2 = 0.2))
+#' eqn <- extend_se(d, "v" := "AUC + R2")
+#' print(eqn)
+#' sql <- to_sql(eqn)
+#' cat(sql)
+#' DBI::dbGetQuery(my_db, sql)
+#'
+#' # SQLite can not run the following query
+#' eqn2 <- extend_se(d, "v" := "rank()",
+#'               partitionby = "AUC", orderby = "R2")
+#' sql2 <- to_sql(eqn2)
+#' cat(sql2)
+#'
+#' @noRd
+#'
+extend_impl <- function(source, parsed,
+                        ...,
+                        partitionby = NULL,
+                        orderby = NULL,
+                        desc = FALSE) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
+  n <- length(parsed)
+  if(n<=0) {
+    stop("rquery::extend_imp must generate at least 1 column")
+  }
+  nms <-  character(n)
+  assignments <- character(n)
+  uses <- vector(n, mode='list')
+  for(i in 1:n) {
+    si <- parsed[[i]]
+    if(length(si$symbols_produced)!=1) {
+      stop("each assignment must be of the form name := expr")
+    }
+    nms[[i]] <- si$symbols_produced
+    assignments[[i]] <- si$parsed
+    uses[[i]] <- si$symbols_used
+  }
+  names(assignments) <- nms
+  if(n!=length(unique(names(assignments)))) {
+    stop("rquery::extend_imp generated column names must be unique")
+  }
+  have <- column_names(source)
+  overwritten <- intersect(nms, have)
+  if(length(overwritten)>0) {
+    stop(paste("rquery::extend_imp overwriting columns:",
+               paste(overwritten, collapse = ", ")))
+  }
+  missing <- setdiff(unlist(uses), have)
+  if(length(missing)>0) {
+    stop(paste("rquery::extend_imp refering to unknown columns:",
+               paste(overwritten, collapse = ", ")))
+  }
+  r <- list(source = list(source),
+            partitionby = partitionby,
+            orderby = orderby,
+            desc = desc,
+            assignments = assignments,
+            columns = names(assignments),
+            parsed = parsed)
+  class(r) <- "relop_extend"
+  r
+}
+
+
+
 
 #' Extend data by adding more columns.
 #'
@@ -13,6 +97,7 @@
 #' @param partitionby partitioning (window function) terms.
 #' @param orderby ordering (window function) terms.
 #' @param desc reverse order
+#' @param env environment to look for values in.
 #' @return extend node.
 #'
 #' @examples
@@ -20,42 +105,53 @@
 #' my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #' d <- dbi_copy_to(my_db, 'd',
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
-#' eqn <- extend(d, "v" := "AUC + R2")
+#' eqn <- extend_se(d, "v" := "AUC + R2")
 #' print(eqn)
 #' sql <- to_sql(eqn)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
 #'
 #' # SQLite can not run the following query
-#' eqn2 <- extend(d, "v" := "rank()",
+#' eqn2 <- extend_se(d, "v" := "rank()",
 #'               partitionby = "AUC", orderby = "R2")
 #' sql2 <- to_sql(eqn2)
 #' cat(sql2)
 #'
 #' @export
 #'
-extend <- function(source, assignments,
+extend_se <- function(source, assignments,
                    ...,
                    partitionby = NULL,
                    orderby = NULL,
-                   desc = FALSE) {
+                   desc = FALSE,
+                   env = parent.frame()) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
-  if(length(assignments)<=0) {
-    stop("rquery::extend must generate at least 1 column")
+  n <- length(assignments)
+  if(n<=0) {
+    stop("rquery::extend_se must generate at least 1 column")
   }
-  if(length(names(assignments))!=length(unique(names(assignments)))) {
-    stop("rquery::extend generated column names must be unique")
+  if(n!=length(unique(names(assignments)))) {
+    stop("rquery::extend_se generated column names must be unique")
   }
-  r <- list(source = list(source),
-            partitionby = partitionby,
-            orderby = orderby,
-            desc = desc,
-            columns = names(assignments),
-            assignments = assignments)
-  class(r) <- "relop_extend"
-  r
+  have <- column_names(source)
+  db <- dbi_connection(source)
+  parsed <- vector(n, mode='list')
+  for(i in 1:n) {
+    ni <- names(assignments)[[i]]
+    ai <- assignments[[ni]]
+    ei <- parse(text = paste(ni, ":=", ai))[[1]]
+    parsed[[i]] <- prepForSQL(ei,
+                              colnames = have,
+                              db = db,
+                              env = env)
+  }
+  extend_impl(source = source,
+              parsed = parsed,
+              partitionby = partitionby,
+              orderby = orderby,
+              desc = desc)
 }
 
 
@@ -95,33 +191,24 @@ extend_nse <- function(source,
                    desc = FALSE,
                    env = parent.frame()) {
   exprs <-  eval(substitute(alist(...)))
-  db <- dbi_connection(source)
   n <- length(exprs)
   if(n<=0) {
     stop("rquery::extend_nse must have at least 1 assigment")
   }
   have <- column_names(source)
-  nms <-  character(n)
-  res <- character(n)
-  for(i in 1:n) {
-    si <- prepForSQL(exprs[[i]],
-                     colnames = have,
-                     db = db,
-                     env = env)
-    # TODO: pass vi much further
-    vi <- si$parsed
-    if(length(si$symbols_produced)!=1) {
-      stop("each assignment must be of the form name := expr")
-    }
-    nms[[i]] <- si$symbols_produced
-    res[[i]] <- vi
-  }
-  names(res) <- nms
-  extend(source = source,
-         assignments = res,
-         partitionby = partitionby,
-         orderby = orderby,
-         desc = desc)
+  db <- dbi_connection(source)
+  parsed <- lapply(exprs,
+                   function(ei) {
+                     prepForSQL(ei,
+                                colnames = have,
+                                db = db,
+                                env = env)
+                   })
+  extend_impl(source = source,
+              parsed = parsed,
+              partitionby = partitionby,
+              orderby = orderby,
+              desc = desc)
 }
 
 
