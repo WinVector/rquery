@@ -37,17 +37,26 @@ order_by <- function(source, orderby) {
 
 #' @export
 dbi_connection.relop_order_by <- function (x, ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
   dbi_connection(x$source[[1]])
 }
 
 #' @export
 column_names.relop_order_by <- function (x, ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
   column_names(x$source[[1]])
 }
 
 
 #' @export
 format.relop_order_by <- function(x, ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
   paste0(format(x$source[[1]]),
          " %.>% ",
          "order_by(., ",
@@ -58,6 +67,9 @@ format.relop_order_by <- function(x, ...) {
 
 #' @export
 print.relop_order_by <- function(x, ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
   print(format(x),...)
 }
 
@@ -70,6 +82,9 @@ to_sql.relop_order_by <- function(x,
                                   tnum = cdata::makeTempNameGenerator('tsql'),
                                   append_cr = TRUE,
                                   ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
   db <- dbi_connection(x)
   cols1 <- column_names(x$source[[1]])
   cols <- vapply(cols1,

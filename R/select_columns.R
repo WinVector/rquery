@@ -38,16 +38,25 @@ select_columns <- function(source, columns) {
 
 #' @export
 dbi_connection.relop_select_columns <- function (x, ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
   dbi_connection(x$source[[1]])
 }
 
 #' @export
 column_names.relop_select_columns <- function (x, ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
   x$columns
 }
 
 #' @export
 format.relop_select_columns <- function(x, ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
   paste0(format(x$source[[1]]),
          " %.>% ",
          "select_columns(., ", paste(x$columns, collapse = ", "), ")")
@@ -55,6 +64,9 @@ format.relop_select_columns <- function(x, ...) {
 
 #' @export
 print.relop_select_columns <- function(x, ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
   print(format(x),...)
 }
 
@@ -65,6 +77,9 @@ to_sql.relop_select_columns <- function(x,
                                         tnum = cdata::makeTempNameGenerator('tsql'),
                                         append_cr = TRUE,
                                         ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
   db <- dbi_connection(x)
   cols <- vapply(x$columns,
                  function(ci) {

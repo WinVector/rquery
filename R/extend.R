@@ -39,6 +39,9 @@ extend <- function(source, assignments,
                    partitionby = NULL,
                    orderby = NULL,
                    desc = FALSE) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
   if(length(assignments)<=0) {
     stop("rquery::extend must generate at least 1 column")
   }
@@ -121,18 +124,27 @@ extend_nse <- function(source,
 
 #' @export
 dbi_connection.relop_extend <- function (x, ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
   dbi_connection(x$source[[1]])
 }
 
 
 #' @export
 column_names.relop_extend <- function (x, ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
   c(column_names(x$source[[1]]), x$columns)
 }
 
 
 #' @export
 format.relop_extend <- function(x, ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
   pterms <- ""
   if(length(x$partitionby)>0) {
     pterms <- paste0("; p: ",
@@ -158,6 +170,9 @@ format.relop_extend <- function(x, ...) {
 
 #' @export
 print.relop_extend <- function(x, ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
   print(format(x),...)
 }
 
@@ -168,6 +183,9 @@ to_sql.relop_extend <- function(x,
                                 tnum = cdata::makeTempNameGenerator('tsql'),
                                 append_cr = TRUE,
                                 ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
   db <- dbi_connection(x)
   cols1 <- column_names(x$source[[1]])
   cols <- NULL

@@ -38,18 +38,27 @@ project <- function(source, groupby, assignments) {
 
 #' @export
 dbi_connection.relop_project <- function (x, ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
   dbi_connection(x$source[[1]])
 }
 
 
 #' @export
 column_names.relop_project <- function (x, ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
   x$columns
 }
 
 
 #' @export
 format.relop_project <- function(x, ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
   aterms <- paste(paste(names(x$assignments),
                         ":=",
                         x$assignments), collapse = ", ")
@@ -64,6 +73,9 @@ format.relop_project <- function(x, ...) {
 
 #' @export
 print.relop_project <- function(x, ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
   print(format(x),...)
 }
 
@@ -74,6 +86,9 @@ to_sql.relop_project <- function(x,
                                  tnum = cdata::makeTempNameGenerator('tsql'),
                                  append_cr = TRUE,
                                  ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
   db <- dbi_connection(x)
   cols1 <- x$groupby
   cols <- NULL
