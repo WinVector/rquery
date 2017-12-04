@@ -22,7 +22,7 @@ There are many other relational algebra inspired specialized query languages.
 -   [SQL](https://en.wikipedia.org/wiki/SQL)
 -   (and possibly) [`dplyr`](http://dplyr.tidyverse.org)
 
-`rquery` is a thin translation to `SQL` layer, but we are trying to put the Codd relational operators front and center (user their naming, and back-port `SQL` progress such as window functions to the appropriate relational operator). `rquery` differs from `dplyr` in that `rquery` is trying to stay near the Codd relational operators (in particular grouping is a transient state inside the `rquery::extend()` operator, not a durable user visible annotation as with \`dplyr::group\_by()').
+`rquery` is a thin translation to `SQL` layer, but we are trying to put the Codd relational operators front and center (user their naming, and back-port `SQL` progress such as window functions to the appropriate relational operator). `rquery` differs from `dplyr` in that `rquery` is trying to stay near the Codd relational operators (in particular grouping is a transient state inside the `rquery::extend()` operator, not a durable user visible annotation as with `dplyr::group_by()`).
 
 The primary relational operators are:
 
@@ -194,13 +194,13 @@ cat(to_sql(dq, my_db))
           count(1)  OVER (  PARTITION BY "subjectID" ) AS "count"
          FROM (
           SELECT * FROM "d"
-         ) tsql_ehngztrpsvtq9bckpp1l_0000000000
-        ) tsql_ehngztrpsvtq9bckpp1l_0000000001
-       ) tsql_ehngztrpsvtq9bckpp1l_0000000002
-      ) tsql_ehngztrpsvtq9bckpp1l_0000000003
+         ) tsql_n5nugwkahockdi8uhgfx_0000000000
+        ) tsql_n5nugwkahockdi8uhgfx_0000000001
+       ) tsql_n5nugwkahockdi8uhgfx_0000000002
+      ) tsql_n5nugwkahockdi8uhgfx_0000000003
       WHERE isdiagnosis
-     ) tsql_ehngztrpsvtq9bckpp1l_0000000004
-    ) tsql_ehngztrpsvtq9bckpp1l_0000000005 ORDER BY "subjectID"
+     ) tsql_n5nugwkahockdi8uhgfx_0000000004
+    ) tsql_n5nugwkahockdi8uhgfx_0000000005 ORDER BY "subjectID"
 
 Part of the hope is the additional record keeping in the operator nodes would let a very powerful query optimizer work over the flow before it gets translated to `SQL`. At the very least restricting to columns later used and folding selects together would be achievable. One should have a good changes at optimization as the representation is fairly high-level, and many of the operators are relational (meaning there are known legal transforms a query optimizer can use). The flow itself is represented as follows:
 
@@ -209,8 +209,8 @@ cat(gsub("%.>%", "%.>%\n   ", format(dq), fixed = TRUE))
 ```
 
     dbi_table('d') %.>%
-        extend(., probability := exp("assessmentTotal" * 0.237)/sum(exp("assessmentTotal" * 0.237)), count := count(1);p: subjectID) %.>%
-        extend(., rank := rank();p: subjectID;o: probability) %.>%
+        extend(., probability := exp("assessmentTotal" * 0.237)/sum(exp("assessmentTotal" * 0.237)), count := count(1); p: subjectID) %.>%
+        extend(., rank := rank(); p: subjectID; o: probability) %.>%
         extend(., isdiagnosis := rank = count, diagnosis := "surveyCategory") %.>%
         select_rows(., isdiagnosis) %.>%
         select_columns(., subjectID, diagnosis, probability) %.>%

@@ -37,7 +37,7 @@ is a thin translation to `SQL` layer, but we are trying to put the Codd relation
 front and center (user their naming, and back-port `SQL` progress such as window functions
 to the appropriate relational operator).  `rquery` differs from `dplyr` in that `rquery` 
 is trying to stay near the Codd relational operators (in particular grouping is a transient
-state inside the `rquery::extend()` operator, not a durable user visible annotation as with `dplyr::group_by()').
+state inside the `rquery::extend()` operator, not a durable user visible annotation as with `dplyr::group_by()`).
 
 The primary relational operators are:
 

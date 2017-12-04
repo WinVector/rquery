@@ -29,7 +29,7 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="/index.html">
+  <a href="index.html">
     <span class="fa fa-home fa-lg"></span>
      
   </a>
@@ -74,7 +74,7 @@
 <li>(and possibly) <a href="http://dplyr.tidyverse.org"><code>dplyr</code></a>
 </li>
 </ul>
-<p><code>rquery</code> is a thin translation to <code>SQL</code> layer, but we are trying to put the Codd relational operators front and center (user their naming, and back-port <code>SQL</code> progress such as window functions to the appropriate relational operator). <code>rquery</code> differs from <code>dplyr</code> in that <code>rquery</code> is trying to stay near the Codd relational operators (in particular grouping is a transient state inside the <code><a href="http://www.rdocumentation.org/packages/rquery/topics/extend">rquery::extend()</a></code> operator, not a durable user visible annotation as with `dplyr::group_by()’).</p>
+<p><code>rquery</code> is a thin translation to <code>SQL</code> layer, but we are trying to put the Codd relational operators front and center (user their naming, and back-port <code>SQL</code> progress such as window functions to the appropriate relational operator). <code>rquery</code> differs from <code>dplyr</code> in that <code>rquery</code> is trying to stay near the Codd relational operators (in particular grouping is a transient state inside the <code><a href="http://www.rdocumentation.org/packages/rquery/topics/extend">rquery::extend()</a></code> operator, not a durable user visible annotation as with <code><a href="http://dplyr.tidyverse.org/reference/group_by.html">dplyr::group_by()</a></code>).</p>
 <p>The primary relational operators are:</p>
 <ul>
 <li>
@@ -259,18 +259,18 @@ dq &lt;-<span class="st"> </span><span class="kw">seval</span>(
       count(1)  OVER (  PARTITION BY "subjectID" ) AS "count"
      FROM (
       SELECT * FROM "d"
-     ) tsql_rscwkxry4qackm7eoeeg_0000000000
-    ) tsql_rscwkxry4qackm7eoeeg_0000000001
-   ) tsql_rscwkxry4qackm7eoeeg_0000000002
-  ) tsql_rscwkxry4qackm7eoeeg_0000000003
+     ) tsql_n1cgpbu3odmj4dm6xraz_0000000000
+    ) tsql_n1cgpbu3odmj4dm6xraz_0000000001
+   ) tsql_n1cgpbu3odmj4dm6xraz_0000000002
+  ) tsql_n1cgpbu3odmj4dm6xraz_0000000003
   WHERE isdiagnosis
- ) tsql_rscwkxry4qackm7eoeeg_0000000004
-) tsql_rscwkxry4qackm7eoeeg_0000000005 ORDER BY "subjectID"</code></pre>
+ ) tsql_n1cgpbu3odmj4dm6xraz_0000000004
+) tsql_n1cgpbu3odmj4dm6xraz_0000000005 ORDER BY "subjectID"</code></pre>
 <p>Part of the hope is the additional record keeping in the operator nodes would let a very powerful query optimizer work over the flow before it gets translated to <code>SQL</code>. At the very least restricting to columns later used and folding selects together would be achievable. One should have a good changes at optimization as the representation is fairly high-level, and many of the operators are relational (meaning there are known legal transforms a query optimizer can use). The flow itself is represented as follows:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw">gsub</span>(<span class="st">"%.&gt;%"</span>, <span class="st">"%.&gt;%</span><span class="ch">\n</span><span class="st">   "</span>, <span class="kw">format</span>(dq), <span class="dt">fixed =</span> <span class="ot">TRUE</span>))</code></pre></div>
 <pre><code>dbi_table('d') %.&gt;%
-    extend(., probability := exp("assessmentTotal" * 0.237)/sum(exp("assessmentTotal" * 0.237)), count := count(1);p: subjectID) %.&gt;%
-    extend(., rank := rank();p: subjectID;o: probability) %.&gt;%
+    extend(., probability := exp("assessmentTotal" * 0.237)/sum(exp("assessmentTotal" * 0.237)), count := count(1); p: subjectID) %.&gt;%
+    extend(., rank := rank(); p: subjectID; o: probability) %.&gt;%
     extend(., isdiagnosis := rank = count, diagnosis := "surveyCategory") %.&gt;%
     select_rows(., isdiagnosis) %.&gt;%
     select_columns(., subjectID, diagnosis, probability) %.&gt;%

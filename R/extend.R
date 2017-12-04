@@ -82,12 +82,12 @@ column_names.relop_extend <- function (x, ...) {
 format.relop_extend <- function(x, ...) {
   pterms <- ""
   if(length(x$partitionby)>0) {
-    pterms <- paste0(";p: ",
+    pterms <- paste0("; p: ",
                      paste(x$partitionb, collapse = ", "))
   }
   oterms <- ""
   if(length(x$orderby)>0) {
-    oterms <- paste0(";o: ",
+    oterms <- paste0("; o: ",
       paste(x$orderby, collapse = ", "),
       ifelse(x$desc, " DESC", ""))
   }
