@@ -84,12 +84,12 @@ prepForSQL <- function(lexpr, colnames, db,
         return(as.character(DBI::dbQuoteString(db, v)))
       }
       if(is.numeric(v)) {
-        return(v)
+        return(as.character(v))
       }
     },
     error = function(e) { NULL })
     return(nexpr)
   }
   # fall-back
-  return(as.character(nexpr))
+  return(paste(as.character(nexpr), collapse = " "))
 }
