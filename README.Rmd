@@ -194,4 +194,8 @@ DBI::dbDisconnect(my_db)
 ```
 
 
-  
+Note: `rquery` is only an experimental package.  Also, it is not currently checked, but
+all `rquery` operators should be only used in "zero dependency mode" (never using a value created in the same operator or writing the same value twice) in the sense of [`seplyr::partition_mutate_qt`](https://www.rdocumentation.org/packages/seplyr/versions/0.5.0/topics/partition_mutate_qt).  Again, the point was to see how quickly one can get
+a workable data transform pipeline in terms of Codd-inspired operators.
+
+

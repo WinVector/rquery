@@ -199,13 +199,13 @@ cat(to_sql(dq, my_db))
           count(1)  OVER (  PARTITION BY "subjectID" ) AS "count"
          FROM (
           SELECT * FROM "d"
-         ) tsql_icplfroyvbvxzod4rdse_0000000000
-        ) tsql_icplfroyvbvxzod4rdse_0000000001
-       ) tsql_icplfroyvbvxzod4rdse_0000000002
-      ) tsql_icplfroyvbvxzod4rdse_0000000003
+         ) tsql_px5idkb298udfvjyld5k_0000000000
+        ) tsql_px5idkb298udfvjyld5k_0000000001
+       ) tsql_px5idkb298udfvjyld5k_0000000002
+      ) tsql_px5idkb298udfvjyld5k_0000000003
       WHERE isdiagnosis
-     ) tsql_icplfroyvbvxzod4rdse_0000000004
-    ) tsql_icplfroyvbvxzod4rdse_0000000005 ORDER BY "subjectID"
+     ) tsql_px5idkb298udfvjyld5k_0000000004
+    ) tsql_px5idkb298udfvjyld5k_0000000005 ORDER BY "subjectID"
 
 Part of the hope is the additional record keeping in the operator nodes would let a very powerful query optimizer work over the flow before it gets translated to `SQL`. At the very least restricting to columns later used and folding selects together would be achievable. One should have a good chance at optimization as the representation is fairly high-level, and many of the operators are relational (meaning there are known legal transforms a query optimizer can use). The flow itself is represented as follows:
 
@@ -236,3 +236,5 @@ DBI::dbDisconnect(my_db)
 ```
 
     ## [1] TRUE
+
+Note: `rquery` is only an experimental package. Also, it is not currently checked, but all `rquery` operators should be only used in "zero dependency mode" (never using a value created in the same operator or writing the same value twice) in the sense of [`seplyr::partition_mutate_qt`](https://www.rdocumentation.org/packages/seplyr/versions/0.5.0/topics/partition_mutate_qt). Again, the point was to see how quickly one can get a workable data transform pipeline in terms of Codd-inspired operators.
