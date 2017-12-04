@@ -104,15 +104,18 @@ extend_nse <- function(source,
   nms <-  character(n)
   res <- character(n)
   for(i in 1:n) {
-    vi <- prepForSQL(exprs[[i]],
+    si <- prepForSQL(exprs[[i]],
                      colnames = have,
                      db = db,
                      env = env)
-    nms[[i]] <- names(vi)
+    # TODO: pass vi much further
+    vi <- si$parsed
+    if(length(si$symbols_produced)!=1) {
+      stop("each assignment must be of the form name := expr")
+    }
+    nms[[i]] <- si$symbols_produced
     res[[i]] <- vi
   }
-  nms <- gsub('"', '', nms, fixed = TRUE)
-  nms <- gsub('\'', '', nms, fixed = TRUE)
   names(res) <- nms
   extend(source = source,
          assignments = res,
