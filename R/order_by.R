@@ -1,8 +1,9 @@
 
 #' Make an order_by node (not a relational operation).
 #'
+#'
 #' @param source source to select from.
-#' @param orderby order by names.
+#' @param orderby order by column names.
 #' @return select columns node.
 #'
 #' @examples
@@ -22,12 +23,9 @@ order_by <- function(source, orderby) {
   if(length(orderby)<=0) {
     stop("rquery::order_by must have at least one order by term")
   }
+  # TODO: add desc argument
   have <- column_names(source)
-  missing <- setdiff(orderby, have)
-  if(length(missing)>0) {
-    stop(paste("rquery::order_by missing columns",
-               paste(missing, collapse = ", ")))
-  }
+  check_have_cols(have, orderby, "rquery::order_by orderby")
   r <- list(source = list(source),
             orderby = orderby)
   class(r) <- "relop_order_by"

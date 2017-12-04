@@ -3,7 +3,7 @@
 
 #' project data by grouping, summarizing, and adding more columns.
 #'
-#' TODO: re-factor to look like extend().
+#' TODO: re-factor to work like extend().
 #'
 #' @param source source to select from.
 #' @param groupby grouping columns.
@@ -30,6 +30,8 @@ project <- function(source, groupby, assignments) {
   if(length(assignments)!=length(unique(assignments))) {
     stop("rquery::project generated column names must be unique")
   }
+  have <- column_names(source)
+  check_have_cols(have, groupby, "rquery::project groupby")
   r <- list(source = list(source),
             groupby = groupby,
             columns = c(groupby, names(assignments)),

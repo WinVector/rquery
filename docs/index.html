@@ -263,13 +263,13 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
       count(1)  OVER (  PARTITION BY "subjectID" ) AS "count"
      FROM (
       SELECT * FROM "d"
-     ) tsql_f6cl7rmhdil0gz5hmgxq_0000000000
-    ) tsql_f6cl7rmhdil0gz5hmgxq_0000000001
-   ) tsql_f6cl7rmhdil0gz5hmgxq_0000000002
-  ) tsql_f6cl7rmhdil0gz5hmgxq_0000000003
+     ) tsql_73scwagh29j0cnc7paqf_0000000000
+    ) tsql_73scwagh29j0cnc7paqf_0000000001
+   ) tsql_73scwagh29j0cnc7paqf_0000000002
+  ) tsql_73scwagh29j0cnc7paqf_0000000003
   WHERE isdiagnosis
- ) tsql_f6cl7rmhdil0gz5hmgxq_0000000004
-) tsql_f6cl7rmhdil0gz5hmgxq_0000000005 ORDER BY "subjectID"</code></pre>
+ ) tsql_73scwagh29j0cnc7paqf_0000000004
+) tsql_73scwagh29j0cnc7paqf_0000000005 ORDER BY "subjectID"</code></pre>
 <p>Part of the hope is the additional record keeping in the operator nodes would let a very powerful query optimizer work over the flow before it gets translated to <code>SQL</code>. At the very least restricting to columns later used and folding selects together would be achievable. One should have a good chance at optimization as the representation is fairly high-level, and many of the operators are relational (meaning there are known legal transforms a query optimizer can use). The flow itself is represented as follows:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(dq)</code></pre></div>
 <pre><code>[1] "dbi_table('d') %.&gt;% extend(., probability := exp(\"assessmentTotal\" * 0.237) / sum(exp(\"assessmentTotal\" * 0.237)), count := count(1); p: subjectID) %.&gt;% extend(., rank := rank(); p: subjectID; o: probability) %.&gt;% extend(., isdiagnosis := \"rank\" &gt;= \"count\", diagnosis := \"surveyCategory\") %.&gt;% select_rows(., isdiagnosis) %.&gt;% select_columns(., subjectID, diagnosis, probability) %.&gt;% order_by(., subjectID)"</code></pre>

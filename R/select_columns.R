@@ -22,13 +22,8 @@ select_columns <- function(source, columns) {
   if(length(columns)<=0) {
     stop("rquery::select_columns must select at least 1 column")
   }
-  needs <- columns
   have <- column_names(source)
-  missing <- setdiff(needs, have)
-  if(length(missing)>0) {
-    stop(paste("rquery::select_columns missing columns",
-               paste(missing, collapse = ", ")))
-  }
+  check_have_cols(have, columns, "rquery::select_columns columns")
   r <- list(source = list(source),
             columns = columns)
   class(r) <- "relop_select_columns"

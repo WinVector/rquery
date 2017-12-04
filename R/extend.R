@@ -1,5 +1,16 @@
 
 
+check_have_cols <- function(have, requested, note) {
+  if(length(requested)!=length(unique(requested))) {
+    stop(paste(note,"duplicate columns"))
+  }
+  diff <- setdiff(requested, have)
+  if(length(diff)>0) {
+    stop(paste(note,"unknown columns",
+               paste(diff, collapse = ", ")))
+  }
+  TRUE
+}
 
 #' Extend data by adding more columns.
 #'
@@ -41,6 +52,9 @@ extend_impl <- function(source, parsed,
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
+  have <- column_names(source)
+  check_have_cols(have, partitionby, "rquery::extend partitionby")
+  check_have_cols(have, orderby, "rquery::extend orderby")
   n <- length(parsed)
   if(n<=0) {
     stop("rquery::extend_imp must generate at least 1 column")
@@ -61,17 +75,12 @@ extend_impl <- function(source, parsed,
   if(n!=length(unique(names(assignments)))) {
     stop("rquery::extend_imp generated column names must be unique")
   }
-  have <- column_names(source)
   overwritten <- intersect(nms, have)
   if(length(overwritten)>0) {
     stop(paste("rquery::extend_imp overwriting columns:",
                paste(overwritten, collapse = ", ")))
   }
-  missing <- setdiff(unlist(uses), have)
-  if(length(missing)>0) {
-    stop(paste("rquery::extend_imp refering to unknown columns:",
-               paste(overwritten, collapse = ", ")))
-  }
+  check_have_cols(have, unlist(uses), "rquery::extend uses")
   r <- list(source = list(source),
             partitionby = partitionby,
             orderby = orderby,

@@ -1,6 +1,8 @@
 
 #' Make a select rows node.
 #'
+#' TODO: re-factor to work like extend().
+#'
 #' @param source source to select from.
 #' @param expr expression to select rows.
 #' @return select columns node.
@@ -19,6 +21,8 @@
 #' @export
 #'
 select_rows <- function(source, expr) {
+  # TODO: split into se and nse versions
+  # TODO: parse expr and get what variables we are using.
   r <- list(source = list(source),
             expr = expr)
   class(r) <- "relop_select_rows"
