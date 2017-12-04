@@ -103,7 +103,7 @@ print(d)
 
 ``` r
 d %.>%
-  to_sql(., my_db) %.>%
+  to_sql(.) %.>%
   DBI::dbGetQuery(my_db, .) %.>%
   knitr::kable(.)
 ```
@@ -121,17 +121,17 @@ Now we write the calculation in terms of our operators (we have not yet bothered
 scale <- 0.237
 
 dq <- d %.>%
-  extend_nse(., db=my_db, 
+  extend_nse(.,
              probability :=
                exp(assessmentTotal * scale)/
                sum(exp(assessmentTotal * scale)),
              count := count(1),
              partitionby = 'subjectID') %.>%
-  extend_nse(.,  db=my_db,
+  extend_nse(.,
              rank := rank(),
              partitionby = 'subjectID',
              orderby = 'probability')  %.>%
-  extend_nse(., db=my_db,
+  extend_nse(.,
              isdiagnosis := rank >= count,
              diagnosis := surveyCategory) %.>%
   select_rows(., qe(isdiagnosis)) %.>%
@@ -147,7 +147,7 @@ We then have our result:
 
 ``` r
 dq %.>%
-  to_sql(., my_db) %.>%
+  to_sql(.) %.>%
   DBI::dbGetQuery(my_db, .) %.>%
   knitr::kable(.)
 ```
@@ -162,7 +162,7 @@ We see we reproduced the result purely in terms of these database operators.
 The actual `SQL` query that produces the result is quite involved:
 
 ``` r
-cat(to_sql(dq, my_db))
+cat(to_sql(dq))
 ```
 
     SELECT * FROM (
@@ -199,13 +199,13 @@ cat(to_sql(dq, my_db))
           count(1)  OVER (  PARTITION BY "subjectID" ) AS "count"
          FROM (
           SELECT * FROM "d"
-         ) tsql_px5idkb298udfvjyld5k_0000000000
-        ) tsql_px5idkb298udfvjyld5k_0000000001
-       ) tsql_px5idkb298udfvjyld5k_0000000002
-      ) tsql_px5idkb298udfvjyld5k_0000000003
+         ) tsql_jpawgbcddwml9i6eiu0w_0000000000
+        ) tsql_jpawgbcddwml9i6eiu0w_0000000001
+       ) tsql_jpawgbcddwml9i6eiu0w_0000000002
+      ) tsql_jpawgbcddwml9i6eiu0w_0000000003
       WHERE isdiagnosis
-     ) tsql_px5idkb298udfvjyld5k_0000000004
-    ) tsql_px5idkb298udfvjyld5k_0000000005 ORDER BY "subjectID"
+     ) tsql_jpawgbcddwml9i6eiu0w_0000000004
+    ) tsql_jpawgbcddwml9i6eiu0w_0000000005 ORDER BY "subjectID"
 
 Part of the hope is the additional record keeping in the operator nodes would let a very powerful query optimizer work over the flow before it gets translated to `SQL`. At the very least restricting to columns later used and folding selects together would be achievable. One should have a good chance at optimization as the representation is fairly high-level, and many of the operators are relational (meaning there are known legal transforms a query optimizer can use). The flow itself is represented as follows:
 

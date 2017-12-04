@@ -15,7 +15,7 @@
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
 #' eqn <- project(d, "AUC", "v" := "max(R2)")
 #' print(eqn)
-#' sql <- to_sql(eqn, my_db)
+#' sql <- to_sql(eqn)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
 #'
@@ -36,6 +36,10 @@ project <- function(source, groupby, assignments) {
   r
 }
 
+#' @export
+dbi_connection.relop_project <- function (x, ...) {
+  dbi_connection(x$source[[1]])
+}
 
 
 #' @export
@@ -66,11 +70,11 @@ print.relop_project <- function(x, ...) {
 
 #' @export
 to_sql.relop_project <- function(x,
-                                 db,
                                  indent_level = 0,
                                  tnum = cdata::makeTempNameGenerator('tsql'),
                                  append_cr = TRUE,
                                  ...) {
+  db <- dbi_connection(x)
   cols1 <- x$groupby
   cols <- NULL
   if(length(cols1)>0) {
@@ -88,7 +92,6 @@ to_sql.relop_project <- function(x,
                       }, character(1))
   }
   subsql <- to_sql(x$source[[1]],
-                   db = db,
                    indent_level = indent_level + 1,
                    tnum = tnum,
                    append_cr = FALSE)

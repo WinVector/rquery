@@ -22,14 +22,14 @@
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
 #' eqn <- extend(d, "v" := "AUC + R2")
 #' print(eqn)
-#' sql <- to_sql(eqn, my_db)
+#' sql <- to_sql(eqn)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
 #'
 #' # SQLite can not run the following query
 #' eqn2 <- extend(d, "v" := "rank()",
 #'               partitionby = "AUC", orderby = "R2")
-#' sql2 <- to_sql(eqn2, my_db)
+#' sql2 <- to_sql(eqn2)
 #' cat(sql2)
 #'
 #' @export
@@ -60,8 +60,7 @@ extend <- function(source, assignments,
 #' Extend data by adding more columns.
 #'
 #' partitionby and orderby can only be used with a database that supports window-functions
-#' (such as PostgreSQL). TODO: remove db dependency from this step and separate
-#' variable identification and query generation.  Also not sure about string
+#' (such as PostgreSQL). Note: not sure about string
 #' constants at this point.
 #'
 #' @param source source to select from.
@@ -69,7 +68,6 @@ extend <- function(source, assignments,
 #' @param partitionby partitioning (window function) terms.
 #' @param orderby ordering (window function) terms.
 #' @param desc reverse order
-#' @param db DBI database connection.
 #' @param env environment to look for values in.
 #' @return extend node.
 #'
@@ -78,9 +76,9 @@ extend <- function(source, assignments,
 #' my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #' d <- dbi_copy_to(my_db, 'd',
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
-#' eqn <- extend_nse(d, db = my_db, v := AUC + R2)
+#' eqn <- extend_nse(d, v := AUC + R2)
 #' print(eqn)
-#' sql <- to_sql(eqn, my_db)
+#' sql <- to_sql(eqn)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
 #'
@@ -92,9 +90,9 @@ extend_nse <- function(source,
                    partitionby = NULL,
                    orderby = NULL,
                    desc = FALSE,
-                   db,
                    env = parent.frame()) {
   exprs <-  eval(substitute(alist(...)))
+  db <- dbi_connection(source)
   n <- length(exprs)
   if(n<=0) {
     stop("rquery::extend_nse must have at least 1 assigment")
@@ -120,6 +118,11 @@ extend_nse <- function(source,
          desc = desc)
 }
 
+
+#' @export
+dbi_connection.relop_extend <- function (x, ...) {
+  dbi_connection(x$source[[1]])
+}
 
 
 #' @export
@@ -161,11 +164,11 @@ print.relop_extend <- function(x, ...) {
 
 #' @export
 to_sql.relop_extend <- function(x,
-                                db,
                                 indent_level = 0,
                                 tnum = cdata::makeTempNameGenerator('tsql'),
                                 append_cr = TRUE,
                                 ...) {
+  db <- dbi_connection(x)
   cols1 <- column_names(x$source[[1]])
   cols <- NULL
   if(length(cols1)>0) {
@@ -212,7 +215,6 @@ to_sql.relop_extend <- function(x,
                       }, character(1))
   }
   subsql <- to_sql(x$source[[1]],
-                   db = db,
                    indent_level = indent_level + 1,
                    tnum = tnum,
                    append_cr = FALSE)

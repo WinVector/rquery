@@ -3,11 +3,25 @@
 # in addition to methods below, our nodes implement: format() and print().
 
 
-#' Return column names
+#' Return DBI connection.
 #'
 #' @param x rquery operation tree.
 #' @param ... generic additional arguments
 #' @return DBI handle
+#'
+#' @export
+#'
+dbi_connection <- function (x, ...) {
+  UseMethod("dbi_connection", x)
+}
+
+
+
+#' Return column names
+#'
+#' @param x rquery operation tree.
+#' @param ... generic additional arguments
+#' @return column names
 #'
 #' @export
 #'
@@ -19,7 +33,6 @@ column_names <- function (x, ...) {
 #' Return SQL command of operation chain
 #'
 #' @param x rquery operation tree.
-#' @param db DBI database connection
 #' @param indent_level level to indent
 #' @param tnum temp sub-query name generators
 #' @param append_cr logical if TRUE end with CR
@@ -29,7 +42,6 @@ column_names <- function (x, ...) {
 #' @export
 #'
 to_sql <- function (x,
-                    db,
                     indent_level = 0,
                     tnum = cdata::makeTempNameGenerator('tsql'),
                     append_cr = TRUE,

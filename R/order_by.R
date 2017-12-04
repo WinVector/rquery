@@ -12,7 +12,7 @@
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
 #' eqn <- order_by(d, "AUC")
 #' print(eqn)
-#' sql <- to_sql(eqn, my_db)
+#' sql <- to_sql(eqn)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
 #'
@@ -34,6 +34,11 @@ order_by <- function(source, orderby) {
   r
 }
 
+
+#' @export
+dbi_connection.relop_order_by <- function (x, ...) {
+  dbi_connection(x$source[[1]])
+}
 
 #' @export
 column_names.relop_order_by <- function (x, ...) {
@@ -61,11 +66,11 @@ print.relop_order_by <- function(x, ...) {
 
 #' @export
 to_sql.relop_order_by <- function(x,
-                                  db,
                                   indent_level = 0,
                                   tnum = cdata::makeTempNameGenerator('tsql'),
                                   append_cr = TRUE,
                                   ...) {
+  db <- dbi_connection(x)
   cols1 <- column_names(x$source[[1]])
   cols <- vapply(cols1,
                  function(ci) {
@@ -76,7 +81,6 @@ to_sql.relop_order_by <- function(x,
                  DBI::dbQuoteIdentifier(db, ci)
                }, character(1))
   subsql <- to_sql(x$source[[1]],
-                   db = db,
                    indent_level = indent_level + 1,
                    tnum = tnum,
                    append_cr = FALSE)

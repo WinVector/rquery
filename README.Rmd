@@ -115,7 +115,7 @@ d <- dbi_copy_to(my_db, 'd',
 print(d)
 
 d %.>%
-  to_sql(., my_db) %.>%
+  to_sql(.) %.>%
   DBI::dbGetQuery(my_db, .) %.>%
   knitr::kable(.)
 
@@ -128,17 +128,17 @@ to add the expression capture features to all of the `rquery` operators, so we a
 scale <- 0.237
 
 dq <- d %.>%
-  extend_nse(., db=my_db, 
+  extend_nse(.,
              probability :=
                exp(assessmentTotal * scale)/
                sum(exp(assessmentTotal * scale)),
              count := count(1),
              partitionby = 'subjectID') %.>%
-  extend_nse(.,  db=my_db,
+  extend_nse(.,
              rank := rank(),
              partitionby = 'subjectID',
              orderby = 'probability')  %.>%
-  extend_nse(., db=my_db,
+  extend_nse(.,
              isdiagnosis := rank >= count,
              diagnosis := surveyCategory) %.>%
   select_rows(., qe(isdiagnosis)) %.>%
@@ -156,7 +156,7 @@ We then have our result:
 
 ```{r res}
 dq %.>%
-  to_sql(., my_db) %.>%
+  to_sql(.) %.>%
   DBI::dbGetQuery(my_db, .) %.>%
   knitr::kable(.)
 ```
@@ -166,7 +166,7 @@ We see we reproduced the result purely in terms of these database operators.
 The actual `SQL` query that produces the result is quite involved:
 
 ```{r q, comment=''}
-cat(to_sql(dq, my_db))
+cat(to_sql(dq))
 ```
 
 Part of the hope is the additional record keeping in the operator nodes would 

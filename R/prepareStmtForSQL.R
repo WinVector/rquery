@@ -1,6 +1,9 @@
 
 #' Prepare a statement for SQL.
 #'
+#' TODO: return a more complete structure listing all used variables,
+#' all created variables, and statement.  Also need more care on string constants.
+#'
 #' @param lepxr item from  \code{substitute}
 #' @param colnames column names of table
 #' @param db database connection (for DBI quoting)

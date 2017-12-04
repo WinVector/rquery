@@ -12,7 +12,7 @@
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
 #' eqn <- select_columns(d, 'AUC')
 #' print(eqn)
-#' sql <- to_sql(eqn, my_db)
+#' sql <- to_sql(eqn)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
 #'
@@ -37,6 +37,11 @@ select_columns <- function(source, columns) {
 
 
 #' @export
+dbi_connection.relop_select_columns <- function (x, ...) {
+  dbi_connection(x$source[[1]])
+}
+
+#' @export
 column_names.relop_select_columns <- function (x, ...) {
   x$columns
 }
@@ -56,17 +61,16 @@ print.relop_select_columns <- function(x, ...) {
 
 #' @export
 to_sql.relop_select_columns <- function(x,
-                                        db,
                                         indent_level = 0,
                                         tnum = cdata::makeTempNameGenerator('tsql'),
                                         append_cr = TRUE,
                                         ...) {
+  db <- dbi_connection(x)
   cols <- vapply(x$columns,
                  function(ci) {
                    DBI::dbQuoteIdentifier(db, ci)
                  }, character(1))
   subsql <- to_sql(x$source[[1]],
-                   db = db,
                    indent_level = indent_level + 1,
                    tnum = tnum,
                    append_cr = FALSE)

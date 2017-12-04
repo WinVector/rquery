@@ -17,7 +17,7 @@
 #'                   temporary = TRUE)
 #' d <- dbi_table(my_db, 'd')
 #' print(d)
-#' sql <- to_sql(d, my_db)
+#' sql <- to_sql(d)
 #' cat(sql)
 #'
 #' @export
@@ -25,24 +25,39 @@
 dbi_table <- function(db, table_name) {
   columns <- cdata:::listFields(db, table_name)
   r <- list(columns = columns,
-            table_name = table_name)
+            table_name = table_name,
+            db = db)
   class(r) <- "relop_dbi_table"
   r
 }
 
 
 #' @export
+dbi_connection.relop_dbi_table <- function (x, ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
+  x$db
+}
+
+#' @export
 column_names.relop_dbi_table <- function (x, ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
   x$columns
 }
 
 #' @export
 to_sql.relop_dbi_table <- function (x,
-                                    db,
                                     indent_level = 0,
                                     tnum = cdata::makeTempNameGenerator('tsql'),
                                     append_cr = TRUE,
                                     ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
+  db <- dbi_connection(x)
   prefix <- paste(rep(' ', indent_level), collapse = '')
   q <- paste0(prefix,
          "SELECT * FROM ",
@@ -55,11 +70,17 @@ to_sql.relop_dbi_table <- function (x,
 
 #' @export
 format.relop_dbi_table <- function(x, ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
   paste0("dbi_table('", x$table_name, "')")
 }
 
 #' @export
 print.relop_dbi_table <- function(x, ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
   print(format(x),...)
 }
 
@@ -80,7 +101,7 @@ print.relop_dbi_table <- function(x, ...) {
 #' my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #' d <- dbi_copy_to(my_db, 'd',
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
-#' sql <- to_sql(d, my_db)
+#' sql <- to_sql(d)
 #' cat(sql)
 #'
 #' @export

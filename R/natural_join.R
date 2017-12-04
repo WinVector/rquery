@@ -15,7 +15,7 @@
 #'                  data.frame(AUC = 0.6, D = 0.3))
 #' eqn <- natural_join(d1, d2)
 #' print(eqn)
-#' sql <- to_sql(eqn, my_db)
+#' sql <- to_sql(eqn)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
 #'
@@ -31,6 +31,11 @@ natural_join <- function(a, b,
             jointype = jointype)
   class(r) <- "relop_natural_join"
   r
+}
+
+#' @export
+dbi_connection.relop_natural_join <- function (x, ...) {
+  dbi_connection(x$source[[1]])
 }
 
 
@@ -65,18 +70,16 @@ print.relop_natural_join <- function(x, ...) {
 
 #' @export
 to_sql.relop_natural_join <- function(x,
-                                      db,
                                       indent_level = 0,
                                       tnum = cdata::makeTempNameGenerator('tsql'),
                                       append_cr = TRUE,
                                       ...) {
+  db <- dbi_connection(x)
   subsqla <- to_sql(x$source[[1]],
-                    db = db,
                     indent_level = indent_level + 1,
                     tnum = tnum,
                     append_cr = FALSE)
   subsqlb <- to_sql(x$source[[2]],
-                    db = db,
                     indent_level = indent_level + 1,
                     tnum = tnum,
                     append_cr = FALSE)

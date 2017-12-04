@@ -12,7 +12,7 @@
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
 #' eqn <- select_rows(d, "AUC >= 0.5")
 #' print(eqn)
-#' sql <- to_sql(eqn, my_db)
+#' sql <- to_sql(eqn)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
 #'
@@ -24,6 +24,12 @@ select_rows <- function(source, expr) {
   class(r) <- "relop_select_rows"
   r
 }
+
+#' @export
+dbi_connection.relop_select_rows <- function (x, ...) {
+  dbi_connection(x$source[[1]])
+}
+
 
 #' @export
 column_names.relop_select_rows <- function (x, ...) {
@@ -46,17 +52,16 @@ print.relop_select_rows <- function(x, ...) {
 
 #' @export
 to_sql.relop_select_rows <- function(x,
-                                     db,
                                      indent_level = 0,
                                      tnum = cdata::makeTempNameGenerator('tsql'),
                                      append_cr = TRUE,
                                      ...) {
+  db <- dbi_connection(x)
   cols <- vapply(x$columns,
                  function(ci) {
                    DBI::dbQuoteIdentifier(db, ci)
                  }, character(1))
   subsql <- to_sql(x$source[[1]],
-                   db = db,
                    indent_level = indent_level + 1,
                    tnum = tnum,
                    append_cr = FALSE)
