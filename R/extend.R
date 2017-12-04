@@ -45,22 +45,6 @@ extend <- function(source, assignments,
   if(length(names(assignments))!=length(unique(names(assignments)))) {
     stop("rquery::extend generated column names must be unique")
   }
-  syms <- lapply(assignments,
-                 function(ai) {
-                  find_symbols(parse(text=ai))
-                 })
-  needs <- unique(c(unlist(syms), partitionby, orderby))
-  have <- column_names(source)
-  missing <- setdiff(needs, have)
-  if(length(missing)>0) {
-    stop(paste("rquery::extend missing columns",
-               paste(missing, collapse = ", ")))
-  }
-  gint <- intersect(names(assignments), have)
-  if(length(gint)>0) {
-    stop(paste("rquery::extend re-used column names:",
-               paste(gint, collapse = ", ")))
-  }
   r <- list(source = list(source),
             partitionby = partitionby,
             orderby = orderby,
@@ -70,6 +54,72 @@ extend <- function(source, assignments,
   class(r) <- "relop_extend"
   r
 }
+
+
+
+#' Extend data by adding more columns.
+#'
+#' partitionby and orderby can only be used with a database that supports window-functions
+#' (such as PostgreSQL). TODO: remove db dependency from this step and separate
+#' variable identification and query generation.  Also not sure about string
+#' constants at this point.
+#'
+#' @param source source to select from.
+#' @param ... new column assignment expressions.
+#' @param partitionby partitioning (window function) terms.
+#' @param orderby ordering (window function) terms.
+#' @param desc reverse order
+#' @param db DBI database connection.
+#' @param env environment to look for values in.
+#' @return extend node.
+#'
+#' @examples
+#'
+#' my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#' d <- dbi_copy_to(my_db, 'd',
+#'                 data.frame(AUC = 0.6, R2 = 0.2))
+#' eqn <- extend_nse(d, db = my_db, v := AUC + R2)
+#' print(eqn)
+#' sql <- to_sql(eqn, my_db)
+#' cat(sql)
+#' DBI::dbGetQuery(my_db, sql)
+#'
+#'
+#' @export
+#'
+extend_nse <- function(source,
+                   ...,
+                   partitionby = NULL,
+                   orderby = NULL,
+                   desc = FALSE,
+                   db,
+                   env = parent.frame()) {
+  exprs <-  eval(substitute(alist(...)))
+  n <- length(exprs)
+  if(n<=0) {
+    stop("rquery::extend_nse must have at least 1 assigment")
+  }
+  have <- column_names(source)
+  nms <-  character(n)
+  res <- character(n)
+  for(i in 1:n) {
+    vi <- prepForSQL(exprs[[i]],
+                     colnames = have,
+                     db = db,
+                     env = env)
+    nms[[i]] <- names(vi)
+    res[[i]] <- vi
+  }
+  nms <- gsub('"', '', nms, fixed = TRUE)
+  nms <- gsub('\'', '', nms, fixed = TRUE)
+  names(res) <- nms
+  extend(source = source,
+         assignments = res,
+         partitionby = partitionby,
+         orderby = orderby,
+         desc = desc)
+}
+
 
 
 #' @export

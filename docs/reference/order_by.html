@@ -111,7 +111,7 @@
 <span class='fu'>print</span>(<span class='no'>eqn</span>)</div><div class='output co'>#&gt; [1] "dbi_table('d') %.&gt;% order_by(., AUC)"</div><div class='input'><span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>eqn</span>, <span class='no'>my_db</span>)
 <span class='fu'>cat</span>(<span class='no'>sql</span>)</div><div class='output co'>#&gt; SELECT * FROM (
 #&gt;  SELECT * FROM `d`
-#&gt; ) tsql_zqjukl6hhrbxbcybxi1x_0000000000 ORDER BY `AUC`</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;   AUC  R2
+#&gt; ) tsql_glqrd5ynpd9jg0sohzbd_0000000000 ORDER BY `AUC`</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;   AUC  R2
 #&gt; 1 0.6 0.2</div><div class='input'>
 </div></pre>
   </div>

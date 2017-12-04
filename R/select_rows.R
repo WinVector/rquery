@@ -19,13 +19,6 @@
 #' @export
 #'
 select_rows <- function(source, expr) {
-  needs <- find_symbols(parse(text=expr))
-  have <- column_names(source)
-  missing <- setdiff(needs, have)
-  if(length(missing)>0) {
-    stop(paste("rquery::select_rows missing columns",
-               paste(missing, collapse = ", ")))
-  }
   r <- list(source = list(source),
             expr = expr)
   class(r) <- "relop_select_rows"

@@ -179,26 +179,30 @@ d &lt;-<span class="st"> </span><span class="kw"><a href="reference/dbi_copy_to.
 </tr>
 </tbody>
 </table>
-<p>Now we write the calculation in terms of our operators.</p>
+<p>Now we write the calculation in terms of our operators (we have not yet bothered to add the expression capture features to all of the <code>rquery</code> operators, so we are currently simulating it using the development version <code>1.0.2</code> of <a href="https://winvector.github.io/wrapr/"><code>wrapr</code></a>; the package itself works with the production release version of <code>wrapr</code>).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">scale &lt;-<span class="st"> </span><span class="fl">0.237</span>
 
-dq &lt;-<span class="st"> </span><span class="kw">seval</span>(
-  <span class="kw">c</span>(<span class="dt">scale =</span> scale),
-  d <span class="op">%.&gt;%</span>
-<span class="st">    </span><span class="kw"><a href="reference/extend.html">extend</a></span>(., <span class="kw">c</span>(<span class="st">"probability"</span> <span class="op">:</span><span class="er">=</span>
-<span class="st">                  "exp(</span><span class="ch">\"</span><span class="st">assessmentTotal</span><span class="ch">\"</span><span class="st"> * scale)/sum(exp(</span><span class="ch">\"</span><span class="st">assessmentTotal</span><span class="ch">\"</span><span class="st"> * scale))"</span>,
-                <span class="st">"count"</span> <span class="op">:</span><span class="er">=</span><span class="st"> "count(1)"</span>),
-           <span class="dt">partitionby =</span> <span class="st">'subjectID'</span>) <span class="op">%.&gt;%</span>
-<span class="st">    </span><span class="kw"><a href="reference/extend.html">extend</a></span>(., <span class="st">"rank"</span> <span class="op">:</span><span class="er">=</span><span class="st"> "rank()"</span>,
-           <span class="dt">partitionby =</span> <span class="st">'subjectID'</span>,
-           <span class="dt">orderby =</span> <span class="st">"probability"</span>)  <span class="op">%.&gt;%</span>
-<span class="st">    </span><span class="kw"><a href="reference/extend.html">extend</a></span>(., <span class="kw">c</span>(<span class="st">"isdiagnosis"</span> <span class="op">:</span><span class="er">=</span><span class="st"> "rank = count"</span>,
-                <span class="st">"diagnosis"</span> <span class="op">:</span><span class="er">=</span><span class="st"> "</span><span class="ch">\"</span><span class="st">surveyCategory</span><span class="ch">\"</span><span class="st">"</span>)) <span class="op">%.&gt;%</span>
-<span class="st">    </span><span class="kw"><a href="reference/select_rows.html">select_rows</a></span>(., <span class="st">"isdiagnosis"</span>) <span class="op">%.&gt;%</span>
-<span class="st">    </span><span class="kw"><a href="reference/select_columns.html">select_columns</a></span>(., <span class="kw">c</span>(<span class="st">'subjectID'</span>, <span class="st">'diagnosis'</span>, <span class="st">'probability'</span>)) <span class="op">%.&gt;%</span>
-<span class="st">    </span><span class="kw"><a href="reference/order_by.html">order_by</a></span>(., <span class="st">'subjectID'</span>)
-)</code></pre></div>
-<p>And we then have our result!</p>
+dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="reference/extend_nse.html">extend_nse</a></span>(., <span class="dt">db=</span>my_db, 
+             probability <span class="op">:</span><span class="er">=</span>
+<span class="st">               </span><span class="kw">exp</span>(assessmentTotal <span class="op">*</span><span class="st"> </span>scale)<span class="op">/</span>
+<span class="st">               </span><span class="kw">sum</span>(<span class="kw">exp</span>(assessmentTotal <span class="op">*</span><span class="st"> </span>scale)),
+             count <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">count</span>(<span class="dv">1</span>),
+             <span class="dt">partitionby =</span> <span class="st">'subjectID'</span>) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="reference/extend_nse.html">extend_nse</a></span>(.,  <span class="dt">db=</span>my_db,
+             rank <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">rank</span>(),
+             <span class="dt">partitionby =</span> <span class="st">'subjectID'</span>,
+             <span class="dt">orderby =</span> <span class="st">'probability'</span>)  <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="reference/extend_nse.html">extend_nse</a></span>(., <span class="dt">db=</span>my_db,
+             isdiagnosis <span class="op">:</span><span class="er">=</span><span class="st"> </span>rank <span class="op">&gt;=</span><span class="st"> </span>count,
+             diagnosis <span class="op">:</span><span class="er">=</span><span class="st"> </span>surveyCategory) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="reference/select_rows.html">select_rows</a></span>(., <span class="kw">qe</span>(isdiagnosis)) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="reference/select_columns.html">select_columns</a></span>(., <span class="kw">qc</span>(subjectID, 
+                       diagnosis, 
+                       probability)) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="reference/order_by.html">order_by</a></span>(., <span class="st">'subjectID'</span>)</code></pre></div>
+<p>All of the non-standard expression capture (<code><a href="http://www.rdocumentation.org/packages/wrapr/topics/qc">wrapr::qc()</a></code>, <code><a href="http://www.rdocumentation.org/packages/wrapr/topics/qae">wrapr::qae()</a></code>, substituting in the <code>scale</code>, and avoiding the quoted <code>SQL</code> column names) could easily be incorporated into the relation nodes.</p>
+<p>We then have our result:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dq <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="reference/to_sql.html">to_sql</a></span>(., my_db) <span class="op">%.&gt;%</span>
 <span class="st">  </span>DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery">dbGetQuery</a></span>(my_db, .) <span class="op">%.&gt;%</span>
@@ -238,7 +242,7 @@ dq &lt;-<span class="st"> </span><span class="kw">seval</span>(
     "probability",
     "count",
     "rank",
-    rank = count  AS "isdiagnosis",
+    "rank" &gt;= "count"  AS "isdiagnosis",
     "surveyCategory"  AS "diagnosis"
    FROM (
     SELECT
@@ -255,23 +259,23 @@ dq &lt;-<span class="st"> </span><span class="kw">seval</span>(
       "subjectID",
       "surveyCategory",
       "assessmentTotal",
-      exp("assessmentTotal" * 0.237)/sum(exp("assessmentTotal" * 0.237))  OVER (  PARTITION BY "subjectID" ) AS "probability",
+      exp("assessmentTotal" * 0.237) / sum(exp("assessmentTotal" * 0.237))  OVER (  PARTITION BY "subjectID" ) AS "probability",
       count(1)  OVER (  PARTITION BY "subjectID" ) AS "count"
      FROM (
       SELECT * FROM "d"
-     ) tsql_n1cgpbu3odmj4dm6xraz_0000000000
-    ) tsql_n1cgpbu3odmj4dm6xraz_0000000001
-   ) tsql_n1cgpbu3odmj4dm6xraz_0000000002
-  ) tsql_n1cgpbu3odmj4dm6xraz_0000000003
+     ) tsql_t4seqylsu9pp3toqlcn1_0000000000
+    ) tsql_t4seqylsu9pp3toqlcn1_0000000001
+   ) tsql_t4seqylsu9pp3toqlcn1_0000000002
+  ) tsql_t4seqylsu9pp3toqlcn1_0000000003
   WHERE isdiagnosis
- ) tsql_n1cgpbu3odmj4dm6xraz_0000000004
-) tsql_n1cgpbu3odmj4dm6xraz_0000000005 ORDER BY "subjectID"</code></pre>
+ ) tsql_t4seqylsu9pp3toqlcn1_0000000004
+) tsql_t4seqylsu9pp3toqlcn1_0000000005 ORDER BY "subjectID"</code></pre>
 <p>Part of the hope is the additional record keeping in the operator nodes would let a very powerful query optimizer work over the flow before it gets translated to <code>SQL</code>. At the very least restricting to columns later used and folding selects together would be achievable. One should have a good changes at optimization as the representation is fairly high-level, and many of the operators are relational (meaning there are known legal transforms a query optimizer can use). The flow itself is represented as follows:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw">gsub</span>(<span class="st">"%.&gt;%"</span>, <span class="st">"%.&gt;%</span><span class="ch">\n</span><span class="st">   "</span>, <span class="kw">format</span>(dq), <span class="dt">fixed =</span> <span class="ot">TRUE</span>))</code></pre></div>
 <pre><code>dbi_table('d') %.&gt;%
-    extend(., probability := exp("assessmentTotal" * 0.237)/sum(exp("assessmentTotal" * 0.237)), count := count(1); p: subjectID) %.&gt;%
+    extend(., probability := exp("assessmentTotal" * 0.237) / sum(exp("assessmentTotal" * 0.237)), count := count(1); p: subjectID) %.&gt;%
     extend(., rank := rank(); p: subjectID; o: probability) %.&gt;%
-    extend(., isdiagnosis := rank = count, diagnosis := "surveyCategory") %.&gt;%
+    extend(., isdiagnosis := "rank" &gt;= "count", diagnosis := "surveyCategory") %.&gt;%
     select_rows(., isdiagnosis) %.&gt;%
     select_columns(., subjectID, diagnosis, probability) %.&gt;%
     order_by(., subjectID)</code></pre>

@@ -115,30 +115,30 @@ d %.>%
 | 3         |          2| withdrawal behavior |                3|
 | 4         |          2| positive re-framing |                4|
 
-Now we write the calculation in terms of our operators (we have not yet bothered to add the expression capture features to the `rquery` operators, so we are currently simulating it using the development version `1.0.2` of [`wrapr`](https://winvector.github.io/wrapr/); the package itself works with the production release version of `wrapr`).
+Now we write the calculation in terms of our operators (we have not yet bothered to add the expression capture features to all of the `rquery` operators, so we are currently simulating it using the development version `1.0.2` of [`wrapr`](https://winvector.github.io/wrapr/); the package itself works with the production release version of `wrapr`).
 
 ``` r
 scale <- 0.237
 
-dq <- seval(
-  c(scale = scale),
-  d %.>%
-    extend(., qae(probability :=
-                    exp("assessmentTotal" * scale)/
-                    sum(exp("assessmentTotal" * scale)),
-                  count := count(1)),
-           partitionby = 'subjectID') %.>%
-    extend(., qae(rank := rank()),
-           partitionby = 'subjectID',
-           orderby = "probability")  %.>%
-    extend(., qae(isdiagnosis := rank >= count,
-                  diagnosis := "surveyCategory")) %.>%
-    select_rows(., qe(isdiagnosis)) %.>%
-    select_columns(., qc(subjectID, 
-                         diagnosis, 
-                         probability)) %.>%
-    order_by(., 'subjectID')
-)
+dq <- d %.>%
+  extend_nse(., db=my_db, 
+             probability :=
+               exp(assessmentTotal * scale)/
+               sum(exp(assessmentTotal * scale)),
+             count := count(1),
+             partitionby = 'subjectID') %.>%
+  extend_nse(.,  db=my_db,
+             rank := rank(),
+             partitionby = 'subjectID',
+             orderby = 'probability')  %.>%
+  extend_nse(., db=my_db,
+             isdiagnosis := rank >= count,
+             diagnosis := surveyCategory) %.>%
+  select_rows(., qe(isdiagnosis)) %.>%
+  select_columns(., qc(subjectID, 
+                       diagnosis, 
+                       probability)) %.>%
+  order_by(., 'subjectID')
 ```
 
 All of the non-standard expression capture (`wrapr::qc()`, `wrapr::qae()`, substituting in the `scale`, and avoiding the quoted `SQL` column names) could easily be incorporated into the relation nodes.
@@ -178,7 +178,7 @@ cat(to_sql(dq, my_db))
         "probability",
         "count",
         "rank",
-        rank >= count  AS "isdiagnosis",
+        "rank" >= "count"  AS "isdiagnosis",
         "surveyCategory"  AS "diagnosis"
        FROM (
         SELECT
@@ -195,17 +195,17 @@ cat(to_sql(dq, my_db))
           "subjectID",
           "surveyCategory",
           "assessmentTotal",
-          exp("assessmentTotal" * 0.237)/sum(exp("assessmentTotal" * 0.237))  OVER (  PARTITION BY "subjectID" ) AS "probability",
+          exp("assessmentTotal" * 0.237) / sum(exp("assessmentTotal" * 0.237))  OVER (  PARTITION BY "subjectID" ) AS "probability",
           count(1)  OVER (  PARTITION BY "subjectID" ) AS "count"
          FROM (
           SELECT * FROM "d"
-         ) tsql_wjxjw9i8i9q8jdiaodld_0000000000
-        ) tsql_wjxjw9i8i9q8jdiaodld_0000000001
-       ) tsql_wjxjw9i8i9q8jdiaodld_0000000002
-      ) tsql_wjxjw9i8i9q8jdiaodld_0000000003
+         ) tsql_wzgra4icyzqzhfdgmfrq_0000000000
+        ) tsql_wzgra4icyzqzhfdgmfrq_0000000001
+       ) tsql_wzgra4icyzqzhfdgmfrq_0000000002
+      ) tsql_wzgra4icyzqzhfdgmfrq_0000000003
       WHERE isdiagnosis
-     ) tsql_wjxjw9i8i9q8jdiaodld_0000000004
-    ) tsql_wjxjw9i8i9q8jdiaodld_0000000005 ORDER BY "subjectID"
+     ) tsql_wzgra4icyzqzhfdgmfrq_0000000004
+    ) tsql_wzgra4icyzqzhfdgmfrq_0000000005 ORDER BY "subjectID"
 
 Part of the hope is the additional record keeping in the operator nodes would let a very powerful query optimizer work over the flow before it gets translated to `SQL`. At the very least restricting to columns later used and folding selects together would be achievable. One should have a good changes at optimization as the representation is fairly high-level, and many of the operators are relational (meaning there are known legal transforms a query optimizer can use). The flow itself is represented as follows:
 
@@ -214,9 +214,9 @@ cat(gsub("%.>%", "%.>%\n   ", format(dq), fixed = TRUE))
 ```
 
     dbi_table('d') %.>%
-        extend(., probability := exp("assessmentTotal" * 0.237)/sum(exp("assessmentTotal" * 0.237)), count := count(1); p: subjectID) %.>%
+        extend(., probability := exp("assessmentTotal" * 0.237) / sum(exp("assessmentTotal" * 0.237)), count := count(1); p: subjectID) %.>%
         extend(., rank := rank(); p: subjectID; o: probability) %.>%
-        extend(., isdiagnosis := rank >= count, diagnosis := "surveyCategory") %.>%
+        extend(., isdiagnosis := "rank" >= "count", diagnosis := "surveyCategory") %.>%
         select_rows(., isdiagnosis) %.>%
         select_columns(., subjectID, diagnosis, probability) %.>%
         order_by(., subjectID)

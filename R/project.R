@@ -28,23 +28,6 @@ project <- function(source, groupby, assignments) {
   if(length(assignments)!=length(unique(assignments))) {
     stop("rquery::project generated column names must be unique")
   }
-  syms <- lapply(assignments,
-                 function(ai) {
-                  find_symbols(parse(text=ai))
-                 })
-  needs <- unique(c(groupby, unlist(syms)))
-  have <- column_names(source)
-  missing <- setdiff(needs, have)
-  if(length(missing)>0) {
-    stop(paste("rquery::project missing columns",
-               paste(missing, collapse = ", ")))
-  }
-  gint <- intersect(names(assignments), groupby)
-  if(length(gint)>0) {
-    stop(paste("rquery::project grouping and derived columns overlap:",
-               paste(gint, collapse = ", ")))
-
-  }
   r <- list(source = list(source),
             groupby = groupby,
             columns = c(groupby, names(assignments)),

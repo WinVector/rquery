@@ -133,7 +133,7 @@
 #&gt;  AUC + R2  AS `v`
 #&gt; FROM (
 #&gt;  SELECT * FROM `d`
-#&gt; ) tsql_fzljacertv2kctymzdy8_0000000000</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;   AUC  R2   v
+#&gt; ) tsql_rqtm8tdgrqbnsndar6ln_0000000000</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;   AUC  R2   v
 #&gt; 1 0.6 0.2 0.8</div><div class='input'>
 <span class='co'># SQLite can not run the following query</span>
 <span class='no'>eqn2</span> <span class='kw'>&lt;-</span> <span class='fu'>extend</span>(<span class='no'>d</span>, <span class='st'>"v"</span> <span class='kw'>:=</span> <span class='st'>"rank()"</span>,
@@ -145,7 +145,7 @@
 #&gt;  rank()  OVER (  PARTITION BY `AUC` ORDER BY `R2` ) AS `v`
 #&gt; FROM (
 #&gt;  SELECT * FROM `d`
-#&gt; ) tsql_rqtm8tdgrqbnsndar6ln_0000000000</div><div class='input'>
+#&gt; ) tsql_qenofvv98yctkgewmsev_0000000000</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

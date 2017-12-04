@@ -122,31 +122,30 @@ d %.>%
 ```
 
 Now we write the calculation in terms of our operators (we have not yet bothered
-to add the expression capture features to the `rquery` operators, so we are currently
-simulating it using the development version `1.0.2` of [`wrapr`](https://winvector.github.io/wrapr/);  the package itself works with the production release version of `wrapr`).
+to add the expression capture features to all of the `rquery` operators, so we are currently simulating it using the development version `1.0.2` of [`wrapr`](https://winvector.github.io/wrapr/);  the package itself works with the production release version of `wrapr`).
 
 ```{r calc}
 scale <- 0.237
 
-dq <- seval(
-  c(scale = scale),
-  d %.>%
-    extend(., qae(probability :=
-                    exp("assessmentTotal" * scale)/
-                    sum(exp("assessmentTotal" * scale)),
-                  count := count(1)),
-           partitionby = 'subjectID') %.>%
-    extend(., qae(rank := rank()),
-           partitionby = 'subjectID',
-           orderby = "probability")  %.>%
-    extend(., qae(isdiagnosis := rank >= count,
-                  diagnosis := "surveyCategory")) %.>%
-    select_rows(., qe(isdiagnosis)) %.>%
-    select_columns(., qc(subjectID, 
-                         diagnosis, 
-                         probability)) %.>%
-    order_by(., 'subjectID')
-)
+dq <- d %.>%
+  extend_nse(., db=my_db, 
+             probability :=
+               exp(assessmentTotal * scale)/
+               sum(exp(assessmentTotal * scale)),
+             count := count(1),
+             partitionby = 'subjectID') %.>%
+  extend_nse(.,  db=my_db,
+             rank := rank(),
+             partitionby = 'subjectID',
+             orderby = 'probability')  %.>%
+  extend_nse(., db=my_db,
+             isdiagnosis := rank >= count,
+             diagnosis := surveyCategory) %.>%
+  select_rows(., qe(isdiagnosis)) %.>%
+  select_columns(., qc(subjectID, 
+                       diagnosis, 
+                       probability)) %.>%
+  order_by(., 'subjectID')
 ```
 
 All of the non-standard expression capture (`wrapr::qc()`, `wrapr::qae()`,
