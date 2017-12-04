@@ -115,7 +115,7 @@ d %.>%
 | 3         |          2| withdrawal behavior |                3|
 | 4         |          2| positive re-framing |                4|
 
-Now we write the calculation in terms of our operators.
+Now we write the calculation in terms of our operators (we have not yet bothered to add the expression capture features to the `rquery` operators, so we are currently simulating it using the development version `1.0.2` of [`wrapr`](https://winvector.github.io/wrapr/); the package itself works with the production release version of `wrapr`).
 
 ``` r
 scale <- 0.237
@@ -133,7 +133,7 @@ dq <- seval(
            orderby = "probability")  %.>%
     extend(., qae(isdiagnosis := rank >= count,
                   diagnosis := "surveyCategory")) %.>%
-    select_rows(., qc(isdiagnosis)) %.>%
+    select_rows(., qe(isdiagnosis)) %.>%
     select_columns(., qc(subjectID, 
                          diagnosis, 
                          probability)) %.>%
@@ -199,13 +199,13 @@ cat(to_sql(dq, my_db))
           count(1)  OVER (  PARTITION BY "subjectID" ) AS "count"
          FROM (
           SELECT * FROM "d"
-         ) tsql_wpulrqpddawsiofc1mjf_0000000000
-        ) tsql_wpulrqpddawsiofc1mjf_0000000001
-       ) tsql_wpulrqpddawsiofc1mjf_0000000002
-      ) tsql_wpulrqpddawsiofc1mjf_0000000003
+         ) tsql_wjxjw9i8i9q8jdiaodld_0000000000
+        ) tsql_wjxjw9i8i9q8jdiaodld_0000000001
+       ) tsql_wjxjw9i8i9q8jdiaodld_0000000002
+      ) tsql_wjxjw9i8i9q8jdiaodld_0000000003
       WHERE isdiagnosis
-     ) tsql_wpulrqpddawsiofc1mjf_0000000004
-    ) tsql_wpulrqpddawsiofc1mjf_0000000005 ORDER BY "subjectID"
+     ) tsql_wjxjw9i8i9q8jdiaodld_0000000004
+    ) tsql_wjxjw9i8i9q8jdiaodld_0000000005 ORDER BY "subjectID"
 
 Part of the hope is the additional record keeping in the operator nodes would let a very powerful query optimizer work over the flow before it gets translated to `SQL`. At the very least restricting to columns later used and folding selects together would be achievable. One should have a good changes at optimization as the representation is fairly high-level, and many of the operators are relational (meaning there are known legal transforms a query optimizer can use). The flow itself is represented as follows:
 

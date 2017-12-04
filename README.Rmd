@@ -121,7 +121,9 @@ d %.>%
 
 ```
 
-Now we write the calculation in terms of our operators.
+Now we write the calculation in terms of our operators (we have not yet bothered
+to add the expression capture features to the `rquery` operators, so we are currently
+simulating it using the development version `1.0.2` of [`wrapr`](https://winvector.github.io/wrapr/);  the package itself works with the production release version of `wrapr`).
 
 ```{r calc}
 scale <- 0.237
@@ -139,7 +141,7 @@ dq <- seval(
            orderby = "probability")  %.>%
     extend(., qae(isdiagnosis := rank >= count,
                   diagnosis := "surveyCategory")) %.>%
-    select_rows(., qc(isdiagnosis)) %.>%
+    select_rows(., qe(isdiagnosis)) %.>%
     select_columns(., qc(subjectID, 
                          diagnosis, 
                          probability)) %.>%
