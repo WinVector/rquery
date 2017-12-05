@@ -193,13 +193,13 @@ cat(to_sql(dq))
           count(1)  OVER (  PARTITION BY "subjectID" ) AS "count"
          FROM (
           SELECT * FROM "d"
-         ) tsql_vihljgx9ud2zeoa6kfql_0000000000
-        ) tsql_vihljgx9ud2zeoa6kfql_0000000001
-       ) tsql_vihljgx9ud2zeoa6kfql_0000000002
-      ) tsql_vihljgx9ud2zeoa6kfql_0000000003
+         ) tsql_qbvmut9u1h2p39qghjir_0000000000
+        ) tsql_qbvmut9u1h2p39qghjir_0000000001
+       ) tsql_qbvmut9u1h2p39qghjir_0000000002
+      ) tsql_qbvmut9u1h2p39qghjir_0000000003
       WHERE "isdiagnosis"
-     ) tsql_vihljgx9ud2zeoa6kfql_0000000004
-    ) tsql_vihljgx9ud2zeoa6kfql_0000000005 ORDER BY "subjectID"
+     ) tsql_qbvmut9u1h2p39qghjir_0000000004
+    ) tsql_qbvmut9u1h2p39qghjir_0000000005 ORDER BY "subjectID"
 
 Part of the plan is: the additional record-keeping in the operator nodes would let a very powerful query optimizer work over the flow before it gets translated to `SQL` (perhaps an extension of or successor to [`seplyr`](https://winvector.github.io/seplyr/), which re-plans over `dplyr::mutate()` expressions). At the very least restricting to columns later used and folding selects together would be achievable. One should have a good chance at optimization as the representation is fairly high-level, and many of the operators are relational (meaning there are known legal transforms a query optimizer can use). The flow itself is represented as follows:
 
@@ -207,7 +207,7 @@ Part of the plan is: the additional record-keeping in the operator nodes would l
 print(dq)
 ```
 
-    [1] "dbi_table('d') %.>% extend(., := probability exp(assessmentTotal * scale)/sum(exp(assessmentTotal * scale)), := count count(1); p: subjectID) %.>% extend(., := rank rank(); p: subjectID; o: probability) %.>% extend(., := isdiagnosis rank == count, := diagnosis surveyCategory) %.>% select_rows(., \"isdiagnosis\") %.>% select_columns(., subjectID, diagnosis, probability) %.>% order_by(., subjectID)"
+    [1] "dbi_table('d') %.>% extend(., probability := exp(assessmentTotal * scale) / sum(exp(assessmentTotal * scale)), count := count(1); p: subjectID) %.>% extend(., rank := rank(); p: subjectID; o: probability) %.>% extend(., isdiagnosis := rank == count, diagnosis := surveyCategory) %.>% select_rows(., isdiagnosis) %.>% select_columns(., subjectID, diagnosis, probability) %.>% order_by(., subjectID)"
 
 We can even pretty-format it:
 
@@ -218,10 +218,10 @@ cat(gsub("%.>%", "%.>%\n   ",
 ```
 
     dbi_table('d') %.>%
-        extend(., := probability exp(assessmentTotal * scale)/sum(exp(assessmentTotal * scale)), := count count(1); p: subjectID) %.>%
-        extend(., := rank rank(); p: subjectID; o: probability) %.>%
-        extend(., := isdiagnosis rank == count, := diagnosis surveyCategory) %.>%
-        select_rows(., "isdiagnosis") %.>%
+        extend(., probability := exp(assessmentTotal * scale) / sum(exp(assessmentTotal * scale)), count := count(1); p: subjectID) %.>%
+        extend(., rank := rank(); p: subjectID; o: probability) %.>%
+        extend(., isdiagnosis := rank == count, diagnosis := surveyCategory) %.>%
+        select_rows(., isdiagnosis) %.>%
         select_columns(., subjectID, diagnosis, probability) %.>%
         order_by(., subjectID)
 

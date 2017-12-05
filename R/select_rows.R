@@ -94,7 +94,7 @@ format.relop_select_rows <- function(x, ...) {
   }
   paste0(format(x$source[[1]]),
          " %.>% ",
-         "select_rows(., ", x$expr, ")")
+         "select_rows(., ", x$parsed[[1]]$presentation, ")")
 }
 
 #' @export

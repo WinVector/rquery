@@ -101,14 +101,16 @@ format.relop_project <- function(x, ...) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
-  aterms <- paste(paste(names(x$assignments),
-                        ":=",
-                        x$assignments), collapse = ", ")
+  origTerms <- vapply(x$parsed,
+                      function(pi) {
+                        paste(as.character(pi$presentation), collapse = ' ')
+                      }, character(1))
+  aterms <- paste(origTerms, collapse = ", ")
   paste0(format(x$source[[1]]),
          " %.>% ",
          "project(., ",
          aterms,
-         ";g ",
+         "; g ",
          paste(x$groupby, collapse = ", "),
          ")")
 }

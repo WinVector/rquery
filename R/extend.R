@@ -174,7 +174,7 @@ format.relop_extend <- function(x, ...) {
   }
   origTerms <- vapply(x$parsed,
                       function(pi) {
-                        paste(as.character(pi$orig), collapse = ' ')
+                        paste(as.character(pi$presentation), collapse = ' ')
                       }, character(1))
   aterms <- paste(origTerms, collapse = ", ")
   paste0(format(x$source[[1]]),

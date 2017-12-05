@@ -15,14 +15,14 @@ merge_fld <- function(reslist, field) {
 #' @param colnames column names of table
 #' @param db database connection (for DBI quoting)
 #' @param env environment to look for values
-#' @return sql info: list(orig, parsed, symbols_used, symbols_produced)
+#' @return sql info: list(presentation, parsed, symbols_used, symbols_produced)
 #'
 #' @noRd
 #'
 prepForSQL <- function(lexpr, colnames, db,
                        env = parent.frame()) {
   n <- length(lexpr)
-  res <- list(orig = lexpr,
+  res <- list(presentation = as.character(lexpr),
               parsed = "",
               symbols_used = character(0),
               symbols_produced = character(0))
@@ -38,14 +38,39 @@ prepForSQL <- function(lexpr, colnames, db,
   # special cases
   if(is.call(lexpr)) {
     callName <- as.character(lexpr[[1]])
-    if((n==4) && (callName=="ifelse")) {
-      args <- lapply(2:4,
+    args <- list()
+    if(n>=2) {
+      args <- lapply(2:n,
                      function(i) {
                        prepForSQL(lexpr[[i]],
                                   colnames = colnames,
                                   db = db,
                                   env = env)
                      })
+      res$symbols_used <- merge_fld(args,
+                                    "symbols_used")
+      res$symbols_produced <- merge_fld(args,
+                                        "symbols_produced")
+    }
+    inlineops = c(":=", "==", "!=", ">=", "<=", "=",
+                  "<", ">",
+                  "+", "-", "*", "/")
+    if((n==3) && (callName %in% inlineops)) {
+      res$presentation <- paste(args[[1]]$presentation,
+                                callName,
+                                args[[2]]$presentation)
+    } else {
+      argstr <- vapply(args,
+                       function(ai) {
+                         ai$presentation
+                       }, character(1))
+      res$presentation <- paste0(callName,
+                                 "(",
+                                 paste(argstr, collapse = ", "),
+                                 ")")
+    }
+    # TODO: make special cases like this table driven
+    if((n==4) && (callName=="ifelse")) {
       res$symbols_used = merge_fld(args,
                                    "symbols_used")
       res$symbols_produced = merge_fld(args,
@@ -59,15 +84,11 @@ prepForSQL <- function(lexpr, colnames, db,
                            " END")
       return(res)
     }
-    inlineops = c(":=", "==", "!=", ">=", "<=", "=", "<", ">", "+", "-", "*", "/")
     if((n==3) && (length(lexpr[[2]]==1)) && (callName %in% inlineops)) {
       if(callName=="==") {
         callName <- "="
       }
-      rhs <- prepForSQL(lexpr[[3]],
-                        colnames = colnames,
-                        db = db,
-                        env = env)
+      rhs <- args[[2]]
       if(callName==":=") {
         names(rhs$parsed) <- as.character(lexpr[[2]])
         res$parsed <- rhs$parsed
@@ -76,10 +97,7 @@ prepForSQL <- function(lexpr, colnames, db,
                                          rhs$symbols_produced))
         return(res)
       }
-      lhs <- prepForSQL(lexpr[[2]],
-                        colnames = colnames,
-                        db = db,
-                        env = env)
+      lhs <- args[[1]]
       res$parsed <- paste(lhs$parsed, callName, rhs$parsed)
       res$symbols_used = merge_fld(list(lhs, rhs),
                                    "symbols_used")
@@ -87,25 +105,12 @@ prepForSQL <- function(lexpr, colnames, db,
                                        "symbols_produced")
       return(res)
     }
-    rest <- vector(n-1, mode="list")
-    if(n>=2) {
-      for(i in 2:n) {
-        rest[[i-1]] <- prepForSQL(lexpr[[i]],
-                                  colnames = colnames,
-                                  db = db,
-                                  env = env)
-      }
-    }
-    subqstrs <- vapply(rest,
+    subqstrs <- vapply(args,
                        function(ri) {
                          ri$parsed
                        }, character(1))
     res$parsed <- paste0(callName,
                          "(", paste(subqstrs, collapse = ", "),")")
-    res$symbols_used <- merge_fld(rest,
-                                  "symbols_used")
-    res$symbols_produced <- merge_fld(rest,
-                                      "symbols_produced")
     return(res)
   }
   # basic recurse, establish invariant n==1

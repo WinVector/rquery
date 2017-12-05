@@ -130,7 +130,7 @@
 <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dbi_copy_to.html'>dbi_copy_to</a></span>(<span class='no'>my_db</span>, <span class='st'>'d'</span>,
                 <span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>0.6</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>0.2</span>))
 <span class='no'>eqn</span> <span class='kw'>&lt;-</span> <span class='fu'>extend_se</span>(<span class='no'>d</span>, <span class='st'>"v"</span> <span class='kw'>:=</span> <span class='st'>"AUC + R2"</span>)
-<span class='fu'>print</span>(<span class='no'>eqn</span>)</div><div class='output co'>#&gt; [1] "dbi_table('d') %.&gt;% extend(., := v AUC + R2)"</div><div class='input'><span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>eqn</span>)
+<span class='fu'>print</span>(<span class='no'>eqn</span>)</div><div class='output co'>#&gt; [1] "dbi_table('d') %.&gt;% extend(., v := AUC + R2)"</div><div class='input'><span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>eqn</span>)
 <span class='fu'>cat</span>(<span class='no'>sql</span>)</div><div class='output co'>#&gt; SELECT
 #&gt;  `AUC`,
 #&gt;  `R2`,
