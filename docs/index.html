@@ -179,7 +179,7 @@ d &lt;-<span class="st"> </span><span class="kw"><a href="reference/dbi_copy_to.
 </tr>
 </tbody>
 </table>
-<p>Now we write the calculation in terms of our operators (we have not yet bothered to add the expression capture features to all of the <code>rquery</code> operators, so we are currently simulating it using the development version <code>1.0.2</code> of <a href="https://winvector.github.io/wrapr/"><code>wrapr</code></a>; the package itself works with the production release version of <code>wrapr</code>).</p>
+<p>Now we write the calculation in terms of our operators.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">scale &lt;-<span class="st"> </span><span class="fl">0.237</span>
 
 dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
@@ -199,9 +199,9 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="reference/select_rows_nse.html">select_rows_nse</a></span>(., isdiagnosis) <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="reference/select_columns.html">select_columns</a></span>(., <span class="kw">c</span>(<span class="st">"subjectID"</span>, 
                       <span class="st">"diagnosis"</span>, 
-                       <span class="st">"probability"</span>)) <span class="op">%.&gt;%</span>
+                      <span class="st">"probability"</span>)) <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="reference/order_by.html">order_by</a></span>(., <span class="st">'subjectID'</span>)</code></pre></div>
-<p>All of the non-standard expression capture (<code><a href="http://www.rdocumentation.org/packages/wrapr/topics/qc">wrapr::qc()</a></code>, <code><a href="http://www.rdocumentation.org/packages/wrapr/topics/qae">wrapr::qae()</a></code>, substituting in the <code>scale</code>, and avoiding the quoted <code>SQL</code> column names) could easily be incorporated into the relation nodes.</p>
+<p>The above compares well to <a href="http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/">the original <code>dplyr</code> pipeline</a>.</p>
 <p>We then have our result:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dq <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="reference/to_sql.html">to_sql</a></span>(.) <span class="op">%.&gt;%</span>
@@ -263,13 +263,13 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
       count(1)  OVER (  PARTITION BY "subjectID" ) AS "count"
      FROM (
       SELECT * FROM "d"
-     ) tsql_d6pv2se0gzp6abrcuz4y_0000000000
-    ) tsql_d6pv2se0gzp6abrcuz4y_0000000001
-   ) tsql_d6pv2se0gzp6abrcuz4y_0000000002
-  ) tsql_d6pv2se0gzp6abrcuz4y_0000000003
+     ) tsql_pgsnwxsbmxommvytvhsj_0000000000
+    ) tsql_pgsnwxsbmxommvytvhsj_0000000001
+   ) tsql_pgsnwxsbmxommvytvhsj_0000000002
+  ) tsql_pgsnwxsbmxommvytvhsj_0000000003
   WHERE "isdiagnosis"
- ) tsql_d6pv2se0gzp6abrcuz4y_0000000004
-) tsql_d6pv2se0gzp6abrcuz4y_0000000005 ORDER BY "subjectID"</code></pre>
+ ) tsql_pgsnwxsbmxommvytvhsj_0000000004
+) tsql_pgsnwxsbmxommvytvhsj_0000000005 ORDER BY "subjectID"</code></pre>
 <p>Part of the hope is the additional record keeping in the operator nodes would let a very powerful query optimizer work over the flow before it gets translated to <code>SQL</code>. At the very least restricting to columns later used and folding selects together would be achievable. One should have a good chance at optimization as the representation is fairly high-level, and many of the operators are relational (meaning there are known legal transforms a query optimizer can use). The flow itself is represented as follows:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(dq)</code></pre></div>
 <pre><code>[1] "dbi_table('d') %.&gt;% extend(., probability := exp(\"assessmentTotal\" * 0.237) / sum(exp(\"assessmentTotal\" * 0.237)), count := count(1); p: subjectID) %.&gt;% extend(., rank := rank(); p: subjectID; o: probability) %.&gt;% extend(., isdiagnosis := \"rank\" &gt;= \"count\", diagnosis := \"surveyCategory\") %.&gt;% select_rows(., \"isdiagnosis\") %.&gt;% select_columns(., subjectID, diagnosis, probability) %.&gt;% order_by(., subjectID)"</code></pre>
@@ -285,7 +285,7 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <p>And that is our weekend experiment.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect">dbDisconnect</a></span>(my_db)</code></pre></div>
 <pre><code>## [1] TRUE</code></pre>
-<p>Note: <code>rquery</code> is only an experimental package. Also, it is not currently checked, but all <code>rquery</code> operators should be only used in “zero dependency mode” (never using a value created in the same operator or writing the same value twice) in the sense of <a href="https://www.rdocumentation.org/packages/seplyr/versions/0.5.0/topics/partition_mutate_qt"><code><a href="http://www.rdocumentation.org/packages/seplyr/topics/partition_mutate_qt">seplyr::partition_mutate_qt</a></code></a>. Again, the point was to see how quickly one can get a workable data transform pipeline in terms of Codd-inspired operators.</p>
+<p>Note: <code>rquery</code> is only an experimental package. All <code>rquery</code> operators should be only used in “zero dependency mode” (never using a value created in the same operator or writing the same value twice) in the sense of <a href="https://www.rdocumentation.org/packages/seplyr/versions/0.5.0/topics/partition_mutate_qt"><code><a href="http://www.rdocumentation.org/packages/seplyr/topics/partition_mutate_qt">seplyr::partition_mutate_qt</a></code></a>; the noded check this as a pre-condition). Again, the point was to see how quickly one can get a workable data transform pipeline in terms of Codd-inspired operators. <code>rquery</code> can also be used to teach advanced use of <code>SQL</code>.</p>
 </div>
   </div>
 

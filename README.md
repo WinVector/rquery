@@ -115,7 +115,7 @@ d %.>%
 | 3         |          2| withdrawal behavior |                3|
 | 4         |          2| positive re-framing |                4|
 
-Now we write the calculation in terms of our operators (we have not yet bothered to add the expression capture features to all of the `rquery` operators, so we are currently simulating it using the development version `1.0.2` of [`wrapr`](https://winvector.github.io/wrapr/); the package itself works with the production release version of `wrapr`).
+Now we write the calculation in terms of our operators.
 
 ``` r
 scale <- 0.237
@@ -137,11 +137,11 @@ dq <- d %.>%
   select_rows_nse(., isdiagnosis) %.>%
   select_columns(., c("subjectID", 
                       "diagnosis", 
-                       "probability")) %.>%
+                      "probability")) %.>%
   order_by(., 'subjectID')
 ```
 
-All of the non-standard expression capture (`wrapr::qc()`, `wrapr::qae()`, substituting in the `scale`, and avoiding the quoted `SQL` column names) could easily be incorporated into the relation nodes.
+The above compares well to [the original `dplyr` pipeline](http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/).
 
 We then have our result:
 
@@ -199,13 +199,13 @@ cat(to_sql(dq))
           count(1)  OVER (  PARTITION BY "subjectID" ) AS "count"
          FROM (
           SELECT * FROM "d"
-         ) tsql_drkojfuopwprr9znq7v9_0000000000
-        ) tsql_drkojfuopwprr9znq7v9_0000000001
-       ) tsql_drkojfuopwprr9znq7v9_0000000002
-      ) tsql_drkojfuopwprr9znq7v9_0000000003
+         ) tsql_ok1avb8vzpqbusae6ain_0000000000
+        ) tsql_ok1avb8vzpqbusae6ain_0000000001
+       ) tsql_ok1avb8vzpqbusae6ain_0000000002
+      ) tsql_ok1avb8vzpqbusae6ain_0000000003
       WHERE "isdiagnosis"
-     ) tsql_drkojfuopwprr9znq7v9_0000000004
-    ) tsql_drkojfuopwprr9znq7v9_0000000005 ORDER BY "subjectID"
+     ) tsql_ok1avb8vzpqbusae6ain_0000000004
+    ) tsql_ok1avb8vzpqbusae6ain_0000000005 ORDER BY "subjectID"
 
 Part of the hope is the additional record keeping in the operator nodes would let a very powerful query optimizer work over the flow before it gets translated to `SQL`. At the very least restricting to columns later used and folding selects together would be achievable. One should have a good chance at optimization as the representation is fairly high-level, and many of the operators are relational (meaning there are known legal transforms a query optimizer can use). The flow itself is represented as follows:
 
@@ -237,4 +237,4 @@ DBI::dbDisconnect(my_db)
 
     ## [1] TRUE
 
-Note: `rquery` is only an experimental package. Also, it is not currently checked, but all `rquery` operators should be only used in "zero dependency mode" (never using a value created in the same operator or writing the same value twice) in the sense of [`seplyr::partition_mutate_qt`](https://www.rdocumentation.org/packages/seplyr/versions/0.5.0/topics/partition_mutate_qt). Again, the point was to see how quickly one can get a workable data transform pipeline in terms of Codd-inspired operators.
+Note: `rquery` is only an experimental package. All `rquery` operators should be only used in "zero dependency mode" (never using a value created in the same operator or writing the same value twice) in the sense of [`seplyr::partition_mutate_qt`](https://www.rdocumentation.org/packages/seplyr/versions/0.5.0/topics/partition_mutate_qt); the noded check this as a pre-condition). Again, the point was to see how quickly one can get a workable data transform pipeline in terms of Codd-inspired operators. `rquery` can also be used to teach advanced use of `SQL`.
