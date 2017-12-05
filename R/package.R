@@ -18,6 +18,6 @@ NULL
 # equijoin() (equijion for now)
 # order_by() (not relational)
 
-#' @importFrom wrapr %.>%
+#' @importFrom wrapr %.>% :=
 #' @importFrom cdata qlook
 NULL
