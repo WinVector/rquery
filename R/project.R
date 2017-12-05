@@ -1,13 +1,34 @@
 
 
 
-#' project data by grouping, summarizing, and adding more columns.
+#' project data by grouping, and adding aggregate columns.
 #'
-#' TODO: re-factor to work like extend().
+#' @param source source to select from.
+#' @param groupby grouping columns.
+#' @param parsed new column assignment expressions.
+#' @return project node.
+#'
+#' @noRd
+#'
+project_impl <- function(source, groupby, parsed) {
+  have <- column_names(source)
+  check_have_cols(have, groupby, "rquery::project groupby")
+  assignments <- unpack_assignments(source, parsed)
+  r <- list(source = list(source),
+            groupby = groupby,
+            columns = c(groupby, names(assignments)),
+            parsed = parsed,
+            assignments = assignments)
+  class(r) <- "relop_project"
+  r
+}
+
+#' project data by grouping, and adding aggregate columns.
 #'
 #' @param source source to select from.
 #' @param groupby grouping columns.
 #' @param assignments new column assignment expressions.
+#' @param env environment to look for values in.
 #' @return project node.
 #'
 #' @examples
@@ -15,7 +36,7 @@
 #' my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #' d <- dbi_copy_to(my_db, 'd',
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
-#' eqn <- project(d, "AUC", "v" := "max(R2)")
+#' eqn <- project_se(d, "AUC", "v" := "max(R2)")
 #' print(eqn)
 #' sql <- to_sql(eqn)
 #' cat(sql)
@@ -23,21 +44,38 @@
 #'
 #' @export
 #'
-project <- function(source, groupby, assignments) {
-  if(length(assignments)<=0) {
-    stop("rquery::project must generate at least 1 column")
-  }
-  if(length(assignments)!=length(unique(assignments))) {
-    stop("rquery::project generated column names must be unique")
-  }
-  have <- column_names(source)
-  check_have_cols(have, groupby, "rquery::project groupby")
-  r <- list(source = list(source),
-            groupby = groupby,
-            columns = c(groupby, names(assignments)),
-            assignments = assignments)
-  class(r) <- "relop_project"
-  r
+project_se <- function(source, groupby, assignments,
+                    env = parent.frame()) {
+  parsed <- parse_se(source, assignments, env = env)
+  project_impl(source, groupby, parsed)
+}
+
+#' project data by grouping, and adding aggregate columns.
+#'
+#' @param source source to select from.
+#' @param groupby grouping columns.
+#' @param ... new column assignment expressions.
+#' @param env environment to look for values in.
+#' @return project node.
+#'
+#' @examples
+#'
+#' my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#' d <- dbi_copy_to(my_db, 'd',
+#'                 data.frame(AUC = 0.6, R2 = 0.2))
+#' eqn <- project_nse(d, "AUC", v := max(R2))
+#' print(eqn)
+#' sql <- to_sql(eqn)
+#' cat(sql)
+#' DBI::dbGetQuery(my_db, sql)
+#'
+#' @export
+#'
+project_nse <- function(source, groupby, ...,
+                    env = parent.frame()) {
+  exprs <-  eval(substitute(alist(...)))
+  parsed <- parse_nse(source, exprs, env = env)
+  project_impl(source, groupby, parsed)
 }
 
 #' @export
