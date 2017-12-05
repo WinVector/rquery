@@ -111,6 +111,7 @@ prepForSQL <- function(lexpr, colnames, db,
   if(is.name(lexpr)) {
     lexpr <- as.character(lexpr)
     if(lexpr %in% colnames) {
+      res$symbols_used <- lexpr
       res$parsed <- as.character(DBI::dbQuoteIdentifier(db, lexpr))
       return(res)
     }

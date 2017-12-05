@@ -1,10 +1,9 @@
 
 #' Make a select rows node.
 #'
-#' TODO: re-factor to work like extend().
-#'
 #' @param source source to select from.
 #' @param expr expression to select rows.
+#' @param env environment to look for values in.
 #' @return select columns node.
 #'
 #' @examples
@@ -12,7 +11,7 @@
 #' my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #' d <- dbi_copy_to(my_db, 'd',
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
-#' eqn <- select_rows(d, "AUC >= 0.5")
+#' eqn <- select_rows_se(d, "AUC >= 0.5")
 #' print(eqn)
 #' sql <- to_sql(eqn)
 #' cat(sql)
@@ -20,14 +19,56 @@
 #'
 #' @export
 #'
-select_rows <- function(source, expr) {
-  # TODO: split into se and nse versions
-  # TODO: parse expr and get what variables we are using.
+select_rows_se <- function(source, expr,
+                        env = parent.frame()) {
+  have <- column_names(source)
+  vnam <- setdiff(paste("rquery_select_condition", 1:(length(have)+1), sep = "_"),
+                  have)[[1]]
+  parsed <- parse_se(source, vnam := expr, env = env)
+  assignments <- unpack_assignments(source, parsed)
   r <- list(source = list(source),
-            expr = expr)
+            parsed = parsed,
+            expr = assignments)
   class(r) <- "relop_select_rows"
   r
 }
+
+#' Make a select rows node.
+#'
+#' @param source source to select from.
+#' @param expr expression to select rows.
+#' @param env environment to look for values in.
+#' @return select columns node.
+#'
+#' @examples
+#'
+#' my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#' d <- dbi_copy_to(my_db, 'd',
+#'                 data.frame(AUC = 0.6, R2 = 0.2))
+#' eqn <- select_rows_nse(d, AUC >= 0.5)
+#' print(eqn)
+#' sql <- to_sql(eqn)
+#' cat(sql)
+#' DBI::dbGetQuery(my_db, sql)
+#'
+#' @export
+#'
+select_rows_nse <- function(source, expr,
+                            env = parent.frame()) {
+  have <- column_names(source)
+  vnam <- setdiff(paste("rquery_select_condition", 1:(length(have)+1), sep = "_"),
+                  have)[[1]]
+  exprq <- substitute(expr)
+  parsed <- parse_nse(source, list(exprq), env = env)
+  parsed[[1]]$symbols_produced <- vnam
+  assignments <- unpack_assignments(source, parsed)
+  r <- list(source = list(source),
+            parsed = parsed,
+            expr = assignments)
+  class(r) <- "relop_select_rows"
+  r
+}
+
 
 #' @export
 dbi_connection.relop_select_rows <- function (x, ...) {

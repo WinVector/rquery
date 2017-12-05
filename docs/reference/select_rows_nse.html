@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Make a select columns node (not a relational operation). — select_columns • rquery</title>
+<title>Make a select rows node. — select_rows_nse • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -75,14 +75,14 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Make a select columns node (not a relational operation).</h1>
+    <h1>Make a select rows node.</h1>
     </div>
 
     
-    <p>Make a select columns node (not a relational operation).</p>
+    <p>Make a select rows node.</p>
     
 
-    <pre class="usage"><span class='fu'>select_columns</span>(<span class='no'>source</span>, <span class='no'>columns</span>)</pre>
+    <pre class="usage"><span class='fu'>select_rows_nse</span>(<span class='no'>source</span>, <span class='no'>expr</span>, <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -92,8 +92,12 @@
       <td><p>source to select from.</p></td>
     </tr>
     <tr>
-      <th>columns</th>
-      <td><p>list of distinct column names.</p></td>
+      <th>expr</th>
+      <td><p>expression to select rows.</p></td>
+    </tr>
+    <tr>
+      <th>env</th>
+      <td><p>environment to look for values in.</p></td>
     </tr>
     </table>
     
@@ -107,14 +111,13 @@
 <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
 <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dbi_copy_to.html'>dbi_copy_to</a></span>(<span class='no'>my_db</span>, <span class='st'>'d'</span>,
                 <span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>0.6</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>0.2</span>))
-<span class='no'>eqn</span> <span class='kw'>&lt;-</span> <span class='fu'>select_columns</span>(<span class='no'>d</span>, <span class='st'>'AUC'</span>)
-<span class='fu'>print</span>(<span class='no'>eqn</span>)</div><div class='output co'>#&gt; [1] "dbi_table('d') %.&gt;% select_columns(., AUC)"</div><div class='input'><span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>eqn</span>)
-<span class='fu'>cat</span>(<span class='no'>sql</span>)</div><div class='output co'>#&gt; SELECT
-#&gt;  `AUC`
-#&gt; FROM (
+<span class='no'>eqn</span> <span class='kw'>&lt;-</span> <span class='fu'>select_rows_nse</span>(<span class='no'>d</span>, <span class='no'>AUC</span> <span class='kw'>&gt;=</span> <span class='fl'>0.5</span>)
+<span class='fu'>print</span>(<span class='no'>eqn</span>)</div><div class='output co'>#&gt; [1] "dbi_table('d') %.&gt;% select_rows(., `AUC` &gt;= 0.5)"</div><div class='input'><span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>eqn</span>)
+<span class='fu'>cat</span>(<span class='no'>sql</span>)</div><div class='output co'>#&gt; SELECT * FROM (
 #&gt;  SELECT * FROM `d`
-#&gt; ) tsql_e9lk4cko4yrntncujpc4_0000000000</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;   AUC
-#&gt; 1 0.6</div><div class='input'>
+#&gt; ) tsql_8y3kv9snss1oa6bupzvt_0000000000
+#&gt; WHERE `AUC` &gt;= 0.5</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;   AUC  R2
+#&gt; 1 0.6 0.2</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

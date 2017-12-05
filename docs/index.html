@@ -80,11 +80,11 @@
 <li>
 <code>extend()</code>. Extend adds derived columns to a relation table. With a sufficiently powerful <code>SQL</code> provider this includes ordered and partitioned window functions.</li>
 <li>
-<code><a href="reference/project.html">project()</a></code>. Project is usually portrait as the equivalent to column selection. In our opinion the original relational nature of the operator is best captured by moving <code>SQL</code>’s “<code>GROUP BY</code>” aggregation functionality to this operator.</li>
+<code>project()</code>. Project is usually portrait as the equivalent to column selection. In our opinion the original relational nature of the operator is best captured by moving <code>SQL</code>’s “<code>GROUP BY</code>” aggregation functionality to this operator.</li>
 <li>
 <code><a href="reference/natural_join.html">natural_join()</a></code>. This is the relational join operator, using all common columns as the equi-join condition. The next operator to add would definitely be <code>theta-join</code> as that adds a lot more expressiveness to the grammar.</li>
 <li>
-<code><a href="reference/select_rows.html">select_rows()</a></code>. This is Codd’s relational row selection. Obviously <code>select</code> alone is an over-used and now ambiguous term (it is the “doit” verb in <code>SQL</code> and the <em>column</em> selector in <code>dplyr</code>).</li>
+<code>select_rows()</code>. This is Codd’s relational row selection. Obviously <code>select</code> alone is an over-used and now ambiguous term (it is the “doit” verb in <code>SQL</code> and the <em>column</em> selector in <code>dplyr</code>).</li>
 </ul>
 <p>The primary non-relational (traditional <code>SQL</code>) operators are:</p>
 <ul>
@@ -196,10 +196,10 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="reference/extend_nse.html">extend_nse</a></span>(.,
              isdiagnosis <span class="op">:</span><span class="er">=</span><span class="st"> </span>rank <span class="op">&gt;=</span><span class="st"> </span>count,
              diagnosis <span class="op">:</span><span class="er">=</span><span class="st"> </span>surveyCategory) <span class="op">%.&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="reference/select_rows.html">select_rows</a></span>(., <span class="kw">qe</span>(isdiagnosis)) <span class="op">%.&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="reference/select_columns.html">select_columns</a></span>(., <span class="kw">qc</span>(subjectID, 
-                       diagnosis, 
-                       probability)) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="reference/select_rows_nse.html">select_rows_nse</a></span>(., isdiagnosis) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="reference/select_columns.html">select_columns</a></span>(., <span class="kw">c</span>(<span class="st">"subjectID"</span>, 
+                      <span class="st">"diagnosis"</span>, 
+                       <span class="st">"probability"</span>)) <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="reference/order_by.html">order_by</a></span>(., <span class="st">'subjectID'</span>)</code></pre></div>
 <p>All of the non-standard expression capture (<code><a href="http://www.rdocumentation.org/packages/wrapr/topics/qc">wrapr::qc()</a></code>, <code><a href="http://www.rdocumentation.org/packages/wrapr/topics/qae">wrapr::qae()</a></code>, substituting in the <code>scale</code>, and avoiding the quoted <code>SQL</code> column names) could easily be incorporated into the relation nodes.</p>
 <p>We then have our result:</p>
@@ -263,23 +263,23 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
       count(1)  OVER (  PARTITION BY "subjectID" ) AS "count"
      FROM (
       SELECT * FROM "d"
-     ) tsql_fvrngle1qlzuw76znsez_0000000000
-    ) tsql_fvrngle1qlzuw76znsez_0000000001
-   ) tsql_fvrngle1qlzuw76znsez_0000000002
-  ) tsql_fvrngle1qlzuw76znsez_0000000003
-  WHERE isdiagnosis
- ) tsql_fvrngle1qlzuw76znsez_0000000004
-) tsql_fvrngle1qlzuw76znsez_0000000005 ORDER BY "subjectID"</code></pre>
+     ) tsql_9pngfnwqiputay3y3ily_0000000000
+    ) tsql_9pngfnwqiputay3y3ily_0000000001
+   ) tsql_9pngfnwqiputay3y3ily_0000000002
+  ) tsql_9pngfnwqiputay3y3ily_0000000003
+  WHERE "isdiagnosis"
+ ) tsql_9pngfnwqiputay3y3ily_0000000004
+) tsql_9pngfnwqiputay3y3ily_0000000005 ORDER BY "subjectID"</code></pre>
 <p>Part of the hope is the additional record keeping in the operator nodes would let a very powerful query optimizer work over the flow before it gets translated to <code>SQL</code>. At the very least restricting to columns later used and folding selects together would be achievable. One should have a good chance at optimization as the representation is fairly high-level, and many of the operators are relational (meaning there are known legal transforms a query optimizer can use). The flow itself is represented as follows:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(dq)</code></pre></div>
-<pre><code>[1] "dbi_table('d') %.&gt;% extend(., probability := exp(\"assessmentTotal\" * 0.237) / sum(exp(\"assessmentTotal\" * 0.237)), count := count(1); p: subjectID) %.&gt;% extend(., rank := rank(); p: subjectID; o: probability) %.&gt;% extend(., isdiagnosis := \"rank\" &gt;= \"count\", diagnosis := \"surveyCategory\") %.&gt;% select_rows(., isdiagnosis) %.&gt;% select_columns(., subjectID, diagnosis, probability) %.&gt;% order_by(., subjectID)"</code></pre>
+<pre><code>[1] "dbi_table('d') %.&gt;% extend(., probability := exp(\"assessmentTotal\" * 0.237) / sum(exp(\"assessmentTotal\" * 0.237)), count := count(1); p: subjectID) %.&gt;% extend(., rank := rank(); p: subjectID; o: probability) %.&gt;% extend(., isdiagnosis := \"rank\" &gt;= \"count\", diagnosis := \"surveyCategory\") %.&gt;% select_rows(., \"isdiagnosis\") %.&gt;% select_columns(., subjectID, diagnosis, probability) %.&gt;% order_by(., subjectID)"</code></pre>
 <p>We can even pretty-format it:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw">gsub</span>(<span class="st">"%.&gt;%"</span>, <span class="st">"%.&gt;%</span><span class="ch">\n</span><span class="st">   "</span>, <span class="kw">format</span>(dq), <span class="dt">fixed =</span> <span class="ot">TRUE</span>))</code></pre></div>
 <pre><code>dbi_table('d') %.&gt;%
     extend(., probability := exp("assessmentTotal" * 0.237) / sum(exp("assessmentTotal" * 0.237)), count := count(1); p: subjectID) %.&gt;%
     extend(., rank := rank(); p: subjectID; o: probability) %.&gt;%
     extend(., isdiagnosis := "rank" &gt;= "count", diagnosis := "surveyCategory") %.&gt;%
-    select_rows(., isdiagnosis) %.&gt;%
+    select_rows(., "isdiagnosis") %.&gt;%
     select_columns(., subjectID, diagnosis, probability) %.&gt;%
     order_by(., subjectID)</code></pre>
 <p>And that is our weekend experiment.</p>

@@ -141,10 +141,10 @@ dq <- d %.>%
   extend_nse(.,
              isdiagnosis := rank >= count,
              diagnosis := surveyCategory) %.>%
-  select_rows(., qe(isdiagnosis)) %.>%
-  select_columns(., qc(subjectID, 
-                       diagnosis, 
-                       probability)) %.>%
+  select_rows_nse(., isdiagnosis) %.>%
+  select_columns(., c("subjectID", 
+                      "diagnosis", 
+                       "probability")) %.>%
   order_by(., 'subjectID')
 ```
 
