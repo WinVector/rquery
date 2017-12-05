@@ -199,13 +199,13 @@ cat(to_sql(dq))
           count(1)  OVER (  PARTITION BY "subjectID" ) AS "count"
          FROM (
           SELECT * FROM "d"
-         ) tsql_ok1avb8vzpqbusae6ain_0000000000
-        ) tsql_ok1avb8vzpqbusae6ain_0000000001
-       ) tsql_ok1avb8vzpqbusae6ain_0000000002
-      ) tsql_ok1avb8vzpqbusae6ain_0000000003
+         ) tsql_5g7mpmvincz5iubygfbe_0000000000
+        ) tsql_5g7mpmvincz5iubygfbe_0000000001
+       ) tsql_5g7mpmvincz5iubygfbe_0000000002
+      ) tsql_5g7mpmvincz5iubygfbe_0000000003
       WHERE "isdiagnosis"
-     ) tsql_ok1avb8vzpqbusae6ain_0000000004
-    ) tsql_ok1avb8vzpqbusae6ain_0000000005 ORDER BY "subjectID"
+     ) tsql_5g7mpmvincz5iubygfbe_0000000004
+    ) tsql_5g7mpmvincz5iubygfbe_0000000005 ORDER BY "subjectID"
 
 Part of the hope is the additional record keeping in the operator nodes would let a very powerful query optimizer work over the flow before it gets translated to `SQL`. At the very least restricting to columns later used and folding selects together would be achievable. One should have a good chance at optimization as the representation is fairly high-level, and many of the operators are relational (meaning there are known legal transforms a query optimizer can use). The flow itself is represented as follows:
 
@@ -213,7 +213,7 @@ Part of the hope is the additional record keeping in the operator nodes would le
 print(dq)
 ```
 
-    [1] "dbi_table('d') %.>% extend(., probability := exp(\"assessmentTotal\" * 0.237) / sum(exp(\"assessmentTotal\" * 0.237)), count := count(1); p: subjectID) %.>% extend(., rank := rank(); p: subjectID; o: probability) %.>% extend(., isdiagnosis := \"rank\" >= \"count\", diagnosis := \"surveyCategory\") %.>% select_rows(., \"isdiagnosis\") %.>% select_columns(., subjectID, diagnosis, probability) %.>% order_by(., subjectID)"
+    [1] "dbi_table('d') %.>% extend(., := probability exp(assessmentTotal * scale)/sum(exp(assessmentTotal * scale)), := count count(1); p: subjectID) %.>% extend(., := rank rank(); p: subjectID; o: probability) %.>% extend(., := isdiagnosis rank >= count, := diagnosis surveyCategory) %.>% select_rows(., \"isdiagnosis\") %.>% select_columns(., subjectID, diagnosis, probability) %.>% order_by(., subjectID)"
 
 We can even pretty-format it:
 
@@ -222,9 +222,9 @@ cat(gsub("%.>%", "%.>%\n   ", format(dq), fixed = TRUE))
 ```
 
     dbi_table('d') %.>%
-        extend(., probability := exp("assessmentTotal" * 0.237) / sum(exp("assessmentTotal" * 0.237)), count := count(1); p: subjectID) %.>%
-        extend(., rank := rank(); p: subjectID; o: probability) %.>%
-        extend(., isdiagnosis := "rank" >= "count", diagnosis := "surveyCategory") %.>%
+        extend(., := probability exp(assessmentTotal * scale)/sum(exp(assessmentTotal * scale)), := count count(1); p: subjectID) %.>%
+        extend(., := rank rank(); p: subjectID; o: probability) %.>%
+        extend(., := isdiagnosis rank >= count, := diagnosis surveyCategory) %.>%
         select_rows(., "isdiagnosis") %.>%
         select_columns(., subjectID, diagnosis, probability) %.>%
         order_by(., subjectID)
@@ -238,3 +238,5 @@ DBI::dbDisconnect(my_db)
     ## [1] TRUE
 
 Note: `rquery` is only an experimental package. All `rquery` operators should be only used in "zero dependency mode" (never using a value created in the same operator or writing the same value twice) in the sense of [`seplyr::partition_mutate_qt`](https://www.rdocumentation.org/packages/seplyr/versions/0.5.0/topics/partition_mutate_qt); the noded check this as a pre-condition). Again, the point was to see how quickly one can get a workable data transform pipeline in terms of Codd-inspired operators. `rquery` can also be used to teach advanced use of `SQL`.
+
+One can also add custom support for translations [such as `ifelse()`](https://johnmount.github.io/rquery/reference/extend_nse.html).

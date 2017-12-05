@@ -38,6 +38,27 @@ prepForSQL <- function(lexpr, colnames, db,
   # special cases
   if(is.call(lexpr)) {
     callName <- as.character(lexpr[[1]])
+    if((n==4) && (callName=="ifelse")) {
+      args <- lapply(2:4,
+                     function(i) {
+                       prepForSQL(lexpr[[i]],
+                                  colnames = colnames,
+                                  db = db,
+                                  env = env)
+                     })
+      res$symbols_used = merge_fld(args,
+                                   "symbols_used")
+      res$symbols_produced = merge_fld(args,
+                                       "symbols_produced")
+      res$parsed <- paste0("CASE WHEN ",
+                           args[[1]]$parsed,
+                           " THEN ",
+                           args[[2]]$parsed,
+                           " ELSE ",
+                           args[[3]]$parsed,
+                           " END")
+      return(res)
+    }
     inlineops = c(":=", "==", "!=", ">=", "<=", "=", "<", ">", "+", "-", "*", "/")
     if((n==3) && (length(lexpr[[2]]==1)) && (callName %in% inlineops)) {
       if(callName=="==") {

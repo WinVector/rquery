@@ -14,22 +14,6 @@
 #' @param desc reverse order
 #' @return extend node.
 #'
-#' @examples
-#'
-#' my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#' d <- dbi_copy_to(my_db, 'd',
-#'                 data.frame(AUC = 0.6, R2 = 0.2))
-#' eqn <- extend_se(d, "v" := "AUC + R2")
-#' print(eqn)
-#' sql <- to_sql(eqn)
-#' cat(sql)
-#' DBI::dbGetQuery(my_db, sql)
-#'
-#' # SQLite can not run the following query
-#' eqn2 <- extend_se(d, "v" := "rank()",
-#'               partitionby = "AUC", orderby = "R2")
-#' sql2 <- to_sql(eqn2)
-#' cat(sql2)
 #'
 #' @noRd
 #'
@@ -129,7 +113,7 @@ extend_se <- function(source, assignments,
 #' my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #' d <- dbi_copy_to(my_db, 'd',
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
-#' eqn <- extend_nse(d, v := AUC + R2)
+#' eqn <- extend_nse(d, v := ifelse(AUC>0.5, R2, 1.0))
 #' print(eqn)
 #' sql <- to_sql(eqn)
 #' cat(sql)
@@ -188,9 +172,11 @@ format.relop_extend <- function(x, ...) {
       paste(x$orderby, collapse = ", "),
       ifelse(x$desc, " DESC", ""))
   }
-  aterms <- paste(paste(names(x$assignments),
-                        ":=",
-                        x$assignments), collapse = ", ")
+  origTerms <- vapply(x$parsed,
+                      function(pi) {
+                        paste(as.character(pi$orig), collapse = ' ')
+                      }, character(1))
+  aterms <- paste(origTerms, collapse = ", ")
   paste0(format(x$source[[1]]),
          " %.>% ",
          "extend(., ",
