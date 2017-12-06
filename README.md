@@ -65,16 +65,19 @@ library('RPostgreSQL')
     ## Loading required package: DBI
 
 ``` r
-is_spark <- FALSE
+use_spark <- TRUE
 
-# my_db <- DBI::dbConnect(dbDriver("PostgreSQL"), 
-#                         host = 'localhost',
-#                         port = 5432,
-#                         user = 'postgres',
-#                         password = 'pg')
-my_db <- sparklyr::spark_connect(version='2.2.0', 
-   master = "local")
-is_spark <- TRUE
+if(use_spark) {
+  my_db <- sparklyr::spark_connect(version='2.2.0', 
+                                   master = "local")
+} else {
+  my_db <- DBI::dbConnect(dbDriver("PostgreSQL"),
+                          host = 'localhost',
+                          port = 5432,
+                          user = 'postgres',
+                          password = 'pg')
+}
+
 
 d <- dbi_copy_to(my_db, 'd',
                  data.frame(
@@ -94,7 +97,7 @@ d <- dbi_copy_to(my_db, 'd',
                                        4),
                    stringsAsFactors = FALSE),
                  temporary = TRUE, 
-                 overwrite = !is_spark)
+                 overwrite = !use_spark)
 
 print(d)
 ```
@@ -196,13 +199,13 @@ cat(to_sql(dq))
           count(1)  OVER (  PARTITION BY `subjectID` ) AS `count`
          FROM (
           SELECT * FROM `d`
-         ) tsql_mjsulyif2hjb7qcd2ndh_0000000000
-        ) tsql_mjsulyif2hjb7qcd2ndh_0000000001
-       ) tsql_mjsulyif2hjb7qcd2ndh_0000000002
-      ) tsql_mjsulyif2hjb7qcd2ndh_0000000003
+         ) tsql_mchlkwdzvz6d0qsqkqm5_0000000000
+        ) tsql_mchlkwdzvz6d0qsqkqm5_0000000001
+       ) tsql_mchlkwdzvz6d0qsqkqm5_0000000002
+      ) tsql_mchlkwdzvz6d0qsqkqm5_0000000003
       WHERE `isdiagnosis`
-     ) tsql_mjsulyif2hjb7qcd2ndh_0000000004
-    ) tsql_mjsulyif2hjb7qcd2ndh_0000000005 ORDER BY `subjectID`
+     ) tsql_mchlkwdzvz6d0qsqkqm5_0000000004
+    ) tsql_mchlkwdzvz6d0qsqkqm5_0000000005 ORDER BY `subjectID`
 
 Part of the plan is: the additional record-keeping in the operator nodes would let a very powerful query optimizer work over the flow before it gets translated to `SQL` (perhaps an extension of or successor to [`seplyr`](https://winvector.github.io/seplyr/), which re-plans over `dplyr::mutate()` expressions). At the very least restricting to columns later used and folding selects together would be achievable. One should have a good chance at optimization as the representation is fairly high-level, and many of the operators are relational (meaning there are known legal transforms a query optimizer can use). The flow itself is represented as follows:
 
@@ -231,7 +234,7 @@ cat(gsub("%.>%", "%.>%\n   ",
 And that is our weekend experiment.
 
 ``` r
-if(is_spark) {
+if(use_spark) {
   sparklyr::spark_disconnect(my_db)
 } else {
   DBI::dbDisconnect(my_db)

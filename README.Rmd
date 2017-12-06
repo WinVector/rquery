@@ -62,16 +62,19 @@ First we set up the database and the original example data:
 ```{r ex}
 library("rquery")
 library('RPostgreSQL')
-is_spark <- FALSE
+use_spark <- TRUE
 
-# my_db <- DBI::dbConnect(dbDriver("PostgreSQL"), 
-#                         host = 'localhost',
-#                         port = 5432,
-#                         user = 'postgres',
-#                         password = 'pg')
-my_db <- sparklyr::spark_connect(version='2.2.0', 
-   master = "local")
-is_spark <- TRUE
+if(use_spark) {
+  my_db <- sparklyr::spark_connect(version='2.2.0', 
+                                   master = "local")
+} else {
+  my_db <- DBI::dbConnect(dbDriver("PostgreSQL"),
+                          host = 'localhost',
+                          port = 5432,
+                          user = 'postgres',
+                          password = 'pg')
+}
+
 
 d <- dbi_copy_to(my_db, 'd',
                  data.frame(
@@ -91,7 +94,7 @@ d <- dbi_copy_to(my_db, 'd',
                                        4),
                    stringsAsFactors = FALSE),
                  temporary = TRUE, 
-                 overwrite = !is_spark)
+                 overwrite = !use_spark)
 
 print(d)
 
@@ -170,7 +173,7 @@ cat(gsub("%.>%", "%.>%\n   ",
 And that is our weekend experiment.
 
 ```{r cleanup}
-if(is_spark) {
+if(use_spark) {
   sparklyr::spark_disconnect(my_db)
 } else {
   DBI::dbDisconnect(my_db)
