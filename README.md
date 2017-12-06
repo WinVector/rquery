@@ -65,11 +65,16 @@ library('RPostgreSQL')
     ## Loading required package: DBI
 
 ``` r
-my_db <- DBI::dbConnect(dbDriver("PostgreSQL"), 
-                        host = 'localhost',
-                        port = 5432,
-                        user = 'postgres',
-                        password = 'pg')
+is_spark <- FALSE
+
+# my_db <- DBI::dbConnect(dbDriver("PostgreSQL"), 
+#                         host = 'localhost',
+#                         port = 5432,
+#                         user = 'postgres',
+#                         password = 'pg')
+my_db <- sparklyr::spark_connect(version='2.2.0', 
+   master = "local")
+is_spark <- TRUE
 
 d <- dbi_copy_to(my_db, 'd',
                  data.frame(
@@ -88,7 +93,8 @@ d <- dbi_copy_to(my_db, 'd',
                                        3,                  
                                        4),
                    stringsAsFactors = FALSE),
-                 temporary = TRUE, overwrite = TRUE)
+                 temporary = TRUE, 
+                 overwrite = !is_spark)
 
 print(d)
 ```
@@ -102,12 +108,12 @@ d %.>%
   knitr::kable(.)
 ```
 
-| row.names |  subjectID| surveyCategory      |  assessmentTotal|
-|:----------|----------:|:--------------------|----------------:|
-| 1         |          1| withdrawal behavior |                5|
-| 2         |          1| positive re-framing |                2|
-| 3         |          2| withdrawal behavior |                3|
-| 4         |          2| positive re-framing |                4|
+|  subjectID| surveyCategory      |  assessmentTotal|
+|----------:|:--------------------|----------------:|
+|          1| withdrawal behavior |                5|
+|          1| positive re-framing |                2|
+|          2| withdrawal behavior |                3|
+|          2| positive re-framing |                4|
 
 Now we write the calculation in terms of our operators.
 
@@ -161,45 +167,42 @@ cat(to_sql(dq))
 
     SELECT * FROM (
      SELECT
-      "subjectID", "diagnosis", "probability"
+      `subjectID`, `diagnosis`, `probability`
      FROM (
       SELECT * FROM (
        SELECT
-        "row.names",
-        "subjectID",
-        "surveyCategory",
-        "assessmentTotal",
-        "probability",
-        "count",
-        "rank",
-        "rank" = "count"  AS "isdiagnosis",
-        "surveyCategory"  AS "diagnosis"
+        `subjectID`,
+        `surveyCategory`,
+        `assessmentTotal`,
+        `probability`,
+        `count`,
+        `rank`,
+        `rank` = `count`  AS `isdiagnosis`,
+        `surveyCategory`  AS `diagnosis`
        FROM (
         SELECT
-         "row.names",
-         "subjectID",
-         "surveyCategory",
-         "assessmentTotal",
-         "probability",
-         "count",
-         rank()  OVER (  PARTITION BY "subjectID" ORDER BY "probability" ) AS "rank"
+         `subjectID`,
+         `surveyCategory`,
+         `assessmentTotal`,
+         `probability`,
+         `count`,
+         rank()  OVER (  PARTITION BY `subjectID` ORDER BY `probability` ) AS `rank`
         FROM (
          SELECT
-          "row.names",
-          "subjectID",
-          "surveyCategory",
-          "assessmentTotal",
-          exp("assessmentTotal" * 0.237) / sum(exp("assessmentTotal" * 0.237))  OVER (  PARTITION BY "subjectID" ) AS "probability",
-          count(1)  OVER (  PARTITION BY "subjectID" ) AS "count"
+          `subjectID`,
+          `surveyCategory`,
+          `assessmentTotal`,
+          exp(`assessmentTotal` * 0.237) / sum(exp(`assessmentTotal` * 0.237))  OVER (  PARTITION BY `subjectID` ) AS `probability`,
+          count(1)  OVER (  PARTITION BY `subjectID` ) AS `count`
          FROM (
-          SELECT * FROM "d"
-         ) tsql_qbvmut9u1h2p39qghjir_0000000000
-        ) tsql_qbvmut9u1h2p39qghjir_0000000001
-       ) tsql_qbvmut9u1h2p39qghjir_0000000002
-      ) tsql_qbvmut9u1h2p39qghjir_0000000003
-      WHERE "isdiagnosis"
-     ) tsql_qbvmut9u1h2p39qghjir_0000000004
-    ) tsql_qbvmut9u1h2p39qghjir_0000000005 ORDER BY "subjectID"
+          SELECT * FROM `d`
+         ) tsql_mjsulyif2hjb7qcd2ndh_0000000000
+        ) tsql_mjsulyif2hjb7qcd2ndh_0000000001
+       ) tsql_mjsulyif2hjb7qcd2ndh_0000000002
+      ) tsql_mjsulyif2hjb7qcd2ndh_0000000003
+      WHERE `isdiagnosis`
+     ) tsql_mjsulyif2hjb7qcd2ndh_0000000004
+    ) tsql_mjsulyif2hjb7qcd2ndh_0000000005 ORDER BY `subjectID`
 
 Part of the plan is: the additional record-keeping in the operator nodes would let a very powerful query optimizer work over the flow before it gets translated to `SQL` (perhaps an extension of or successor to [`seplyr`](https://winvector.github.io/seplyr/), which re-plans over `dplyr::mutate()` expressions). At the very least restricting to columns later used and folding selects together would be achievable. One should have a good chance at optimization as the representation is fairly high-level, and many of the operators are relational (meaning there are known legal transforms a query optimizer can use). The flow itself is represented as follows:
 
@@ -228,10 +231,12 @@ cat(gsub("%.>%", "%.>%\n   ",
 And that is our weekend experiment.
 
 ``` r
-DBI::dbDisconnect(my_db)
+if(is_spark) {
+  sparklyr::spark_disconnect(my_db)
+} else {
+  DBI::dbDisconnect(my_db)
+}
 ```
-
-    ## [1] TRUE
 
 Note: `rquery` is only an experimental package. All `rquery` operators should be only used in "zero dependency mode" (never using a value created in the same operator or writing the same value twice) in the sense of [`seplyr::partition_mutate_qt`](https://www.rdocumentation.org/packages/seplyr/versions/0.5.0/topics/partition_mutate_qt); the nodes check this as a pre-condition). Again, the point was to see how quickly one can get a workable data transform pipeline in terms of Codd-inspired operators. `rquery` can also be used to teach advanced use of `SQL`.
 

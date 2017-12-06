@@ -2,3 +2,6 @@
 ^\.Rproj\.user$
 ^docs$
 ^README.Rmd$
+^.*.log$
+^logs$
+

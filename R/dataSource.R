@@ -117,11 +117,19 @@ dbi_copy_to <- function(db, table_name, d,
   if(!is.null(rowidcolumn)) {
     d[[rowidcolumn]] <- 1:nrow(d)
   }
-  DBI::dbWriteTable(db,
-                    table_name,
-                    d,
-                    overwrite = overwrite,
-                    temporary = temporary)
+  if(overwrite) {
+    DBI::dbWriteTable(db,
+                      table_name,
+                      d,
+                      overwrite = overwrite,
+                      temporary = temporary)
+  } else {
+    # sparklyr does not take overwrite argument
+    DBI::dbWriteTable(db,
+                      table_name,
+                      d,
+                      temporary = temporary)
+  }
   dbi_table(db, table_name)
 }
 
