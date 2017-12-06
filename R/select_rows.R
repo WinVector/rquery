@@ -110,7 +110,7 @@ print.relop_select_rows <- function(x, ...) {
 #' @export
 to_sql.relop_select_rows <- function(x,
                                      indent_level = 0,
-                                     tnum = cdata::makeTempNameGenerator('tsql'),
+                                     tnum = mkTempNameGenerator('tsql'),
                                      append_cr = TRUE,
                                      ...) {
   if(length(list(...))>0) {

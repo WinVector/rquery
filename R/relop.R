@@ -43,7 +43,7 @@ column_names <- function (x, ...) {
 #'
 to_sql <- function (x,
                     indent_level = 0,
-                    tnum = cdata::makeTempNameGenerator('tsql'),
+                    tnum = mkTempNameGenerator('tsql'),
                     append_cr = TRUE,
                     ...) {
   UseMethod("to_sql", x)

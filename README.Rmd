@@ -1,7 +1,7 @@
 ---
 title: "rquery"
 output: github_document
-date: "2017-12-05"
+date: "2017-12-06"
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -61,13 +61,13 @@ First we set up the database and the original example data:
 
 ```{r ex}
 library("rquery")
-library('RPostgreSQL')
 use_spark <- TRUE
 
 if(use_spark) {
   my_db <- sparklyr::spark_connect(version='2.2.0', 
                                    master = "local")
 } else {
+  library('RPostgreSQL')
   my_db <- DBI::dbConnect(dbDriver("PostgreSQL"),
                           host = 'localhost',
                           port = 5432,

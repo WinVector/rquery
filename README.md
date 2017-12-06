@@ -1,6 +1,6 @@
 rquery
 ================
-2017-12-05
+2017-12-06
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 `rquery` is a experiment/demonstration of a simplified sequenced query language based on [Codd's relational algebra](https://en.wikipedia.org/wiki/Relational_algebra) and not currently recommended for non-experimental use. `rquery` is something we whipped up in a singe weekend to see how small a scope such an adapter might have. Another goal of this experiment is to see if `SQL` would be more fun if it had a sequential data-flow or pipe notation.
@@ -59,18 +59,13 @@ library("rquery")
     ## Loading required package: wrapr
 
 ``` r
-library('RPostgreSQL')
-```
-
-    ## Loading required package: DBI
-
-``` r
 use_spark <- TRUE
 
 if(use_spark) {
   my_db <- sparklyr::spark_connect(version='2.2.0', 
                                    master = "local")
 } else {
+  library('RPostgreSQL')
   my_db <- DBI::dbConnect(dbDriver("PostgreSQL"),
                           host = 'localhost',
                           port = 5432,
@@ -199,13 +194,13 @@ cat(to_sql(dq))
           count(1)  OVER (  PARTITION BY `subjectID` ) AS `count`
          FROM (
           SELECT * FROM `d`
-         ) tsql_mchlkwdzvz6d0qsqkqm5_0000000000
-        ) tsql_mchlkwdzvz6d0qsqkqm5_0000000001
-       ) tsql_mchlkwdzvz6d0qsqkqm5_0000000002
-      ) tsql_mchlkwdzvz6d0qsqkqm5_0000000003
+         ) tsql_0000
+        ) tsql_0001
+       ) tsql_0002
+      ) tsql_0003
       WHERE `isdiagnosis`
-     ) tsql_mchlkwdzvz6d0qsqkqm5_0000000004
-    ) tsql_mchlkwdzvz6d0qsqkqm5_0000000005 ORDER BY `subjectID`
+     ) tsql_0004
+    ) tsql_0005 ORDER BY `subjectID`
 
 Part of the plan is: the additional record-keeping in the operator nodes would let a very powerful query optimizer work over the flow before it gets translated to `SQL` (perhaps an extension of or successor to [`seplyr`](https://winvector.github.io/seplyr/), which re-plans over `dplyr::mutate()` expressions). At the very least restricting to columns later used and folding selects together would be achievable. One should have a good chance at optimization as the representation is fairly high-level, and many of the operators are relational (meaning there are known legal transforms a query optimizer can use). The flow itself is represented as follows:
 

@@ -104,13 +104,20 @@
 <p>First we set up the database and the original example data:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">"rquery"</span>)</code></pre></div>
 <pre><code>## Loading required package: wrapr</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">'RPostgreSQL'</span>)</code></pre></div>
-<pre><code>## Loading required package: DBI</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">my_db &lt;-<span class="st"> </span>DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbConnect">dbConnect</a></span>(<span class="kw">dbDriver</span>(<span class="st">"PostgreSQL"</span>), 
-                        <span class="dt">host =</span> <span class="st">'localhost'</span>,
-                        <span class="dt">port =</span> <span class="dv">5432</span>,
-                        <span class="dt">user =</span> <span class="st">'postgres'</span>,
-                        <span class="dt">password =</span> <span class="st">'pg'</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">use_spark &lt;-<span class="st"> </span><span class="ot">TRUE</span>
+
+<span class="cf">if</span>(use_spark) {
+  my_db &lt;-<span class="st"> </span>sparklyr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/sparklyr/topics/spark-connections">spark_connect</a></span>(<span class="dt">version=</span><span class="st">'2.2.0'</span>, 
+                                   <span class="dt">master =</span> <span class="st">"local"</span>)
+} <span class="cf">else</span> {
+  <span class="kw">library</span>(<span class="st">'RPostgreSQL'</span>)
+  my_db &lt;-<span class="st"> </span>DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbConnect">dbConnect</a></span>(<span class="kw">dbDriver</span>(<span class="st">"PostgreSQL"</span>),
+                          <span class="dt">host =</span> <span class="st">'localhost'</span>,
+                          <span class="dt">port =</span> <span class="dv">5432</span>,
+                          <span class="dt">user =</span> <span class="st">'postgres'</span>,
+                          <span class="dt">password =</span> <span class="st">'pg'</span>)
+}
+
 
 d &lt;-<span class="st"> </span><span class="kw"><a href="reference/dbi_copy_to.html">dbi_copy_to</a></span>(my_db, <span class="st">'d'</span>,
                  <span class="kw">data.frame</span>(
@@ -129,7 +136,8 @@ d &lt;-<span class="st"> </span><span class="kw"><a href="reference/dbi_copy_to.
                                        <span class="dv">3</span>,                  
                                        <span class="dv">4</span>),
                    <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>),
-                 <span class="dt">temporary =</span> <span class="ot">TRUE</span>, <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)
+                 <span class="dt">temporary =</span> <span class="ot">TRUE</span>, 
+                 <span class="dt">overwrite =</span> <span class="op">!</span>use_spark)
 
 <span class="kw">print</span>(d)</code></pre></div>
 <pre><code>## [1] "dbi_table('d')"</code></pre>
@@ -139,32 +147,27 @@ d &lt;-<span class="st"> </span><span class="kw"><a href="reference/dbi_copy_to.
 <span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</code></pre></div>
 <table class="table">
 <thead><tr class="header">
-<th align="left">row.names</th>
 <th align="right">subjectID</th>
 <th align="left">surveyCategory</th>
 <th align="right">assessmentTotal</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">1</td>
 <td align="right">1</td>
 <td align="left">withdrawal behavior</td>
 <td align="right">5</td>
 </tr>
 <tr class="even">
-<td align="left">2</td>
 <td align="right">1</td>
 <td align="left">positive re-framing</td>
 <td align="right">2</td>
 </tr>
 <tr class="odd">
-<td align="left">3</td>
 <td align="right">2</td>
 <td align="left">withdrawal behavior</td>
 <td align="right">3</td>
 </tr>
 <tr class="even">
-<td align="left">4</td>
 <td align="right">2</td>
 <td align="left">positive re-framing</td>
 <td align="right">4</td>
@@ -223,45 +226,42 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw"><a href="reference/to_sql.html">to_sql</a></span>(dq))</code></pre></div>
 <pre><code>SELECT * FROM (
  SELECT
-  "subjectID", "diagnosis", "probability"
+  `subjectID`, `diagnosis`, `probability`
  FROM (
   SELECT * FROM (
    SELECT
-    "row.names",
-    "subjectID",
-    "surveyCategory",
-    "assessmentTotal",
-    "probability",
-    "count",
-    "rank",
-    "rank" = "count"  AS "isdiagnosis",
-    "surveyCategory"  AS "diagnosis"
+    `subjectID`,
+    `surveyCategory`,
+    `assessmentTotal`,
+    `probability`,
+    `count`,
+    `rank`,
+    `rank` = `count`  AS `isdiagnosis`,
+    `surveyCategory`  AS `diagnosis`
    FROM (
     SELECT
-     "row.names",
-     "subjectID",
-     "surveyCategory",
-     "assessmentTotal",
-     "probability",
-     "count",
-     rank()  OVER (  PARTITION BY "subjectID" ORDER BY "probability" ) AS "rank"
+     `subjectID`,
+     `surveyCategory`,
+     `assessmentTotal`,
+     `probability`,
+     `count`,
+     rank()  OVER (  PARTITION BY `subjectID` ORDER BY `probability` ) AS `rank`
     FROM (
      SELECT
-      "row.names",
-      "subjectID",
-      "surveyCategory",
-      "assessmentTotal",
-      exp("assessmentTotal" * 0.237) / sum(exp("assessmentTotal" * 0.237))  OVER (  PARTITION BY "subjectID" ) AS "probability",
-      count(1)  OVER (  PARTITION BY "subjectID" ) AS "count"
+      `subjectID`,
+      `surveyCategory`,
+      `assessmentTotal`,
+      exp(`assessmentTotal` * 0.237) / sum(exp(`assessmentTotal` * 0.237))  OVER (  PARTITION BY `subjectID` ) AS `probability`,
+      count(1)  OVER (  PARTITION BY `subjectID` ) AS `count`
      FROM (
-      SELECT * FROM "d"
-     ) tsql_l6a54ls5ulw3jrie2tuo_0000000000
-    ) tsql_l6a54ls5ulw3jrie2tuo_0000000001
-   ) tsql_l6a54ls5ulw3jrie2tuo_0000000002
-  ) tsql_l6a54ls5ulw3jrie2tuo_0000000003
-  WHERE "isdiagnosis"
- ) tsql_l6a54ls5ulw3jrie2tuo_0000000004
-) tsql_l6a54ls5ulw3jrie2tuo_0000000005 ORDER BY "subjectID"</code></pre>
+      SELECT * FROM `d`
+     ) tsql_0000
+    ) tsql_0001
+   ) tsql_0002
+  ) tsql_0003
+  WHERE `isdiagnosis`
+ ) tsql_0004
+) tsql_0005 ORDER BY `subjectID`</code></pre>
 <p>Part of the plan is: the additional record-keeping in the operator nodes would let a very powerful query optimizer work over the flow before it gets translated to <code>SQL</code> (perhaps an extension of or successor to <a href="https://winvector.github.io/seplyr/"><code>seplyr</code></a>, which re-plans over <code><a href="http://dplyr.tidyverse.org/reference/mutate.html">dplyr::mutate()</a></code> expressions). At the very least restricting to columns later used and folding selects together would be achievable. One should have a good chance at optimization as the representation is fairly high-level, and many of the operators are relational (meaning there are known legal transforms a query optimizer can use). The flow itself is represented as follows:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(dq)</code></pre></div>
 <pre><code>[1] "dbi_table('d') %.&gt;% extend(., probability := exp(assessmentTotal * scale) / sum(exp(assessmentTotal * scale)), count := count(1); p: subjectID) %.&gt;% extend(., rank := rank(); p: subjectID; o: probability) %.&gt;% extend(., isdiagnosis := rank == count, diagnosis := surveyCategory) %.&gt;% select_rows(., isdiagnosis) %.&gt;% select_columns(., subjectID, diagnosis, probability) %.&gt;% order_by(., subjectID)"</code></pre>
@@ -277,8 +277,11 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
     select_columns(., subjectID, diagnosis, probability) %.&gt;%
     order_by(., subjectID)</code></pre>
 <p>And that is our weekend experiment.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect">dbDisconnect</a></span>(my_db)</code></pre></div>
-<pre><code>## [1] TRUE</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="cf">if</span>(use_spark) {
+  sparklyr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/sparklyr/topics/spark-connections">spark_disconnect</a></span>(my_db)
+} <span class="cf">else</span> {
+  DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect">dbDisconnect</a></span>(my_db)
+}</code></pre></div>
 <p>Note: <code>rquery</code> is only an experimental package. All <code>rquery</code> operators should be only used in “zero dependency mode” (never using a value created in the same operator or writing the same value twice) in the sense of <a href="https://www.rdocumentation.org/packages/seplyr/versions/0.5.0/topics/partition_mutate_qt"><code><a href="http://www.rdocumentation.org/packages/seplyr/topics/partition_mutate_qt">seplyr::partition_mutate_qt</a></code></a>; the nodes check this as a pre-condition). Again, the point was to see how quickly one can get a workable data transform pipeline in terms of Codd-inspired operators. <code>rquery</code> can also be used to teach advanced use of <code>SQL</code>.</p>
 <p>We are also adding custom support for translations <a href="https://johnmount.github.io/rquery/reference/extend_nse.html">such as <code>ifelse()</code></a>.</p>
 </div>

@@ -83,7 +83,7 @@ print.relop_natural_join <- function(x, ...) {
 #' @export
 to_sql.relop_natural_join <- function(x,
                                       indent_level = 0,
-                                      tnum = cdata::makeTempNameGenerator('tsql'),
+                                      tnum = mkTempNameGenerator('tsql'),
                                       append_cr = TRUE,
                                       ...) {
   if(length(list(...))>0) {

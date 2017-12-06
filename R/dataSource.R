@@ -23,7 +23,7 @@
 #' @export
 #'
 dbi_table <- function(db, table_name) {
-  columns <- cdata:::listFields(db, table_name)
+  columns <- listFields(db, table_name)
   r <- list(columns = columns,
             table_name = table_name,
             db = db)
@@ -51,7 +51,7 @@ column_names.relop_dbi_table <- function (x, ...) {
 #' @export
 to_sql.relop_dbi_table <- function (x,
                                     indent_level = 0,
-                                    tnum = cdata::makeTempNameGenerator('tsql'),
+                                    tnum = mkTempNameGenerator('tsql'),
                                     append_cr = TRUE,
                                     ...) {
   if(length(list(...))>0) {

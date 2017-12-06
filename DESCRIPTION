@@ -2,7 +2,7 @@ Package: rquery
 Type: Package
 Title: Relational Query Algebra for Data Manipulation
 Version: 0.1.0
-Date: 2017-12-03
+Date: 2017-12-06
 Authors@R: c(
     person("John", "Mount", email = "jmount@win-vector.com", role = c("aut", "cre")),
     person(family = "Win-Vector LLC", role = c("cph"))
@@ -15,8 +15,10 @@ Depends:
   wrapr (>= 1.0.1)
 Imports:
   DBI,
-  RSQLite,
-  cdata (>= 0.5.0)
+  RSQLite
+Suggests: 
+    sparklyr (>= 0.6.4),
+    RPostgreSQL
 LazyData: true
 RoxygenNote: 6.0.1
 ByteCompile: true
