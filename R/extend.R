@@ -61,7 +61,7 @@ extend_impl <- function(source, parsed,
 #' my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #' d <- dbi_copy_to(my_db, 'd',
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
-#' eqn <- extend_se(d, "v" := "AUC + R2")
+#' eqn <- extend_se(d, c("v" := "AUC + R2", "x" := "max(AUC,R2)"))
 #' print(eqn)
 #' sql <- to_sql(eqn)
 #' cat(sql)
