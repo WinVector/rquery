@@ -1,9 +1,9 @@
 rquery
 ================
-2017-12-06
+2017-12-07
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-`rquery` is a experiment/demonstration of a simplified sequenced query language based on [Codd's relational algebra](https://en.wikipedia.org/wiki/Relational_algebra) and not currently recommended for non-experimental use. `rquery` is something we whipped up in a singe weekend to see how small a scope such an adapter might have. Another goal of this experiment is to see if `SQL` would be more fun if it had a sequential data-flow or pipe notation.
+`rquery` is a experiment/demonstration of a simplified sequenced query language based on [Codd's relational algebra](https://en.wikipedia.org/wiki/Relational_algebra) and not currently recommended for non-experimental use. The goal of this experiment is to see if `SQL` would be more fun if it had a sequential data-flow or pipe notation.
 
 `rquery` is not for production use, but can be an excellent advanced `SQL` training tool (it shows how some very deep `SQL` by composing `rquery` operators). Currently `rquery` is biased towards `PostgeSQL` `SQL`.
 
@@ -22,7 +22,8 @@ The primary relational operators are:
 
 -   `extend()`. Extend adds derived columns to a relation table. With a sufficiently powerful `SQL` provider this includes ordered and partitioned window functions. This sort of operator can eventually encompass all of a ["grouped ordered apply" methodology](http://www.win-vector.com/blog/2016/12/organize-your-data-manipulation-in-terms-of-grouped-ordered-apply/).
 -   `project()`. Project is usually portrayed as the equivalent to column selection. In our opinion the original relational nature of the operator is best captured by moving `SQL`'s "`GROUP BY`" aggregation functionality to this operator.
--   `natural_join()`. This is the relational join operator, using all common columns as the equi-join condition. The next operator to add would definitely be `theta-join` as that adds a lot more expressiveness to the grammar.
+-   `natural_join()`. This a specialized relational join operator, using all common columns as the equi-join condition. The next operator to add would definitely be `theta-join` as that adds a lot more expressiveness to the grammar.
+-   `theta_join()`. This is the relational join operator, insisting on distinct columns but allowing an arbitrary matching condition. The next operator to add would definitely be `theta-join` as that adds a lot more expressiveness to the grammar.
 -   `select_rows()`. This is Codd's relational row selection. Obviously `select` alone is an over-used and now ambiguous term (it is the "doit" verb in `SQL` and the *column* selector in `dplyr`).
 
 The primary non-relational (traditional `SQL`) operators are:
@@ -184,14 +185,14 @@ cat(to_sql(dq))
          `assessmentTotal`,
          `probability`,
          `count`,
-         rank()  OVER (  PARTITION BY `subjectID` ORDER BY `probability` ) AS `rank`
+         rank() OVER (  PARTITION BY `subjectID` ORDER BY `probability` ) AS `rank`
         FROM (
          SELECT
           `subjectID`,
           `surveyCategory`,
           `assessmentTotal`,
-          exp(`assessmentTotal` * 0.237) / sum(exp(`assessmentTotal` * 0.237))  OVER (  PARTITION BY `subjectID` ) AS `probability`,
-          count(1)  OVER (  PARTITION BY `subjectID` ) AS `count`
+          exp(`assessmentTotal` * 0.237) / sum(exp(`assessmentTotal` * 0.237)) OVER (  PARTITION BY `subjectID` ) AS `probability`,
+          count(1) OVER (  PARTITION BY `subjectID` ) AS `count`
          FROM (
           SELECT * FROM `d`
          ) tsql_0000
@@ -226,7 +227,7 @@ cat(gsub("%.>%", "%.>%\n   ",
         select_columns(., subjectID, diagnosis, probability) %.>%
         order_by(., subjectID)
 
-And that is our weekend experiment.
+And that is our experiment.
 
 ``` r
 if(use_spark) {

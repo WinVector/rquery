@@ -146,7 +146,7 @@
 <span class='fu'>cat</span>(<span class='no'>sql2</span>)</div><div class='output co'>#&gt; SELECT
 #&gt;  `AUC`,
 #&gt;  `R2`,
-#&gt;  rank()  OVER (  PARTITION BY `AUC` ORDER BY `R2` ) AS `v`
+#&gt;  rank() OVER (  PARTITION BY `AUC` ORDER BY `R2` ) AS `v`
 #&gt; FROM (
 #&gt;  SELECT * FROM `d`
 #&gt; ) tsql_0000</div><div class='input'>

@@ -55,7 +55,7 @@
     
 <div class="contents">
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-<p><code>rquery</code> is a experiment/demonstration of a simplified sequenced query language based on <a href="https://en.wikipedia.org/wiki/Relational_algebra">Codd’s relational algebra</a> and not currently recommended for non-experimental use. <code>rquery</code> is something we whipped up in a singe weekend to see how small a scope such an adapter might have. Another goal of this experiment is to see if <code>SQL</code> would be more fun if it had a sequential data-flow or pipe notation.</p>
+<p><code>rquery</code> is a experiment/demonstration of a simplified sequenced query language based on <a href="https://en.wikipedia.org/wiki/Relational_algebra">Codd’s relational algebra</a> and not currently recommended for non-experimental use. The goal of this experiment is to see if <code>SQL</code> would be more fun if it had a sequential data-flow or pipe notation.</p>
 <p><code>rquery</code> is not for production use, but can be an excellent advanced <code>SQL</code> training tool (it shows how some very deep <code>SQL</code> by composing <code>rquery</code> operators). Currently <code>rquery</code> is biased towards <code>PostgeSQL</code> <code>SQL</code>.</p>
 <p>There are many prior relational algebra inspired specialized query languages. Just a few include:</p>
 <ul>
@@ -74,7 +74,9 @@
 <li>
 <code>project()</code>. Project is usually portrayed as the equivalent to column selection. In our opinion the original relational nature of the operator is best captured by moving <code>SQL</code>’s “<code>GROUP BY</code>” aggregation functionality to this operator.</li>
 <li>
-<code><a href="reference/natural_join.html">natural_join()</a></code>. This is the relational join operator, using all common columns as the equi-join condition. The next operator to add would definitely be <code>theta-join</code> as that adds a lot more expressiveness to the grammar.</li>
+<code><a href="reference/natural_join.html">natural_join()</a></code>. This a specialized relational join operator, using all common columns as the equi-join condition. The next operator to add would definitely be <code>theta-join</code> as that adds a lot more expressiveness to the grammar.</li>
+<li>
+<code>theta_join()</code>. This is the relational join operator, insisting on distinct columns but allowing an arbitrary matching condition. The next operator to add would definitely be <code>theta-join</code> as that adds a lot more expressiveness to the grammar.</li>
 <li>
 <code>select_rows()</code>. This is Codd’s relational row selection. Obviously <code>select</code> alone is an over-used and now ambiguous term (it is the “doit” verb in <code>SQL</code> and the <em>column</em> selector in <code>dplyr</code>).</li>
 </ul>
@@ -245,14 +247,14 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
      `assessmentTotal`,
      `probability`,
      `count`,
-     rank()  OVER (  PARTITION BY `subjectID` ORDER BY `probability` ) AS `rank`
+     rank() OVER (  PARTITION BY `subjectID` ORDER BY `probability` ) AS `rank`
     FROM (
      SELECT
       `subjectID`,
       `surveyCategory`,
       `assessmentTotal`,
-      exp(`assessmentTotal` * 0.237) / sum(exp(`assessmentTotal` * 0.237))  OVER (  PARTITION BY `subjectID` ) AS `probability`,
-      count(1)  OVER (  PARTITION BY `subjectID` ) AS `count`
+      exp(`assessmentTotal` * 0.237) / sum(exp(`assessmentTotal` * 0.237)) OVER (  PARTITION BY `subjectID` ) AS `probability`,
+      count(1) OVER (  PARTITION BY `subjectID` ) AS `count`
      FROM (
       SELECT * FROM `d`
      ) tsql_0000
@@ -276,7 +278,7 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
     select_rows(., isdiagnosis) %.&gt;%
     select_columns(., subjectID, diagnosis, probability) %.&gt;%
     order_by(., subjectID)</code></pre>
-<p>And that is our weekend experiment.</p>
+<p>And that is our experiment.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="cf">if</span>(use_spark) {
   sparklyr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/sparklyr/topics/spark-connections">spark_disconnect</a></span>(my_db)
 } <span class="cf">else</span> {

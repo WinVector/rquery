@@ -26,6 +26,7 @@ select_rows_se <- function(source, expr,
                   have)[[1]]
   parsed <- parse_se(source, vnam := expr, env = env)
   assignments <- unpack_assignments(source, parsed)
+  parsed[[1]]$symbols_produced <- character(0)
   r <- list(source = list(source),
             parsed = parsed,
             expr = assignments)
@@ -62,6 +63,7 @@ select_rows_nse <- function(source, expr,
   parsed <- parse_nse(source, list(exprq), env = env)
   parsed[[1]]$symbols_produced <- vnam
   assignments <- unpack_assignments(source, parsed)
+  parsed[[1]]$symbols_produced <- character(0)
   r <- list(source = list(source),
             parsed = parsed,
             expr = assignments)

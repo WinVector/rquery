@@ -1,6 +1,8 @@
 
 #' Make a natural_join node.
 #'
+#' Natural join is a join by identity on all common columns.
+#'
 #' @param a source to select from.
 #' @param b source to select from.
 #' @param jointype type of join ('INNER', 'LEFT', 'RIGHT', 'FULL').

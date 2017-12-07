@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Make a natural_join node. — natural_join • rquery</title>
+<title>Make a theta_join node. — theta_join_se • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -75,14 +75,14 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Make a natural_join node.</h1>
+    <h1>Make a theta_join node.</h1>
     </div>
 
     
-    <p>Natural join is a join by identity on all common columns.</p>
+    <p>Theta join is a join on an arbitrary predicate.</p>
     
 
-    <pre class="usage"><span class='fu'>natural_join</span>(<span class='no'>a</span>, <span class='no'>b</span>, <span class='kw'>jointype</span> <span class='kw'>=</span> <span class='st'>"INNER"</span>)</pre>
+    <pre class="usage"><span class='fu'>theta_join_se</span>(<span class='no'>a</span>, <span class='no'>b</span>, <span class='no'>expr</span>, <span class='no'>...</span>, <span class='kw'>jointype</span> <span class='kw'>=</span> <span class='st'>"INNER"</span>, <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -96,14 +96,26 @@
       <td><p>source to select from.</p></td>
     </tr>
     <tr>
+      <th>expr</th>
+      <td><p>quoated join condition</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>force later arguments to be by name</p></td>
+    </tr>
+    <tr>
       <th>jointype</th>
       <td><p>type of join ('INNER', 'LEFT', 'RIGHT', 'FULL').</p></td>
+    </tr>
+    <tr>
+      <th>env</th>
+      <td><p>environment to look for values in.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>natural_join node.</p>
+    <p>theta_join node.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -112,18 +124,19 @@
 <span class='no'>d1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dbi_copy_to.html'>dbi_copy_to</a></span>(<span class='no'>my_db</span>, <span class='st'>'d1'</span>,
                  <span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>0.6</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>0.2</span>))
 <span class='no'>d2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dbi_copy_to.html'>dbi_copy_to</a></span>(<span class='no'>my_db</span>, <span class='st'>'d2'</span>,
-                 <span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>0.6</span>, <span class='kw'>D</span> <span class='kw'>=</span> <span class='fl'>0.3</span>))
-<span class='no'>eqn</span> <span class='kw'>&lt;-</span> <span class='fu'>natural_join</span>(<span class='no'>d1</span>, <span class='no'>d2</span>)
-<span class='fu'>print</span>(<span class='no'>eqn</span>)</div><div class='output co'>#&gt; [1] "dbi_table('d1') %.&gt;% natural_join(., dbi_table('d2'); INNER; by AUC)"</div><div class='input'><span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>eqn</span>)
-<span class='fu'>cat</span>(<span class='no'>sql</span>)</div><div class='output co'>#&gt; SELECT tsql_0000.*, `R2` FROM (
+                 <span class='fu'>data.frame</span>(<span class='kw'>AUC2</span> <span class='kw'>=</span> <span class='fl'>0.4</span>, <span class='kw'>D</span> <span class='kw'>=</span> <span class='fl'>0.3</span>))
+<span class='no'>eqn</span> <span class='kw'>&lt;-</span> <span class='fu'>theta_join_se</span>(<span class='no'>d1</span>, <span class='no'>d2</span>, <span class='st'>"AUC &gt;= AUC2"</span>)
+<span class='fu'>print</span>(<span class='no'>eqn</span>)</div><div class='output co'>#&gt; [1] "dbi_table('d1') %.&gt;% theta_join(., dbi_table('d2'); INNER; on AUC &gt;= AUC2)"</div><div class='input'><span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>eqn</span>)
+<span class='fu'>cat</span>(<span class='no'>sql</span>)</div><div class='output co'>#&gt; SELECT
+#&gt;  tsql_0000.*,
+#&gt;  tsql_0001.*
+#&gt; FROM (
 #&gt;  SELECT * FROM `d1`
 #&gt; ) tsql_0000
 #&gt; INNER JOIN (
 #&gt;  SELECT * FROM `d2`
-#&gt; ) tsql_0001
-#&gt; ON
-#&gt;  tsql_0000.`AUC` = tsql_0001.`AUC`</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;   AUC  R2  R2
-#&gt; 1 0.6 0.2 0.2</div><div class='input'>
+#&gt; ) tsql_0001 ON `AUC` &gt;= `AUC2`</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;   AUC  R2 AUC2   D
+#&gt; 1 0.6 0.2  0.4 0.3</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

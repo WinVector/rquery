@@ -218,7 +218,7 @@ to_sql.relop_extend <- function(x,
   if(length(x$assignments)>0) {
     windowTerm <- ""
     if((length(x$partitionby)>0) || (length(x$orderby)>0)) {
-      windowTerm <- " OVER ( "
+      windowTerm <- "OVER ( "
       if(length(x$partitionby)>0) {
         pcols <- vapply(x$partitionby,
                         function(ci) {

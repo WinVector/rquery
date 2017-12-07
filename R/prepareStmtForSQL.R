@@ -54,7 +54,9 @@ prepForSQL <- function(lexpr, colnames, db,
     }
     inlineops = c(":=", "==", "!=", ">=", "<=", "=",
                   "<", ">",
-                  "+", "-", "*", "/")
+                  "+", "-", "*", "/",
+                  "&&", "||",
+                  "&", "|")
     if((n==3) && (callName %in% inlineops)) {
       res$presentation <- paste(args[[1]]$presentation,
                                 callName,
@@ -85,11 +87,9 @@ prepForSQL <- function(lexpr, colnames, db,
       return(res)
     }
     if((n==3) && (length(lexpr[[2]]==1)) && (callName %in% inlineops)) {
-      if(callName=="==") {
-        callName <- "="
-      }
+      lhs <- args[[1]]
       rhs <- args[[2]]
-      if(callName==":=") {
+      if(callName==":=") { # assignment special case
         names(rhs$parsed) <- as.character(lexpr[[2]])
         res$parsed <- rhs$parsed
         res$symbols_used <- rhs$symbols_used
@@ -97,7 +97,13 @@ prepForSQL <- function(lexpr, colnames, db,
                                          rhs$symbols_produced))
         return(res)
       }
-      lhs <- args[[1]]
+      replacements <- list("==" = "=",
+                           "&&" = "AND",
+                           "||" = "OR")
+      replacement <- replacements[[callName]]
+      if(!is.null(replacement)) {
+        callName <- replacement
+      }
       res$parsed <- paste(lhs$parsed, callName, rhs$parsed)
       res$symbols_used = merge_fld(list(lhs, rhs),
                                    "symbols_used")
@@ -141,18 +147,18 @@ prepForSQL <- function(lexpr, colnames, db,
       res$parsed <- as.character(DBI::dbQuoteIdentifier(db, lexpr))
       return(res)
     }
-    tryCatch({
-      v <- base::get(lexpr, envir = env)
-      if(is.character(v)) {
-        res$parsed <- as.character(DBI::dbQuoteString(db, v))
-        return(res)
-      }
-      if(is.numeric(v)) {
-        res$parsed <- as.character(v)
-        return(res)
-      }
-    },
-    error = function(e) { NULL })
+    v <- base::mget(lexpr,
+                    envir = env,
+                    ifnotfound = list(NULL),
+                    inherits = TRUE)[[1]]
+    if(is.character(v)) {
+      res$parsed <- as.character(DBI::dbQuoteString(db, v))
+      return(res)
+    }
+    if(is.numeric(v)) {
+      res$parsed <- as.character(v)
+      return(res)
+    }
   }
   if(is.character(lexpr)) {
     res$parsed <- as.character(DBI::dbQuoteString(db, lexpr))

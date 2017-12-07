@@ -81,8 +81,8 @@ check_have_cols <- function(have, requested, note) {
 }
 
 
-unpack_assignments <- function(source, parsed) {
-  have <- column_names(source)
+unpack_assignments <- function(source, parsed,
+                               have = column_names(source)) {
   n <- length(parsed)
   if(n<=0) {
     stop("must generate at least 1 column")
@@ -107,7 +107,8 @@ unpack_assignments <- function(source, parsed) {
   assignments
 }
 
-parse_se <- function(source, assignments, env) {
+parse_se <- function(source, assignments, env,
+                     have = column_names(source)) {
   n <- length(assignments)
   if(n<=0) {
     stop("must generate at least 1 expression")
@@ -115,7 +116,6 @@ parse_se <- function(source, assignments, env) {
   if(n!=length(unique(names(assignments)))) {
     stop("generated column names must be unique")
   }
-  have <- column_names(source)
   db <- dbi_connection(source)
   parsed <- vector(n, mode = 'list')
   for(i in 1:n) {
@@ -131,12 +131,12 @@ parse_se <- function(source, assignments, env) {
 }
 
 
-parse_nse <- function(source, exprs, env) {
+parse_nse <- function(source, exprs, env,
+                      have = column_names(source)) {
   n <- length(exprs)
   if(n<=0) {
     stop("must have at least 1 assigment")
   }
-  have <- column_names(source)
   db <- dbi_connection(source)
   parsed <- lapply(exprs,
                    function(ei) {
