@@ -135,9 +135,9 @@ column_names.relop_theta_join <- function (x, ...) {
   }
   c1 <- column_names(x$source[[1]])
   c2 <- column_names(x$source[[2]])
-  if(length(overlap)>0) {
-    c1[c1 %in% overalap] <- paste0(c1[c1 %in% overalap], x$suffix[[1]])
-    c2[c2 %in% overalap] <- paste0(c2[c2 %in% overalap], x$suffix[[2]])
+  if(length(x$overlap)>0) {
+    c1[c1 %in% x$overlap] <- paste0(c1[c1 %in% x$overlap], x$suffix[[1]])
+    c2[c2 %in% x$overlap] <- paste0(c2[c2 %in% x$overlap], x$suffix[[2]])
   }
   c(c1, c2)
 }

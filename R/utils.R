@@ -69,6 +69,10 @@ mkTempNameGenerator <- function(prefix) {
 
 
 check_have_cols <- function(have, requested, note) {
+  if(length(have)!=length(unique(have))) {
+    stop(paste(note,"duplicate declared columns",
+               paste(diff, collapse = ", ")))
+  }
   requested <- unique(requested)
   diff <- setdiff(requested, have)
   if(length(diff)>0) {
