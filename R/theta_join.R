@@ -8,6 +8,7 @@
 #' @param expr quoated join condition
 #' @param ... force later arguments to be by name
 #' @param jointype type of join ('INNER', 'LEFT', 'RIGHT', 'FULL').
+#' @param suffix suffix to disambiguate columns
 #' @param env environment to look for values in.
 #' @return theta_join node.
 #'
@@ -17,7 +18,7 @@
 #' d1 <- dbi_copy_to(my_db, 'd1',
 #'                  data.frame(AUC = 0.6, R2 = 0.2))
 #' d2 <- dbi_copy_to(my_db, 'd2',
-#'                  data.frame(AUC2 = 0.4, D = 0.3))
+#'                  data.frame(AUC2 = 0.4, R2 = 0.3))
 #' eqn <- theta_join_se(d1, d2, "AUC >= AUC2")
 #' print(eqn)
 #' sql <- to_sql(eqn)
@@ -30,13 +31,11 @@ theta_join_se <- function(a, b,
                           expr,
                           ...,
                           jointype = 'INNER',
+                          suffix = c("_a", "_b"),
                           env = parent.frame()) {
   usesa <- column_names(a)
   usesb <- column_names(b)
   overlap = intersect(usesa, usesb)
-  if(length(overlap)>0) {
-    stop("rquery::theta_join_se does not currently support duplicate column names")
-  }
   have = unique(c(usesa, usesb))
   vnam <- setdiff(paste("rquery_thetajoin_condition",
                         1:(length(have)+1), sep = "_"),
@@ -52,7 +51,8 @@ theta_join_se <- function(a, b,
   r <- list(source = list(a, b),
             overlap = overlap,
             jointype = jointype,
-            parsed = parsed)
+            parsed = parsed,
+            suffix = suffix)
   class(r) <- "relop_theta_join"
   r
 }
@@ -67,6 +67,7 @@ theta_join_se <- function(a, b,
 #' @param expr unquoated join condition
 #' @param ... force later arguments to be by name
 #' @param jointype type of join ('INNER', 'LEFT', 'RIGHT', 'FULL').
+#' @param suffix suffix to disambiguate columns
 #' @param env environment to look for values in.
 #' @return theta_join node.
 #'
@@ -76,7 +77,7 @@ theta_join_se <- function(a, b,
 #' d1 <- dbi_copy_to(my_db, 'd1',
 #'                  data.frame(AUC = 0.6, R2 = 0.2))
 #' d2 <- dbi_copy_to(my_db, 'd2',
-#'                  data.frame(AUC2 = 0.4, D = 0.3))
+#'                  data.frame(AUC2 = 0.4, R2 = 0.3))
 #' eqn <- theta_join_nse(d1, d2, AUC >= AUC2)
 #' print(eqn)
 #' sql <- to_sql(eqn)
@@ -89,13 +90,11 @@ theta_join_nse <- function(a, b,
                           expr,
                           ...,
                           jointype = 'INNER',
+                          suffix = c("_a", "_b"),
                           env = parent.frame()) {
   usesa <- column_names(a)
   usesb <- column_names(b)
   overlap = intersect(usesa, usesb)
-  if(length(overlap)>0) {
-    stop("rquery::theta_join_se does not currently support duplicate column names")
-  }
   have = unique(c(usesa, usesb))
   vnam <- setdiff(paste("rquery_thetajoin_condition",
                         1:(length(have)+1), sep = "_"),
@@ -113,7 +112,8 @@ theta_join_nse <- function(a, b,
   r <- list(source = list(a, b),
             overlap = overlap,
             jointype = jointype,
-            parsed = parsed)
+            parsed = parsed,
+            suffix = suffix)
   class(r) <- "relop_theta_join"
   r
 }
@@ -165,6 +165,17 @@ print.relop_theta_join <- function(x, ...) {
 }
 
 
+prepColumnNames <- function(db, tabName, tabColumns, ambiguous, suffix) {
+  tabColumnsV <- DBI::dbQuoteIdentifier(db, tabColumns)
+  tabColumnsV <- paste(tabName, tabColumnsV, sep = ".")
+  tabColumnsA <- tabColumns
+  needsFix <- which(tabColumns %in% ambiguous)
+  if(length(needsFix)>0) {
+    tabColumnsA[needsFix] <- paste0(tabColumnsA[needsFix], suffix)
+  }
+  tabColumnsA <-  DBI::dbQuoteIdentifier(db, tabColumnsA)
+  paste(tabColumnsV, "AS", tabColumnsA)
+}
 
 #' @export
 to_sql.relop_theta_join <- function(x,
@@ -195,9 +206,15 @@ to_sql.relop_theta_join <- function(x,
                     }, character(1))
   }
   prefix <- paste(rep(' ', indent_level), collapse = '')
+  cseta <- prepColumnNames(db, taba, column_names(x$source[[1]]),
+                          x$overlap, x$suffix[[1]])
+  ctermsa <- paste(cseta, collapse = paste0(",\n", prefix, " "))
+  csetb <- prepColumnNames(db, tabb, column_names(x$source[[2]]),
+                          x$overlap, x$suffix[[2]])
+  ctermsb <- paste(csetb, collapse = paste0(",\n", prefix, " "))
   q <- paste0(prefix, "SELECT\n",
-              prefix, " ", taba,".*,\n",
-              prefix, " ", tabb, ".*\n",
+              prefix, " ", ctermsa, ",\n",
+              prefix, " ", ctermsb, "\n",
               prefix, "FROM (\n",
               subsqla, "\n",
               prefix, ") ",
