@@ -79,6 +79,8 @@
 <code>theta_join()</code>. This is the relational join operator, insisting on distinct columns but allowing an arbitrary matching condition. The next operator to add would definitely be <code>theta-join</code> as that adds a lot more expressiveness to the grammar.</li>
 <li>
 <code>select_rows()</code>. This is Codd’s relational row selection. Obviously <code>select</code> alone is an over-used and now ambiguous term (it is the “doit” verb in <code>SQL</code> and the <em>column</em> selector in <code>dplyr</code>).</li>
+<li>
+<code><a href="reference/rename_columns.html">rename_columns()</a></code>. This operator renames sets of columns.</li>
 </ul>
 <p>The primary non-relational (traditional <code>SQL</code>) operators are:</p>
 <ul>
@@ -89,15 +91,15 @@
 </ul>
 <p>The primary missing relational operators are:</p>
 <ul>
-<li>Direct rename.</li>
 <li>Union.</li>
 <li>Direct set difference, anti-join.</li>
-<li>Theta-join.</li>
 <li>Division.</li>
 </ul>
 <p>Primary useful missing operators:</p>
 <ul>
 <li>Deselect columns.</li>
+<li><a href="https://winvector.github.io/seplyr/reference/partition_mutate_qt.html"><code>seplyr::partition_mutate()</code></a></li>
+<li><a href="https://winvector.github.io/seplyr/reference/if_else_device.html"><code><a href="http://www.rdocumentation.org/packages/seplyr/topics/if_else_device">seplyr::if_else_device()</a></code></a></li>
 </ul>
 <p>A great benefit of Codd’s relational algebra is it decomposes data transformations into a sequence of operators. <code>SQL</code> loses a lot of the original invariants, and over-specifies how operations are strung together and insisting on a nesting function notation. <code>SQL</code> also realizes some of the Codd concepts as operators, some as expressions, and some as predicates (obscuring the uniformity of the original theory).</p>
 <p>A lot of the grace of the Codd theory can be recovered through the usual trick changing function composition notation from <code>g(f(x))</code> as <code>x . f() . g()</code>. This is the other inspiration for this experiment: “what if <code>SQL</code> were piped?” (wrote composition as a left to right flow, instead of right to left nesting).</p>
@@ -228,7 +230,9 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw"><a href="reference/to_sql.html">to_sql</a></span>(dq))</code></pre></div>
 <pre><code>SELECT * FROM (
  SELECT
-  `subjectID`, `diagnosis`, `probability`
+  `subjectID`,
+  `diagnosis`,
+  `probability`
  FROM (
   SELECT * FROM (
    SELECT

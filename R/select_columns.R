@@ -87,7 +87,7 @@ to_sql.relop_select_columns <- function(x,
   tab <- tnum()
   prefix <- paste(rep(' ', indent_level), collapse = '')
   q <- paste0(prefix, "SELECT\n",
-         prefix, " ", paste(cols, collapse = ", "), "\n",
+         prefix, " ", paste(cols, collapse = paste0(",\n", prefix, " ")), "\n",
          prefix, "FROM (\n",
          subsql, "\n",
          prefix, ") ",

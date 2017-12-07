@@ -25,6 +25,7 @@ The primary relational operators are:
 -   `natural_join()`. This a specialized relational join operator, using all common columns as the equi-join condition. The next operator to add would definitely be `theta-join` as that adds a lot more expressiveness to the grammar.
 -   `theta_join()`. This is the relational join operator, insisting on distinct columns but allowing an arbitrary matching condition. The next operator to add would definitely be `theta-join` as that adds a lot more expressiveness to the grammar.
 -   `select_rows()`. This is Codd's relational row selection. Obviously `select` alone is an over-used and now ambiguous term (it is the "doit" verb in `SQL` and the *column* selector in `dplyr`).
+-   `rename_columns()`. This operator renames sets of columns.
 
 The primary non-relational (traditional `SQL`) operators are:
 
@@ -33,15 +34,15 @@ The primary non-relational (traditional `SQL`) operators are:
 
 The primary missing relational operators are:
 
--   Direct rename.
 -   Union.
 -   Direct set difference, anti-join.
--   Theta-join.
 -   Division.
 
 Primary useful missing operators:
 
 -   Deselect columns.
+-   [`seplyr::partition_mutate()`](https://winvector.github.io/seplyr/reference/partition_mutate_qt.html)
+-   [`seplyr::if_else_device()`](https://winvector.github.io/seplyr/reference/if_else_device.html)
 
 A great benefit of Codd's relational algebra is it decomposes data transformations into a sequence of operators. `SQL` loses a lot of the original invariants, and over-specifies how operations are strung together and insisting on a nesting function notation. `SQL` also realizes some of the Codd concepts as operators, some as expressions, and some as predicates (obscuring the uniformity of the original theory).
 
@@ -166,7 +167,9 @@ cat(to_sql(dq))
 
     SELECT * FROM (
      SELECT
-      `subjectID`, `diagnosis`, `probability`
+      `subjectID`,
+      `diagnosis`,
+      `probability`
      FROM (
       SELECT * FROM (
        SELECT
