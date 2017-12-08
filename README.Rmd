@@ -6,9 +6,9 @@ date: "2017-12-07"
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-`rquery` is a experiment/demonstration of a simplified sequenced query language based on [Codd's relational algebra](https://en.wikipedia.org/wiki/Relational_algebra) and not currently recommended for non-experimental use.  The goal of this experiment is to see if `SQL` would be more fun if it had a sequential data-flow or pipe notation.
+[`rquery`](https://johnmount.github.io/rquery/) is an experiment/demonstration of a simplified sequenced query language based on [Codd's relational algebra](https://en.wikipedia.org/wiki/Relational_algebra) and not currently recommended for non-experimental (i.e., production) use.  The goal of this experiment is to see if `SQL` would be more fun if it had a sequential data-flow or pipe notation.
 
-`rquery` is not for production use, but can be an excellent advanced `SQL`
+[`rquery`](https://github.com/JohnMount/rquery) can be an excellent advanced `SQL`
 training tool (it shows how some very deep `SQL` by composing `rquery` operators).  Currently `rquery` is biased towards `PostgeSQL` `SQL`.
 
 There are many prior relational algebra inspired specialized query languages.  Just a few include:

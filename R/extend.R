@@ -77,6 +77,10 @@ extend_impl_list <- function(source, parsed,
 
 #' Extend data by adding more columns.
 #'
+#' Create a node similar to a Codd extend relational operator (add derived columns).
+#'
+#' Allows re-use of column names in the spirit of \code{\link[seplyr]{partition_mutate_se}},
+#' though re-use can break relational property.
 #' partitionby and orderby can only be used with a database that supports window-functions
 #' (such as PostgreSQL).
 #'
@@ -129,9 +133,12 @@ extend_se <- function(source, assignments,
 
 #' Extend data by adding more columns.
 #'
+#' Create a node similar to a Codd extend relational operator (add derived columns).
+#'
+#' Allows re-use of column names in the spirit of \code{\link[seplyr]{partition_mutate_qt}},
+#' though re-use can break relational property.
 #' partitionby and orderby can only be used with a database that supports window-functions
-#' (such as PostgreSQL). Note: not sure about string
-#' constants at this point.
+#' (such as PostgreSQL).
 #'
 #' @param source source to select from.
 #' @param ... new column assignment expressions.
