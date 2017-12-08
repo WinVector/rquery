@@ -79,7 +79,18 @@
     </div>
 
     
-    <p>Note: nesting does not work with RSQlite.</p>
+    <p>This device uses expression-<code>ifelse(,,)</code> to simulate the
+more powerful per-row block-<code>if(){}else{}</code>.  The difference is
+expression-<code>ifelse(,,)</code> can choose per-row what value to express,
+whereas block-<code>if(){}else{}</code> can choose per-row where to assign multiple
+values. By simulation we mean: a sequence of quoted mutate expressions
+are emitted that implement the transform.  These expressions can then
+be optimized into a minimal number of no-dependency
+blocks by <code><a href='extend_se.html'>extend_se</a></code> for efficient execution.
+The idea is the user can write legible code in this notation, and
+the translation turns it into safe and efficient code suitable for
+execution either on <code>data.frame</code>s or at a big data scale using
+<code>RPostgreSQL</code> or <code>sparklyr</code>.</p>
     
 
     <pre class="usage"><span class='fu'>if_else_block</span>(<span class='no'>testexpr</span>, <span class='kw'>thenexprs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>elseexprs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
@@ -103,25 +114,14 @@
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>This device uses expression-<code>ifelse(,,)</code> to simulate the
-more powerful per-row block-<code>if(){}else{}</code>.  The difference is
-expression-<code>ifelse(,,)</code> can choose per-row what value to express,
-whereas block-<code>if(){}else{}</code> can choose per-row where to assign multiple
-values. By simulation we mean: a sequence of quoted mutate expressions
-are emitted that implement the transform.  These expressions can then
-be optimized into a minimal number of no-dependency
-blocks by <code><a href='extend_se.html'>extend_se</a></code> for efficient execution.
-The idea is the user can write legible code in this notation, and
-the translation turns it into safe and efficient code suitable for
-execution either on <code>data.frame</code>s or at a big data scale using
-<code>RPostgreSQL</code> or <code>sparklyr</code>.</p>
-<p>Note: <code>ifebtest_*</code>
+    <p>Note: <code>ifebtest_*</code>
 is a reserved column name for this procedure.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
 <span class='co'># Example: clear one of a or b in any row where both are set.</span>
+<span class='co'># Land random selections early to avoid SQLite bug.</span>
 <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
 <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dbi_copy_to.html'>dbi_copy_to</a></span>(
   <span class='no'>my_db</span>,
@@ -129,6 +129,7 @@ is a reserved column name for this procedure.</p>
   <span class='fu'>data.frame</span>(<span class='kw'>i</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>3</span>, <span class='fl'>4</span>, <span class='fl'>5</span>, <span class='fl'>6</span>, <span class='fl'>7</span>, <span class='fl'>8</span>, <span class='fl'>9</span>, <span class='fl'>10</span>),
              <span class='kw'>a</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>0</span>, <span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>),
              <span class='kw'>b</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>),
+             <span class='kw'>r</span> <span class='kw'>=</span> <span class='fu'>runif</span>(<span class='fl'>10</span>),
              <span class='kw'>edited</span> <span class='kw'>=</span> <span class='fl'>0</span>),
   <span class='kw'>temporary</span><span class='kw'>=</span><span class='fl'>TRUE</span>, <span class='kw'>overwrite</span><span class='kw'>=</span><span class='fl'>TRUE</span>)
 
@@ -136,7 +137,7 @@ is a reserved column name for this procedure.</p>
   <span class='kw'>testexpr</span> <span class='kw'>=</span> <span class='fu'>qe</span>((<span class='no'>a</span>+<span class='no'>b</span>)<span class='kw'>&gt;</span><span class='fl'>1</span>),
   <span class='kw'>thenexprs</span> <span class='kw'>=</span> <span class='fu'>c</span>(
     <span class='fu'>if_else_block</span>(
-      <span class='kw'>testexpr</span> <span class='kw'>=</span> <span class='fu'>qe</span>(<span class='fu'>random</span>() <span class='kw'>&gt;=</span> <span class='fl'>0.5</span>),
+      <span class='kw'>testexpr</span> <span class='kw'>=</span> <span class='fu'>qe</span>(<span class='no'>r</span> <span class='kw'>&gt;=</span> <span class='fl'>0.5</span>),
       <span class='kw'>thenexprs</span> <span class='kw'>=</span> <span class='fu'>qae</span>(<span class='no'>a</span> <span class='kw'>:=</span> <span class='fl'>0</span>),
       <span class='kw'>elseexprs</span> <span class='kw'>=</span> <span class='fu'>qae</span>(<span class='no'>b</span> <span class='kw'>:=</span> <span class='fl'>0</span>)),
     <span class='fu'>qae</span>(<span class='no'>edited</span> <span class='kw'>:=</span> <span class='fl'>1</span>)))
@@ -144,7 +145,7 @@ is a reserved column name for this procedure.</p>
 #&gt; [1] "(a + b) &gt; 1"
 #&gt; 
 #&gt; $ifebtest_1
-#&gt; [1] "random() &gt;= 0.5"
+#&gt; [1] "r &gt;= 0.5"
 #&gt; 
 #&gt; $a
 #&gt; [1] "ifelse( ifebtest_2, ifelse( ifebtest_1, 0, a), a)"
@@ -157,11 +158,12 @@ is a reserved column name for this procedure.</p>
 #&gt; </div><div class='input'>
 <span class='no'>trf</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='extend_se.html'>extend_se</a></span>(<span class='no'>d</span>, <span class='no'>program</span>)
 <span class='fu'>cat</span>(<span class='fu'>gsub</span>(<span class='st'>"%.&gt;%"</span>, <span class='st'>"%.&gt;%\n   "</span>, <span class='fu'>format</span>(<span class='no'>trf</span>), <span class='kw'>fixed</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>))</div><div class='output co'>#&gt; dbi_table('d') %.&gt;%
-#&gt;     extend(., ifebtest_2 := ( a + b ) &gt; 1, ifebtest_1 := random() &gt;= 0.5) %.&gt;%
+#&gt;     extend(., ifebtest_2 := ( a + b ) &gt; 1, ifebtest_1 := r &gt;= 0.5) %.&gt;%
 #&gt;     extend(., a := ifelse(ifebtest_2, ifelse(ifebtest_1, 0, a), a), b := ifelse(ifebtest_2, ifelse(!( ifebtest_1 ), 0, b), b), edited := ifelse(ifebtest_2, 1, edited))</div><div class='input'>
 <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>trf</span>)
 <span class='fu'>cat</span>(<span class='no'>sql</span>)</div><div class='output co'>#&gt; SELECT
 #&gt;  `i`,
+#&gt;  `r`,
 #&gt;  `ifebtest_2`,
 #&gt;  `ifebtest_1`,
 #&gt;  ( CASE WHEN `ifebtest_2` THEN ( CASE WHEN `ifebtest_1` THEN 0 ELSE `a` END ) ELSE `a` END )  AS `a`,
@@ -172,24 +174,38 @@ is a reserved column name for this procedure.</p>
 #&gt;   `i`,
 #&gt;   `a`,
 #&gt;   `b`,
+#&gt;   `r`,
 #&gt;   `edited`,
 #&gt;   ( `a` + `b` ) &gt; 1  AS `ifebtest_2`,
-#&gt;   random() &gt;= 0.5  AS `ifebtest_1`
+#&gt;   `r` &gt;= 0.5  AS `ifebtest_1`
 #&gt;  FROM (
 #&gt;   SELECT * FROM `d`
 #&gt;  ) tsql_0000
 #&gt; ) tsql_0001</div><div class='input'>
-<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;     i ifebtest_2 ifebtest_1 a b edited
-#&gt; 1   1          0          1 0 0      0
-#&gt; 2   2          0          1 0 1      0
-#&gt; 3   3          0          1 1 0      0
-#&gt; 4   4          1          0 1 1      1
-#&gt; 5   5          1          0 1 0      1
-#&gt; 6   6          1          0 0 1      1
-#&gt; 7   7          1          1 1 1      1
-#&gt; 8   8          1          1 0 0      1
-#&gt; 9   9          1          1 0 0      1
-#&gt; 10 10          1          0 0 0      1</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)</div></pre>
+<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;     i           r ifebtest_2 ifebtest_1 a b edited
+#&gt; 1   1 0.080750138          0          0 0 0      0
+#&gt; 2   2 0.834333037          0          1 0 1      0
+#&gt; 3   3 0.600760886          0          1 1 0      0
+#&gt; 4   4 0.157208442          1          0 1 0      1
+#&gt; 5   5 0.007399441          1          0 1 0      1
+#&gt; 6   6 0.466393497          1          0 1 0      1
+#&gt; 7   7 0.497777389          1          0 1 0      1
+#&gt; 8   8 0.289767245          1          0 1 0      1
+#&gt; 9   9 0.732881987          1          1 0 1      1
+#&gt; 10 10 0.772521511          1          1 0 1      1</div><div class='input'>
+ <span class='co'># Why we need to land the random selection early</span>
+ <span class='co'># for SQLIte:</span>
+ <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(),
+                         <span class='st'>":memory:"</span>)
+ <span class='no'>q</span> <span class='kw'>&lt;-</span> <span class='st'>"SELECT r AS r1, r AS r2 FROM (
+          SELECT random() AS r FROM (
+             SELECT * from ( VALUES(1),(2) )
+          ) a
+       ) b"</span>
+ <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>q</span>)</div><div class='output co'>#&gt;                     r1                   r2
+#&gt; 1  6156230680775266411 -8130188052456172079
+#&gt; 2 -5502009785830174119  3531324517102102847</div><div class='input'>
+<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

@@ -2,7 +2,6 @@
 
 #' Simulate a per-row block-\code{if(){}else{}}.
 #'
-#' Note: nesting does not work with RSQlite.
 #'
 #' This device uses expression-\code{ifelse(,,)} to simulate the
 #' more powerful per-row block-\code{if(){}else{}}.  The difference is
@@ -27,6 +26,7 @@
 #' @examples
 #'
 #' # Example: clear one of a or b in any row where both are set.
+#' # Land random selections early to avoid SQLite bug.
 #' my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #' d <- dbi_copy_to(
 #'   my_db,
@@ -34,6 +34,7 @@
 #'   data.frame(i = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
 #'              a = c(0, 0, 1, 1, 1, 1, 1, 1, 1, 1),
 #'              b = c(0, 1, 0, 1, 1, 1, 1, 1, 1, 1),
+#'              r = runif(10),
 #'              edited = 0),
 #'   temporary=TRUE, overwrite=TRUE)
 #'
@@ -41,7 +42,7 @@
 #'   testexpr = qe((a+b)>1),
 #'   thenexprs = c(
 #'     if_else_block(
-#'       testexpr = qe(random() >= 0.5),
+#'       testexpr = qe(r >= 0.5),
 #'       thenexprs = qae(a := 0),
 #'       elseexprs = qae(b := 0)),
 #'     qae(edited := 1)))
@@ -54,6 +55,18 @@
 #' cat(sql)
 #'
 #' DBI::dbGetQuery(my_db, sql)
+#'
+#'  # Why we need to land the random selection early
+#'  # for SQLIte:
+#'  my_db <- DBI::dbConnect(RSQLite::SQLite(),
+#'                          ":memory:")
+#'  q <- "SELECT r AS r1, r AS r2 FROM (
+#'           SELECT random() AS r FROM (
+#'              SELECT * from ( VALUES(1),(2) )
+#'           ) a
+#'        ) b"
+#'  DBI::dbGetQuery(my_db, q)
+#'
 #' DBI::dbDisconnect(my_db)
 #'
 #'
