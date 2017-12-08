@@ -22,7 +22,7 @@ merge_fld <- function(reslist, field) {
 prepForSQL <- function(lexpr, colnames, db,
                        env = parent.frame()) {
   n <- length(lexpr)
-  res <- list(presentation = as.character(lexpr),
+  res <- list(presentation = paste(as.character(lexpr), collapse = ' '),
               parsed = "",
               symbols_used = character(0),
               symbols_produced = character(0))
@@ -38,6 +38,24 @@ prepForSQL <- function(lexpr, colnames, db,
   # special cases
   if(is.call(lexpr)) {
     callName <- as.character(lexpr[[1]])
+    if(callName=="(") {
+      sres <- prepForSQL(lexpr[[2]],
+                         colnames = colnames,
+                         db = db,
+                         env = env)
+      sres$presentation <- paste("(", sres$presentation, ")")
+      sres$parsed <- paste("(", sres$parsed, ")")
+      return(sres)
+    }
+    if(callName=="!") {
+      sres <- prepForSQL(lexpr[[2]],
+                         colnames = colnames,
+                         db = db,
+                         env = env)
+      sres$presentation <- paste("!(", sres$presentation, ")")
+      sres$parsed <- paste("( NOT ( ", sres$parsed, "))")
+      return(sres)
+    }
     args <- list()
     if(n>=2) {
       args <- lapply(2:n,
