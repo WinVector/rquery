@@ -14,6 +14,12 @@ project_impl <- function(source, groupby, parsed) {
   have <- column_names(source)
   check_have_cols(have, groupby, "rquery::project groupby")
   assignments <- unpack_assignments(source, parsed)
+  producing <- names(assignments)
+  overlap <- intersect(have, producing)
+  if(length(overlap)>0) {
+    stop(paste("rquery:::project_impl produced columns must be disjoint from incoming table: ",
+               paste(overlap, collapse = ", ")))
+  }
   r <- list(source = list(source),
             groupby = groupby,
             columns = c(groupby, names(assignments)),

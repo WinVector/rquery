@@ -79,7 +79,7 @@
     </div>
 
     
-    <p>NOT WORKING YET (FINDING BUGS ELSEWHERE).</p>
+    <p>Note: nesting does not work with RSQlite.</p>
     
 
     <pre class="usage"><span class='fu'>if_else_block</span>(<span class='no'>testexpr</span>, <span class='kw'>thenexprs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>elseexprs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
@@ -126,9 +126,11 @@ is a reserved column name for this procedure.</p>
 <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dbi_copy_to.html'>dbi_copy_to</a></span>(
   <span class='no'>my_db</span>,
   <span class='st'>'d'</span>,
-  <span class='fu'>data.frame</span>(<span class='kw'>a</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>0</span>, <span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>),
+  <span class='fu'>data.frame</span>(<span class='kw'>i</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>3</span>, <span class='fl'>4</span>, <span class='fl'>5</span>, <span class='fl'>6</span>, <span class='fl'>7</span>, <span class='fl'>8</span>, <span class='fl'>9</span>, <span class='fl'>10</span>),
+             <span class='kw'>a</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>0</span>, <span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>),
              <span class='kw'>b</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>),
-             <span class='kw'>edited</span> <span class='kw'>=</span> <span class='fl'>0</span>))
+             <span class='kw'>edited</span> <span class='kw'>=</span> <span class='fl'>0</span>),
+  <span class='kw'>temporary</span><span class='kw'>=</span><span class='fl'>TRUE</span>, <span class='kw'>overwrite</span><span class='kw'>=</span><span class='fl'>TRUE</span>)
 
 <span class='no'>program</span> <span class='kw'>&lt;-</span> <span class='fu'>if_else_block</span>(
   <span class='kw'>testexpr</span> <span class='kw'>=</span> <span class='fu'>qe</span>((<span class='no'>a</span>+<span class='no'>b</span>)<span class='kw'>&gt;</span><span class='fl'>1</span>),
@@ -159,16 +161,15 @@ is a reserved column name for this procedure.</p>
 #&gt;     extend(., a := ifelse(ifebtest_2, ifelse(ifebtest_1, 0, a), a), b := ifelse(ifebtest_2, ifelse(!( ifebtest_1 ), 0, b), b), edited := ifelse(ifebtest_2, 1, edited))</div><div class='input'>
 <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>trf</span>)
 <span class='fu'>cat</span>(<span class='no'>sql</span>)</div><div class='output co'>#&gt; SELECT
-#&gt;  `a`,
-#&gt;  `b`,
-#&gt;  `edited`,
+#&gt;  `i`,
 #&gt;  `ifebtest_2`,
 #&gt;  `ifebtest_1`,
-#&gt;  CASE WHEN `ifebtest_2` THEN CASE WHEN `ifebtest_1` THEN 0 ELSE `a` END ELSE `a` END  AS `a`,
-#&gt;  CASE WHEN `ifebtest_2` THEN CASE WHEN ( NOT (  `ifebtest_1` )) THEN 0 ELSE `b` END ELSE `b` END  AS `b`,
-#&gt;  CASE WHEN `ifebtest_2` THEN 1 ELSE `edited` END  AS `edited`
+#&gt;  ( CASE WHEN `ifebtest_2` THEN ( CASE WHEN `ifebtest_1` THEN 0 ELSE `a` END ) ELSE `a` END )  AS `a`,
+#&gt;  ( CASE WHEN `ifebtest_2` THEN ( CASE WHEN ( NOT (  `ifebtest_1` )) THEN 0 ELSE `b` END ) ELSE `b` END )  AS `b`,
+#&gt;  ( CASE WHEN `ifebtest_2` THEN 1 ELSE `edited` END )  AS `edited`
 #&gt; FROM (
 #&gt;  SELECT
+#&gt;   `i`,
 #&gt;   `a`,
 #&gt;   `b`,
 #&gt;   `edited`,
@@ -178,19 +179,17 @@ is a reserved column name for this procedure.</p>
 #&gt;   SELECT * FROM `d`
 #&gt;  ) tsql_0000
 #&gt; ) tsql_0001</div><div class='input'>
-<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;    a b edited ifebtest_2 ifebtest_1 a b edited
-#&gt; 1  0 0      0          0          1 0 0      0
-#&gt; 2  0 1      0          0          0 0 1      0
-#&gt; 3  1 0      0          0          0 1 0      0
-#&gt; 4  1 1      0          1          1 0 0      1
-#&gt; 5  1 1      0          1          0 1 0      1
-#&gt; 6  1 1      0          1          0 1 1      1
-#&gt; 7  1 1      0          1          0 1 1      1
-#&gt; 8  1 1      0          1          1 1 0      1
-#&gt; 9  1 1      0          1          0 0 0      1
-#&gt; 10 1 1      0          1          0 0 1      1</div><div class='input'>
-
-</div></pre>
+<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;     i ifebtest_2 ifebtest_1 a b edited
+#&gt; 1   1          0          1 0 0      0
+#&gt; 2   2          0          1 0 1      0
+#&gt; 3   3          0          1 1 0      0
+#&gt; 4   4          1          0 1 1      1
+#&gt; 5   5          1          0 1 0      1
+#&gt; 6   6          1          0 0 1      1
+#&gt; 7   7          1          1 1 1      1
+#&gt; 8   8          1          1 0 0      1
+#&gt; 9   9          1          1 0 0      1
+#&gt; 10 10          1          0 0 0      1</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

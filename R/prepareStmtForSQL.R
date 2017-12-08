@@ -95,13 +95,13 @@ prepForSQL <- function(lexpr, colnames, db,
                                    "symbols_used")
       res$symbols_produced = merge_fld(args,
                                        "symbols_produced")
-      res$parsed <- paste0("CASE WHEN ",
+      res$parsed <- paste0("( CASE WHEN ",
                            args[[1]]$parsed,
                            " THEN ",
                            args[[2]]$parsed,
                            " ELSE ",
                            args[[3]]$parsed,
-                           " END")
+                           " END )")
       return(res)
     }
     if((n==3) && (length(lexpr[[2]]==1)) && (callName %in% inlineops)) {

@@ -2,7 +2,7 @@
 
 #' Simulate a per-row block-\code{if(){}else{}}.
 #'
-#' NOT WORKING YET (FINDING BUGS ELSEWHERE).
+#' Note: nesting does not work with RSQlite.
 #'
 #' This device uses expression-\code{ifelse(,,)} to simulate the
 #' more powerful per-row block-\code{if(){}else{}}.  The difference is
@@ -31,9 +31,11 @@
 #' d <- dbi_copy_to(
 #'   my_db,
 #'   'd',
-#'   data.frame(a = c(0, 0, 1, 1, 1, 1, 1, 1, 1, 1),
+#'   data.frame(i = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+#'              a = c(0, 0, 1, 1, 1, 1, 1, 1, 1, 1),
 #'              b = c(0, 1, 0, 1, 1, 1, 1, 1, 1, 1),
-#'              edited = 0))
+#'              edited = 0),
+#'   temporary=TRUE, overwrite=TRUE)
 #'
 #' program <- if_else_block(
 #'   testexpr = qe((a+b)>1),
@@ -52,6 +54,7 @@
 #' cat(sql)
 #'
 #' DBI::dbGetQuery(my_db, sql)
+#' DBI::dbDisconnect(my_db)
 #'
 #'
 #' @export

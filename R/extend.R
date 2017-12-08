@@ -239,6 +239,7 @@ to_sql.relop_extend <- function(x,
   }
   db <- dbi_connection(x)
   cols1 <- column_names(x$source[[1]])
+  cols1 <- setdiff(cols1, names(x$assignments)) # allow simple name re-use
   cols <- NULL
   if(length(cols1)>0) {
     cols <- vapply(cols1,
