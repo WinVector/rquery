@@ -128,6 +128,7 @@ parse_se <- function(source, assignments, env,
                               colnames = have,
                               db = db,
                               env = env)
+    have <- unique(c(have, parsed[[i]]$symbols_produced))
   }
   parsed
 }
@@ -140,13 +141,14 @@ parse_nse <- function(source, exprs, env,
     stop("must have at least 1 assigment")
   }
   db <- dbi_connection(source)
-  parsed <- lapply(exprs,
-                   function(ei) {
-                     prepForSQL(ei,
-                                colnames = have,
-                                db = db,
-                                env = env)
-                   })
+  parsed <- vector(n, mode = 'list')
+  for(i in 1:n) {
+    parsed[[i]] <- prepForSQL(exprs[[i]],
+                              colnames = have,
+                              db = db,
+                              env = env)
+    have <- unique(c(have, parsed[[i]]$symbols_produced))
+  }
   parsed
 }
 

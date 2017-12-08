@@ -40,6 +40,39 @@ extend_impl <- function(source, parsed,
   r
 }
 
+#' Extend data by adding more columns list mode (can create multiple nodes)
+#'
+#' partitionby and orderby can only be used with a database that supports window-functions
+#' (such as PostgreSQL).
+#'
+#' @param source source to select from.
+#' @param parsed parsed assignment expressions.
+#' @param ... force later arguments to bind by name
+#' @param partitionby partitioning (window function) terms.
+#' @param orderby ordering (window function) terms.
+#' @param desc reverse order
+#' @return extend node.
+#'
+#'
+#' @noRd
+#'
+extend_impl_list <- function(source, parsed,
+                             ...,
+                             partitionby = NULL,
+                             orderby = NULL,
+                             desc = FALSE) {
+  parts <- partition_assignments(parsed)
+  ndchain <- source
+  for(parti in parts) {
+    parsedi <- parti$parsed[seq_len(nrow(parti))]
+    ndchain <- extend_impl(ndchain, parsedi,
+                           partitionby = partitionby,
+                           orderby = orderby,
+                           desc = desc)
+  }
+  ndchain
+}
+
 
 
 #' Extend data by adding more columns.
@@ -61,7 +94,7 @@ extend_impl <- function(source, parsed,
 #' my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #' d <- dbi_copy_to(my_db, 'd',
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
-#' eqn <- extend_se(d, c("v" := "AUC + R2", "x" := "max(AUC,R2)"))
+#' eqn <- extend_se(d, c("v" := "AUC + R2", "x" := "max(AUC,v)"))
 #' print(eqn)
 #' sql <- to_sql(eqn)
 #' cat(sql)
@@ -85,7 +118,7 @@ extend_se <- function(source, assignments,
     stop("unexpected arguemnts")
   }
   parsed <- parse_se(source, assignments, env = env)
-  extend_impl(source = source,
+  extend_impl_list(source = source,
               parsed = parsed,
               partitionby = partitionby,
               orderby = orderby,
@@ -130,7 +163,7 @@ extend_nse <- function(source,
                    env = parent.frame()) {
   exprs <-  eval(substitute(alist(...)))
   parsed <- parse_nse(source, exprs, env = env)
-  extend_impl(source = source,
+  extend_impl_list(source = source,
               parsed = parsed,
               partitionby = partitionby,
               orderby = orderby,
