@@ -1,17 +1,4 @@
 
-listFields <- function(my_db, tableName) {
-  # fails intermitnently, and sometimes gives wrong results
-  # filed as: https://github.com/tidyverse/dplyr/issues/3204
-  # tryCatch(
-  #   return(DBI::dbListFields(my_db, tableName)),
-  #   error = function(e) { NULL })
-  # below is going to have issues to to R-column name conversion!
-  q <- paste0("SELECT * FROM ",
-              DBI::dbQuoteIdentifier(my_db, tableName),
-              " LIMIT 1")
-  v <- DBI::dbGetQuery(my_db, q)
-  colnames(v)
-}
 
 
 #' Produce a temp name generator with a given prefix.
@@ -118,7 +105,6 @@ parse_se <- function(source, assignments, env,
   if(n!=length(unique(names(assignments)))) {
     stop("generated column names must be unique")
   }
-  db <- dbi_connection(source)
   parsed <- vector(n, mode = 'list')
   for(i in 1:n) {
     ni <- names(assignments)[[i]]
@@ -126,7 +112,7 @@ parse_se <- function(source, assignments, env,
     ei <- parse(text = paste(ni, ":=", ai))[[1]]
     parsed[[i]] <- prepForSQL(ei,
                               colnames = have,
-                              db = db,
+                              node = source,
                               env = env)
     have <- unique(c(have, parsed[[i]]$symbols_produced))
   }
@@ -140,12 +126,11 @@ parse_nse <- function(source, exprs, env,
   if(n<=0) {
     stop("must have at least 1 assigment")
   }
-  db <- dbi_connection(source)
   parsed <- vector(n, mode = 'list')
   for(i in 1:n) {
     parsed[[i]] <- prepForSQL(exprs[[i]],
                               colnames = have,
-                              db = db,
+                              node = source,
                               env = env)
     have <- unique(c(have, parsed[[i]]$symbols_produced))
   }

@@ -3,19 +3,31 @@
 # in addition to methods below, our nodes implement: format() and print().
 
 
-#' Return DBI connection.
+#' Quote an idnetifier.
 #'
 #' @param x rquery operation tree.
-#' @param ... generic additional arguments
-#' @return DBI handle
+#' @param id character to quote
+#' @param ... generic additional arguments (not used)
+#' @return quoted identifier
 #'
 #' @export
 #'
-dbi_connection <- function (x, ...) {
-  UseMethod("dbi_connection", x)
+quote_identifier <- function (x, id, ...) {
+  UseMethod("quote_identifier", x)
 }
 
-
+#' Quote a string
+#'
+#' @param x rquery operation tree.
+#' @param s character to quote
+#' @param ... generic additional arguments (not used)
+#' @return quoted string
+#'
+#' @export
+#'
+quote_string <- function (x, s, ...) {
+  UseMethod("quote_string", x)
+}
 
 #' Return column names
 #'

@@ -58,8 +58,6 @@
 #'
 #'  # Why we need to land the random selection early
 #'  # for SQLIte:
-#'  my_db <- DBI::dbConnect(RSQLite::SQLite(),
-#'                          ":memory:")
 #'  q <- "SELECT r AS r1, r AS r2 FROM (
 #'           SELECT random() AS r FROM (
 #'              SELECT * from ( VALUES(1),(2) )

@@ -15,6 +15,7 @@
 #' sql <- to_sql(eqn)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
+#' DBI::dbDisconnect(my_db)
 #'
 #' @export
 #'
@@ -37,13 +38,20 @@ rename_columns <- function(source, cmap) {
 
 
 #' @export
-dbi_connection.relop_rename_columns <- function (x, ...) {
+quote_identifier.relop_rename_columns <- function (x, id, ...) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
-  dbi_connection(x$source[[1]])
+  quote_identifier(x$source[[1]], id)
 }
 
+#' @export
+quote_string.relop_rename_columns <- function (x, s, ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
+  quote_string(x$source[[1]], s)
+}
 
 #' @export
 column_names.relop_rename_columns <- function (x, ...) {
@@ -95,14 +103,13 @@ to_sql.relop_rename_columns <- function(x,
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
-  db <- dbi_connection(x)
   colsV <- vapply(column_names(x$source[[1]]),
                   function(ci) {
-                    DBI::dbQuoteIdentifier(db, ci)
+                    quote_identifier(x, ci)
                   }, character(1))
   colsA <- vapply(column_names(x),
                   function(ci) {
-                    DBI::dbQuoteIdentifier(db, ci)
+                    quote_identifier(x, ci)
                   }, character(1))
   cols <- paste(colsV, "AS", colsA)
   subsql <- to_sql(x$source[[1]],

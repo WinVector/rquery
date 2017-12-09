@@ -110,6 +110,8 @@ extend_impl_list <- function(source, parsed,
 #' sql2 <- to_sql(eqn2)
 #' cat(sql2)
 #'
+#' DBI::dbDisconnect(my_db)
+#'
 #' @export
 #'
 extend_se <- function(source, assignments,
@@ -158,7 +160,7 @@ extend_se <- function(source, assignments,
 #' sql <- to_sql(eqn)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
-#'
+#' DBI::dbDisconnect(my_db)
 #'
 #' @export
 #'
@@ -179,13 +181,20 @@ extend_nse <- function(source,
 
 
 #' @export
-dbi_connection.relop_extend <- function (x, ...) {
+quote_identifier.relop_extend <- function (x, id, ...) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
-  dbi_connection(x$source[[1]])
+  quote_identifier(x$source[[1]], id)
 }
 
+#' @export
+quote_string.relop_extend <- function (x, s, ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
+  quote_string(x$source[[1]], s)
+}
 
 #' @export
 column_names.relop_extend <- function (x, ...) {
@@ -244,14 +253,13 @@ to_sql.relop_extend <- function(x,
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
-  db <- dbi_connection(x)
   cols1 <- column_names(x$source[[1]])
   cols1 <- setdiff(cols1, names(x$assignments)) # allow simple name re-use
   cols <- NULL
   if(length(cols1)>0) {
     cols <- vapply(cols1,
                    function(ci) {
-                     DBI::dbQuoteIdentifier(db, ci)
+                     quote_identifier(x, ci)
                    }, character(1))
   }
   prefix <- paste(rep(' ', indent_level), collapse = '')
@@ -263,7 +271,7 @@ to_sql.relop_extend <- function(x,
       if(length(x$partitionby)>0) {
         pcols <- vapply(x$partitionby,
                         function(ci) {
-                          DBI::dbQuoteIdentifier(db, ci)
+                          quote_identifier(x, ci)
                         }, character(1))
         windowTerm <- paste0(windowTerm,
                              " PARTITION BY ",
@@ -272,7 +280,7 @@ to_sql.relop_extend <- function(x,
       if(length(x$orderby)>0) {
         ocols <- vapply(x$orderby,
                         function(ci) {
-                          DBI::dbQuoteIdentifier(db, ci)
+                          quote_identifier(x, ci)
                         }, character(1))
         windowTerm <- paste0(windowTerm,
                              " ORDER BY ",
@@ -288,7 +296,7 @@ to_sql.relop_extend <- function(x,
                         ei <- x$assignments[[ni]]
                         paste(ei,
                               windowTerm,
-                              "AS", DBI::dbQuoteIdentifier(db, ni))
+                              "AS", quote_identifier(x, ni))
                       }, character(1))
   }
   subsql <- to_sql(x$source[[1]],

@@ -13,13 +13,13 @@ merge_fld <- function(reslist, field) {
 #'
 #' @param lepxr item from  \code{substitute}
 #' @param colnames column names of table
-#' @param db database connection (for DBI quoting)
+#' @param node rquery node we are working in context of (for DB quoting)
 #' @param env environment to look for values
 #' @return sql info: list(presentation, parsed, symbols_used, symbols_produced)
 #'
 #' @noRd
 #'
-prepForSQL <- function(lexpr, colnames, db,
+prepForSQL <- function(lexpr, colnames, node,
                        env = parent.frame()) {
   n <- length(lexpr)
   res <- list(presentation = paste(as.character(lexpr), collapse = ' '),
@@ -41,7 +41,7 @@ prepForSQL <- function(lexpr, colnames, db,
     if(callName=="(") {
       sres <- prepForSQL(lexpr[[2]],
                          colnames = colnames,
-                         db = db,
+                         node = node,
                          env = env)
       sres$presentation <- paste("(", sres$presentation, ")")
       sres$parsed <- paste("(", sres$parsed, ")")
@@ -50,7 +50,7 @@ prepForSQL <- function(lexpr, colnames, db,
     if(callName=="!") {
       sres <- prepForSQL(lexpr[[2]],
                          colnames = colnames,
-                         db = db,
+                         node = node,
                          env = env)
       sres$presentation <- paste("!(", sres$presentation, ")")
       sres$parsed <- paste("( NOT ( ", sres$parsed, "))")
@@ -62,7 +62,7 @@ prepForSQL <- function(lexpr, colnames, db,
                      function(i) {
                        prepForSQL(lexpr[[i]],
                                   colnames = colnames,
-                                  db = db,
+                                  node = node,
                                   env = env)
                      })
       res$symbols_used <- merge_fld(args,
@@ -143,7 +143,7 @@ prepForSQL <- function(lexpr, colnames, db,
                    function(ei) {
                      prepForSQL(ei,
                                 colnames = colnames,
-                                db = db,
+                                node = node,
                                 env = env)
                    })
     subqstrs <- vapply(sube,
@@ -162,7 +162,7 @@ prepForSQL <- function(lexpr, colnames, db,
     lexpr <- as.character(lexpr)
     if(lexpr %in% colnames) {
       res$symbols_used <- lexpr
-      res$parsed <- as.character(DBI::dbQuoteIdentifier(db, lexpr))
+      res$parsed <- as.character(quote_identifier(node, lexpr))
       return(res)
     }
     v <- base::mget(lexpr,
@@ -170,7 +170,7 @@ prepForSQL <- function(lexpr, colnames, db,
                     ifnotfound = list(NULL),
                     inherits = TRUE)[[1]]
     if(is.character(v)) {
-      res$parsed <- as.character(DBI::dbQuoteString(db, v))
+      res$parsed <- as.character(quote_string(node, v))
       return(res)
     }
     if(is.numeric(v)) {
@@ -179,7 +179,7 @@ prepForSQL <- function(lexpr, colnames, db,
     }
   }
   if(is.character(lexpr)) {
-    res$parsed <- as.character(DBI::dbQuoteString(db, lexpr))
+    res$parsed <- as.character(quote_string(node, lexpr))
     return(res)
   }
   # fall-back

@@ -16,6 +16,7 @@
 #' sql <- to_sql(eqn)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
+#' DBI::dbDisconnect(my_db)
 #'
 #' @export
 #'
@@ -34,11 +35,19 @@ order_by <- function(source, orderby) {
 
 
 #' @export
-dbi_connection.relop_order_by <- function (x, ...) {
+quote_identifier.relop_order_by <- function (x, id, ...) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
-  dbi_connection(x$source[[1]])
+  quote_identifier(x$source[[1]], id)
+}
+
+#' @export
+quote_string.relop_order_by <- function (x, s, ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
+  quote_string(x$source[[1]], s)
 }
 
 #' @export
@@ -83,15 +92,14 @@ to_sql.relop_order_by <- function(x,
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
-  db <- dbi_connection(x)
   cols1 <- column_names(x$source[[1]])
   cols <- vapply(cols1,
                  function(ci) {
-                   DBI::dbQuoteIdentifier(db, ci)
+                   quote_identifier(x, ci)
                  }, character(1))
   ot <- vapply(x$orderby,
                function(ci) {
-                 DBI::dbQuoteIdentifier(db, ci)
+                 quote_identifier(x, ci)
                }, character(1))
   subsql <- to_sql(x$source[[1]],
                    indent_level = indent_level + 1,

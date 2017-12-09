@@ -140,9 +140,7 @@ partitionby and orderby can only be used with a database that supports window-fu
 #&gt; FROM (
 #&gt;  SELECT * FROM `d`
 #&gt; ) tsql_0000</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;   AUC  R2   v
-#&gt; 1 0.6 0.2 0.2</div><div class='input'>
-
-</div></pre>
+#&gt; 1 0.6 0.2 0.2</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

@@ -16,6 +16,7 @@
 #' sql <- to_sql(eqn)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
+#' DBI::dbDisconnect(my_db)
 #'
 #' @export
 #'
@@ -51,6 +52,7 @@ select_rows_se <- function(source, expr,
 #' sql <- to_sql(eqn)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
+#' DBI::dbDisconnect(my_db)
 #'
 #' @export
 #'
@@ -73,13 +75,20 @@ select_rows_nse <- function(source, expr,
 
 
 #' @export
-dbi_connection.relop_select_rows <- function (x, ...) {
+quote_identifier.relop_select_rows <- function (x, id, ...) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
-  dbi_connection(x$source[[1]])
+  quote_identifier(x$source[[1]], id)
 }
 
+#' @export
+quote_string.relop_select_rows <- function (x, s, ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
+  quote_string(x$source[[1]], s)
+}
 
 #' @export
 column_names.relop_select_rows <- function (x, ...) {
@@ -118,10 +127,9 @@ to_sql.relop_select_rows <- function(x,
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
-  db <- dbi_connection(x)
   cols <- vapply(x$columns,
                  function(ci) {
-                   DBI::dbQuoteIdentifier(db, ci)
+                   quote_identifier(x, ci)
                  }, character(1))
   subsql <- to_sql(x$source[[1]],
                    indent_level = indent_level + 1,

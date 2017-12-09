@@ -20,6 +20,7 @@
 #' sql <- to_sql(eqn)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
+#' DBI::dbDisconnect(my_db)
 #'
 #' @export
 #'
@@ -36,11 +37,19 @@ natural_join <- function(a, b,
 }
 
 #' @export
-dbi_connection.relop_natural_join <- function (x, ...) {
+quote_identifier.relop_natural_join <- function (x, id, ...) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
-  dbi_connection(x$source[[1]])
+  quote_identifier(x$source[[1]], id)
+}
+
+#' @export
+quote_string.relop_natural_join <- function (x, s, ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
+  quote_string(x$source[[1]], s)
 }
 
 
@@ -91,7 +100,6 @@ to_sql.relop_natural_join <- function(x,
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
-  db <- dbi_connection(x)
   subsqla <- to_sql(x$source[[1]],
                     indent_level = indent_level + 1,
                     tnum = tnum,
@@ -108,7 +116,7 @@ to_sql.relop_natural_join <- function(x,
   if(length(bterms)>0) {
     bcols <- vapply(bterms,
                    function(ci) {
-                     DBI::dbQuoteIdentifier(db, ci)
+                     quote_identifier(x, ci)
                    }, character(1))
     bexpr <- paste(",",
                    paste(bcols, collapse = ", "))
@@ -130,7 +138,7 @@ to_sql.relop_natural_join <- function(x,
   if(length(x$by)>0) {
     bt <- vapply(x$by,
                  function(ci) {
-                   DBI::dbQuoteIdentifier(db, ci)
+                   quote_identifier(x, ci)
                  }, character(1))
     mt <- paste(paste(paste(taba, bt, sep='.'),
                       paste(tabb, bt, sep='.'), sep = ' = '),

@@ -195,16 +195,14 @@ is a reserved column name for this procedure.</p>
 #&gt; 10 10 0.772521511          1          1 0 1      1</div><div class='input'>
  <span class='co'># Why we need to land the random selection early</span>
  <span class='co'># for SQLIte:</span>
- <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(),
-                         <span class='st'>":memory:"</span>)
  <span class='no'>q</span> <span class='kw'>&lt;-</span> <span class='st'>"SELECT r AS r1, r AS r2 FROM (
           SELECT random() AS r FROM (
              SELECT * from ( VALUES(1),(2) )
           ) a
        ) b"</span>
  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>q</span>)</div><div class='output co'>#&gt;                     r1                  r2
-#&gt; 1 -7188482870907684104 3784420538236905363
-#&gt; 2 -1950513163029630785 4372514264935559032</div><div class='input'>
+#&gt; 1  8554791023623859041 4449754451615806402
+#&gt; 2 -4545211033231619167 1982381153779248783</div><div class='input'>
 <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

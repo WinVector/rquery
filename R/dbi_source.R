@@ -1,5 +1,20 @@
 
-# basic data sources
+# dbi data source
+
+listFields <- function(my_db, tableName) {
+  # fails intermitnently, and sometimes gives wrong results
+  # filed as: https://github.com/tidyverse/dplyr/issues/3204
+  # tryCatch(
+  #   return(DBI::dbListFields(my_db, tableName)),
+  #   error = function(e) { NULL })
+  # below is going to have issues to to R-column name conversion!
+  q <- paste0("SELECT * FROM ",
+              DBI::dbQuoteIdentifier(my_db, tableName),
+              " LIMIT 1")
+  v <- DBI::dbGetQuery(my_db, q)
+  colnames(v)
+}
+
 
 #' DBI data source.
 #'
@@ -19,6 +34,7 @@
 #' print(d)
 #' sql <- to_sql(d)
 #' cat(sql)
+#' DBI::dbDisconnect(my_db)
 #'
 #' @export
 #'
@@ -33,11 +49,27 @@ dbi_table <- function(db, table_name) {
 
 
 #' @export
-dbi_connection.relop_dbi_table <- function (x, ...) {
+quote_identifier.relop_dbi_table <- function (x, id, ...) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
-  x$db
+  id <- as.character(id)
+  if(length(id)!=1) {
+    stop("rquery::quote_identifier length(id)!=1")
+  }
+  DBI::dbQuoteIdentifier(x$db, id)
+}
+
+#' @export
+quote_string.relop_dbi_table <- function (x, s, ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
+  s <- as.character(s)
+  if(length(s)!=1) {
+    stop("rquery::quote_string length(s)!=1")
+  }
+  DBI::dbQuoteString(x$db, s)
 }
 
 #' @export
@@ -57,11 +89,11 @@ to_sql.relop_dbi_table <- function (x,
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
-  db <- dbi_connection(x)
   prefix <- paste(rep(' ', indent_level), collapse = '')
+  tabnam <- quote_identifier(x,  x$table_name)
   q <- paste0(prefix,
          "SELECT * FROM ",
-         DBI::dbQuoteIdentifier(db, x$table_name))
+         tabnam)
   if(append_cr) {
     q <- paste0(q, "\n")
   }
@@ -103,6 +135,7 @@ print.relop_dbi_table <- function(x, ...) {
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
 #' sql <- to_sql(d)
 #' cat(sql)
+#' DBI::dbDisconnect(my_db)
 #'
 #' @export
 #'
