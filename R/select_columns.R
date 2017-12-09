@@ -96,10 +96,11 @@ columns_used.relop_select_columns <- function (x, ...,
 
 #' @export
 to_sql.relop_select_columns <- function(x,
+                                        ...,
                                         indent_level = 0,
                                         tnum = mkTempNameGenerator('tsql'),
                                         append_cr = TRUE,
-                                        ...) {
+                                        column_restriction = NULL) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
@@ -110,7 +111,8 @@ to_sql.relop_select_columns <- function(x,
   subsql <- to_sql(x$source[[1]],
                    indent_level = indent_level + 1,
                    tnum = tnum,
-                   append_cr = FALSE)
+                   append_cr = FALSE,
+                   column_restriction = column_restriction)
   tab <- tnum()
   prefix <- paste(rep(' ', indent_level), collapse = '')
   q <- paste0(prefix, "SELECT\n",

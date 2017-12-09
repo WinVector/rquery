@@ -1,6 +1,6 @@
 rquery
 ================
-2017-12-07
+2017-12-09
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 [`rquery`](https://johnmount.github.io/rquery/) is an experiment/demonstration of a simplified sequenced query language based on [Codd's relational algebra](https://en.wikipedia.org/wiki/Relational_algebra) and not currently recommended for non-experimental (i.e., production) use. The goal of this experiment is to see if `SQL` would be more fun if it had a sequential data-flow or pipe notation.
@@ -198,9 +198,9 @@ cat(to_sql(dq))
           count(1) OVER (  PARTITION BY `subjectID` ) AS `count`
          FROM (
           SELECT * FROM `d`
-         ) tsql_0000
-        ) tsql_0001
-       ) tsql_0002
+          ) tsql_0000
+         ) tsql_0001
+        ) tsql_0002
       ) tsql_0003
       WHERE `isdiagnosis`
      ) tsql_0004

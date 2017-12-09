@@ -79,7 +79,8 @@
     </div>
 
     
-    <p>DBI data source.</p>
+    <p>Build structures (table name, column names, and quoting
+strategy) needed to represent data from a remote table.</p>
     
 
     <pre class="usage"><span class='fu'>dbi_table</span>(<span class='no'>db</span>, <span class='no'>table_name</span>)</pre>
@@ -101,6 +102,13 @@
 
     <p>a relop representation of the data</p>
     
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>Generate a query that returns contents of a table, we
+could try to eliminate this (replace the query with the table name),
+but there are features one can work with with the query in place and
+SQL optimizers likely make this zero-cost anyway.</p>
+    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
@@ -112,7 +120,14 @@
                   <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'>dbi_table</span>(<span class='no'>my_db</span>, <span class='st'>'d'</span>)
 <span class='fu'>print</span>(<span class='no'>d</span>)</div><div class='output co'>#&gt; [1] "dbi_table('d')"</div><div class='input'><span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>d</span>)
-<span class='fu'>cat</span>(<span class='no'>sql</span>)</div><div class='output co'>#&gt; SELECT * FROM `d`</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)</div></pre>
+<span class='fu'>cat</span>(<span class='no'>sql</span>)</div><div class='output co'>#&gt; SELECT * FROM `d`</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;   AUC  R2
+#&gt; 1 0.6 0.2</div><div class='input'><span class='no'>cols</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='columns_used.html'>columns_used</a></span>(<span class='no'>d</span>)
+<span class='fu'>print</span>(<span class='no'>cols</span>)</div><div class='output co'>#&gt; [1] "`d`.`AUC`" "`d`.`R2`" </div><div class='input'><span class='no'>sql2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>d</span>, <span class='kw'>column_restriction</span> <span class='kw'>=</span> <span class='no'>cols</span>[<span class='fl'>1</span>])
+<span class='fu'>cat</span>(<span class='no'>sql2</span>)</div><div class='output co'>#&gt; SELECT
+#&gt;  `d`.`AUC`
+#&gt; FROM
+#&gt;  `d`</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql2</span>)</div><div class='output co'>#&gt;   AUC
+#&gt; 1 0.6</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -120,6 +135,8 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
+
+      <li><a href="#details">Details</a></li>
       
       <li><a href="#examples">Examples</a></li>
     </ul>

@@ -1,7 +1,7 @@
 ---
 title: "rquery"
 output: github_document
-date: "2017-12-07"
+date: "2017-12-09"
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->

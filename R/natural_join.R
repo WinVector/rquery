@@ -119,21 +119,24 @@ columns_used.relop_natural_join <- function (x, ...,
 
 #' @export
 to_sql.relop_natural_join <- function(x,
+                                      ...,
                                       indent_level = 0,
                                       tnum = mkTempNameGenerator('tsql'),
                                       append_cr = TRUE,
-                                      ...) {
+                                      column_restriction = NULL) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
   subsqla <- to_sql(x$source[[1]],
                     indent_level = indent_level + 1,
                     tnum = tnum,
-                    append_cr = FALSE)
+                    append_cr = FALSE,
+                    column_restriction = column_restriction)
   subsqlb <- to_sql(x$source[[2]],
                     indent_level = indent_level + 1,
                     tnum = tnum,
-                    append_cr = FALSE)
+                    append_cr = FALSE,
+                    column_restriction = column_restriction)
   taba <- tnum()
   tabb <- tnum()
   bexpr <- NULL

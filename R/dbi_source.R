@@ -18,6 +18,14 @@ listFields <- function(my_db, tableName) {
 
 #' DBI data source.
 #'
+#' Build structures (table name, column names, and quoting
+#' strategy) needed to represent data from a remote table.
+#'
+#' Generate a query that returns contents of a table, we
+#' could try to eliminate this (replace the query with the table name),
+#' but there are features one can work with with the query in place and
+#' SQL optimizers likely make this zero-cost anyway.
+#'
 #' @param db database connection
 #' @param table_name name of table
 #' @return a relop representation of the data
@@ -34,6 +42,12 @@ listFields <- function(my_db, tableName) {
 #' print(d)
 #' sql <- to_sql(d)
 #' cat(sql)
+#' DBI::dbGetQuery(my_db, sql)
+#' cols <- columns_used(d)
+#' print(cols)
+#' sql2 <- to_sql(d, column_restriction = cols[1])
+#' cat(sql2)
+#' DBI::dbGetQuery(my_db, sql2)
 #' DBI::dbDisconnect(my_db)
 #'
 #' @export
@@ -106,19 +120,30 @@ columns_used.relop_dbi_table <- function (x, ...,
 }
 
 #' @export
-to_sql.relop_dbi_table <- function (x,
-                                    indent_level = 0,
-                                    tnum = mkTempNameGenerator('tsql'),
-                                    append_cr = TRUE,
-                                    ...) {
+to_sql.relop_dbi_table <- function(x,
+                                   ...,
+                                   indent_level = 0,
+                                   tnum = mkTempNameGenerator('tsql'),
+                                   append_cr = TRUE,
+                                   column_restriction = NULL) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
   prefix <- paste(rep(' ', indent_level), collapse = '')
   tabnam <- quote_identifier(x,  x$table_name)
-  q <- paste0(prefix,
-         "SELECT * FROM ",
-         tabnam)
+  if(length(column_restriction)<=0) {
+    q <- paste0(prefix,
+                "SELECT * FROM ",
+                tabnam)
+  } else {
+    ours <- column_restriction[startsWith(column_restriction, tabnam)]
+    qt <- paste(ours, collapse = paste0(",\n", prefix, " "))
+    q <- paste0(prefix,
+                "SELECT\n",
+                prefix, " ", qt, "\n",
+                prefix, "FROM\n",
+                prefix, " ", tabnam)
+  }
   if(append_cr) {
     q <- paste0(q, "\n")
   }

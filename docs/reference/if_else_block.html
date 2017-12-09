@@ -180,8 +180,8 @@ is a reserved column name for this procedure.</p>
 #&gt;   `r` &gt;= 0.5  AS `ifebtest_1`
 #&gt;  FROM (
 #&gt;   SELECT * FROM `d`
-#&gt;  ) tsql_0000
-#&gt; ) tsql_0001</div><div class='input'>
+#&gt;   ) tsql_0000
+#&gt;  ) tsql_0001</div><div class='input'>
 <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;     i           r ifebtest_2 ifebtest_1 a b edited
 #&gt; 1   1 0.080750138          0          0 0 0      0
 #&gt; 2   2 0.834333037          0          1 0 1      0
@@ -200,9 +200,9 @@ is a reserved column name for this procedure.</p>
              SELECT * from ( VALUES(1),(2) )
           ) a
        ) b"</span>
- <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>q</span>)</div><div class='output co'>#&gt;                    r1                  r2
-#&gt; 1 2247286170132800058 6629455284247403054
-#&gt; 2  -33917998641663414  604532211055863453</div><div class='input'>
+ <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>q</span>)</div><div class='output co'>#&gt;                    r1                   r2
+#&gt; 1 4869831707033369707 -8524784037215106966
+#&gt; 2  800251780840224939  5878527866961053250</div><div class='input'>
 <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
