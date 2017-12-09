@@ -37,12 +37,28 @@ quote_string <- function (x, s, ...) {
 #'
 #' @param x rquery operation tree.
 #' @param ... generic additional arguments
-#' @return column names
+#' @return vector of column names
 #'
 #' @export
 #'
 column_names <- function (x, ...) {
   UseMethod("column_names", x)
+}
+
+#' Return columns used
+#'
+#' @param x rquery operation tree.
+#' @param ... generic additional arguments (not used)
+#' @param using character, if not NULL set of columns used from above.
+#' @param contract logical, if TRUE perform unused value elimination.
+#' @return vector of table qualified column names.
+#'
+#' @export
+#'
+columns_used <- function (x, ...,
+                          using = NULL,
+                          contract = FALSE) {
+  UseMethod("columns_used", x)
 }
 
 
@@ -52,7 +68,7 @@ column_names <- function (x, ...) {
 #' @param indent_level level to indent
 #' @param tnum temp sub-query name generators
 #' @param append_cr logical if TRUE end with CR
-#' @param ... generic additional arguments
+#' @param ... generic additional arguments (not used)
 #' @return SQL command
 #'
 #' @export

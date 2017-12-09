@@ -94,6 +94,27 @@ print.relop_rename_columns <- function(x, ...) {
   print(format(x),...)
 }
 
+#' @export
+columns_used.relop_rename_columns <- function (x, ...,
+                                               using = NULL,
+                                               contract = FALSE) {
+  if(length(using)<=0) {
+    return(columns_used(x$source[[1]],
+                        using = NULL,
+                        contract = contract))
+  }
+  cols <- column_names(x)
+  missing <- setdiff(using, cols)
+  if(length(missing)>0) {
+    stop(paste("rquery::columns_used unknown columns",
+               paste(missing, collapse = ", ")))
+  }
+  subusing <- intersect(cols, using)
+  return(columns_used(x$source[[1]],
+                      using = subusing,
+                      contract = contract))
+}
+
 
 #' @export
 to_sql.relop_rename_columns <- function(x,

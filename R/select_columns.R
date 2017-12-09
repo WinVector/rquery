@@ -75,6 +75,24 @@ print.relop_select_columns <- function(x, ...) {
   print(format(x),...)
 }
 
+#' @export
+columns_used.relop_select_columns <- function (x, ...,
+                                               using = NULL,
+                                               contract = FALSE) {
+  if(length(using)<=0) {
+    return(columns_used(x$source[[1]],
+                        using = x$columns,
+                        contract = contract))
+  }
+  missing <- setdiff(using, x$columns)
+  if(length(missing)>0) {
+    stop(paste("rquery::columns_used unknown columns",
+               paste0(missing, collapse = ", ")))
+  }
+  return(columns_used(x$source[[1]],
+                      using = using,
+                      contract = contract))
+}
 
 #' @export
 to_sql.relop_select_columns <- function(x,

@@ -244,6 +244,31 @@ print.relop_extend <- function(x, ...) {
   print(format(x),...)
 }
 
+#' @export
+columns_used.relop_extend <- function (x, ...,
+                                       using = NULL,
+                                       contract = FALSE) {
+  if(length(list(...))>0) {
+    stop("rquery:columns_used: unexpected arguemnts")
+  }
+  if(length(using)<=0) {
+    return(columns_used(x$source[[1]],
+                        using = NULL,
+                        contract = contract))
+  }
+  producing <- merge_fld(x$parsed, "symbols_produced")
+  expressions <- x$parsed
+  if(contract) {
+    expressions <- x$parsed[producing %in% using]
+  }
+  using <- setdiff(using, producing)
+  consuming <- merge_fld(expressions, "symbols_used")
+  subusing <- unique(c(using, consuming, x$partitionby, x$orderby))
+  columns_used(x$source[[1]],
+               using = subusing,
+               contract = contract)
+}
+
 
 #' @export
 to_sql.relop_extend <- function(x,

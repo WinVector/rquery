@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Return SQL command of operation chain — to_sql • rquery</title>
+<title>Return columns used — columns_used • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -75,15 +75,14 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Return SQL command of operation chain</h1>
+    <h1>Return columns used</h1>
     </div>
 
     
-    <p>Return SQL command of operation chain</p>
+    <p>Return columns used</p>
     
 
-    <pre class="usage"><span class='fu'>to_sql</span>(<span class='no'>x</span>, <span class='kw'>indent_level</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>tnum</span> <span class='kw'>=</span> <span class='fu'>mkTempNameGenerator</span>(<span class='st'>"tsql"</span>),
-  <span class='kw'>append_cr</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>columns_used</span>(<span class='no'>x</span>, <span class='no'>...</span>, <span class='kw'>using</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>contract</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -93,26 +92,22 @@
       <td><p>rquery operation tree.</p></td>
     </tr>
     <tr>
-      <th>indent_level</th>
-      <td><p>level to indent</p></td>
-    </tr>
-    <tr>
-      <th>tnum</th>
-      <td><p>temp sub-query name generators</p></td>
-    </tr>
-    <tr>
-      <th>append_cr</th>
-      <td><p>logical if TRUE end with CR</p></td>
-    </tr>
-    <tr>
       <th>...</th>
       <td><p>generic additional arguments (not used)</p></td>
+    </tr>
+    <tr>
+      <th>using</th>
+      <td><p>character, if not NULL set of columns used from above.</p></td>
+    </tr>
+    <tr>
+      <th>contract</th>
+      <td><p>logical, if TRUE perform unused value elimination.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>SQL command</p>
+    <p>vector of table qualified column names.</p>
     
 
   </div>

@@ -168,3 +168,16 @@ tables_used <- function(node) {
                  character(1))
   return(sort(unique(c(node$table_name, subs))))
 }
+
+# get field by name from list
+merge_fld <- function(reslist, field) {
+  if(length(reslist)<=0) {
+    return(NULL)
+  }
+  got <- lapply(reslist,
+                function(ri) {
+                  ri[[field]]
+                })
+  unique(unlist(got))
+}
+

@@ -1,12 +1,6 @@
 
 
-merge_fld <- function(reslist, field) {
-  got <- lapply(reslist,
-                function(ri) {
-                  ri[[field]]
-                })
-  unique(unlist(got))
-}
+
 
 #' Prepare a statement for SQL.
 #'

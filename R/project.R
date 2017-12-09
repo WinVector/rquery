@@ -139,6 +139,29 @@ print.relop_project <- function(x, ...) {
   print(format(x),...)
 }
 
+#' @export
+columns_used.relop_project <- function (x, ...,
+                                        using = NULL,
+                                        contract = FALSE) {
+  if(length(list(...))>0) {
+    stop("rquery:columns_used: unexpected arguemnts")
+  }
+  if(length(using)<=0) {
+    using <- column_names(x)
+  }
+  producing <- merge_fld(x$parsed, "symbols_produced")
+  expressions <- x$parsed
+  if(contract) {
+    expressions <- x$parsed[producing %in% using]
+  }
+  using <- setdiff(using, producing)
+  consuming <- merge_fld(expressions, "symbols_used")
+  subusing <- unique(c(using, consuming, x$groupby))
+  columns_used(x$source[[1]],
+               using = subusing,
+               contract = contract)
+}
+
 
 #' @export
 to_sql.relop_project <- function(x,

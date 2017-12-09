@@ -117,6 +117,20 @@ print.relop_select_rows <- function(x, ...) {
   print(format(x),...)
 }
 
+#' @export
+columns_used.relop_select_rows <- function (x, ...,
+                                         using = NULL,
+                                         contract = FALSE) {
+  if(length(using)<=0) {
+    return(columns_used(x$source[[1]],
+                        using = NULL,
+                        contract = contract))
+  }
+  consuming <- merge_fld(x$parsed, "symbols_used")
+  return(columns_used(x$source[[1]],
+                      using = unique(c(using, consuming)),
+                      contract = contract))
+}
 
 
 #' @export

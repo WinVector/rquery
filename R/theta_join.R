@@ -199,6 +199,33 @@ prepColumnNames <- function(x, tabName, tabColumns, ambiguous, suffix) {
 }
 
 #' @export
+columns_used.relop_theta_join <- function (x, ...,
+                                           using = NULL,
+                                           contract = FALSE) {
+  if(length(using)<=0) {
+    s1 <- columns_used(x$source[[1]],
+                       using = NULL,
+                       contract = contract)
+    s2 <- columns_used(x$source[[2]],
+                       using = NULL,
+                       contract = contract)
+    return(unique(c(s1, s2)))
+  }
+  condTerms <- merge_fld(x$parsed, "symbols_used")
+  c1 <- unique(c(condTerms,
+                 intersect(using, column_names(x$source[[1]]))))
+  s1 <- columns_used(x$source[[1]],
+                     using = c1,
+                     contract = contract)
+  c2 <- unique(c(condTerms,
+                 intersect(using, column_names(x$source[[1]]))))
+  s2 <- columns_used(x$source[[2]],
+                     using = c2,
+                     contract = contract)
+  return(unique(c(s1, s2)))
+}
+
+#' @export
 to_sql.relop_theta_join <- function(x,
                                       indent_level = 0,
                                       tnum = mkTempNameGenerator('tsql'),

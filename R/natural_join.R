@@ -90,6 +90,31 @@ print.relop_natural_join <- function(x, ...) {
   print(format(x),...)
 }
 
+#' @export
+columns_used.relop_natural_join <- function (x, ...,
+                                             using = NULL,
+                                             contract = FALSE) {
+  if(length(using)<=0) {
+    s1 <- columns_used(x$source[[1]],
+                       using = NULL,
+                       contract = contract)
+    s2 <- columns_used(x$source[[2]],
+                       using = NULL,
+                       contract = contract)
+    return(unique(c(s1, s2)))
+  }
+  c1 <- unique(c(x$by,
+                 intersect(using, column_names(x$source[[1]]))))
+  s1 <- columns_used(x$source[[1]],
+                     using = c1,
+                     contract = contract)
+  c2 <- unique(c(x$by,
+                 intersect(using, column_names(x$source[[1]]))))
+  s2 <- columns_used(x$source[[2]],
+                     using = c2,
+                     contract = contract)
+  return(unique(c(s1, s2)))
+}
 
 
 #' @export

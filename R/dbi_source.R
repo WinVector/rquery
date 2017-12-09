@@ -58,7 +58,7 @@ quote_identifier.relop_dbi_table <- function (x, id, ...) {
   if(length(id)!=1) {
     stop("rquery::quote_identifier length(id)!=1")
   }
-  DBI::dbQuoteIdentifier(x$db, id)
+  as.character(DBI::dbQuoteIdentifier(x$db, id))
 }
 
 #' @export
@@ -70,7 +70,7 @@ quote_string.relop_dbi_table <- function (x, s, ...) {
   if(length(s)!=1) {
     stop("rquery::quote_string length(s)!=1")
   }
-  DBI::dbQuoteString(x$db, s)
+  as.character(DBI::dbQuoteString(x$db, s))
 }
 
 #' @export
@@ -79,6 +79,30 @@ column_names.relop_dbi_table <- function (x, ...) {
     stop("unexpected arguemnts")
   }
   x$columns
+}
+
+#' @export
+columns_used.relop_dbi_table <- function (x, ...,
+                                          using = NULL,
+                                          contract = FALSE) {
+  if(length(list(...))>0) {
+    stop("rquery:columns_used: unexpected arguemnts")
+  }
+  cols <- x$columns
+  if(length(using)>0) {
+    missing <- setdiff(using, x$columns)
+    if(length(missing)>0) {
+      stop(paste("rquery:columns_used request for unknonw columns",
+                 paste(missing, collapse = ", ")))
+    }
+    cols <- intersect(x$columns, using)
+  }
+  qcols <- vapply(cols,
+                  function(ui) {
+                    quote_identifier(x, ui)
+                  }, character(1))
+  r <- paste(quote_identifier(x, x$table_name), qcols, sep = '.')
+  r
 }
 
 #' @export

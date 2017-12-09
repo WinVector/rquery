@@ -82,6 +82,19 @@ print.relop_order_by <- function(x, ...) {
 }
 
 
+#' @export
+columns_used.relop_order_by <- function (x, ...,
+                                       using = NULL,
+                                       contract = FALSE) {
+  if(length(using)<=0) {
+    return(columns_used(x$source[[1]],
+                        using = NULL,
+                        contract = contract))
+  }
+  return(columns_used(x$source[[1]],
+                      using = unique(c(using, x$orderby)),
+                      contract = contract))
+}
 
 
 #' @export
