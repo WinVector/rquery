@@ -31,6 +31,7 @@ rename_columns <- function(source, cmap) {
                paste(collisions, collapse = ", ")))
   }
   r <- list(source = list(source),
+            table_name = NULL,
             cmap = cmap)
   class(r) <- "relop_rename_columns"
   r

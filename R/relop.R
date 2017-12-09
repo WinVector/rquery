@@ -1,6 +1,10 @@
 
 # define relational op, basis for this package.
 # in addition to methods below, our nodes implement: format() and print().
+#
+# Each node should be a list with named entries:
+#   source: list of nodes supplying values to this node.
+#   table_name: character name of table if a concrete table or view.
 
 
 #' Quote an idnetifier.

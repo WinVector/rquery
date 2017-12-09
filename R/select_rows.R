@@ -29,6 +29,7 @@ select_rows_se <- function(source, expr,
   assignments <- unpack_assignments(source, parsed)
   parsed[[1]]$symbols_produced <- character(0)
   r <- list(source = list(source),
+            table_name = NULL,
             parsed = parsed,
             expr = assignments)
   class(r) <- "relop_select_rows"

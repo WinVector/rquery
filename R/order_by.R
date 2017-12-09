@@ -28,6 +28,7 @@ order_by <- function(source, orderby) {
   have <- column_names(source)
   check_have_cols(have, orderby, "rquery::order_by orderby")
   r <- list(source = list(source),
+            table_name = NULL,
             orderby = orderby)
   class(r) <- "relop_order_by"
   r

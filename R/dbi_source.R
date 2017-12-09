@@ -40,8 +40,9 @@ listFields <- function(my_db, tableName) {
 #'
 dbi_table <- function(db, table_name) {
   columns <- listFields(db, table_name)
-  r <- list(columns = columns,
+  r <- list(source = list(),
             table_name = table_name,
+            columns = columns,
             db = db)
   class(r) <- "relop_dbi_table"
   r

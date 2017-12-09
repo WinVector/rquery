@@ -21,6 +21,7 @@ project_impl <- function(source, groupby, parsed) {
                paste(overlap, collapse = ", ")))
   }
   r <- list(source = list(source),
+            table_name = NULL,
             groupby = groupby,
             columns = c(groupby, names(assignments)),
             parsed = parsed,

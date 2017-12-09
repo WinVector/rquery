@@ -26,6 +26,7 @@ select_columns <- function(source, columns) {
   have <- column_names(source)
   check_have_cols(have, columns, "rquery::select_columns columns")
   r <- list(source = list(source),
+            table_name = NULL,
             columns = columns)
   class(r) <- "relop_select_columns"
   r

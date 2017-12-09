@@ -30,6 +30,7 @@ extend_impl <- function(source, parsed,
   check_have_cols(have, orderby, "rquery::extend orderby")
   assignments <- unpack_assignments(source, parsed)
   r <- list(source = list(source),
+            table_name = NULL,
             partitionby = partitionby,
             orderby = orderby,
             desc = desc,

@@ -50,6 +50,7 @@ theta_join_se <- function(a, b,
   parsed$symbols_produced <- character(0)
   parsed$presentation <- gsub("^.*:= ", "", parsed$presentation)
   r <- list(source = list(a, b),
+            table_name = NULL,
             overlap = overlap,
             jointype = jointype,
             parsed = parsed,

@@ -30,6 +30,7 @@ natural_join <- function(a, b,
   usesb <- column_names(b)
   by = intersect(usesa, usesb)
   r <- list(source = list(a, b),
+            table_name = NULL,
             by = by,
             jointype = jointype)
   class(r) <- "relop_natural_join"
