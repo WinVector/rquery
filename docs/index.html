@@ -284,9 +284,78 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <p>Because the <code>rquery</code> representation is an intelligible network of nodes: we can interrogate it for facts about the query. For example:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/tables_used.html">tables_used</a></span>(dq)</code></pre></div>
 <pre><code>## [1] "d"</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/columns_used.html">columns_used</a></span>(dq)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cu &lt;-<span class="st"> </span><span class="kw"><a href="reference/columns_used.html">columns_used</a></span>(dq)
+<span class="kw">print</span>(cu)</code></pre></div>
 <pre><code>## [1] "`d`.`subjectID`"       "`d`.`surveyCategory`"  "`d`.`assessmentTotal`"</code></pre>
 <p>By using the <code><a href="reference/to_sql.html">to_sql(column_restriction = )</a></code> option, the query can be re-built in terms of columns used to ensure we are using only a minimal set of columns (these operators are still under development). The column set (gathered with <code><a href="reference/columns_used.html">columns_used(dq)</a></code>) is pushed back to all source nodes, altering their queries (allowing local optimization).</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sqlr &lt;-<span class="st"> </span><span class="kw"><a href="reference/to_sql.html">to_sql</a></span>(dq, <span class="dt">column_restriction =</span> cu)
+<span class="kw">cat</span>(sqlr)</code></pre></div>
+<pre><code>## SELECT * FROM (
+##  SELECT
+##   `subjectID`,
+##   `diagnosis`,
+##   `probability`
+##  FROM (
+##   SELECT * FROM (
+##    SELECT
+##     `subjectID`,
+##     `surveyCategory`,
+##     `assessmentTotal`,
+##     `probability`,
+##     `count`,
+##     `rank`,
+##     `rank` = `count`  AS `isdiagnosis`,
+##     `surveyCategory`  AS `diagnosis`
+##    FROM (
+##     SELECT
+##      `subjectID`,
+##      `surveyCategory`,
+##      `assessmentTotal`,
+##      `probability`,
+##      `count`,
+##      rank() OVER (  PARTITION BY `subjectID` ORDER BY `probability` ) AS `rank`
+##     FROM (
+##      SELECT
+##       `subjectID`,
+##       `surveyCategory`,
+##       `assessmentTotal`,
+##       exp(`assessmentTotal` * 0.237) / sum(exp(`assessmentTotal` * 0.237)) OVER (  PARTITION BY `subjectID` ) AS `probability`,
+##       count(1) OVER (  PARTITION BY `subjectID` ) AS `count`
+##      FROM (
+##       SELECT
+##        `d`.`subjectID`,
+##        `d`.`surveyCategory`,
+##        `d`.`assessmentTotal`
+##       FROM
+##        `d`
+##       ) tsql_0000
+##      ) tsql_0001
+##     ) tsql_0002
+##   ) tsql_0003
+##   WHERE `isdiagnosis`
+##  ) tsql_0004
+## ) tsql_0005 ORDER BY `subjectID`</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery">dbGetQuery</a></span>(my_db, sqlr) <span class="op">%.&gt;%</span>
+<span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="right">subjectID</th>
+<th align="left">diagnosis</th>
+<th align="right">probability</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">1</td>
+<td align="left">withdrawal behavior</td>
+<td align="right">0.6706221</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="left">positive re-framing</td>
+<td align="right">0.5589742</td>
+</tr>
+</tbody>
+</table>
 <p>And that is our experiment.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="cf">if</span>(use_spark) {
   sparklyr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/sparklyr/topics/spark-connections">spark_disconnect</a></span>(my_db)

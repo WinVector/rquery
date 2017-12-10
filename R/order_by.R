@@ -1,9 +1,22 @@
 
 #' Make an order_by node (not a relational operation).
 #'
+#' Order a table by a set of columns (not general expressions) and
+#' limit number of rows in that order.
+#'
+#' Note: this is a relational operator in that it takes a table that
+#' is a relation (has unique rows) to a table that is still a relation.
+#' However, most relational systems do not preserve row order in storage or between
+#' operations.  So without the limit set this is not a useful operator except
+#' as a last step prior ot pulling data to an in-memory \code{data.frame} (
+#' which does preserve row order).
+#'
 #'
 #' @param source source to select from.
 #' @param orderby order by column names.
+#' @param ... force later arguments to be bound by name
+#' @param desc logical if TRUE reverse order
+#' @param limit number limit row count.
 #' @return select columns node.
 #'
 #' @examples
@@ -11,25 +24,27 @@
 #' my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #' d <- dbi_copy_to(my_db, 'd',
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
-#' eqn <- order_by(d, "AUC")
-#' cat(format(eqn))
+#' eqn <- order_by(d, "AUC", desc=TRUE, limit=4)
+#' cat(format(eqn)); cat("\n")
 #' sql <- to_sql(eqn)
-#' cat(sql)
+#' cat(sql); cat("\n")
 #' DBI::dbGetQuery(my_db, sql)
 #' DBI::dbDisconnect(my_db)
 #'
 #' @export
 #'
-order_by <- function(source, orderby) {
-  if(length(orderby)<=0) {
-    stop("rquery::order_by must have at least one order by term")
-  }
-  # TODO: add desc argument
+order_by <- function(source,
+                     orderby,
+                     ...,
+                     desc = FALSE,
+                     limit = NULL) {
   have <- column_names(source)
   check_have_cols(have, orderby, "rquery::order_by orderby")
   r <- list(source = list(source),
             table_name = NULL,
-            orderby = orderby)
+            orderby = orderby,
+            desc = desc,
+            limit = limit)
   class(r) <- "relop_order_by"
   r
 }
@@ -68,8 +83,13 @@ format.relop_order_by <- function(x, ...) {
   paste0(format(x$source[[1]]),
          " %.>%\n ",
          "order_by(., ",
-         paste(x$orderby, collapse = ", "),
-         ifelse(x$desc, " DESC", ""),
+         ifelse(length(x$orderby)>0,
+                paste(x$orderby, collapse = ", "),
+                ""),
+         ifelse(x$desc, ", DESC", ""),
+         ifelse((length(x$limit)>0) && (length(x$orderby)>0),
+                paste0(", LIMIT ", x$limit),
+                ""),
          ")")
 }
 
@@ -127,9 +147,13 @@ to_sql.relop_order_by <- function(x,
          subsql, "\n",
          prefix, ") ",
          tab,
-         " ORDER BY ",
-         paste(ot, collapse = ", "),
-         ifelse(x$desc, " DESC", ""))
+         ifelse(length(ot)>0,
+                paste0(" ORDER BY ", paste(ot, collapse = ", ")),
+                ""),
+         ifelse((x$desc) && (length(ot)>0), " DESC", ""),
+         ifelse(length(x$limit)>0,
+                paste0(" LIMIT ", x$limit),
+                ""))
   if(append_cr) {
     q <- paste0(q, "\n")
   }
