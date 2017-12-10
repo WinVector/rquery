@@ -73,7 +73,9 @@ print.relop_select_columns <- function(x, ...) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
-  print(format(x),...)
+  txt <- format(x)
+  txt <- trimws(gsub("[ \t\r\n]+", " ", txt), which = "both")
+  print(txt, ...)
 }
 
 #' @export

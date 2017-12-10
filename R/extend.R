@@ -213,12 +213,12 @@ format.relop_extend <- function(x, ...) {
   }
   pterms <- ""
   if(length(x$partitionby)>0) {
-    pterms <- paste0(", p= ",
+    pterms <- paste0(",\n  p= ",
                      paste(x$partitionb, collapse = ", "))
   }
   oterms <- ""
   if(length(x$orderby)>0) {
-    oterms <- paste0(", o= ",
+    oterms <- paste0(",\n  o= ",
       paste(x$orderby, collapse = ", "),
       ifelse(x$desc, " DESC", ""))
   }
@@ -242,7 +242,9 @@ print.relop_extend <- function(x, ...) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
-  print(format(x),...)
+  txt <- format(x)
+  txt <- trimws(gsub("[ \t\r\n]+", " ", txt), which = "both")
+  print(txt, ...)
 }
 
 #' @export
