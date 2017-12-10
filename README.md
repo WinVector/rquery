@@ -204,6 +204,8 @@ cat(to_sql(dq))
      ) tsql_0004
     ) tsql_0005 ORDER BY `subjectID`
 
+The query is large, but due to its regular structure it should be very amenable to database query optimizer.
+
 Part of the plan is: the additional record-keeping in the operator nodes would let a very powerful query optimizer work over the flow before it gets translated to `SQL` (perhaps an extension of or successor to [`seplyr`](https://winvector.github.io/seplyr/), which re-plans over `dplyr::mutate()` expressions). At the very least restricting to columns later used and folding selects together would be achievable. One should have a good chance at optimization as the representation is fairly high-level, and many of the operators are relational (meaning there are known legal transforms a query optimizer can use). The flow itself is represented as follows:
 
 ``` r
@@ -237,7 +239,7 @@ columns_used(dq)
 
     ## [1] "`d`.`subjectID`"       "`d`.`surveyCategory`"  "`d`.`assessmentTotal`"
 
-By using the `to_sql(column_restriction = )` option, the query can be re-built in terms of columns used to ensure we are using only a minimal set of columns. The column set (gathered with `columns_used(dq)`) is pushed back to all source nodes, altering their queries.
+By using the `to_sql(column_restriction = )` option, the query can be re-built in terms of columns used to ensure we are using only a minimal set of columns (these operators are still under development). The column set (gathered with `columns_used(dq)`) is pushed back to all source nodes, altering their queries (allowing local optimization).
 
 And that is our experiment.
 
