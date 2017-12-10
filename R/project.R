@@ -128,7 +128,8 @@ format.relop_project <- function(x, ...) {
          aterms,
          ", g= ",
          paste(x$groupby, collapse = ", "),
-         ")")
+         ")",
+         "\n")
 }
 
 #' @export

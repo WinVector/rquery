@@ -64,7 +64,8 @@ format.relop_select_columns <- function(x, ...) {
   }
   paste0(trimws(format(x$source[[1]]), which = "right"),
          " %.>%\n ",
-         "select_columns(., ", paste(x$columns, collapse = ", "), ")")
+         "select_columns(., ", paste(x$columns, collapse = ", "), ")",
+         "\n")
 }
 
 #' @export

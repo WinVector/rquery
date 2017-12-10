@@ -80,7 +80,8 @@ format.relop_natural_join <- function(x, ...) {
          x$jointype,
          ", by= ",
          paste(x$by, collapse = ", "),
-         ")")
+         ")",
+         "\n")
 }
 
 #' @export

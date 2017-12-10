@@ -233,7 +233,8 @@ format.relop_extend <- function(x, ...) {
          aterms,
          pterms,
          oterms,
-         ")")
+         ")",
+         "\n")
 }
 
 #' @export

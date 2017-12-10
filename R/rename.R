@@ -83,7 +83,8 @@ format.relop_rename_columns <- function(x, ...) {
   }
   paste0(trimws(format(x$source[[1]]), which = "right"),
          " %.>%\n ",
-         "rename(., ", map_to_char_(x$cmap), ")")
+         "rename(., ", map_to_char_(x$cmap), ")",
+         "\n")
 }
 
 #' @export

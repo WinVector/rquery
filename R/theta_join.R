@@ -169,7 +169,8 @@ format.relop_theta_join <- function(x, ...) {
          x$jointype,
          "; on= ",
          paste(x$parsed$presentation, collapse = ", "),
-         ")")
+         ")",
+         "\n")
 }
 
 #' @export

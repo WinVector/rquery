@@ -90,7 +90,8 @@ format.relop_order_by <- function(x, ...) {
          ifelse((length(x$limit)>0) && (length(x$orderby)>0),
                 paste0(", LIMIT ", x$limit),
                 ""),
-         ")")
+         ")",
+         "\n")
 }
 
 #' @export

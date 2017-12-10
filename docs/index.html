@@ -142,7 +142,7 @@ d &lt;-<span class="st"> </span><span class="kw"><a href="reference/dbi_copy_to.
                  <span class="dt">overwrite =</span> <span class="op">!</span>use_spark)
 
 <span class="kw">print</span>(d)</code></pre></div>
-<pre><code>## [1] "dbi_table('d')"</code></pre>
+<pre><code>## [1] "dbi_table('d')\n"</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">d <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="reference/to_sql.html">to_sql</a></span>(.) <span class="op">%.&gt;%</span>
 <span class="st">  </span>DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery">dbGetQuery</a></span>(my_db, .) <span class="op">%.&gt;%</span>

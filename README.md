@@ -97,7 +97,7 @@ d <- dbi_copy_to(my_db, 'd',
 print(d)
 ```
 
-    ## [1] "dbi_table('d')"
+    ## [1] "dbi_table('d')\n"
 
 ``` r
 d %.>%

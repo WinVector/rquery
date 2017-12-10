@@ -155,7 +155,8 @@ format.relop_dbi_table <- function(x, ...) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
-  paste0("dbi_table('", x$table_name, "')")
+  paste0("dbi_table('", x$table_name, "')",
+         "\n")
 }
 
 #' @export
