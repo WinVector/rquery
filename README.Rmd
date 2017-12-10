@@ -169,10 +169,20 @@ facts about the query.  For example:
 ```{r qfacts}
 tables_used(dq)
 
-columns_used(dq)
+cu <- columns_used(dq)
+print(cu)
 ```
 
 By using the `to_sql(column_restriction = )` option, the query can be re-built in terms of columns used to ensure we are using only a minimal set of columns (these operators are still under development).  The column set (gathered with `columns_used(dq)`) is pushed back to all source nodes, altering their queries (allowing local optimization).
+
+```{r restrict}
+sqlr <- to_sql(dq, column_restriction = cu)
+cat(sqlr)
+
+DBI::dbGetQuery(my_db, sqlr) %.>%
+  knitr::kable(.)
+```
+
 
 And that is our experiment.
 

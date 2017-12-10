@@ -234,12 +234,74 @@ tables_used(dq)
     ## [1] "d"
 
 ``` r
-columns_used(dq)
+cu <- columns_used(dq)
+print(cu)
 ```
 
     ## [1] "`d`.`subjectID`"       "`d`.`surveyCategory`"  "`d`.`assessmentTotal`"
 
 By using the `to_sql(column_restriction = )` option, the query can be re-built in terms of columns used to ensure we are using only a minimal set of columns (these operators are still under development). The column set (gathered with `columns_used(dq)`) is pushed back to all source nodes, altering their queries (allowing local optimization).
+
+``` r
+sqlr <- to_sql(dq, column_restriction = cu)
+cat(sqlr)
+```
+
+    ## SELECT * FROM (
+    ##  SELECT
+    ##   `subjectID`,
+    ##   `diagnosis`,
+    ##   `probability`
+    ##  FROM (
+    ##   SELECT * FROM (
+    ##    SELECT
+    ##     `subjectID`,
+    ##     `surveyCategory`,
+    ##     `assessmentTotal`,
+    ##     `probability`,
+    ##     `count`,
+    ##     `rank`,
+    ##     `rank` = `count`  AS `isdiagnosis`,
+    ##     `surveyCategory`  AS `diagnosis`
+    ##    FROM (
+    ##     SELECT
+    ##      `subjectID`,
+    ##      `surveyCategory`,
+    ##      `assessmentTotal`,
+    ##      `probability`,
+    ##      `count`,
+    ##      rank() OVER (  PARTITION BY `subjectID` ORDER BY `probability` ) AS `rank`
+    ##     FROM (
+    ##      SELECT
+    ##       `subjectID`,
+    ##       `surveyCategory`,
+    ##       `assessmentTotal`,
+    ##       exp(`assessmentTotal` * 0.237) / sum(exp(`assessmentTotal` * 0.237)) OVER (  PARTITION BY `subjectID` ) AS `probability`,
+    ##       count(1) OVER (  PARTITION BY `subjectID` ) AS `count`
+    ##      FROM (
+    ##       SELECT
+    ##        `d`.`subjectID`,
+    ##        `d`.`surveyCategory`,
+    ##        `d`.`assessmentTotal`
+    ##       FROM
+    ##        `d`
+    ##       ) tsql_0000
+    ##      ) tsql_0001
+    ##     ) tsql_0002
+    ##   ) tsql_0003
+    ##   WHERE `isdiagnosis`
+    ##  ) tsql_0004
+    ## ) tsql_0005 ORDER BY `subjectID`
+
+``` r
+DBI::dbGetQuery(my_db, sqlr) %.>%
+  knitr::kable(.)
+```
+
+|  subjectID| diagnosis           |  probability|
+|----------:|:--------------------|------------:|
+|          1| withdrawal behavior |    0.6706221|
+|          2| positive re-framing |    0.5589742|
 
 And that is our experiment.
 
