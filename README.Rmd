@@ -25,17 +25,17 @@ There are many prior relational algebra inspired specialized query languages.  J
 
 The primary relational operators are:
 
-  * `extend()`.  Extend adds derived columns to a relation table.  With a sufficiently powerful `SQL` provider this includes ordered and partitioned window functions.  This sort of operator can eventually encompass all of a ["grouped ordered apply" methodology](http://www.win-vector.com/blog/2016/12/organize-your-data-manipulation-in-terms-of-grouped-ordered-apply/).
-  * `project()`.  Project is usually portrayed as the equivalent to column selection.  In our opinion the original relational nature of the operator is best captured by moving `SQL`'s "`GROUP BY`" aggregation functionality to this operator.
-  * `natural_join()`.  This a specialized relational join operator, using all common columns as the equi-join condition.  The next operator to add would definitely be `theta-join` as that adds a lot more expressiveness to the grammar.
-  * `theta_join()`.  This is the relational join operator, insisting on distinct columns but allowing an arbitrary matching condition.  The next operator to add would definitely be `theta-join` as that adds a lot more expressiveness to the grammar.
-  * `select_rows()`.  This is Codd's relational row selection.  Obviously `select` alone is an over-used and now ambiguous term (it is the "doit" verb in `SQL` and the *column* selector in `dplyr`).
-  * `rename_columns()`.  This operator renames sets of columns.
+  * [`extend()`](https://johnmount.github.io/rquery/reference/extend_nse.html).  Extend adds derived columns to a relation table.  With a sufficiently powerful `SQL` provider this includes ordered and partitioned window functions.  This operator also includes built-in [`seplyr`](https://winvector.github.io/seplyr/)-style [assignment partitioning](https://winvector.github.io/seplyr/articles/MutatePartitioner.html).
+  * [`project()`](https://johnmount.github.io/rquery/reference/project_nse.html).  Project is usually portrayed as the equivalent to column selection.  In our opinion the original relational nature of the operator is best captured by moving `SQL`'s "`GROUP BY`" aggregation functionality to this operator.
+  * [`natural_join()`](https://johnmount.github.io/rquery/reference/natural_join.html).  This a specialized relational join operator, using all common columns as the equi-join condition.  The next operator to add would definitely be `theta-join` as that adds a lot more expressiveness to the grammar.
+  * [`theta_join()`](https://johnmount.github.io/rquery/reference/theta_join_nse.html).  This is the relational join operator, insisting on distinct columns but allowing an arbitrary matching condition.  The next operator to add would definitely be `theta-join` as that adds a lot more expressiveness to the grammar.
+  * [`select_rows()`](https://johnmount.github.io/rquery/reference/theta_join_nse.html).  This is Codd's relational row selection.  Obviously `select` alone is an over-used and now ambiguous term (it is the "doit" verb in `SQL` and the *column* selector in `dplyr`).
+  * [`rename_columns()`](https://johnmount.github.io/rquery/reference/rename_columns.html).  This operator renames sets of columns.
   
 The primary non-relational (traditional `SQL`) operators are:
 
-  * `select_columns()`.  This allows choice of columns (central to `SQL`), but is not a relational operator as it can damage row-uniqueness.
-  * `order_by()`.  This is a non-relational "user presentation" verb.  Row order is not well-defined in the relational algebra (and also not in most `SQL` implementations).  If used it should be used last in a query (so it is not undone by later operations).
+  * [`select_columns()`](https://johnmount.github.io/rquery/reference/select_columns.html).  This allows choice of columns (central to `SQL`), but is not a relational operator as it can damage row-uniqueness.
+  * [`order_by()`](https://johnmount.github.io/rquery/reference/order_by.html).  This is a non-relational "user presentation" verb.  Row order is not well-defined in the relational algebra (and also not in most `SQL` implementations).  If used it should be used last in a query (so it is not undone by later operations).
   
 The primary missing relational operators are:
 
@@ -46,9 +46,6 @@ The primary missing relational operators are:
 Primary useful missing operators:
 
   * Deselect columns.
-  * [`seplyr::partition_mutate()`](https://winvector.github.io/seplyr/reference/partition_mutate_qt.html)
-  * [`seplyr::if_else_device()`](https://winvector.github.io/seplyr/reference/if_else_device.html)
-
 
 A great benefit of Codd's relational algebra is it decomposes data transformations into a sequence of operators.  `SQL` loses a lot of the original invariants, and over-specifies how operations are strung together and insisting on a nesting function notation.  `SQL` also realizes some of the Codd concepts as operators, some as expressions, and some as predicates (obscuring the uniformity of the original theory).
 
@@ -181,10 +178,4 @@ if(use_spark) {
   DBI::dbDisconnect(my_db)
 }
 ```
-
-
-Note: `rquery` is only an experimental package. All `rquery` operators should be only used in "zero dependency mode" (never using a value created in the same operator or writing the same value twice) in the sense of [`seplyr::partition_mutate_qt`](https://www.rdocumentation.org/packages/seplyr/versions/0.5.0/topics/partition_mutate_qt); the nodes check this as a pre-condition).  Again, the point was to see how quickly one can get a workable data transform pipeline in terms of Codd-inspired operators. `rquery` can also be used to teach advanced use of `SQL`.
-
-We are also adding custom support for translations [such as `ifelse()`](https://johnmount.github.io/rquery/reference/extend_nse.html).
-
 

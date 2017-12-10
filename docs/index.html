@@ -70,24 +70,24 @@
 <p>The primary relational operators are:</p>
 <ul>
 <li>
-<code>extend()</code>. Extend adds derived columns to a relation table. With a sufficiently powerful <code>SQL</code> provider this includes ordered and partitioned window functions. This sort of operator can eventually encompass all of a <a href="http://www.win-vector.com/blog/2016/12/organize-your-data-manipulation-in-terms-of-grouped-ordered-apply/">“grouped ordered apply” methodology</a>.</li>
+<a href="https://johnmount.github.io/rquery/reference/extend_nse.html"><code>extend()</code></a>. Extend adds derived columns to a relation table. With a sufficiently powerful <code>SQL</code> provider this includes ordered and partitioned window functions. This operator also includes built-in <a href="https://winvector.github.io/seplyr/"><code>seplyr</code></a>-style <a href="https://winvector.github.io/seplyr/articles/MutatePartitioner.html">assignment partitioning</a>.</li>
 <li>
-<code>project()</code>. Project is usually portrayed as the equivalent to column selection. In our opinion the original relational nature of the operator is best captured by moving <code>SQL</code>’s “<code>GROUP BY</code>” aggregation functionality to this operator.</li>
+<a href="https://johnmount.github.io/rquery/reference/project_nse.html"><code>project()</code></a>. Project is usually portrayed as the equivalent to column selection. In our opinion the original relational nature of the operator is best captured by moving <code>SQL</code>’s “<code>GROUP BY</code>” aggregation functionality to this operator.</li>
 <li>
-<code><a href="reference/natural_join.html">natural_join()</a></code>. This a specialized relational join operator, using all common columns as the equi-join condition. The next operator to add would definitely be <code>theta-join</code> as that adds a lot more expressiveness to the grammar.</li>
+<a href="https://johnmount.github.io/rquery/reference/natural_join.html"><code><a href="reference/natural_join.html">natural_join()</a></code></a>. This a specialized relational join operator, using all common columns as the equi-join condition. The next operator to add would definitely be <code>theta-join</code> as that adds a lot more expressiveness to the grammar.</li>
 <li>
-<code>theta_join()</code>. This is the relational join operator, insisting on distinct columns but allowing an arbitrary matching condition. The next operator to add would definitely be <code>theta-join</code> as that adds a lot more expressiveness to the grammar.</li>
+<a href="https://johnmount.github.io/rquery/reference/theta_join_nse.html"><code>theta_join()</code></a>. This is the relational join operator, insisting on distinct columns but allowing an arbitrary matching condition. The next operator to add would definitely be <code>theta-join</code> as that adds a lot more expressiveness to the grammar.</li>
 <li>
-<code>select_rows()</code>. This is Codd’s relational row selection. Obviously <code>select</code> alone is an over-used and now ambiguous term (it is the “doit” verb in <code>SQL</code> and the <em>column</em> selector in <code>dplyr</code>).</li>
+<a href="https://johnmount.github.io/rquery/reference/theta_join_nse.html"><code>select_rows()</code></a>. This is Codd’s relational row selection. Obviously <code>select</code> alone is an over-used and now ambiguous term (it is the “doit” verb in <code>SQL</code> and the <em>column</em> selector in <code>dplyr</code>).</li>
 <li>
-<code><a href="reference/rename_columns.html">rename_columns()</a></code>. This operator renames sets of columns.</li>
+<a href="https://johnmount.github.io/rquery/reference/rename_columns.html"><code><a href="reference/rename_columns.html">rename_columns()</a></code></a>. This operator renames sets of columns.</li>
 </ul>
 <p>The primary non-relational (traditional <code>SQL</code>) operators are:</p>
 <ul>
 <li>
-<code><a href="reference/select_columns.html">select_columns()</a></code>. This allows choice of columns (central to <code>SQL</code>), but is not a relational operator as it can damage row-uniqueness.</li>
+<a href="https://johnmount.github.io/rquery/reference/select_columns.html"><code><a href="reference/select_columns.html">select_columns()</a></code></a>. This allows choice of columns (central to <code>SQL</code>), but is not a relational operator as it can damage row-uniqueness.</li>
 <li>
-<code><a href="reference/order_by.html">order_by()</a></code>. This is a non-relational “user presentation” verb. Row order is not well-defined in the relational algebra (and also not in most <code>SQL</code> implementations). If used it should be used last in a query (so it is not undone by later operations).</li>
+<a href="https://johnmount.github.io/rquery/reference/order_by.html"><code><a href="reference/order_by.html">order_by()</a></code></a>. This is a non-relational “user presentation” verb. Row order is not well-defined in the relational algebra (and also not in most <code>SQL</code> implementations). If used it should be used last in a query (so it is not undone by later operations).</li>
 </ul>
 <p>The primary missing relational operators are:</p>
 <ul>
@@ -98,8 +98,6 @@
 <p>Primary useful missing operators:</p>
 <ul>
 <li>Deselect columns.</li>
-<li><a href="https://winvector.github.io/seplyr/reference/partition_mutate_qt.html"><code>seplyr::partition_mutate()</code></a></li>
-<li><a href="https://winvector.github.io/seplyr/reference/if_else_device.html"><code><a href="http://www.rdocumentation.org/packages/seplyr/topics/if_else_device">seplyr::if_else_device()</a></code></a></li>
 </ul>
 <p>A great benefit of Codd’s relational algebra is it decomposes data transformations into a sequence of operators. <code>SQL</code> loses a lot of the original invariants, and over-specifies how operations are strung together and insisting on a nesting function notation. <code>SQL</code> also realizes some of the Codd concepts as operators, some as expressions, and some as predicates (obscuring the uniformity of the original theory).</p>
 <p>A lot of the grace of the Codd theory can be recovered through the usual trick changing function composition notation from <code>g(f(x))</code> as <code>x . f() . g()</code>. This is the other inspiration for this experiment: “what if <code>SQL</code> were piped?” (wrote composition as a left to right flow, instead of right to left nesting).</p>
@@ -288,8 +286,6 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 } <span class="cf">else</span> {
   DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect">dbDisconnect</a></span>(my_db)
 }</code></pre></div>
-<p>Note: <code>rquery</code> is only an experimental package. All <code>rquery</code> operators should be only used in “zero dependency mode” (never using a value created in the same operator or writing the same value twice) in the sense of <a href="https://www.rdocumentation.org/packages/seplyr/versions/0.5.0/topics/partition_mutate_qt"><code><a href="http://www.rdocumentation.org/packages/seplyr/topics/partition_mutate_qt">seplyr::partition_mutate_qt</a></code></a>; the nodes check this as a pre-condition). Again, the point was to see how quickly one can get a workable data transform pipeline in terms of Codd-inspired operators. <code>rquery</code> can also be used to teach advanced use of <code>SQL</code>.</p>
-<p>We are also adding custom support for translations <a href="https://johnmount.github.io/rquery/reference/extend_nse.html">such as <code>ifelse()</code></a>.</p>
 </div>
   </div>
 
