@@ -11,7 +11,7 @@
 #' d <- dbi_copy_to(my_db, 'd',
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
 #' eqn <- rename_columns(d, c('AUC2' := 'AUC', 'R' := 'R2'))
-#' print(eqn)
+#' cat(format(eqn))
 #' sql <- to_sql(eqn)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
@@ -82,7 +82,7 @@ format.relop_rename_columns <- function(x, ...) {
     stop("unexpected arguemnts")
   }
   paste0(format(x$source[[1]]),
-         " %.>% ",
+         " %.>%\n ",
          "rename(., ", map_to_char_(x$cmap), ")")
 }
 

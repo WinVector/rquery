@@ -20,7 +20,7 @@
 #' d2 <- dbi_copy_to(my_db, 'd2',
 #'                  data.frame(AUC2 = 0.4, R2 = 0.3))
 #' eqn <- theta_join_se(d1, d2, "AUC >= AUC2")
-#' print(eqn)
+#' cat(format(eqn))
 #' sql <- to_sql(eqn)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
@@ -81,7 +81,7 @@ theta_join_se <- function(a, b,
 #' d2 <- dbi_copy_to(my_db, 'd2',
 #'                  data.frame(AUC2 = 0.4, R2 = 0.3))
 #' eqn <- theta_join_nse(d1, d2, AUC >= AUC2)
-#' print(eqn)
+#' cat(format(eqn))
 #' sql <- to_sql(eqn)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
@@ -160,13 +160,14 @@ format.relop_theta_join <- function(x, ...) {
   }
   a <- format(x$source[[1]])
   b <- format(x$source[[2]])
+  b <- gsub("\n", "\n  ", b, fixed = TRUE)
   paste0(a,
-         " %.>% ",
-         "theta_join(., ",
-         b,
-         "; ",
+         " %.>%\n ",
+         "theta_join(.,\n",
+         "  ", b, ",\n",
+         "  j= ",
          x$jointype,
-         "; on ",
+         "; on= ",
          paste(x$parsed$presentation, collapse = ", "),
          ")")
 }

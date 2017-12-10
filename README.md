@@ -207,26 +207,37 @@ cat(to_sql(dq))
 Part of the plan is: the additional record-keeping in the operator nodes would let a very powerful query optimizer work over the flow before it gets translated to `SQL` (perhaps an extension of or successor to [`seplyr`](https://winvector.github.io/seplyr/), which re-plans over `dplyr::mutate()` expressions). At the very least restricting to columns later used and folding selects together would be achievable. One should have a good chance at optimization as the representation is fairly high-level, and many of the operators are relational (meaning there are known legal transforms a query optimizer can use). The flow itself is represented as follows:
 
 ``` r
-print(dq)
-```
-
-    [1] "dbi_table('d') %.>% extend(., probability := exp(assessmentTotal * scale) / sum(exp(assessmentTotal * scale)), count := count(1); p: subjectID) %.>% extend(., rank := rank(); p: subjectID; o: probability) %.>% extend(., isdiagnosis := rank == count, diagnosis := surveyCategory) %.>% select_rows(., isdiagnosis) %.>% select_columns(., subjectID, diagnosis, probability) %.>% order_by(., subjectID)"
-
-We can even pretty-format it:
-
-``` r
-cat(gsub("%.>%", "%.>%\n   ", 
-         format(dq), 
-         fixed = TRUE))
+cat(format(dq))
 ```
 
     dbi_table('d') %.>%
-        extend(., probability := exp(assessmentTotal * scale) / sum(exp(assessmentTotal * scale)), count := count(1); p: subjectID) %.>%
-        extend(., rank := rank(); p: subjectID; o: probability) %.>%
-        extend(., isdiagnosis := rank == count, diagnosis := surveyCategory) %.>%
-        select_rows(., isdiagnosis) %.>%
-        select_columns(., subjectID, diagnosis, probability) %.>%
-        order_by(., subjectID)
+     extend(.,
+      probability := exp(assessmentTotal * scale) / sum(exp(assessmentTotal * scale)),
+      count := count(1), p= subjectID) %.>%
+     extend(.,
+      rank := rank(), p= subjectID, o= probability) %.>%
+     extend(.,
+      isdiagnosis := rank == count,
+      diagnosis := surveyCategory) %.>%
+     select_rows(., isdiagnosis) %.>%
+     select_columns(., subjectID, diagnosis, probability) %.>%
+     order_by(., subjectID)
+
+Because the `rquery` representation is an intelligible network of nodes: we can interrogate it for facts about the query. For example:
+
+``` r
+tables_used(dq)
+```
+
+    ## [1] "d"
+
+``` r
+columns_used(dq)
+```
+
+    ## [1] "`d`.`subjectID`"       "`d`.`surveyCategory`"  "`d`.`assessmentTotal`"
+
+By using the `to_sql(column_restriction = )` option, the query can be re-build in terms of columns used to ensure we are using only a minimal set of columns. The column set (gathered with `columns_used(dq)`) is pushed back to all source nodes, altering their queries.
 
 And that is our experiment.
 

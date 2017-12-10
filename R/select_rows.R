@@ -12,7 +12,7 @@
 #' d <- dbi_copy_to(my_db, 'd',
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
 #' eqn <- select_rows_se(d, "AUC >= 0.5")
-#' print(eqn)
+#' cat(format(eqn))
 #' sql <- to_sql(eqn)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
@@ -49,7 +49,7 @@ select_rows_se <- function(source, expr,
 #' d <- dbi_copy_to(my_db, 'd',
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
 #' eqn <- select_rows_nse(d, AUC >= 0.5)
-#' print(eqn)
+#' cat(format(eqn))
 #' sql <- to_sql(eqn)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
@@ -105,7 +105,7 @@ format.relop_select_rows <- function(x, ...) {
     stop("unexpected arguemnts")
   }
   paste0(format(x$source[[1]]),
-         " %.>% ",
+         " %.>%\n ",
          "select_rows(., ", x$parsed[[1]]$presentation, ")")
 }
 

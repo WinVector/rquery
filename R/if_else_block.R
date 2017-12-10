@@ -49,7 +49,7 @@
 #' print(program)
 #'
 #' trf <- extend_se(d, program)
-#' cat(gsub("%.>%", "%.>%\n   ", format(trf), fixed = TRUE))
+#' cat(format(trf))
 #'
 #' sql <- to_sql(trf)
 #' cat(sql)

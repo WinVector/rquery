@@ -100,7 +100,7 @@ extend_impl_list <- function(source, parsed,
 #' d <- dbi_copy_to(my_db, 'd',
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
 #' eqn <- extend_se(d, c("v" := "AUC + R2", "x" := "max(AUC,v)"))
-#' print(eqn)
+#' cat(format(eqn))
 #' sql <- to_sql(eqn)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
@@ -157,7 +157,7 @@ extend_se <- function(source, assignments,
 #' d <- dbi_copy_to(my_db, 'd',
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
 #' eqn <- extend_nse(d, v := ifelse(AUC>0.5, R2, 1.0))
-#' print(eqn)
+#' cat(format(eqn))
 #' sql <- to_sql(eqn)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
@@ -213,12 +213,12 @@ format.relop_extend <- function(x, ...) {
   }
   pterms <- ""
   if(length(x$partitionby)>0) {
-    pterms <- paste0("; p: ",
+    pterms <- paste0(", p= ",
                      paste(x$partitionb, collapse = ", "))
   }
   oterms <- ""
   if(length(x$orderby)>0) {
-    oterms <- paste0("; o: ",
+    oterms <- paste0(", o= ",
       paste(x$orderby, collapse = ", "),
       ifelse(x$desc, " DESC", ""))
   }
@@ -226,10 +226,10 @@ format.relop_extend <- function(x, ...) {
                       function(pi) {
                         paste(as.character(pi$presentation), collapse = ' ')
                       }, character(1))
-  aterms <- paste(origTerms, collapse = ", ")
+  aterms <- paste(origTerms, collapse = ",\n  ")
   paste0(format(x$source[[1]]),
-         " %.>% ",
-         "extend(., ",
+         " %.>%\n ",
+         "extend(.,\n  ",
          aterms,
          pterms,
          oterms,

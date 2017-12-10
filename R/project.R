@@ -44,7 +44,7 @@ project_impl <- function(source, groupby, parsed) {
 #' d <- dbi_copy_to(my_db, 'd',
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
 #' eqn <- project_se(d, "AUC", "v" := "max(R2)")
-#' print(eqn)
+#' cat(format(eqn))
 #' sql <- to_sql(eqn)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
@@ -72,7 +72,7 @@ project_se <- function(source, groupby, assignments,
 #' d <- dbi_copy_to(my_db, 'd',
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
 #' eqn <- project_nse(d, "AUC", v := max(R2))
-#' print(eqn)
+#' cat(format(eqn))
 #' sql <- to_sql(eqn)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
@@ -123,10 +123,10 @@ format.relop_project <- function(x, ...) {
                       }, character(1))
   aterms <- paste(origTerms, collapse = ", ")
   paste0(format(x$source[[1]]),
-         " %.>% ",
+         " %.>%\n ",
          "project(., ",
          aterms,
-         "; g ",
+         ", g= ",
          paste(x$groupby, collapse = ", "),
          ")")
 }

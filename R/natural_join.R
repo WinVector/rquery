@@ -16,7 +16,7 @@
 #' d2 <- dbi_copy_to(my_db, 'd2',
 #'                  data.frame(AUC = 0.6, D = 0.3))
 #' eqn <- natural_join(d1, d2)
-#' print(eqn)
+#' print(format(eqn))
 #' sql <- to_sql(eqn)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
@@ -71,13 +71,14 @@ format.relop_natural_join <- function(x, ...) {
   }
   a <- format(x$source[[1]])
   b <- format(x$source[[2]])
+  b <- gsub("\n", "\n  ", b, fixed = TRUE)
   paste0(a,
-         " %.>% ",
-         "natural_join(., ",
-         b,
-         "; ",
+         " %.>%\n ",
+         "natural_join(.,\n",
+         "  ", b, ",\n",
+         "  j= ",
          x$jointype,
-         "; by ",
+         ", by= ",
          paste(x$by, collapse = ", "),
          ")")
 }

@@ -11,7 +11,7 @@
 #' d <- dbi_copy_to(my_db, 'd',
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
 #' eqn <- select_columns(d, 'AUC')
-#' print(eqn)
+#' cat(format(eqn))
 #' sql <- to_sql(eqn)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
@@ -63,7 +63,7 @@ format.relop_select_columns <- function(x, ...) {
     stop("unexpected arguemnts")
   }
   paste0(format(x$source[[1]]),
-         " %.>% ",
+         " %.>%\n ",
          "select_columns(., ", paste(x$columns, collapse = ", "), ")")
 }
 

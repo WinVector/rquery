@@ -158,16 +158,19 @@ the representation is fairly high-level, and many of the operators are relationa
 is represented as follows:
 
 ```{r pqp, comment=''}
-print(dq)
+cat(format(dq))
 ```
 
-We can even pretty-format it:
+Because the `rquery` representation is an intelligible network of nodes: we can interrogate it for
+facts about the query.  For example:
 
-```{r pq, comment=''}
-cat(gsub("%.>%", "%.>%\n   ", 
-         format(dq), 
-         fixed = TRUE))
+```{r qfacts}
+tables_used(dq)
+
+columns_used(dq)
 ```
+
+By using the `to_sql(column_restriction = )` option, the query can be re-build in terms of columns used to ensure we are using only a minimal set of columns.  The column set (gathered with `columns_used(dq)`) is pushed back to all source nodes, altering their queries.
 
 And that is our experiment.
 

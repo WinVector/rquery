@@ -150,7 +150,7 @@ parse_nse <- function(source, exprs, env,
 #' d2 <- dbi_copy_to(my_db, 'd2',
 #'                  data.frame(AUC = 0.6, D = 0.3))
 #' eqn <- natural_join(d1, d2)
-#' print(eqn)
+#' cat(format(eqn))
 #' print(tables_used(eqn))
 #' DBI::dbDisconnect(my_db)
 #'

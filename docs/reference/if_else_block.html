@@ -157,9 +157,14 @@ is a reserved column name for this procedure.</p>
 #&gt; [1] "ifelse( ifebtest_2, 1, edited)"
 #&gt; </div><div class='input'>
 <span class='no'>trf</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='extend_se.html'>extend_se</a></span>(<span class='no'>d</span>, <span class='no'>program</span>)
-<span class='fu'>cat</span>(<span class='fu'>gsub</span>(<span class='st'>"%.&gt;%"</span>, <span class='st'>"%.&gt;%\n   "</span>, <span class='fu'>format</span>(<span class='no'>trf</span>), <span class='kw'>fixed</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>))</div><div class='output co'>#&gt; dbi_table('d') %.&gt;%
-#&gt;     extend(., ifebtest_2 := ( a + b ) &gt; 1, ifebtest_1 := r &gt;= 0.5) %.&gt;%
-#&gt;     extend(., a := ifelse(ifebtest_2, ifelse(ifebtest_1, 0, a), a), b := ifelse(ifebtest_2, ifelse(!( ifebtest_1 ), 0, b), b), edited := ifelse(ifebtest_2, 1, edited))</div><div class='input'>
+<span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>trf</span>))</div><div class='output co'>#&gt; dbi_table('d') %.&gt;%
+#&gt;  extend(.,
+#&gt;   ifebtest_2 := ( a + b ) &gt; 1,
+#&gt;   ifebtest_1 := r &gt;= 0.5) %.&gt;%
+#&gt;  extend(.,
+#&gt;   a := ifelse(ifebtest_2, ifelse(ifebtest_1, 0, a), a),
+#&gt;   b := ifelse(ifebtest_2, ifelse(!( ifebtest_1 ), 0, b), b),
+#&gt;   edited := ifelse(ifebtest_2, 1, edited))</div><div class='input'>
 <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>trf</span>)
 <span class='fu'>cat</span>(<span class='no'>sql</span>)</div><div class='output co'>#&gt; SELECT
 #&gt;  `i`,
@@ -201,8 +206,8 @@ is a reserved column name for this procedure.</p>
           ) a
        ) b"</span>
  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>q</span>)</div><div class='output co'>#&gt;                     r1                   r2
-#&gt; 1 -1419299546520190486   127479891796925891
-#&gt; 2   132674968688364345 -1456993798796403309</div><div class='input'>
+#&gt; 1 -5435583155179364577  -262678134182845764
+#&gt; 2  3908565272334039222 -8518841035925602543</div><div class='input'>
 <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
