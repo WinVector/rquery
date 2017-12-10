@@ -237,7 +237,7 @@ columns_used(dq)
 
     ## [1] "`d`.`subjectID`"       "`d`.`surveyCategory`"  "`d`.`assessmentTotal`"
 
-By using the `to_sql(column_restriction = )` option, the query can be re-build in terms of columns used to ensure we are using only a minimal set of columns. The column set (gathered with `columns_used(dq)`) is pushed back to all source nodes, altering their queries.
+By using the `to_sql(column_restriction = )` option, the query can be re-built in terms of columns used to ensure we are using only a minimal set of columns. The column set (gathered with `columns_used(dq)`) is pushed back to all source nodes, altering their queries.
 
 And that is our experiment.
 
