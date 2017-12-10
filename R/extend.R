@@ -227,7 +227,7 @@ format.relop_extend <- function(x, ...) {
                         paste(as.character(pi$presentation), collapse = ' ')
                       }, character(1))
   aterms <- paste(origTerms, collapse = ",\n  ")
-  paste0(format(x$source[[1]]),
+  paste0(trimws(format(x$source[[1]]), which="right"),
          " %.>%\n ",
          "extend(.,\n  ",
          aterms,

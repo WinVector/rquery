@@ -122,7 +122,7 @@ format.relop_project <- function(x, ...) {
                         paste(as.character(pi$presentation), collapse = ' ')
                       }, character(1))
   aterms <- paste(origTerms, collapse = ", ")
-  paste0(format(x$source[[1]]),
+  paste0(trimws(format(x$source[[1]]), which="right"),
          " %.>%\n ",
          "project(., ",
          aterms,

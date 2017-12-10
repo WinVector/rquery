@@ -158,8 +158,8 @@ format.relop_theta_join <- function(x, ...) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
-  a <- format(x$source[[1]])
-  b <- format(x$source[[2]])
+  a <- trimws(format(x$source[[1]]), which = "right")
+  b <- trimws(format(x$source[[2]]), which = "right")
   b <- gsub("\n", "\n  ", b, fixed = TRUE)
   paste0(a,
          " %.>%\n ",

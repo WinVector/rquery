@@ -25,9 +25,9 @@
 #' d <- dbi_copy_to(my_db, 'd',
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
 #' eqn <- order_by(d, "AUC", desc=TRUE, limit=4)
-#' cat(format(eqn)); cat("\n")
+#' cat(format(eqn))
 #' sql <- to_sql(eqn)
-#' cat(sql); cat("\n")
+#' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
 #' DBI::dbDisconnect(my_db)
 #'
@@ -80,7 +80,7 @@ format.relop_order_by <- function(x, ...) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
-  paste0(format(x$source[[1]]),
+  paste0(trimws(format(x$source[[1]]), which="right"),
          " %.>%\n ",
          "order_by(., ",
          ifelse(length(x$orderby)>0,

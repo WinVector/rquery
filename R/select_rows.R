@@ -104,9 +104,10 @@ format.relop_select_rows <- function(x, ...) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
-  paste0(format(x$source[[1]]),
+  paste0(trimws(format(x$source[[1]]), which="right"),
          " %.>%\n ",
-         "select_rows(., ", x$parsed[[1]]$presentation, ")")
+         "select_rows(., ", x$parsed[[1]]$presentation, ")",
+         "\n")
 }
 
 #' @export
