@@ -305,7 +305,7 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
  select_rows(., isdiagnosis) %.&gt;%
  select_columns(., subjectID, diagnosis, probability) %.&gt;%
  order_by(., subjectID)</code></pre>
-<p>We also can stand this system up on non-<code>DBI</code> sources such as <code>SparkR</code>.</p>
+<p>We also can <a href="https://github.com/JohnMount/rquery/blob/master/extras/SparkRExample.md">stand this system up on non-<code>DBI</code> sources such as <code>SparkR</code></a>.</p>
 <p>And that is our experiment.</p>
 <p>We are looking for funding and partners to take this system further (including: finishing functionality, documentation, training materials, test materials, acceptance procedures, porting to more back-ends).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="cf">if</span>(use_spark) {

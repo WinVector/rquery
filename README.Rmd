@@ -1,7 +1,7 @@
 ---
 title: "rquery"
 output: github_document
-date: "2017-12-10"
+date: "2017-12-11"
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -177,7 +177,7 @@ is represented as follows:
 cat(format(dq))
 ```
 
-We also can stand this system up on non-`DBI` sources such as `SparkR`.
+We also can [stand this system up on non-`DBI` sources such as `SparkR`](https://github.com/JohnMount/rquery/blob/master/extras/SparkRExample.md).
 
 And that is our experiment. 
 

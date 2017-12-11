@@ -1,6 +1,6 @@
 rquery
 ================
-2017-12-10
+2017-12-11
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 [`rquery`](https://johnmount.github.io/rquery/) is an experiment/demonstration of a simplified sequenced query language based on [Codd's relational algebra](https://en.wikipedia.org/wiki/Relational_algebra) and not currently recommended for non-experimental (i.e., production) use. The goal of this experiment is to see if `SQL` would be more fun if it had a sequential data-flow or pipe notation.
@@ -248,7 +248,7 @@ cat(format(dq))
      select_columns(., subjectID, diagnosis, probability) %.>%
      order_by(., subjectID)
 
-We also can stand this system up on non-`DBI` sources such as `SparkR`.
+We also can [stand this system up on non-`DBI` sources such as `SparkR`](https://github.com/JohnMount/rquery/blob/master/extras/SparkRExample.md).
 
 And that is our experiment.
 
