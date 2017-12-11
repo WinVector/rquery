@@ -27,9 +27,10 @@ print(dSparkR)
     ## SparkDataFrame[subjectID:double, surveyCategory:string, assessmentTotal:double, irrelevantCol1:string, irrelevantCol2:string]
 
 ``` r
-createOrReplaceTempView(dSparkR, "dSparkR")
+SparkR::createOrReplaceTempView(dSparkR, 
+                                "dSparkR")
 
-sql("SELECT * from dSparkR") %.>%
+SparkR::sql("SELECT * from dSparkR") %.>%
   head(.) %.>%
   knitr::kable(.)
 ```
@@ -71,10 +72,10 @@ dq <- d %.>%
                       "probability")) %.>%
   order_by(., 'subjectID')
 
-sql <- to_sql(dq)
+sql <- rquery::to_sql(dq)
 
 # run query through SparkR
-sql(sql) %.>%
+SparkR::sql(sql) %.>%
   head(.) %.>%
   knitr::kable(.)
 ```
