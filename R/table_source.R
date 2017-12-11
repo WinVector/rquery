@@ -1,5 +1,57 @@
 
-# dbi data source
+
+#' Table data source.
+#'
+#' Build structures (table name, column names, and quoting
+#' strategy) needed to represent data from a remote table.
+#'
+#' Generate a query that returns contents of a table, we
+#' could try to eliminate this (replace the query with the table name),
+#' but there are features one can work with with the query in place and
+#' SQL optimizers likely make this zero-cost anyway.
+#'
+#' @param table_name character, name of table
+#' @param columns character, column names of table
+#' @param dbqi function, method to quote identifiers in queries
+#' @param dbqs function, method to quote strings in queries
+#' @return a relop representation of the data
+#'
+#' @examples
+#'
+#' my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#' DBI::dbWriteTable(my_db,
+#'                   'd',
+#'                   data.frame(AUC = 0.6, R2 = 0.2),
+#'                   overwrite = TRUE,
+#'                   temporary = TRUE)
+#' d <- table_source('d',
+#'                   columns = c("AUC", "R2"),
+#'                   dbqi = function(id) {
+#'                     as.character(DBI::dbQuoteIdentifier(my_db, id))
+#'                   },
+#'                   dbqs = function(s) {
+#'                     as.character(DBI::dbQuoteString(my_db, s))
+#'                   })
+#' print(d)
+#' sql <- to_sql(d)
+#' cat(sql)
+#' DBI::dbGetQuery(my_db, sql)
+#' DBI::dbDisconnect(my_db)
+#'
+#'
+#' @export
+#'
+table_source <- function(table_name, columns, dbqi, dbqs) {
+  r <- list(source = list(),
+            table_name = table_name,
+            columns = columns,
+            dbqi = dbqi,
+            dbqs = dbqs)
+  class(r) <- "relop_table_source"
+  r
+}
+
+
 
 listFields <- function(my_db, tableName) {
   # fails intermitnently, and sometimes gives wrong results
@@ -54,22 +106,19 @@ listFields <- function(my_db, tableName) {
 #' @export
 #'
 dbi_table <- function(db, table_name) {
-  r <- list(source = list(),
-            table_name = table_name,
-            columns = listFields(db, table_name),
-            dbqi = function(id) {
-              as.character(DBI::dbQuoteIdentifier(db, id))
-            },
-            dbqs = function(s) {
-              as.character(DBI::dbQuoteString(db, s))
-            })
-  class(r) <- "relop_dbi_table"
-  r
+  table_source(table_name = table_name,
+               columns = listFields(db, table_name),
+               dbqi = function(id) {
+                 as.character(DBI::dbQuoteIdentifier(db, id))
+               },
+               dbqs = function(s) {
+                 as.character(DBI::dbQuoteString(db, s))
+               })
 }
 
 
 #' @export
-quote_identifier.relop_dbi_table <- function (x, id, ...) {
+quote_identifier.relop_table_source <- function (x, id, ...) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
@@ -81,7 +130,7 @@ quote_identifier.relop_dbi_table <- function (x, id, ...) {
 }
 
 #' @export
-quote_string.relop_dbi_table <- function (x, s, ...) {
+quote_string.relop_table_source <- function (x, s, ...) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
@@ -93,7 +142,7 @@ quote_string.relop_dbi_table <- function (x, s, ...) {
 }
 
 #' @export
-column_names.relop_dbi_table <- function (x, ...) {
+column_names.relop_table_source <- function (x, ...) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
@@ -102,7 +151,7 @@ column_names.relop_dbi_table <- function (x, ...) {
 
 
 #' @export
-columns_used.relop_dbi_table <- function (x, ...,
+columns_used.relop_table_source <- function (x, ...,
                                           using = NULL,
                                           contract = FALSE) {
   if(length(list(...))>0) {
@@ -126,7 +175,7 @@ columns_used.relop_dbi_table <- function (x, ...,
 }
 
 #' @export
-to_sql.relop_dbi_table <- function (x,
+to_sql.relop_table_source <- function (x,
                                     ...,
                                     indent_level = 0,
                                     tnum = mkTempNameGenerator('tsql'),
@@ -151,16 +200,16 @@ to_sql.relop_dbi_table <- function (x,
 }
 
 #' @export
-format.relop_dbi_table <- function(x, ...) {
+format.relop_table_source <- function(x, ...) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
-  paste0("dbi_table('", x$table_name, "')",
+  paste0("table('", x$table_name, "')",
          "\n")
 }
 
 #' @export
-print.relop_dbi_table <- function(x, ...) {
+print.relop_table_source <- function(x, ...) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }

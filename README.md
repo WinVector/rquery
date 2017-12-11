@@ -99,7 +99,7 @@ d <- dbi_copy_to(my_db, 'd',
 print(d)
 ```
 
-    ## [1] "dbi_table('d')"
+    ## [1] "table('d')"
 
 ``` r
 d %.>%
@@ -232,7 +232,7 @@ Part of the plan is: the additional record-keeping in the operator nodes would l
 cat(format(dq))
 ```
 
-    dbi_table('d') %.>%
+    table('d') %.>%
      extend(.,
       probability := exp(assessmentTotal * scale) / sum(exp(assessmentTotal * scale)),
       count := count(1),

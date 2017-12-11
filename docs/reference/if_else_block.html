@@ -157,7 +157,7 @@ is a reserved column name for this procedure.</p>
 #&gt; [1] "ifelse( ifebtest_2, 1, edited)"
 #&gt; </div><div class='input'>
 <span class='no'>trf</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='extend_se.html'>extend_se</a></span>(<span class='no'>d</span>, <span class='no'>program</span>)
-<span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>trf</span>))</div><div class='output co'>#&gt; dbi_table('d') %.&gt;%
+<span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>trf</span>))</div><div class='output co'>#&gt; table('d') %.&gt;%
 #&gt;  extend(.,
 #&gt;   ifebtest_2 := ( a + b ) &gt; 1,
 #&gt;   ifebtest_1 := r &gt;= 0.5) %.&gt;%
@@ -208,9 +208,9 @@ is a reserved column name for this procedure.</p>
              SELECT * from ( VALUES(1),(2) )
           ) a
        ) b"</span>
- <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>q</span>)</div><div class='output co'>#&gt;                    r1                   r2
-#&gt; 1 5091501578602603194 -1337046140339502785
-#&gt; 2 8906929571905960764 -1512962402544324717</div><div class='input'>
+ <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>q</span>)</div><div class='output co'>#&gt;                    r1                  r2
+#&gt; 1  540210565152544485 -910946885760525158
+#&gt; 2 5948715834756299617 1847118499159742314</div><div class='input'>
 <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

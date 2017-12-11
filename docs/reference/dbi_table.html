@@ -119,7 +119,7 @@ SQL optimizers likely make this zero-cost anyway.</p>
                   <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
                   <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'>dbi_table</span>(<span class='no'>my_db</span>, <span class='st'>'d'</span>)
-<span class='fu'>print</span>(<span class='no'>d</span>)</div><div class='output co'>#&gt; [1] "dbi_table('d')"</div><div class='input'><span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>d</span>)
+<span class='fu'>print</span>(<span class='no'>d</span>)</div><div class='output co'>#&gt; [1] "table('d')"</div><div class='input'><span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>d</span>)
 <span class='fu'>cat</span>(<span class='no'>sql</span>)</div><div class='output co'>#&gt; SELECT
 #&gt;  `d`.`AUC`,
 #&gt;  `d`.`R2`
