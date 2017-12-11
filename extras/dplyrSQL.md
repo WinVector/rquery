@@ -3,7 +3,7 @@ dplyrSQL
 Win-Vector LLC
 12/11/2017
 
-`dplyr` SQL for the [`rquery` example](https://johnmount.github.io/rquery/). Notice the irrelevant columns live a few steps into the query sequence.
+`dplyr` SQL for the [`rquery` example](https://johnmount.github.io/rquery/). Notice the irrelevant columns live a few steps into the query sequence. Also notice the `dplyr` `SQL` does have less nesting than the `rquery` `SQL`.
 
 ``` r
 suppressPackageStartupMessages(library("dplyr"))
@@ -63,9 +63,9 @@ d %>%
     ## FROM (SELECT `subjectID`, `surveyCategory`, `assessmentTotal`, `irrelevantCol1`, `irrelevantCol2`, `probability`, row_number() OVER (PARTITION BY `subjectID` ORDER BY `probability`, `surveyCategory`) = COUNT(*) OVER (PARTITION BY `subjectID`) AS `isDiagnosis`
     ## FROM (SELECT *
     ## FROM (SELECT `subjectID`, `surveyCategory`, `assessmentTotal`, `irrelevantCol1`, `irrelevantCol2`, EXP(`assessmentTotal` * 0.237) / sum(EXP(`assessmentTotal` * 0.237)) OVER (PARTITION BY `subjectID`) AS `probability`
-    ## FROM `d`) `mkdkmgxosl`
-    ## ORDER BY `probability`, `surveyCategory`) `wxxtjzbzbo`) `augwhtpjdy`
-    ## WHERE (`isDiagnosis`)) `dakzosnmub`) `otmyldflsi`
+    ## FROM `d`) `ngbbxyuxqv`
+    ## ORDER BY `probability`, `surveyCategory`) `vbueyehubn`) `gclxvmbguv`
+    ## WHERE (`isDiagnosis`)) `mirxojzcvr`) `qwtshngxye`
     ## ORDER BY `subjectID`
 
 ``` r
