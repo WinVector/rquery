@@ -63,9 +63,9 @@ d %>%
     ## FROM (SELECT `subjectID`, `surveyCategory`, `assessmentTotal`, `irrelevantCol1`, `irrelevantCol2`, `probability`, row_number() OVER (PARTITION BY `subjectID` ORDER BY `probability`, `surveyCategory`) = COUNT(*) OVER (PARTITION BY `subjectID`) AS `isDiagnosis`
     ## FROM (SELECT *
     ## FROM (SELECT `subjectID`, `surveyCategory`, `assessmentTotal`, `irrelevantCol1`, `irrelevantCol2`, EXP(`assessmentTotal` * 0.237) / sum(EXP(`assessmentTotal` * 0.237)) OVER (PARTITION BY `subjectID`) AS `probability`
-    ## FROM `d`) `rjalhherpu`
-    ## ORDER BY `probability`, `surveyCategory`) `mrmtredidu`) `fjmtdtxbvf`
-    ## WHERE (`isDiagnosis`)) `flpcaeurtu`) `moqxyfwpjl`
+    ## FROM `d`) `ncflniwzya`
+    ## ORDER BY `probability`, `surveyCategory`) `mhrqixblyt`) `huvezogdam`
+    ## WHERE (`isDiagnosis`)) `ezmnqgukzq`) `xjuzsjzoqo`
     ## ORDER BY `subjectID`
 
 ``` r

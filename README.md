@@ -5,6 +5,8 @@ rquery
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 [`rquery`](https://winvector.github.io/rquery/) is an experiment/demonstration of a simplified sequenced query language based on [Codd's relational algebra](https://en.wikipedia.org/wiki/Relational_algebra) and not currently recommended for non-experimental (i.e., production) use. The goal of this experiment is to see if `SQL` would be more fun if it had a sequential data-flow or pipe notation.
 
+To install: `devtools::install_github("WinVector/rquery")`.
+
 [`rquery`](https://github.com/WinVector/rquery) can be an excellent advanced `SQL` training tool (it shows how some very deep `SQL` by composing `rquery` operators). Currently `rquery` is biased towards `PostgeSQL` `SQL`.
 
 There are many prior relational algebra inspired specialized query languages. Just a few include:
