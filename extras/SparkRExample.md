@@ -83,7 +83,3 @@ sql(sql) %.>%
 |----------:|:--------------------|------------:|
 |          1| withdrawal behavior |    0.6706221|
 |          2| positive re-framing |    0.5589742|
-
-``` r
-sparklyr::spark_disconnect(sc)
-```

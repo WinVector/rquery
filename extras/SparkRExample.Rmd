@@ -96,7 +96,7 @@ sql(sql) %.>%
   knitr::kable(.)
 ```
 
-```{r exit}
+```{r exit,  include=FALSE, message=FALSE, warning=FALSE, echo=FALSE}
 sparklyr::spark_disconnect(sc)
 ```
 
