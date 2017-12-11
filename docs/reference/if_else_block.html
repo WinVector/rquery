@@ -167,8 +167,6 @@ is a reserved column name for this procedure.</p>
 #&gt;   edited := ifelse(ifebtest_2, 1, edited))</div><div class='input'>
 <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>trf</span>)
 <span class='fu'>cat</span>(<span class='no'>sql</span>)</div><div class='output co'>#&gt; SELECT
-#&gt;  `i`,
-#&gt;  `r`,
 #&gt;  `ifebtest_2`,
 #&gt;  `ifebtest_1`,
 #&gt;  ( CASE WHEN `ifebtest_2` THEN ( CASE WHEN `ifebtest_1` THEN 0 ELSE `a` END ) ELSE `a` END )  AS `a`,
@@ -176,7 +174,6 @@ is a reserved column name for this procedure.</p>
 #&gt;  ( CASE WHEN `ifebtest_2` THEN 1 ELSE `edited` END )  AS `edited`
 #&gt; FROM (
 #&gt;  SELECT
-#&gt;   `i`,
 #&gt;   `a`,
 #&gt;   `b`,
 #&gt;   `r`,
@@ -184,20 +181,26 @@ is a reserved column name for this procedure.</p>
 #&gt;   ( `a` + `b` ) &gt; 1  AS `ifebtest_2`,
 #&gt;   `r` &gt;= 0.5  AS `ifebtest_1`
 #&gt;  FROM (
-#&gt;   SELECT * FROM `d`
+#&gt;   SELECT
+#&gt;    `d`.`a`,
+#&gt;    `d`.`b`,
+#&gt;    `d`.`r`,
+#&gt;    `d`.`edited`
+#&gt;   FROM
+#&gt;    `d`
 #&gt;   ) tsql_0000
 #&gt;  ) tsql_0001</div><div class='input'>
-<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;     i           r ifebtest_2 ifebtest_1 a b edited
-#&gt; 1   1 0.080750138          0          0 0 0      0
-#&gt; 2   2 0.834333037          0          1 0 1      0
-#&gt; 3   3 0.600760886          0          1 1 0      0
-#&gt; 4   4 0.157208442          1          0 1 0      1
-#&gt; 5   5 0.007399441          1          0 1 0      1
-#&gt; 6   6 0.466393497          1          0 1 0      1
-#&gt; 7   7 0.497777389          1          0 1 0      1
-#&gt; 8   8 0.289767245          1          0 1 0      1
-#&gt; 9   9 0.732881987          1          1 0 1      1
-#&gt; 10 10 0.772521511          1          1 0 1      1</div><div class='input'>
+<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;    ifebtest_2 ifebtest_1 a b edited
+#&gt; 1           0          0 0 0      0
+#&gt; 2           0          1 0 1      0
+#&gt; 3           0          1 1 0      0
+#&gt; 4           1          0 1 0      1
+#&gt; 5           1          0 1 0      1
+#&gt; 6           1          0 1 0      1
+#&gt; 7           1          0 1 0      1
+#&gt; 8           1          0 1 0      1
+#&gt; 9           1          1 0 1      1
+#&gt; 10          1          1 0 1      1</div><div class='input'>
  <span class='co'># Why we need to land the random selection early</span>
  <span class='co'># for SQLIte:</span>
  <span class='no'>q</span> <span class='kw'>&lt;-</span> <span class='st'>"SELECT r AS r1, r AS r2 FROM (
@@ -205,9 +208,9 @@ is a reserved column name for this procedure.</p>
              SELECT * from ( VALUES(1),(2) )
           ) a
        ) b"</span>
- <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>q</span>)</div><div class='output co'>#&gt;                     r1                   r2
-#&gt; 1 -2595129934254289811   990225662498650029
-#&gt; 2   493893130328380362 -8769080145600369681</div><div class='input'>
+ <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>q</span>)</div><div class='output co'>#&gt;                    r1                   r2
+#&gt; 1 5091501578602603194 -1337046140339502785
+#&gt; 2 8906929571905960764 -1512962402544324717</div><div class='input'>
 <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

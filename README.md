@@ -30,7 +30,7 @@ The primary relational operators are:
 The primary non-relational (traditional `SQL`) operators are:
 
 -   [`select_columns()`](https://johnmount.github.io/rquery/reference/select_columns.html). This allows choice of columns (central to `SQL`), but is not a relational operator as it can damage row-uniqueness.
--   [`order_by()`](https://johnmount.github.io/rquery/reference/order_by.html). This is a non-relational "user presentation" verb. Row order is not well-defined in the relational algebra (and also not in most `SQL` implementations). If used it should be used last in a query (so it is not undone by later operations).
+-   [`order_by()`](https://johnmount.github.io/rquery/reference/order_by.html). This is actually relational in the sense that it does not ruin a table that is a relation (has unique rows). However it is only a useful intermediate step with used with its `limit=` option. Row order is not well-defined in the relational algebra (and also not in most `SQL` implementations). If used it should be used last in a query (so it is not undone by later operations).
 
 The primary missing relational operators are:
 
@@ -90,6 +90,8 @@ d <- dbi_copy_to(my_db, 'd',
                                        2,
                                        3,                  
                                        4),
+                   irrelevantCol1 = "irrel1",
+                   irrelevantCol2 = "irrel2",
                    stringsAsFactors = FALSE),
                  temporary = TRUE, 
                  overwrite = !use_spark)
@@ -97,7 +99,7 @@ d <- dbi_copy_to(my_db, 'd',
 print(d)
 ```
 
-    ## [1] "dbi_table('d')\n"
+    ## [1] "dbi_table('d')"
 
 ``` r
 d %.>%
@@ -106,12 +108,12 @@ d %.>%
   knitr::kable(.)
 ```
 
-|  subjectID| surveyCategory      |  assessmentTotal|
-|----------:|:--------------------|----------------:|
-|          1| withdrawal behavior |                5|
-|          1| positive re-framing |                2|
-|          2| withdrawal behavior |                3|
-|          2| positive re-framing |                4|
+|  subjectID| surveyCategory      |  assessmentTotal| irrelevantCol1 | irrelevantCol2 |
+|----------:|:--------------------|----------------:|:---------------|:---------------|
+|          1| withdrawal behavior |                5| irrel1         | irrel2         |
+|          1| positive re-framing |                2| irrel1         | irrel2         |
+|          2| withdrawal behavior |                3| irrel1         | irrel2         |
+|          2| positive re-framing |                4| irrel1         | irrel2         |
 
 Now we write the calculation in terms of our operators.
 
@@ -173,7 +175,6 @@ cat(to_sql(dq))
        SELECT
         `subjectID`,
         `surveyCategory`,
-        `assessmentTotal`,
         `probability`,
         `count`,
         `rank`,
@@ -183,7 +184,6 @@ cat(to_sql(dq))
         SELECT
          `subjectID`,
          `surveyCategory`,
-         `assessmentTotal`,
          `probability`,
          `count`,
          rank() OVER (  PARTITION BY `subjectID` ORDER BY `probability` ) AS `rank`
@@ -195,7 +195,12 @@ cat(to_sql(dq))
           exp(`assessmentTotal` * 0.237) / sum(exp(`assessmentTotal` * 0.237)) OVER (  PARTITION BY `subjectID` ) AS `probability`,
           count(1) OVER (  PARTITION BY `subjectID` ) AS `count`
          FROM (
-          SELECT * FROM `d`
+          SELECT
+           `d`.`subjectID`,
+           `d`.`surveyCategory`,
+           `d`.`assessmentTotal`
+          FROM
+           `d`
           ) tsql_0000
          ) tsql_0001
         ) tsql_0002
@@ -206,26 +211,7 @@ cat(to_sql(dq))
 
 The query is large, but due to its regular structure it should be very amenable to database query optimizer.
 
-Part of the plan is: the additional record-keeping in the operator nodes would let a very powerful query optimizer work over the flow before it gets translated to `SQL` (perhaps an extension of or successor to [`seplyr`](https://winvector.github.io/seplyr/), which re-plans over `dplyr::mutate()` expressions). At the very least restricting to columns later used and folding selects together would be achievable. One should have a good chance at optimization as the representation is fairly high-level, and many of the operators are relational (meaning there are known legal transforms a query optimizer can use). The flow itself is represented as follows:
-
-``` r
-cat(format(dq))
-```
-
-    dbi_table('d') %.>%
-     extend(.,
-      probability := exp(assessmentTotal * scale) / sum(exp(assessmentTotal * scale)),
-      count := count(1), p= subjectID) %.>%
-     extend(.,
-      rank := rank(), p= subjectID, o= probability) %.>%
-     extend(.,
-      isdiagnosis := rank == count,
-      diagnosis := surveyCategory) %.>%
-     select_rows(., isdiagnosis) %.>%
-     select_columns(., subjectID, diagnosis, probability) %.>%
-     order_by(., subjectID)
-
-Because the `rquery` representation is an intelligible network of nodes: we can interrogate it for facts about the query. For example:
+Notice the query was automatically restricted to columns actually needed from the source table. This is possible because the `rquery` representation is an intelligible network of nodes, so we can interrogate it for facts about the query. For example:
 
 ``` r
 tables_used(dq)
@@ -240,70 +226,33 @@ print(cu)
 
     ## [1] "`d`.`subjectID`"       "`d`.`surveyCategory`"  "`d`.`assessmentTotal`"
 
-By using the `to_sql(column_restriction = )` option, the query can be re-built in terms of columns used to ensure we are using only a minimal set of columns (these operators are still under development). The column set (gathered with `columns_used(dq)`) is pushed back to all source nodes, altering their queries (allowing local optimization).
+Part of the plan is: the additional record-keeping in the operator nodes would let a potentially powerful query optimizer work over the flow before it gets translated to `SQL` (perhaps an extension of or successor to [`seplyr`](https://winvector.github.io/seplyr/), which re-plans over `dplyr::mutate()` expressions). At the very least restricting to columns later used and folding selects together would be achievable. One should have a good chance at optimization as the representation is fairly high-level, and many of the operators are relational (meaning there are known legal transforms a query optimizer can use). The flow itself is represented as follows:
 
 ``` r
-sqlr <- to_sql(dq, column_restriction = cu)
-cat(sqlr)
+cat(format(dq))
 ```
 
-    ## SELECT * FROM (
-    ##  SELECT
-    ##   `subjectID`,
-    ##   `diagnosis`,
-    ##   `probability`
-    ##  FROM (
-    ##   SELECT * FROM (
-    ##    SELECT
-    ##     `subjectID`,
-    ##     `surveyCategory`,
-    ##     `assessmentTotal`,
-    ##     `probability`,
-    ##     `count`,
-    ##     `rank`,
-    ##     `rank` = `count`  AS `isdiagnosis`,
-    ##     `surveyCategory`  AS `diagnosis`
-    ##    FROM (
-    ##     SELECT
-    ##      `subjectID`,
-    ##      `surveyCategory`,
-    ##      `assessmentTotal`,
-    ##      `probability`,
-    ##      `count`,
-    ##      rank() OVER (  PARTITION BY `subjectID` ORDER BY `probability` ) AS `rank`
-    ##     FROM (
-    ##      SELECT
-    ##       `subjectID`,
-    ##       `surveyCategory`,
-    ##       `assessmentTotal`,
-    ##       exp(`assessmentTotal` * 0.237) / sum(exp(`assessmentTotal` * 0.237)) OVER (  PARTITION BY `subjectID` ) AS `probability`,
-    ##       count(1) OVER (  PARTITION BY `subjectID` ) AS `count`
-    ##      FROM (
-    ##       SELECT
-    ##        `d`.`subjectID`,
-    ##        `d`.`surveyCategory`,
-    ##        `d`.`assessmentTotal`
-    ##       FROM
-    ##        `d`
-    ##       ) tsql_0000
-    ##      ) tsql_0001
-    ##     ) tsql_0002
-    ##   ) tsql_0003
-    ##   WHERE `isdiagnosis`
-    ##  ) tsql_0004
-    ## ) tsql_0005 ORDER BY `subjectID`
+    dbi_table('d') %.>%
+     extend(.,
+      probability := exp(assessmentTotal * scale) / sum(exp(assessmentTotal * scale)),
+      count := count(1),
+      p= subjectID) %.>%
+     extend(.,
+      rank := rank(),
+      p= subjectID,
+      o= probability) %.>%
+     extend(.,
+      isdiagnosis := rank == count,
+      diagnosis := surveyCategory) %.>%
+     select_rows(., isdiagnosis) %.>%
+     select_columns(., subjectID, diagnosis, probability) %.>%
+     order_by(., subjectID)
 
-``` r
-DBI::dbGetQuery(my_db, sqlr) %.>%
-  knitr::kable(.)
-```
-
-|  subjectID| diagnosis           |  probability|
-|----------:|:--------------------|------------:|
-|          1| withdrawal behavior |    0.6706221|
-|          2| positive re-framing |    0.5589742|
+We also can stand this system up on non-`DBI` sources such as `SparkR`.
 
 And that is our experiment.
+
+We are looking for funding and partners to take this system further (including: finishing functionality, documentation, training materials, test materials, acceptance procedures, porting to more back-ends).
 
 ``` r
 if(use_spark) {

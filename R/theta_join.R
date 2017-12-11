@@ -202,27 +202,38 @@ prepColumnNames <- function(x, tabName, tabColumns, ambiguous, suffix) {
   paste(tabColumnsV, "AS", tabColumnsA)
 }
 
+calc_used_relop_theta_join <- function (x, ...,
+                                        using = NULL,
+                                        contract = FALSE) {
+  cols <- unique(c(column_names(x$source[[1]]),
+                   column_names(x$source[[2]])))
+  if(length(using)>0) {
+    missing <- setdiff(using, cols)
+    if(length(missing)>0) {
+      stop(paste("rquery::relop_theta_join unkown columns",
+                 paste(missing, collapse = ", ")))
+
+    }
+    cols <- using
+  }
+  condTerms <- x$parsed$symbols_used
+  cols <- unique(c(cols, condTerms))
+  cols
+}
+
+
 #' @export
 columns_used.relop_theta_join <- function (x, ...,
                                            using = NULL,
                                            contract = FALSE) {
-  if(length(using)<=0) {
-    s1 <- columns_used(x$source[[1]],
-                       using = NULL,
-                       contract = contract)
-    s2 <- columns_used(x$source[[2]],
-                       using = NULL,
-                       contract = contract)
-    return(unique(c(s1, s2)))
-  }
-  condTerms <- merge_fld(x$parsed, "symbols_used")
-  c1 <- unique(c(condTerms,
-                 intersect(using, column_names(x$source[[1]]))))
+  using <- calc_used_relop_theta_join(x,
+                                      using=using,
+                                      contract = contract)
+  c1 <- intersect(using, column_names(x$source[[1]]))
   s1 <- columns_used(x$source[[1]],
                      using = c1,
                      contract = contract)
-  c2 <- unique(c(condTerms,
-                 intersect(using, column_names(x$source[[1]]))))
+  c2 <- intersect(using, column_names(x$source[[2]]))
   s2 <- columns_used(x$source[[2]],
                      using = c2,
                      contract = contract)
@@ -230,25 +241,29 @@ columns_used.relop_theta_join <- function (x, ...,
 }
 
 #' @export
-to_sql.relop_theta_join <- function(x,
-                                    ...,
-                                    indent_level = 0,
-                                    tnum = mkTempNameGenerator('tsql'),
-                                    append_cr = TRUE,
-                                    column_restriction = NULL) {
+to_sql.relop_theta_join <- function (x,
+                                     ...,
+                                     indent_level = 0,
+                                     tnum = mkTempNameGenerator('tsql'),
+                                     append_cr = TRUE,
+                                     using = NULL) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
+  using <- calc_used_relop_theta_join(x,
+                                      using=using)
+  c1 <- intersect(using, column_names(x$source[[1]]))
+  c2 <- intersect(using, column_names(x$source[[2]]))
   subsqla <- to_sql(x$source[[1]],
                     indent_level = indent_level + 1,
                     tnum = tnum,
                     append_cr = FALSE,
-                    column_restriction = column_restriction)
+                    using = c1)
   subsqlb <- to_sql(x$source[[2]],
                     indent_level = indent_level + 1,
                     tnum = tnum,
                     append_cr = FALSE,
-                    column_restriction = column_restriction)
+                    using = c2)
   taba <- tnum()
   tabb <- tnum()
   bterms <- setdiff(column_names(x$source[[1]]),

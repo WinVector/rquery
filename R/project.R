@@ -142,6 +142,24 @@ print.relop_project <- function(x, ...) {
   print(txt, ...)
 }
 
+calc_used_relop_project <- function (x,
+                                     using = NULL,
+                                     contract = FALSE) {
+  cols <- column_names(x)
+  if(length(using)>=0) {
+    cols <- using
+  }
+  producing <- merge_fld(x$parsed, "symbols_produced")
+  expressions <- x$parsed
+  if(contract) {
+    expressions <- x$parsed[producing %in% cols]
+  }
+  cols <- setdiff(cols, producing)
+  consuming <- merge_fld(expressions, "symbols_used")
+  subusing <- unique(c(cols, consuming, x$groupby, x$orderby))
+  subusing
+}
+
 #' @export
 columns_used.relop_project <- function (x, ...,
                                         using = NULL,
@@ -149,33 +167,32 @@ columns_used.relop_project <- function (x, ...,
   if(length(list(...))>0) {
     stop("rquery:columns_used: unexpected arguemnts")
   }
-  if(length(using)<=0) {
-    using <- column_names(x)
-  }
-  producing <- merge_fld(x$parsed, "symbols_produced")
-  expressions <- x$parsed
-  if(contract) {
-    expressions <- x$parsed[producing %in% using]
-  }
-  using <- setdiff(using, producing)
-  consuming <- merge_fld(expressions, "symbols_used")
-  subusing <- unique(c(using, consuming, x$groupby))
+  cols <- calc_used_relop_project(x,
+                                  using = using,
+                                  contract = contract)
   columns_used(x$source[[1]],
-               using = subusing,
+               using = cols,
                contract = contract)
 }
 
 
 #' @export
-to_sql.relop_project <- function(x,
-                                 ...,
-                                 indent_level = 0,
-                                 tnum = mkTempNameGenerator('tsql'),
-                                 append_cr = TRUE,
-                                 column_restriction = NULL) {
+to_sql.relop_project <- function (x,
+                                  ...,
+                                  indent_level = 0,
+                                  tnum = mkTempNameGenerator('tsql'),
+                                  append_cr = TRUE,
+                                  using = NULL) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
+  using <- calc_used_relop_project(x,
+                                   using = using)
+  subsql <- to_sql(x$source[[1]],
+                   indent_level = indent_level + 1,
+                   tnum = tnum,
+                   append_cr = FALSE,
+                   using = using)
   cols1 <- x$groupby
   cols <- NULL
   if(length(cols1)>0) {
@@ -192,11 +209,6 @@ to_sql.relop_project <- function(x,
                         paste(ei, "AS", quote_identifier(x, ni))
                       }, character(1))
   }
-  subsql <- to_sql(x$source[[1]],
-                   indent_level = indent_level + 1,
-                   tnum = tnum,
-                   append_cr = FALSE,
-                   column_restriction = column_restriction)
   tab <- tnum()
   prefix <- paste(rep(' ', indent_level), collapse = '')
   q <- paste0(prefix, "SELECT ",

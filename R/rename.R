@@ -9,7 +9,7 @@
 #'
 #' my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #' d <- dbi_copy_to(my_db, 'd',
-#'                 data.frame(AUC = 0.6, R2 = 0.2))
+#'                 data.frame(AUC = 0.6, R2 = 0.2, z = 3))
 #' eqn <- rename_columns(d, c('AUC2' := 'AUC', 'R' := 'R2'))
 #' cat(format(eqn))
 #' sql <- to_sql(eqn)
@@ -22,6 +22,12 @@
 rename_columns <- function(source, cmap) {
   if(length(cmap)<=0) {
     stop("rquery::rename_columns must rename at least 1 column")
+  }
+  if(length(cmap)!=length(unique(as.character(cmap)))) {
+    stop("rquery::rename_columns map values must be unique")
+  }
+  if(length(cmap)!=length(unique(names(cmap)))) {
+    stop("rquery::rename_columns map keys must be unique")
   }
   have <- column_names(source)
   check_have_cols(have, as.character(cmap), "rquery::rename_columns cmap")
@@ -66,14 +72,6 @@ column_names.relop_rename_columns <- function (x, ...) {
   sc
 }
 
-map_to_char_ <- function(mp) {
-  nms <- names(mp)
-  nv <- vapply(nms,
-               function(ni) {
-                 paste(shQuote(ni), ':=', shQuote(mp[[ni]]))
-               }, character(1))
-  paste0("c(", paste(nv, collapse = ", "), ")")
-}
 
 
 #' @export
@@ -83,7 +81,10 @@ format.relop_rename_columns <- function(x, ...) {
   }
   paste0(trimws(format(x$source[[1]]), which = "right"),
          " %.>%\n ",
-         "rename(., ", map_to_char_(x$cmap), ")",
+         "rename(.,\n",
+         "  ", gsub("\n", "\n  ",
+                    wrapr::map_to_char(x$cmap),
+                    fixed = TRUE), ")",
          "\n")
 }
 
@@ -95,43 +96,53 @@ print.relop_rename_columns <- function(x, ...) {
   print(format(x),...)
 }
 
+calc_used_relop_rename_columns <- function (x, ...,
+                                            using = NULL,
+                                            contract = FALSE) {
+  cols <- column_names(x)
+  if(length(using)>0) {
+    missing <- setdiff(using, cols)
+    if(length(missing)>0) {
+      stop(paste("rquery::calc_used_relop_rename_columns unknown columns",
+                 paste(missing, collapse = ", ")))
+    }
+    cols <- intersect(cols, using)
+  }
+  # map back prior to rename
+  rmap <- x$cmap
+  sc <- cols
+  sc[sc %in% names(rmap)] <- rmap[sc[sc %in% names(rmap)]]
+  names(sc) <- cols
+  sc
+}
+
 #' @export
 columns_used.relop_rename_columns <- function (x, ...,
                                                using = NULL,
                                                contract = FALSE) {
-  if(length(using)<=0) {
-    return(columns_used(x$source[[1]],
-                        using = NULL,
-                        contract = contract))
-  }
-  cols <- column_names(x)
-  missing <- setdiff(using, cols)
-  if(length(missing)>0) {
-    stop(paste("rquery::columns_used unknown columns",
-               paste(missing, collapse = ", ")))
-  }
-  subusing <- intersect(cols, using)
+  qmap <- calc_used_relop_rename_columns(x, using=using, contract=contract)
   return(columns_used(x$source[[1]],
-                      using = subusing,
+                      using = names(qmap),
                       contract = contract))
 }
 
 
 #' @export
-to_sql.relop_rename_columns <- function(x,
-                                        ...,
-                                        indent_level = 0,
-                                        tnum = mkTempNameGenerator('tsql'),
-                                        append_cr = TRUE,
-                                        column_restriction = NULL) {
+to_sql.relop_rename_columns <- function (x,
+                                         ...,
+                                         indent_level = 0,
+                                         tnum = mkTempNameGenerator('tsql'),
+                                         append_cr = TRUE,
+                                         using = NULL) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
-  colsV <- vapply(column_names(x$source[[1]]),
+  qmap <- calc_used_relop_rename_columns(x, using=using)
+  colsV <- vapply(as.character(qmap),
                   function(ci) {
                     quote_identifier(x, ci)
                   }, character(1))
-  colsA <- vapply(column_names(x),
+  colsA <- vapply(names(qmap),
                   function(ci) {
                     quote_identifier(x, ci)
                   }, character(1))
@@ -140,7 +151,7 @@ to_sql.relop_rename_columns <- function(x,
                    indent_level = indent_level + 1,
                    tnum = tnum,
                    append_cr = FALSE,
-                   column_restriction = column_restriction)
+                   using = as.character(qmap))
   tab <- tnum()
   prefix <- paste(rep(' ', indent_level), collapse = '')
   q <- paste0(prefix, "SELECT\n",

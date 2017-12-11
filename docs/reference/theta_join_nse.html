@@ -141,10 +141,18 @@
 #&gt;  tsql_0001.`AUC2` AS `AUC2`,
 #&gt;  tsql_0001.`R2` AS `R2_b`
 #&gt; FROM (
-#&gt;  SELECT * FROM `d1`
+#&gt;  SELECT
+#&gt;   `d1`.`AUC`,
+#&gt;   `d1`.`R2`
+#&gt;  FROM
+#&gt;   `d1`
 #&gt; ) tsql_0000
 #&gt; INNER JOIN (
-#&gt;  SELECT * FROM `d2`
+#&gt;  SELECT
+#&gt;   `d2`.`AUC2`,
+#&gt;   `d2`.`R2`
+#&gt;  FROM
+#&gt;   `d2`
 #&gt; ) tsql_0001 ON `AUC` &gt;= `AUC2`</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;   AUC R2_a AUC2 R2_b
 #&gt; 1 0.6  0.2  0.4  0.3</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)</div></pre>
   </div>

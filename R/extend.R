@@ -247,6 +247,24 @@ print.relop_extend <- function(x, ...) {
   print(txt, ...)
 }
 
+calc_used_relop_extend <- function (x,
+                                    using = NULL,
+                                    contract = FALSE) {
+  cols <- column_names(x)
+  if(length(using)>=0) {
+    cols <- using
+  }
+  producing <- merge_fld(x$parsed, "symbols_produced")
+  expressions <- x$parsed
+  if(contract) {
+    expressions <- x$parsed[producing %in% cols]
+  }
+  cols <- setdiff(cols, producing)
+  consuming <- merge_fld(expressions, "symbols_used")
+  subusing <- unique(c(cols, consuming, x$partitionby, x$orderby))
+  subusing
+}
+
 #' @export
 columns_used.relop_extend <- function (x, ...,
                                        using = NULL,
@@ -254,36 +272,33 @@ columns_used.relop_extend <- function (x, ...,
   if(length(list(...))>0) {
     stop("rquery:columns_used: unexpected arguemnts")
   }
-  if(length(using)<=0) {
-    return(columns_used(x$source[[1]],
-                        using = NULL,
-                        contract = contract))
-  }
-  producing <- merge_fld(x$parsed, "symbols_produced")
-  expressions <- x$parsed
-  if(contract) {
-    expressions <- x$parsed[producing %in% using]
-  }
-  using <- setdiff(using, producing)
-  consuming <- merge_fld(expressions, "symbols_used")
-  subusing <- unique(c(using, consuming, x$partitionby, x$orderby))
+  cols <- calc_used_relop_extend(x,
+                                 using = using,
+                                 contract = contract)
   columns_used(x$source[[1]],
-               using = subusing,
+               using = cols,
                contract = contract)
 }
 
 
 #' @export
-to_sql.relop_extend <- function(x,
-                                ...,
-                                indent_level = 0,
-                                tnum = mkTempNameGenerator('tsql'),
-                                append_cr = TRUE,
-                                column_restriction = NULL) {
+to_sql.relop_extend <- function (x,
+                                 ...,
+                                 indent_level = 0,
+                                 tnum = mkTempNameGenerator('tsql'),
+                                 append_cr = TRUE,
+                                 using = NULL) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
-  cols1 <- column_names(x$source[[1]])
+  using <- calc_used_relop_extend(x,
+                                  using = using)
+  subsql <- to_sql(x$source[[1]],
+                   indent_level = indent_level + 1,
+                   tnum = tnum,
+                   append_cr = FALSE,
+                   using = using)
+  cols1 <- intersect(column_names(x$source[[1]]), using)
   cols1 <- setdiff(cols1, names(x$assignments)) # allow simple name re-use
   cols <- NULL
   if(length(cols1)>0) {
@@ -329,11 +344,6 @@ to_sql.relop_extend <- function(x,
                               "AS", quote_identifier(x, ni))
                       }, character(1))
   }
-  subsql <- to_sql(x$source[[1]],
-                   indent_level = indent_level + 1,
-                   tnum = tnum,
-                   append_cr = FALSE,
-                   column_restriction = column_restriction)
   tab <- tnum()
   q <- paste0(prefix, "SELECT\n",
          prefix, " ", paste(c(cols, derived), collapse = paste0(",\n", prefix, " ")))

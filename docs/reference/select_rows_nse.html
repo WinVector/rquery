@@ -110,15 +110,25 @@
     <pre class="examples"><div class='input'>
 <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
 <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dbi_copy_to.html'>dbi_copy_to</a></span>(<span class='no'>my_db</span>, <span class='st'>'d'</span>,
-                <span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>0.6</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>0.2</span>))
-<span class='no'>eqn</span> <span class='kw'>&lt;-</span> <span class='fu'>select_rows_nse</span>(<span class='no'>d</span>, <span class='no'>AUC</span> <span class='kw'>&gt;=</span> <span class='fl'>0.5</span>)
+                <span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>0.6</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>0.2</span>, <span class='kw'>z</span> <span class='kw'>=</span> <span class='fl'>3</span>))
+<span class='no'>eqn</span> <span class='kw'>&lt;-</span> <span class='fu'>select_rows_nse</span>(<span class='no'>d</span>, <span class='no'>AUC</span> <span class='kw'>&gt;=</span> <span class='fl'>0.5</span>) <span class='kw'>%.&gt;%</span>
+   <span class='fu'><a href='select_columns.html'>select_columns</a></span>(<span class='no'>.</span>, <span class='st'>"R2"</span>)
 <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>eqn</span>))</div><div class='output co'>#&gt; dbi_table('d') %.&gt;%
-#&gt;  select_rows(., AUC &gt;= 0.5)</div><div class='input'><span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>eqn</span>)
-<span class='fu'>cat</span>(<span class='no'>sql</span>)</div><div class='output co'>#&gt; SELECT * FROM (
-#&gt;  SELECT * FROM `d`
-#&gt; ) tsql_0000
-#&gt; WHERE `AUC` &gt;= 0.5</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;   AUC  R2
-#&gt; 1 0.6 0.2</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)</div></pre>
+#&gt;  select_rows(., AUC &gt;= 0.5) %.&gt;%
+#&gt;  select_columns(., R2)</div><div class='input'><span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>eqn</span>)
+<span class='fu'>cat</span>(<span class='no'>sql</span>)</div><div class='output co'>#&gt; SELECT
+#&gt;  `R2`
+#&gt; FROM (
+#&gt;  SELECT * FROM (
+#&gt;   SELECT
+#&gt;    `d`.`AUC`,
+#&gt;    `d`.`R2`
+#&gt;   FROM
+#&gt;    `d`
+#&gt;  ) tsql_0000
+#&gt;  WHERE `AUC` &gt;= 0.5
+#&gt; ) tsql_0001</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;    R2
+#&gt; 1 0.2</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

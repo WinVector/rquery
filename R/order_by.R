@@ -105,28 +105,42 @@ print.relop_order_by <- function(x, ...) {
 }
 
 
+calc_used_relop_order_by <- function (x, ...,
+                                      using = NULL,
+                                      contract = FALSE) {
+  if(length(using)<=0) {
+    using <- column_names(x)
+  }
+  consuming <- x$orderby
+  using <- unique(c(using, consuming))
+  missing <- setdiff(using, column_names(x$source[[1]]))
+  if(length(missing)>0) {
+    stop(paste("rquery::calc_used_relop_order_by unknown columns",
+               paste(missing, collapse = ", ")))
+  }
+  using
+}
+
 #' @export
 columns_used.relop_order_by <- function (x, ...,
                                        using = NULL,
                                        contract = FALSE) {
-  if(length(using)<=0) {
-    return(columns_used(x$source[[1]],
-                        using = NULL,
-                        contract = contract))
-  }
+  cols <- calc_used_relop_select_rows(x,
+                                      using = using,
+                                      contract = contract)
   return(columns_used(x$source[[1]],
-                      using = unique(c(using, x$orderby)),
+                      using = cols,
                       contract = contract))
 }
 
 
 #' @export
-to_sql.relop_order_by <- function(x,
-                                  ...,
-                                  indent_level = 0,
-                                  tnum = mkTempNameGenerator('tsql'),
-                                  append_cr = TRUE,
-                                  column_restriction = NULL) {
+to_sql.relop_order_by <- function (x,
+                                   ...,
+                                   indent_level = 0,
+                                   tnum = mkTempNameGenerator('tsql'),
+                                   append_cr = TRUE,
+                                   using = NULL) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
@@ -139,11 +153,12 @@ to_sql.relop_order_by <- function(x,
                function(ci) {
                  quote_identifier(x, ci)
                }, character(1))
+  subcols <- calc_used_relop_order_by(x, using=using)
   subsql <- to_sql(x$source[[1]],
                    indent_level = indent_level + 1,
                    tnum = tnum,
                    append_cr = FALSE,
-                   column_restriction = column_restriction)
+                   using = subcols)
   tab <- tnum()
   prefix <- paste(rep(' ', indent_level), collapse = '')
   q <- paste0(prefix, "SELECT * FROM (\n",

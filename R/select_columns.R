@@ -78,44 +78,54 @@ print.relop_select_columns <- function(x, ...) {
   print(txt, ...)
 }
 
+calc_using_relop_select_columns <- function(x, ...,
+                                            using = NULL,
+                                            contract = FALSE) {
+  cols <- x$columns
+  if(length(using)>0) {
+    missing <- setdiff(using, x$columns)
+    if(length(missing)>0) {
+      stop(paste("rquery:columns_used request for unknown columns",
+                 paste(missing, collapse = ", ")))
+    }
+    cols <- intersect(cols, using)
+  }
+  cols
+}
+
 #' @export
 columns_used.relop_select_columns <- function (x, ...,
                                                using = NULL,
                                                contract = FALSE) {
-  if(length(using)<=0) {
-    return(columns_used(x$source[[1]],
-                        using = x$columns,
-                        contract = contract))
-  }
-  missing <- setdiff(using, x$columns)
-  if(length(missing)>0) {
-    stop(paste("rquery::columns_used unknown columns",
-               paste0(missing, collapse = ", ")))
-  }
+  cols <- calc_using_relop_select_columns(x,
+                                          using = using,
+                                          contract = contract)
   return(columns_used(x$source[[1]],
-                      using = using,
+                      using = cols,
                       contract = contract))
 }
 
 #' @export
-to_sql.relop_select_columns <- function(x,
-                                        ...,
-                                        indent_level = 0,
-                                        tnum = mkTempNameGenerator('tsql'),
-                                        append_cr = TRUE,
-                                        column_restriction = NULL) {
+to_sql.relop_select_columns <- function (x,
+                                         ...,
+                                         indent_level = 0,
+                                         tnum = mkTempNameGenerator('tsql'),
+                                         append_cr = TRUE,
+                                         using = NULL) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
-  cols <- vapply(x$columns,
-                 function(ci) {
-                   quote_identifier(x, ci)
-                 }, character(1))
+  using <- calc_using_relop_select_columns(x,
+                                           using = using)
   subsql <- to_sql(x$source[[1]],
                    indent_level = indent_level + 1,
                    tnum = tnum,
                    append_cr = FALSE,
-                   column_restriction = column_restriction)
+                   using = using)
+  cols <- vapply(x$columns,
+                 function(ci) {
+                   quote_identifier(x, ci)
+                 }, character(1))
   tab <- tnum()
   prefix <- paste(rep(' ', indent_level), collapse = '')
   q <- paste0(prefix, "SELECT\n",

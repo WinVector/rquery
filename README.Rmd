@@ -35,7 +35,8 @@ The primary relational operators are:
 The primary non-relational (traditional `SQL`) operators are:
 
   * [`select_columns()`](https://johnmount.github.io/rquery/reference/select_columns.html).  This allows choice of columns (central to `SQL`), but is not a relational operator as it can damage row-uniqueness.
-  * [`order_by()`](https://johnmount.github.io/rquery/reference/order_by.html).  This is a non-relational "user presentation" verb.  Row order is not well-defined in the relational algebra (and also not in most `SQL` implementations).  If used it should be used last in a query (so it is not undone by later operations).
+  * [`order_by()`](https://johnmount.github.io/rquery/reference/order_by.html).  This is actually relational in the sense that it does not ruin a table that is a relation (has unique rows).  However it is only a useful intermediate step with used with its `limit=` option.  Row order is not well-defined in the relational algebra (and also not in most `SQL` implementations).  If used it should be used last in a query (so it is not undone by later operations).
+
   
 The primary missing relational operators are:
 
@@ -91,6 +92,8 @@ d <- dbi_copy_to(my_db, 'd',
                                        2,
                                        3,                  
                                        4),
+                   irrelevantCol1 = "irrel1",
+                   irrelevantCol2 = "irrel2",
                    stringsAsFactors = FALSE),
                  temporary = TRUE, 
                  overwrite = !use_spark)
@@ -151,8 +154,19 @@ cat(to_sql(dq))
 
 The query is large, but due to its regular structure it should be very amenable to database query optimizer.
 
+Notice the query was automatically restricted to columns actually needed from the source table.  This is possible because the `rquery` representation is an intelligible network of nodes, so we can interrogate it for
+facts about the query.  For example:
+
+```{r qfacts}
+tables_used(dq)
+
+cu <- columns_used(dq)
+print(cu)
+```
+
+
 Part of the plan is: the additional record-keeping in the operator nodes would 
-let a very powerful query optimizer work over the flow before it gets translated
+let a potentially powerful query optimizer work over the flow before it gets translated
 to `SQL` (perhaps an extension of or successor to [`seplyr`](https://winvector.github.io/seplyr/), which re-plans over `dplyr::mutate()` expressions).  At the very least restricting to columns later used and folding selects
 together would be achievable.  One should have a good chance at optimization as
 the representation is fairly high-level, and many of the operators are relational 
@@ -163,28 +177,13 @@ is represented as follows:
 cat(format(dq))
 ```
 
-Because the `rquery` representation is an intelligible network of nodes: we can interrogate it for
-facts about the query.  For example:
+We also can stand this system up on non-`DBI` sources such as `SparkR`.
 
-```{r qfacts}
-tables_used(dq)
+And that is our experiment. 
 
-cu <- columns_used(dq)
-print(cu)
-```
-
-By using the `to_sql(column_restriction = )` option, the query can be re-built in terms of columns used to ensure we are using only a minimal set of columns (these operators are still under development).  The column set (gathered with `columns_used(dq)`) is pushed back to all source nodes, altering their queries (allowing local optimization).
-
-```{r restrict}
-sqlr <- to_sql(dq, column_restriction = cu)
-cat(sqlr)
-
-DBI::dbGetQuery(my_db, sqlr) %.>%
-  knitr::kable(.)
-```
+We are looking for funding and partners to take this system further (including: finishing functionality, documentation, training materials, test materials, acceptance procedures, porting to more back-ends). 
 
 
-And that is our experiment.
 
 ```{r cleanup}
 if(use_spark) {

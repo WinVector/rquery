@@ -69,7 +69,7 @@ columns_used <- function (x, ...,
 #' @param indent_level level to indent
 #' @param tnum temp sub-query name generators
 #' @param append_cr logical if TRUE end with CR
-#' @param column_restriction character if not null restrict inputs to these columns.
+#' @param using character, if not NULL set of columns used from above.
 #' @return SQL command
 #'
 #' @export
@@ -79,6 +79,6 @@ to_sql <- function (x,
                     indent_level = 0,
                     tnum = mkTempNameGenerator('tsql'),
                     append_cr = TRUE,
-                    column_restriction = NULL) {
+                    using = NULL) {
   UseMethod("to_sql", x)
 }

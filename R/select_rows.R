@@ -47,8 +47,9 @@ select_rows_se <- function(source, expr,
 #'
 #' my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #' d <- dbi_copy_to(my_db, 'd',
-#'                 data.frame(AUC = 0.6, R2 = 0.2))
-#' eqn <- select_rows_nse(d, AUC >= 0.5)
+#'                 data.frame(AUC = 0.6, R2 = 0.2, z = 3))
+#' eqn <- select_rows_nse(d, AUC >= 0.5) %.>%
+#'    select_columns(., "R2")
 #' cat(format(eqn))
 #' sql <- to_sql(eqn)
 #' cat(sql)
@@ -120,41 +121,53 @@ print.relop_select_rows <- function(x, ...) {
   print(txt, ...)
 }
 
+
+calc_used_relop_select_rows <- function (x, ...,
+                                         using = NULL,
+                                         contract = FALSE) {
+  if(length(using)<=0) {
+    using <- column_names(x)
+  }
+  consuming <- merge_fld(x$parsed, "symbols_used")
+  using <- unique(c(using, consuming))
+  missing <- setdiff(using, column_names(x$source[[1]]))
+  if(length(missing)>0) {
+    stop(paste("rquery::calc_used_relop_select_rows unknown columns",
+               paste(missing, collapse = ", ")))
+  }
+  using
+}
+
 #' @export
 columns_used.relop_select_rows <- function (x, ...,
                                          using = NULL,
                                          contract = FALSE) {
-  if(length(using)<=0) {
-    return(columns_used(x$source[[1]],
-                        using = NULL,
-                        contract = contract))
-  }
-  consuming <- merge_fld(x$parsed, "symbols_used")
+  cols <- calc_used_relop_select_rows(x,
+                                      using = using,
+                                      contract = contract)
   return(columns_used(x$source[[1]],
-                      using = unique(c(using, consuming)),
+                      using = cols,
                       contract = contract))
 }
 
 
 #' @export
-to_sql.relop_select_rows <- function(x,
-                                     ...,
-                                     indent_level = 0,
-                                     tnum = mkTempNameGenerator('tsql'),
-                                     append_cr = TRUE,
-                                     column_restriction = NULL) {
+to_sql.relop_select_rows <- function (x,
+                                      ...,
+                                      indent_level = 0,
+                                      tnum = mkTempNameGenerator('tsql'),
+                                      append_cr = TRUE,
+                                      using = NULL) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
-  cols <- vapply(x$columns,
-                 function(ci) {
-                   quote_identifier(x, ci)
-                 }, character(1))
+  cols <- calc_used_relop_select_rows(x,
+                                      using = using)
   subsql <- to_sql(x$source[[1]],
                    indent_level = indent_level + 1,
                    tnum = tnum,
                    append_cr = FALSE,
-                   column_restriction = column_restriction)
+                   using = cols)
   tab <- tnum()
   prefix <- paste(rep(' ', indent_level), collapse = '')
   q <- paste0(prefix, "SELECT * FROM (\n",

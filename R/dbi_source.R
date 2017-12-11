@@ -45,7 +45,8 @@ listFields <- function(my_db, tableName) {
 #' DBI::dbGetQuery(my_db, sql)
 #' cols <- columns_used(d)
 #' print(cols)
-#' sql2 <- to_sql(d, column_restriction = cols[1])
+#'
+#' sql2 <- to_sql(d, using = "AUC")
 #' cat(sql2)
 #' DBI::dbGetQuery(my_db, sql2)
 #' DBI::dbDisconnect(my_db)
@@ -53,11 +54,15 @@ listFields <- function(my_db, tableName) {
 #' @export
 #'
 dbi_table <- function(db, table_name) {
-  columns <- listFields(db, table_name)
   r <- list(source = list(),
             table_name = table_name,
-            columns = columns,
-            db = db)
+            columns = listFields(db, table_name),
+            dbqi = function(id) {
+              as.character(DBI::dbQuoteIdentifier(db, id))
+            },
+            dbqs = function(s) {
+              as.character(DBI::dbQuoteString(db, s))
+            })
   class(r) <- "relop_dbi_table"
   r
 }
@@ -72,7 +77,7 @@ quote_identifier.relop_dbi_table <- function (x, id, ...) {
   if(length(id)!=1) {
     stop("rquery::quote_identifier length(id)!=1")
   }
-  as.character(DBI::dbQuoteIdentifier(x$db, id))
+  x$dbqi(id)
 }
 
 #' @export
@@ -84,7 +89,7 @@ quote_string.relop_dbi_table <- function (x, s, ...) {
   if(length(s)!=1) {
     stop("rquery::quote_string length(s)!=1")
   }
-  as.character(DBI::dbQuoteString(x$db, s))
+  x$dbqs(s)
 }
 
 #' @export
@@ -94,6 +99,7 @@ column_names.relop_dbi_table <- function (x, ...) {
   }
   x$columns
 }
+
 
 #' @export
 columns_used.relop_dbi_table <- function (x, ...,
@@ -106,10 +112,10 @@ columns_used.relop_dbi_table <- function (x, ...,
   if(length(using)>0) {
     missing <- setdiff(using, x$columns)
     if(length(missing)>0) {
-      stop(paste("rquery:columns_used request for unknonw columns",
+      stop(paste("rquery:columns_used request for unknown columns",
                  paste(missing, collapse = ", ")))
     }
-    cols <- intersect(x$columns, using)
+    cols <- intersect(cols, using)
   }
   qcols <- vapply(cols,
                   function(ui) {
@@ -120,30 +126,24 @@ columns_used.relop_dbi_table <- function (x, ...,
 }
 
 #' @export
-to_sql.relop_dbi_table <- function(x,
-                                   ...,
-                                   indent_level = 0,
-                                   tnum = mkTempNameGenerator('tsql'),
-                                   append_cr = TRUE,
-                                   column_restriction = NULL) {
+to_sql.relop_dbi_table <- function (x,
+                                    ...,
+                                    indent_level = 0,
+                                    tnum = mkTempNameGenerator('tsql'),
+                                    append_cr = TRUE,
+                                    using = NULL) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
   prefix <- paste(rep(' ', indent_level), collapse = '')
   tabnam <- quote_identifier(x,  x$table_name)
-  if(length(column_restriction)<=0) {
-    q <- paste0(prefix,
-                "SELECT * FROM ",
-                tabnam)
-  } else {
-    ours <- column_restriction[startsWith(column_restriction, tabnam)]
-    qt <- paste(ours, collapse = paste0(",\n", prefix, " "))
-    q <- paste0(prefix,
-                "SELECT\n",
-                prefix, " ", qt, "\n",
-                prefix, "FROM\n",
-                prefix, " ", tabnam)
-  }
+  cols <- columns_used(x, using = using)
+  qt <- paste(cols, collapse = paste0(",\n", prefix, " "))
+  q <- paste0(prefix,
+              "SELECT\n",
+              prefix, " ", qt, "\n",
+              prefix, "FROM\n",
+              prefix, " ", tabnam)
   if(append_cr) {
     q <- paste0(q, "\n")
   }
