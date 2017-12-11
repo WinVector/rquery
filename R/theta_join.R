@@ -208,6 +208,10 @@ calc_used_relop_theta_join <- function (x, ...,
   cols <- unique(c(column_names(x$source[[1]]),
                    column_names(x$source[[2]])))
   if(length(using)>0) {
+    mpback <- c(column_names(x$source[[1]]),
+                column_names(x$source[[2]]))
+    names(mpback) <- column_names(x)
+    using <- unique(mpback[using])
     missing <- setdiff(using, cols)
     if(length(missing)>0) {
       stop(paste("rquery::relop_theta_join unkown columns",
