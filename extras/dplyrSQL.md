@@ -7,7 +7,12 @@ Win-Vector LLC
 
 ``` r
 suppressPackageStartupMessages(library("dplyr"))
+packageVersion("dplyr")
+```
 
+    ## [1] '0.7.4'
+
+``` r
 my_db <- sparklyr::spark_connect(version='2.2.0', 
                                  master = "local")
 
@@ -58,9 +63,9 @@ d %>%
     ## FROM (SELECT `subjectID`, `surveyCategory`, `assessmentTotal`, `irrelevantCol1`, `irrelevantCol2`, `probability`, row_number() OVER (PARTITION BY `subjectID` ORDER BY `probability`, `surveyCategory`) = COUNT(*) OVER (PARTITION BY `subjectID`) AS `isDiagnosis`
     ## FROM (SELECT *
     ## FROM (SELECT `subjectID`, `surveyCategory`, `assessmentTotal`, `irrelevantCol1`, `irrelevantCol2`, EXP(`assessmentTotal` * 0.237) / sum(EXP(`assessmentTotal` * 0.237)) OVER (PARTITION BY `subjectID`) AS `probability`
-    ## FROM `d`) `zmqmoagpbr`
-    ## ORDER BY `probability`, `surveyCategory`) `dktnkdazif`) `kuahddwmre`
-    ## WHERE (`isDiagnosis`)) `eawiimwboq`) `tmpuogwlka`
+    ## FROM `d`) `mkdkmgxosl`
+    ## ORDER BY `probability`, `surveyCategory`) `wxxtjzbzbo`) `augwhtpjdy`
+    ## WHERE (`isDiagnosis`)) `dakzosnmub`) `otmyldflsi`
     ## ORDER BY `subjectID`
 
 ``` r

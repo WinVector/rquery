@@ -282,7 +282,7 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
  ) tsql_0004
 ) tsql_0005 ORDER BY `subjectID`</code></pre>
 <p>The query is large, but due to its regular structure it should be very amenable to database query optimizer.</p>
-<p>Notice the query was automatically restricted to columns actually needed from the source table. This is possible because the <code>rquery</code> representation is an intelligible network of nodes, so we can interrogate it for facts about the query. For example:</p>
+<p>Notice the query was automatically restricted to columns actually needed from the source table all the way back to to the initial source-table queries (<a href="https://github.com/JohnMount/rquery/blob/master/extras/dplyrSQL.md">something <code>dplyr</code> <code>0.7.4</code> does not do</a>). This is possible because the <code>rquery</code> representation is an intelligible network of nodes, so we can interrogate it for facts about the query. For example:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/tables_used.html">tables_used</a></span>(dq)</code></pre></div>
 <pre><code>## [1] "d"</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cu &lt;-<span class="st"> </span><span class="kw"><a href="reference/columns_used.html">columns_used</a></span>(dq)

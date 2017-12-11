@@ -154,7 +154,9 @@ cat(to_sql(dq))
 
 The query is large, but due to its regular structure it should be very amenable to database query optimizer.
 
-Notice the query was automatically restricted to columns actually needed from the source table.  This is possible because the `rquery` representation is an intelligible network of nodes, so we can interrogate it for
+Notice the query was automatically restricted to columns actually needed from the source table all the way back 
+to to the initial source-table queries ([something `dplyr` `0.7.4` does not do](https://github.com/JohnMount/rquery/blob/master/extras/dplyrSQL.md)).
+This is possible because the `rquery` representation is an intelligible network of nodes, so we can interrogate it for
 facts about the query.  For example:
 
 ```{r qfacts}

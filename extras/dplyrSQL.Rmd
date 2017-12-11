@@ -9,6 +9,7 @@ output: github_document
 
 ```{r ex, commment=''}
 suppressPackageStartupMessages(library("dplyr"))
+packageVersion("dplyr")
 
 my_db <- sparklyr::spark_connect(version='2.2.0', 
                                  master = "local")
