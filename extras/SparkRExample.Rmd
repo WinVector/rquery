@@ -58,7 +58,7 @@ sql("SELECT * from dSparkR") %.>%
   knitr::kable(.)
 ```
 
-Run the same query as the [`rquery` example](https://johnmount.github.io/rquery/).
+Run the same query as the [`rquery` example](https://winvector.github.io/rquery/).
 
 ```{r calc}
 scale <- 0.237

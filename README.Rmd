@@ -6,9 +6,9 @@ date: "2017-12-11"
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-[`rquery`](https://johnmount.github.io/rquery/) is an experiment/demonstration of a simplified sequenced query language based on [Codd's relational algebra](https://en.wikipedia.org/wiki/Relational_algebra) and not currently recommended for non-experimental (i.e., production) use.  The goal of this experiment is to see if `SQL` would be more fun if it had a sequential data-flow or pipe notation.
+[`rquery`](https://winvector.github.io/rquery/) is an experiment/demonstration of a simplified sequenced query language based on [Codd's relational algebra](https://en.wikipedia.org/wiki/Relational_algebra) and not currently recommended for non-experimental (i.e., production) use.  The goal of this experiment is to see if `SQL` would be more fun if it had a sequential data-flow or pipe notation.
 
-[`rquery`](https://github.com/JohnMount/rquery) can be an excellent advanced `SQL`
+[`rquery`](https://github.com/WinVector/rquery) can be an excellent advanced `SQL`
 training tool (it shows how some very deep `SQL` by composing `rquery` operators).  Currently `rquery` is biased towards `PostgeSQL` `SQL`.
 
 There are many prior relational algebra inspired specialized query languages.  Just a few include:
@@ -25,17 +25,17 @@ There are many prior relational algebra inspired specialized query languages.  J
 
 The primary relational operators are:
 
-  * [`extend()`](https://johnmount.github.io/rquery/reference/extend_nse.html).  Extend adds derived columns to a relation table.  With a sufficiently powerful `SQL` provider this includes ordered and partitioned window functions.  This operator also includes built-in [`seplyr`](https://winvector.github.io/seplyr/)-style [assignment partitioning](https://winvector.github.io/seplyr/articles/MutatePartitioner.html).
-  * [`project()`](https://johnmount.github.io/rquery/reference/project_nse.html).  Project is usually portrayed as the equivalent to column selection.  In our opinion the original relational nature of the operator is best captured by moving `SQL`'s "`GROUP BY`" aggregation functionality to this operator.
-  * [`natural_join()`](https://johnmount.github.io/rquery/reference/natural_join.html).  This a specialized relational join operator, using all common columns as the equi-join condition.  The next operator to add would definitely be `theta-join` as that adds a lot more expressiveness to the grammar.
-  * [`theta_join()`](https://johnmount.github.io/rquery/reference/theta_join_nse.html).  This is the relational join operator, insisting on distinct columns but allowing an arbitrary matching condition.  The next operator to add would definitely be `theta-join` as that adds a lot more expressiveness to the grammar.
-  * [`select_rows()`](https://johnmount.github.io/rquery/reference/theta_join_nse.html).  This is Codd's relational row selection.  Obviously `select` alone is an over-used and now ambiguous term (it is the "doit" verb in `SQL` and the *column* selector in `dplyr`).
-  * [`rename_columns()`](https://johnmount.github.io/rquery/reference/rename_columns.html).  This operator renames sets of columns.
+  * [`extend()`](https://winvector.github.io/rquery/reference/extend_nse.html).  Extend adds derived columns to a relation table.  With a sufficiently powerful `SQL` provider this includes ordered and partitioned window functions.  This operator also includes built-in [`seplyr`](https://winvector.github.io/seplyr/)-style [assignment partitioning](https://winvector.github.io/seplyr/articles/MutatePartitioner.html).
+  * [`project()`](https://winvector.github.io/rquery/reference/project_nse.html).  Project is usually portrayed as the equivalent to column selection.  In our opinion the original relational nature of the operator is best captured by moving `SQL`'s "`GROUP BY`" aggregation functionality to this operator.
+  * [`natural_join()`](https://winvector.github.io/rquery/reference/natural_join.html).  This a specialized relational join operator, using all common columns as the equi-join condition.  The next operator to add would definitely be `theta-join` as that adds a lot more expressiveness to the grammar.
+  * [`theta_join()`](https://winvector.github.io/rquery/reference/theta_join_nse.html).  This is the relational join operator, insisting on distinct columns but allowing an arbitrary matching condition.  The next operator to add would definitely be `theta-join` as that adds a lot more expressiveness to the grammar.
+  * [`select_rows()`](https://winvector.github.io/rquery/reference/theta_join_nse.html).  This is Codd's relational row selection.  Obviously `select` alone is an over-used and now ambiguous term (it is the "doit" verb in `SQL` and the *column* selector in `dplyr`).
+  * [`rename_columns()`](https://winvector.github.io/rquery/reference/rename_columns.html).  This operator renames sets of columns.
   
 The primary non-relational (traditional `SQL`) operators are:
 
-  * [`select_columns()`](https://johnmount.github.io/rquery/reference/select_columns.html).  This allows choice of columns (central to `SQL`), but is not a relational operator as it can damage row-uniqueness.
-  * [`order_by()`](https://johnmount.github.io/rquery/reference/order_by.html).  This is actually relational in the sense that it does not ruin a table that is a relation (has unique rows).  However it is only a useful intermediate step with used with its `limit=` option.  Row order is not well-defined in the relational algebra (and also not in most `SQL` implementations).  If used it should be used last in a query (so it is not undone by later operations).
+  * [`select_columns()`](https://winvector.github.io/rquery/reference/select_columns.html).  This allows choice of columns (central to `SQL`), but is not a relational operator as it can damage row-uniqueness.
+  * [`order_by()`](https://winvector.github.io/rquery/reference/order_by.html).  This is actually relational in the sense that it does not ruin a table that is a relation (has unique rows).  However it is only a useful intermediate step with used with its `limit=` option.  Row order is not well-defined in the relational algebra (and also not in most `SQL` implementations).  If used it should be used last in a query (so it is not undone by later operations).
 
   
 The primary missing relational operators are:
@@ -155,7 +155,7 @@ cat(to_sql(dq))
 The query is large, but due to its regular structure it should be very amenable to database query optimizer.
 
 Notice the query was automatically restricted to columns actually needed from the source table all the way back 
-to to the initial source-table queries ([something `dplyr` `0.7.4` does not do](https://github.com/JohnMount/rquery/blob/master/extras/dplyrSQL.md)).
+to to the initial source-table queries ([something `dplyr` `0.7.4` does not do](https://github.com/WinVector/rquery/blob/master/extras/dplyrSQL.md)).
 This is possible because the `rquery` representation is an intelligible network of nodes, so we can interrogate it for
 facts about the query.  For example:
 
@@ -179,7 +179,7 @@ is represented as follows:
 cat(format(dq))
 ```
 
-We also can [stand this system up on non-`DBI` sources such as `SparkR`](https://github.com/JohnMount/rquery/blob/master/extras/SparkRExample.md).
+We also can [stand this system up on non-`DBI` sources such as `SparkR`](https://github.com/WinVector/rquery/blob/master/extras/SparkRExample.md).
 
 And that is our experiment. 
 

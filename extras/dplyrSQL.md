@@ -3,7 +3,7 @@ dplyrSQL
 Win-Vector LLC
 12/11/2017
 
-`dplyr` SQL for the [`rquery` example](https://johnmount.github.io/rquery/). Notice the irrelevant columns live a few steps into the query sequence. Also notice the `dplyr` `SQL` does have less nesting than the `rquery` `SQL`.
+`dplyr` SQL for the [`rquery` example](https://winvector.github.io/rquery/). Notice the irrelevant columns live a few steps into the query sequence. Also notice the `dplyr` `SQL` does have less nesting than the `rquery` `SQL`.
 
 ``` r
 suppressPackageStartupMessages(library("dplyr"))

@@ -41,7 +41,7 @@ sql("SELECT * from dSparkR") %.>%
 |          2| withdrawal behavior |                3| irrel1         | irrel2         |
 |          2| positive re-framing |                4| irrel1         | irrel2         |
 
-Run the same query as the [`rquery` example](https://johnmount.github.io/rquery/).
+Run the same query as the [`rquery` example](https://winvector.github.io/rquery/).
 
 ``` r
 scale <- 0.237
