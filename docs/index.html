@@ -38,7 +38,11 @@
   <a href="reference/index.html">Reference</a>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right"></ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="http://www.win-vector.com/">Sponsor: Win-Vector LLC</a>
+</li>
+      </ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -55,8 +59,8 @@
     
 <div class="contents">
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-<p><a href="https://johnmount.github.io/rquery/"><code>rquery</code></a> is an experiment/demonstration of a simplified sequenced query language based on <a href="https://en.wikipedia.org/wiki/Relational_algebra">Codd’s relational algebra</a> and not currently recommended for non-experimental (i.e., production) use. The goal of this experiment is to see if <code>SQL</code> would be more fun if it had a sequential data-flow or pipe notation.</p>
-<p><a href="https://github.com/JohnMount/rquery"><code>rquery</code></a> can be an excellent advanced <code>SQL</code> training tool (it shows how some very deep <code>SQL</code> by composing <code>rquery</code> operators). Currently <code>rquery</code> is biased towards <code>PostgeSQL</code> <code>SQL</code>.</p>
+<p><a href="https://winvector.github.io/rquery/"><code>rquery</code></a> is an experiment/demonstration of a simplified sequenced query language based on <a href="https://en.wikipedia.org/wiki/Relational_algebra">Codd’s relational algebra</a> and not currently recommended for non-experimental (i.e., production) use. The goal of this experiment is to see if <code>SQL</code> would be more fun if it had a sequential data-flow or pipe notation.</p>
+<p><a href="https://github.com/WinVector/rquery"><code>rquery</code></a> can be an excellent advanced <code>SQL</code> training tool (it shows how some very deep <code>SQL</code> by composing <code>rquery</code> operators). Currently <code>rquery</code> is biased towards <code>PostgeSQL</code> <code>SQL</code>.</p>
 <p>There are many prior relational algebra inspired specialized query languages. Just a few include:</p>
 <ul>
 <li><a href="https://en.wikipedia.org/wiki/Alpha_(programming_language)">Alpha</a></li>
@@ -70,24 +74,24 @@
 <p>The primary relational operators are:</p>
 <ul>
 <li>
-<a href="https://johnmount.github.io/rquery/reference/extend_nse.html"><code>extend()</code></a>. Extend adds derived columns to a relation table. With a sufficiently powerful <code>SQL</code> provider this includes ordered and partitioned window functions. This operator also includes built-in <a href="https://winvector.github.io/seplyr/"><code>seplyr</code></a>-style <a href="https://winvector.github.io/seplyr/articles/MutatePartitioner.html">assignment partitioning</a>.</li>
+<a href="https://winvector.github.io/rquery/reference/extend_nse.html"><code>extend()</code></a>. Extend adds derived columns to a relation table. With a sufficiently powerful <code>SQL</code> provider this includes ordered and partitioned window functions. This operator also includes built-in <a href="https://winvector.github.io/seplyr/"><code>seplyr</code></a>-style <a href="https://winvector.github.io/seplyr/articles/MutatePartitioner.html">assignment partitioning</a>.</li>
 <li>
-<a href="https://johnmount.github.io/rquery/reference/project_nse.html"><code>project()</code></a>. Project is usually portrayed as the equivalent to column selection. In our opinion the original relational nature of the operator is best captured by moving <code>SQL</code>’s “<code>GROUP BY</code>” aggregation functionality to this operator.</li>
+<a href="https://winvector.github.io/rquery/reference/project_nse.html"><code>project()</code></a>. Project is usually portrayed as the equivalent to column selection. In our opinion the original relational nature of the operator is best captured by moving <code>SQL</code>’s “<code>GROUP BY</code>” aggregation functionality to this operator.</li>
 <li>
-<a href="https://johnmount.github.io/rquery/reference/natural_join.html"><code><a href="reference/natural_join.html">natural_join()</a></code></a>. This a specialized relational join operator, using all common columns as the equi-join condition. The next operator to add would definitely be <code>theta-join</code> as that adds a lot more expressiveness to the grammar.</li>
+<a href="https://winvector.github.io/rquery/reference/natural_join.html"><code><a href="reference/natural_join.html">natural_join()</a></code></a>. This a specialized relational join operator, using all common columns as the equi-join condition. The next operator to add would definitely be <code>theta-join</code> as that adds a lot more expressiveness to the grammar.</li>
 <li>
-<a href="https://johnmount.github.io/rquery/reference/theta_join_nse.html"><code>theta_join()</code></a>. This is the relational join operator, insisting on distinct columns but allowing an arbitrary matching condition. The next operator to add would definitely be <code>theta-join</code> as that adds a lot more expressiveness to the grammar.</li>
+<a href="https://winvector.github.io/rquery/reference/theta_join_nse.html"><code>theta_join()</code></a>. This is the relational join operator, insisting on distinct columns but allowing an arbitrary matching condition. The next operator to add would definitely be <code>theta-join</code> as that adds a lot more expressiveness to the grammar.</li>
 <li>
-<a href="https://johnmount.github.io/rquery/reference/theta_join_nse.html"><code>select_rows()</code></a>. This is Codd’s relational row selection. Obviously <code>select</code> alone is an over-used and now ambiguous term (it is the “doit” verb in <code>SQL</code> and the <em>column</em> selector in <code>dplyr</code>).</li>
+<a href="https://winvector.github.io/rquery/reference/theta_join_nse.html"><code>select_rows()</code></a>. This is Codd’s relational row selection. Obviously <code>select</code> alone is an over-used and now ambiguous term (it is the “doit” verb in <code>SQL</code> and the <em>column</em> selector in <code>dplyr</code>).</li>
 <li>
-<a href="https://johnmount.github.io/rquery/reference/rename_columns.html"><code><a href="reference/rename_columns.html">rename_columns()</a></code></a>. This operator renames sets of columns.</li>
+<a href="https://winvector.github.io/rquery/reference/rename_columns.html"><code><a href="reference/rename_columns.html">rename_columns()</a></code></a>. This operator renames sets of columns.</li>
 </ul>
 <p>The primary non-relational (traditional <code>SQL</code>) operators are:</p>
 <ul>
 <li>
-<a href="https://johnmount.github.io/rquery/reference/select_columns.html"><code><a href="reference/select_columns.html">select_columns()</a></code></a>. This allows choice of columns (central to <code>SQL</code>), but is not a relational operator as it can damage row-uniqueness.</li>
+<a href="https://winvector.github.io/rquery/reference/select_columns.html"><code><a href="reference/select_columns.html">select_columns()</a></code></a>. This allows choice of columns (central to <code>SQL</code>), but is not a relational operator as it can damage row-uniqueness.</li>
 <li>
-<a href="https://johnmount.github.io/rquery/reference/order_by.html"><code><a href="reference/order_by.html">order_by()</a></code></a>. This is actually relational in the sense that it does not ruin a table that is a relation (has unique rows). However it is only a useful intermediate step with used with its <code>limit=</code> option. Row order is not well-defined in the relational algebra (and also not in most <code>SQL</code> implementations). If used it should be used last in a query (so it is not undone by later operations).</li>
+<a href="https://winvector.github.io/rquery/reference/order_by.html"><code><a href="reference/order_by.html">order_by()</a></code></a>. This is actually relational in the sense that it does not ruin a table that is a relation (has unique rows). However it is only a useful intermediate step with used with its <code>limit=</code> option. Row order is not well-defined in the relational algebra (and also not in most <code>SQL</code> implementations). If used it should be used last in a query (so it is not undone by later operations).</li>
 </ul>
 <p>The primary missing relational operators are:</p>
 <ul>
@@ -282,7 +286,7 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
  ) tsql_0004
 ) tsql_0005 ORDER BY `subjectID`</code></pre>
 <p>The query is large, but due to its regular structure it should be very amenable to database query optimizer.</p>
-<p>Notice the query was automatically restricted to columns actually needed from the source table all the way back to to the initial source-table queries (<a href="https://github.com/JohnMount/rquery/blob/master/extras/dplyrSQL.md">something <code>dplyr</code> <code>0.7.4</code> does not do</a>). This is possible because the <code>rquery</code> representation is an intelligible network of nodes, so we can interrogate it for facts about the query. For example:</p>
+<p>Notice the query was automatically restricted to columns actually needed from the source table all the way back to to the initial source-table queries (<a href="https://github.com/WinVector/rquery/blob/master/extras/dplyrSQL.md">something <code>dplyr</code> <code>0.7.4</code> does not do</a>). This is possible because the <code>rquery</code> representation is an intelligible network of nodes, so we can interrogate it for facts about the query. For example:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/tables_used.html">tables_used</a></span>(dq)</code></pre></div>
 <pre><code>## [1] "d"</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cu &lt;-<span class="st"> </span><span class="kw"><a href="reference/columns_used.html">columns_used</a></span>(dq)
@@ -305,7 +309,7 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
  select_rows(., isdiagnosis) %.&gt;%
  select_columns(., subjectID, diagnosis, probability) %.&gt;%
  order_by(., subjectID)</code></pre>
-<p>We also can <a href="https://github.com/JohnMount/rquery/blob/master/extras/SparkRExample.md">stand this system up on non-<code>DBI</code> sources such as <code>SparkR</code></a>.</p>
+<p>We also can <a href="https://github.com/WinVector/rquery/blob/master/extras/SparkRExample.md">stand this system up on non-<code>DBI</code> sources such as <code>SparkR</code></a>.</p>
 <p>And that is our experiment.</p>
 <p>We are looking for funding and partners to take this system further (including: finishing functionality, documentation, training materials, test materials, acceptance procedures, porting to more back-ends).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="cf">if</span>(use_spark) {

@@ -6,3 +6,4 @@
 ^logs$
 ^extras$
 
+^_pkgdown\.yml$
