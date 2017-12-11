@@ -7,3 +7,4 @@
 man/
 *.log
 logs/
+df_tmp/

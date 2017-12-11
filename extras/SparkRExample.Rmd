@@ -1,0 +1,104 @@
+---
+title: "SparkR"
+author: "Win-Vector LLC"
+date: "12/11/2017"
+output: github_document
+---
+
+```{r su, include=FALSE, message=FALSE, warning=FALSE, echo=FALSE}
+# set up a SparkR cluster with some data in it.
+sc <- sparklyr::spark_connect(version='2.2.0', 
+                              master = "local")
+# connect SparkR to cluster 
+# https://github.com/WinVector/BigDataRStrata2017/blob/master/Exercises/solutions/06-Spark-Extension.md
+SPARK_HOME <- sc$spark_home
+library(SparkR, lib.loc = paste0(SPARK_HOME, "/R/lib/"))
+sr <- sparkR.session(master = "local", sparkHome = SPARK_HOME)
+
+df <- dplyr::copy_to(sc, 
+                    data.frame(
+                      subjectID = c(1,                   
+                                    1,
+                                    2,                   
+                                    2),
+                      surveyCategory = c(
+                        'withdrawal behavior',
+                        'positive re-framing',
+                        'withdrawal behavior',
+                        'positive re-framing'
+                      ),
+                      assessmentTotal = c(5,                 
+                                          2,
+                                          3,                  
+                                          4),
+                      irrelevantCol1 = "irrel1",
+                      irrelevantCol2 = "irrel2",
+                      stringsAsFactors = FALSE),
+                    name = 'df',
+                    temporary = TRUE, 
+                    overwrite = FALSE)
+sparklyr::spark_write_parquet(df, 'df_tmp')
+dSparkR <- SparkR::read.df('df_tmp')
+```
+
+Show our `SparkR` setup.
+
+```{r st}
+library("wrapr")
+library("rquery")
+library("SparkR")
+packageVersion("SparkR")
+print(sr)
+print(dSparkR)
+
+createOrReplaceTempView(dSparkR, "dSparkR")
+
+sql("SELECT * from dSparkR") %.>%
+  head(.) %.>%
+  knitr::kable(.)
+```
+
+Run the same query as the [`rquery` example](https://johnmount.github.io/rquery/).
+
+```{r calc}
+scale <- 0.237
+d <- rquery::table_source(table_name = "dSparkR",
+                          columns = colnames(dSparkR),
+                          dbqi = function(id) { paste0("`", id, "`") },
+                          dbqs = function(s) { paste0('"', s, '"') })
+                          
+
+dq <- d %.>%
+  extend_nse(.,
+             probability :=
+               exp(assessmentTotal * scale)/
+               sum(exp(assessmentTotal * scale)),
+             count := count(1),
+             partitionby = 'subjectID') %.>%
+  extend_nse(.,
+             rank := rank(),
+             partitionby = 'subjectID',
+             orderby = 'probability')  %.>%
+  extend_nse(.,
+             isdiagnosis := rank == count,
+             diagnosis := surveyCategory) %.>%
+  select_rows_nse(., isdiagnosis) %.>%
+  select_columns(., c("subjectID", 
+                      "diagnosis", 
+                      "probability")) %.>%
+  order_by(., 'subjectID')
+
+sql <- to_sql(dq)
+
+# run query through SparkR
+sql(sql) %.>%
+  head(.) %.>%
+  knitr::kable(.)
+```
+
+```{r exit}
+sparklyr::spark_disconnect(sc)
+```
+
+
+
