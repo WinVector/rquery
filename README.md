@@ -67,8 +67,9 @@ if(use_spark) {
   my_db <- sparklyr::spark_connect(version='2.2.0', 
                                    master = "local")
 } else {
-  library('RPostgreSQL')
-  my_db <- DBI::dbConnect(dbDriver("PostgreSQL"),
+  # driver <- RPostgreSQL::PostgreSQL()
+  driver <- RPostgres::Postgres()
+  my_db <- DBI::dbConnect(driver,
                           host = 'localhost',
                           port = 5432,
                           user = 'postgres',

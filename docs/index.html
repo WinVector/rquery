@@ -117,8 +117,9 @@
   my_db &lt;-<span class="st"> </span>sparklyr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/sparklyr/topics/spark-connections">spark_connect</a></span>(<span class="dt">version=</span><span class="st">'2.2.0'</span>, 
                                    <span class="dt">master =</span> <span class="st">"local"</span>)
 } <span class="cf">else</span> {
-  <span class="kw">library</span>(<span class="st">'RPostgreSQL'</span>)
-  my_db &lt;-<span class="st"> </span>DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbConnect">dbConnect</a></span>(<span class="kw">dbDriver</span>(<span class="st">"PostgreSQL"</span>),
+  <span class="co"># driver &lt;- RPostgreSQL::PostgreSQL()</span>
+  driver &lt;-<span class="st"> </span>RPostgres<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/RPostgres/topics/Postgres">Postgres</a></span>()
+  my_db &lt;-<span class="st"> </span>DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbConnect">dbConnect</a></span>(driver,
                           <span class="dt">host =</span> <span class="st">'localhost'</span>,
                           <span class="dt">port =</span> <span class="dv">5432</span>,
                           <span class="dt">user =</span> <span class="st">'postgres'</span>,
