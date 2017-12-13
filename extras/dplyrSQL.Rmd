@@ -39,7 +39,7 @@ d <- dplyr::copy_to(my_db,
 
 scale <- 0.237
 
-d %>%
+dq <- d %>%
   group_by(subjectID) %>%
   mutate(probability =
            exp(assessmentTotal * scale)/
@@ -50,8 +50,15 @@ d %>%
   ungroup() %>%
   select(subjectID, surveyCategory, probability) %>%
   rename(diagnosis = surveyCategory) %>%
-  arrange(subjectID) %>%
-  show_query()
+  arrange(subjectID)
+
+# directly prints, can not easilly and reliable capture SQL
+show_query(dq)
+
+# directly prints, can not easilly and reliable capture SQL
+explain(dq)
+
+dq
 
 sparklyr::spark_disconnect(my_db)
 ```
