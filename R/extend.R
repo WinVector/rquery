@@ -31,12 +31,12 @@ extend_impl <- function(source, parsed,
   assignments <- unpack_assignments(source, parsed)
   r <- list(source = list(source),
             table_name = NULL,
+            parsed = parsed,
             partitionby = partitionby,
             orderby = orderby,
             desc = desc,
             assignments = assignments,
-            columns = names(assignments),
-            parsed = parsed)
+            columns = names(assignments))
   class(r) <- "relop_extend"
   r
 }

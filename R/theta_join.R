@@ -46,9 +46,8 @@ theta_join_se <- function(a, b,
                      have = have)
   assignments <- unpack_assignments(a, parsed,
                                     have = have)
-  parsed <- parsed[[1]]
-  parsed$symbols_produced <- character(0)
-  parsed$presentation <- gsub("^.*:= ", "", parsed$presentation)
+  parsed[[1]]$symbols_produced <- character(0)
+  parsed[[1]]$presentation <- gsub("^.*:= ", "", parsed[[1]]$presentation)
   r <- list(source = list(a, b),
             table_name = NULL,
             overlap = overlap,
@@ -109,9 +108,8 @@ theta_join_nse <- function(a, b,
   parsed[[1]]$symbols_produced <- vnam
   assignments <- unpack_assignments(a, parsed,
                                     have = have)
-  parsed <- parsed[[1]]
-  parsed$symbols_produced <- character(0)
-  parsed$presentation <- gsub("^.*:= ", "", parsed$presentation)
+  parsed[[1]]$symbols_produced <- character(0)
+  parsed[[1]]$presentation <- gsub("^.*:= ", "", parsed[[1]]$presentation)
   r <- list(source = list(a, b),
             overlap = overlap,
             jointype = jointype,
@@ -168,7 +166,7 @@ format.relop_theta_join <- function(x, ...) {
          "  j= ",
          x$jointype,
          "; on= ",
-         paste(x$parsed$presentation, collapse = ", "),
+         paste(x$parsed[[1]]$presentation, collapse = ", "),
          ")",
          "\n")
 }
@@ -220,7 +218,7 @@ calc_used_relop_theta_join <- function (x, ...,
     }
     cols <- using
   }
-  condTerms <- x$parsed$symbols_used
+  condTerms <- x$parsed[[1]]$symbols_used
   cols <- unique(c(cols, condTerms))
   cols
 }
@@ -298,7 +296,7 @@ to_sql.relop_theta_join <- function (x,
               prefix, ") ",
               tabb,
               " ON ",
-              x$parsed$parsed)
+              x$parsed[[1]]$parsed)
   if(append_cr) {
     q <- paste0(q, "\n")
   }

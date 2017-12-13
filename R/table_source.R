@@ -44,6 +44,7 @@
 table_source <- function(table_name, columns, dbqi, dbqs) {
   r <- list(source = list(),
             table_name = table_name,
+            parsed = NULL,
             columns = columns,
             dbqi = dbqi,
             dbqs = dbqs)

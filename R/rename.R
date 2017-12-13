@@ -38,6 +38,7 @@ rename_columns <- function(source, cmap) {
   }
   r <- list(source = list(source),
             table_name = NULL,
+            parsed = NULL,
             cmap = cmap)
   class(r) <- "relop_rename_columns"
   r

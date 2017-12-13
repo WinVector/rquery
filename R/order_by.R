@@ -42,6 +42,7 @@ order_by <- function(source,
   check_have_cols(have, orderby, "rquery::order_by orderby")
   r <- list(source = list(source),
             table_name = NULL,
+            parsed = NULL,
             orderby = orderby,
             desc = desc,
             limit = limit)

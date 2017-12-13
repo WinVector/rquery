@@ -5,6 +5,7 @@
 # Each node should be a list with named entries:
 #   source: list of nodes supplying values to this node.
 #   table_name: character name of table if a concrete table or view.
+#   parsed: list of parsed expressions.
 
 
 #' Quote an idnetifier.

@@ -22,9 +22,9 @@ project_impl <- function(source, groupby, parsed) {
   }
   r <- list(source = list(source),
             table_name = NULL,
+            parsed = parsed,
             groupby = groupby,
             columns = c(groupby, names(assignments)),
-            parsed = parsed,
             assignments = assignments)
   class(r) <- "relop_project"
   r
