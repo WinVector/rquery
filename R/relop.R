@@ -63,7 +63,7 @@ columns_used <- function (x, ...,
 }
 
 
-#' Return SQL command of operation chain
+#' Return SQL implementation of operation tree.
 #'
 #' @param x rquery operation tree.
 #' @param ... generic additional arguments (not used)

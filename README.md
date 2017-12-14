@@ -11,11 +11,13 @@ To install: `devtools::install_github("WinVector/rquery")`.
 
 There are many prior relational algebra inspired specialized query languages. Just a few include:
 
--   [Alpha](https://en.wikipedia.org/wiki/Alpha_(programming_language))
--   [QUEL](https://en.wikipedia.org/wiki/QUEL_query_languages)
--   [Tutorial D](https://en.wikipedia.org/wiki/D_(data_language_specification)#Tutorial_D)
+-   [`Alpha`](https://en.wikipedia.org/wiki/Alpha_(programming_language))
+-   [`QUEL`](https://en.wikipedia.org/wiki/QUEL_query_languages)
+-   [`Tutorial D`](https://en.wikipedia.org/wiki/D_(data_language_specification)#Tutorial_D)
 -   [`LINQ`](https://msdn.microsoft.com/en-us/library/bb308959.aspx)
 -   [`SQL`](https://en.wikipedia.org/wiki/SQL)
+-   [`data.table`](http://r-datatable.com/) ([example `rquery` adapter](https://github.com/WinVector/rquery/blob/master/extras/data_table.md))
+-   [`pandas`](http://pandas.pydata.org)
 -   [`dplyr`](http://dplyr.tidyverse.org)
 
 `rquery` itself is a thin translation to `SQL` layer, but we are trying to put the Codd relational operators front and center (using the original naming, and back-porting `SQL` progress such as window functions to the appropriate relational operator). `rquery` differs from `dplyr` in that `rquery` is trying to stay near the Codd relational operators (in particular grouping is a transient state inside the `rquery::extend()` operator, not a durable user visible annotation as with `dplyr::group_by()`).
@@ -75,8 +77,21 @@ if(use_spark) {
                           user = 'postgres',
                           password = 'pg')
 }
+```
 
+    ## Warning in yaml.load(readLines(con), error.label = error.label, ...): R
+    ## expressions in yaml.load will not be auto-evaluated by default in the near
+    ## future
 
+    ## Warning in yaml.load(readLines(con), error.label = error.label, ...): R
+    ## expressions in yaml.load will not be auto-evaluated by default in the near
+    ## future
+
+    ## Warning in yaml.load(readLines(con), error.label = error.label, ...): R
+    ## expressions in yaml.load will not be auto-evaluated by default in the near
+    ## future
+
+``` r
 d <- dbi_copy_to(my_db, 'd',
                  data.frame(
                    subjectID = c(1,                   

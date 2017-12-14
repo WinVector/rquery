@@ -64,11 +64,14 @@
 <p><a href="https://github.com/WinVector/rquery"><code>rquery</code></a> can be an excellent advanced <code>SQL</code> training tool (it shows how some very deep <code>SQL</code> by composing <code>rquery</code> operators). Currently <code>rquery</code> is biased towards <code>PostgeSQL</code> <code>SQL</code>.</p>
 <p>There are many prior relational algebra inspired specialized query languages. Just a few include:</p>
 <ul>
-<li><a href="https://en.wikipedia.org/wiki/Alpha_(programming_language)">Alpha</a></li>
-<li><a href="https://en.wikipedia.org/wiki/QUEL_query_languages">QUEL</a></li>
-<li><a href="https://en.wikipedia.org/wiki/D_(data_language_specification)#Tutorial_D">Tutorial D</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Alpha_(programming_language)"><code>Alpha</code></a></li>
+<li><a href="https://en.wikipedia.org/wiki/QUEL_query_languages"><code>QUEL</code></a></li>
+<li><a href="https://en.wikipedia.org/wiki/D_(data_language_specification)#Tutorial_D"><code>Tutorial D</code></a></li>
 <li><a href="https://msdn.microsoft.com/en-us/library/bb308959.aspx"><code>LINQ</code></a></li>
 <li><a href="https://en.wikipedia.org/wiki/SQL"><code>SQL</code></a></li>
+<li>
+<a href="http://r-datatable.com/"><code>data.table</code></a> (<a href="https://github.com/WinVector/rquery/blob/master/extras/data_table.md">example <code>rquery</code> adapter</a>)</li>
+<li><a href="http://pandas.pydata.org"><code>pandas</code></a></li>
 <li><a href="http://dplyr.tidyverse.org"><code>dplyr</code></a></li>
 </ul>
 <p><code>rquery</code> itself is a thin translation to <code>SQL</code> layer, but we are trying to put the Codd relational operators front and center (using the original naming, and back-porting <code>SQL</code> progress such as window functions to the appropriate relational operator). <code>rquery</code> differs from <code>dplyr</code> in that <code>rquery</code> is trying to stay near the Codd relational operators (in particular grouping is a transient state inside the <code>rquery::extend()</code> operator, not a durable user visible annotation as with <code><a href="http://dplyr.tidyverse.org/reference/group_by.html">dplyr::group_by()</a></code>).</p>
@@ -124,10 +127,19 @@
                           <span class="dt">port =</span> <span class="dv">5432</span>,
                           <span class="dt">user =</span> <span class="st">'postgres'</span>,
                           <span class="dt">password =</span> <span class="st">'pg'</span>)
-}
+}</code></pre></div>
+<pre><code>## Warning in yaml.load(readLines(con), error.label = error.label, ...): R
+## expressions in yaml.load will not be auto-evaluated by default in the near
+## future
 
+## Warning in yaml.load(readLines(con), error.label = error.label, ...): R
+## expressions in yaml.load will not be auto-evaluated by default in the near
+## future
 
-d &lt;-<span class="st"> </span><span class="kw"><a href="reference/dbi_copy_to.html">dbi_copy_to</a></span>(my_db, <span class="st">'d'</span>,
+## Warning in yaml.load(readLines(con), error.label = error.label, ...): R
+## expressions in yaml.load will not be auto-evaluated by default in the near
+## future</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">d &lt;-<span class="st"> </span><span class="kw"><a href="reference/dbi_copy_to.html">dbi_copy_to</a></span>(my_db, <span class="st">'d'</span>,
                  <span class="kw">data.frame</span>(
                    <span class="dt">subjectID =</span> <span class="kw">c</span>(<span class="dv">1</span>,                   
                                  <span class="dv">1</span>,

@@ -15,11 +15,13 @@ training tool (it shows how some very deep `SQL` by composing `rquery` operators
 
 There are many prior relational algebra inspired specialized query languages.  Just a few include:
 
-  * [Alpha](https://en.wikipedia.org/wiki/Alpha_(programming_language))
-  * [QUEL](https://en.wikipedia.org/wiki/QUEL_query_languages)
-  * [Tutorial D](https://en.wikipedia.org/wiki/D_(data_language_specification)#Tutorial_D)
+  * [`Alpha`](https://en.wikipedia.org/wiki/Alpha_(programming_language))
+  * [`QUEL`](https://en.wikipedia.org/wiki/QUEL_query_languages)
+  * [`Tutorial D`](https://en.wikipedia.org/wiki/D_(data_language_specification)#Tutorial_D)
   * [`LINQ`](https://msdn.microsoft.com/en-us/library/bb308959.aspx)
   * [`SQL`](https://en.wikipedia.org/wiki/SQL)
+  * [`data.table`](http://r-datatable.com/) ([example `rquery` adapter](https://github.com/WinVector/rquery/blob/master/extras/data_table.md))
+  * [`pandas`](http://pandas.pydata.org)
   * [`dplyr`](http://dplyr.tidyverse.org)
  
 
