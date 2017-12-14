@@ -24,6 +24,5 @@ Suggests:
 LazyData: true
 RoxygenNote: 6.0.1
 ByteCompile: true
-Remotes:
-   WinVector/wrapr
+
 
