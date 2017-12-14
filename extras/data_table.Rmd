@@ -55,7 +55,9 @@ cat(format(dq))
 
 # translation to data.table
 expr <- to_data_table(dq)
-print(expr)
+cat(gsub("][,", " ][,\n  ", 
+         expr, 
+         fixed = TRUE))
 
 # execute
 # https://stackoverflow.com/questions/10527072/using-data-table-package-inside-my-own-package
@@ -72,4 +74,6 @@ res <- res[order(res$subjectID), , drop = FALSE]
 
 knitr::kable(res)
 ```
+
+Notice how "`][`" looks a lot like it is already a pipe operator for `data.table`.
 

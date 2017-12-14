@@ -73,10 +73,17 @@ cat(format(dq))
 ``` r
 # translation to data.table
 expr <- to_data_table(dq)
-print(expr)
+cat(gsub("][,", " ][,\n  ", 
+         expr, 
+         fixed = TRUE))
 ```
 
-    ## [1] "dL[, one := 1][, probability := exp(`assessmentTotal` * 0.237) / sum(exp(`assessmentTotal` * 0.237)) ,subjectID][, count := sum(`one`) ,subjectID][, rank := rank(`probability`) ,subjectID][, isdiagnosis := `rank` == `count`][, diagnosis := `surveyCategory`]"
+    ## dL[, one := 1 ][,
+    ##    probability := exp(`assessmentTotal` * 0.237) / sum(exp(`assessmentTotal` * 0.237)) ,subjectID ][,
+    ##    count := sum(`one`) ,subjectID ][,
+    ##    rank := rank(`probability`) ,subjectID ][,
+    ##    isdiagnosis := `rank` == `count` ][,
+    ##    diagnosis := `surveyCategory`]
 
 ``` r
 # execute
@@ -99,3 +106,5 @@ knitr::kable(res)
 |----------:|:--------------------|------------:|
 |          1| withdrawal behavior |    0.6706221|
 |          2| positive re-framing |    0.5589742|
+
+Notice how "`][`" looks a lot like it is already a pipe operator for `data.table`.
