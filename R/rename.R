@@ -123,7 +123,7 @@ columns_used.relop_rename_columns <- function (x, ...,
                                                contract = FALSE) {
   qmap <- calc_used_relop_rename_columns(x, using=using, contract=contract)
   return(columns_used(x$source[[1]],
-                      using = names(qmap),
+                      using = as.character(qmap),
                       contract = contract))
 }
 

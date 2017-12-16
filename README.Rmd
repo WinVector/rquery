@@ -11,55 +11,47 @@ date: "2017-12-11"
 To install: `devtools::install_github("WinVector/rquery")`.
 
 [`rquery`](https://github.com/WinVector/rquery) can be an excellent advanced `SQL`
-training tool (it shows how some very deep `SQL` by composing `rquery` operators).  Currently `rquery` is biased towards `PostgeSQL` `SQL`.
+training tool (it shows how some very deep `SQL` by composing `rquery` operators).  Currently `rquery` is biased towards the `Spark` and `PostgeSQL` `SQL` dialects.
 
 There are many prior relational algebra inspired specialized query languages.  Just a few include:
 
-  * [`Alpha`](https://en.wikipedia.org/wiki/Alpha_(programming_language))
-  * [`QUEL`](https://en.wikipedia.org/wiki/QUEL_query_languages)
-  * [`Tutorial D`](https://en.wikipedia.org/wiki/D_(data_language_specification)#Tutorial_D)
-  * [`LINQ`](https://msdn.microsoft.com/en-us/library/bb308959.aspx)
-  * [`SQL`](https://en.wikipedia.org/wiki/SQL)
-  * [`data.table`](http://r-datatable.com/) ([example `rquery` adapter](https://github.com/WinVector/rquery/blob/master/extras/data_table.md))
-  * [`pandas`](http://pandas.pydata.org)
-  * [`dplyr`](http://dplyr.tidyverse.org)
+  * [`Alpha`](https://en.wikipedia.org/wiki/Alpha_(programming_language)) ~1971.
+  * [`QUEL`](https://en.wikipedia.org/wiki/QUEL_query_languages) ~1974.
+  * [`SQL`](https://en.wikipedia.org/wiki/SQL) ~1986.
+  * [`Tutorial D`](https://en.wikipedia.org/wiki/D_(data_language_specification)#Tutorial_D) ~2000.
+  * [`data.table`](http://r-datatable.com/) ~2006.
+  * [`LINQ`](https://msdn.microsoft.com/en-us/library/bb308959.aspx) ~2007.
+  * [`pandas`](http://pandas.pydata.org) ~2008.
+  * [`dplyr`](http://dplyr.tidyverse.org) ~2014.
  
+`rquery` is realized as a thin translation to an underlying `SQL` provider.  We are trying to put the Codd relational operators front and center (using the original naming, and back-porting `SQL` progress such as window functions to the appropriate relational operator).
 
-`rquery` itself is a thin translation to `SQL` layer, but we are trying to put the Codd relational operators front and center (using the original naming, and back-porting `SQL` progress such as window functions to the appropriate relational operator).  `rquery` differs from `dplyr` in that `rquery` is trying to stay near the Codd relational operators (in particular grouping is a transient state inside the `rquery::extend()` operator, not a durable user visible annotation as with `dplyr::group_by()`).
-
-The primary relational operators are:
+The primary relational operators include:
 
   * [`extend()`](https://winvector.github.io/rquery/reference/extend_nse.html).  Extend adds derived columns to a relation table.  With a sufficiently powerful `SQL` provider this includes ordered and partitioned window functions.  This operator also includes built-in [`seplyr`](https://winvector.github.io/seplyr/)-style [assignment partitioning](https://winvector.github.io/seplyr/articles/MutatePartitioner.html).
-  * [`project()`](https://winvector.github.io/rquery/reference/project_nse.html).  Project is usually portrayed as the equivalent to column selection.  In our opinion the original relational nature of the operator is best captured by moving `SQL`'s "`GROUP BY`" aggregation functionality to this operator.
-  * [`natural_join()`](https://winvector.github.io/rquery/reference/natural_join.html).  This a specialized relational join operator, using all common columns as the equi-join condition.  The next operator to add would definitely be `theta-join` as that adds a lot more expressiveness to the grammar.
-  * [`theta_join()`](https://winvector.github.io/rquery/reference/theta_join_nse.html).  This is the relational join operator, insisting on distinct columns but allowing an arbitrary matching condition.  The next operator to add would definitely be `theta-join` as that adds a lot more expressiveness to the grammar.
-  * [`select_rows()`](https://winvector.github.io/rquery/reference/theta_join_nse.html).  This is Codd's relational row selection.  Obviously `select` alone is an over-used and now ambiguous term (it is the "doit" verb in `SQL` and the *column* selector in `dplyr`).
+  * [`project()`](https://winvector.github.io/rquery/reference/project_nse.html).  Project is usually *portrayed* as the equivalent to column selection, though the original definition includes aggregation.  In our opinion the original relational nature of the operator is best captured by moving `SQL`'s "`GROUP BY`" aggregation functionality.
+  * [`natural_join()`](https://winvector.github.io/rquery/reference/natural_join.html).  This a specialized relational join operator, using all common columns as an equi-join condition.
+  * [`theta_join()`](https://winvector.github.io/rquery/reference/theta_join_nse.html).  This is the relational join operator allowing an arbitrary matching predicate.
+  * [`select_rows()`](https://winvector.github.io/rquery/reference/theta_join_nse.html).  This is Codd's relational row selection.  Obviously `select` alone is an over-used and now ambiguous term (for example: it is already used as the "doit" verb in `SQL` and the *column* selector in `dplyr`).
   * [`rename_columns()`](https://winvector.github.io/rquery/reference/rename_columns.html).  This operator renames sets of columns.
   
 The primary non-relational (traditional `SQL`) operators are:
 
   * [`select_columns()`](https://winvector.github.io/rquery/reference/select_columns.html).  This allows choice of columns (central to `SQL`), but is not a relational operator as it can damage row-uniqueness.
-  * [`order_by()`](https://winvector.github.io/rquery/reference/order_by.html).  This is actually relational in the sense that it does not ruin a table that is a relation (has unique rows).  However it is only a useful intermediate step with used with its `limit=` option.  Row order is not well-defined in the relational algebra (and also not in most `SQL` implementations).  If used it should be used last in a query (so it is not undone by later operations).
+  * [`order_by()`](https://winvector.github.io/rquery/reference/order_by.html). Row order is not a concept in the relational algebra (and also not maintained in most `SQL` implementations). This operator is only useful when used with its `limit=` option, or as the last step as data comes out of the relation store and is moved to `R` (where row-order is usually maintained).
 
-  
+
 The primary missing relational operators are:
 
   * Union.
   * Direct set difference, anti-join.
   * Division.
-  
-Primary useful missing operators:
 
-  * Deselect columns.
 
-A great benefit of Codd's relational algebra is it decomposes data transformations into a sequence of operators.  `SQL` loses a lot of the original invariants, and over-specifies how operations are strung together and insisting on a nesting function notation.  `SQL` also realizes some of the Codd concepts as operators, some as expressions, and some as predicates (obscuring the uniformity of the original theory).
+A great benefit of Codd's relational algebra is it gives one concepts to decompose complex data transformations into sequences of simpler transformations. One reason `SQL` seems more complicated is `SQL`'s expression of sequencing as nested function composition. A lot of the gracefulness of the Codd theory can be recovered through the usual trick changing function composition notation from `g(f(x))` to `x . f() . g()`.  This experiment is asking (and not for the first time): "what if `SQL` were piped (wrote composition as a left to right flow, instead of right to left nesting)?"
 
-A lot of the grace of the Codd theory can be recovered through the usual trick changing function composition notation from `g(f(x))` as `x . f() . g()`.  This is the other inspiration for this experiment: "what if `SQL` were piped?" (wrote composition as a left to right flow, instead of right to left nesting).
-
-The `rquery` operators are passive.  They don't do anything other than collect a specification of the desired calculation.  This data structure can then be printed in a friendly fashion, used to generate `SQL`, and (in principle) be the representational layer for a higher-order optimizer.
-
-As an acid test we generate a query equivalent to the non-trivial `dplyr` pipeline 
-demonstrated in [Let’s Have Some Sympathy For The Part-time R User](http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/).
+Let's work a non-trivial example: the `dplyr` pipeline 
+from [Let’s Have Some Sympathy For The Part-time R User](http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/).
 
 First we set up the database and the original example data:
 
@@ -109,10 +101,9 @@ d %.>%
   to_sql(.) %.>%
   DBI::dbGetQuery(my_db, .) %.>%
   knitr::kable(.)
-
 ```
 
-Now we write the calculation in terms of our operators.
+Now we write the original calculation in terms of the `rquery` operators.
 
 ```{r calc}
 scale <- 0.237
@@ -128,17 +119,13 @@ dq <- d %.>%
              rank := rank(),
              partitionby = 'subjectID',
              orderby = 'probability')  %.>%
-  extend_nse(.,
-             isdiagnosis := rank == count,
-             diagnosis := surveyCategory) %.>%
-  select_rows_nse(., isdiagnosis) %.>%
-  select_columns(., c("subjectID", 
-                      "diagnosis", 
-                      "probability")) %.>%
+  rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
+  select_rows_nse(., rank == count) %.>%
+  select_columns(., c('subjectID', 
+                      'diagnosis', 
+                      'probability')) %.>%
   order_by(., 'subjectID')
 ```
-
-The above compares well to [the original `dplyr` pipeline](http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/).
 
 We then generate our result:
 
@@ -149,47 +136,37 @@ dq %.>%
   knitr::kable(.)
 ```
 
-We see we reproduced the result purely in terms of these database operators.
+We see we quickly reproduced the original result using the new database operators.  This means such a calculation could easily be performed at a "big data" scale (using a database or `Spark`).
 
-The actual `SQL` query that produces the result is quite involved:
+The actual `SQL` query that produces the result is, in fact, quite involved:
 
 ```{r q, comment=''}
 cat(to_sql(dq))
 ```
 
-The query is large, but due to its regular structure it should be very amenable to database query optimizer.
+The query is large, but due to its regular structure it should be very amenable to query optimization.
 
-Notice the query was automatically restricted to columns actually needed from the source table all the way back 
-to to the initial source-table queries ([something `dplyr` `0.7.4` does not do](https://github.com/WinVector/rquery/blob/master/extras/dplyrSQL.md)).
-This is possible because the `rquery` representation is an intelligible network of nodes, so we can interrogate it for
-facts about the query.  For example:
+A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This can greatly decrease data volume and greatly speed up query performance.  This optimization is possible because the `rquery` representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query.  For example:
 
 ```{r qfacts}
 tables_used(dq)
 
-cu <- columns_used(dq)
-print(cu)
+columns_used(dq)
 ```
 
 
-Part of the plan is: the additional record-keeping in the operator nodes would 
-let a potentially powerful query optimizer work over the flow before it gets translated
-to `SQL` (perhaps an extension of or successor to [`seplyr`](https://winvector.github.io/seplyr/), which re-plans over `dplyr::mutate()` expressions).  At the very least restricting to columns later used and folding selects
-together would be achievable.  One should have a good chance at optimization as
-the representation is fairly high-level, and many of the operators are relational 
-(meaning there are known legal transforms a query optimizer can use).  The flow itself
-is represented as follows:
+Part of the plan is: the additional record-keeping in the operator nodes would let a potentially powerful query optimizer work over the flow before it gets translated to `SQL` (perhaps an extension of or successor to [`seplyr`](https://winvector.github.io/seplyr/), which re-plans over `dplyr::mutate()` expressions).  At the very least restricting to columns later used and folding selects together would be achievable.  One should have a good chance at optimization as the representation is fairly high-level, and many of the operators are relational (meaning there are known legal transforms a query optimizer can use).  The flow itself is represented as follows:
 
 ```{r pqp, comment=''}
 cat(format(dq))
 ```
 
-We also can [stand this system up on non-`DBI` sources such as `SparkR`](https://github.com/WinVector/rquery/blob/master/extras/SparkRExample.md).
+We also can stand `rquery` up on non-`DBI` sources such as [`SparkR`](https://github.com/WinVector/rquery/blob/master/extras/SparkRExample.md)
+and perhaps even [`data.table`](https://github.com/WinVector/rquery/blob/master/extras/data_table.md).
 
 And that is our experiment. 
 
-We are looking for funding and partners to take this system further (including: finishing functionality, documentation, training materials, test materials, acceptance procedures, porting to more back-ends). 
-
+We are looking for funding and partners to take this system further (including: finishing functionality, documentation, training materials, test materials, acceptance procedures, and porting to more back-ends). It is our opinion that a query generator specialized to large scale databases and `Spark` will serve `R` users very well. 
 
 
 ```{r cleanup}
