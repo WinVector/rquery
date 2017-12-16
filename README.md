@@ -200,6 +200,12 @@ The query is large, but due to its regular structure it should be very amenable 
 A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This can greatly decrease data volume and greatly speed up query performance. This optimization is possible because the `rquery` representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query. For example:
 
 ``` r
+column_names(dq)
+```
+
+    ## [1] "subjectID"   "diagnosis"   "probability"
+
+``` r
 tables_used(dq)
 ```
 
