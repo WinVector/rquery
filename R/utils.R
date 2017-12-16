@@ -137,37 +137,7 @@ parse_nse <- function(source, exprs, env,
   parsed
 }
 
-#' Return vector of table names used.
-#'
-#' @param node rquery tree to examine
-#' @return character vector of tables referenced in calculation.
-#'
-#' @examples
-#'
-#' my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#' d1 <- dbi_copy_to(my_db, 'd1',
-#'                  data.frame(AUC = 0.6, R2 = 0.2))
-#' d2 <- dbi_copy_to(my_db, 'd2',
-#'                  data.frame(AUC = 0.6, D = 0.3))
-#' eqn <- natural_join(d1, d2)
-#' cat(format(eqn))
-#' print(tables_used(eqn))
-#' DBI::dbDisconnect(my_db)
-#'
-#' @export
-#'
-tables_used <- function(node) {
-  if(is.null(node)) {
-    return(NULL)
-  }
-  if(length(node$source)<=0) {
-    return(node$table_name)
-  }
-  subs <- vapply(node$source,
-                 tables_used,
-                 character(1))
-  return(sort(unique(c(node$table_name, subs))))
-}
+
 
 # get field by name from list
 merge_fld <- function(reslist, field) {

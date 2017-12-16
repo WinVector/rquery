@@ -32,7 +32,7 @@ select_rows_se <- function(source, expr,
             table_name = NULL,
             parsed = parsed,
             expr = assignments)
-  class(r) <- "relop_select_rows"
+  class(r) <- c("relop_select_rows", "relop")
   r
 }
 
@@ -71,34 +71,10 @@ select_rows_nse <- function(source, expr,
   r <- list(source = list(source),
             parsed = parsed,
             expr = assignments)
-  class(r) <- "relop_select_rows"
+  class(r) <- c("relop_select_rows", "relop")
   r
 }
 
-
-#' @export
-quote_identifier.relop_select_rows <- function (x, id, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  quote_identifier(x$source[[1]], id)
-}
-
-#' @export
-quote_string.relop_select_rows <- function (x, s, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  quote_string(x$source[[1]], s)
-}
-
-#' @export
-column_names.relop_select_rows <- function (x, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  column_names(x$source[[1]])
-}
 
 #' @export
 format.relop_select_rows <- function(x, ...) {
@@ -109,16 +85,6 @@ format.relop_select_rows <- function(x, ...) {
          " %.>%\n ",
          "select_rows(., ", x$parsed[[1]]$presentation, ")",
          "\n")
-}
-
-#' @export
-print.relop_select_rows <- function(x, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  txt <- format(x)
-  txt <- trimws(gsub("[ \t\r\n]+", " ", txt), which = "both")
-  print(txt, ...)
 }
 
 

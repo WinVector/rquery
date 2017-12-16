@@ -203,7 +203,7 @@ A feature to notice is: the query was automatically restricted to just columns a
 column_names(dq)
 ```
 
-    ## [1] "subjectID"   "diagnosis"   "probability"
+    ## [1] "diagnosis"   "probability" "subjectID"
 
 ``` r
 tables_used(dq)

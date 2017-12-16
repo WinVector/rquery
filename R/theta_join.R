@@ -54,7 +54,7 @@ theta_join_se <- function(a, b,
             jointype = jointype,
             parsed = parsed,
             suffix = suffix)
-  class(r) <- "relop_theta_join"
+  class(r) <- c("relop_theta_join", "relop")
   r
 }
 
@@ -115,26 +115,10 @@ theta_join_nse <- function(a, b,
             jointype = jointype,
             parsed = parsed,
             suffix = suffix)
-  class(r) <- "relop_theta_join"
+  class(r) <- c("relop_theta_join", "relop")
   r
 }
 
-
-#' @export
-quote_identifier.relop_theta_join <- function (x, id, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  quote_identifier(x$source[[1]], id)
-}
-
-#' @export
-quote_string.relop_theta_join <- function (x, s, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  quote_string(x$source[[1]], s)
-}
 
 #' @export
 column_names.relop_theta_join <- function (x, ...) {
@@ -169,16 +153,6 @@ format.relop_theta_join <- function(x, ...) {
          paste(x$parsed[[1]]$presentation, collapse = ", "),
          ")",
          "\n")
-}
-
-#' @export
-print.relop_theta_join <- function(x, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  txt <- format(x)
-  txt <- trimws(gsub("[ \t\r\n]+", " ", txt), which = "both")
-  print(txt, ...)
 }
 
 

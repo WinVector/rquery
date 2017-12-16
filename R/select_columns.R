@@ -29,26 +29,11 @@ select_columns <- function(source, columns) {
             table_name = NULL,
             parsed = NULL,
             columns = columns)
-  class(r) <- "relop_select_columns"
+  class(r) <- c("relop_select_columns", "relop")
   r
 }
 
 
-#' @export
-quote_identifier.relop_select_columns <- function (x, id, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  quote_identifier(x$source[[1]], id)
-}
-
-#' @export
-quote_string.relop_select_columns <- function (x, s, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  quote_string(x$source[[1]], s)
-}
 
 #' @export
 column_names.relop_select_columns <- function (x, ...) {
@@ -69,15 +54,6 @@ format.relop_select_columns <- function(x, ...) {
          "\n")
 }
 
-#' @export
-print.relop_select_columns <- function(x, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  txt <- format(x)
-  txt <- trimws(gsub("[ \t\r\n]+", " ", txt), which = "both")
-  print(txt, ...)
-}
 
 calc_using_relop_select_columns <- function(x, ...,
                                             using = NULL,

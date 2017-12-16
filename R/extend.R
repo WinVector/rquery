@@ -37,7 +37,7 @@ extend_impl <- function(source, parsed,
             desc = desc,
             assignments = assignments,
             columns = names(assignments))
-  class(r) <- "relop_extend"
+  class(r) <- c("relop_extend", "relop")
   r
 }
 
@@ -182,22 +182,6 @@ extend_nse <- function(source,
 
 
 #' @export
-quote_identifier.relop_extend <- function (x, id, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  quote_identifier(x$source[[1]], id)
-}
-
-#' @export
-quote_string.relop_extend <- function (x, s, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  quote_string(x$source[[1]], s)
-}
-
-#' @export
 column_names.relop_extend <- function (x, ...) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
@@ -237,15 +221,7 @@ format.relop_extend <- function(x, ...) {
          "\n")
 }
 
-#' @export
-print.relop_extend <- function(x, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  txt <- format(x)
-  txt <- trimws(gsub("[ \t\r\n]+", " ", txt), which = "both")
-  print(txt, ...)
-}
+
 
 calc_used_relop_extend <- function (x,
                                     using = NULL,

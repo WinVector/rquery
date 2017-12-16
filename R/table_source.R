@@ -48,7 +48,7 @@ table_source <- function(table_name, columns, dbqi, dbqs) {
             columns = columns,
             dbqi = dbqi,
             dbqs = dbqs)
-  class(r) <- "relop_table_source"
+  class(r) <- c("relop_table_source", "relop")
   r
 }
 
@@ -207,16 +207,6 @@ format.relop_table_source <- function(x, ...) {
   }
   paste0("table('", x$table_name, "')",
          "\n")
-}
-
-#' @export
-print.relop_table_source <- function(x, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  txt <- format(x)
-  txt <- trimws(gsub("[ \t\r\n]+", " ", txt), which = "both")
-  print(txt, ...)
 }
 
 

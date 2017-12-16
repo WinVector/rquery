@@ -46,34 +46,10 @@ order_by <- function(source,
             orderby = orderby,
             desc = desc,
             limit = limit)
-  class(r) <- "relop_order_by"
+  class(r) <- c("relop_order_by", "relop")
   r
 }
 
-
-#' @export
-quote_identifier.relop_order_by <- function (x, id, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  quote_identifier(x$source[[1]], id)
-}
-
-#' @export
-quote_string.relop_order_by <- function (x, s, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  quote_string(x$source[[1]], s)
-}
-
-#' @export
-column_names.relop_order_by <- function (x, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  column_names(x$source[[1]])
-}
 
 
 #' @export
@@ -95,15 +71,6 @@ format.relop_order_by <- function(x, ...) {
          "\n")
 }
 
-#' @export
-print.relop_order_by <- function(x, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  txt <- format(x)
-  txt <- trimws(gsub("[ \t\r\n]+", " ", txt), which = "both")
-  print(txt, ...)
-}
 
 
 calc_used_relop_order_by <- function (x, ...,

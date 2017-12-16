@@ -27,7 +27,7 @@ data_table_source <- function(dt, table_name = deparse(substitute(dt))) {
             columns = colnames(dt),
             dbqi = function(id) {  paste0('`', id, '`')  },
             dbqs = function(s) { paste0('"', s, '"') })
-  class(r) <- "relop_table_source"
+  class(r) <- c("relop_table_source", "relop")
   r
 }
 
@@ -46,7 +46,7 @@ to_data_table.relop_extend <- function (x,
   # https://stackoverflow.com/questions/10527072/using-data-table-package-inside-my-own-package
   .datatable.aware <- TRUE
   # data.table has in-place mutate semantics
-  expr <- to_data_table(x$source[[1]])
+  expr <- to_data_table(x$source[[1]], env = env)
   n <- length(x$parsed)
   byi <- ""
   if(length(x$partitionby)>0) {

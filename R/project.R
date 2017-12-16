@@ -26,7 +26,7 @@ project_impl <- function(source, groupby, parsed) {
             groupby = groupby,
             columns = c(groupby, names(assignments)),
             assignments = assignments)
-  class(r) <- "relop_project"
+  class(r) <- c("relop_project", "relop")
   r
 }
 
@@ -87,21 +87,6 @@ project_nse <- function(source, groupby, ...,
   project_impl(source, groupby, parsed)
 }
 
-#' @export
-quote_identifier.relop_project <- function (x, id, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  quote_identifier(x$source[[1]], id)
-}
-
-#' @export
-quote_string.relop_project <- function (x, s, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  quote_string(x$source[[1]], s)
-}
 
 #' @export
 column_names.relop_project <- function (x, ...) {
@@ -130,16 +115,6 @@ format.relop_project <- function(x, ...) {
          paste(x$groupby, collapse = ", "),
          ")",
          "\n")
-}
-
-#' @export
-print.relop_project <- function(x, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  txt <- format(x)
-  txt <- trimws(gsub("[ \t\r\n]+", " ", txt), which = "both")
-  print(txt, ...)
 }
 
 calc_used_relop_project <- function (x,

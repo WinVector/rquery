@@ -34,35 +34,10 @@ natural_join <- function(a, b,
             parsed = NULL,
             by = by,
             jointype = jointype)
-  class(r) <- "relop_natural_join"
+  class(r) <- c("relop_natural_join", "relop")
   r
 }
 
-#' @export
-quote_identifier.relop_natural_join <- function (x, id, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  quote_identifier(x$source[[1]], id)
-}
-
-#' @export
-quote_string.relop_natural_join <- function (x, s, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  quote_string(x$source[[1]], s)
-}
-
-
-#' @export
-column_names.relop_natural_join <- function (x, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  unique(c(column_names(x$source[[1]]),
-           column_names(x$source[[2]])))
-}
 
 
 #' @export
@@ -85,15 +60,7 @@ format.relop_natural_join <- function(x, ...) {
          "\n")
 }
 
-#' @export
-print.relop_natural_join <- function(x, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  txt <- format(x)
-  txt <- trimws(gsub("[ \t\r\n]+", " ", txt), which = "both")
-  print(txt, ...)
-}
+
 
 calc_used_relop_natural_join <- function (x, ...,
                                           using = NULL,

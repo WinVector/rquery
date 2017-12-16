@@ -40,26 +40,10 @@ rename_columns <- function(source, cmap) {
             table_name = NULL,
             parsed = NULL,
             cmap = cmap)
-  class(r) <- "relop_rename_columns"
+  class(r) <- c("relop_rename_columns", "relop")
   r
 }
 
-
-#' @export
-quote_identifier.relop_rename_columns <- function (x, id, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  quote_identifier(x$source[[1]], id)
-}
-
-#' @export
-quote_string.relop_rename_columns <- function (x, s, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  quote_string(x$source[[1]], s)
-}
 
 #' @export
 column_names.relop_rename_columns <- function (x, ...) {
@@ -89,13 +73,6 @@ format.relop_rename_columns <- function(x, ...) {
          "\n")
 }
 
-#' @export
-print.relop_rename_columns <- function(x, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  print(format(x),...)
-}
 
 calc_used_relop_rename_columns <- function (x, ...,
                                             using = NULL,

@@ -288,7 +288,7 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <p>The query is large, but due to its regular structure it should be very amenable to query optimization.</p>
 <p>A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This can greatly decrease data volume and greatly speed up query performance. This optimization is possible because the <code>rquery</code> representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query. For example:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/column_names.html">column_names</a></span>(dq)</code></pre></div>
-<pre><code>## [1] "subjectID"   "diagnosis"   "probability"</code></pre>
+<pre><code>## [1] "diagnosis"   "probability" "subjectID"</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/tables_used.html">tables_used</a></span>(dq)</code></pre></div>
 <pre><code>## [1] "d"</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/columns_used.html">columns_used</a></span>(dq)</code></pre></div>
