@@ -80,13 +80,11 @@ dq <- d %.>%
              rank := rank(),
              partitionby = 'subjectID',
              orderby = 'probability')  %.>%
-  extend_nse(.,
-             isdiagnosis := rank == count,
-             diagnosis := surveyCategory) %.>%
-  select_rows_nse(., isdiagnosis) %.>%
-  select_columns(., c("subjectID", 
-                      "diagnosis", 
-                      "probability")) %.>%
+  rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
+  select_rows_nse(., rank == count) %.>%
+  select_columns(., c('subjectID', 
+                      'diagnosis', 
+                      'probability')) %.>%
   order_by(., 'subjectID')
 
 sql <- rquery::to_sql(dq)
