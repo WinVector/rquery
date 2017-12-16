@@ -51,14 +51,21 @@ dq <- d %.>%
   extend_nse(.,
              isdiagnosis := rank == count,
              diagnosis := surveyCategory)
-cat(format(dq))
+```
 
+```{r, comment=""}
+cat(format(dq))
+```
+
+```{r, comment=""}
 # translation to data.table
 expr <- to_data_table(dq)
-cat(gsub("][,", " ][,\n  ", 
+cat(gsub("][", " ][\n  ", 
          expr, 
          fixed = TRUE))
+```
 
+```{r}
 # execute
 # https://stackoverflow.com/questions/10527072/using-data-table-package-inside-my-own-package
 .datatable.aware <- TRUE

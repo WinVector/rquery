@@ -53,37 +53,40 @@ dq <- d %.>%
   extend_nse(.,
              isdiagnosis := rank == count,
              diagnosis := surveyCategory)
+```
+
+``` r
 cat(format(dq))
 ```
 
-    ## table('dL') %.>%
-    ##  extend(.,
-    ##   one := 1) %.>%
-    ##  extend(.,
-    ##   probability := exp(assessmentTotal * scale) / sum(exp(assessmentTotal * scale)),
-    ##   count := sum(one),
-    ##   p= subjectID) %.>%
-    ##  extend(.,
-    ##   rank := rank(probability),
-    ##   p= subjectID) %.>%
-    ##  extend(.,
-    ##   isdiagnosis := rank == count,
-    ##   diagnosis := surveyCategory)
+    table('dL') %.>%
+     extend(.,
+      one := 1) %.>%
+     extend(.,
+      probability := exp(assessmentTotal * scale) / sum(exp(assessmentTotal * scale)),
+      count := sum(one),
+      p= subjectID) %.>%
+     extend(.,
+      rank := rank(probability),
+      p= subjectID) %.>%
+     extend(.,
+      isdiagnosis := rank == count,
+      diagnosis := surveyCategory)
 
 ``` r
 # translation to data.table
 expr <- to_data_table(dq)
-cat(gsub("][,", " ][,\n  ", 
+cat(gsub("][", " ][\n  ", 
          expr, 
          fixed = TRUE))
 ```
 
-    ## dL[, one := 1 ][,
-    ##    probability := exp(`assessmentTotal` * 0.237) / sum(exp(`assessmentTotal` * 0.237)) ,subjectID ][,
-    ##    count := sum(`one`) ,subjectID ][,
-    ##    rank := rank(`probability`) ,subjectID ][,
-    ##    isdiagnosis := `rank` == `count` ][,
-    ##    diagnosis := `surveyCategory`]
+    dL[, one := 1 ][
+      , probability := exp(`assessmentTotal` * 0.237) / sum(exp(`assessmentTotal` * 0.237)) ,subjectID ][
+      , count := sum(`one`) ,subjectID ][
+      , rank := rank(`probability`) ,subjectID ][
+      , isdiagnosis := `rank` == `count` ][
+      , diagnosis := `surveyCategory`]
 
 ``` r
 # execute
