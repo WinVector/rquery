@@ -50,11 +50,6 @@ First we set up the database and the original example data:
 
 ``` r
 library("rquery")
-```
-
-    ## Loading required package: wrapr
-
-``` r
 use_spark <- TRUE
 
 if(use_spark) {
@@ -69,21 +64,8 @@ if(use_spark) {
                           user = 'postgres',
                           password = 'pg')
 }
-```
 
-    ## Warning in yaml.load(readLines(con), error.label = error.label, ...): R
-    ## expressions in yaml.load will not be auto-evaluated by default in the near
-    ## future
 
-    ## Warning in yaml.load(readLines(con), error.label = error.label, ...): R
-    ## expressions in yaml.load will not be auto-evaluated by default in the near
-    ## future
-
-    ## Warning in yaml.load(readLines(con), error.label = error.label, ...): R
-    ## expressions in yaml.load will not be auto-evaluated by default in the near
-    ## future
-
-``` r
 d <- dbi_copy_to(my_db, 'd',
                  data.frame(
                    subjectID = c(1,                   

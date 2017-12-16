@@ -55,7 +55,7 @@ from [Let’s Have Some Sympathy For The Part-time R User](http://www.win-vector
 
 First we set up the database and the original example data:
 
-```{r ex}
+```{r ex, warning=FALSE, message=FALSE}
 library("rquery")
 use_spark <- TRUE
 

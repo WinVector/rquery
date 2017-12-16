@@ -113,9 +113,8 @@
 <p>A great benefit of Codd’s relational algebra is it gives one concepts to decompose complex data transformations into sequences of simpler transformations. One reason <code>SQL</code> seems more complicated is <code>SQL</code>’s expression of sequencing as nested function composition. A lot of the gracefulness of the Codd theory can be recovered through the usual trick changing function composition notation from <code>g(f(x))</code> to <code>x . f() . g()</code>. This experiment is asking (and not for the first time): “what if <code>SQL</code> were piped (wrote composition as a left to right flow, instead of right to left nesting)?”</p>
 <p>Let’s work a non-trivial example: the <code>dplyr</code> pipeline from <a href="http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/">Let’s Have Some Sympathy For The Part-time R User</a>.</p>
 <p>First we set up the database and the original example data:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">"rquery"</span>)</code></pre></div>
-<pre><code>## Loading required package: wrapr</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">use_spark &lt;-<span class="st"> </span><span class="ot">TRUE</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">"rquery"</span>)
+use_spark &lt;-<span class="st"> </span><span class="ot">TRUE</span>
 
 <span class="cf">if</span>(use_spark) {
   my_db &lt;-<span class="st"> </span>sparklyr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/sparklyr/topics/spark-connections">spark_connect</a></span>(<span class="dt">version=</span><span class="st">'2.2.0'</span>, 
@@ -128,19 +127,10 @@
                           <span class="dt">port =</span> <span class="dv">5432</span>,
                           <span class="dt">user =</span> <span class="st">'postgres'</span>,
                           <span class="dt">password =</span> <span class="st">'pg'</span>)
-}</code></pre></div>
-<pre><code>## Warning in yaml.load(readLines(con), error.label = error.label, ...): R
-## expressions in yaml.load will not be auto-evaluated by default in the near
-## future
+}
 
-## Warning in yaml.load(readLines(con), error.label = error.label, ...): R
-## expressions in yaml.load will not be auto-evaluated by default in the near
-## future
 
-## Warning in yaml.load(readLines(con), error.label = error.label, ...): R
-## expressions in yaml.load will not be auto-evaluated by default in the near
-## future</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">d &lt;-<span class="st"> </span><span class="kw"><a href="reference/dbi_copy_to.html">dbi_copy_to</a></span>(my_db, <span class="st">'d'</span>,
+d &lt;-<span class="st"> </span><span class="kw"><a href="reference/dbi_copy_to.html">dbi_copy_to</a></span>(my_db, <span class="st">'d'</span>,
                  <span class="kw">data.frame</span>(
                    <span class="dt">subjectID =</span> <span class="kw">c</span>(<span class="dv">1</span>,                   
                                  <span class="dv">1</span>,
