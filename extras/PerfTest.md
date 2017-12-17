@@ -32,7 +32,21 @@ d <- dbi_copy_to(my_db, 'd',
                  overwrite = FALSE)
 dL <- NULL
 
+# copy to Parquet to simulate large external data source
 dT <- dplyr::tbl(my_db, d$table_name)
+sparklyr::spark_write_parquet(dT, "perf_tmp", mode = 'overwrite')
+dplyr::db_drop_table(my_db, d$table_name)
+```
+
+    ## [1] 0
+
+``` r
+dT <- NULL
+d <- NULL
+
+# build new refs
+dT <- sparklyr::spark_read_parquet(my_db, 'dparq', "perf_tmp", memory = FALSE)
+d <- dbi_table(my_db, 'dparq')
 ```
 
 Define and demonstrate pipelines:
@@ -85,12 +99,12 @@ head(rquery_run())
 ```
 
     ##   subjectID           diagnosis probability
-    ## 1         1 positive re-framing   0.6163301
-    ## 2         2 withdrawal behavior   0.7658456
-    ## 3         3 positive re-framing   0.6706221
-    ## 4         4 withdrawal behavior   0.7658456
-    ## 5         5 positive re-framing   0.7658456
-    ## 6         6 positive re-framing   0.6706221
+    ## 1         1 withdrawal behavior   0.7207128
+    ## 2         2 positive re-framing   0.5589742
+    ## 3         3 positive re-framing   0.5589742
+    ## 4         4 withdrawal behavior   0.5589742
+    ## 5         5 positive re-framing   0.5589742
+    ## 6         6 withdrawal behavior   0.5000000
 
 ``` r
 head(dplyr_run())
@@ -99,12 +113,12 @@ head(dplyr_run())
     ## # A tibble: 6 x 3
     ##   subjectID diagnosis           probability
     ##       <int> <chr>                     <dbl>
-    ## 1         1 positive re-framing       0.616
-    ## 2         2 withdrawal behavior       0.766
-    ## 3         3 positive re-framing       0.671
-    ## 4         4 withdrawal behavior       0.766
-    ## 5         5 positive re-framing       0.766
-    ## 6         6 positive re-framing       0.671
+    ## 1         1 withdrawal behavior       0.721
+    ## 2         2 positive re-framing       0.559
+    ## 3         3 positive re-framing       0.559
+    ## 4         4 withdrawal behavior       0.559
+    ## 5         5 positive re-framing       0.559
+    ## 6         6 withdrawal behavior       0.500
 
 Get timings:
 
@@ -120,18 +134,16 @@ Present results:
 print(timings)
 ```
 
-    ## Unit: seconds
+    ## Unit: milliseconds
     ##          expr      min       lq     mean   median       uq      max neval
-    ##  rquery_run() 5.714978 5.863546 6.029122 5.946924 6.012969 6.607193     5
-    ##   dplyr_run() 7.524662 8.038975 8.211565 8.123074 8.478510 8.892605     5
+    ##  rquery_run()  937.365 1073.515 1195.104 1126.578 1294.201 1543.863     5
+    ##   dplyr_run() 2954.588 3101.749 3283.109 3156.848 3410.751 3791.607     5
 
 ``` r
 plot(timings)
 ```
 
 ![](PerfTest_files/figure-markdown_github/present-1.png)
-
-TODO: confirm this effect is not a query cache effect.
 
 ``` r
 sparklyr::spark_disconnect(my_db)

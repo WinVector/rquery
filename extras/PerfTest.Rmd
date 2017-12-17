@@ -35,7 +35,16 @@ d <- dbi_copy_to(my_db, 'd',
                  overwrite = FALSE)
 dL <- NULL
 
+# copy to Parquet to simulate large external data source
 dT <- dplyr::tbl(my_db, d$table_name)
+sparklyr::spark_write_parquet(dT, "perf_tmp", mode = 'overwrite')
+dplyr::db_drop_table(my_db, d$table_name)
+dT <- NULL
+d <- NULL
+
+# build new refs
+dT <- sparklyr::spark_read_parquet(my_db, 'dparq', "perf_tmp", memory = FALSE)
+d <- dbi_table(my_db, 'dparq')
 ```
 
 Define and demonstrate pipelines:
@@ -105,7 +114,6 @@ print(timings)
 plot(timings)
 ```
 
-TODO: confirm this effect is not a query cache effect.
 
 ```{r cleanup}
 sparklyr::spark_disconnect(my_db)
