@@ -1,5 +1,5 @@
 ---
-title: "rquery"
+title: "PerfTest"
 output: github_document
 date: "2017-12-16"
 ---
@@ -16,8 +16,8 @@ library("rquery")
 my_db <- sparklyr::spark_connect(version='2.2.0', 
                                  master = "local")
 
-nSubj <- 100
-nIrrelCol <- 5
+nSubj <- 100000
+nIrrelCol <- 1000
 dL <- data.frame(subjectID = sort(rep(seq_len(nSubj),2)),
                  surveyCategory = c(
                    'withdrawal behavior',
@@ -36,18 +36,13 @@ d <- dbi_copy_to(my_db, 'd',
 dL <- NULL
 
 dT <- dplyr::tbl(my_db, d$table_name)
-
-d %.>%
-  to_sql(., source_limit = 6) %.>%
-  DBI::dbGetQuery(my_db, .) %.>%
-  str(.)
-
-scale <- 0.237
 ```
 
 Define and demonstrate pipelines:
 
 ```{r defexp}
+scale <- 0.237
+
 rquery_run <- function() {
   dq <- d %.>%
     extend_nse(.,
@@ -110,7 +105,7 @@ print(timings)
 plot(timings)
 ```
 
-TODO: confirm this effect is not a query cache.
+TODO: confirm this effect is not a query cache effect.
 
 ```{r cleanup}
 sparklyr::spark_disconnect(my_db)

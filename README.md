@@ -197,7 +197,9 @@ cat(to_sql(dq, source_limit = 1000))
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
-A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This can greatly decrease data volume and greatly speed up query performance. This optimization is possible because the `rquery` representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query. For example:
+A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibilty of decreasing data volume and greatly speeding up query performance. Our [initial experiments](https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md) show `rquery` to be 25% faster than `dplyr` on a synthetic problem.
+
+The above optimization is possible because the `rquery` representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query. For example:
 
 ``` r
 column_names(dq)

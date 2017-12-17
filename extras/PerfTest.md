@@ -1,4 +1,4 @@
-rquery
+PerfTest
 ================
 2017-12-16
 
@@ -13,8 +13,8 @@ library("rquery")
 my_db <- sparklyr::spark_connect(version='2.2.0', 
                                  master = "local")
 
-nSubj <- 100
-nIrrelCol <- 5
+nSubj <- 100000
+nIrrelCol <- 1000
 dL <- data.frame(subjectID = sort(rep(seq_len(nSubj),2)),
                  surveyCategory = c(
                    'withdrawal behavior',
@@ -33,30 +33,13 @@ d <- dbi_copy_to(my_db, 'd',
 dL <- NULL
 
 dT <- dplyr::tbl(my_db, d$table_name)
-
-d %.>%
-  to_sql(., source_limit = 6) %.>%
-  DBI::dbGetQuery(my_db, .) %.>%
-  str(.)
-```
-
-    ## 'data.frame':    6 obs. of  8 variables:
-    ##  $ subjectID            : int  1 1 2 2 3 3
-    ##  $ surveyCategory       : chr  "withdrawal behavior" "positive re-framing" "withdrawal behavior" "positive re-framing" ...
-    ##  $ assessmentTotal      : int  9 6 8 6 7 8
-    ##  $ irrelevantCol_0000001: chr  "l" "p" "v" "h" ...
-    ##  $ irrelevantCol_0000002: chr  "m" "n" "z" "a" ...
-    ##  $ irrelevantCol_0000003: chr  "k" "u" "a" "j" ...
-    ##  $ irrelevantCol_0000004: chr  "c" "r" "g" "x" ...
-    ##  $ irrelevantCol_0000005: chr  "b" "i" "y" "x" ...
-
-``` r
-scale <- 0.237
 ```
 
 Define and demonstrate pipelines:
 
 ``` r
+scale <- 0.237
+
 rquery_run <- function() {
   dq <- d %.>%
     extend_nse(.,
@@ -102,12 +85,12 @@ head(rquery_run())
 ```
 
     ##   subjectID           diagnosis probability
-    ## 1         1 withdrawal behavior   0.6706221
-    ## 2         2 withdrawal behavior   0.6163301
-    ## 3         3 positive re-framing   0.5589742
-    ## 4         4 positive re-framing   0.7658456
-    ## 5         5 withdrawal behavior   0.5000000
-    ## 6         6 withdrawal behavior   0.5000000
+    ## 1         1 positive re-framing   0.6163301
+    ## 2         2 withdrawal behavior   0.7658456
+    ## 3         3 positive re-framing   0.6706221
+    ## 4         4 withdrawal behavior   0.7658456
+    ## 5         5 positive re-framing   0.7658456
+    ## 6         6 positive re-framing   0.6706221
 
 ``` r
 head(dplyr_run())
@@ -116,12 +99,12 @@ head(dplyr_run())
     ## # A tibble: 6 x 3
     ##   subjectID diagnosis           probability
     ##       <int> <chr>                     <dbl>
-    ## 1         1 withdrawal behavior       0.671
-    ## 2         2 withdrawal behavior       0.616
-    ## 3         3 positive re-framing       0.559
-    ## 4         4 positive re-framing       0.766
-    ## 5         5 withdrawal behavior       0.500
-    ## 6         6 withdrawal behavior       0.500
+    ## 1         1 positive re-framing       0.616
+    ## 2         2 withdrawal behavior       0.766
+    ## 3         3 positive re-framing       0.671
+    ## 4         4 withdrawal behavior       0.766
+    ## 5         5 positive re-framing       0.766
+    ## 6         6 positive re-framing       0.671
 
 Get timings:
 
@@ -137,10 +120,10 @@ Present results:
 print(timings)
 ```
 
-    ## Unit: milliseconds
+    ## Unit: seconds
     ##          expr      min       lq     mean   median       uq      max neval
-    ##  rquery_run() 293.6785 302.1365 338.0736 322.4487 369.5122 402.5923     5
-    ##   dplyr_run() 508.5111 518.7965 548.0737 527.4243 543.5125 642.1240     5
+    ##  rquery_run() 5.714978 5.863546 6.029122 5.946924 6.012969 6.607193     5
+    ##   dplyr_run() 7.524662 8.038975 8.211565 8.123074 8.478510 8.892605     5
 
 ``` r
 plot(timings)
@@ -148,7 +131,7 @@ plot(timings)
 
 ![](PerfTest_files/figure-markdown_github/present-1.png)
 
-TODO: confirm this effect is not a query cache.
+TODO: confirm this effect is not a query cache effect.
 
 ``` r
 sparklyr::spark_disconnect(my_db)
