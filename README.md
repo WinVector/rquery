@@ -122,7 +122,7 @@ dq <- d %.>%
   extend_nse(.,
              rank := rank(),
              partitionby = 'subjectID',
-             orderby = 'probability')  %.>%
+             orderby = c('probability', 'surveyCategory'))  %.>%
   rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
   select_rows_nse(., rank == count) %.>%
   select_columns(., c('subjectID', 
@@ -172,7 +172,7 @@ cat(to_sql(dq, source_limit = 1000))
          `surveyCategory`,
          `probability`,
          `count`,
-         rank() OVER (  PARTITION BY `subjectID` ORDER BY `probability` ) AS `rank`
+         rank() OVER (  PARTITION BY `subjectID` ORDER BY `probability`, `surveyCategory` ) AS `rank`
         FROM (
          SELECT
           `subjectID`,
@@ -231,7 +231,7 @@ cat(format(dq))
      extend(.,
       rank := rank(),
       p= subjectID,
-      o= probability) %.>%
+      o= probability, surveyCategory) %.>%
      rename(.,
       c('diagnosis' := 'surveyCategory')) %.>%
      select_rows(., rank == count) %.>%

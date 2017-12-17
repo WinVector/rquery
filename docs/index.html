@@ -210,7 +210,7 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="reference/extend_nse.html">extend_nse</a></span>(.,
              rank <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">rank</span>(),
              <span class="dt">partitionby =</span> <span class="st">'subjectID'</span>,
-             <span class="dt">orderby =</span> <span class="st">'probability'</span>)  <span class="op">%.&gt;%</span>
+             <span class="dt">orderby =</span> <span class="kw">c</span>(<span class="st">'probability'</span>, <span class="st">'surveyCategory'</span>))  <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="reference/rename_columns.html">rename_columns</a></span>(., <span class="st">'diagnosis'</span> <span class="op">:</span><span class="er">=</span><span class="st"> 'surveyCategory'</span>) <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="reference/select_rows_nse.html">select_rows_nse</a></span>(., rank <span class="op">==</span><span class="st"> </span>count) <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="reference/select_columns.html">select_columns</a></span>(., <span class="kw">c</span>(<span class="st">'subjectID'</span>, 
@@ -263,7 +263,7 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
      `surveyCategory`,
      `probability`,
      `count`,
-     rank() OVER (  PARTITION BY `subjectID` ORDER BY `probability` ) AS `rank`
+     rank() OVER (  PARTITION BY `subjectID` ORDER BY `probability`, `surveyCategory` ) AS `rank`
     FROM (
      SELECT
       `subjectID`,
@@ -303,7 +303,7 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
  extend(.,
   rank := rank(),
   p= subjectID,
-  o= probability) %.&gt;%
+  o= probability, surveyCategory) %.&gt;%
  rename(.,
   c('diagnosis' := 'surveyCategory')) %.&gt;%
  select_rows(., rank == count) %.&gt;%

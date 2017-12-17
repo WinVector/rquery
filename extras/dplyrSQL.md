@@ -61,11 +61,10 @@ dq <- d %>%
            exp(assessmentTotal * scale)/
            sum(exp(assessmentTotal * scale))) %>%
   arrange(probability, surveyCategory) %>%
-  mutate(isDiagnosis = row_number() == n()) %>%
-  filter(isDiagnosis) %>%
+  filter(row_number() == n()) %>%
   ungroup() %>%
-  select(subjectID, surveyCategory, probability) %>%
   rename(diagnosis = surveyCategory) %>%
+  select(subjectID, diagnosis, probability) %>%
   arrange(subjectID)
 
 # directly prints, can not easilly and reliable capture SQL
@@ -73,15 +72,15 @@ show_query(dq)
 ```
 
     ## <SQL>
-    ## SELECT `subjectID` AS `subjectID`, `surveyCategory` AS `diagnosis`, `probability` AS `probability`
-    ## FROM (SELECT `subjectID` AS `subjectID`, `surveyCategory` AS `surveyCategory`, `probability` AS `probability`
-    ## FROM (SELECT *
-    ## FROM (SELECT `subjectID`, `surveyCategory`, `assessmentTotal`, `irrelevantCol1`, `irrelevantCol2`, `probability`, row_number() OVER (PARTITION BY `subjectID` ORDER BY `probability`, `surveyCategory`) = COUNT(*) OVER (PARTITION BY `subjectID`) AS `isDiagnosis`
+    ## SELECT `subjectID` AS `subjectID`, `diagnosis` AS `diagnosis`, `probability` AS `probability`
+    ## FROM (SELECT `subjectID` AS `subjectID`, `surveyCategory` AS `diagnosis`, `assessmentTotal` AS `assessmentTotal`, `irrelevantCol1` AS `irrelevantCol1`, `irrelevantCol2` AS `irrelevantCol2`, `probability` AS `probability`
+    ## FROM (SELECT `subjectID`, `surveyCategory`, `assessmentTotal`, `irrelevantCol1`, `irrelevantCol2`, `probability`
+    ## FROM (SELECT `subjectID`, `surveyCategory`, `assessmentTotal`, `irrelevantCol1`, `irrelevantCol2`, `probability`, row_number() OVER (PARTITION BY `subjectID` ORDER BY `probability`, `surveyCategory`) AS `zzz2`, COUNT(*) OVER (PARTITION BY `subjectID`) AS `zzz3`
     ## FROM (SELECT *
     ## FROM (SELECT `subjectID`, `surveyCategory`, `assessmentTotal`, `irrelevantCol1`, `irrelevantCol2`, EXP(`assessmentTotal` * 0.237) / sum(EXP(`assessmentTotal` * 0.237)) OVER (PARTITION BY `subjectID`) AS `probability`
-    ## FROM `d`) `btiutqisxf`
-    ## ORDER BY `probability`, `surveyCategory`) `ohdcwqtxwh`) `odjvjxiujp`
-    ## WHERE (`isDiagnosis`)) `sqscykgqmy`) `xdedicvrse`
+    ## FROM `d`) `jfbqpokxeh`
+    ## ORDER BY `probability`, `surveyCategory`) `yulcxpohqj`) `sntuncswch`
+    ## WHERE (`zzz2` = `zzz3`)) `tlanedvvur`) `lbxrixfdtk`
     ## ORDER BY `subjectID`
 
 ``` r
@@ -90,15 +89,15 @@ explain(dq)
 ```
 
     ## <SQL>
-    ## SELECT `subjectID` AS `subjectID`, `surveyCategory` AS `diagnosis`, `probability` AS `probability`
-    ## FROM (SELECT `subjectID` AS `subjectID`, `surveyCategory` AS `surveyCategory`, `probability` AS `probability`
-    ## FROM (SELECT *
-    ## FROM (SELECT `subjectID`, `surveyCategory`, `assessmentTotal`, `irrelevantCol1`, `irrelevantCol2`, `probability`, row_number() OVER (PARTITION BY `subjectID` ORDER BY `probability`, `surveyCategory`) = COUNT(*) OVER (PARTITION BY `subjectID`) AS `isDiagnosis`
+    ## SELECT `subjectID` AS `subjectID`, `diagnosis` AS `diagnosis`, `probability` AS `probability`
+    ## FROM (SELECT `subjectID` AS `subjectID`, `surveyCategory` AS `diagnosis`, `assessmentTotal` AS `assessmentTotal`, `irrelevantCol1` AS `irrelevantCol1`, `irrelevantCol2` AS `irrelevantCol2`, `probability` AS `probability`
+    ## FROM (SELECT `subjectID`, `surveyCategory`, `assessmentTotal`, `irrelevantCol1`, `irrelevantCol2`, `probability`
+    ## FROM (SELECT `subjectID`, `surveyCategory`, `assessmentTotal`, `irrelevantCol1`, `irrelevantCol2`, `probability`, row_number() OVER (PARTITION BY `subjectID` ORDER BY `probability`, `surveyCategory`) AS `zzz4`, COUNT(*) OVER (PARTITION BY `subjectID`) AS `zzz5`
     ## FROM (SELECT *
     ## FROM (SELECT `subjectID`, `surveyCategory`, `assessmentTotal`, `irrelevantCol1`, `irrelevantCol2`, EXP(`assessmentTotal` * 0.237) / sum(EXP(`assessmentTotal` * 0.237)) OVER (PARTITION BY `subjectID`) AS `probability`
-    ## FROM `d`) `msneohpzga`
-    ## ORDER BY `probability`, `surveyCategory`) `dcixpqdkmw`) `czqosedexy`
-    ## WHERE (`isDiagnosis`)) `htefgrxelx`) `lrxpmtccvs`
+    ## FROM `d`) `dfksodawbv`
+    ## ORDER BY `probability`, `surveyCategory`) `oqvrlluvcb`) `cmnsldwlly`
+    ## WHERE (`zzz4` = `zzz5`)) `pixylutzgr`) `kkozixtrvm`
     ## ORDER BY `subjectID`
 
     ## 

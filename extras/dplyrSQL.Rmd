@@ -45,11 +45,10 @@ dq <- d %>%
            exp(assessmentTotal * scale)/
            sum(exp(assessmentTotal * scale))) %>%
   arrange(probability, surveyCategory) %>%
-  mutate(isDiagnosis = row_number() == n()) %>%
-  filter(isDiagnosis) %>%
+  filter(row_number() == n()) %>%
   ungroup() %>%
-  select(subjectID, surveyCategory, probability) %>%
   rename(diagnosis = surveyCategory) %>%
+  select(subjectID, diagnosis, probability) %>%
   arrange(subjectID)
 
 # directly prints, can not easilly and reliable capture SQL

@@ -79,7 +79,7 @@ dq <- d %.>%
   extend_nse(.,
              rank := rank(),
              partitionby = 'subjectID',
-             orderby = 'probability')  %.>%
+             orderby = c('probability', 'surveyCategory'))  %.>%
   rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
   select_rows_nse(., rank == count) %.>%
   select_columns(., c('subjectID', 
