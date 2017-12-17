@@ -78,7 +78,6 @@ rquery_run <- function() {
   dR
 }
 
-
 dplyr_run <- function() {
   dR <- dT %>%
     group_by(subjectID) %>%
@@ -95,16 +94,34 @@ dplyr_run <- function() {
   dR
 }
 
+dplyr_narrow_run <- function() {
+  dR <- dT %>%
+    select(subjectID, surveyCategory, assessmentTotal) %>%
+    group_by(subjectID) %>%
+    mutate(probability =
+             exp(assessmentTotal * scale)/
+             sum(exp(assessmentTotal * scale))) %>%
+    arrange(probability, surveyCategory) %>%
+    filter(row_number() == n()) %>%
+    ungroup() %>%
+    rename(diagnosis = surveyCategory) %>%
+    select(subjectID, diagnosis, probability) %>%
+    arrange(subjectID) %>% 
+    collect()
+  dR
+}
+
+
 head(rquery_run())
 ```
 
     ##   subjectID           diagnosis probability
-    ## 1         1 withdrawal behavior   0.7207128
-    ## 2         2 positive re-framing   0.5589742
-    ## 3         3 positive re-framing   0.5589742
-    ## 4         4 withdrawal behavior   0.5589742
-    ## 5         5 positive re-framing   0.5589742
-    ## 6         6 withdrawal behavior   0.5000000
+    ## 1         1 positive re-framing   0.7658456
+    ## 2         2 positive re-framing   0.8940695
+    ## 3         3 withdrawal behavior   0.6163301
+    ## 4         4 positive re-framing   0.5589742
+    ## 5         5 withdrawal behavior   0.7207128
+    ## 6         6 withdrawal behavior   0.8401037
 
 ``` r
 head(dplyr_run())
@@ -113,18 +130,33 @@ head(dplyr_run())
     ## # A tibble: 6 x 3
     ##   subjectID diagnosis           probability
     ##       <int> <chr>                     <dbl>
-    ## 1         1 withdrawal behavior       0.721
-    ## 2         2 positive re-framing       0.559
-    ## 3         3 positive re-framing       0.559
-    ## 4         4 withdrawal behavior       0.559
-    ## 5         5 positive re-framing       0.559
-    ## 6         6 withdrawal behavior       0.500
+    ## 1         1 positive re-framing       0.766
+    ## 2         2 positive re-framing       0.894
+    ## 3         3 withdrawal behavior       0.616
+    ## 4         4 positive re-framing       0.559
+    ## 5         5 withdrawal behavior       0.721
+    ## 6         6 withdrawal behavior       0.840
+
+``` r
+head(dplyr_narrow_run())
+```
+
+    ## # A tibble: 6 x 3
+    ##   subjectID diagnosis           probability
+    ##       <int> <chr>                     <dbl>
+    ## 1         1 positive re-framing       0.766
+    ## 2         2 positive re-framing       0.894
+    ## 3         3 withdrawal behavior       0.616
+    ## 4         4 positive re-framing       0.559
+    ## 5         5 withdrawal behavior       0.721
+    ## 6         6 withdrawal behavior       0.840
 
 Get timings:
 
 ``` r
 timings <- microbenchmark(rquery_run(), 
                           dplyr_run(), 
+                          dplyr_narrow_run(),
                           times = 5)
 ```
 
@@ -135,9 +167,14 @@ print(timings)
 ```
 
     ## Unit: milliseconds
-    ##          expr      min       lq     mean   median       uq      max neval
-    ##  rquery_run()  937.365 1073.515 1195.104 1126.578 1294.201 1543.863     5
-    ##   dplyr_run() 2954.588 3101.749 3283.109 3156.848 3410.751 3791.607     5
+    ##                expr       min        lq     mean   median       uq
+    ##        rquery_run()  909.5703  969.8015 1091.923 1078.948 1213.966
+    ##         dplyr_run() 2798.4506 3044.2357 3104.139 3082.380 3161.290
+    ##  dplyr_narrow_run() 1779.1346 1811.2692 1836.615 1842.772 1874.550
+    ##       max neval
+    ##  1287.327     5
+    ##  3434.339     5
+    ##  1875.350     5
 
 ``` r
 plot(timings)
