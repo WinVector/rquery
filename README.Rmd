@@ -131,17 +131,17 @@ We then generate our result:
 
 ```{r res}
 dq %.>%
-  to_sql(.) %.>%
+  to_sql(., source_limit = 1000) %.>%
   DBI::dbGetQuery(my_db, .) %.>%
   knitr::kable(.)
 ```
 
-We see we quickly reproduced the original result using the new database operators.  This means such a calculation could easily be performed at a "big data" scale (using a database or `Spark`).
+We see we quickly reproduced the original result using the new database operators.  This means such a calculation could easily be performed at a "big data" scale (using a database or `Spark`; in this case we would not take the results back, but instead use `CREATE TABLE tname AS` to build a remote materialized view of the results).
 
 The actual `SQL` query that produces the result is, in fact, quite involved:
 
 ```{r q, comment=''}
-cat(to_sql(dq))
+cat(to_sql(dq, source_limit = 1000))
 ```
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.

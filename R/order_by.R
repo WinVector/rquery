@@ -105,6 +105,7 @@ columns_used.relop_order_by <- function (x, ...,
 #' @export
 to_sql.relop_order_by <- function (x,
                                    ...,
+                                   source_limit = NULL,
                                    indent_level = 0,
                                    tnum = mkTempNameGenerator('tsql'),
                                    append_cr = TRUE,
@@ -123,6 +124,7 @@ to_sql.relop_order_by <- function (x,
                }, character(1))
   subcols <- calc_used_relop_order_by(x, using=using)
   subsql <- to_sql(x$source[[1]],
+                   source_limit = source_limit,
                    indent_level = indent_level + 1,
                    tnum = tnum,
                    append_cr = FALSE,

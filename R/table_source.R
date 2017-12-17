@@ -178,6 +178,7 @@ columns_used.relop_table_source <- function (x, ...,
 #' @export
 to_sql.relop_table_source <- function (x,
                                     ...,
+                                    source_limit = NULL,
                                     indent_level = 0,
                                     tnum = mkTempNameGenerator('tsql'),
                                     append_cr = TRUE,
@@ -194,6 +195,9 @@ to_sql.relop_table_source <- function (x,
               prefix, " ", qt, "\n",
               prefix, "FROM\n",
               prefix, " ", tabnam)
+  if(!is.null(source_limit)) {
+    q <- paste(q, "LIMIT", source_limit)
+  }
   if(append_cr) {
     q <- paste0(q, "\n")
   }

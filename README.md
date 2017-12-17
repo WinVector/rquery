@@ -135,7 +135,7 @@ We then generate our result:
 
 ``` r
 dq %.>%
-  to_sql(.) %.>%
+  to_sql(., source_limit = 1000) %.>%
   DBI::dbGetQuery(my_db, .) %.>%
   knitr::kable(.)
 ```
@@ -145,12 +145,12 @@ dq %.>%
 |          1| withdrawal behavior |    0.6706221|
 |          2| positive re-framing |    0.5589742|
 
-We see we quickly reproduced the original result using the new database operators. This means such a calculation could easily be performed at a "big data" scale (using a database or `Spark`).
+We see we quickly reproduced the original result using the new database operators. This means such a calculation could easily be performed at a "big data" scale (using a database or `Spark`; in this case we would not take the results back, but instead use `CREATE TABLE tname AS` to build a remote materialized view of the results).
 
 The actual `SQL` query that produces the result is, in fact, quite involved:
 
 ``` r
-cat(to_sql(dq))
+cat(to_sql(dq, source_limit = 1000))
 ```
 
     SELECT * FROM (
@@ -186,7 +186,7 @@ cat(to_sql(dq))
            `d`.`surveyCategory`,
            `d`.`assessmentTotal`
           FROM
-           `d`
+           `d` LIMIT 1000
           ) tsql_0000
          ) tsql_0001
        ) tsql_0002

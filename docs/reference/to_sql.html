@@ -84,8 +84,8 @@
     <p>Return SQL implementation of operation tree.</p>
     
 
-    <pre class="usage"><span class='fu'>to_sql</span>(<span class='no'>x</span>, <span class='no'>...</span>, <span class='kw'>indent_level</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>tnum</span> <span class='kw'>=</span> <span class='fu'>mkTempNameGenerator</span>(<span class='st'>"tsql"</span>),
-  <span class='kw'>append_cr</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>using</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>to_sql</span>(<span class='no'>x</span>, <span class='no'>...</span>, <span class='kw'>source_limit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>indent_level</span> <span class='kw'>=</span> <span class='fl'>0</span>,
+  <span class='kw'>tnum</span> <span class='kw'>=</span> <span class='fu'>mkTempNameGenerator</span>(<span class='st'>"tsql"</span>), <span class='kw'>append_cr</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>using</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -96,19 +96,23 @@
     </tr>
     <tr>
       <th>...</th>
-      <td><p>generic additional arguments (not used)</p></td>
+      <td><p>generic additional arguments (not used).</p></td>
+    </tr>
+    <tr>
+      <th>source_limit</th>
+      <td><p>numeric if not NULL limit sources to this many rows.</p></td>
     </tr>
     <tr>
       <th>indent_level</th>
-      <td><p>level to indent</p></td>
+      <td><p>level to indent.</p></td>
     </tr>
     <tr>
       <th>tnum</th>
-      <td><p>temp sub-query name generators</p></td>
+      <td><p>temp sub-query name generator.</p></td>
     </tr>
     <tr>
       <th>append_cr</th>
-      <td><p>logical if TRUE end with CR</p></td>
+      <td><p>logical if TRUE end with CR.</p></td>
     </tr>
     <tr>
       <th>using</th>

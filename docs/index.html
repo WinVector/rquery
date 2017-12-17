@@ -219,7 +219,7 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="reference/order_by.html">order_by</a></span>(., <span class="st">'subjectID'</span>)</code></pre></div>
 <p>We then generate our result:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dq <span class="op">%.&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="reference/to_sql.html">to_sql</a></span>(.) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="reference/to_sql.html">to_sql</a></span>(., <span class="dt">source_limit =</span> <span class="dv">1000</span>) <span class="op">%.&gt;%</span>
 <span class="st">  </span>DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery">dbGetQuery</a></span>(my_db, .) <span class="op">%.&gt;%</span>
 <span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</code></pre></div>
 <table class="table">
@@ -241,9 +241,9 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 </tr>
 </tbody>
 </table>
-<p>We see we quickly reproduced the original result using the new database operators. This means such a calculation could easily be performed at a “big data” scale (using a database or <code>Spark</code>).</p>
+<p>We see we quickly reproduced the original result using the new database operators. This means such a calculation could easily be performed at a “big data” scale (using a database or <code>Spark</code>; in this case we would not take the results back, but instead use <code>CREATE TABLE tname AS</code> to build a remote materialized view of the results).</p>
 <p>The actual <code>SQL</code> query that produces the result is, in fact, quite involved:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw"><a href="reference/to_sql.html">to_sql</a></span>(dq))</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw"><a href="reference/to_sql.html">to_sql</a></span>(dq, <span class="dt">source_limit =</span> <span class="dv">1000</span>))</code></pre></div>
 <pre><code>SELECT * FROM (
  SELECT
   `subjectID`,
@@ -277,7 +277,7 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
        `d`.`surveyCategory`,
        `d`.`assessmentTotal`
       FROM
-       `d`
+       `d` LIMIT 1000
       ) tsql_0000
      ) tsql_0001
    ) tsql_0002

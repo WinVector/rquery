@@ -219,6 +219,7 @@ columns_used.relop_theta_join <- function (x, ...,
 #' @export
 to_sql.relop_theta_join <- function (x,
                                      ...,
+                                     source_limit = NULL,
                                      indent_level = 0,
                                      tnum = mkTempNameGenerator('tsql'),
                                      append_cr = TRUE,
@@ -231,11 +232,13 @@ to_sql.relop_theta_join <- function (x,
   c1 <- intersect(using, column_names(x$source[[1]]))
   c2 <- intersect(using, column_names(x$source[[2]]))
   subsqla <- to_sql(x$source[[1]],
+                    source_limit = source_limit,
                     indent_level = indent_level + 1,
                     tnum = tnum,
                     append_cr = FALSE,
                     using = c1)
   subsqlb <- to_sql(x$source[[2]],
+                    source_limit = source_limit,
                     indent_level = indent_level + 1,
                     tnum = tnum,
                     append_cr = FALSE,

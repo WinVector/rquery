@@ -108,6 +108,7 @@ columns_used.relop_rename_columns <- function (x, ...,
 #' @export
 to_sql.relop_rename_columns <- function (x,
                                          ...,
+                                         source_limit = NULL,
                                          indent_level = 0,
                                          tnum = mkTempNameGenerator('tsql'),
                                          append_cr = TRUE,
@@ -126,6 +127,7 @@ to_sql.relop_rename_columns <- function (x,
                   }, character(1))
   cols <- paste(colsV, "AS", colsA)
   subsql <- to_sql(x$source[[1]],
+                   source_limit = source_limit,
                    indent_level = indent_level + 1,
                    tnum = tnum,
                    append_cr = FALSE,

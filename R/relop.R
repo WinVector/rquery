@@ -150,10 +150,11 @@ print.relop <- function(x, ...) {
 #' Return SQL implementation of operation tree.
 #'
 #' @param x rquery operation tree.
-#' @param ... generic additional arguments (not used)
-#' @param indent_level level to indent
-#' @param tnum temp sub-query name generators
-#' @param append_cr logical if TRUE end with CR
+#' @param ... generic additional arguments (not used).
+#' @param source_limit numeric if not NULL limit sources to this many rows.
+#' @param indent_level level to indent.
+#' @param tnum temp sub-query name generator.
+#' @param append_cr logical if TRUE end with CR.
 #' @param using character, if not NULL set of columns used from above.
 #' @return SQL command
 #'
@@ -161,6 +162,7 @@ print.relop <- function(x, ...) {
 #'
 to_sql <- function (x,
                     ...,
+                    source_limit = NULL,
                     indent_level = 0,
                     tnum = mkTempNameGenerator('tsql'),
                     append_cr = TRUE,
