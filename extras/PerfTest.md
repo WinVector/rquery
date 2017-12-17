@@ -26,7 +26,7 @@ for(i in seq_len(nIrrelCol)) {
   dL[[ni]] <- sample(letters, size = nrow(dL), replace = TRUE)
 }
 
-d <- dbi_copy_to(my_db, 'd',
+d <- rquery::dbi_copy_to(my_db, 'd',
                  dL,
                  temporary = TRUE, 
                  overwrite = FALSE)
@@ -46,7 +46,7 @@ d <- NULL
 
 # build new refs
 dT <- sparklyr::spark_read_parquet(my_db, 'dparq', "perf_tmp", memory = FALSE)
-d <- dbi_table(my_db, 'dparq')
+d <- rquery::dbi_table(my_db, 'dparq')
 ```
 
 Define and demonstrate pipelines:
@@ -116,12 +116,12 @@ head(rquery_run())
 ```
 
     ##   subjectID           diagnosis probability
-    ## 1         1 positive re-framing   0.7658456
-    ## 2         2 positive re-framing   0.8940695
-    ## 3         3 withdrawal behavior   0.6163301
-    ## 4         4 positive re-framing   0.5589742
-    ## 5         5 withdrawal behavior   0.7207128
-    ## 6         6 withdrawal behavior   0.8401037
+    ## 1         1 positive re-framing   0.8056518
+    ## 2         2 withdrawal behavior   0.7207128
+    ## 3         3 withdrawal behavior   0.7207128
+    ## 4         4 positive re-framing   0.6163301
+    ## 5         5 positive re-framing   0.7658456
+    ## 6         6 positive re-framing   0.8056518
 
 ``` r
 head(dplyr_run())
@@ -130,12 +130,12 @@ head(dplyr_run())
     ## # A tibble: 6 x 3
     ##   subjectID diagnosis           probability
     ##       <int> <chr>                     <dbl>
-    ## 1         1 positive re-framing       0.766
-    ## 2         2 positive re-framing       0.894
-    ## 3         3 withdrawal behavior       0.616
-    ## 4         4 positive re-framing       0.559
-    ## 5         5 withdrawal behavior       0.721
-    ## 6         6 withdrawal behavior       0.840
+    ## 1         1 positive re-framing       0.806
+    ## 2         2 withdrawal behavior       0.721
+    ## 3         3 withdrawal behavior       0.721
+    ## 4         4 positive re-framing       0.616
+    ## 5         5 positive re-framing       0.766
+    ## 6         6 positive re-framing       0.806
 
 ``` r
 head(dplyr_narrow_run())
@@ -144,12 +144,12 @@ head(dplyr_narrow_run())
     ## # A tibble: 6 x 3
     ##   subjectID diagnosis           probability
     ##       <int> <chr>                     <dbl>
-    ## 1         1 positive re-framing       0.766
-    ## 2         2 positive re-framing       0.894
-    ## 3         3 withdrawal behavior       0.616
-    ## 4         4 positive re-framing       0.559
-    ## 5         5 withdrawal behavior       0.721
-    ## 6         6 withdrawal behavior       0.840
+    ## 1         1 positive re-framing       0.806
+    ## 2         2 withdrawal behavior       0.721
+    ## 3         3 withdrawal behavior       0.721
+    ## 4         4 positive re-framing       0.616
+    ## 5         5 positive re-framing       0.766
+    ## 6         6 positive re-framing       0.806
 
 Get timings:
 
@@ -168,13 +168,13 @@ print(timings)
 
     ## Unit: milliseconds
     ##                expr       min        lq     mean   median       uq
-    ##        rquery_run()  909.5703  969.8015 1091.923 1078.948 1213.966
-    ##         dplyr_run() 2798.4506 3044.2357 3104.139 3082.380 3161.290
-    ##  dplyr_narrow_run() 1779.1346 1811.2692 1836.615 1842.772 1874.550
+    ##        rquery_run()  877.9828  921.8874 1084.964  964.549 1178.351
+    ##         dplyr_run() 3035.3073 3066.5757 3224.544 3157.523 3288.035
+    ##  dplyr_narrow_run() 1707.0174 1753.3946 1818.521 1845.908 1859.348
     ##       max neval
-    ##  1287.327     5
-    ##  3434.339     5
-    ##  1875.350     5
+    ##  1482.051     5
+    ##  3575.279     5
+    ##  1926.936     5
 
 ``` r
 plot(timings)

@@ -145,7 +145,7 @@ dq %.>%
 |          1| withdrawal behavior |    0.6706221|
 |          2| positive re-framing |    0.5589742|
 
-We see we quickly reproduced the original result using the new database operators. This means such a calculation could easily be performed at a "big data" scale (using a database or `Spark`; in this case we would not take the results back, but instead use `CREATE TABLE tname AS` to build a remote materialized view of the results).
+We see we have quickly reproduced the original result using the new database operators. This means such a calculation could easily be performed at a "big data" scale (using a database or `Spark`; in this case we would not take the results back, but instead use `CREATE TABLE tname AS` to build a remote materialized view of the results).
 
 The actual `SQL` query that produces the result is, in fact, quite involved:
 
@@ -197,7 +197,7 @@ cat(to_sql(dq, source_limit = 1000))
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
-A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our [initial experiments](https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md) show `rquery` to be almost three times faster than `dplyr` on a synthetic problem simulating large disk-based queries.
+A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our [initial experiments](https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md) show `rquery` to be almost three times faster than `dplyr` on a synthetic problem simulating large disk-based queries (and even almost two time faster even when the use explicitly narrows to the columns of interest, possibly tracking other overhead issues in collecting the data to memory which is not a part of all big data projects).
 
 The above optimization is possible because the `rquery` representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query. For example:
 

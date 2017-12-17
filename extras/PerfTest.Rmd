@@ -29,7 +29,7 @@ for(i in seq_len(nIrrelCol)) {
   dL[[ni]] <- sample(letters, size = nrow(dL), replace = TRUE)
 }
 
-d <- dbi_copy_to(my_db, 'd',
+d <- rquery::dbi_copy_to(my_db, 'd',
                  dL,
                  temporary = TRUE, 
                  overwrite = FALSE)
@@ -44,7 +44,7 @@ d <- NULL
 
 # build new refs
 dT <- sparklyr::spark_read_parquet(my_db, 'dparq', "perf_tmp", memory = FALSE)
-d <- dbi_table(my_db, 'dparq')
+d <- rquery::dbi_table(my_db, 'dparq')
 ```
 
 Define and demonstrate pipelines:
