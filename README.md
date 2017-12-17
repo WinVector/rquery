@@ -42,7 +42,14 @@ The primary missing relational operators are:
 -   Direct set difference, anti-join.
 -   Division.
 
-A great benefit of Codd's relational algebra is it gives one concepts to decompose complex data transformations into sequences of simpler transformations. One reason `SQL` seems more complicated is `SQL`'s expression of sequencing as nested function composition. A lot of the gracefulness of the Codd theory can be recovered through the usual trick changing function composition notation from `g(f(x))` to `x . f() . g()`. This experiment is asking (and not for the first time): "what if `SQL` were piped (wrote composition as a left to right flow, instead of right to left nesting)?"
+A great benefit of Codd's relational algebra is it gives one concepts to decompose complex data transformations into sequences of simpler transformations.
+
+Some reasons `SQL` seems complicated include:
+
+-   `SQL`'s realization of sequencing as nested function composition.
+-   `SQL` uses some relational concepts as steps, others as modifiers and predicates.
+
+A lot of the gracefulness of the Codd theory can be recovered through the usual trick changing function composition notation from `g(f(x))` to `x . f() . g()`. This experiment is asking (and not for the first time): "what if `SQL` were piped (expressed composition as a left to right flow, instead of a right to left nesting)?"
 
 Let's work a non-trivial example: the `dplyr` pipeline from [Let’s Have Some Sympathy For The Part-time R User](http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/).
 
@@ -197,7 +204,7 @@ cat(to_sql(dq, source_limit = 1000))
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
-A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our [initial experiments](https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md) show `rquery` to be almost three times faster than `dplyr` on a synthetic problem simulating large disk-based queries (and even almost two time faster even when the use explicitly narrows to the columns of interest, possibly tracking other overhead issues in collecting the data to memory which is not a part of all big data projects).
+A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our [initial experiments](https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md) show `rquery` to be almost three times faster than `dplyr` on a synthetic problem simulating large disk-based queries (and even almost two time faster even when the use explicitly narrows to the columns of interest, possibly tracking other overhead issues in collecting the data to memory which is not a part of all big data projects). We think if we connected directly to `Spark`'s relational operators (avoiding the `SQL` layer) we may be able to achieve even faster performance.
 
 The above optimization is possible because the `rquery` representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query. For example:
 
