@@ -286,7 +286,7 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
  ) tsql_0004
 ) tsql_0005 ORDER BY `subjectID`</code></pre>
 <p>The query is large, but due to its regular structure it should be very amenable to query optimization.</p>
-<p>A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our <a href="https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md">initial experiments</a> show <code>rquery</code> to be almost faster than <code>dplyr</code> on a synthetic problem simulating large disk-based queries.</p>
+<p>A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our <a href="https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md">initial experiments</a> show <code>rquery</code> to be almost three times faster than <code>dplyr</code> on a synthetic problem simulating large disk-based queries.</p>
 <p>The above optimization is possible because the <code>rquery</code> representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query. For example:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/column_names.html">column_names</a></span>(dq)</code></pre></div>
 <pre><code>## [1] "diagnosis"   "probability" "subjectID"</code></pre>
