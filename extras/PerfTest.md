@@ -114,12 +114,12 @@ head(rquery_run(collect=TRUE))
 ```
 
     ##   subjectID           diagnosis probability
-    ## 1         1 positive re-framing   0.5589742
-    ## 2         2 positive re-framing   0.8056518
-    ## 3         3 withdrawal behavior   0.6163301
-    ## 4         4 positive re-framing   0.7207128
-    ## 5         5 positive re-framing   0.7207128
-    ## 6         6 withdrawal behavior   0.5589742
+    ## 1         1 positive re-framing   0.7207128
+    ## 2         2 positive re-framing   0.8401037
+    ## 3         3 withdrawal behavior   0.8056518
+    ## 4         4 withdrawal behavior   0.5589742
+    ## 5         5 positive re-framing   0.5589742
+    ## 6         6 positive re-framing   0.6706221
 
 ``` r
 dR <- rquery_run(collect=FALSE) 
@@ -128,12 +128,12 @@ DBI::dbGetQuery(my_db,
 ```
 
     ##   subjectID           diagnosis probability
-    ## 1     23266 withdrawal behavior   0.7207128
-    ## 2     23267 positive re-framing   0.6163301
-    ## 3     23268 withdrawal behavior   0.7207128
-    ## 4     23269 positive re-framing   0.6706221
-    ## 5     23270 withdrawal behavior   0.6163301
-    ## 6     23271 withdrawal behavior   0.5000000
+    ## 1     23266 withdrawal behavior   0.5589742
+    ## 2     23267 withdrawal behavior   0.5000000
+    ## 3     23268 withdrawal behavior   0.5000000
+    ## 4     23269 withdrawal behavior   0.6163301
+    ## 5     23270 withdrawal behavior   0.8694381
+    ## 6     23271 withdrawal behavior   0.6163301
 
 ``` r
 head(dplyr_run(narrow=FALSE, collect=TRUE))
@@ -142,12 +142,12 @@ head(dplyr_run(narrow=FALSE, collect=TRUE))
     ## # A tibble: 6 x 3
     ##   subjectID diagnosis           probability
     ##       <int> <chr>                     <dbl>
-    ## 1         1 positive re-framing       0.559
-    ## 2         2 positive re-framing       0.806
-    ## 3         3 withdrawal behavior       0.616
-    ## 4         4 positive re-framing       0.721
-    ## 5         5 positive re-framing       0.721
-    ## 6         6 withdrawal behavior       0.559
+    ## 1         1 positive re-framing       0.721
+    ## 2         2 positive re-framing       0.840
+    ## 3         3 withdrawal behavior       0.806
+    ## 4         4 withdrawal behavior       0.559
+    ## 5         5 positive re-framing       0.559
+    ## 6         6 positive re-framing       0.671
 
 ``` r
 head(dplyr_run(narrow=FALSE, collect=FALSE))
@@ -158,12 +158,12 @@ head(dplyr_run(narrow=FALSE, collect=FALSE))
     ## # Ordered by: probability, surveyCategory, subjectID
     ##   subjectID diagnosis           probability
     ##       <int> <chr>                     <dbl>
-    ## 1         1 positive re-framing       0.559
-    ## 2         2 positive re-framing       0.806
-    ## 3         3 withdrawal behavior       0.616
-    ## 4         4 positive re-framing       0.721
-    ## 5         5 positive re-framing       0.721
-    ## 6         6 withdrawal behavior       0.559
+    ## 1         1 positive re-framing       0.721
+    ## 2         2 positive re-framing       0.840
+    ## 3         3 withdrawal behavior       0.806
+    ## 4         4 withdrawal behavior       0.559
+    ## 5         5 positive re-framing       0.559
+    ## 6         6 positive re-framing       0.671
 
 ``` r
 head(dplyr_run(narrow=TRUE, collect=TRUE))
@@ -172,12 +172,12 @@ head(dplyr_run(narrow=TRUE, collect=TRUE))
     ## # A tibble: 6 x 3
     ##   subjectID diagnosis           probability
     ##       <int> <chr>                     <dbl>
-    ## 1         1 positive re-framing       0.559
-    ## 2         2 positive re-framing       0.806
-    ## 3         3 withdrawal behavior       0.616
-    ## 4         4 positive re-framing       0.721
-    ## 5         5 positive re-framing       0.721
-    ## 6         6 withdrawal behavior       0.559
+    ## 1         1 positive re-framing       0.721
+    ## 2         2 positive re-framing       0.840
+    ## 3         3 withdrawal behavior       0.806
+    ## 4         4 withdrawal behavior       0.559
+    ## 5         5 positive re-framing       0.559
+    ## 6         6 positive re-framing       0.671
 
 ``` r
 head(dplyr_run(narrow=TRUE, collect=FALSE))
@@ -188,12 +188,12 @@ head(dplyr_run(narrow=TRUE, collect=FALSE))
     ## # Ordered by: probability, surveyCategory, subjectID
     ##   subjectID diagnosis           probability
     ##       <int> <chr>                     <dbl>
-    ## 1         1 positive re-framing       0.559
-    ## 2         2 positive re-framing       0.806
-    ## 3         3 withdrawal behavior       0.616
-    ## 4         4 positive re-framing       0.721
-    ## 5         5 positive re-framing       0.721
-    ## 6         6 withdrawal behavior       0.559
+    ## 1         1 positive re-framing       0.721
+    ## 2         2 positive re-framing       0.840
+    ## 3         3 withdrawal behavior       0.806
+    ## 4         4 withdrawal behavior       0.559
+    ## 5         5 positive re-framing       0.559
+    ## 6         6 positive re-framing       0.671
 
 Get timings:
 
@@ -215,20 +215,20 @@ print(timings)
 ```
 
     ## Unit: milliseconds
-    ##                                        expr       min        lq      mean
-    ##                  rquery_run(collect = TRUE)  842.3482  869.0729  936.7508
-    ##   dplyr_run(narrow = FALSE, collect = TRUE) 2737.9100 2800.0907 2849.1706
-    ##    dplyr_run(narrow = TRUE, collect = TRUE) 1680.6390 1745.3924 1811.7457
-    ##                 rquery_run(collect = FALSE) 1055.3818 1135.1144 1221.7407
-    ##  dplyr_run(narrow = FALSE, collect = FALSE) 2271.0574 2295.0817 2472.6400
-    ##   dplyr_run(narrow = TRUE, collect = FALSE)  926.1705  932.5914 1073.8828
-    ##     median        uq      max neval
-    ##   910.8444  952.6031 1231.069    10
-    ##  2824.5068 2875.8243 2997.982    10
-    ##  1787.2461 1881.0530 2072.279    10
-    ##  1196.6431 1246.5913 1566.196    10
-    ##  2333.1417 2418.6568 3640.092    10
-    ##   955.0510 1000.7769 2077.655    10
+    ##                                        expr       min        lq     mean
+    ##                  rquery_run(collect = TRUE)  891.6546  984.7117 1111.720
+    ##   dplyr_run(narrow = FALSE, collect = TRUE) 2961.3765 3090.4798 3286.134
+    ##    dplyr_run(narrow = TRUE, collect = TRUE) 1746.8691 1792.5143 1917.907
+    ##                 rquery_run(collect = FALSE) 1145.6630 1218.2469 1380.408
+    ##  dplyr_run(narrow = FALSE, collect = FALSE) 2507.8978 2515.2819 3103.473
+    ##   dplyr_run(narrow = TRUE, collect = FALSE)  964.4651  994.9701 1195.040
+    ##    median       uq      max neval
+    ##  1040.346 1259.398 1454.955    10
+    ##  3221.841 3536.910 3749.677    10
+    ##  1884.773 1950.861 2409.531    10
+    ##  1354.741 1454.342 1865.689    10
+    ##  2793.214 3126.409 4974.525    10
+    ##  1040.714 1218.468 2023.165    10
 
 ``` r
 tdf <- as.data.frame(timings)
@@ -247,7 +247,10 @@ WVPlots::ScatterBoxPlotH(tdf, "time", "expr",
 
 ![](PerfTest_files/figure-markdown_github/present-1.png)
 
-Guessing speed of the `dplyr_narrow_run(collect=FALSE)` is a sign it is probably an in-memory temp table.
+My guess is the timings are seeing some trends and two irregularities:
+
+-   `rquery` is landing its results on disk in `collect=FALSE` mode, and `dplyr` is (rightly) avoiding this cost.
+-   `dplyr` seems to have some extra overhead on `collect=TRUE` (which may not be that bad a thing, as truly large workloads try to avoid this step).
 
 ``` r
 sparklyr::spark_disconnect(my_db)
