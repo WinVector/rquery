@@ -51,8 +51,9 @@ Define and demonstrate pipelines:
 
 ```{r defexp}
 scale <- 0.237
+tng <- cdata::makeTempNameGenerator("tmptab")
 
-rquery_run <- function() {
+rquery_run <- function(collect) {
   dq <- d %.>%
     extend_nse(.,
                probability :=
@@ -70,13 +71,18 @@ rquery_run <- function() {
                         'diagnosis', 
                         'probability')) %.>%
     order_by(., 'subjectID')
-  dR <- dq %.>%
-    to_sql(.) %.>%
-    DBI::dbGetQuery(my_db, .) 
+  if(collect) {
+    dR <- DBI::dbGetQuery(my_db, to_sql(dq))
+  } else {
+    tnam <- tng()
+    sql <- paste("CREATE TABLE", tnam, "USING PARQUET OPTIONS ('compression'='snappy') AS", to_sql(dq))
+    DBI::dbGetQuery(my_db, sql)
+    dR <- rquery::dbi_table(my_db, tnam)
+  }
   dR
 }
 
-dplyr_run <- function() {
+dplyr_run <- function(collect) {
   dR <- dT %>%
     group_by(subjectID) %>%
     mutate(probability =
@@ -87,12 +93,16 @@ dplyr_run <- function() {
     ungroup() %>%
     rename(diagnosis = surveyCategory) %>%
     select(subjectID, diagnosis, probability) %>%
-    arrange(subjectID) %>% 
-    collect()
+    arrange(subjectID) 
+  if(collect) {
+    dR <- collect(dR)
+  } else {
+    dR <- compute(dR)
+  }
   dR
 }
 
-dplyr_narrow_run <- function() {
+dplyr_narrow_run <- function(collect) {
   dR <- dT %>%
     select(subjectID, surveyCategory, assessmentTotal) %>%
     group_by(subjectID) %>%
@@ -104,25 +114,39 @@ dplyr_narrow_run <- function() {
     ungroup() %>%
     rename(diagnosis = surveyCategory) %>%
     select(subjectID, diagnosis, probability) %>%
-    arrange(subjectID) %>% 
-    collect()
+    arrange(subjectID)
+  if(collect) {
+    dR <- collect(dR)
+  } else {
+    dR <- compute(dR)
+  }
   dR
 }
 
+head(rquery_run(collect=TRUE))
 
-head(rquery_run())
+dR <- rquery_run(collect=FALSE) 
+DBI::dbGetQuery(my_db, 
+                paste("SELECT * FROM", dR$table_name, "LIMIT 6"))
 
-head(dplyr_run())
+head(dplyr_run(collect=TRUE))
 
-head(dplyr_narrow_run())
+head(dplyr_run(collect=FALSE))
+
+head(dplyr_narrow_run(collect=TRUE))
+
+head(dplyr_narrow_run(collect=FALSE))
 ```
 
 Get timings:
 
 ```{r time}
-timings <- microbenchmark(rquery_run(), 
-                          dplyr_run(), 
-                          dplyr_narrow_run(),
+timings <- microbenchmark(rquery_run(collect=TRUE), 
+                          dplyr_run(collect=TRUE), 
+                          dplyr_narrow_run(collect=TRUE),
+                          rquery_run(collect=FALSE), 
+                          dplyr_run(collect=FALSE), 
+                          dplyr_narrow_run(collect=FALSE),
                           times = 5)
 ```
 
@@ -131,7 +155,11 @@ Present results:
 ```{r present}
 print(timings)
 
-plot(timings)
+tdf <- as.data.frame(timings)
+tdf$expr <- reorder(tdf$expr, tdf$time)
+WVPlots::ScatterBoxPlotH(tdf, "time", "expr",  
+                         pt_alpha=0.2,
+                         title="Execution times in NS")
 ```
 
 
