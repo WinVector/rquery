@@ -84,29 +84,14 @@ rquery_run <- function(collect) {
   dR
 }
 
-dplyr_run <- function(collect) {
-  dR <- dT %>%
-    group_by(subjectID) %>%
-    mutate(probability =
-             exp(assessmentTotal * scale)/
-             sum(exp(assessmentTotal * scale))) %>%
-    arrange(probability, surveyCategory) %>%
-    filter(row_number() == n()) %>%
-    ungroup() %>%
-    rename(diagnosis = surveyCategory) %>%
-    select(subjectID, diagnosis, probability) %>%
-    arrange(subjectID) 
-  if(collect) {
-    dR <- collect(dR)
-  } else {
-    dR <- compute(dR)
-  }
-  dR
-}
 
-dplyr_narrow_run <- function(collect) {
-  dR <- dT %>%
-    select(subjectID, surveyCategory, assessmentTotal) %>%
+dplyr_run <- function(narrow, collect) {
+  dR <- dT
+  if(narrow) {
+    dR <- dR %>%
+      select(subjectID, surveyCategory, assessmentTotal)
+  }
+  dR <- dR %>%
     group_by(subjectID) %>%
     mutate(probability =
              exp(assessmentTotal * scale)/
@@ -129,12 +114,12 @@ head(rquery_run(collect=TRUE))
 ```
 
     ##   subjectID           diagnosis probability
-    ## 1         1 withdrawal behavior   0.7658456
-    ## 2         2 withdrawal behavior   0.6163301
-    ## 3         3 positive re-framing   0.7207128
-    ## 4         4 withdrawal behavior   0.7207128
-    ## 5         5 positive re-framing   0.8056518
-    ## 6         6 positive re-framing   0.8940695
+    ## 1         1 positive re-framing   0.5589742
+    ## 2         2 positive re-framing   0.8056518
+    ## 3         3 withdrawal behavior   0.6163301
+    ## 4         4 positive re-framing   0.7207128
+    ## 5         5 positive re-framing   0.7207128
+    ## 6         6 withdrawal behavior   0.5589742
 
 ``` r
 dR <- rquery_run(collect=FALSE) 
@@ -143,29 +128,29 @@ DBI::dbGetQuery(my_db,
 ```
 
     ##   subjectID           diagnosis probability
-    ## 1     23266 withdrawal behavior   0.5589742
-    ## 2     23267 positive re-framing   0.8401037
-    ## 3     23268 withdrawal behavior   0.5000000
-    ## 4     23269 positive re-framing   0.6163301
-    ## 5     23270 withdrawal behavior   0.6706221
-    ## 6     23271 withdrawal behavior   0.5589742
+    ## 1     23266 withdrawal behavior   0.7207128
+    ## 2     23267 positive re-framing   0.6163301
+    ## 3     23268 withdrawal behavior   0.7207128
+    ## 4     23269 positive re-framing   0.6706221
+    ## 5     23270 withdrawal behavior   0.6163301
+    ## 6     23271 withdrawal behavior   0.5000000
 
 ``` r
-head(dplyr_run(collect=TRUE))
+head(dplyr_run(narrow=FALSE, collect=TRUE))
 ```
 
     ## # A tibble: 6 x 3
     ##   subjectID diagnosis           probability
     ##       <int> <chr>                     <dbl>
-    ## 1         1 withdrawal behavior       0.766
-    ## 2         2 withdrawal behavior       0.616
-    ## 3         3 positive re-framing       0.721
-    ## 4         4 withdrawal behavior       0.721
-    ## 5         5 positive re-framing       0.806
-    ## 6         6 positive re-framing       0.894
+    ## 1         1 positive re-framing       0.559
+    ## 2         2 positive re-framing       0.806
+    ## 3         3 withdrawal behavior       0.616
+    ## 4         4 positive re-framing       0.721
+    ## 5         5 positive re-framing       0.721
+    ## 6         6 withdrawal behavior       0.559
 
 ``` r
-head(dplyr_run(collect=FALSE))
+head(dplyr_run(narrow=FALSE, collect=FALSE))
 ```
 
     ## # Source: lazy query [?? x 3]
@@ -173,29 +158,29 @@ head(dplyr_run(collect=FALSE))
     ## # Ordered by: probability, surveyCategory, subjectID
     ##   subjectID diagnosis           probability
     ##       <int> <chr>                     <dbl>
-    ## 1         1 withdrawal behavior       0.766
-    ## 2         2 withdrawal behavior       0.616
-    ## 3         3 positive re-framing       0.721
-    ## 4         4 withdrawal behavior       0.721
-    ## 5         5 positive re-framing       0.806
-    ## 6         6 positive re-framing       0.894
+    ## 1         1 positive re-framing       0.559
+    ## 2         2 positive re-framing       0.806
+    ## 3         3 withdrawal behavior       0.616
+    ## 4         4 positive re-framing       0.721
+    ## 5         5 positive re-framing       0.721
+    ## 6         6 withdrawal behavior       0.559
 
 ``` r
-head(dplyr_narrow_run(collect=TRUE))
+head(dplyr_run(narrow=TRUE, collect=TRUE))
 ```
 
     ## # A tibble: 6 x 3
     ##   subjectID diagnosis           probability
     ##       <int> <chr>                     <dbl>
-    ## 1         1 withdrawal behavior       0.766
-    ## 2         2 withdrawal behavior       0.616
-    ## 3         3 positive re-framing       0.721
-    ## 4         4 withdrawal behavior       0.721
-    ## 5         5 positive re-framing       0.806
-    ## 6         6 positive re-framing       0.894
+    ## 1         1 positive re-framing       0.559
+    ## 2         2 positive re-framing       0.806
+    ## 3         3 withdrawal behavior       0.616
+    ## 4         4 positive re-framing       0.721
+    ## 5         5 positive re-framing       0.721
+    ## 6         6 withdrawal behavior       0.559
 
 ``` r
-head(dplyr_narrow_run(collect=FALSE))
+head(dplyr_run(narrow=TRUE, collect=FALSE))
 ```
 
     ## # Source: lazy query [?? x 3]
@@ -203,22 +188,22 @@ head(dplyr_narrow_run(collect=FALSE))
     ## # Ordered by: probability, surveyCategory, subjectID
     ##   subjectID diagnosis           probability
     ##       <int> <chr>                     <dbl>
-    ## 1         1 withdrawal behavior       0.766
-    ## 2         2 withdrawal behavior       0.616
-    ## 3         3 positive re-framing       0.721
-    ## 4         4 withdrawal behavior       0.721
-    ## 5         5 positive re-framing       0.806
-    ## 6         6 positive re-framing       0.894
+    ## 1         1 positive re-framing       0.559
+    ## 2         2 positive re-framing       0.806
+    ## 3         3 withdrawal behavior       0.616
+    ## 4         4 positive re-framing       0.721
+    ## 5         5 positive re-framing       0.721
+    ## 6         6 withdrawal behavior       0.559
 
 Get timings:
 
 ``` r
 timings <- microbenchmark(rquery_run(collect=TRUE), 
-                          dplyr_run(collect=TRUE), 
-                          dplyr_narrow_run(collect=TRUE),
+                          dplyr_run(narrow=FALSE, collect=TRUE), 
+                          dplyr_run(narrow=TRUE, collect=TRUE),
                           rquery_run(collect=FALSE), 
-                          dplyr_run(collect=FALSE), 
-                          dplyr_narrow_run(collect=FALSE),
+                          dplyr_run(narrow=FALSE, collect=FALSE), 
+                          dplyr_run(narrow=TRUE, collect=FALSE),
                           times = 10)
 ```
 
@@ -230,20 +215,20 @@ print(timings)
 ```
 
     ## Unit: milliseconds
-    ##                               expr       min        lq      mean    median
-    ##         rquery_run(collect = TRUE)  874.5895  940.2566  951.2349  953.9594
-    ##          dplyr_run(collect = TRUE) 2810.4525 2842.4260 2943.1012 2916.6831
-    ##   dplyr_narrow_run(collect = TRUE) 1663.3073 1710.0458 1825.1881 1796.6628
-    ##        rquery_run(collect = FALSE) 1006.8827 1089.1111 1174.9770 1133.8259
-    ##         dplyr_run(collect = FALSE) 2431.3161 2434.2981 2642.2580 2491.4957
-    ##  dplyr_narrow_run(collect = FALSE)  923.9540  928.4978 1055.5590  942.2475
-    ##         uq      max neval
-    ##   966.4726 1021.821    10
-    ##  2981.7669 3166.250    10
-    ##  1864.5365 2167.466    10
-    ##  1280.6254 1420.037    10
-    ##  2563.3218 3581.354    10
-    ##   980.3150 1995.026    10
+    ##                                        expr       min        lq      mean
+    ##                  rquery_run(collect = TRUE)  842.3482  869.0729  936.7508
+    ##   dplyr_run(narrow = FALSE, collect = TRUE) 2737.9100 2800.0907 2849.1706
+    ##    dplyr_run(narrow = TRUE, collect = TRUE) 1680.6390 1745.3924 1811.7457
+    ##                 rquery_run(collect = FALSE) 1055.3818 1135.1144 1221.7407
+    ##  dplyr_run(narrow = FALSE, collect = FALSE) 2271.0574 2295.0817 2472.6400
+    ##   dplyr_run(narrow = TRUE, collect = FALSE)  926.1705  932.5914 1073.8828
+    ##     median        uq      max neval
+    ##   910.8444  952.6031 1231.069    10
+    ##  2824.5068 2875.8243 2997.982    10
+    ##  1787.2461 1881.0530 2072.279    10
+    ##  1196.6431 1246.5913 1566.196    10
+    ##  2333.1417 2418.6568 3640.092    10
+    ##   955.0510 1000.7769 2077.655    10
 
 ``` r
 tdf <- as.data.frame(timings)

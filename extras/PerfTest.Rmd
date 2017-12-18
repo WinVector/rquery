@@ -82,29 +82,14 @@ rquery_run <- function(collect) {
   dR
 }
 
-dplyr_run <- function(collect) {
-  dR <- dT %>%
-    group_by(subjectID) %>%
-    mutate(probability =
-             exp(assessmentTotal * scale)/
-             sum(exp(assessmentTotal * scale))) %>%
-    arrange(probability, surveyCategory) %>%
-    filter(row_number() == n()) %>%
-    ungroup() %>%
-    rename(diagnosis = surveyCategory) %>%
-    select(subjectID, diagnosis, probability) %>%
-    arrange(subjectID) 
-  if(collect) {
-    dR <- collect(dR)
-  } else {
-    dR <- compute(dR)
-  }
-  dR
-}
 
-dplyr_narrow_run <- function(collect) {
-  dR <- dT %>%
-    select(subjectID, surveyCategory, assessmentTotal) %>%
+dplyr_run <- function(narrow, collect) {
+  dR <- dT
+  if(narrow) {
+    dR <- dR %>%
+      select(subjectID, surveyCategory, assessmentTotal)
+  }
+  dR <- dR %>%
     group_by(subjectID) %>%
     mutate(probability =
              exp(assessmentTotal * scale)/
@@ -129,24 +114,24 @@ dR <- rquery_run(collect=FALSE)
 DBI::dbGetQuery(my_db, 
                 paste("SELECT * FROM", dR$table_name, "LIMIT 6"))
 
-head(dplyr_run(collect=TRUE))
+head(dplyr_run(narrow=FALSE, collect=TRUE))
 
-head(dplyr_run(collect=FALSE))
+head(dplyr_run(narrow=FALSE, collect=FALSE))
 
-head(dplyr_narrow_run(collect=TRUE))
+head(dplyr_run(narrow=TRUE, collect=TRUE))
 
-head(dplyr_narrow_run(collect=FALSE))
+head(dplyr_run(narrow=TRUE, collect=FALSE))
 ```
 
 Get timings:
 
 ```{r time}
 timings <- microbenchmark(rquery_run(collect=TRUE), 
-                          dplyr_run(collect=TRUE), 
-                          dplyr_narrow_run(collect=TRUE),
+                          dplyr_run(narrow=FALSE, collect=TRUE), 
+                          dplyr_run(narrow=TRUE, collect=TRUE),
                           rquery_run(collect=FALSE), 
-                          dplyr_run(collect=FALSE), 
-                          dplyr_narrow_run(collect=FALSE),
+                          dplyr_run(narrow=FALSE, collect=FALSE), 
+                          dplyr_run(narrow=TRUE, collect=FALSE),
                           times = 10)
 ```
 
