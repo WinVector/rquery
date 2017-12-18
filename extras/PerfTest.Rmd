@@ -157,9 +157,12 @@ library("seplyr")
 print(timings)
 
 tdf <- as.data.frame(timings)
+
+# order the data
 tdf <- tdf %.>%
   group_by_se(., "expr") %.>%
-  mutate_se(., qae(mtime := median(time)))
+  mutate_se(., qae(mtime := median(time))) %.>%
+  ungroup(.)
 
 tdf$expr <- reorder(tdf$expr, tdf$mtime)
 WVPlots::ScatterBoxPlotH(tdf, "time", "expr",  
