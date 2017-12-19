@@ -1,11 +1,19 @@
 ---
-title: "PerfTest"
+title: "NarrowEffect"
+author: "Win-Vector LLC"
+date: "12/18/2017"
 output: github_document
-date: "2017-12-16"
 ---
 
-<!-- PerfTest.md is generated from PerfTest.Rmd. Please edit that file -->
+<!-- NarrowEffect.md is generated from NarrowEffect.Rmd. Please edit that file -->
 
+For some time we have been teaching [`R`](https://journal.r-project.org) users "when working with wide tables on Spark or on databases: narrow to the columns you really want to work with early in your analysis."
+
+This issue arises because ultra-wide tables (200 to 1000 columns) are quite common in big-data analytics projects.  Often these are "denormalized marts" that are used to drive many different projects.  For any one project only a small subset of the columns may be relevant in a calculation.
+
+The idea behind the advice is: working with fewer columns make for quicker queries.
+
+Some wonder is this really an issue or is it something one can ignore in the hope the downstream query optimizer fixes the problem.  In this note we will show the effect is real.
 
 ```{r ex, warning=FALSE, message=FALSE, echo=FALSE, include=FALSE}
 library("microbenchmark")
@@ -41,51 +49,15 @@ dplyr::db_drop_table(my_db, d$table_name)
 dT <- NULL
 d <- NULL
 
-# build new refs
+# build new ref
 dT <- sparklyr::spark_read_parquet(my_db, 'dparq', "perf_tmp", memory = FALSE)
-d <- rquery::dbi_table(my_db, 'dparq')
 ```
 
-Define and demonstrate pipelines:
+
+Let's set up our experiment.  The data is a larger version of the problem from ["Let’s Have Some Sympathy For The Part-time R User"](http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/).  We have expanded the number of subjects to `r nSubj` and added `r nIrrelCol` irrelevant columns to the data store.  We define a new function that uses `dplyr` and `Sparklyr` to compute the diagnoses.  We can turn on and off if the table is first limited to columns of interest and if the results are brought back to `R`.
 
 ```{r defexp}
-DBI::dbGetQuery(my_db, paste("SELECT COUNT(1) FROM", d$table_name))
-length(column_names(d))
-
-sparklyr::sdf_nrow(dT)
-sparklyr::sdf_ncol(dT)
-
 scale <- 0.237
-tng <- cdata::makeTempNameGenerator("tmptab")
-
-rquery_run <- function(collect) {
-  dq <- d %.>%
-    extend_nse(.,
-               probability :=
-                 exp(assessmentTotal * scale)/
-                 sum(exp(assessmentTotal * scale)),
-               count := count(1),
-               partitionby = 'subjectID') %.>%
-    extend_nse(.,
-               rank := rank(),
-               partitionby = 'subjectID',
-               orderby = c('probability', 'surveyCategory'))  %.>%
-    rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
-    select_rows_nse(., rank == count) %.>%
-    select_columns(., c('subjectID', 
-                        'diagnosis', 
-                        'probability')) %.>%
-    order_by(., 'subjectID')
-  if(collect) {
-    dR <- DBI::dbGetQuery(my_db, to_sql(dq))
-  } else {
-    tnam <- tng()
-    sql <- paste("CREATE TABLE", tnam, "USING PARQUET OPTIONS ('compression'='snappy') AS", to_sql(dq))
-    DBI::dbGetQuery(my_db, sql)
-    dR <- rquery::dbi_table(my_db, tnam)
-  }
-  dR
-}
 
 
 dplyr_run <- function(narrow, collect) {
@@ -113,45 +85,33 @@ dplyr_run <- function(narrow, collect) {
   dR
 }
 
-head(rquery_run(collect=TRUE))
-
-dR <- rquery_run(collect=FALSE) 
-DBI::dbGetQuery(my_db, 
-                paste("SELECT * FROM", dR$table_name, "LIMIT 6"))
-
-head(dplyr_run(narrow=FALSE, collect=TRUE))
 
 head(dplyr_run(narrow=FALSE, collect=FALSE))
-
-head(dplyr_run(narrow=TRUE, collect=TRUE))
-
-head(dplyr_run(narrow=TRUE, collect=FALSE))
 ```
 
-Get timings:
+We can get timings for variations of the function:
 
 ```{r time}
-timings <- microbenchmark(rquery_run(collect=TRUE), 
-                          dplyr_run(narrow=FALSE, collect=TRUE), 
+library("microbenchmark")
+
+timings <- microbenchmark(dplyr_run(narrow=FALSE, collect=TRUE), 
                           dplyr_run(narrow=TRUE, collect=TRUE),
-                          rquery_run(collect=FALSE), 
                           dplyr_run(narrow=FALSE, collect=FALSE), 
                           dplyr_run(narrow=TRUE, collect=FALSE),
                           times = 10)
 ```
 
-Present results:
+And then present the results:
 
 ```{r present}
-library("seplyr")
 print(timings)
 
 tdf <- as.data.frame(timings)
 
 # order the data
-tdf <- tdf %.>%
-  group_by_se(., "expr") %.>%
-  mutate_se(., qae(mtime := median(time))) %.>%
+tdf <- tdf %>%
+  group_by(., expr) %>%
+  mutate(., mtime = median(time)) %>%
   ungroup(.)
 
 tdf$expr <- reorder(tdf$expr, tdf$mtime)
@@ -160,10 +120,15 @@ WVPlots::ScatterBoxPlotH(tdf, "time", "expr",
                          title="Execution times in NS")
 ```
 
-My guess is the timings are seeing some trends and two irregularities:
+Notice the times where we have not by-hand narrowed the table are indeed much slower.
 
- * `rquery` is landing its results on disk in `collect=FALSE` mode, and `dplyr` is (rightly) avoiding this cost.
- * `dplyr` seems to have some extra overhead on `collect=TRUE` (which may not be that bad a thing, as truly large workloads try to avoid this step).
+The advice is confirmed: narrow to the columns of interest early in your analysis.
+
+Narrowing to the exact columns used can be difficult: it can involve inspecting an
+arbitrarily long pipeline for column uses.  That is part of why we are developing
+a new `R` query generator that does just that: [`rquery`](https://winvector.github.io/rquery/).
+
+
 
 ```{r cleanup}
 sparklyr::spark_disconnect(my_db)
