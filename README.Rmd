@@ -61,9 +61,9 @@ A lot of the gracefulness of the Codd theory can be recovered through the usual 
 Let's work a non-trivial example: the `dplyr` pipeline 
 from [Let’s Have Some Sympathy For The Part-time R User](http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/).
 
-First we set up the database and the original example data:
 
-```{r ex, warning=FALSE, message=FALSE}
+
+```{r ex, warning=FALSE, message=FALSE, include=FALSE}
 library("rquery")
 use_spark <- TRUE
 
@@ -102,18 +102,32 @@ d <- dbi_copy_to(my_db, 'd',
                    stringsAsFactors = FALSE),
                  temporary = TRUE, 
                  overwrite = !use_spark)
+```
 
+First we show the Spark/database version of the original example data:
+
+```{r dbdat}
+class(my_db)
 print(d)
 
 d %.>%
-  to_sql(.) %.>%
+  rquery::to_sql(.) %.>%
   DBI::dbGetQuery(my_db, .) %.>%
   knitr::kable(.)
 ```
 
-Now we write the original calculation in terms of the `rquery` operators.
+Now we re-write the original calculation in terms of the `rquery` SQL generating operators.
 
 ```{r calc}
+class(my_db)
+print(d)
+
+d %.>%
+  rquery::to_sql(.) %.>%
+  DBI::dbGetQuery(my_db, .) %.>%
+  knitr::kable(.)
+
+
 scale <- 0.237
 
 dq <- d %.>%
@@ -181,7 +195,7 @@ And that is our experiment.
 We are looking for funding and partners to take this system further (including: finishing functionality, documentation, training materials, test materials, acceptance procedures, and porting to more back-ends). It is our opinion that a query generator specialized to large scale databases and `Spark` will serve `R` users very well. 
 
 
-```{r cleanup}
+```{r cleanup, include=FALSE}
 if(use_spark) {
   sparklyr::spark_disconnect(my_db)
 } else {

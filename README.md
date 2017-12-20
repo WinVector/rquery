@@ -53,48 +53,16 @@ A lot of the gracefulness of the Codd theory can be recovered through the usual 
 
 Let's work a non-trivial example: the `dplyr` pipeline from [Let’s Have Some Sympathy For The Part-time R User](http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/).
 
-First we set up the database and the original example data:
+First we show the Spark/database version of the original example data:
 
 ``` r
-library("rquery")
-use_spark <- TRUE
+class(my_db)
+```
 
-if(use_spark) {
-  my_db <- sparklyr::spark_connect(version='2.2.0', 
-                                   master = "local")
-} else {
-  # driver <- RPostgreSQL::PostgreSQL()
-  driver <- RPostgres::Postgres()
-  my_db <- DBI::dbConnect(driver,
-                          host = 'localhost',
-                          port = 5432,
-                          user = 'postgres',
-                          password = 'pg')
-}
+    ## [1] "spark_connection"       "spark_shell_connection"
+    ## [3] "DBIConnection"
 
-
-d <- dbi_copy_to(my_db, 'd',
-                 data.frame(
-                   subjectID = c(1,                   
-                                 1,
-                                 2,                   
-                                 2),
-                   surveyCategory = c(
-                     'withdrawal behavior',
-                     'positive re-framing',
-                     'withdrawal behavior',
-                     'positive re-framing'
-                   ),
-                   assessmentTotal = c(5,                 
-                                       2,
-                                       3,                  
-                                       4),
-                   irrelevantCol1 = "irrel1",
-                   irrelevantCol2 = "irrel2",
-                   stringsAsFactors = FALSE),
-                 temporary = TRUE, 
-                 overwrite = !use_spark)
-
+``` r
 print(d)
 ```
 
@@ -102,7 +70,7 @@ print(d)
 
 ``` r
 d %.>%
-  to_sql(.) %.>%
+  rquery::to_sql(.) %.>%
   DBI::dbGetQuery(my_db, .) %.>%
   knitr::kable(.)
 ```
@@ -114,7 +82,34 @@ d %.>%
 |          2| withdrawal behavior |                3| irrel1         | irrel2         |
 |          2| positive re-framing |                4| irrel1         | irrel2         |
 
-Now we write the original calculation in terms of the `rquery` operators.
+Now we re-write the original calculation in terms of the `rquery` SQL generating operators.
+
+``` r
+class(my_db)
+```
+
+    ## [1] "spark_connection"       "spark_shell_connection"
+    ## [3] "DBIConnection"
+
+``` r
+print(d)
+```
+
+    ## [1] "table('d')"
+
+``` r
+d %.>%
+  rquery::to_sql(.) %.>%
+  DBI::dbGetQuery(my_db, .) %.>%
+  knitr::kable(.)
+```
+
+|  subjectID| surveyCategory      |  assessmentTotal| irrelevantCol1 | irrelevantCol2 |
+|----------:|:--------------------|----------------:|:---------------|:---------------|
+|          1| withdrawal behavior |                5| irrel1         | irrel2         |
+|          1| positive re-framing |                2| irrel1         | irrel2         |
+|          2| withdrawal behavior |                3| irrel1         | irrel2         |
+|          2| positive re-framing |                4| irrel1         | irrel2         |
 
 ``` r
 scale <- 0.237
@@ -252,11 +247,3 @@ We also can stand `rquery` up on non-`DBI` sources such as [`SparkR`](https://gi
 And that is our experiment.
 
 We are looking for funding and partners to take this system further (including: finishing functionality, documentation, training materials, test materials, acceptance procedures, and porting to more back-ends). It is our opinion that a query generator specialized to large scale databases and `Spark` will serve `R` users very well.
-
-``` r
-if(use_spark) {
-  sparklyr::spark_disconnect(my_db)
-} else {
-  DBI::dbDisconnect(my_db)
-}
-```
