@@ -54,13 +54,13 @@ dT <- sparklyr::spark_read_parquet(my_db, 'dparq', "perf_tmp", memory = FALSE)
 ```
 
 
-Let's set up our experiment.  The data is a larger version of the problem from ["Let’s Have Some Sympathy For The Part-time R User"](http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/).  We have expanded the number of subjects to `r format(nSubj)` and added `r format(nIrrelCol)` irrelevant columns to the data store.  We define a new function that uses `dplyr` and `Sparklyr` to compute the diagnoses.  We can turn on and off if the table is first limited to columns of interest and if the results are brought back to `R`.
+Let's set up our experiment.  The data is a larger version of the problem from ["Let’s Have Some Sympathy For The Part-time R User"](http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/).  We have expanded the number of subjects to `r sprintf("%i",nSubj)` and added `r sprintf("%i",nIrrelCol)` irrelevant columns to the example.  We define a new function that uses `dplyr` and `Sparklyr` to compute the diagnoses.  We vary if the table is first limited to columns of interest and if the results are brought back to `R`.
 
 ```{r defexp}
 scale <- 0.237
 
 
-dplyr_run <- function(narrow, collect) {
+dplyr_run <- function(narrow, collect = FALSE) {
   dR <- dT
   if(narrow) {
     dR <- dR %>%
@@ -86,7 +86,9 @@ dplyr_run <- function(narrow, collect) {
 }
 
 
-head(dplyr_run(narrow=FALSE, collect=FALSE))
+head(dplyr_run(narrow=FALSE))
+
+head(dplyr_run(narrow=TRUE))
 ```
 
 We can get timings for variations of the function:
@@ -94,11 +96,9 @@ We can get timings for variations of the function:
 ```{r time}
 library("microbenchmark")
 
-timings <- microbenchmark(dplyr_run(narrow=FALSE, collect=TRUE), 
-                          dplyr_run(narrow=TRUE, collect=TRUE),
-                          dplyr_run(narrow=FALSE, collect=FALSE), 
-                          dplyr_run(narrow=TRUE, collect=FALSE),
-                          times = 10)
+timings <- microbenchmark(dplyr_run(narrow=FALSE), 
+                          dplyr_run(narrow=TRUE),
+                          times = 20)
 ```
 
 And then present the results:
@@ -120,17 +120,17 @@ WVPlots::ScatterBoxPlotH(tdf, "time", "expr",
                          title="Execution times in NS")
 ```
 
-Notice the times where we have not by-hand narrowed the table are indeed much slower.
+Notice the times where we have not per-narrowed the table are indeed much slower.
 
 The advice is confirmed: narrow to the columns of interest early in your analysis.
 
-Narrowing to the exact columns used can be difficult: it can involve inspecting an
+Of course, narrowing to the exact columns used can be difficult: it can involve inspecting an
 arbitrarily long pipeline for column uses.  That is part of why we are developing
-a new `R` query generator that does just that: [`rquery`](https://winvector.github.io/rquery/).
+a new `R` query generator that automates that procedure: [`rquery`](https://winvector.github.io/rquery/).
 
 
 
-```{r cleanup}
+```{r cleanup, include=FALSE}
 sparklyr::spark_disconnect(my_db)
 ```
 
