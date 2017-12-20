@@ -14,7 +14,7 @@ License: GPL-3
 Encoding: UTF-8
 Depends:
   wrapr (>= 1.0.2),
-  cdata (>= 0.5.1)
+  cdata (>= 0.5.0)
 Imports:
   DBI,
   RSQLite
