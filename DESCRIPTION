@@ -13,7 +13,8 @@ Description: Supplies relational algebra style commands for data manipulation.
 License: GPL-3
 Encoding: UTF-8
 Depends:
-  wrapr (>= 1.0.2)
+  wrapr (>= 1.0.2),
+  cdata (>= 0.5.0)
 Imports:
   DBI,
   RSQLite
