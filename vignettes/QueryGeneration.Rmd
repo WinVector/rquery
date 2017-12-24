@@ -77,6 +77,13 @@ sql <- to_sql(dq, source_limit = 1000)
 cat(sql)
 ```
 
+`pre_sql` query:
+
+```{r res2, echo=FALSE, comment = ' '}
+p <- to_pre_sql(d)
+sql2 <- to_query(p, my_db)
+cat(sql2)
+```
 
 
 

@@ -169,3 +169,18 @@ to_sql <- function (x,
                     using = NULL) {
   UseMethod("to_sql", x)
 }
+
+
+#' Return SQL implementation of operation tree.
+#'
+#' @param x rquery operation tree.
+#' @param ... generic additional arguments (not used).
+#' @return pre_sql_op node
+#'
+#' @export
+#'
+to_pre_sql <- function (x,
+                        ...) {
+  UseMethod("to_pre_sql", x)
+}
+

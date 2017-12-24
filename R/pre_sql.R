@@ -7,13 +7,13 @@
 #'  source is name of source
 #'  name is name for term
 #'
-#' @param column_name character name of column
 #' @param source pre_sql_op where the column is coming from
+#' @param column_name character name of column
 #' @return pre_sql_identifier
 #'
 #' @noRd
 #'
-pre_sql_identifier <- function(column_name, source) {
+pre_sql_identifier <- function(source, column_name) {
   t <- list(column_name = column_name,
             source = source)
   class(t) <- c("pre_sql_identifier", "pre_sql")
@@ -66,12 +66,12 @@ pre_sql_expr <- function(terms) {
 
 #' pre_sql_table representation of a table
 #'
-#' @param columns character column names
 #' @param tablename characer name of table
+#' @param columns character column names
 #'
 #' @noRd
 #'
-pre_sql_table <- function(columns, tablename) {
+pre_sql_table <- function(tablename, columns) {
   exprs <- lapply(as.character(columns),
                   function(ci) {
                     pre_sql_expr(list(pre_sql_identifier(tablename, ci)))
@@ -101,7 +101,7 @@ pre_sql_table <- function(columns, tablename) {
 #' @param using character, if not NULL set of columns used from above.
 #' @return SQL command
 #'
-#' @noRd
+#' @export
 #'
 to_query <- function (x,
                       db,
@@ -121,7 +121,9 @@ to_query.pre_sql_identifier <- function (x,
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
-  paste0(DBI::dbQuoteIdentifier(x$source), DBI::dbQuoteIdentifier(x$name), sep = '.')
+  paste(DBI::dbQuoteIdentifier(db, x$source),
+        DBI::dbQuoteIdentifier(db, x$column_name),
+        sep = '.')
 }
 
 #' @noRd
@@ -186,7 +188,7 @@ build_subqs <- function(x,
     stop("unexpected arguemnts")
   }
   if(!is.null(x$source_table)) {
-    subqi <- list(DBI::dbQuoteIdentifier(db, x$source_table))
+    subq <- list(DBI::dbQuoteIdentifier(db, x$source_table))
     names(subq) <- x$source_table
   } else {
     exprs <- x$exprs
@@ -249,7 +251,7 @@ place_subqs.pre_sql_op <- function (x,
 }
 
 
-#' @noRd
+#' @export
 #'
 to_query.pre_sql_op <- function (x,
                                  db,
@@ -275,28 +277,31 @@ to_query.pre_sql_op <- function (x,
   exprq <- vapply(names(exprs),
                   function(ni) {
                     ei <- exprs[[ni]]
-                    paste(to_query(ei),
+                    paste(to_query(ei,
+                                   db = db,
+                                   source_limit = source_limit,
+                                   using = using),
                           "AS",
-                          DBI::dbQuoteIdentifier(ni))
+                          DBI::dbQuoteIdentifier(db, ni))
                   }, character(1))
-  q <- paste0("SELECT \n",
-              paste(exprq, collapse = "\n "),
-              "FROM\n",
+  q <- paste0("SELECT \n ",
+              paste(exprq, collapse = ",\n "),
+              "\nFROM\n",
               " ", subqsq)
-  if(!is.null(x$where_exprs)) {
+  if(length(x$where_exprs)>0) {
     # TODO: implement
     stop("to_query.pre_sq where terms not implemented yet")
   }
-  if(!is.null(x$group_terms)) {
+  if(length(x$group_terms)>0) {
     # TODO: implement
     stop("to_query.pre_sq group terms not implemented yet")
   }
-  if(!is.null(x$order_terms)) {
+  if(length(x$order_terms)>0) {
     # TODO: implement
     stop("to_query.pre_sq order terms not implemented yet")
   }
   limit <- NA
-  if((!is.null(x$limit)) && (!is.null(x$limit))) {
+  if((!is.null(x$limit)) && (!is.na(x$limit))) {
     limit <- min(limit, x$limit, na.rm = TRUE)
   }
   if((!is.null(x$source_table)) && (!is.na(x$source_table)) &&
