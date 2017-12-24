@@ -60,6 +60,10 @@ pre_sql_expr <- function(terms) {
 #  limit numeric
 
 
+
+
+
+
 #' pre_sql_table representation of a table
 #'
 #' @param columns character column names
@@ -97,7 +101,7 @@ pre_sql_table <- function(columns, tablename) {
 #' @param using character, if not NULL set of columns used from above.
 #' @return SQL command
 #'
-#' @export
+#' @noRd
 #'
 to_query <- function (x,
                       db,
@@ -107,7 +111,7 @@ to_query <- function (x,
   UseMethod("to_query", x)
 }
 
-#' @export
+#' @noRd
 #'
 to_query.pre_sql_identifier <- function (x,
                                          db,
@@ -120,7 +124,7 @@ to_query.pre_sql_identifier <- function (x,
   paste0(DBI::dbQuoteIdentifier(x$source), DBI::dbQuoteIdentifier(x$name), sep = '.')
 }
 
-#' @export
+#' @noRd
 #'
 to_query.pre_sql_string <- function (x,
                                      db,
@@ -136,7 +140,7 @@ to_query.pre_sql_string <- function (x,
   DBI::dbQuoteString(db, paste(as.character(x$value), collapse = " "))
 }
 
-#' @export
+#' @noRd
 #'
 to_query.pre_sql_expr <- function (x,
                                    db,
@@ -209,11 +213,43 @@ build_subqs <- function(x,
 }
 
 
+#' Return SQL implementation of operation tree.
+#'
+#' @param x pre_sql_op operation tree.
+#' @param db database handle.
+#' @param subqs chracter, array of rendered sub-queries
+#' @param ... generic additional arguments (not used).
+#' @param source_limit numeric if not NULL limit sources to this many rows.
+#' @param using character, if not NULL set of columns used from above.
+#' @return SQL command
+#'
+#' @noRd
+#'
+place_subqs <- function (x,
+                         db,
+                         subqs,
+                         ...,
+                         source_limit = NA_real_,
+                         using = NULL) {
+  UseMethod("place_subqs", x)
+}
+
+#' @noRd
+#'
+place_subqs.pre_sql_op <- function (x,
+                                    db,
+                                    subqs,
+                                    ...,
+                                    source_limit = NULL,
+                                    using = NULL) {
+  if(length(subqs)!=1) {
+    stop("expected length(subqs)==1")
+  }
+  subqs[[1]]
+}
 
 
-
-
-#' @export
+#' @noRd
 #'
 to_query.pre_sql_op <- function (x,
                                  db,
@@ -227,6 +263,11 @@ to_query.pre_sql_op <- function (x,
                        db = db,
                        source_limit = source_limit,
                        using = using)
+  subqsq <- place_subqs(x,
+                        db = db,
+                        subqs = subqs,
+                        source_limit = source_limit,
+                        using = using)
   exprs <- x$exprs
   if(!is.null(using)) {
     exprs <- x$exprs[using]
@@ -241,7 +282,7 @@ to_query.pre_sql_op <- function (x,
   q <- paste0("SELECT \n",
               paste(exprq, collapse = "\n "),
               "FROM\n",
-              " ", subqs[[1]])
+              " ", subqsq)
   if(!is.null(x$where_exprs)) {
     # TODO: implement
     stop("to_query.pre_sq where terms not implemented yet")
@@ -270,6 +311,79 @@ to_query.pre_sql_op <- function (x,
 }
 
 
+
+#' Add derived expressions.
+#'
+#' @param x pre_sql_op node to derived column expressions
+#' @param exprs named list of pre_sql_expr
+#' @return modified node
+#'
+#' @noRd
+#'
+add_exprs <- function(x, exprs) {
+  for(ni in names(exprs)) {
+    x$exprs[[ni]] <- exprs[[ni]]
+  }
+  x
+}
+
+#' Add where expressions.
+#'
+#' @param x pre_sql_op node to add where conditions to
+#' @param where_exprs list of pre_sql_expr
+#' @return modified node
+#'
+#' @noRd
+#'
+add_where <- function(x, where_exprs) {
+  x$where_exprs <- c(x$where_exprs, where_exprs)
+  x
+}
+
+
+#' Add group terms.
+#'
+#' @param x pre_sql_op node to add where conditions to
+#' @param group_terms charater list of grouping terms
+#' @return modified node
+#'
+#' @noRd
+#'
+add_group_terms <- function(x, group_terms) {
+  x$group_terms <- unique(c(x$group_terms, group_terms))
+  x
+}
+
+
+#' Add limit condition to a pre_sql_op node.
+#'
+#' @param x pre_sql_op node to add limit condition to
+#' @param limit numeric limit
+#' @return modified node
+#'
+#' @noRd
+#'
+add_limit <- function(x, limit) {
+  x$limit <- min(x$limit, limit, na.rm = TRUE)
+  x
+}
+
+#' Add order by terms to a pre_sql_op node.
+#'
+#' @param x pre_sql_op node to add order terms to
+#' @param order_terms character, order by terms
+#' @param desc logical set/clear desc
+#' @return modified node
+#'
+#' @noRd
+#'
+add_order_by <- function(x, order_terms, desc = NA) {
+  x$order_terms <- unique(c(x$order_terms, order_terms))
+  if((!is.null(desc)) && (!is.na(desc))) {
+    x$desc = desc
+  }
+  x
+}
 
 
 

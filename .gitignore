@@ -8,3 +8,4 @@ man/
 *.log
 logs/
 df_tmp/
+inst/doc

@@ -18,12 +18,13 @@ Depends:
 Imports:
   DBI,
   RSQLite
-Suggests: 
+Suggests:
     sparklyr (>= 0.6.4),
     RPostgreSQL,
-    RPostgres
+    RPostgres,
+    knitr,
+    rmarkdown
 LazyData: true
 RoxygenNote: 6.0.1
 ByteCompile: true
-
-
+VignetteBuilder: knitr
