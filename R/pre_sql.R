@@ -1,5 +1,10 @@
 
 
+# The idea is these arrangements of nodes are transient- so they
+# can instantiate narrowing from the rel_op nodes.
+# Some of these can also be implemented as modifiers on previous nodes
+# to try and cut down the amount of query nesting.
+
 
 #' pre_sql_identifier: abstract name of a column and where it is comming from
 #'
