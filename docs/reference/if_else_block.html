@@ -52,7 +52,7 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../index.html">
+  <a href="..//index.html">
     <span class="fa fa-home fa-lg"></span>
      
   </a>
@@ -142,8 +142,9 @@ is a reserved column name for this procedure.</p>
       <span class='kw'>testexpr</span> <span class='kw'>=</span> <span class='fu'>qe</span>(<span class='no'>r</span> <span class='kw'>&gt;=</span> <span class='fl'>0.5</span>),
       <span class='kw'>thenexprs</span> <span class='kw'>=</span> <span class='fu'>qae</span>(<span class='no'>a</span> <span class='kw'>:=</span> <span class='fl'>0</span>),
       <span class='kw'>elseexprs</span> <span class='kw'>=</span> <span class='fu'>qae</span>(<span class='no'>b</span> <span class='kw'>:=</span> <span class='fl'>0</span>)),
-    <span class='fu'>qae</span>(<span class='no'>edited</span> <span class='kw'>:=</span> <span class='fl'>1</span>)))
-<span class='fu'>print</span>(<span class='no'>program</span>)</div><div class='output co'>#&gt; $ifebtest_2
+    <span class='fu'>qae</span>(<span class='no'>edited</span> <span class='kw'>:=</span> <span class='fl'>1</span>)))</div><div class='output co'>#&gt; [1] "0"
+#&gt; [1] "0"
+#&gt; [1] "1"</div><div class='input'><span class='fu'>print</span>(<span class='no'>program</span>)</div><div class='output co'>#&gt; $ifebtest_2
 #&gt; [1] "(a + b) &gt; 1"
 #&gt; 
 #&gt; $ifebtest_1
@@ -210,9 +211,9 @@ is a reserved column name for this procedure.</p>
              SELECT * from ( VALUES(1),(2) )
           ) a
        ) b"</span>
- <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>q</span>)</div><div class='output co'>#&gt;                   r1                   r2
-#&gt; 1  18618588758331943 -2857009805885856187
-#&gt; 2 963565859999748693  7667608803079599668</div><div class='input'>
+ <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>q</span>)</div><div class='output co'>#&gt;                     r1                  r2
+#&gt; 1  7477504400182489840 8330055723283362454
+#&gt; 2 -1420816273262285292 8343112335872247281</div><div class='input'>
 <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

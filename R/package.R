@@ -12,4 +12,5 @@ NULL
 
 
 #' @importFrom wrapr %.>% :=
+#' @importFrom cdata bind_rowsQ
 NULL
