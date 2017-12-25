@@ -71,7 +71,6 @@ parse_call_for_SQL <- function(lexpr,
     lhs <- args[[1]]
     rhs <- args[[2]]
     if(callName==":=") { # assignment special case
-      names(rhs$parsed) <- as.character(lexpr[[2]])
       res$parsed <- rhs$parsed
       res$symbols_used <- rhs$symbols_used
       res$symbols_produced <- unique(c(as.character(lexpr[[2]]),
@@ -91,13 +90,13 @@ parse_call_for_SQL <- function(lexpr,
   }
   # TODO: make special cases like this table driven
   if((n==4) && (callName=="ifelse")) {
-     res$parsed <- c(ltok("("), ltok("CASE WHEN"),
-                         args[[1]]$parsed,
-                         ltok("THEN"),
-                         args[[2]]$parsed,
-                         ltok("ELSE"),
-                         args[[3]]$parsed,
-                         ltok("END"), ltok(")"))
+    res$parsed <- c(ltok("("), ltok("CASE"), ltok("WHEN"),
+                    ltok("("), args[[1]]$parsed, ltok(")"),
+                    ltok("THEN"),
+                    ltok("("), args[[2]]$parsed, ltok(")"),
+                    ltok("ELSE"),
+                    ltok("("), args[[3]]$parsed, ltok(")"),
+                    ltok("END"), ltok(")"))
     return(res)
   }
   # default
