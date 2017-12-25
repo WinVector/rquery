@@ -105,6 +105,11 @@ parse_call_for_SQL <- function(lexpr,
     return(res)
   }
   # default
+  creplacements <- list('pmax' = 'max')
+  rep <- creplacements[[callName]]
+  if(!is.null(rep)) {
+    callName <- rep
+  }
   res$parsed_toks <- c(ltok(callName),
                        ltok("("), subseq, ltok(")"))
   res$presentation <- paste0(callName, "(", subpres, ")")

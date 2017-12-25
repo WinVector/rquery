@@ -71,7 +71,7 @@ test_that("test_parse: Works As Expected", {
   expect_equal("rank ( )", ex15$check)
   expect_equal("rank", ex15$symbols_produced)
 
-  ex16 <- do_parse("x" := "max(AUC,v)")
+  ex16 <- do_parse("x" := "pmax(AUC,v)")
   expect_equal("max ( AUC , v )", ex16$check)
 
   ex17 <- do_parse("x" := "exp(3 * 5)")
