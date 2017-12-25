@@ -81,7 +81,16 @@ cat(sql)
 
 ```{r res2, echo=FALSE, comment = ' '}
 p <- to_pre_sql(d)
-sql2 <- to_query(p, my_db)
+dbqi <- function(id) {
+  as.character(DBI::dbQuoteIdentifier(my_db, id))
+}
+dbqs <- function(s) {
+  as.character(DBI::dbQuoteString(my_db, s))
+}
+sql2 <- to_query(p, 
+                 source_table = p$ref_name,
+                 dbqi = dbqi, dbqs = dbqs)
+
 cat(sql2)
 ```
 

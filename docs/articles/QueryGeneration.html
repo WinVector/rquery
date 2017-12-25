@@ -140,11 +140,11 @@ sql &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.
   ) tsql_0005 ORDER BY `subjectID`</code></pre>
 <p><code>pre_sql</code> query:</p>
 <pre><code>  SELECT 
-   `subjectID` AS `subjectID`,
-   `surveyCategory` AS `surveyCategory`,
-   `assessmentTotal` AS `assessmentTotal`,
-   `irrelevantCol1` AS `irrelevantCol1`,
-   `irrelevantCol2` AS `irrelevantCol2`
+   `d`.`subjectID` AS `subjectID`,
+   `d`.`surveyCategory` AS `surveyCategory`,
+   `d`.`assessmentTotal` AS `assessmentTotal`,
+   `d`.`irrelevantCol1` AS `irrelevantCol1`,
+   `d`.`irrelevantCol2` AS `irrelevantCol2`
   FROM
    `d`</code></pre>
 </div>

@@ -9,7 +9,7 @@ Authors@R: c(
     )
 Maintainer: John Mount <jmount@win-vector.com>
 URL: https://github.com/WinVector/rquery/, https://winvector.github.io/rquery/
-Description: Supplies relational algebra style commands for data manipulation.
+Description: Supplies relational algebra style commands for SQL based data manipulation.
 License: GPL-3
 Encoding: UTF-8
 Depends:

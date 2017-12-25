@@ -115,7 +115,8 @@ pre_sql_table <- function(tablename, columns) {
 #' Return SQL implementation of operation tree.
 #'
 #' @param x pre_sql_op operation tree.
-#' @param db database handle.
+#' @param dbqi function, method to quote identifiers in queries
+#' @param dbqs function, method to quote strings in queries
 #' @param ... generic additional arguments (not used).
 #' @param source_table character if not NULL name of source table.
 #' @param source_limit numeric if not NULL limit sources to this many rows.
@@ -125,7 +126,8 @@ pre_sql_table <- function(tablename, columns) {
 #' @export
 #'
 to_query <- function (x,
-                      db,
+                      dbqi,
+                      dbqs,
                       ...,
                       source_table = NULL,
                       source_limit = NA_real_,
@@ -147,7 +149,8 @@ format.pre_sql_token <- function(x, ...) {
 #' @export
 #'
 to_query.pre_sql_token <- function (x,
-                                    db,
+                                    dbqi,
+                                    dbqs,
                                     ...,
                                     source_table = NULL,
                                     source_limit = NA_real_,
@@ -157,15 +160,15 @@ to_query.pre_sql_token <- function (x,
   }
   if(x$token_type == "column") {
     if((!is.null(source_table)) && (!is.na(source_table))) {
-      return(paste(DBI::dbQuoteIdentifier(db, source_table),
-                   DBI::dbQuoteIdentifier(db, x$column_name),
+      return(paste(dbqi(source_table),
+                   dbqi(x$column_name),
                    sep = '.'))
     } else {
-      return(DBI::dbQuoteIdentifier(db, x$column_name))
+      return(dbqi(x$column_name))
     }
   }
   if(x$token_type == "string") {
-    return(DBI::dbQuoteString(db, paste(as.character(x$value), collapse = " ")))
+    return(dbqs(paste(as.character(x$value), collapse = " ")))
   }
   paste(as.character(x$value), collapse = " ")
 }
@@ -174,7 +177,8 @@ to_query.pre_sql_token <- function (x,
 #' @export
 #'
 to_query.pre_sql_expr <- function (x,
-                                   db,
+                                   dbqi,
+                                   dbqs,
                                    ...,
                                    source_table = NULL,
                                    source_limit = NA_real_,
@@ -185,7 +189,8 @@ to_query.pre_sql_expr <- function (x,
   terms <- vapply(x,
                   function(ti) {
                     to_query(ti,
-                             db = db,
+                             dbqi = dbqi,
+                             dbqs = dbqs,
                              source_table = source_table,
                              source_limit = source_limit,
                              using = using)
@@ -208,7 +213,8 @@ values_used <- function(exprs) {
 
 
 build_subqs <- function(x,
-                        db,
+                        dbqi,
+                        dbqs,
                         ...,
                         source_table = NULL,
                         source_limit = NA_real_,
@@ -217,7 +223,7 @@ build_subqs <- function(x,
     stop("unexpected arguemnts")
   }
   if(!is.null(x$source_table)) {
-    subq <- list(DBI::dbQuoteIdentifier(db, x$source_table))
+    subq <- list(dbqi(x$source_table))
     names(subq) <- x$source_table
   } else {
     exprs <- x$exprs
@@ -229,14 +235,15 @@ build_subqs <- function(x,
                   function(ni) {
                     si <- x$sources[[ni]]
                     subqi <- to_query(si,
-                                      db = db,
+                                      dbqi = dbqi,
+                                      dbqs = dbqs,
                                       source_table = source_table,
                                       source_limit = source_limit,
                                       using = vals_used$ni)
                     subqi <- trimws(subqi, which = "right")
                     subqi <- gsub("\n", "\n ", subqi, fixed = TRUE)
                     subqi <- paste0(" ( ", subqi,
-                                    " ) ", DBI::dbQuoteIdentifier(db, ni))
+                                    " ) ", dbqi(ni))
                     subqi
                   })
     names(subq) <- names(x$sources)
@@ -247,8 +254,11 @@ build_subqs <- function(x,
 
 #' Return SQL implementation of operation tree.
 #'
+#' S3 method so join nodes can override this.
+#'
 #' @param x pre_sql_op operation tree.
-#' @param db database handle.
+#' @param dbqi function, method to quote identifiers in queries
+#' @param dbqs function, method to quote strings in queries
 #' @param subqs chracter, array of rendered sub-queries
 #' @param ... generic additional arguments (not used).
 #' @param source_table character if not NULL name of soure table.
@@ -259,7 +269,8 @@ build_subqs <- function(x,
 #' @noRd
 #'
 place_subqs <- function (x,
-                         db,
+                         dbqi,
+                         dbqs,
                          subqs,
                          ...,
                          source_table = NULL,
@@ -268,10 +279,12 @@ place_subqs <- function (x,
   UseMethod("place_subqs", x)
 }
 
+#'
 #' @noRd
 #'
 place_subqs.pre_sql_op <- function (x,
-                                    db,
+                                    dbqi,
+                                    dbqs,
                                     subqs,
                                     ...,
                                     source_limit = NULL,
@@ -286,7 +299,8 @@ place_subqs.pre_sql_op <- function (x,
 #' @export
 #'
 to_query.pre_sql_op <- function (x,
-                                 db,
+                                 dbqi,
+                                 dbqs,
                                  ...,
                                  source_table = NULL,
                                  source_limit = NA_real_,
@@ -295,12 +309,14 @@ to_query.pre_sql_op <- function (x,
     stop("unexpected arguemnts")
   }
   subqs <- build_subqs(x = x,
-                       db = db,
+                       dbqi = dbqi,
+                       dbqs = dbqs,
                        source_table = source_table,
                        source_limit = source_limit,
                        using = using)
   subqsq <- place_subqs(x,
-                        db = db,
+                        dbqi = dbqi,
+                        dbqs = dbqs,
                         subqs = subqs,
                         source_table = source_table,
                         source_limit = source_limit,
@@ -313,12 +329,13 @@ to_query.pre_sql_op <- function (x,
                   function(ni) {
                     ei <- exprs[[ni]]
                     paste(to_query(ei,
-                                   db = db,
+                                   dbqi = dbqi,
+                                   dbqs = dbqs,
                                    source_table = source_table,
                                    source_limit = source_limit,
                                    using = using),
                           "AS",
-                          DBI::dbQuoteIdentifier(db, ni))
+                          dbqi(ni))
                   }, character(1))
   q <- paste0("SELECT \n ",
               paste(exprq, collapse = ",\n "),
