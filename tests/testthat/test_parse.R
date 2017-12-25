@@ -22,6 +22,7 @@ test_that("test_parse: Works As Expected", {
 
   ex1 <- do_parse("1")
   expect_equal("1", ex1$check)
+  expect_equal("1", to_query(ex1$parsed_toks))
 
   ex2 <- do_parse("c1")
   expect_equal("'c1'", ex2$check)

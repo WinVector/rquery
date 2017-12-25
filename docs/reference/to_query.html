@@ -96,7 +96,8 @@
     <p>Return SQL implementation of operation tree.</p>
     
 
-    <pre class="usage"><span class='fu'>to_query</span>(<span class='no'>x</span>, <span class='no'>db</span>, <span class='no'>...</span>, <span class='kw'>source_limit</span> <span class='kw'>=</span> <span class='fl'>NA_real_</span>, <span class='kw'>using</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>to_query</span>(<span class='no'>x</span>, <span class='no'>db</span>, <span class='no'>...</span>, <span class='kw'>source_table</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>source_limit</span> <span class='kw'>=</span> <span class='fl'>NA_real_</span>,
+  <span class='kw'>using</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -112,6 +113,10 @@
     <tr>
       <th>...</th>
       <td><p>generic additional arguments (not used).</p></td>
+    </tr>
+    <tr>
+      <th>source_table</th>
+      <td><p>character if not NULL name of source table.</p></td>
     </tr>
     <tr>
       <th>source_limit</th>

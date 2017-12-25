@@ -117,6 +117,7 @@ pre_sql_table <- function(tablename, columns) {
 #' @param x pre_sql_op operation tree.
 #' @param db database handle.
 #' @param ... generic additional arguments (not used).
+#' @param source_table character if not NULL name of source table.
 #' @param source_limit numeric if not NULL limit sources to this many rows.
 #' @param using character, if not NULL set of columns used from above.
 #' @return SQL command
@@ -126,30 +127,10 @@ pre_sql_table <- function(tablename, columns) {
 to_query <- function (x,
                       db,
                       ...,
+                      source_table = NULL,
                       source_limit = NA_real_,
                       using = NULL) {
   UseMethod("to_query", x)
-}
-
-#' @noRd
-#'
-to_query.pre_sql_token <- function (x,
-                                    db,
-                                    ...,
-                                    source_limit = NULL,
-                                    using = NULL) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  if(x$token_type == "column") {
-    return(paste(DBI::dbQuoteIdentifier(db, x$source),
-                 DBI::dbQuoteIdentifier(db, x$column_name),
-                 sep = '.'))
-  }
-  if(x$token_type == "string") {
-    return(DBI::dbQuoteString(db, paste(as.character(x$value), collapse = " ")))
-  }
-  paste(as.character(x$value), collapse = " ")
 }
 
 #' @export
@@ -163,12 +144,40 @@ format.pre_sql_token <- function(x, ...) {
   paste(as.character(x$value), collapse = " ")
 }
 
-#' @noRd
+#' @export
+#'
+to_query.pre_sql_token <- function (x,
+                                    db,
+                                    ...,
+                                    source_table = NULL,
+                                    source_limit = NA_real_,
+                                    using = NULL) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
+  if(x$token_type == "column") {
+    if((!is.null(source_table)) && (!is.na(source_table))) {
+      return(paste(DBI::dbQuoteIdentifier(db, source_table),
+                   DBI::dbQuoteIdentifier(db, x$column_name),
+                   sep = '.'))
+    } else {
+      return(DBI::dbQuoteIdentifier(db, x$column_name))
+    }
+  }
+  if(x$token_type == "string") {
+    return(DBI::dbQuoteString(db, paste(as.character(x$value), collapse = " ")))
+  }
+  paste(as.character(x$value), collapse = " ")
+}
+
+
+#' @export
 #'
 to_query.pre_sql_expr <- function (x,
                                    db,
                                    ...,
-                                   source_limit = NULL,
+                                   source_table = NULL,
+                                   source_limit = NA_real_,
                                    using = NULL) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
@@ -177,6 +186,7 @@ to_query.pre_sql_expr <- function (x,
                   function(ti) {
                     to_query(ti,
                              db = db,
+                             source_table = source_table,
                              source_limit = source_limit,
                              using = using)
                   }, character(1))
@@ -196,10 +206,12 @@ values_used <- function(exprs) {
   found
 }
 
+
 build_subqs <- function(x,
                         db,
                         ...,
-                        source_limit = NULL,
+                        source_table = NULL,
+                        source_limit = NA_real_,
                         using = NULL) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
@@ -218,6 +230,7 @@ build_subqs <- function(x,
                     si <- x$sources[[ni]]
                     subqi <- to_query(si,
                                       db = db,
+                                      source_table = source_table,
                                       source_limit = source_limit,
                                       using = vals_used$ni)
                     subqi <- trimws(subqi, which = "right")
@@ -238,6 +251,7 @@ build_subqs <- function(x,
 #' @param db database handle.
 #' @param subqs chracter, array of rendered sub-queries
 #' @param ... generic additional arguments (not used).
+#' @param source_table character if not NULL name of soure table.
 #' @param source_limit numeric if not NULL limit sources to this many rows.
 #' @param using character, if not NULL set of columns used from above.
 #' @return SQL command
@@ -248,6 +262,7 @@ place_subqs <- function (x,
                          db,
                          subqs,
                          ...,
+                         source_table = NULL,
                          source_limit = NA_real_,
                          using = NULL) {
   UseMethod("place_subqs", x)
@@ -273,18 +288,21 @@ place_subqs.pre_sql_op <- function (x,
 to_query.pre_sql_op <- function (x,
                                  db,
                                  ...,
-                                 source_limit = NULL,
+                                 source_table = NULL,
+                                 source_limit = NA_real_,
                                  using = NULL) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
   subqs <- build_subqs(x = x,
                        db = db,
+                       source_table = source_table,
                        source_limit = source_limit,
                        using = using)
   subqsq <- place_subqs(x,
                         db = db,
                         subqs = subqs,
+                        source_table = source_table,
                         source_limit = source_limit,
                         using = using)
   exprs <- x$exprs
@@ -296,6 +314,7 @@ to_query.pre_sql_op <- function (x,
                     ei <- exprs[[ni]]
                     paste(to_query(ei,
                                    db = db,
+                                   source_table = source_table,
                                    source_limit = source_limit,
                                    using = using),
                           "AS",
