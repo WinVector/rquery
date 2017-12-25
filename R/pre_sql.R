@@ -19,9 +19,10 @@
 #' @noRd
 #'
 pre_sql_identifier <- function(source, column_name) {
-  t <- list(column_name = column_name,
+  t <- list(token_type = "column",
+            column_name = column_name,
             source = source)
-  class(t) <- c("pre_sql_identifier", "pre_sql")
+  class(t) <- "pre_sql_token"
   t
 }
 
@@ -33,8 +34,24 @@ pre_sql_identifier <- function(source, column_name) {
 #' @noRd
 #'
 pre_sql_string <- function(value) {
-  t <- list(value = value)
-  class(t) <- c("pre_sql_string", "pre_sql")
+  t <- list(token_type = "string",
+            value = value)
+  class(t) <- "pre_sql_token"
+  t
+}
+
+
+#' pre_sql_token
+#'
+#' represents a string constant
+#'   value character string
+#'
+#' @noRd
+#'
+pre_sql_token <- function(value) {
+  t <- list(token_type = "token",
+            value = value)
+  class(t) <- "pre_sql_token"
   t
 }
 
@@ -118,33 +135,35 @@ to_query <- function (x,
 
 #' @noRd
 #'
-to_query.pre_sql_identifier <- function (x,
-                                         db,
-                                         ...,
-                                         source_limit = NULL,
-                                         using = NULL) {
+to_query.pre_sql_token <- function (x,
+                                    db,
+                                    ...,
+                                    source_limit = NULL,
+                                    using = NULL) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
-  paste(DBI::dbQuoteIdentifier(db, x$source),
-        DBI::dbQuoteIdentifier(db, x$column_name),
-        sep = '.')
+  if(x$token_type == "column") {
+    return(paste(DBI::dbQuoteIdentifier(db, x$source),
+                 DBI::dbQuoteIdentifier(db, x$column_name),
+                 sep = '.'))
+  }
+  if(x$token_type == "string") {
+    return(DBI::dbQuoteString(db, paste(as.character(x$value), collapse = " ")))
+  }
+  paste(as.character(x$value), collapse = " ")
 }
 
-#' @noRd
-#'
-to_query.pre_sql_string <- function (x,
-                                     db,
-                                     ...,
-                                     source_limit = NULL,
-                                     using = NULL) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+#' @export
+format.pre_sql_token <- function(x, ...) {
+  if(x$token_type == "column") {
+    return(paste0("'", x$source, "'.'",
+                 x$column_name, "'"))
   }
-  if(length(x$value)<=0) {
-    return("NULL")
+  if(x$token_type == "string") {
+    return(paste0('"', paste(as.character(x$value), collapse = " "), '"'))
   }
-  DBI::dbQuoteString(db, paste(as.character(x$value), collapse = " "))
+  paste(as.character(x$value), collapse = " ")
 }
 
 #' @noRd
@@ -159,14 +178,10 @@ to_query.pre_sql_expr <- function (x,
   }
   terms <- vapply(x,
                   function(ti) {
-                    if("pre_sql" %in% class(ti)) {
-                      to_query(ti,
-                               db = db,
-                               source_limit = source_limit,
-                               using = using)
-                    } else {
-                      paste(as.character(ti), collapse = " ")
-                    }
+                    to_query(ti,
+                             db = db,
+                             source_limit = source_limit,
+                             using = using)
                   }, character(1))
   paste(terms, collapse = " ")
 }
@@ -176,7 +191,7 @@ values_used <- function(exprs) {
   found <- list()
   for(ei in exprs) {
     for(eij in ei) {
-      if("pre_sql_identifier" %in% class(eij)) {
+      if(eij$token_type == "column") {
         found[[eij$source]] <- unique(c(found[[eij$source]], eij$name))
       }
     }

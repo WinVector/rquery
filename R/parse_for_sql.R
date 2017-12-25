@@ -1,4 +1,7 @@
 
+ltok <- function(v) {
+  list(pre_sql_token(v))
+}
 
 #' Cross-parse a call from an R parse tree into SQL.
 #'
@@ -51,12 +54,12 @@ parse_call_for_SQL <- function(lexpr,
   }
   if(callName=="(") {
     res$presentation <- paste("(", subpres, ")")
-    res$parsed <- c(list("("), subseq, list(")"))
+    res$parsed <- c(ltok("("), subseq, ltok(")"))
     return(res)
   }
   if(callName=="!") {
     res$presentation <- paste("!(", subpres, ")")
-    res$parsed <- c(list("("), list("NOT"), list("("), subseq, list(")"), list(")"))
+    res$parsed <- c(ltok("("), ltok("NOT"), ltok("("), subseq, ltok(")"), ltok(")"))
     return(res)
   }
   inlineops = c(":=", "==", "!=", ">=", "<=", "=",
@@ -82,24 +85,24 @@ parse_call_for_SQL <- function(lexpr,
     if(!is.null(replacement)) {
       callName <- replacement
     }
-    res$parsed <- c(lhs$parsed, list(callName), rhs$parsed)
+    res$parsed <- c(lhs$parsed, ltok(callName), rhs$parsed)
     res$presentation <- paste(lhs$presentation, callName, rhs$presentation)
     return(res)
   }
   # TODO: make special cases like this table driven
   if((n==4) && (callName=="ifelse")) {
-     res$parsed <- c(list("("), list("CASE WHEN"),
+     res$parsed <- c(ltok("("), ltok("CASE WHEN"),
                          args[[1]]$parsed,
-                         list("THEN"),
+                         ltok("THEN"),
                          args[[2]]$parsed,
-                         list("ELSE"),
+                         ltok("ELSE"),
                          args[[3]]$parsed,
-                         list("END"), list(")"))
+                         ltok("END"), ltok(")"))
     return(res)
   }
   # default
-  res$parsed <- c(list(callName),
-                       list("("), subseq, list(")"))
+  res$parsed <- c(ltok(callName),
+                       ltok("("), subseq, ltok(")"))
   return(res)
 }
 
@@ -176,17 +179,24 @@ parse_for_SQL <- function(lexpr,
                     envir = env,
                     ifnotfound = list(NULL),
                     inherits = TRUE)[[1]]
-    v <- v[[lexpr]]
+    v <- v[[1]]
     if(length(v)>0) {
       if(is.character(v)) {
         res$parsed <- list(pre_sql_string(v))
         return(res)
       }
-      res$parsed <- list(paste(as.character(v), collapse = " "))
+      res$parsed <- list(pre_sql_token(paste(as.character(v), collapse = " ")))
       return(res)
     }
+    # fall back
+    res$parsed <- list(pre_sql_token(paste(as.character(lexpr), collapse = " ")))
+    return(res)
+  }
+  if(is.character(lexpr)) {
+    res$parsed <- list(pre_sql_string(paste(as.character(lexpr), collapse = " ")))
+    return(res)
   }
   # fall-back
-  res$parsed <- list(paste(as.character(lexpr), collapse = " "))
+  res$parsed <- list(pre_sql_token(paste(as.character(lexpr), collapse = " ")))
   return(res)
 }
