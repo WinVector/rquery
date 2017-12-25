@@ -109,7 +109,7 @@ parse_se <- function(source, assignments, env,
   for(i in 1:n) {
     ni <- names(assignments)[[i]]
     ai <- assignments[[ni]]
-    ei <- parse(text = paste(ni, ":=", ai))[[1]]
+    ei <- paste(parse(text = paste(ni, ":=", ai)), collapse = "\n")
     parsed[[i]] <- prepForSQL(ei,
                               colnames = have,
                               node = source,
