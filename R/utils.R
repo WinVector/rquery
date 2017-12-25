@@ -105,15 +105,24 @@ parse_se <- function(source, assignments, env,
   if(n!=length(unique(names(assignments)))) {
     stop("generated column names must be unique")
   }
+  dbqi <- function(id) {
+    quote_identifier(source, id)
+  }
+  dbqs <- function(v) {
+    quote_string(source, v)
+  }
   parsed <- vector(n, mode = 'list')
   for(i in 1:n) {
     ni <- names(assignments)[[i]]
     ai <- assignments[[ni]]
     ei <- parse(text = paste(ni, ":=", ai))[[1]]
-    parsed[[i]] <- prepForSQL(ei,
-                              colnames = have,
-                              node = source,
-                              env = env)
+    pi <- parse_for_SQL(ei,
+                        colnames = have,
+                        env = env)
+    pi$parsed <- to_query(pi$parsed_toks,
+                          dbqi = dbqi,
+                          dbqs = dbqs)
+    parsed[[i]] <- pi
     have <- unique(c(have, parsed[[i]]$symbols_produced))
   }
   parsed
@@ -126,12 +135,22 @@ parse_nse <- function(source, exprs, env,
   if(n<=0) {
     stop("must have at least 1 assigment")
   }
+  dbqi <- function(id) {
+    quote_identifier(source, id)
+  }
+  dbqs <- function(v) {
+    quote_string(source, v)
+  }
   parsed <- vector(n, mode = 'list')
   for(i in 1:n) {
-    parsed[[i]] <- prepForSQL(exprs[[i]],
-                              colnames = have,
-                              node = source,
-                              env = env)
+    ei <- exprs[[i]]
+    pi <- parse_for_SQL(ei,
+                        colnames = have,
+                        env = env)
+    pi$parsed <- to_query(pi$parsed_toks,
+                          dbqi = dbqi,
+                          dbqs = dbqs)
+    parsed[[i]] <- pi
     have <- unique(c(have, parsed[[i]]$symbols_produced))
   }
   parsed

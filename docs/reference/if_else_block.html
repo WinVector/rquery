@@ -177,16 +177,16 @@ is a reserved column name for this procedure.</p>
 #&gt;   ifebtest_2 := ( a + b ) &gt; 1,
 #&gt;   ifebtest_1 := r &gt;= 0.5) %.&gt;%
 #&gt;  extend(.,
-#&gt;   a := ifelse(ifebtest_2, ifelse(ifebtest_1, 0, a), a),
-#&gt;   b := ifelse(ifebtest_2, ifelse(!( ifebtest_1 ), 0, b), b),
-#&gt;   edited := ifelse(ifebtest_2, 1, edited))</div><div class='input'>
+#&gt;   a := ifelse ifebtest_2 ifelse(ifebtest_1, 0, a) a,
+#&gt;   b := ifelse ifebtest_2 ifelse(!ifebtest_1, 0, b) b,
+#&gt;   edited := ifelse ifebtest_2 1 edited)</div><div class='input'>
 <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>trf</span>)
 <span class='fu'>cat</span>(<span class='no'>sql</span>)</div><div class='output co'>#&gt; SELECT
 #&gt;  `ifebtest_2`,
 #&gt;  `ifebtest_1`,
-#&gt;  ( CASE WHEN `ifebtest_2` THEN ( CASE WHEN `ifebtest_1` THEN 0 ELSE `a` END ) ELSE `a` END )  AS `a`,
-#&gt;  ( CASE WHEN `ifebtest_2` THEN ( CASE WHEN ( NOT (  `ifebtest_1` )) THEN 0 ELSE `b` END ) ELSE `b` END )  AS `b`,
-#&gt;  ( CASE WHEN `ifebtest_2` THEN 1 ELSE `edited` END )  AS `edited`
+#&gt;  ( CASE WHEN ( `ifebtest_2` ) THEN ( ( CASE WHEN ( `ifebtest_1` ) THEN ( 0 ) ELSE ( `a` ) END ) ) ELSE ( `a` ) END )  AS `a`,
+#&gt;  ( CASE WHEN ( `ifebtest_2` ) THEN ( ( CASE WHEN ( ( NOT ( `ifebtest_1` ) ) ) THEN ( 0 ) ELSE ( `b` ) END ) ) ELSE ( `b` ) END )  AS `b`,
+#&gt;  ( CASE WHEN ( `ifebtest_2` ) THEN ( 1 ) ELSE ( `edited` ) END )  AS `edited`
 #&gt; FROM (
 #&gt;  SELECT
 #&gt;   `a`,
@@ -223,9 +223,9 @@ is a reserved column name for this procedure.</p>
              SELECT * from ( VALUES(1),(2) )
           ) a
        ) b"</span>
- <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>q</span>)</div><div class='output co'>#&gt;                     r1                   r2
-#&gt; 1  -788622325879418523 -2036125394159322991
-#&gt; 2 -4290005409876525100 -3304363157741239867</div><div class='input'>
+ <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>q</span>)</div><div class='output co'>#&gt;                     r1                  r2
+#&gt; 1  7383111386153713844 3593900782357743054
+#&gt; 2 -2792681130847649341 3125927189169559379</div><div class='input'>
 <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

@@ -19,7 +19,12 @@ parse_call_for_SQL <- function(lexpr,
   if((n<=0) || (!is.call(lexpr))) {
     stop("rquery::parse_call_for_SQL called on non-call")
   }
-  res <- list(presentation = paste(as.character(lexpr), collapse = '\n'),
+  inlineops = c(":=", "==", "!=", ">=", "<=", "=",
+                "<", ">",
+                "+", "-", "*", "/",
+                "&&", "||",
+                "&", "|")
+  res <- list(presentation = paste(as.character(lexpr), collapse = ' '),
               parsed_toks = list(),
               symbols_used = character(0),
               symbols_produced = character(0))
@@ -38,6 +43,13 @@ parse_call_for_SQL <- function(lexpr,
                        function(ri) {
                          ri$parsed_toks
                        })
+    if(length(subqstrs)>1) {
+      # insert commas
+      subqstrso <- subqstrs
+      ns <- length(subqstrs)
+      subqstrs <- rep(list(ltok(",")), ns+ns-1)
+      subqstrs[2*seq_len(ns)-1] <- subqstrso
+    }
     subseq <- unlist(subqstrs, recursive = FALSE)
     subpresv <- vapply(args,
                        function(ri) {
@@ -59,11 +71,6 @@ parse_call_for_SQL <- function(lexpr,
     res$parsed_toks <- c(ltok("("), ltok("NOT"), ltok("("), subseq, ltok(")"), ltok(")"))
     return(res)
   }
-  inlineops = c(":=", "==", "!=", ">=", "<=", "=",
-                "<", ">",
-                "+", "-", "*", "/",
-                "&&", "||",
-                "&", "|")
   if((n==3) && (callName %in% inlineops)) {
     lhs <- args[[1]]
     rhs <- args[[2]]
@@ -72,6 +79,7 @@ parse_call_for_SQL <- function(lexpr,
       res$symbols_used <- rhs$symbols_used
       res$symbols_produced <- unique(c(as.character(lexpr[[2]]),
                                        rhs$symbols_produced))
+      res$presentation <- paste0(lhs$presentation, " := ", rhs$presentation)
       return(res)
     }
     replacements <- list("==" = "=",
@@ -99,6 +107,7 @@ parse_call_for_SQL <- function(lexpr,
   # default
   res$parsed_toks <- c(ltok(callName),
                        ltok("("), subseq, ltok(")"))
+  res$presentation <- paste0(callName, "(", subpres, ")")
   return(res)
 }
 
@@ -171,14 +180,16 @@ parse_for_SQL_r <- function(lexpr,
                     envir = env,
                     ifnotfound = list(NULL),
                     inherits = TRUE)[[1]]
-    v <- v[[1]]
     if(length(v)>0) {
       if(is.character(v)) {
         res$parsed_toks <- list(pre_sql_string(v))
         return(res)
       }
-      res$parsed_toks <- list(pre_sql_token(paste(as.character(v), collapse = " ")))
-      return(res)
+      if(is.numeric(v)) {
+        res$parsed_toks <- list(pre_sql_token(paste(as.character(v), collapse = " ")))
+        return(res)
+      }
+      # finding functions in the env is a problem here
     }
     # fall back
     res$parsed_toks <- list(pre_sql_token(paste(as.character(lexpr), collapse = " ")))

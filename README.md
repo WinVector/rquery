@@ -174,14 +174,14 @@ cat(to_sql(dq, source_limit = 1000))
          `surveyCategory`,
          `probability`,
          `count`,
-         rank() OVER (  PARTITION BY `subjectID` ORDER BY `probability`, `surveyCategory` ) AS `rank`
+         rank ( ) OVER (  PARTITION BY `subjectID` ORDER BY `probability`, `surveyCategory` ) AS `rank`
         FROM (
          SELECT
           `subjectID`,
           `surveyCategory`,
           `assessmentTotal`,
-          exp(`assessmentTotal` * 0.237) / sum(exp(`assessmentTotal` * 0.237)) OVER (  PARTITION BY `subjectID` ) AS `probability`,
-          count(1) OVER (  PARTITION BY `subjectID` ) AS `count`
+          exp ( `assessmentTotal` * 0.237 ) / sum ( exp ( `assessmentTotal` * 0.237 ) ) OVER (  PARTITION BY `subjectID` ) AS `probability`,
+          count ( 1 ) OVER (  PARTITION BY `subjectID` ) AS `count`
          FROM (
           SELECT
            `d`.`subjectID`,
@@ -238,7 +238,7 @@ cat(format(dq))
       o= probability, surveyCategory) %.>%
      rename(.,
       c('diagnosis' := 'surveyCategory')) %.>%
-     select_rows(., rank == count) %.>%
+     select_rows(., rank = count) %.>%
      select_columns(., subjectID, diagnosis, probability) %.>%
      order_by(., subjectID)
 

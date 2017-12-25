@@ -133,7 +133,7 @@
 <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>eqn</span>))</div><div class='output co'>#&gt; table('d') %.&gt;%
 #&gt;  project(., v := max(R2),
 #&gt;   g= AUC)</div><div class='input'><span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>eqn</span>)
-<span class='fu'>cat</span>(<span class='no'>sql</span>)</div><div class='output co'>#&gt; SELECT `AUC`, max(`R2`) AS `v` FROM (
+<span class='fu'>cat</span>(<span class='no'>sql</span>)</div><div class='output co'>#&gt; SELECT `AUC`, max ( `R2` ) AS `v` FROM (
 #&gt;  SELECT
 #&gt;   `d`.`AUC`,
 #&gt;   `d`.`R2`
