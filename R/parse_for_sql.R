@@ -1,0 +1,192 @@
+
+
+#' Cross-parse a call from an R parse tree into SQL.
+#'
+#' @param lexpr item from  \code{substitute} with length(lexpr)>0 and is.call(lexpr)
+#' @param contextname name of context we are working in (table or query name).
+#' @param colnames column names of table
+#' @param env environment to look for values
+#' @return sql info: list(presentation, parsed(list of tokens), symbols_used, symbols_produced)
+#'
+#' @noRd
+#'
+parse_call_for_SQL <- function(lexpr,
+                               contextname,
+                               colnames,
+                               env) {
+  n <- length(lexpr)
+  if((n<=0) || (!is.call(lexpr))) {
+    stop("rquery::parse_call_for_SQL called on non-call")
+  }
+  res <- list(presentation = paste(as.character(lexpr), collapse = '\n'),
+              parsed = list(),
+              symbols_used = character(0),
+              symbols_produced = character(0))
+  callName <- as.character(lexpr[[1]])
+  args <- list()
+  subseq <- list()
+  subpres <- ""
+  if(n>=2) {
+    args <- lapply(2:n,
+                   function(i) {
+                     parse_for_SQL(lexpr[[i]],
+                                   contextname = contextname,
+                                   colnames = colnames,
+                                   env = env)
+                   })
+    subqstrs <- lapply(args,
+                       function(ri) {
+                         ri$parsed
+                       })
+    subseq <- unlist(subqstrs, recursive = FALSE)
+    subpresv <- vapply(args,
+                       function(ri) {
+                         ri$presentation
+                       }, character(1))
+    subpres <- paste(subpresv, collapse = " ")
+    res$symbols_used <- merge_fld(args,
+                                  "symbols_used")
+    res$symbols_produced <- merge_fld(args,
+                                      "symbols_produced")
+  }
+  if(callName=="(") {
+    res$presentation <- paste("(", subpres, ")")
+    res$parsed <- c(list("("), subseq, list(")"))
+    return(res)
+  }
+  if(callName=="!") {
+    res$presentation <- paste("!(", subpres, ")")
+    res$parsed <- c(list("("), list("NOT"), list("("), subseq, list(")"), list(")"))
+    return(res)
+  }
+  inlineops = c(":=", "==", "!=", ">=", "<=", "=",
+                "<", ">",
+                "+", "-", "*", "/",
+                "&&", "||",
+                "&", "|")
+  if((n==3) && (callName %in% inlineops)) {
+    lhs <- args[[1]]
+    rhs <- args[[2]]
+    if(callName==":=") { # assignment special case
+      names(rhs$parsed) <- as.character(lexpr[[2]])
+      res$parsed <- rhs$parsed
+      res$symbols_used <- rhs$symbols_used
+      res$symbols_produced <- unique(c(as.character(lexpr[[2]]),
+                                       rhs$symbols_produced))
+      return(res)
+    }
+    replacements <- list("==" = "=",
+                         "&&" = "AND",
+                         "||" = "OR")
+    replacement <- replacements[[callName]]
+    if(!is.null(replacement)) {
+      callName <- replacement
+    }
+    res$parsed <- c(lhs$parsed, list(callName), rhs$parsed)
+    res$presentation <- paste(lhs$presentation, callName, rhs$presentation)
+    return(res)
+  }
+  # TODO: make special cases like this table driven
+  if((n==4) && (callName=="ifelse")) {
+     res$parsed <- c(list("("), list("CASE WHEN"),
+                         args[[1]]$parsed,
+                         list("THEN"),
+                         args[[2]]$parsed,
+                         list("ELSE"),
+                         args[[3]]$parsed,
+                         list("END"), list(")"))
+    return(res)
+  }
+  # default
+  res$parsed <- c(list(callName),
+                       list("("), subseq, list(")"))
+  return(res)
+}
+
+
+#' Cross-parse from an R parse tree into SQL.
+#'
+#'
+#' @param lexpr item from  \code{substitute}
+#' @param contextname name of context we are working in (table or query name).
+#' @param colnames column names of table
+#' @param env environment to look for values
+#' @return sql info: list(presentation, parsed(list of tokens), symbols_used, symbols_produced)
+#'
+#' @export
+#'
+parse_for_SQL <- function(lexpr,
+                          contextname,
+                          colnames,
+                          env = parent.frame()) {
+  n <- length(lexpr)
+  res <- list(presentation = paste(as.character(lexpr), collapse = ' '),
+              parsed = list(),
+              symbols_used = character(0),
+              symbols_produced = character(0))
+  # just in case (establishes an invarient of n>=1)
+  if(n<=0) {
+    return(res)
+  }
+  # left-hand sides of lists/calls are represented as keys
+  nms <- names(lexpr)
+  if(length(nms)>0) {
+    stop("rquery::parse_for_SQL saw named items")
+  }
+  # special cases
+  if(is.call(lexpr)) {
+    res <- parse_call_for_SQL(lexpr = lexpr,
+                              contextname = contextname,
+                              colnames = colnames,
+                              env = env)
+    return(res)
+  }
+  # basic recurse, establish invariant n==1
+  if(n>1) {
+    sube <- lapply(lexpr,
+                   function(ei) {
+                     parse_for_SQL(ei,
+                                   contextname = contextname,
+                                   colnames = colnames,
+                                   env = env)
+                   })
+    subqstrs <- lapply(sube,
+                       function(ri) {
+                         ri$parsed
+                       })
+    subseq <- unlist(subqstrs, recursive = FALSE)
+    res$parsed <- subseq
+    res$symbols_used <- merge_fld(sube,
+                                  "symbols_used")
+    res$symbols_produced = merge_fld(sube,
+                                     "symbols_produced")
+    return(res)
+  }
+  # now have n==1, handle identifiers and constants
+  if(is.name(lexpr)) {
+    lexpr <- as.character(lexpr)
+    # look for columns
+    if(lexpr %in% colnames) {
+      res$symbols_used <- lexpr
+      res$parsed <- list(pre_sql_identifier(contextname, lexpr))
+      return(res)
+    }
+    # now look in environment
+    v <- base::mget(lexpr,
+                    envir = env,
+                    ifnotfound = list(NULL),
+                    inherits = TRUE)[[1]]
+    v <- v[[lexpr]]
+    if(length(v)>0) {
+      if(is.character(v)) {
+        res$parsed <- list(pre_sql_string(v))
+        return(res)
+      }
+      res$parsed <- list(paste(as.character(v), collapse = " "))
+      return(res)
+    }
+  }
+  # fall-back
+  res$parsed <- list(paste(as.character(lexpr), collapse = " "))
+  return(res)
+}

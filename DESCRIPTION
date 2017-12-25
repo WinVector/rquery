@@ -23,7 +23,8 @@ Suggests:
     RPostgreSQL,
     RPostgres,
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat
 LazyData: true
 RoxygenNote: 6.0.1
 ByteCompile: true
