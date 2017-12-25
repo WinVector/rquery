@@ -12,16 +12,14 @@
 #'  source is name of source
 #'  name is name for term
 #'
-#' @param source pre_sql_op where the column is coming from
 #' @param column_name character name of column
 #' @return pre_sql_identifier
 #'
 #' @noRd
 #'
-pre_sql_identifier <- function(source, column_name) {
+pre_sql_identifier <- function(column_name) {
   t <- list(token_type = "column",
-            column_name = column_name,
-            source = source)
+            column_name = column_name)
   class(t) <- "pre_sql_token"
   t
 }
@@ -96,7 +94,7 @@ pre_sql_expr <- function(terms) {
 pre_sql_table <- function(tablename, columns) {
   exprs <- lapply(as.character(columns),
                   function(ci) {
-                    pre_sql_expr(list(pre_sql_identifier(tablename, ci)))
+                    pre_sql_expr(list(pre_sql_identifier(ci)))
                   })
   names(exprs) <- as.character(columns)
   t <- list(ref_name = tablename,
@@ -157,8 +155,7 @@ to_query.pre_sql_token <- function (x,
 #' @export
 format.pre_sql_token <- function(x, ...) {
   if(x$token_type == "column") {
-    return(paste0("'", x$source, "'.'",
-                 x$column_name, "'"))
+    return(paste0("'", x$column_name, "'"))
   }
   if(x$token_type == "string") {
     return(paste0('"', paste(as.character(x$value), collapse = " "), '"'))

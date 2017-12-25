@@ -6,7 +6,6 @@ ltok <- function(v) {
 #' Cross-parse a call from an R parse tree into SQL.
 #'
 #' @param lexpr item from  \code{substitute} with length(lexpr)>0 and is.call(lexpr)
-#' @param contextname name of context we are working in (table or query name).
 #' @param colnames column names of table
 #' @param env environment to look for values
 #' @return sql info: list(presentation, parsed(list of tokens), symbols_used, symbols_produced)
@@ -14,7 +13,6 @@ ltok <- function(v) {
 #' @noRd
 #'
 parse_call_for_SQL <- function(lexpr,
-                               contextname,
                                colnames,
                                env) {
   n <- length(lexpr)
@@ -33,7 +31,6 @@ parse_call_for_SQL <- function(lexpr,
     args <- lapply(2:n,
                    function(i) {
                      parse_for_SQL(lexpr[[i]],
-                                   contextname = contextname,
                                    colnames = colnames,
                                    env = env)
                    })
@@ -110,7 +107,6 @@ parse_call_for_SQL <- function(lexpr,
 #'
 #'
 #' @param lexpr item from  \code{substitute}
-#' @param contextname name of context we are working in (table or query name).
 #' @param colnames column names of table
 #' @param env environment to look for values
 #' @return sql info: list(presentation, parsed(list of tokens), symbols_used, symbols_produced)
@@ -118,7 +114,6 @@ parse_call_for_SQL <- function(lexpr,
 #' @export
 #'
 parse_for_SQL <- function(lexpr,
-                          contextname,
                           colnames,
                           env = parent.frame()) {
   n <- length(lexpr)
@@ -138,7 +133,6 @@ parse_for_SQL <- function(lexpr,
   # special cases
   if(is.call(lexpr)) {
     res <- parse_call_for_SQL(lexpr = lexpr,
-                              contextname = contextname,
                               colnames = colnames,
                               env = env)
     return(res)
@@ -148,7 +142,6 @@ parse_for_SQL <- function(lexpr,
     sube <- lapply(lexpr,
                    function(ei) {
                      parse_for_SQL(ei,
-                                   contextname = contextname,
                                    colnames = colnames,
                                    env = env)
                    })
@@ -170,7 +163,7 @@ parse_for_SQL <- function(lexpr,
     # look for columns
     if(lexpr %in% colnames) {
       res$symbols_used <- lexpr
-      res$parsed <- list(pre_sql_identifier(contextname, lexpr))
+      res$parsed <- list(pre_sql_identifier(lexpr))
       return(res)
     }
     # now look in environment

@@ -10,7 +10,6 @@ test_that("test_parse: Works As Expected", {
   do_parse <- function(text, env= parent.frame()) {
     ei <- parse(text = text)[[1]]
     p <- parse_for_SQL(ei,
-                  contextname = "table",
                   colnames = c("c1", "c2"),
                   env = env)
     ftoks <- vapply(p$parsed,
@@ -25,7 +24,7 @@ test_that("test_parse: Works As Expected", {
   expect_equal("1", ex1$check)
 
   ex2 <- do_parse("c1")
-  expect_equal("'table'.'c1'", ex2$check)
+  expect_equal("'c1'", ex2$check)
   expect_equal("c1", ex2$symbols_used)
 
   ex3 <- do_parse("x1")
