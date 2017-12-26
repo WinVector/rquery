@@ -120,6 +120,52 @@
     <p>sql info: list(presentation, parsed_toks(list of tokens), sql_text, symbols_used, symbols_produced)</p>
     
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'>
+<span class='fu'>parse_for_SQL</span>(<span class='fu'>substitute</span>(<span class='fl'>1</span> + <span class='fl'>1</span>), <span class='kw'>colnames</span><span class='kw'>=</span> <span class='kw'>NULL</span>)</div><div class='output co'>#&gt; $presentation
+#&gt; [1] "1 + 1"
+#&gt; 
+#&gt; $parsed_toks
+#&gt; [[1]]
+#&gt; $token_type
+#&gt; [1] "token"
+#&gt; 
+#&gt; $value
+#&gt; [1] "1"
+#&gt; 
+#&gt; attr(,"class")
+#&gt; [1] "pre_sql_token"
+#&gt; 
+#&gt; [[2]]
+#&gt; $token_type
+#&gt; [1] "token"
+#&gt; 
+#&gt; $value
+#&gt; [1] "+"
+#&gt; 
+#&gt; attr(,"class")
+#&gt; [1] "pre_sql_token"
+#&gt; 
+#&gt; [[3]]
+#&gt; $token_type
+#&gt; [1] "token"
+#&gt; 
+#&gt; $value
+#&gt; [1] "1"
+#&gt; 
+#&gt; attr(,"class")
+#&gt; [1] "pre_sql_token"
+#&gt; 
+#&gt; attr(,"class")
+#&gt; [1] "pre_sql_expr"
+#&gt; 
+#&gt; $symbols_used
+#&gt; character(0)
+#&gt; 
+#&gt; $symbols_produced
+#&gt; character(0)
+#&gt; </div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -127,7 +173,9 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-          </ul>
+      
+      <li><a href="#examples">Examples</a></li>
+    </ul>
 
   </div>
 </div>

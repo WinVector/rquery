@@ -218,6 +218,10 @@ parse_for_SQL_r <- function(lexpr,
 #' @param env environment to look for values
 #' @return sql info: list(presentation, parsed_toks(list of tokens), sql_text, symbols_used, symbols_produced)
 #'
+#' @examples
+#'
+#' parse_for_SQL(substitute(1 + 1), colnames= NULL)
+#'
 #' @export
 #'
 parse_for_SQL <- function(lexpr,
