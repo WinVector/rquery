@@ -122,8 +122,8 @@ parse_se <- function(source, assignments, env,
     pi$parsed <- to_query(pi$parsed_toks,
                           dbqi = dbqi,
                           dbqs = dbqs)
+    have <- unique(c(have, pi$symbols_produced))
     parsed[[i]] <- pi
-    have <- unique(c(have, parsed[[i]]$symbols_produced))
   }
   parsed
 }
@@ -150,11 +150,12 @@ parse_nse <- function(source, exprs, env,
     pi$parsed <- to_query(pi$parsed_toks,
                           dbqi = dbqi,
                           dbqs = dbqs)
+    have <- unique(c(have, pi$symbols_produced))
     parsed[[i]] <- pi
-    have <- unique(c(have, parsed[[i]]$symbols_produced))
   }
   parsed
 }
+
 
 
 
@@ -168,5 +169,17 @@ merge_fld <- function(reslist, field) {
                   ri[[field]]
                 })
   unique(unlist(got))
+}
+
+
+# mege named maps of column vectors
+merge_columns_used <- function(cu1, cu2) {
+  nms <- sort(unique(names(cu1), names(cu2)))
+  cu <- lapply(nms,
+               function(ni) {
+                 sort(unique(cu1[[ni]], cu2[[ni]]))
+               })
+  names(cu) <- nms
+  cu
 }
 

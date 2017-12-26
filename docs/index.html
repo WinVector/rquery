@@ -325,7 +325,8 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/tables_used.html">tables_used</a></span>(dq)</code></pre></div>
 <pre><code>## [1] "d"</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/columns_used.html">columns_used</a></span>(dq)</code></pre></div>
-<pre><code>## [1] "`d`.`subjectID`"       "`d`.`surveyCategory`"  "`d`.`assessmentTotal`"</code></pre>
+<pre><code>## $d
+## [1] "subjectID"       "surveyCategory"  "assessmentTotal"</code></pre>
 <p>Part of the plan is: the additional record-keeping in the operator nodes would let a potentially powerful query optimizer work over the flow before it gets translated to <code>SQL</code> (perhaps an extension of or successor to <a href="https://winvector.github.io/seplyr/"><code>seplyr</code></a>, which re-plans over <code><a href="http://dplyr.tidyverse.org/reference/mutate.html">dplyr::mutate()</a></code> expressions). At the very least restricting to columns later used and folding selects together would be achievable. One should have a good chance at optimization as the representation is fairly high-level, and many of the operators are relational (meaning there are known legal transforms a query optimizer can use). The flow itself is represented as follows:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw">format</span>(dq))</code></pre></div>
 <pre><code>table('d') %.&gt;%

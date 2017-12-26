@@ -94,7 +94,7 @@ columns_used.relop_natural_join <- function (x, ...,
   s2 <- columns_used(x$source[[2]],
                      using = c2,
                      contract = contract)
-  return(unique(c(s1, s2)))
+  merge_columns_used(s1, s2)
 }
 
 

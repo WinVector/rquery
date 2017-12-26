@@ -151,12 +151,11 @@ column_names.relop_table_source <- function (x, ...) {
 }
 
 
-#' @export
-columns_used.relop_table_source <- function (x, ...,
-                                          using = NULL,
-                                          contract = FALSE) {
+columns_used_relop_table_source <- function (x, ...,
+                                             using = NULL,
+                                             contract = FALSE) {
   if(length(list(...))>0) {
-    stop("rquery:columns_used: unexpected arguemnts")
+    stop("columns_used_relop_table_source: unexpected arguemnts")
   }
   cols <- x$columns
   if(length(using)>0) {
@@ -167,29 +166,39 @@ columns_used.relop_table_source <- function (x, ...,
     }
     cols <- intersect(cols, using)
   }
-  qcols <- vapply(cols,
-                  function(ui) {
-                    quote_identifier(x, ui)
-                  }, character(1))
-  r <- paste(quote_identifier(x, x$table_name), qcols, sep = '.')
+  cols
+}
+
+#' @export
+columns_used.relop_table_source <- function (x, ...,
+                                             using = NULL,
+                                             contract = FALSE) {
+  cols <- columns_used_relop_table_source(x, using = using, contract=contract)
+  r <- list(cols)
+  names(r) <- x$table_name
   r
 }
 
 #' @export
 to_sql.relop_table_source <- function (x,
-                                    ...,
-                                    source_limit = NULL,
-                                    indent_level = 0,
-                                    tnum = mkTempNameGenerator('tsql'),
-                                    append_cr = TRUE,
-                                    using = NULL) {
+                                       ...,
+                                       source_limit = NULL,
+                                       indent_level = 0,
+                                       tnum = mkTempNameGenerator('tsql'),
+                                       append_cr = TRUE,
+                                       using = NULL) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
   prefix <- paste(rep(' ', indent_level), collapse = '')
   tabnam <- quote_identifier(x,  x$table_name)
-  cols <- columns_used(x, using = using)
-  qt <- paste(cols, collapse = paste0(",\n", prefix, " "))
+  cols <- columns_used_relop_table_source(x, using = using)
+  qcols <- vapply(cols,
+                  function(ui) {
+                    quote_identifier(x, ui)
+                  }, character(1))
+  qcols <- paste(quote_identifier(x, x$table_name), qcols, sep = '.')
+  qt <- paste(qcols, collapse = paste0(",\n", prefix, " "))
   q <- paste0(prefix,
               "SELECT\n",
               prefix, " ", qt, "\n",

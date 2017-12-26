@@ -219,7 +219,8 @@ tables_used(dq)
 columns_used(dq)
 ```
 
-    ## [1] "`d`.`subjectID`"       "`d`.`surveyCategory`"  "`d`.`assessmentTotal`"
+    ## $d
+    ## [1] "subjectID"       "surveyCategory"  "assessmentTotal"
 
 Part of the plan is: the additional record-keeping in the operator nodes would let a potentially powerful query optimizer work over the flow before it gets translated to `SQL` (perhaps an extension of or successor to [`seplyr`](https://winvector.github.io/seplyr/), which re-plans over `dplyr::mutate()` expressions). At the very least restricting to columns later used and folding selects together would be achievable. One should have a good chance at optimization as the representation is fairly high-level, and many of the operators are relational (meaning there are known legal transforms a query optimizer can use). The flow itself is represented as follows:
 
