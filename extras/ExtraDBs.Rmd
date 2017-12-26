@@ -1,0 +1,87 @@
+---
+title: "DifferentDBs"
+output: github_document
+---
+
+`rquery` operator trees do not hold a reference to a database.
+This means the same tree can be serialized/de-serialized or saved/loaded and also used with multiple
+databases.
+
+```{r definequery}
+library("rquery")
+
+d <- rquery::table_source(
+  "d",
+  c("subjectID", "surveyCategory", "assessmentTotal"))
+
+scale <- 0.237
+
+dq <- d %.>%
+  extend_nse(.,
+             probability :=
+               exp(assessmentTotal * scale)/
+               sum(exp(assessmentTotal * scale)),
+             count := count(1),
+             partitionby = 'subjectID') %.>%
+  extend_nse(.,
+             rank := rank(),
+             partitionby = 'subjectID',
+             orderby = c('probability', 'surveyCategory'))  %.>%
+  rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
+  select_rows_nse(., rank == count) %.>%
+  select_columns(., c('subjectID', 
+                      'diagnosis', 
+                      'probability')) %.>%
+  order_by(., 'subjectID')
+```
+
+Printing the pipeline.
+
+```{r pqp, comment=''}
+cat(format(dq))
+```
+
+Spark example.
+
+```{r spark, comment=''}
+spark <- sparklyr::spark_connect(version='2.2.0', 
+                                   master = "local")
+class(spark)
+
+cat(to_sql(dq, 
+           db = spark, 
+           source_limit = 1000))
+
+sparklyr::spark_disconnect(spark)
+```
+
+PostgreSQL example.
+
+```{r postgres, comment=''}
+rpostgres <- DBI::dbConnect(RPostgres::Postgres(),
+                            host = 'localhost',
+                            port = 5432,
+                            user = 'postgres',
+                            password = 'pg')
+class(rpostgres)
+
+cat(to_sql(dq, 
+           db = rpostgres, 
+           source_limit = 1000))
+
+DBI::dbDisconnect(rpostgres)
+```
+
+SQLite example.
+
+```{r rsqlite, comment=''}
+rsqlite <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+
+class(rsqlite)
+
+cat(to_sql(dq, 
+           db = rsqlite, 
+           source_limit = 1000))
+
+DBI::dbDisconnect(rsqlite)
+```
