@@ -11,6 +11,8 @@ library("rquery")
 
     ## Loading required package: wrapr
 
+    ## Loading required package: cdata
+
 ``` r
 suppressPackageStartupMessages(library("data.table"))
 source("data_table.R") # our example data.table back-end
@@ -70,7 +72,7 @@ cat(format(dq))
       rank := rank(probability),
       p= subjectID) %.>%
      extend(.,
-      isdiagnosis := rank == count,
+      isdiagnosis := rank = count,
       diagnosis := surveyCategory)
 
 ``` r
@@ -82,9 +84,9 @@ cat(gsub("][", " ][\n  ",
 ```
 
     dL[, one := 1 ][
-      , probability := exp(`assessmentTotal` * 0.237) / sum(exp(`assessmentTotal` * 0.237)) ,subjectID ][
-      , count := sum(`one`) ,subjectID ][
-      , rank := rank(`probability`) ,subjectID ][
+      , probability := exp ( `assessmentTotal` * 0.237 ) / sum ( exp ( `assessmentTotal` * 0.237 ) ) ,subjectID ][
+      , count := sum ( `one` ) ,subjectID ][
+      , rank := rank ( `probability` ) ,subjectID ][
       , isdiagnosis := `rank` == `count` ][
       , diagnosis := `surveyCategory`]
 
@@ -92,6 +94,7 @@ cat(gsub("][", " ][\n  ",
 # execute
 # https://stackoverflow.com/questions/10527072/using-data-table-package-inside-my-own-package
 .datatable.aware <- TRUE
+# Note: data.table has in-place mutate semantics
 res <- as.data.frame(eval(parse(text = expr)))
 
 # finish in base-R 

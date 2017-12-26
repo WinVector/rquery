@@ -8,6 +8,11 @@ Show our `SparkR` setup.
 ``` r
 library("wrapr")
 library("rquery")
+```
+
+    ## Loading required package: cdata
+
+``` r
 library("SparkR")
 packageVersion("SparkR")
 ```
@@ -46,11 +51,12 @@ Run the same query as the [`rquery` example](https://winvector.github.io/rquery/
 
 ``` r
 scale <- 0.237
-d <- rquery::table_source(table_name = "dSparkR",
-                          columns = colnames(dSparkR),
-                          dbqi = function(id) { paste0("`", id, "`") },
-                          dbqs = function(s) { paste0('"', s, '"') })
-                          
+db_info <- rquery_db_info(indentifier_quote_char = '`',
+                           string_quote_char = '"')
+d <- rquery::table_source(
+  table_name = "dSparkR",
+  columns = colnames(dSparkR),
+  db_info = db_info)
 
 dq <- d %.>%
   extend_nse(.,
@@ -62,7 +68,7 @@ dq <- d %.>%
   extend_nse(.,
              rank := rank(),
              partitionby = 'subjectID',
-             orderby = 'probability')  %.>%
+             orderby = c('probability', 'surveyCategory'))  %.>%
   rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
   select_rows_nse(., rank == count) %.>%
   select_columns(., c('subjectID', 
@@ -70,7 +76,7 @@ dq <- d %.>%
                       'probability')) %.>%
   order_by(., 'subjectID')
 
-sql <- rquery::to_sql(dq)
+sql <- rquery::to_sql(dq, db_info)
 
 # run query through SparkR
 SparkR::sql(sql) %.>%

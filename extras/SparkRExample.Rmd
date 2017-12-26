@@ -63,11 +63,12 @@ Run the same query as the [`rquery` example](https://winvector.github.io/rquery/
 
 ```{r calc}
 scale <- 0.237
-d <- rquery::table_source(table_name = "dSparkR",
-                          columns = colnames(dSparkR),
-                          dbqi = function(id) { paste0("`", id, "`") },
-                          dbqs = function(s) { paste0('"', s, '"') })
-                          
+db_info <- rquery_db_info(indentifier_quote_char = '`',
+                           string_quote_char = '"')
+d <- rquery::table_source(
+  table_name = "dSparkR",
+  columns = colnames(dSparkR),
+  db_info = db_info)
 
 dq <- d %.>%
   extend_nse(.,
@@ -87,7 +88,7 @@ dq <- d %.>%
                       'probability')) %.>%
   order_by(., 'subjectID')
 
-sql <- rquery::to_sql(dq)
+sql <- rquery::to_sql(dq, db_info)
 
 # run query through SparkR
 SparkR::sql(sql) %.>%

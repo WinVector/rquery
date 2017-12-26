@@ -69,6 +69,7 @@ cat(gsub("][", " ][\n  ",
 # execute
 # https://stackoverflow.com/questions/10527072/using-data-table-package-inside-my-own-package
 .datatable.aware <- TRUE
+# Note: data.table has in-place mutate semantics
 res <- as.data.frame(eval(parse(text = expr)))
 
 # finish in base-R 

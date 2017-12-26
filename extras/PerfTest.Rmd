@@ -76,11 +76,13 @@ rquery_run <- function(collect) {
                         'diagnosis', 
                         'probability')) %.>%
     order_by(., 'subjectID')
+  sql <- to_sql(dq, my_db)
   if(collect) {
-    dR <- DBI::dbGetQuery(my_db, to_sql(dq))
+    dR <- DBI::dbGetQuery(my_db, sql)
   } else {
     tnam <- tng()
-    sql <- paste("CREATE TABLE", tnam, "USING PARQUET OPTIONS ('compression'='snappy') AS", to_sql(dq))
+    sql <- paste("CREATE TABLE", tnam, "USING PARQUET OPTIONS ('compression'='snappy') AS", 
+                 sql)
     DBI::dbGetQuery(my_db, sql)
     dR <- rquery::dbi_table(my_db, tnam)
   }
