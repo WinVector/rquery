@@ -22,9 +22,7 @@ to_data_table <- function (x,
 #'
 data_table_source <- function(dt, table_name = deparse(substitute(dt))) {
   table_source(table_name = table_name,
-               columns = colnames(dt),
-               db_info = rquery_db_info(indentifier_quote_char = '`',
-                                        string_quote_char = '"'))
+               columns = colnames(dt))
 }
 
 #' @export

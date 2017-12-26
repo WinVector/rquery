@@ -1,6 +1,6 @@
 rquery
 ================
-2017-12-25
+2017-12-26
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 [`rquery`](https://winvector.github.io/rquery/) is an experiment/demonstration of a simplified sequenced query generator based on [Codd's relational algebra](https://en.wikipedia.org/wiki/Relational_algebra) and not currently recommended for non-experimental (i.e., production) use. The goal of this experiment is to see if `SQL` would be more fun if it had a sequential data-flow or pipe notation.
@@ -49,7 +49,7 @@ Some reasons `SQL` seems complicated include:
 -   `SQL`'s realization of sequencing as nested function composition.
 -   `SQL` uses some relational concepts as steps, others as modifiers and predicates.
 
-A lot of the gracefulness of the Codd theory can be recovered through the usual trick changing function composition notation from `g(f(x))` to `x . f() . g()`. This experiment is asking (and not for the first time): "what if `SQL` were piped (expressed composition as a left to right flow, instead of a right to left nesting)?"
+A lot of the grace of the Codd theory can be recovered through the usual trick changing function composition notation from `g(f(x))` to `x . f() . g()`. This experiment is asking (and not for the first time): "what if `SQL` were piped (expressed composition as a left to right flow, instead of a right to left nesting)?"
 
 Let's work a non-trivial example: the `dplyr` pipeline from [Let’s Have Some Sympathy For The Part-time R User](http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/).
 

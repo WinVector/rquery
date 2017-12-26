@@ -67,8 +67,7 @@ db_info <- rquery_db_info(indentifier_quote_char = '`',
                            string_quote_char = '"')
 d <- rquery::table_source(
   table_name = "dSparkR",
-  columns = colnames(dSparkR),
-  db_info = db_info)
+  columns = colnames(dSparkR))
 
 dq <- d %.>%
   extend_nse(.,
