@@ -12,7 +12,6 @@
 #'
 #' @param table_name character, name of table
 #' @param columns character, column names of table
-#' @param db_info DBI connnection or rquery_db_info object
 #' @return a relop representation of the data
 #'
 #' @examples
@@ -24,8 +23,7 @@
 #'                   overwrite = TRUE,
 #'                   temporary = TRUE)
 #' d <- table_source('d',
-#'                   columns = c("AUC", "R2"),
-#'                   my_db)
+#'                   columns = c("AUC", "R2"))
 #' print(d)
 #' sql <- to_sql(d, my_db)
 #' cat(sql)
@@ -35,12 +33,11 @@
 #'
 #' @export
 #'
-table_source <- function(table_name, columns, db_info) {
+table_source <- function(table_name, columns) {
   r <- list(source = list(),
             table_name = table_name,
             parsed = NULL,
-            columns = columns,
-            db_info = db_info)
+            columns = columns)
   class(r) <- c("relop_table_source", "relop")
   r
 }
@@ -109,18 +106,9 @@ listFields <- function(my_db, tableName) {
 #'
 dbi_table <- function(db, table_name) {
   table_source(table_name = table_name,
-               columns = listFields(db, table_name),
-               db)
+               columns = listFields(db, table_name))
 }
 
-
-#' @export
-db_info.relop_table_source <- function (x, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  x$db_info
-}
 
 
 #' @export

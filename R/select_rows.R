@@ -129,6 +129,11 @@ to_sql.relop_select_rows <- function (x,
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
+  # re-quote expr
+  re_quoted <- redo_parse_quoting(x$parsed, db)
+  re_expr <- unpack_assignments(x$source[[1]], re_quoted,
+                                check_is_assignment = FALSE)
+  # work on query
   cols <- calc_used_relop_select_rows(x,
                                       using = using)
   subsql <- to_sql(x$source[[1]],
@@ -145,7 +150,7 @@ to_sql.relop_select_rows <- function (x,
          prefix, ") ",
          tab, "\n",
          prefix, "WHERE ",
-         x$expr)
+         re_expr)
   if(append_cr) {
     q <- paste0(q, "\n")
   }

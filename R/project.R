@@ -163,6 +163,10 @@ to_sql.relop_project <- function (x,
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
+  # re-quote expr
+  re_quoted <- redo_parse_quoting(x$parsed, db)
+  re_assignments <- unpack_assignments(x$source[[1]], re_quoted)
+  # work on query
   using <- calc_used_relop_project(x,
                                    using = using)
   subsql <- to_sql(x$source[[1]],
@@ -181,10 +185,10 @@ to_sql.relop_project <- function (x,
                    }, character(1))
   }
   derived <- NULL
-  if(length(x$assignments)>0) {
-    derived <- vapply(names(x$assignments),
+  if(length(re_assignments)>0) {
+    derived <- vapply(names(re_assignments),
                       function(ni) {
-                        ei <- x$assignments[[ni]]
+                        ei <- re_assignments[[ni]]
                         paste(ei, "AS", quote_identifier(db, ni))
                       }, character(1))
   }

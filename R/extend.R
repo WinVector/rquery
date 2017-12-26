@@ -269,6 +269,10 @@ to_sql.relop_extend <- function (x,
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
+  # re-quote expr
+  re_quoted <- redo_parse_quoting(x$parsed, db)
+  re_assignments <- unpack_assignments(x$source[[1]], re_quoted)
+  # work on query
   using <- calc_used_relop_extend(x,
                                   using = using)
   subsql <- to_sql(x$source[[1]],
@@ -279,7 +283,7 @@ to_sql.relop_extend <- function (x,
                    append_cr = FALSE,
                    using = using)
   cols1 <- intersect(column_names(x$source[[1]]), using)
-  cols1 <- setdiff(cols1, names(x$assignments)) # allow simple name re-use
+  cols1 <- setdiff(cols1, names(re_assignments)) # allow simple name re-use
   cols <- NULL
   if(length(cols1)>0) {
     cols <- vapply(cols1,
@@ -289,7 +293,7 @@ to_sql.relop_extend <- function (x,
   }
   prefix <- paste(rep(' ', indent_level), collapse = '')
   derived <- NULL
-  if(length(x$assignments)>0) {
+  if(length(re_assignments)>0) {
     windowTerm <- ""
     if((length(x$partitionby)>0) || (length(x$orderby)>0)) {
       windowTerm <- "OVER ( "
@@ -316,9 +320,9 @@ to_sql.relop_extend <- function (x,
       }
       windowTerm <- paste(windowTerm, ")")
     }
-    derived <- vapply(names(x$assignments),
+    derived <- vapply(names(re_assignments),
                       function(ni) {
-                        ei <- x$assignments[[ni]]
+                        ei <- re_assignments[[ni]]
                         paste(ei,
                               windowTerm,
                               "AS", quote_identifier(db, ni))

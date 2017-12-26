@@ -228,6 +228,9 @@ to_sql.relop_theta_join <- function (x,
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
+  # re-quote expr
+  re_quoted <- redo_parse_quoting(x$parsed, db)
+  # work on query
   using <- calc_used_relop_theta_join(x,
                                       using=using)
   c1 <- intersect(using, column_names(x$source[[1]]))

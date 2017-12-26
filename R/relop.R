@@ -154,27 +154,3 @@ to_pre_sql <- function (x,
   UseMethod("to_pre_sql", x)
 }
 
-
-
-#' Return DBI connection or rquery_db_info object.
-#'
-#' TODO: remove this (so we don't need to store reference).
-#'
-#' @param x rquery operation tree.
-#' @param ... generic additional arguments
-#' @return DBI connection or rquery_db_info object.
-#'
-#' @export
-#'
-db_info <- function (x, ...) {
-  UseMethod("db_info", x)
-}
-
-#' @export
-db_info.relop <- function (x, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  db_info(x$source[[1]])
-}
-

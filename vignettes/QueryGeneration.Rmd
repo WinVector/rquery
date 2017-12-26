@@ -68,6 +68,8 @@ dq <- d %.>%
                       'probability')) %.>%
   order_by(., 'subjectID')
 
+class(my_db)
+
 sql <- to_sql(dq, db = my_db, source_limit = 1000)
 ```
 

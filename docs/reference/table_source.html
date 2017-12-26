@@ -97,7 +97,7 @@
 strategy) needed to represent data from a remote table.</p>
     
 
-    <pre class="usage"><span class='fu'>table_source</span>(<span class='no'>table_name</span>, <span class='no'>columns</span>, <span class='no'>db_info</span>)</pre>
+    <pre class="usage"><span class='fu'>table_source</span>(<span class='no'>table_name</span>, <span class='no'>columns</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -109,10 +109,6 @@ strategy) needed to represent data from a remote table.</p>
     <tr>
       <th>columns</th>
       <td><p>character, column names of table</p></td>
-    </tr>
-    <tr>
-      <th>db_info</th>
-      <td><p>DBI connnection or rquery_db_info object</p></td>
     </tr>
     </table>
     
@@ -137,8 +133,7 @@ SQL optimizers likely make this zero-cost anyway.</p>
                   <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
                   <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'>table_source</span>(<span class='st'>'d'</span>,
-                  <span class='kw'>columns</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"AUC"</span>, <span class='st'>"R2"</span>),
-                  <span class='no'>my_db</span>)
+                  <span class='kw'>columns</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"AUC"</span>, <span class='st'>"R2"</span>))
 <span class='fu'>print</span>(<span class='no'>d</span>)</div><div class='output co'>#&gt; [1] "table('d')"</div><div class='input'><span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>d</span>, <span class='no'>my_db</span>)
 <span class='fu'>cat</span>(<span class='no'>sql</span>)</div><div class='output co'>#&gt; SELECT
 #&gt;  `d`.`AUC`,

@@ -71,20 +71,32 @@ check_have_cols <- function(have, requested, note) {
 
 
 unpack_assignments <- function(source, parsed,
-                               have = column_names(source)) {
+                               ...,
+                               have = column_names(source),
+                               check_is_assignment = TRUE) {
+  if(length(list(...))>0) {
+    stop("rquery::unpack_assignments unexpected argument")
+  }
   n <- length(parsed)
   if(n<=0) {
     stop("must generate at least 1 column")
   }
-  nms <-  character(n)
+  nms <- character(n)
   assignments <- character(n)
   uses <- vector(n, mode='list')
-  for(i in 1:n) {
+  for(i in seq_len(n)) {
     si <- parsed[[i]]
-    if(length(si$symbols_produced)!=1) {
-      stop("each assignment must be of the form name := expr")
+    if(length(si$symbols_produced)>1) {
+      stop("more than one symbol produced")
     }
-    nms[[i]] <- si$symbols_produced
+    if(check_is_assignment) {
+      if(length(si$symbols_produced)!=1) {
+        stop("each assignment must be of the form name := expr")
+      }
+    }
+    if(length(si$symbols_produced)==1) {
+      nms[[i]] <- si$symbols_produced
+    }
     assignments[[i]] <- si$parsed
     uses[[i]] <- si$symbols_used
   }
@@ -105,9 +117,11 @@ parse_se <- function(source, assignments, env,
   if(n!=length(unique(names(assignments)))) {
     stop("generated column names must be unique")
   }
-  db_inf <- db_info(source)
+  # R-like db-info for presentation
+  db_inf <- rquery_db_info(indentifier_quote_char = '`',
+                           string_quote_char = '"')
   parsed <- vector(n, mode = 'list')
-  for(i in 1:n) {
+  for(i in seq_len(n)) {
     ni <- names(assignments)[[i]]
     ai <- assignments[[ni]]
     ei <- parse(text = paste(ni, ":=", ai))[[1]]
@@ -129,9 +143,11 @@ parse_nse <- function(source, exprs, env,
   if(n<=0) {
     stop("must have at least 1 assigment")
   }
-  db_inf <- db_info(source)
+  # R-like db-info for presentation
+  db_inf <- rquery_db_info(indentifier_quote_char = '`',
+                           string_quote_char = '"')
   parsed <- vector(n, mode = 'list')
-  for(i in 1:n) {
+  for(i in seq_len(n)) {
     ei <- exprs[[i]]
     pi <- parse_for_SQL(ei,
                         colnames = have,
@@ -144,6 +160,17 @@ parse_nse <- function(source, exprs, env,
   parsed
 }
 
+
+redo_parse_quoting <- function(parsed, db_info) {
+  n <- length(parsed)
+  for(i in seq_len(n)) {
+    pi <- parsed[[i]]
+    pi$parsed <- to_query(pi$parsed_toks,
+                          db_info = db_info)
+    parsed[[i]] <- pi
+  }
+  parsed
+}
 
 
 
