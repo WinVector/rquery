@@ -68,7 +68,7 @@ dq <- d %.>%
                       'probability')) %.>%
   order_by(., 'subjectID')
 
-sql <- to_sql(dq, source_limit = 1000)
+sql <- to_sql(dq, db = my_db, source_limit = 1000)
 ```
 
 `to_sql()` SQL:
@@ -81,15 +81,9 @@ cat(sql)
 
 ```{r res2, echo=FALSE, comment = ' '}
 p <- to_pre_sql(d)
-dbqi <- function(id) {
-  as.character(DBI::dbQuoteIdentifier(my_db, id))
-}
-dbqs <- function(s) {
-  as.character(DBI::dbQuoteString(my_db, s))
-}
 sql2 <- to_query(p, 
-                 source_table = p$ref_name,
-                 dbqi = dbqi, dbqs = dbqs)
+                 db_info = my_db,
+                 source_table = p$ref_name)
 
 cat(sql2)
 ```

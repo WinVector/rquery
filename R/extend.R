@@ -101,14 +101,14 @@ extend_impl_list <- function(source, parsed,
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
 #' eqn <- extend_se(d, c("v" := "AUC + R2", "x" := "pmax(AUC,v)"))
 #' cat(format(eqn))
-#' sql <- to_sql(eqn)
+#' sql <- to_sql(eqn, my_db)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
 #'
 #' # SQLite can not run the following query
 #' eqn2 <- extend_se(d, "v" := "rank()",
 #'               partitionby = "AUC", orderby = "R2")
-#' sql2 <- to_sql(eqn2)
+#' sql2 <- to_sql(eqn2, my_db)
 #' cat(sql2)
 #'
 #' DBI::dbDisconnect(my_db)
@@ -158,7 +158,7 @@ extend_se <- function(source, assignments,
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
 #' eqn <- extend_nse(d, v := ifelse(AUC>0.5, R2, 1.0))
 #' cat(format(eqn))
-#' sql <- to_sql(eqn)
+#' sql <- to_sql(eqn, my_db)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
 #' DBI::dbDisconnect(my_db)
@@ -259,6 +259,7 @@ columns_used.relop_extend <- function (x, ...,
 
 #' @export
 to_sql.relop_extend <- function (x,
+                                 db,
                                  ...,
                                  source_limit = NULL,
                                  indent_level = 0,
@@ -271,6 +272,7 @@ to_sql.relop_extend <- function (x,
   using <- calc_used_relop_extend(x,
                                   using = using)
   subsql <- to_sql(x$source[[1]],
+                   db = db,
                    source_limit = source_limit,
                    indent_level = indent_level + 1,
                    tnum = tnum,
@@ -282,7 +284,7 @@ to_sql.relop_extend <- function (x,
   if(length(cols1)>0) {
     cols <- vapply(cols1,
                    function(ci) {
-                     quote_identifier(x, ci)
+                     quote_identifier(db, ci)
                    }, character(1))
   }
   prefix <- paste(rep(' ', indent_level), collapse = '')
@@ -294,7 +296,7 @@ to_sql.relop_extend <- function (x,
       if(length(x$partitionby)>0) {
         pcols <- vapply(x$partitionby,
                         function(ci) {
-                          quote_identifier(x, ci)
+                          quote_identifier(db, ci)
                         }, character(1))
         windowTerm <- paste0(windowTerm,
                              " PARTITION BY ",
@@ -303,7 +305,7 @@ to_sql.relop_extend <- function (x,
       if(length(x$orderby)>0) {
         ocols <- vapply(x$orderby,
                         function(ci) {
-                          quote_identifier(x, ci)
+                          quote_identifier(db, ci)
                         }, character(1))
         windowTerm <- paste0(windowTerm,
                              " ORDER BY ",
@@ -319,7 +321,7 @@ to_sql.relop_extend <- function (x,
                         ei <- x$assignments[[ni]]
                         paste(ei,
                               windowTerm,
-                              "AS", quote_identifier(x, ni))
+                              "AS", quote_identifier(db, ni))
                       }, character(1))
   }
   tab <- tnum()

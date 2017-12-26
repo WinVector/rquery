@@ -96,7 +96,7 @@
     <p>Return SQL implementation of operation tree.</p>
     
 
-    <pre class="usage"><span class='fu'>to_query</span>(<span class='no'>x</span>, <span class='no'>dbqi</span>, <span class='no'>dbqs</span>, <span class='no'>...</span>, <span class='kw'>source_table</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>source_limit</span> <span class='kw'>=</span> <span class='fl'>NA_real_</span>,
+    <pre class="usage"><span class='fu'>to_query</span>(<span class='no'>x</span>, <span class='no'>db_info</span>, <span class='no'>...</span>, <span class='kw'>source_table</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>source_limit</span> <span class='kw'>=</span> <span class='fl'>NA_real_</span>,
   <span class='kw'>using</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
@@ -107,12 +107,8 @@
       <td><p>pre_sql_op operation tree.</p></td>
     </tr>
     <tr>
-      <th>dbqi</th>
-      <td><p>function, method to quote identifiers in queries</p></td>
-    </tr>
-    <tr>
-      <th>dbqs</th>
-      <td><p>function, method to quote strings in queries</p></td>
+      <th>db_info</th>
+      <td><p>DBI connnection or rquery_db_info object</p></td>
     </tr>
     <tr>
       <th>...</th>

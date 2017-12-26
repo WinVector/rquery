@@ -12,7 +12,7 @@
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
 #' eqn <- select_columns(d, 'AUC')
 #' cat(format(eqn))
-#' sql <- to_sql(eqn)
+#' sql <- to_sql(eqn, my_db)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
 #' DBI::dbDisconnect(my_db)
@@ -84,6 +84,7 @@ columns_used.relop_select_columns <- function (x, ...,
 
 #' @export
 to_sql.relop_select_columns <- function (x,
+                                         db,
                                          ...,
                                          source_limit = NULL,
                                          indent_level = 0,
@@ -96,6 +97,7 @@ to_sql.relop_select_columns <- function (x,
   using <- calc_using_relop_select_columns(x,
                                            using = using)
   subsql <- to_sql(x$source[[1]],
+                   db = db,
                    source_limit = source_limit,
                    indent_level = indent_level + 1,
                    tnum = tnum,
@@ -103,7 +105,7 @@ to_sql.relop_select_columns <- function (x,
                    using = using)
   cols <- vapply(x$columns,
                  function(ci) {
-                   quote_identifier(x, ci)
+                   quote_identifier(db, ci)
                  }, character(1))
   tab <- tnum()
   prefix <- paste(rep(' ', indent_level), collapse = '')

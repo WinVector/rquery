@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Quote an idnetifier. — quote_identifier • rquery</title>
+<title>Build a db information stand-in — rquery_db_info • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -89,35 +89,31 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Quote an idnetifier.</h1>
+    <h1>Build a db information stand-in</h1>
     </div>
 
     
-    <p>Quote an idnetifier.</p>
+    <p>Build a db information stand-in</p>
     
 
-    <pre class="usage"><span class='fu'>quote_identifier</span>(<span class='no'>x</span>, <span class='no'>id</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>rquery_db_info</span>(<span class='no'>indentifier_quote_char</span>, <span class='no'>string_quote_char</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>rquery operation tree.</p></td>
+      <th>indentifier_quote_char</th>
+      <td><p>character</p></td>
     </tr>
     <tr>
-      <th>id</th>
-      <td><p>character to quote</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>generic additional arguments (not used)</p></td>
+      <th>string_quote_char</th>
+      <td><p>character</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>quoted identifier</p>
+    <p>rquery_db_info object</p>
     
 
   </div>

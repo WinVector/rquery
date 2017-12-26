@@ -12,8 +12,7 @@
 #'
 #' @param table_name character, name of table
 #' @param columns character, column names of table
-#' @param dbqi function, method to quote identifiers in queries
-#' @param dbqs function, method to quote strings in queries
+#' @param db_info DBI connnection or rquery_db_info object
 #' @return a relop representation of the data
 #'
 #' @examples
@@ -26,14 +25,9 @@
 #'                   temporary = TRUE)
 #' d <- table_source('d',
 #'                   columns = c("AUC", "R2"),
-#'                   dbqi = function(id) {
-#'                     as.character(DBI::dbQuoteIdentifier(my_db, id))
-#'                   },
-#'                   dbqs = function(s) {
-#'                     as.character(DBI::dbQuoteString(my_db, s))
-#'                   })
+#'                   my_db)
 #' print(d)
-#' sql <- to_sql(d)
+#' sql <- to_sql(d, my_db)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
 #' DBI::dbDisconnect(my_db)
@@ -41,19 +35,26 @@
 #'
 #' @export
 #'
-table_source <- function(table_name, columns, dbqi, dbqs) {
+table_source <- function(table_name, columns, db_info) {
   r <- list(source = list(),
             table_name = table_name,
             parsed = NULL,
             columns = columns,
-            dbqi = dbqi,
-            dbqs = dbqs)
+            db_info = db_info)
   class(r) <- c("relop_table_source", "relop")
   r
 }
 
 
 
+#' List fields from a dbi connection
+#'
+#' @param my_db DBI connection
+#' @param tableName character table name
+#' @return character list of column names
+#'
+#' @noRd
+#'
 listFields <- function(my_db, tableName) {
   # fails intermitnently, and sometimes gives wrong results
   # filed as: https://github.com/tidyverse/dplyr/issues/3204
@@ -93,13 +94,13 @@ listFields <- function(my_db, tableName) {
 #'                   temporary = TRUE)
 #' d <- dbi_table(my_db, 'd')
 #' print(d)
-#' sql <- to_sql(d)
+#' sql <- to_sql(d, my_db)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
 #' cols <- columns_used(d)
 #' print(cols)
 #'
-#' sql2 <- to_sql(d, using = "AUC")
+#' sql2 <- to_sql(d, my_db, using = "AUC")
 #' cat(sql2)
 #' DBI::dbGetQuery(my_db, sql2)
 #' DBI::dbDisconnect(my_db)
@@ -109,38 +110,18 @@ listFields <- function(my_db, tableName) {
 dbi_table <- function(db, table_name) {
   table_source(table_name = table_name,
                columns = listFields(db, table_name),
-               dbqi = function(id) {
-                 as.character(DBI::dbQuoteIdentifier(db, id))
-               },
-               dbqs = function(s) {
-                 as.character(DBI::dbQuoteString(db, s))
-               })
+               db)
 }
 
 
 #' @export
-quote_identifier.relop_table_source <- function (x, id, ...) {
+db_info.relop_table_source <- function (x, ...) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
-  id <- as.character(id)
-  if(length(id)!=1) {
-    stop("rquery::quote_identifier length(id)!=1")
-  }
-  x$dbqi(id)
+  x$db_info
 }
 
-#' @export
-quote_string.relop_table_source <- function (x, s, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  s <- as.character(s)
-  if(length(s)!=1) {
-    stop("rquery::quote_string length(s)!=1")
-  }
-  x$dbqs(s)
-}
 
 #' @export
 column_names.relop_table_source <- function (x, ...) {
@@ -181,6 +162,7 @@ columns_used.relop_table_source <- function (x, ...,
 
 #' @export
 to_sql.relop_table_source <- function (x,
+                                       db,
                                        ...,
                                        source_limit = NULL,
                                        indent_level = 0,
@@ -191,13 +173,13 @@ to_sql.relop_table_source <- function (x,
     stop("unexpected arguemnts")
   }
   prefix <- paste(rep(' ', indent_level), collapse = '')
-  tabnam <- quote_identifier(x,  x$table_name)
+  tabnam <- quote_identifier(db,  x$table_name)
   cols <- columns_used_relop_table_source(x, using = using)
   qcols <- vapply(cols,
                   function(ui) {
-                    quote_identifier(x, ui)
+                    quote_identifier(db, ui)
                   }, character(1))
-  qcols <- paste(quote_identifier(x, x$table_name), qcols, sep = '.')
+  qcols <- paste(quote_identifier(db, x$table_name), qcols, sep = '.')
   qt <- paste(qcols, collapse = paste0(",\n", prefix, " "))
   q <- paste0(prefix,
               "SELECT\n",
@@ -239,7 +221,7 @@ format.relop_table_source <- function(x, ...) {
 #' my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #' d <- dbi_copy_to(my_db, 'd',
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
-#' sql <- to_sql(d)
+#' sql <- to_sql(d, my_db)
 #' cat(sql)
 #' DBI::dbDisconnect(my_db)
 #'

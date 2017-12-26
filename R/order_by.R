@@ -26,7 +26,7 @@
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
 #' eqn <- order_by(d, "AUC", desc=TRUE, limit=4)
 #' cat(format(eqn))
-#' sql <- to_sql(eqn)
+#' sql <- to_sql(eqn, my_db)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
 #' DBI::dbDisconnect(my_db)
@@ -104,6 +104,7 @@ columns_used.relop_order_by <- function (x, ...,
 
 #' @export
 to_sql.relop_order_by <- function (x,
+                                   db,
                                    ...,
                                    source_limit = NULL,
                                    indent_level = 0,
@@ -116,14 +117,15 @@ to_sql.relop_order_by <- function (x,
   cols1 <- column_names(x$source[[1]])
   cols <- vapply(cols1,
                  function(ci) {
-                   quote_identifier(x, ci)
+                   quote_identifier(db, ci)
                  }, character(1))
   ot <- vapply(x$orderby,
                function(ci) {
-                 quote_identifier(x, ci)
+                 quote_identifier(db, ci)
                }, character(1))
   subcols <- calc_used_relop_order_by(x, using=using)
   subsql <- to_sql(x$source[[1]],
+                   db = db,
                    source_limit = source_limit,
                    indent_level = indent_level + 1,
                    tnum = tnum,

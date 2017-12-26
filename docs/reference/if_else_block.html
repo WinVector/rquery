@@ -180,7 +180,7 @@ is a reserved column name for this procedure.</p>
 #&gt;   a := ifelse ifebtest_2 ifelse(ifebtest_1, 0, a) a,
 #&gt;   b := ifelse ifebtest_2 ifelse(!ifebtest_1, 0, b) b,
 #&gt;   edited := ifelse ifebtest_2 1 edited)</div><div class='input'>
-<span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>trf</span>)
+<span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>trf</span>, <span class='no'>my_db</span>)
 <span class='fu'>cat</span>(<span class='no'>sql</span>)</div><div class='output co'>#&gt; SELECT
 #&gt;  `ifebtest_2`,
 #&gt;  `ifebtest_1`,
@@ -224,8 +224,8 @@ is a reserved column name for this procedure.</p>
           ) a
        ) b"</span>
  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>q</span>)</div><div class='output co'>#&gt;                     r1                   r2
-#&gt; 1 -4038393521664372296 -3663666612988370965
-#&gt; 2  1460289123181899408 -3822650018675822055</div><div class='input'>
+#&gt; 1 -3428655638877125527  7210837739891263294
+#&gt; 2  7683184332627224319 -7221811351386621401</div><div class='input'>
 <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

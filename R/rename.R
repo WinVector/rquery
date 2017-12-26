@@ -12,7 +12,7 @@
 #'                 data.frame(AUC = 0.6, R2 = 0.2, z = 3))
 #' eqn <- rename_columns(d, c('AUC2' := 'AUC', 'R' := 'R2'))
 #' cat(format(eqn))
-#' sql <- to_sql(eqn)
+#' sql <- to_sql(eqn, my_db)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
 #' DBI::dbDisconnect(my_db)
@@ -107,6 +107,7 @@ columns_used.relop_rename_columns <- function (x, ...,
 
 #' @export
 to_sql.relop_rename_columns <- function (x,
+                                         db,
                                          ...,
                                          source_limit = NULL,
                                          indent_level = 0,
@@ -119,14 +120,15 @@ to_sql.relop_rename_columns <- function (x,
   qmap <- calc_used_relop_rename_columns(x, using=using)
   colsV <- vapply(as.character(qmap),
                   function(ci) {
-                    quote_identifier(x, ci)
+                    quote_identifier(db, ci)
                   }, character(1))
   colsA <- vapply(names(qmap),
                   function(ci) {
-                    quote_identifier(x, ci)
+                    quote_identifier(db, ci)
                   }, character(1))
   cols <- paste(colsV, "AS", colsA)
   subsql <- to_sql(x$source[[1]],
+                   db = db,
                    source_limit = source_limit,
                    indent_level = indent_level + 1,
                    tnum = tnum,

@@ -70,7 +70,7 @@ print(d)
 
 ``` r
 d %.>%
-  rquery::to_sql(.) %.>%
+  rquery::to_sql(., my_db) %.>%
   DBI::dbGetQuery(my_db, .) %.>%
   knitr::kable(.)
 ```
@@ -99,7 +99,7 @@ print(d)
 
 ``` r
 d %.>%
-  rquery::to_sql(.) %.>%
+  rquery::to_sql(., my_db) %.>%
   DBI::dbGetQuery(my_db, .) %.>%
   knitr::kable(.)
 ```
@@ -137,7 +137,7 @@ We then generate our result:
 
 ``` r
 dq %.>%
-  to_sql(., source_limit = 1000) %.>%
+  to_sql(., my_db, source_limit = 1000) %.>%
   DBI::dbGetQuery(my_db, .) %.>%
   knitr::kable(.)
 ```
@@ -152,7 +152,7 @@ We see we have quickly reproduced the original result using the new database ope
 The actual `SQL` query that produces the result is, in fact, quite involved:
 
 ``` r
-cat(to_sql(dq, source_limit = 1000))
+cat(to_sql(dq, my_db, source_limit = 1000))
 ```
 
     SELECT * FROM (

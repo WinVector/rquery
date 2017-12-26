@@ -9,50 +9,6 @@
 
 
 
-#' Quote an idnetifier.
-#'
-#' @param x rquery operation tree.
-#' @param id character to quote
-#' @param ... generic additional arguments (not used)
-#' @return quoted identifier
-#'
-#' @export
-#'
-quote_identifier <- function (x, id, ...) {
-  UseMethod("quote_identifier", x)
-}
-
-#' @export
-quote_identifier.relop <- function (x, id, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  quote_identifier(x$source[[1]], id)
-}
-
-
-
-#' Quote a string
-#'
-#' @param x rquery operation tree.
-#' @param s character to quote
-#' @param ... generic additional arguments (not used)
-#' @return quoted string
-#'
-#' @export
-#'
-quote_string <- function (x, s, ...) {
-  UseMethod("quote_string", x)
-}
-
-#' @export
-quote_string.relop <- function (x, s, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  quote_string(x$source[[1]], s)
-}
-
 
 #' Return column names
 #'
@@ -88,22 +44,34 @@ column_names.relop <- function (x, ...) {
 #'
 #' @export
 #'
-columns_used <- function (x, ...,
+columns_used <- function (x,
+                          ...,
                           using = NULL,
                           contract = FALSE) {
   UseMethod("columns_used", x)
 }
 
 #' @export
-columns_used.relop <- function (x, ...,
-                                       using = NULL,
-                                       contract = FALSE) {
+columns_used.relop <- function (x,
+                                ...,
+                                using = NULL,
+                                contract = FALSE) {
   if(length(list(...))>0) {
     stop("rquery:columns_used: unexpected arguemnts")
   }
   subs <- lapply(x$source,
                  columns_used)
-  return(sort(unique(unlist(subs))))
+  res <- list()
+  nsubs <- length(subs)
+  if(nsubs>0) {
+    res <- subs[[1]]
+    if(nsubs>1) {
+      for(i in 2:nsubs) {
+        res <- merge_columns_used(res, subs[[i]])
+      }
+    }
+  }
+  return(res)
 }
 
 
@@ -150,6 +118,7 @@ print.relop <- function(x, ...) {
 #' Return SQL implementation of operation tree.
 #'
 #' @param x rquery operation tree.
+#' @param db DBI database handle or rquery_db_info object.
 #' @param ... generic additional arguments (not used).
 #' @param source_limit numeric if not NULL limit sources to this many rows.
 #' @param indent_level level to indent.
@@ -161,6 +130,7 @@ print.relop <- function(x, ...) {
 #' @export
 #'
 to_sql <- function (x,
+                    db,
                     ...,
                     source_limit = NULL,
                     indent_level = 0,
@@ -182,5 +152,29 @@ to_sql <- function (x,
 to_pre_sql <- function (x,
                         ...) {
   UseMethod("to_pre_sql", x)
+}
+
+
+
+#' Return DBI connection or rquery_db_info object.
+#'
+#' TODO: remove this (so we don't need to store reference).
+#'
+#' @param x rquery operation tree.
+#' @param ... generic additional arguments
+#' @return DBI connection or rquery_db_info object.
+#'
+#' @export
+#'
+db_info <- function (x, ...) {
+  UseMethod("db_info", x)
+}
+
+#' @export
+db_info.relop <- function (x, ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
+  db_info(x$source[[1]])
 }
 

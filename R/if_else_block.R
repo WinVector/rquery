@@ -51,7 +51,7 @@
 #' trf <- extend_se(d, program)
 #' cat(format(trf))
 #'
-#' sql <- to_sql(trf)
+#' sql <- to_sql(trf, my_db)
 #' cat(sql)
 #'
 #' DBI::dbGetQuery(my_db, sql)

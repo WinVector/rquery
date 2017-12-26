@@ -95,7 +95,7 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
                       <span class="st">'probability'</span>)) <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/order_by.html">order_by</a></span>(., <span class="st">'subjectID'</span>)
 
-sql &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(dq, <span class="dt">source_limit =</span> <span class="dv">1000</span>)</code></pre></div>
+sql &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(dq, <span class="dt">db =</span> my_db, <span class="dt">source_limit =</span> <span class="dv">1000</span>)</code></pre></div>
 <p><code><a href="../reference/to_sql.html">to_sql()</a></code> SQL:</p>
 <pre><code>  SELECT * FROM (
    SELECT

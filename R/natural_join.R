@@ -17,7 +17,7 @@
 #'                  data.frame(AUC = 0.6, D = 0.3))
 #' eqn <- natural_join(d1, d2)
 #' cat(format(eqn))
-#' sql <- to_sql(eqn)
+#' sql <- to_sql(eqn, my_db)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
 #' DBI::dbDisconnect(my_db)
@@ -100,6 +100,7 @@ columns_used.relop_natural_join <- function (x, ...,
 
 #' @export
 to_sql.relop_natural_join <- function (x,
+                                       db,
                                        ...,
                                        source_limit = NULL,
                                        indent_level = 0,
@@ -113,6 +114,7 @@ to_sql.relop_natural_join <- function (x,
                                         using=using)
   c1 <- intersect(using, column_names(x$source[[1]]))
   subsqla <- to_sql(x$source[[1]],
+                    db = db,
                     source_limit = source_limit,
                     indent_level = indent_level + 1,
                     tnum = tnum,
@@ -120,6 +122,7 @@ to_sql.relop_natural_join <- function (x,
                     using = c1)
   c2 <- intersect(using, column_names(x$source[[2]]))
   subsqlb <- to_sql(x$source[[2]],
+                    db = db,
                     source_limit = source_limit,
                     indent_level = indent_level + 1,
                     tnum = tnum,
@@ -133,7 +136,7 @@ to_sql.relop_natural_join <- function (x,
   if(length(bterms)>0) {
     bcols <- vapply(bterms,
                    function(ci) {
-                     quote_identifier(x, ci)
+                     quote_identifier(db, ci)
                    }, character(1))
     bexpr <- paste(",",
                    paste(bcols, collapse = ", "))
@@ -155,7 +158,7 @@ to_sql.relop_natural_join <- function (x,
   if(length(x$by)>0) {
     bt <- vapply(x$by,
                  function(ci) {
-                   quote_identifier(x, ci)
+                   quote_identifier(db, ci)
                  }, character(1))
     mt <- paste(paste(paste(taba, bt, sep='.'),
                       paste(tabb, bt, sep='.'), sep = ' = '),

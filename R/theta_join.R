@@ -21,7 +21,7 @@
 #'                  data.frame(AUC2 = 0.4, R2 = 0.3))
 #' eqn <- theta_join_se(d1, d2, "AUC >= AUC2")
 #' cat(format(eqn))
-#' sql <- to_sql(eqn)
+#' sql <- to_sql(eqn, my_db)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
 #' DBI::dbDisconnect(my_db)
@@ -81,7 +81,7 @@ theta_join_se <- function(a, b,
 #'                  data.frame(AUC2 = 0.4, R2 = 0.3))
 #' eqn <- theta_join_nse(d1, d2, AUC >= AUC2)
 #' cat(format(eqn))
-#' sql <- to_sql(eqn)
+#' sql <- to_sql(eqn, my_db)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
 #' DBI::dbDisconnect(my_db)
@@ -156,10 +156,10 @@ format.relop_theta_join <- function(x, ...) {
 }
 
 
-prepColumnNames <- function(x, tabName, tabColumns, ambiguous, suffix) {
+prepColumnNames <- function(db, tabName, tabColumns, ambiguous, suffix) {
   tabColumnsV <- vapply(tabColumns,
                         function(ci) {
-                          quote_identifier(x, ci)
+                          quote_identifier(db, ci)
                         }, character(1))
   tabColumnsV <- paste(tabName, tabColumnsV, sep = ".")
   tabColumnsA <- tabColumns
@@ -169,7 +169,7 @@ prepColumnNames <- function(x, tabName, tabColumns, ambiguous, suffix) {
   }
   tabColumnsA <- vapply(tabColumnsA,
                         function(ci) {
-                          quote_identifier(x, ci)
+                          quote_identifier(db, ci)
                         }, character(1))
   paste(tabColumnsV, "AS", tabColumnsA)
 }
@@ -218,6 +218,7 @@ columns_used.relop_theta_join <- function (x, ...,
 
 #' @export
 to_sql.relop_theta_join <- function (x,
+                                     db,
                                      ...,
                                      source_limit = NULL,
                                      indent_level = 0,
@@ -232,12 +233,14 @@ to_sql.relop_theta_join <- function (x,
   c1 <- intersect(using, column_names(x$source[[1]]))
   c2 <- intersect(using, column_names(x$source[[2]]))
   subsqla <- to_sql(x$source[[1]],
+                    db = db,
                     source_limit = source_limit,
                     indent_level = indent_level + 1,
                     tnum = tnum,
                     append_cr = FALSE,
                     using = c1)
   subsqlb <- to_sql(x$source[[2]],
+                    db = db,
                     source_limit = source_limit,
                     indent_level = indent_level + 1,
                     tnum = tnum,
@@ -250,14 +253,14 @@ to_sql.relop_theta_join <- function (x,
   if(length(bterms)>0) {
     bcols <- vapply(bterms,
                     function(ci) {
-                      quote_identifier(x, ci)
+                      quote_identifier(db, ci)
                     }, character(1))
   }
   prefix <- paste(rep(' ', indent_level), collapse = '')
-  cseta <- prepColumnNames(x, taba, column_names(x$source[[1]]),
+  cseta <- prepColumnNames(db, taba, column_names(x$source[[1]]),
                           x$overlap, x$suffix[[1]])
   ctermsa <- paste(cseta, collapse = paste0(",\n", prefix, " "))
-  csetb <- prepColumnNames(x, tabb, column_names(x$source[[2]]),
+  csetb <- prepColumnNames(db, tabb, column_names(x$source[[2]]),
                           x$overlap, x$suffix[[2]])
   ctermsb <- paste(csetb, collapse = paste0(",\n", prefix, " "))
   q <- paste0(prefix, "SELECT\n",

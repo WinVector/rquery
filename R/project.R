@@ -45,7 +45,7 @@ project_impl <- function(source, groupby, parsed) {
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
 #' eqn <- project_se(d, "AUC", "v" := "max(R2)")
 #' cat(format(eqn))
-#' sql <- to_sql(eqn)
+#' sql <- to_sql(eqn, my_db)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
 #' DBI::dbDisconnect(my_db)
@@ -73,7 +73,7 @@ project_se <- function(source, groupby, assignments,
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
 #' eqn <- project_nse(d, "AUC", v := max(R2))
 #' cat(format(eqn))
-#' sql <- to_sql(eqn)
+#' sql <- to_sql(eqn, my_db)
 #' cat(sql)
 #' DBI::dbGetQuery(my_db, sql)
 #' DBI::dbDisconnect(my_db)
@@ -153,6 +153,7 @@ columns_used.relop_project <- function (x, ...,
 
 #' @export
 to_sql.relop_project <- function (x,
+                                  db,
                                   ...,
                                   source_limit = NULL,
                                   indent_level = 0,
@@ -165,6 +166,7 @@ to_sql.relop_project <- function (x,
   using <- calc_used_relop_project(x,
                                    using = using)
   subsql <- to_sql(x$source[[1]],
+                   db = db,
                    source_limit = source_limit,
                    indent_level = indent_level + 1,
                    tnum = tnum,
@@ -175,7 +177,7 @@ to_sql.relop_project <- function (x,
   if(length(cols1)>0) {
     cols <- vapply(cols1,
                    function(ci) {
-                     quote_identifier(x, ci)
+                     quote_identifier(db, ci)
                    }, character(1))
   }
   derived <- NULL
@@ -183,7 +185,7 @@ to_sql.relop_project <- function (x,
     derived <- vapply(names(x$assignments),
                       function(ni) {
                         ei <- x$assignments[[ni]]
-                        paste(ei, "AS", quote_identifier(x, ni))
+                        paste(ei, "AS", quote_identifier(db, ni))
                       }, character(1))
   }
   tab <- tnum()
