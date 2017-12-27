@@ -85,33 +85,6 @@ d %.>%
 Now we re-write the original calculation in terms of the `rquery` SQL generating operators.
 
 ``` r
-class(my_db)
-```
-
-    ## [1] "spark_connection"       "spark_shell_connection"
-    ## [3] "DBIConnection"
-
-``` r
-print(d)
-```
-
-    ## [1] "table('d')"
-
-``` r
-d %.>%
-  rquery::to_sql(., my_db) %.>%
-  DBI::dbGetQuery(my_db, .) %.>%
-  knitr::kable(.)
-```
-
-|  subjectID| surveyCategory      |  assessmentTotal| irrelevantCol1 | irrelevantCol2 |
-|----------:|:--------------------|----------------:|:---------------|:---------------|
-|          1| withdrawal behavior |                5| irrel1         | irrel2         |
-|          1| positive re-framing |                2| irrel1         | irrel2         |
-|          2| withdrawal behavior |                3| irrel1         | irrel2         |
-|          2| positive re-framing |                4| irrel1         | irrel2         |
-
-``` r
 scale <- 0.237
 
 dq <- d %.>%

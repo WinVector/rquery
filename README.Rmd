@@ -119,15 +119,6 @@ d %.>%
 Now we re-write the original calculation in terms of the `rquery` SQL generating operators.
 
 ```{r calc}
-class(my_db)
-print(d)
-
-d %.>%
-  rquery::to_sql(., my_db) %.>%
-  DBI::dbGetQuery(my_db, .) %.>%
-  knitr::kable(.)
-
-
 scale <- 0.237
 
 dq <- d %.>%

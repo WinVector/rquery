@@ -185,54 +185,6 @@
 </tbody>
 </table>
 <p>Now we re-write the original calculation in terms of the <code>rquery</code> SQL generating operators.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">class</span>(my_db)</code></pre></div>
-<pre><code>## [1] "spark_connection"       "spark_shell_connection"
-## [3] "DBIConnection"</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(d)</code></pre></div>
-<pre><code>## [1] "table('d')"</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">d <span class="op">%.&gt;%</span>
-<span class="st">  </span>rquery<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/rquery/topics/to_sql">to_sql</a></span>(., my_db) <span class="op">%.&gt;%</span>
-<span class="st">  </span>DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery">dbGetQuery</a></span>(my_db, .) <span class="op">%.&gt;%</span>
-<span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</code></pre></div>
-<table class="table">
-<thead><tr class="header">
-<th align="right">subjectID</th>
-<th align="left">surveyCategory</th>
-<th align="right">assessmentTotal</th>
-<th align="left">irrelevantCol1</th>
-<th align="left">irrelevantCol2</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="right">1</td>
-<td align="left">withdrawal behavior</td>
-<td align="right">5</td>
-<td align="left">irrel1</td>
-<td align="left">irrel2</td>
-</tr>
-<tr class="even">
-<td align="right">1</td>
-<td align="left">positive re-framing</td>
-<td align="right">2</td>
-<td align="left">irrel1</td>
-<td align="left">irrel2</td>
-</tr>
-<tr class="odd">
-<td align="right">2</td>
-<td align="left">withdrawal behavior</td>
-<td align="right">3</td>
-<td align="left">irrel1</td>
-<td align="left">irrel2</td>
-</tr>
-<tr class="even">
-<td align="right">2</td>
-<td align="left">positive re-framing</td>
-<td align="right">4</td>
-<td align="left">irrel1</td>
-<td align="left">irrel2</td>
-</tr>
-</tbody>
-</table>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">scale &lt;-<span class="st"> </span><span class="fl">0.237</span>
 
 dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
