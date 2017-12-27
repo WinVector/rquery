@@ -125,7 +125,7 @@ parse_se <- function(source, assignments, env,
     ni <- names(assignments)[[i]]
     ai <- assignments[[ni]]
     ei <- parse(text = paste(ni, ":=", ai))[[1]]
-    pi <- parse_for_SQL(ei,
+    pi <- tokenize_for_SQL(ei,
                         colnames = have,
                         env = env)
     pi$parsed <- to_query(pi$parsed_toks,
@@ -149,7 +149,7 @@ parse_nse <- function(source, exprs, env,
   parsed <- vector(n, mode = 'list')
   for(i in seq_len(n)) {
     ei <- exprs[[i]]
-    pi <- parse_for_SQL(ei,
+    pi <- tokenize_for_SQL(ei,
                         colnames = have,
                         env = env)
     pi$parsed <- to_query(pi$parsed_toks,

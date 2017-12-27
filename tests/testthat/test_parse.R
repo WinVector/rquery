@@ -9,7 +9,7 @@ test_that("test_parse: Works As Expected", {
 
   do_parse <- function(text, env= parent.frame()) {
     ei <- parse(text = text)[[1]]
-    p <- parse_for_SQL(ei,
+    p <- tokenize_for_SQL(ei,
                   colnames = c("c1", "c2"),
                   env = env)
     ftoks <- vapply(p$parsed,

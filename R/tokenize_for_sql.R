@@ -12,12 +12,12 @@ ltok <- function(v) {
 #'
 #' @noRd
 #'
-parse_call_for_SQL <- function(lexpr,
+tokenize_call_for_SQL <- function(lexpr,
                                colnames,
                                env) {
   n <- length(lexpr)
   if((n<=0) || (!is.call(lexpr))) {
-    stop("rquery::parse_call_for_SQL called on non-call")
+    stop("rquery::tokenize_call_for_SQL called on non-call")
   }
   inlineops = c(":=", "==", "!=", ">=", "<=", "=",
                 "<", ">",
@@ -35,7 +35,7 @@ parse_call_for_SQL <- function(lexpr,
   if(n>=2) {
     args <- lapply(2:n,
                    function(i) {
-                     parse_for_SQL_r(lexpr[[i]],
+                     tokenize_for_SQL_r(lexpr[[i]],
                                    colnames = colnames,
                                    env = env)
                    })
@@ -127,7 +127,7 @@ parse_call_for_SQL <- function(lexpr,
 #'
 #' @noRd
 #'
-parse_for_SQL_r <- function(lexpr,
+tokenize_for_SQL_r <- function(lexpr,
                           colnames,
                           env) {
   n <- length(lexpr)
@@ -142,11 +142,11 @@ parse_for_SQL_r <- function(lexpr,
   # left-hand sides of lists/calls are represented as keys
   nms <- names(lexpr)
   if(length(nms)>0) {
-    stop("rquery::parse_for_SQL_r saw named items")
+    stop("rquery::tokenize_for_SQL_r saw named items")
   }
   # special cases
   if(is.call(lexpr)) {
-    res <- parse_call_for_SQL(lexpr = lexpr,
+    res <- tokenize_call_for_SQL(lexpr = lexpr,
                               colnames = colnames,
                               env = env)
     return(res)
@@ -155,7 +155,7 @@ parse_for_SQL_r <- function(lexpr,
   if(n>1) {
     sube <- lapply(lexpr,
                    function(ei) {
-                     parse_for_SQL_r(ei,
+                     tokenize_for_SQL_r(ei,
                                    colnames = colnames,
                                    env = env)
                    })
@@ -220,14 +220,14 @@ parse_for_SQL_r <- function(lexpr,
 #'
 #' @examples
 #'
-#' parse_for_SQL(substitute(1 + 1), colnames= NULL)
+#' tokenize_for_SQL(substitute(1 + 1), colnames= NULL)
 #'
 #' @export
 #'
-parse_for_SQL <- function(lexpr,
+tokenize_for_SQL <- function(lexpr,
                             colnames,
                             env = parent.frame()) {
-  p <- parse_for_SQL_r(lexpr = lexpr,
+  p <- tokenize_for_SQL_r(lexpr = lexpr,
                             colnames = colnames,
                             env = env)
   class(p$parsed_toks) <- c("pre_sql_expr")
