@@ -79,17 +79,6 @@ sql <- to_sql(dq, db = my_db, source_limit = 1000)
 cat(sql)
 ```
 
-`pre_sql` query:
-
-```{r res2, echo=FALSE, comment = ' '}
-p <- to_pre_sql(d)
-sql2 <- to_query(p, 
-                 db_info = my_db,
-                 source_table = p$ref_name)
-
-cat(sql2)
-```
-
 
 
 ```{r cleanup, include=FALSE}

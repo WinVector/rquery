@@ -136,17 +136,17 @@ cat(to_sql(dq, my_db, source_limit = 1000))
      FROM (
       SELECT * FROM (
        SELECT
-        `subjectID` AS `subjectID`,
-        `surveyCategory` AS `diagnosis`,
-        `probability` AS `probability`,
         `count` AS `count`,
-        `rank` AS `rank`
+        `probability` AS `probability`,
+        `rank` AS `rank`,
+        `subjectID` AS `subjectID`,
+        `surveyCategory` AS `diagnosis`
        FROM (
         SELECT
+         `count`,
+         `probability`,
          `subjectID`,
          `surveyCategory`,
-         `probability`,
-         `count`,
          rank ( ) OVER (  PARTITION BY `subjectID` ORDER BY `probability`, `surveyCategory` ) AS `rank`
         FROM (
          SELECT

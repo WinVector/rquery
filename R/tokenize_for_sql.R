@@ -102,6 +102,14 @@ tokenize_call_for_SQL <- function(lexpr,
                     ltok("ELSE"),
                     ltok("("), args[[3]]$parsed_toks, ltok(")"),
                     ltok("END"), ltok(")"))
+    res$presentation <- paste0(
+      "ifelse(",
+      args[[1]]$presentation,
+      ",",
+      args[[2]]$presentation,
+      ",",
+      args[[3]]$presentation,
+      ")")
     return(res)
   }
   # default
@@ -188,6 +196,7 @@ tokenize_for_SQL_r <- function(lexpr,
     if(length(v)>0) {
       if(is.character(v)) {
         res$parsed_toks <- list(pre_sql_string(v))
+        res$presentation <- paste0('"', v, '"')
         return(res)
       }
       if(is.numeric(v)) {
@@ -202,6 +211,7 @@ tokenize_for_SQL_r <- function(lexpr,
   }
   if(is.character(lexpr)) {
     res$parsed_toks <- list(pre_sql_string(paste(as.character(lexpr), collapse = " ")))
+    res$presentation <- paste0('"', paste(as.character(lexpr), collapse = " "), '"')
     return(res)
   }
   # fall-back

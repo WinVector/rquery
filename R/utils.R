@@ -57,8 +57,10 @@ mkTempNameGenerator <- function(prefix) {
 
 check_have_cols <- function(have, requested, note) {
   if(length(have)!=length(unique(have))) {
+    dups <- table(have)
+    dups <- names(dups[dups>1])
     stop(paste(note,"duplicate declared columns",
-               paste(diff, collapse = ", ")))
+               paste(dups, collapse = ", ")))
   }
   requested <- unique(requested)
   diff <- setdiff(requested, have)
@@ -114,16 +116,13 @@ parse_se <- function(source, assignments, env,
   if(n<=0) {
     stop("must generate at least 1 expression")
   }
-  if(n!=length(unique(names(assignments)))) {
-    stop("generated column names must be unique")
-  }
   # R-like db-info for presentation
   db_inf <- rquery_db_info(indentifier_quote_char = '`',
                            string_quote_char = '"')
   parsed <- vector(n, mode = 'list')
   for(i in seq_len(n)) {
     ni <- names(assignments)[[i]]
-    ai <- assignments[[ni]]
+    ai <- assignments[[i]]
     ei <- parse(text = paste(ni, ":=", ai))[[1]]
     pi <- tokenize_for_SQL(ei,
                         colnames = have,

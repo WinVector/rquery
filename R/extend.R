@@ -65,7 +65,7 @@ extend_impl_list <- function(source, parsed,
   parts <- partition_assignments(parsed)
   ndchain <- source
   for(parti in parts) {
-    parsedi <- parti$parsed[seq_len(nrow(parti))]
+    parsedi <- parsed[parti$origOrder]
     ndchain <- extend_impl(ndchain, parsedi,
                            partitionby = partitionby,
                            orderby = orderby,
@@ -186,7 +186,7 @@ column_names.relop_extend <- function (x, ...) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
-  c(column_names(x$source[[1]]), x$columns)
+  sort(unique(c(column_names(x$source[[1]]), x$columns)))
 }
 
 
@@ -227,7 +227,7 @@ calc_used_relop_extend <- function (x,
                                     using = NULL,
                                     contract = FALSE) {
   cols <- column_names(x)
-  if(length(using)>=0) {
+  if(length(using)>0) {
     cols <- using
   }
   producing <- merge_fld(x$parsed, "symbols_produced")

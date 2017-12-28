@@ -72,7 +72,7 @@
       <h1>Query Generation</h1>
                         <h4 class="author">John Mount</h4>
             
-            <h4 class="date">2017-12-27</h4>
+            <h4 class="date">2017-12-28</h4>
           </div>
 
     
@@ -113,17 +113,17 @@ sql &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.
    FROM (
     SELECT * FROM (
      SELECT
-      `subjectID` AS `subjectID`,
-      `surveyCategory` AS `diagnosis`,
-      `probability` AS `probability`,
       `count` AS `count`,
-      `rank` AS `rank`
+      `probability` AS `probability`,
+      `rank` AS `rank`,
+      `subjectID` AS `subjectID`,
+      `surveyCategory` AS `diagnosis`
      FROM (
       SELECT
+       `count`,
+       `probability`,
        `subjectID`,
        `surveyCategory`,
-       `probability`,
-       `count`,
        rank ( ) OVER (  PARTITION BY `subjectID` ORDER BY `probability`, `surveyCategory` ) AS `rank`
       FROM (
        SELECT
@@ -146,15 +146,6 @@ sql &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.
     WHERE `rank` = `count`
    ) tsql_0004
   ) tsql_0005 ORDER BY `subjectID`</code></pre>
-<p><code>pre_sql</code> query:</p>
-<pre><code>  SELECT 
-   `d`.`subjectID` AS `subjectID`,
-   `d`.`surveyCategory` AS `surveyCategory`,
-   `d`.`assessmentTotal` AS `assessmentTotal`,
-   `d`.`irrelevantCol1` AS `irrelevantCol1`,
-   `d`.`irrelevantCol2` AS `irrelevantCol2`
-  FROM
-   `d`</code></pre>
 </div>
   </div>
 

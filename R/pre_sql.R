@@ -112,9 +112,9 @@ pre_sql_table <- function(tablename, columns) {
 }
 
 
-#' Return SQL implementation of operation tree.
+#' Return SQL transform of tokens.
 #'
-#' @param x pre_sql_op operation tree.
+#' @param x parsed tokens.
 #' @param db_info DBI connnection or rquery_db_info object
 #' @param ... generic additional arguments (not used).
 #' @param source_table character if not NULL name of source table.
@@ -122,7 +122,7 @@ pre_sql_table <- function(tablename, columns) {
 #' @param using character, if not NULL set of columns used from above.
 #' @return SQL command
 #'
-#' @export
+#' @noRd
 #'
 to_query <- function (x,
                       db_info,
@@ -144,7 +144,7 @@ format.pre_sql_token <- function(x, ...) {
   paste(as.character(x$value), collapse = " ")
 }
 
-#' @export
+#' @noRd
 #'
 to_query.pre_sql_token <- function (x,
                                     db_info,
@@ -171,7 +171,7 @@ to_query.pre_sql_token <- function (x,
 }
 
 
-#' @export
+#' @noRd
 #'
 to_query.pre_sql_expr <- function (x,
                                    db_info,
@@ -286,7 +286,7 @@ place_subqs.pre_sql_op <- function (x,
 }
 
 
-#' @export
+#' @noRd
 #'
 to_query.pre_sql_op <- function (x,
                                  db_info,

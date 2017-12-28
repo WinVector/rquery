@@ -121,7 +121,7 @@ calc_used_relop_project <- function (x,
                                      using = NULL,
                                      contract = FALSE) {
   cols <- column_names(x)
-  if(length(using)>=0) {
+  if(length(using)>0) {
     cols <- using
   }
   producing <- merge_fld(x$parsed, "symbols_produced")

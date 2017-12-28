@@ -151,7 +151,7 @@ partitionby and orderby can only be used with a database that supports window-fu
 <span class='no'>eqn</span> <span class='kw'>&lt;-</span> <span class='fu'>extend_nse</span>(<span class='no'>d</span>, <span class='no'>v</span> <span class='kw'>:=</span> <span class='fu'>ifelse</span>(<span class='no'>AUC</span><span class='kw'>&gt;</span><span class='fl'>0.5</span>, <span class='no'>R2</span>, <span class='fl'>1.0</span>))
 <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>eqn</span>))</div><div class='output co'>#&gt; table('d') %.&gt;%
 #&gt;  extend(.,
-#&gt;   v := ifelse AUC &gt; 0.5 R2 1)</div><div class='input'><span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>eqn</span>, <span class='no'>my_db</span>)
+#&gt;   v := ifelse(AUC &gt; 0.5,R2,1))</div><div class='input'><span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>eqn</span>, <span class='no'>my_db</span>)
 <span class='fu'>cat</span>(<span class='no'>sql</span>)</div><div class='output co'>#&gt; SELECT
 #&gt;  `AUC`,
 #&gt;  `R2`,
