@@ -105,9 +105,9 @@ tokenize_call_for_SQL <- function(lexpr,
     res$presentation <- paste0(
       "ifelse(",
       args[[1]]$presentation,
-      ",",
+      ", ",
       args[[2]]$presentation,
-      ",",
+      ", ",
       args[[3]]$presentation,
       ")")
     return(res)
