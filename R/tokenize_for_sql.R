@@ -24,7 +24,8 @@ tokenize_call_for_SQL <- function(lexpr,
                 "+", "-", "*", "/",
                 "&&", "||",
                 "&", "|")
-  res <- list(presentation = paste(as.character(lexpr), collapse = ' '),
+  res <- list(presentation = paste(as.character(deparse(lexpr)),
+                                   collapse = ' '),
               parsed_toks = list(),
               symbols_used = character(0),
               symbols_produced = character(0))
