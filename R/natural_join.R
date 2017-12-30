@@ -1,21 +1,26 @@
 
 #' Make a natural_join node.
 #'
-#' Natural join is a join by identity on all common columns.
+#' Natural join is a join by identity on all common columns
+#' (or only common columns specified in a non-\code{NULL} \code{by} argument).
+#' Any common columns not specified in a non-\code{NULL} \code{by} argument
+#' are coalesced.
 #'
 #' @param a source to select from.
 #' @param b source to select from.
+#' @param ... force later arguments to bind by name
 #' @param jointype type of join ('INNER', 'LEFT', 'RIGHT', 'FULL').
+#' @param by set of columns to match.
 #' @return natural_join node.
 #'
 #' @examples
 #'
 #' my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #' d1 <- dbi_copy_to(my_db, 'd1',
-#'                  data.frame(AUC = 0.6, R2 = 0.2))
+#'                  data.frame(AUC = 0.6, R2 = 0.2, D = NA))
 #' d2 <- dbi_copy_to(my_db, 'd2',
 #'                  data.frame(AUC = 0.6, D = 0.3))
-#' eqn <- natural_join(d1, d2)
+#' eqn <- natural_join(d1, d2, by = 'AUC')
 #' cat(format(eqn))
 #' sql <- to_sql(eqn, my_db)
 #' cat(sql)
@@ -25,10 +30,17 @@
 #' @export
 #'
 natural_join <- function(a, b,
-                         jointype = 'INNER') {
+                         ...,
+                         jointype = 'INNER',
+                         by = NULL) {
+  if(length(list(...))>0) {
+    stop("rquery::natural_join unexpected arguments")
+  }
   usesa <- column_names(a)
   usesb <- column_names(b)
-  by = intersect(usesa, usesb)
+  if(is.null(by)) {
+    by = intersect(usesa, usesb)
+  }
   r <- list(source = list(a, b),
             table_name = NULL,
             parsed = NULL,
@@ -129,39 +141,54 @@ to_sql.relop_natural_join <- function (x,
                     append_cr = FALSE,
                     using = c2)
   taba <- tnum()
+  tabaq <- quote_identifier(db, taba)
   tabb <- tnum()
+  tabbq <- quote_identifier(db, tabb)
   bexpr <- NULL
-  bterms <- setdiff(column_names(x$source[[2]]),
-                    column_names(x$source[[1]]))
-  if(length(bterms)>0) {
-    bcols <- vapply(bterms,
-                   function(ci) {
-                     quote_identifier(db, ci)
-                   }, character(1))
-    bexpr <- paste(",",
-                   paste(bcols, collapse = ", "))
-  }
+  aterms <- setdiff(column_names(x$source[[1]]), x$by)
+  bterms <- setdiff(column_names(x$source[[2]]), x$by)
+  overlap <- c(x$by, intersect(aterms, bterms))
   prefix <- paste(rep(' ', indent_level), collapse = '')
-  q <- paste0(prefix, "SELECT ",
-         taba,
-         ".*",
-         bexpr,
-         " FROM (\n",
-         subsqla, "\n",
-         prefix, ") ",
-         taba, "\n",
-         prefix, x$jointype,
-         " JOIN (\n",
-         subsqlb, "\n",
-         prefix, ") ",
-         tabb)
+  osql <- vapply(overlap,
+                   function(ci) {
+                     ciq <- quote_identifier(db, ci)
+                     paste0("COALESCE(",
+                            tabaq, ".", ciq,
+                            ", ",
+                            tabbq, ".", ciq,
+                            ") AS ", ciq)
+                   }, character(1))
+  asql <- vapply(setdiff(aterms, overlap),
+                 function(ci) {
+                   ciq <- quote_identifier(db, ci)
+                   paste0(tabaq, ".", ciq,
+                          " AS ", ciq)
+                 }, character(1))
+  bsql <- vapply(setdiff(bterms, overlap),
+                 function(ci) {
+                   ciq <- quote_identifier(db, ci)
+                   paste0(tabbq, ".", ciq,
+                          " AS ", ciq)
+                 }, character(1))
+  texpr <- paste(c(osql, asql, bsql), collapse = paste0(",\n ", prefix))
+  q <- paste0(prefix, "SELECT\n",
+              " ", prefix, texpr, "\n",
+              prefix, "FROM (\n",
+              subsqla, "\n",
+              prefix, ") ",
+              tabaq, "\n",
+              prefix, x$jointype,
+              " JOIN (\n",
+              subsqlb, "\n",
+              prefix, ") ",
+              tabbq)
   if(length(x$by)>0) {
     bt <- vapply(x$by,
                  function(ci) {
                    quote_identifier(db, ci)
                  }, character(1))
-    mt <- paste(paste(paste(taba, bt, sep='.'),
-                      paste(tabb, bt, sep='.'), sep = ' = '),
+    mt <- paste(paste(paste(tabaq, bt, sep='.'),
+                      paste(tabbq, bt, sep='.'), sep = ' = '),
                 collapse = ' AND ')
     q <- paste0(q, "\n",
                 prefix, "ON\n",
