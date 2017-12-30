@@ -74,8 +74,17 @@
     
 <div class="contents">
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-<p><a href="https://winvector.github.io/rquery/"><code>rquery</code></a> is an experiment/demonstration of a simplified sequenced query generator based on <a href="https://en.wikipedia.org/wiki/Relational_algebra">Codd’s relational algebra</a> and not currently recommended for non-experimental (i.e., production) use. The goal of this experiment is to see if <code>SQL</code> would be more fun if it had a sequential data-flow or pipe notation.</p>
+<div id="rquery" class="section level1">
+<div class="page-header"><h1 class="hasAnchor">
+<a href="#rquery" class="anchor"></a><code>rquery</code>
+</h1></div>
+<p><a href="https://winvector.github.io/rquery/"><code>rquery</code></a> is a query generator based on <a href="https://en.wikipedia.org/wiki/Relational_algebra">Codd’s relational algebra</a> (updated to reflect lessons learned from working with <a href="https://www.r-project.org"><code>R</code></a>, <a href="https://en.wikipedia.org/wiki/SQL"><code>SQL</code></a>, and <a href="https://CRAN.R-project.org/package=dplyr"><code>dplyr</code></a> at big data scale in production). One goal of this experiment is to see if <code>SQL</code> would be more fun if it had a sequential data-flow or pipe notation.</p>
+<p><code>rquery</code> is currently experimental, and not yet recommended for production use.</p>
 <p>To install: <code><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">devtools::install_github("WinVector/rquery")</a></code>.</p>
+</div>
+<div id="discussion" class="section level1">
+<h1 class="hasAnchor">
+<a href="#discussion" class="anchor"></a>Discussion</h1>
 <p><a href="https://github.com/WinVector/rquery"><code>rquery</code></a> can be an excellent advanced <code>SQL</code> training tool (it shows how some very deep <code>SQL</code> by composing <code>rquery</code> operators). Currently <code>rquery</code> is biased towards the <code>Spark</code> and <code>PostgeSQL</code> <code>SQL</code> dialects.</p>
 <p>There are many prior relational algebra inspired specialized query languages. Just a few include:</p>
 <ul>
@@ -299,8 +308,12 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
  select_columns(., subjectID, diagnosis, probability) %.&gt;%
  order_by(., subjectID)</code></pre>
 <p>We also can stand <code>rquery</code> up on non-<code>DBI</code> sources such as <a href="https://github.com/WinVector/rquery/blob/master/extras/SparkRExample.md"><code>SparkR</code></a> and perhaps even <a href="https://github.com/WinVector/rquery/blob/master/extras/data_table.md"><code>data.table</code></a>.</p>
-<p>And that is our experiment.</p>
-<p>We are looking for funding and partners to take this system further (including: finishing functionality, documentation, training materials, test materials, acceptance procedures, and porting to more back-ends). It is our opinion that a query generator specialized to large scale databases and <code>Spark</code> will serve <code>R</code> users very well.</p>
+</div>
+<div id="conclusion" class="section level1">
+<h1 class="hasAnchor">
+<a href="#conclusion" class="anchor"></a>Conclusion</h1>
+<p><code>rquery</code> is still in early development (and not yet ready for extensive use in production), but it is maturing fast. Our current intent is to bring in sponsors, partners, and R community voices to help develop and steer rquery.</p>
+</div>
 </div>
   </div>
 

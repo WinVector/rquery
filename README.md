@@ -3,9 +3,17 @@ rquery
 2017-12-30
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-[`rquery`](https://winvector.github.io/rquery/) is an experiment/demonstration of a simplified sequenced query generator based on [Codd's relational algebra](https://en.wikipedia.org/wiki/Relational_algebra) and not currently recommended for non-experimental (i.e., production) use. The goal of this experiment is to see if `SQL` would be more fun if it had a sequential data-flow or pipe notation.
+`rquery`
+========
+
+[`rquery`](https://winvector.github.io/rquery/) is a query generator based on [Codd's relational algebra](https://en.wikipedia.org/wiki/Relational_algebra) (updated to reflect lessons learned from working with [`R`](https://www.r-project.org), [`SQL`](https://en.wikipedia.org/wiki/SQL), and [`dplyr`](https://CRAN.R-project.org/package=dplyr) at big data scale in production). One goal of this experiment is to see if `SQL` would be more fun if it had a sequential data-flow or pipe notation.
+
+`rquery` is currently experimental, and not yet recommended for production use.
 
 To install: `devtools::install_github("WinVector/rquery")`.
+
+Discussion
+==========
 
 [`rquery`](https://github.com/WinVector/rquery) can be an excellent advanced `SQL` training tool (it shows how some very deep `SQL` by composing `rquery` operators). Currently `rquery` is biased towards the `Spark` and `PostgeSQL` `SQL` dialects.
 
@@ -218,6 +226,7 @@ cat(format(dq))
 
 We also can stand `rquery` up on non-`DBI` sources such as [`SparkR`](https://github.com/WinVector/rquery/blob/master/extras/SparkRExample.md) and perhaps even [`data.table`](https://github.com/WinVector/rquery/blob/master/extras/data_table.md).
 
-And that is our experiment.
+Conclusion
+==========
 
-We are looking for funding and partners to take this system further (including: finishing functionality, documentation, training materials, test materials, acceptance procedures, and porting to more back-ends). It is our opinion that a query generator specialized to large scale databases and `Spark` will serve `R` users very well.
+`rquery` is still in early development (and not yet ready for extensive use in production), but it is maturing fast. Our current intent is to bring in sponsors, partners, and R community voices to help develop and steer rquery.
