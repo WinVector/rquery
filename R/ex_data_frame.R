@@ -27,15 +27,15 @@
 #'
 rquery_apply_to_data_frame <- function(d, node_tree,
                                        env = parent.frame()) {
+  tabName <- tables_used(node_tree)
+  if(length(tabName)!=1) {
+    stop("rquery::rquery_apply_to_data_frame node_tree must reference exactly one table.")
+  }
   need_close <- FALSE
   db_handle <- base::mget("winvector_temp_db_handle",
                           envir = env,
                           ifnotfound = list(NULL),
                           inherits = TRUE)[[1]]
-  tabName <- tables_used(node_tree)
-  if(length(tabName)!=1) {
-    stop("rquery::rquery_apply_to_data_frame node_tree must reference exactly one table.")
-  }
   if(is.null(db_handle)) {
     my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
     need_close = TRUE
