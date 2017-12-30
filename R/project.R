@@ -26,7 +26,7 @@ project_impl <- function(source, groupby, parsed) {
             groupby = groupby,
             columns = c(groupby, names(assignments)),
             assignments = assignments)
-  class(r) <- c("relop_project", "relop")
+  r <- relop_decorate("relop_project", r)
   r
 }
 

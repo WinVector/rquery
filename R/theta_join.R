@@ -94,7 +94,7 @@ theta_join_se <- function(a, b,
             jointype = jointype,
             parsed = parsed,
             suffix = suffix)
-  class(r) <- c("relop_theta_join", "relop")
+  r <- relop_decorate("relop_theta_join", r)
   r
 }
 
@@ -154,7 +154,7 @@ theta_join_nse <- function(a, b,
             jointype = jointype,
             parsed = parsed,
             suffix = suffix)
-  class(r) <- c("relop_theta_join", "relop")
+  r <- relop_decorate("relop_theta_join", r)
   r
 }
 

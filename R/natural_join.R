@@ -46,7 +46,7 @@ natural_join <- function(a, b,
             parsed = NULL,
             by = by,
             jointype = jointype)
-  class(r) <- c("relop_natural_join", "relop")
+  r <- relop_decorate("relop_natural_join", r)
   r
 }
 

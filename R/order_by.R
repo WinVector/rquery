@@ -46,7 +46,7 @@ order_by <- function(source,
             orderby = orderby,
             desc = desc,
             limit = limit)
-  class(r) <- c("relop_order_by", "relop")
+  r <- relop_decorate("relop_order_by", r)
   r
 }
 

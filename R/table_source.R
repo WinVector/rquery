@@ -38,7 +38,7 @@ table_source <- function(table_name, columns) {
             table_name = table_name,
             parsed = NULL,
             columns = columns)
-  class(r) <- c("relop_table_source", "relop")
+  r <- relop_decorate("relop_table_source", r)
   r
 }
 

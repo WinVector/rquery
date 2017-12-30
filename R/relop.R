@@ -8,7 +8,40 @@
 #   parsed: list of parsed expressions.
 
 
+#' Execture node_tree in an enviroment where d is the only data.
+#'
+#' Currently uses RSQLite (so some functions are not supported).
+#'
+#' @param d data.frame
+#' @param node_tree rquery rel_op operation tree.
+#' @return data.frame result
+#'
+#' @examples
+#'
+#' d <- data.frame(AUC = 0.6, R2 = 0.2, D = NA, z = 2)
+#' dN <- table_source("d", c("AUC", "R2", "D"))
+#' rquery_local_execute(d, dN)
+#' # # with wrapr version 1.1.0 or greater:
+#' # d %.>% dN
+#'
+#' @export
+#'
+rquery_local_execute <- function(d, node_tree) {
+  my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+  dR <- dbi_copy_to(my_db, tables_used(node_tree)[[1]], d,
+                    temporary = TRUE)
+  sql <- to_sql(node_tree, my_db)
+  res <- DBI::dbGetQuery(my_db, sql)
+  DBI::dbDisconnect(my_db)
+  res
+}
 
+
+relop_decorate <- function(class_name, r) {
+  class(r) <- c(class_name, "relop", "wrapr_applicable")
+  r$wrapr_function <- rquery_local_execute
+  r
+}
 
 #' Return column names
 #'

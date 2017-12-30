@@ -1,6 +1,6 @@
 rquery
 ================
-2017-12-26
+2017-12-30
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 [`rquery`](https://winvector.github.io/rquery/) is an experiment/demonstration of a simplified sequenced query generator based on [Codd's relational algebra](https://en.wikipedia.org/wiki/Relational_algebra) and not currently recommended for non-experimental (i.e., production) use. The goal of this experiment is to see if `SQL` would be more fun if it had a sequential data-flow or pipe notation.

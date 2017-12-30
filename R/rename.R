@@ -40,7 +40,7 @@ rename_columns <- function(source, cmap) {
             table_name = NULL,
             parsed = NULL,
             cmap = cmap)
-  class(r) <- c("relop_rename_columns", "relop")
+  r <- relop_decorate("relop_rename_columns", r)
   r
 }
 

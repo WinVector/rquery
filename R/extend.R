@@ -37,7 +37,7 @@ extend_impl <- function(source, parsed,
             desc = desc,
             assignments = assignments,
             columns = names(assignments))
-  class(r) <- c("relop_extend", "relop")
+  r <- relop_decorate("relop_extend", r)
   r
 }
 

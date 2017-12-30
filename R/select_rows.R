@@ -32,7 +32,7 @@ select_rows_se <- function(source, expr,
             table_name = NULL,
             parsed = parsed,
             expr = assignments)
-  class(r) <- c("relop_select_rows", "relop")
+  r <- relop_decorate("relop_select_rows", r)
   r
 }
 
@@ -71,7 +71,7 @@ select_rows_nse <- function(source, expr,
   r <- list(source = list(source),
             parsed = parsed,
             expr = assignments)
-  class(r) <- c("relop_select_rows", "relop")
+  r <- relop_decorate("relop_select_rows", r)
   r
 }
 

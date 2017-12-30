@@ -29,7 +29,7 @@ select_columns <- function(source, columns) {
             table_name = NULL,
             parsed = NULL,
             columns = columns)
-  class(r) <- c("relop_select_columns", "relop")
+  r <- relop_decorate("relop_select_columns", r)
   r
 }
 
