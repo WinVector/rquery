@@ -1,4 +1,45 @@
 
+#' build a map of original column names to unambigous column names
+#'
+#' @param colsa character columns from table a
+#' @param colsb character columns from table b
+#' @param suffix  character length 2, suffices to disambiguate columns.
+#' @return list length 2 of name column lists
+#'
+#' # build_col_name_map(c("a", "a_a"), c("a"), c("_a", ""))
+#'
+#' @noRd
+#'
+build_col_name_map <- function(colsa, colsb, suffix) {
+  if(suffix[[1]]==suffix[[2]]) {
+    stop("rquery::build_col_name_map suffix entries must differ")
+  }
+  mapa <- colsa
+  names(mapa) <- colsa
+  mapb <- colsb
+  names(mapb) <- colsb
+  overlap = intersect(colsa, colsb)
+  for(oi in overlap) {
+    oia <- paste0(oi, suffix[[1]])
+    oib <- paste0(oi, suffix[[2]])
+    ova <- oia
+    ovb <- oib
+    retry_count = 1
+    while(TRUE) {
+      others <- unique(c(mapa[setdiff(colsa, oi)],
+                         mapb[setdiff(colsa, oi)]))
+      if(length(intersect(others, c(ova, ovb)))<=0) {
+        break
+      }
+      ova <- paste(oia, retry_count, sep = "_")
+      ovb <- paste(oib, retry_count, sep = "_")
+    }
+    mapa[[oi]] <- ova
+    mapb[[oi]] <- ovb
+  }
+  list("a" = mapa, "b" = mapb)
+}
+
 #' Make a theta_join node.
 #'
 #' Theta join is a join on an arbitrary predicate.
@@ -8,7 +49,7 @@
 #' @param expr quoated join condition
 #' @param ... force later arguments to be by name
 #' @param jointype type of join ('INNER', 'LEFT', 'RIGHT', 'FULL').
-#' @param suffix suffix to disambiguate columns
+#' @param suffix character length 2, suffices to disambiguate columns.
 #' @param env environment to look for values in.
 #' @return theta_join node.
 #'
@@ -36,7 +77,6 @@ theta_join_se <- function(a, b,
                           env = parent.frame()) {
   usesa <- column_names(a)
   usesb <- column_names(b)
-  overlap = intersect(usesa, usesb)
   have = unique(c(usesa, usesb))
   vnam <- setdiff(paste("rquery_thetajoin_condition",
                         1:(length(have)+1), sep = "_"),
@@ -50,7 +90,7 @@ theta_join_se <- function(a, b,
   parsed[[1]]$presentation <- gsub("^.*:= ", "", parsed[[1]]$presentation)
   r <- list(source = list(a, b),
             table_name = NULL,
-            overlap = overlap,
+            cmap = build_col_name_map(usesa, usesb, suffix),
             jointype = jointype,
             parsed = parsed,
             suffix = suffix)
@@ -68,7 +108,7 @@ theta_join_se <- function(a, b,
 #' @param expr unquoated join condition
 #' @param ... force later arguments to be by name
 #' @param jointype type of join ('INNER', 'LEFT', 'RIGHT', 'FULL').
-#' @param suffix suffix to disambiguate columns
+#' @param suffix character length 2, suffices to disambiguate columns.
 #' @param env environment to look for values in.
 #' @return theta_join node.
 #'
@@ -96,7 +136,6 @@ theta_join_nse <- function(a, b,
                           env = parent.frame()) {
   usesa <- column_names(a)
   usesb <- column_names(b)
-  overlap = intersect(usesa, usesb)
   have = unique(c(usesa, usesb))
   vnam <- setdiff(paste("rquery_thetajoin_condition",
                         1:(length(have)+1), sep = "_"),
@@ -111,7 +150,7 @@ theta_join_nse <- function(a, b,
   parsed[[1]]$symbols_produced <- character(0)
   parsed[[1]]$presentation <- gsub("^.*:= ", "", parsed[[1]]$presentation)
   r <- list(source = list(a, b),
-            overlap = overlap,
+            cmap = build_col_name_map(usesa, usesb, suffix),
             jointype = jointype,
             parsed = parsed,
             suffix = suffix)
@@ -125,13 +164,7 @@ column_names.relop_theta_join <- function (x, ...) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
-  c1 <- column_names(x$source[[1]])
-  c2 <- column_names(x$source[[2]])
-  if(length(x$overlap)>0) {
-    c1[c1 %in% x$overlap] <- paste0(c1[c1 %in% x$overlap], x$suffix[[1]])
-    c2[c2 %in% x$overlap] <- paste0(c2[c2 %in% x$overlap], x$suffix[[2]])
-  }
-  c(c1, c2)
+  c(as.character(x$cmap[['a']]), as.character(x$cmap[['b']]))
 }
 
 
@@ -156,20 +189,15 @@ format.relop_theta_join <- function(x, ...) {
 }
 
 
-prepColumnNames <- function(db, tabName, tabColumns, ambiguous, suffix) {
+prepColumnNames <- function(db, tabName, tabColumns, cmap) {
   tabColumnsV <- vapply(tabColumns,
                         function(ci) {
                           quote_identifier(db, ci)
                         }, character(1))
-  tabColumnsV <- paste(tabName, tabColumnsV, sep = ".")
-  tabColumnsA <- tabColumns
-  needsFix <- which(tabColumns %in% ambiguous)
-  if(length(needsFix)>0) {
-    tabColumnsA[needsFix] <- paste0(tabColumnsA[needsFix], suffix)
-  }
-  tabColumnsA <- vapply(tabColumnsA,
+  tabColumnsV <- paste(quote_identifier(db, tabName), tabColumnsV, sep = ".")
+  tabColumnsA <- vapply(tabColumns,
                         function(ci) {
-                          quote_identifier(db, ci)
+                          quote_identifier(db, cmap[[ci]])
                         }, character(1))
   paste(tabColumnsV, "AS", tabColumnsA)
 }
@@ -261,10 +289,10 @@ to_sql.relop_theta_join <- function (x,
   }
   prefix <- paste(rep(' ', indent_level), collapse = '')
   cseta <- prepColumnNames(db, taba, column_names(x$source[[1]]),
-                          x$overlap, x$suffix[[1]])
+                          x$cmap[['a']])
   ctermsa <- paste(cseta, collapse = paste0(",\n", prefix, " "))
   csetb <- prepColumnNames(db, tabb, column_names(x$source[[2]]),
-                          x$overlap, x$suffix[[2]])
+                          x$cmap[['b']])
   ctermsb <- paste(csetb, collapse = paste0(",\n", prefix, " "))
   q <- paste0(prefix, "SELECT\n",
               prefix, " ", ctermsa, ",\n",
@@ -272,12 +300,12 @@ to_sql.relop_theta_join <- function (x,
               prefix, "FROM (\n",
               subsqla, "\n",
               prefix, ") ",
-              taba, "\n",
+              quote_identifier(db, taba), "\n",
               prefix, x$jointype,
               " JOIN (\n",
               subsqlb, "\n",
               prefix, ") ",
-              tabb,
+              quote_identifier(db, tabb),
               " ON ",
               x$parsed[[1]]$parsed)
   if(append_cr) {
