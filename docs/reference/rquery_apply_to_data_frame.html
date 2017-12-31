@@ -99,21 +99,22 @@
     <p>Currently uses RSQLite (so some functions are not supported).</p>
     
 
-    <pre class="usage"><span class='fu'>rquery_apply_to_data_frame</span>(<span class='no'>d</span>, <span class='no'>node_tree</span>, <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
+    <pre class="usage"><span class='fu'>rquery_apply_to_data_frame</span>(<span class='no'>pipe_left_arg</span>, <span class='no'>pipe_right_arg</span>,
+  <span class='kw'>pipe_environment</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>d</th>
+      <th>pipe_left_arg</th>
       <td><p>data.frame</p></td>
     </tr>
     <tr>
-      <th>node_tree</th>
+      <th>pipe_right_arg</th>
       <td><p>rquery rel_op operation tree.</p></td>
     </tr>
     <tr>
-      <th>env</th>
+      <th>pipe_environment</th>
       <td><p>environment to look for "winvector_temp_db_handle" in.</p></td>
     </tr>
     </table>
