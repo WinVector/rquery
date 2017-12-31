@@ -4,9 +4,9 @@
 #'
 #' Currently uses RSQLite (so some functions are not supported).
 #'
-#' @param d data.frame
-#' @param node_tree rquery rel_op operation tree.
-#' @param env environment to look for "winvector_temp_db_handle" in.
+#' @param pipe_left_arg data.frame
+#' @param pipe_right_arg rquery rel_op operation tree.
+#' @param pipe_environment environment to look for "winvector_temp_db_handle" in.
 #' @return data.frame result
 #'
 #' @examples
@@ -25,8 +25,12 @@
 #'
 #' @export
 #'
-rquery_apply_to_data_frame <- function(d, node_tree,
-                                       env = parent.frame()) {
+rquery_apply_to_data_frame <- function(pipe_left_arg,
+                                       pipe_right_arg,
+                                       pipe_environment = parent.frame()) {
+  d <- pipe_left_arg
+  node_tree <- pipe_right_arg
+  env <- pipe_environment
   tabName <- tables_used(node_tree)
   if(length(tabName)!=1) {
     stop("rquery::rquery_apply_to_data_frame node_tree must reference exactly one table.")
