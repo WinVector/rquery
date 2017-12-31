@@ -15,7 +15,21 @@ packageVersion("dplyr")
 ``` r
 my_db <- sparklyr::spark_connect(version='2.2.0', 
                                  master = "local")
+```
 
+    ## Warning in yaml.load(readLines(con), error.label = error.label, ...): R
+    ## expressions in yaml.load will not be auto-evaluated by default in the near
+    ## future
+
+    ## Warning in yaml.load(readLines(con), error.label = error.label, ...): R
+    ## expressions in yaml.load will not be auto-evaluated by default in the near
+    ## future
+
+    ## Warning in yaml.load(readLines(con), error.label = error.label, ...): R
+    ## expressions in yaml.load will not be auto-evaluated by default in the near
+    ## future
+
+``` r
 d <- dplyr::copy_to(my_db,
                     data.frame(
                       subjectID = c(1,
@@ -64,9 +78,9 @@ show_query(dq)
     ## FROM (SELECT `subjectID`, `surveyCategory`, `assessmentTotal`, `irrelevantCol1`, `irrelevantCol2`, `probability`, row_number() OVER (PARTITION BY `subjectID` ORDER BY `probability`, `surveyCategory`) AS `zzz2`, COUNT(*) OVER (PARTITION BY `subjectID`) AS `zzz3`
     ## FROM (SELECT *
     ## FROM (SELECT `subjectID`, `surveyCategory`, `assessmentTotal`, `irrelevantCol1`, `irrelevantCol2`, EXP(`assessmentTotal` * 0.237) / sum(EXP(`assessmentTotal` * 0.237)) OVER (PARTITION BY `subjectID`) AS `probability`
-    ## FROM `d`) `uxpqmutlwi`
-    ## ORDER BY `probability`, `surveyCategory`) `lcjklwhqji`) `tsvwikxgrf`
-    ## WHERE (`zzz2` = `zzz3`)) `eoatesqffh`) `daniczjcfg`
+    ## FROM `d`) `tvmusbgnut`
+    ## ORDER BY `probability`, `surveyCategory`) `ajjwdmpyxy`) `rtrsnkotrx`
+    ## WHERE (`zzz2` = `zzz3`)) `ltwbrklqde`) `usdwyawene`
     ## ORDER BY `subjectID`
 
 ``` r
@@ -81,9 +95,9 @@ explain(dq)
     ## FROM (SELECT `subjectID`, `surveyCategory`, `assessmentTotal`, `irrelevantCol1`, `irrelevantCol2`, `probability`, row_number() OVER (PARTITION BY `subjectID` ORDER BY `probability`, `surveyCategory`) AS `zzz4`, COUNT(*) OVER (PARTITION BY `subjectID`) AS `zzz5`
     ## FROM (SELECT *
     ## FROM (SELECT `subjectID`, `surveyCategory`, `assessmentTotal`, `irrelevantCol1`, `irrelevantCol2`, EXP(`assessmentTotal` * 0.237) / sum(EXP(`assessmentTotal` * 0.237)) OVER (PARTITION BY `subjectID`) AS `probability`
-    ## FROM `d`) `kclmmhlpub`
-    ## ORDER BY `probability`, `surveyCategory`) `wfudcfxndv`) `gmzibckwdr`
-    ## WHERE (`zzz4` = `zzz5`)) `blwkzzupqr`) `qthsnydkse`
+    ## FROM `d`) `zhznixjbru`
+    ## ORDER BY `probability`, `surveyCategory`) `ujwdxupxmh`) `ewrwmwcfga`
+    ## WHERE (`zzz4` = `zzz5`)) `hbrxwbmcbk`) `loysrypbmt`
     ## ORDER BY `subjectID`
 
     ## 
@@ -94,13 +108,13 @@ explain(dq)
 dq
 ```
 
-    ## # Source:     lazy query [?? x 3]
-    ## # Database:   spark_connection
+    ## # Source: lazy query [?? x 3]
+    ## # Database: spark_connection
     ## # Ordered by: probability, surveyCategory, subjectID
-    ##   subjectID           diagnosis probability
-    ##       <dbl>               <chr>       <dbl>
-    ## 1         1 withdrawal behavior   0.6706221
-    ## 2         2 positive re-framing   0.5589742
+    ##   subjectID diagnosis           probability
+    ##       <dbl> <chr>                     <dbl>
+    ## 1      1.00 withdrawal behavior       0.671
+    ## 2      2.00 positive re-framing       0.559
 
 ``` r
 sparklyr::spark_disconnect(my_db)

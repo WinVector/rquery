@@ -23,6 +23,13 @@ select_columns <- function(source, columns) {
   if(length(columns)<=0) {
     stop("rquery::select_columns must select at least 1 column")
   }
+  if(is.data.frame(source)) {
+    tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
+    dnode <- table_source(tmp_name, colnames(source))
+    dnode$data <- source
+    enode <- select_columns(dnode, columns)
+    return(enode)
+  }
   have <- column_names(source)
   check_have_cols(have, columns, "rquery::select_columns columns")
   r <- list(source = list(source),

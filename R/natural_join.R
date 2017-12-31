@@ -36,6 +36,22 @@ natural_join <- function(a, b,
   if(length(list(...))>0) {
     stop("rquery::natural_join unexpected arguments")
   }
+  if(is.data.frame(a) || is.data.frame(b)) {
+    if((!is.data.frame(a)) || (!is.data.frame(b))) {
+      stop("rquery::natural_join if one input is a data.frame, both must be")
+    }
+    nmgen <- cdata::makeTempNameGenerator("rquery_tmp")
+    tmp_namea <- nmgen()
+    dnodea <- table_source(tmp_namea, colnames(a))
+    dnodea$data <- a
+    tmp_nameb <- nmgen()
+    dnodeb <- table_source(tmp_namea, colnames(b))
+    dnodeb$data <- b
+    enode <- natural_join(dnodea, dnodeb,
+                          jointype = jointype,
+                          by = by)
+    return(enode)
+  }
   usesa <- column_names(a)
   usesb <- column_names(b)
   if(is.null(by)) {

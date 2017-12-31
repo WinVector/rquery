@@ -75,7 +75,7 @@ rquery_run <- function(collect) {
     select_columns(., c('subjectID', 
                         'diagnosis', 
                         'probability')) %.>%
-    order_by(., 'subjectID')
+    orderby(., 'subjectID')
   sql <- to_sql(dq, my_db)
   if(collect) {
     dR <- DBI::dbGetQuery(my_db, sql)

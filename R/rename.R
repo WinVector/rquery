@@ -29,6 +29,13 @@ rename_columns <- function(source, cmap) {
   if(length(cmap)!=length(unique(names(cmap)))) {
     stop("rquery::rename_columns map keys must be unique")
   }
+  if(is.data.frame(source)) {
+    tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
+    dnode <- table_source(tmp_name, colnames(source))
+    dnode$data <- source
+    enode <- rename_columns(dnode, cmap)
+    return(enode)
+  }
   have <- column_names(source)
   check_have_cols(have, as.character(cmap), "rquery::rename_columns cmap")
   collisions <- intersect(names(cmap), have)

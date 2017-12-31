@@ -34,7 +34,7 @@ dq <- d %.>%
   select_columns(., c('subjectID', 
                       'diagnosis', 
                       'probability')) %.>%
-  order_by(., 'subjectID')
+  orderby(., 'subjectID')
 ```
 
 Printing the pipeline.
@@ -56,13 +56,28 @@ cat(format(dq))
       c('diagnosis' := 'surveyCategory')) %.>%
      select_rows(., rank = count) %.>%
      select_columns(., subjectID, diagnosis, probability) %.>%
-     order_by(., subjectID)
+     orderby(., subjectID)
 
 Spark example.
 
 ``` r
 spark <- sparklyr::spark_connect(version='2.2.0', 
                                    master = "local")
+```
+
+    Warning in yaml.load(readLines(con), error.label = error.label, ...): R
+    expressions in yaml.load will not be auto-evaluated by default in the near
+    future
+
+    Warning in yaml.load(readLines(con), error.label = error.label, ...): R
+    expressions in yaml.load will not be auto-evaluated by default in the near
+    future
+
+    Warning in yaml.load(readLines(con), error.label = error.label, ...): R
+    expressions in yaml.load will not be auto-evaluated by default in the near
+    future
+
+``` r
 class(spark)
 ```
 
@@ -83,17 +98,17 @@ cat(to_sql(dq,
      FROM (
       SELECT * FROM (
        SELECT
-        `subjectID` AS `subjectID`,
-        `surveyCategory` AS `diagnosis`,
-        `probability` AS `probability`,
         `count` AS `count`,
-        `rank` AS `rank`
+        `probability` AS `probability`,
+        `rank` AS `rank`,
+        `subjectID` AS `subjectID`,
+        `surveyCategory` AS `diagnosis`
        FROM (
         SELECT
+         `count`,
+         `probability`,
          `subjectID`,
          `surveyCategory`,
-         `probability`,
-         `count`,
          rank ( ) OVER (  PARTITION BY `subjectID` ORDER BY `probability`, `surveyCategory` ) AS `rank`
         FROM (
          SELECT
@@ -150,17 +165,17 @@ cat(to_sql(dq,
      FROM (
       SELECT * FROM (
        SELECT
-        "subjectID" AS "subjectID",
-        "surveyCategory" AS "diagnosis",
-        "probability" AS "probability",
         "count" AS "count",
-        "rank" AS "rank"
+        "probability" AS "probability",
+        "rank" AS "rank",
+        "subjectID" AS "subjectID",
+        "surveyCategory" AS "diagnosis"
        FROM (
         SELECT
+         "count",
+         "probability",
          "subjectID",
          "surveyCategory",
-         "probability",
-         "count",
          rank ( ) OVER (  PARTITION BY "subjectID" ORDER BY "probability", "surveyCategory" ) AS "rank"
         FROM (
          SELECT
@@ -188,8 +203,6 @@ cat(to_sql(dq,
 DBI::dbDisconnect(rpostgres)
 ```
 
-    [1] TRUE
-
 SQLite example.
 
 ``` r
@@ -216,17 +229,17 @@ cat(to_sql(dq,
      FROM (
       SELECT * FROM (
        SELECT
-        `subjectID` AS `subjectID`,
-        `surveyCategory` AS `diagnosis`,
-        `probability` AS `probability`,
         `count` AS `count`,
-        `rank` AS `rank`
+        `probability` AS `probability`,
+        `rank` AS `rank`,
+        `subjectID` AS `subjectID`,
+        `surveyCategory` AS `diagnosis`
        FROM (
         SELECT
+         `count`,
+         `probability`,
          `subjectID`,
          `surveyCategory`,
-         `probability`,
-         `count`,
          rank ( ) OVER (  PARTITION BY `subjectID` ORDER BY `probability`, `surveyCategory` ) AS `rank`
         FROM (
          SELECT

@@ -32,7 +32,7 @@ dq <- d %.>%
   select_columns(., c('subjectID', 
                       'diagnosis', 
                       'probability')) %.>%
-  order_by(., 'subjectID')
+  orderby(., 'subjectID')
 ```
 
 Printing the pipeline.

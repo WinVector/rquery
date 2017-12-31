@@ -53,7 +53,15 @@ project_impl <- function(source, groupby, parsed) {
 #' @export
 #'
 project_se <- function(source, groupby, assignments,
-                    env = parent.frame()) {
+                       env = parent.frame()) {
+  if(is.data.frame(source)) {
+    tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
+    dnode <- table_source(tmp_name, colnames(source))
+    dnode$data <- source
+    enode <- project_se(dnode, groupby, assignments,
+                        env = env)
+    return(enode)
+  }
   parsed <- parse_se(source, assignments, env = env)
   project_impl(source, groupby, parsed)
 }
@@ -81,7 +89,15 @@ project_se <- function(source, groupby, assignments,
 #' @export
 #'
 project_nse <- function(source, groupby, ...,
-                    env = parent.frame()) {
+                        env = parent.frame()) {
+  if(is.data.frame(source)) {
+    tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
+    dnode <- table_source(tmp_name, colnames(source))
+    dnode$data <- source
+    enode <- project_nse(dnode, groupby, ...,
+                         env = env)
+    return(enode)
+  }
   exprs <-  eval(substitute(alist(...)))
   parsed <- parse_nse(source, exprs, env = env)
   project_impl(source, groupby, parsed)

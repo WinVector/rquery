@@ -21,7 +21,15 @@
 #' @export
 #'
 select_rows_se <- function(source, expr,
-                        env = parent.frame()) {
+                           env = parent.frame()) {
+  if(is.data.frame(source)) {
+    tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
+    dnode <- table_source(tmp_name, colnames(source))
+    dnode$data <- source
+    enode <- select_rows_se(dnode, expr,
+                            env = env)
+    return(enode)
+  }
   have <- column_names(source)
   vnam <- setdiff(paste("rquery_select_condition", 1:(length(have)+1), sep = "_"),
                   have)[[1]]
@@ -60,6 +68,14 @@ select_rows_se <- function(source, expr,
 #'
 select_rows_nse <- function(source, expr,
                             env = parent.frame()) {
+  if(is.data.frame(source)) {
+    tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
+    dnode <- table_source(tmp_name, colnames(source))
+    dnode$data <- source
+    enode <- select_rows_nse(dnode, expr,
+                             env = env)
+    return(enode)
+  }
   have <- column_names(source)
   vnam <- setdiff(paste("rquery_select_condition", 1:(length(have)+1), sep = "_"),
                   have)[[1]]

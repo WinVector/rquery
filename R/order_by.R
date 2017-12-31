@@ -38,6 +38,19 @@ orderby <- function(source,
                      ...,
                      desc = FALSE,
                      limit = NULL) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
+  if(is.data.frame(source)) {
+    tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
+    dnode <- table_source(tmp_name, colnames(source))
+    dnode$data <- source
+    enode <- orderby(dnode,
+                     orderby,
+                     desc = desc,
+                     limit = limit)
+    return(enode)
+  }
   have <- column_names(source)
   check_have_cols(have, orderby, "rquery::orderby orderby")
   r <- list(source = list(source),

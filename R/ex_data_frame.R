@@ -48,9 +48,20 @@ rquery_apply_to_data_frame <- function(pipe_left_arg,
   d <- pipe_left_arg
   node_tree <- pipe_right_arg
   env <- pipe_environment
-  tabName <- names(tables_used(node_tree))
+  tabs <- tables_used(node_tree)
+  tabName <- c()
+  if(length(tabs)!=1) {
+    for(ni in names(tabs)) {
+      ti <- tabs[[ni]]
+      if(is.null(ti$data)) {
+        tabName <- c(tabName, ni)
+      }
+    }
+  } else {
+    tabName <- names(tabs)[[1]]
+  }
   if(length(tabName)!=1) {
-    stop("rquery::rquery_apply_to_data_frame node_tree must reference exactly one table.")
+    stop("rquery::rquery_apply_to_data_frame node_tree must reference exactly one table or exactly one unbound table.")
   }
   need_close <- FALSE
   db_handle <- base::mget("winvector_temp_db_handle",
