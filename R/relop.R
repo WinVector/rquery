@@ -82,8 +82,9 @@ columns_used.relop <- function (x,
 
 #' Return vector of table names used.
 #'
-#' @param node rquery tree to examine
-#' @return character vector of tables referenced in calculation.
+#' @param node rquery tree to examine.
+#' @param ... (not used)
+#' @return named map of tables used.
 #'
 #' @examples
 #'
@@ -99,25 +100,40 @@ columns_used.relop <- function (x,
 #'
 #' @export
 #'
-tables_used <- function(node) {
+tables_used <- function(node, ...) {
   UseMethod("tables_used", node)
 }
 
 #' @export
-tables_used.relop <- function(node) {
-  subs <- lapply(node$source,
-                 tables_used)
-  return(sort(unique(c(node$table_name, unlist(subs)))))
+tables_used.relop <- function(node, ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
+  r <- list()
+  for(si in node$source) {
+    ui <- tables_used(si, ...)
+    for(ki in names(ui)) {
+      r[[ki]] <- ui[[ki]]
+    }
+  }
+  r
 }
+
+
 
 #' @export
 print.relop <- function(x, ...) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
-  txt <- format(x)
-  txt <- trimws(gsub("[ \t\r\n]+", " ", txt), which = "both")
-  print(txt, ...)
+  res <- ex(x, env = parent.frame())
+  if(!is.null(res)) {
+    print(res)
+  } else {
+    txt <- format(x)
+    txt <- trimws(gsub("[ \t\r\n]+", " ", txt), which = "both")
+    print(txt, ...)
+  }
 }
 
 #' Return SQL implementation of operation tree.

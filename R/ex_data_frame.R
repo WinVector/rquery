@@ -17,12 +17,26 @@
 #' )
 #' RSQLite::initExtension(winvector_temp_db_handle$db)
 #'
-#' d <- data.frame(AUC = 0.6, R2 = 0.2, D = NA, z = 2)
+#' d <- data.frame(AUC = 0.6, R2 = c(0.1, 0.2), D = NA, z = 2)
 #' q <- table_source("d", c("AUC", "R2", "D")) %.>%
-#' 	extend_nse(., c := sqrt(R2))
+#' 	extend_nse(., c := sqrt(R2)) %.>%
+#'   order_by(., "R2", desc = TRUE)
+#'
 #' rquery_apply_to_data_frame(d, q)
+#'
+#' ex(q, data = d)
+#'
 #' # # with wrapr version 1.1.0 or greater:
 #' # d %.>% q
+#' # # run (and build result for) ad-hoc query
+#' # d %.>%
+#' #   extend_nse(., c := sqrt(R2)) %.>%
+#' #   order_by(., "R2", desc = TRUE) %.>%
+#' #   ex(.)
+#' # # print ad-hoc query (result only available for printing)
+#' # d %.>%
+#' #   extend_nse(., c := sqrt(R2)) %.>%
+#' #   order_by(., "R2", desc = TRUE)
 #'
 #' DBI::dbDisconnect(winvector_temp_db_handle$db)
 #'
@@ -34,7 +48,7 @@ rquery_apply_to_data_frame <- function(pipe_left_arg,
   d <- pipe_left_arg
   node_tree <- pipe_right_arg
   env <- pipe_environment
-  tabName <- tables_used(node_tree)
+  tabName <- names(tables_used(node_tree))
   if(length(tabName)!=1) {
     stop("rquery::rquery_apply_to_data_frame node_tree must reference exactly one table.")
   }
@@ -61,4 +75,63 @@ rquery_apply_to_data_frame <- function(pipe_left_arg,
     DBI::dbDisconnect(my_db)
   }
   res
+}
+
+#' Attempt to execute a pipeline (assuming it has local data)
+#'
+#' @param node_tree rquery relop pipeline.
+#' @param ... force later arguments to bind by name.
+#' @param env environment to work in.
+#' @param data data.frame to evaluate.
+#' @return executed pipleline or NULL if not executable.
+#'
+#' @examples
+#'
+#' winvector_temp_db_handle <- list(
+#'   db = DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#' )
+#' RSQLite::initExtension(winvector_temp_db_handle$db)
+#'
+#' d <- data.frame(AUC = 0.6, R2 = c(0.1, 0.2), D = NA, z = 2)
+#' q <- table_source("d", c("AUC", "R2", "D")) %.>%
+#' 	extend_nse(., c := sqrt(R2)) %.>%
+#'   order_by(., "R2", desc = TRUE)
+#'
+#' rquery_apply_to_data_frame(d, q)
+#'
+#' ex(q, data = d)
+#'
+#' # # with wrapr version 1.1.0 or greater:
+#' # d %.>% q
+#' # # run (and build result for) ad-hoc query
+#' # d %.>%
+#' #   extend_nse(., c := sqrt(R2)) %.>%
+#' #   order_by(., "R2", desc = TRUE) %.>%
+#' #   ex(.)
+#' # # print ad-hoc query (result only available for printing)
+#' # d %.>%
+#' #   extend_nse(., c := sqrt(R2)) %.>%
+#' #   order_by(., "R2", desc = TRUE)
+#'
+#' DBI::dbDisconnect(winvector_temp_db_handle$db)
+#'
+#' @export
+#'
+ex <- function(node_tree,
+               ...,
+               env = parent.frame(),
+               data = NULL) {
+  if(length(list(...))>0) {
+    stop("rquery: unexpected arguments")
+  }
+  tabs <- tables_used(node_tree)
+  if((length(tabs)==1) &&
+     (!is.null(data)) || (!is.null(tabs[[1]]$data))) {
+    if(is.null(data)) {
+      data <- tabs[[1]]$data
+    }
+    res <- rquery_apply_to_data_frame(data, node_tree, env)
+    return(res)
+  }
+  NULL
 }

@@ -124,6 +124,17 @@ extend_se <- function(source, assignments,
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
+  if(is.data.frame(source)) {
+    dnode <- table_source("rquery_tmp", colnames(source))
+    dnode$data <- source
+    enode <- extend_se(dnode,
+                       assignments = assignments,
+                       partitionby = partitionby,
+                       orderby = orderby,
+                       desc = desc,
+                       env = env)
+    return(enode)
+  }
   parsed <- parse_se(source, assignments, env = env)
   extend_impl_list(source = source,
               parsed = parsed,
@@ -171,6 +182,17 @@ extend_nse <- function(source,
                    orderby = NULL,
                    desc = FALSE,
                    env = parent.frame()) {
+  if(is.data.frame(source)) {
+    dnode <- table_source("rquery_tmp", colnames(source))
+    dnode$data <- source
+    enode <- extend_nse(dnode,
+                        ...,
+                        partitionby = partitionby,
+                        orderby = orderby,
+                        desc = desc,
+                        env = env)
+    return(enode)
+  }
   exprs <-  eval(substitute(alist(...)))
   parsed <- parse_nse(source, exprs, env = env)
   extend_impl_list(source = source,

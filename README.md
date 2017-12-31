@@ -194,7 +194,8 @@ column_names(dq)
 tables_used(dq)
 ```
 
-    ## [1] "d"
+    ## $d
+    ## [1] "table('d')"
 
 ``` r
 columns_used(dq)

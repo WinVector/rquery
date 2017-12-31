@@ -110,6 +110,15 @@ dbi_table <- function(db, table_name) {
 }
 
 
+#' @export
+tables_used.relop_table_source <- function(node, ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
+  r <- list(node)
+  names(r) <- node$table_name
+  r
+}
 
 #' @export
 column_names.relop_table_source <- function (x, ...) {

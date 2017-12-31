@@ -52,7 +52,7 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="..//index.html">
+  <a href="../index.html">
     <span class="fa fa-home fa-lg"></span>
      
   </a>
@@ -99,20 +99,20 @@
     <p>Return vector of table names used.</p>
     
 
-    <pre class="usage"><span class='fu'>tables_used</span>(<span class='no'>node</span>)</pre>
+    <pre class="usage"><span class='fu'>tables_used</span>(<span class='no'>node</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>node</th>
-      <td><p>rquery tree to examine</p></td>
+      <td><p>rquery tree to examine.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>character vector of tables referenced in calculation.</p>
+    <p>named map of tables used.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -126,7 +126,12 @@
 <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>eqn</span>))</div><div class='output co'>#&gt; table('d1') %.&gt;%
 #&gt;  natural_join(.,
 #&gt;   table('d2'),
-#&gt;   j= INNER, by= AUC)</div><div class='input'><span class='fu'>print</span>(<span class='fu'>tables_used</span>(<span class='no'>eqn</span>))</div><div class='output co'>#&gt; [1] "d1" "d2"</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)</div></pre>
+#&gt;   j= INNER, by= AUC)</div><div class='input'><span class='fu'>print</span>(<span class='fu'>tables_used</span>(<span class='no'>eqn</span>))</div><div class='output co'>#&gt; $d1
+#&gt; [1] "table('d1')"
+#&gt; 
+#&gt; $d2
+#&gt; [1] "table('d2')"
+#&gt; </div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
