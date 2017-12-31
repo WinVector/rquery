@@ -14,7 +14,6 @@
 #'
 #' winvector_temp_db_handle <- list(
 #'   db = DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'
 #' )
 #' RSQLite::initExtension(winvector_temp_db_handle$db)
 #'
