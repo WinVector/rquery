@@ -52,7 +52,7 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../index.html">
+  <a href="..//index.html">
     <span class="fa fa-home fa-lg"></span>
      
   </a>
@@ -96,7 +96,8 @@
     </div>
 
     
-    <p>Currently uses RSQLite (so some functions are not supported).</p>
+    <p>Default DB uses RSQLite (so some functions are not supported).
+Functionality is through <code>"wrapr_applicable"</code>: <a href='https://winvector.github.io/wrapr/articles/wrapr_applicable.html'>https://winvector.github.io/wrapr/articles/wrapr_applicable.html</a>.</p>
     
 
     <pre class="usage"><span class='fu'>rquery_apply_to_data_frame</span>(<span class='no'>pipe_left_arg</span>, <span class='no'>pipe_right_arg</span>,
@@ -128,13 +129,16 @@
     <pre class="examples"><div class='input'>
 <span class='no'>winvector_temp_db_handle</span> <span class='kw'>&lt;-</span> <span class='fu'>list</span>(
   <span class='kw'>db</span> <span class='kw'>=</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
+
 )
+<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/initExtension'>initExtension</a></span>(<span class='no'>winvector_temp_db_handle</span>$<span class='no'>db</span>)
 
 <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>0.6</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>0.2</span>, <span class='kw'>D</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>z</span> <span class='kw'>=</span> <span class='fl'>2</span>)
-<span class='no'>dN</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='table_source.html'>table_source</a></span>(<span class='st'>"d"</span>, <span class='fu'>c</span>(<span class='st'>"AUC"</span>, <span class='st'>"R2"</span>, <span class='st'>"D"</span>))
-<span class='fu'>rquery_apply_to_data_frame</span>(<span class='no'>d</span>, <span class='no'>dN</span>)</div><div class='output co'>#&gt;   AUC  R2  D
-#&gt; 1 0.6 0.2 NA</div><div class='input'><span class='co'># # with wrapr version 1.1.0 or greater:</span>
-<span class='co'># d %.&gt;% dN</span>
+<span class='no'>q</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='table_source.html'>table_source</a></span>(<span class='st'>"d"</span>, <span class='fu'>c</span>(<span class='st'>"AUC"</span>, <span class='st'>"R2"</span>, <span class='st'>"D"</span>)) <span class='kw'>%.&gt;%</span>
+        <span class='fu'><a href='extend_nse.html'>extend_nse</a></span>(<span class='no'>.</span>, <span class='no'>c</span> <span class='kw'>:=</span> <span class='fu'>sqrt</span>(<span class='no'>R2</span>))
+<span class='fu'>rquery_apply_to_data_frame</span>(<span class='no'>d</span>, <span class='no'>q</span>)</div><div class='output co'>#&gt;   AUC  R2  D         c
+#&gt; 1 0.6 0.2 NA 0.4472136</div><div class='input'><span class='co'># # with wrapr version 1.1.0 or greater:</span>
+<span class='co'># d %.&gt;% q</span>
 
 <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>winvector_temp_db_handle</span>$<span class='no'>db</span>)</div></pre>
   </div>

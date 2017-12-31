@@ -2,7 +2,8 @@
 
 #' Execture node_tree in an enviroment where d is the only data.
 #'
-#' Currently uses RSQLite (so some functions are not supported).
+#' Default DB uses RSQLite (so some functions are not supported).
+#' Functionality is through \code{"wrapr_applicable"}: \url{https://winvector.github.io/wrapr/articles/wrapr_applicable.html}.
 #'
 #' @param pipe_left_arg data.frame
 #' @param pipe_right_arg rquery rel_op operation tree.
@@ -13,13 +14,16 @@
 #'
 #' winvector_temp_db_handle <- list(
 #'   db = DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#'
 #' )
+#' RSQLite::initExtension(winvector_temp_db_handle$db)
 #'
 #' d <- data.frame(AUC = 0.6, R2 = 0.2, D = NA, z = 2)
-#' dN <- table_source("d", c("AUC", "R2", "D"))
-#' rquery_apply_to_data_frame(d, dN)
+#' q <- table_source("d", c("AUC", "R2", "D")) %.>%
+#' 	extend_nse(., c := sqrt(R2))
+#' rquery_apply_to_data_frame(d, q)
 #' # # with wrapr version 1.1.0 or greater:
-#' # d %.>% dN
+#' # d %.>% q
 #'
 #' DBI::dbDisconnect(winvector_temp_db_handle$db)
 #'
