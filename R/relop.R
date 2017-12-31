@@ -126,7 +126,7 @@ print.relop <- function(x, ...) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
-  res <- ex(x, env = parent.frame())
+  res <- execute(x, env = parent.frame())
   if(!is.null(res)) {
     print(res)
   } else {

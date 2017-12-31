@@ -197,8 +197,22 @@ format.relop_table_source <- function(x, ...) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
-  paste0("table('", x$table_name, "')",
+  sym <- ""
+  if(!is.null(x$data)) {
+    sym <- "+"
+  }
+  paste0("table", sym, "('", x$table_name, "')",
          "\n")
+}
+
+#' @export
+print.relop_table_source <- function(x, ...) {
+  if(length(list(...))>0) {
+    stop("unexpected arguemnts")
+  }
+  txt <- format(x)
+  txt <- trimws(gsub("[ \t\r\n]+", " ", txt), which = "both")
+  print(txt, ...)
 }
 
 

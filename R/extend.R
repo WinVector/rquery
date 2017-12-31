@@ -125,7 +125,8 @@ extend_se <- function(source, assignments,
     stop("unexpected arguemnts")
   }
   if(is.data.frame(source)) {
-    dnode <- table_source("rquery_tmp", colnames(source))
+    tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
+    dnode <- table_source(tmp_name, colnames(source))
     dnode$data <- source
     enode <- extend_se(dnode,
                        assignments = assignments,
@@ -183,7 +184,8 @@ extend_nse <- function(source,
                    desc = FALSE,
                    env = parent.frame()) {
   if(is.data.frame(source)) {
-    dnode <- table_source("rquery_tmp", colnames(source))
+    tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
+    dnode <- table_source(tmp_name, colnames(source))
     dnode$data <- source
     enode <- extend_nse(dnode,
                         ...,

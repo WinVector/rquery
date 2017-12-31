@@ -42,7 +42,7 @@ The primary relational operators include:
 The primary non-relational (traditional `SQL`) operators are:
 
 -   [`select_columns()`](https://winvector.github.io/rquery/reference/select_columns.html). This allows choice of columns (central to `SQL`), but is not a relational operator as it can damage row-uniqueness.
--   [`order_by()`](https://winvector.github.io/rquery/reference/order_by.html). Row order is not a concept in the relational algebra (and also not maintained in most `SQL` implementations). This operator is only useful when used with its `limit=` option, or as the last step as data comes out of the relation store and is moved to `R` (where row-order is usually maintained).
+-   [`orderby()`](https://winvector.github.io/rquery/reference/orderby.html). Row order is not a concept in the relational algebra (and also not maintained in most `SQL` implementations). This operator is only useful when used with its `limit=` option, or as the last step as data comes out of the relation store and is moved to `R` (where row-order is usually maintained).
 
 The primary missing relational operators are:
 
@@ -111,7 +111,7 @@ dq <- d %.>%
   select_columns(., c('subjectID', 
                       'diagnosis', 
                       'probability')) %.>%
-  order_by(., 'subjectID')
+  orderby(., 'subjectID')
 ```
 
 We then generate our result:
@@ -223,7 +223,7 @@ cat(format(dq))
       c('diagnosis' := 'surveyCategory')) %.>%
      select_rows(., rank = count) %.>%
      select_columns(., subjectID, diagnosis, probability) %.>%
-     order_by(., subjectID)
+     orderby(., subjectID)
 
 We also can stand `rquery` up on non-`DBI` sources such as [`SparkR`](https://github.com/WinVector/rquery/blob/master/extras/SparkRExample.md) and perhaps even [`data.table`](https://github.com/WinVector/rquery/blob/master/extras/data_table.md).
 

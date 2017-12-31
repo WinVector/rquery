@@ -421,7 +421,7 @@ add_limit <- function(x, limit) {
 #'
 #' @noRd
 #'
-add_order_by <- function(x, order_terms, desc = NA) {
+add_orderby <- function(x, order_terms, desc = NA) {
   x$order_terms <- unique(c(x$order_terms, order_terms))
   if((!is.null(desc)) && (!is.na(desc))) {
     x$desc = desc

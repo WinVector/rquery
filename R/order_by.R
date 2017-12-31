@@ -1,5 +1,5 @@
 
-#' Make an order_by node (not a relational operation).
+#' Make an orderby node (not a relational operation).
 #'
 #' Order a table by a set of columns (not general expressions) and
 #' limit number of rows in that order.
@@ -24,7 +24,7 @@
 #' my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #' d <- dbi_copy_to(my_db, 'd',
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
-#' eqn <- order_by(d, "AUC", desc=TRUE, limit=4)
+#' eqn <- orderby(d, "AUC", desc=TRUE, limit=4)
 #' cat(format(eqn))
 #' sql <- to_sql(eqn, my_db)
 #' cat(sql)
@@ -33,33 +33,33 @@
 #'
 #' @export
 #'
-order_by <- function(source,
+orderby <- function(source,
                      orderby,
                      ...,
                      desc = FALSE,
                      limit = NULL) {
   have <- column_names(source)
-  check_have_cols(have, orderby, "rquery::order_by orderby")
+  check_have_cols(have, orderby, "rquery::orderby orderby")
   r <- list(source = list(source),
             table_name = NULL,
             parsed = NULL,
             orderby = orderby,
             desc = desc,
             limit = limit)
-  r <- relop_decorate("relop_order_by", r)
+  r <- relop_decorate("relop_orderby", r)
   r
 }
 
 
 
 #' @export
-format.relop_order_by <- function(x, ...) {
+format.relop_orderby <- function(x, ...) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
   paste0(trimws(format(x$source[[1]]), which="right"),
          " %.>%\n ",
-         "order_by(., ",
+         "orderby(., ",
          ifelse(length(x$orderby)>0,
                 paste(x$orderby, collapse = ", "),
                 ""),
@@ -73,7 +73,7 @@ format.relop_order_by <- function(x, ...) {
 
 
 
-calc_used_relop_order_by <- function (x, ...,
+calc_used_relop_orderby <- function (x, ...,
                                       using = NULL,
                                       contract = FALSE) {
   if(length(using)<=0) {
@@ -83,14 +83,14 @@ calc_used_relop_order_by <- function (x, ...,
   using <- unique(c(using, consuming))
   missing <- setdiff(using, column_names(x$source[[1]]))
   if(length(missing)>0) {
-    stop(paste("rquery::calc_used_relop_order_by unknown columns",
+    stop(paste("rquery::calc_used_relop_orderby unknown columns",
                paste(missing, collapse = ", ")))
   }
   using
 }
 
 #' @export
-columns_used.relop_order_by <- function (x, ...,
+columns_used.relop_orderby <- function (x, ...,
                                        using = NULL,
                                        contract = FALSE) {
   cols <- calc_used_relop_select_rows(x,
@@ -103,7 +103,7 @@ columns_used.relop_order_by <- function (x, ...,
 
 
 #' @export
-to_sql.relop_order_by <- function (x,
+to_sql.relop_orderby <- function (x,
                                    db,
                                    ...,
                                    source_limit = NULL,
@@ -123,7 +123,7 @@ to_sql.relop_order_by <- function (x,
                function(ci) {
                  quote_identifier(db, ci)
                }, character(1))
-  subcols <- calc_used_relop_order_by(x, using=using)
+  subcols <- calc_used_relop_orderby(x, using=using)
   subsql <- to_sql(x$source[[1]],
                    db = db,
                    source_limit = source_limit,

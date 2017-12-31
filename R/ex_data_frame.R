@@ -20,23 +20,23 @@
 #' d <- data.frame(AUC = 0.6, R2 = c(0.1, 0.2), D = NA, z = 2)
 #' q <- table_source("d", c("AUC", "R2", "D")) %.>%
 #' 	extend_nse(., c := sqrt(R2)) %.>%
-#'   order_by(., "R2", desc = TRUE)
+#'   orderby(., "R2", desc = TRUE)
 #'
 #' rquery_apply_to_data_frame(d, q)
 #'
-#' ex(q, data = d)
+#' execute(q, data = d)
 #'
 #' # # with wrapr version 1.1.0 or greater:
 #' # d %.>% q
 #' # # run (and build result for) ad-hoc query
 #' # d %.>%
 #' #   extend_nse(., c := sqrt(R2)) %.>%
-#' #   order_by(., "R2", desc = TRUE) %.>%
-#' #   ex(.)
+#' #   orderby(., "R2", desc = TRUE) %.>%
+#' #   execute(.)
 #' # # print ad-hoc query (result only available for printing)
 #' # d %.>%
 #' #   extend_nse(., c := sqrt(R2)) %.>%
-#' #   order_by(., "R2", desc = TRUE)
+#' #   orderby(., "R2", desc = TRUE)
 #'
 #' DBI::dbDisconnect(winvector_temp_db_handle$db)
 #'
@@ -59,6 +59,7 @@ rquery_apply_to_data_frame <- function(pipe_left_arg,
                           inherits = TRUE)[[1]]
   if(is.null(db_handle)) {
     my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+    RSQLite::initExtension(my_db)
     need_close = TRUE
   } else {
     my_db <- db_handle$db
@@ -95,29 +96,29 @@ rquery_apply_to_data_frame <- function(pipe_left_arg,
 #' d <- data.frame(AUC = 0.6, R2 = c(0.1, 0.2), D = NA, z = 2)
 #' q <- table_source("d", c("AUC", "R2", "D")) %.>%
 #' 	extend_nse(., c := sqrt(R2)) %.>%
-#'   order_by(., "R2", desc = TRUE)
+#'   orderby(., "R2", desc = TRUE)
 #'
 #' rquery_apply_to_data_frame(d, q)
 #'
-#' ex(q, data = d)
+#' execute(q, data = d)
 #'
 #' # # with wrapr version 1.1.0 or greater:
 #' # d %.>% q
 #' # # run (and build result for) ad-hoc query
 #' # d %.>%
 #' #   extend_nse(., c := sqrt(R2)) %.>%
-#' #   order_by(., "R2", desc = TRUE) %.>%
-#' #   ex(.)
+#' #   orderby(., "R2", desc = TRUE) %.>%
+#' #   execute(.)
 #' # # print ad-hoc query (result only available for printing)
 #' # d %.>%
 #' #   extend_nse(., c := sqrt(R2)) %.>%
-#' #   order_by(., "R2", desc = TRUE)
+#' #   orderby(., "R2", desc = TRUE)
 #'
 #' DBI::dbDisconnect(winvector_temp_db_handle$db)
 #'
 #' @export
 #'
-ex <- function(node_tree,
+execute <- function(node_tree,
                ...,
                env = parent.frame(),
                data = NULL) {
@@ -125,8 +126,8 @@ ex <- function(node_tree,
     stop("rquery: unexpected arguments")
   }
   tabs <- tables_used(node_tree)
-  if((length(tabs)==1) &&
-     (!is.null(data)) || (!is.null(tabs[[1]]$data))) {
+  if( (length(tabs)==1) &&
+     ((!is.null(data)) || (!is.null(tabs[[1]]$data))) ) {
     if(is.null(data)) {
       data <- tabs[[1]]$data
     }

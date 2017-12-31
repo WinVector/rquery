@@ -126,7 +126,7 @@
 <li>
 <a href="https://winvector.github.io/rquery/reference/select_columns.html"><code><a href="reference/select_columns.html">select_columns()</a></code></a>. This allows choice of columns (central to <code>SQL</code>), but is not a relational operator as it can damage row-uniqueness.</li>
 <li>
-<a href="https://winvector.github.io/rquery/reference/order_by.html"><code><a href="reference/order_by.html">order_by()</a></code></a>. Row order is not a concept in the relational algebra (and also not maintained in most <code>SQL</code> implementations). This operator is only useful when used with its <code>limit=</code> option, or as the last step as data comes out of the relation store and is moved to <code>R</code> (where row-order is usually maintained).</li>
+<a href="https://winvector.github.io/rquery/reference/orderby.html"><code><a href="reference/orderby.html">orderby()</a></code></a>. Row order is not a concept in the relational algebra (and also not maintained in most <code>SQL</code> implementations). This operator is only useful when used with its <code>limit=</code> option, or as the last step as data comes out of the relation store and is moved to <code>R</code> (where row-order is usually maintained).</li>
 </ul>
 <p>The primary missing relational operators are:</p>
 <ul>
@@ -212,7 +212,7 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="reference/select_columns.html">select_columns</a></span>(., <span class="kw">c</span>(<span class="st">'subjectID'</span>, 
                       <span class="st">'diagnosis'</span>, 
                       <span class="st">'probability'</span>)) <span class="op">%.&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="reference/order_by.html">order_by</a></span>(., <span class="st">'subjectID'</span>)</code></pre></div>
+<span class="st">  </span><span class="kw"><a href="reference/orderby.html">orderby</a></span>(., <span class="st">'subjectID'</span>)</code></pre></div>
 <p>We then generate our result:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dq <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="reference/to_sql.html">to_sql</a></span>(., my_db, <span class="dt">source_limit =</span> <span class="dv">1000</span>) <span class="op">%.&gt;%</span>
@@ -307,7 +307,7 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
   c('diagnosis' := 'surveyCategory')) %.&gt;%
  select_rows(., rank = count) %.&gt;%
  select_columns(., subjectID, diagnosis, probability) %.&gt;%
- order_by(., subjectID)</code></pre>
+ orderby(., subjectID)</code></pre>
 <p>We also can stand <code>rquery</code> up on non-<code>DBI</code> sources such as <a href="https://github.com/WinVector/rquery/blob/master/extras/SparkRExample.md"><code>SparkR</code></a> and perhaps even <a href="https://github.com/WinVector/rquery/blob/master/extras/data_table.md"><code>data.table</code></a>.</p>
 </div>
 <div id="conclusion" class="section level1">
