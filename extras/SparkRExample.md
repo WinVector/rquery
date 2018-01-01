@@ -73,7 +73,7 @@ dq <- d %.>%
   select_columns(., c('subjectID', 
                       'diagnosis', 
                       'probability')) %.>%
-  order_by(., 'subjectID')
+  orderby(., 'subjectID')
 
 sql <- rquery::to_sql(dq, db_info)
 
