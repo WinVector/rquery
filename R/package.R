@@ -12,5 +12,5 @@ NULL
 
 
 #' @importFrom wrapr %.>% :=
-#' @importFrom cdata bind_rowsQ
+#' @importFrom cdata makeTempNameGenerator
 NULL
