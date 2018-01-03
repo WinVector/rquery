@@ -1,0 +1,135 @@
+---
+title: "Assignment Paritioner"
+author: "John Mount, Win-Vector LLC"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Assignment Paritioner}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+`rquery::extend_se()` and `rquery::extend_nse()` each partition a sequence of assignments so that no statement is using any value created in the same partition element or group.  This is to eliminate ambiguity in statements.
+
+For such a partition the evaluation result does not depend on the order of execution of the statements in each group (as they are all independent of each other's left-hand-sides).  A no-dependency small number of 
+groups partition is *very* helpful when executing expressions on `SQL` based 
+data interfaces (such as `Apache Spark`).
+
+The method used to partition expressions is
+to scan the remaining expressions in order taking any that: have all their values available from earlier groups,
+do not use a value formed in the current group, and do not overwrite a value formed in the current group.
+
+This partitioning method can lead to far fewer
+groups than the straightforward method of breaking up the sequence of expressions
+at each new-value use.
+
+Here is a non-trivial example (notice we use `=` for assignment, that is a requirement of `seplyr::mutate_se()`):
+
+```{r ex1}
+library("rquery")
+
+src <- table_source("example_table",
+                    c())
+plan <- extend_nse(src,
+  rand_a = rand(),
+   choice_a = rand_a>=0.5, # first use of a new value 1
+    a_1 = ifelse(choice_a, # first use of a new value 2
+                  'treatment', 
+                  'contol'),
+    a_2 = ifelse(choice_a, 
+                  'control', 
+                  'treatment'),
+  rand_b = rand(),
+   choice_b = rand_b>=0.5, # first use of a new value 3
+    b_1 = ifelse(choice_b, # first use of a new value 4
+                  'treatment', 
+                  'contol'),
+    b_2 = ifelse(choice_b, 
+                  'control', 
+                  'treatment'),
+  rand_c = rand(),
+   choice_c = rand_c>=0.5, # first use of a new value 5
+    c_1 = ifelse(choice_c, # first use of a new value 6
+                  'treatment', 
+                  'contol'),
+    c_2 = ifelse(choice_c, 
+                  'control', 
+                  'treatment'),
+  rand_d = rand(),
+   choice_d = rand_d>=0.5, # first use of a new value 7
+    d_1 = ifelse(choice_d, # first use of a new value 8
+                  'treatment', 
+                  'contol'),
+    d_2 = ifelse(choice_d, 
+                  'control', 
+                  'treatment'),
+  rand_e = rand(),
+   choice_e = rand_e>=0.5, # first use of a new value 9
+    e_1 = ifelse(choice_e, # first use of a new value 10
+                  'treatment', 
+                  'contol'),
+    e_2 = ifelse(choice_e, 
+                  'control', 
+                  'treatment')
+  )
+
+cat(format(plan))
+```
+
+Notice `rquery::extend_se` split the work into 3 groups.
+The straightforward method (with no statement re-ordering) of splitting into
+non-dependent groups would have to split the mutate at each first use of a 
+new value: yielding 10 splits or 11 mutate stages.  For why a low number
+of execution stages is 
+important please see [here](http://winvector.github.io/FluidData/partition_mutate.html).
+
+Note re-using variable values does limit the planner's ability to efficiently partition the the statement.  The planner still emits safe and correct code, but unless it were to be allowed to introduce new variable names it must break sequences in more places (note prior to `seplyr` version `0.5.2` some dependencies were missed, leading to possibly unsafe code).  We show this effect below.
+
+```{r reuse}
+plan <- extend_nse(src,
+  rand = rand(),
+   choice = rand>=0.5, # first use of a new value 1
+    a_1 = ifelse(choice, # first use of a new value 2
+                  'treatment', 
+                  'contol'),
+    a_2 = ifelse(choice, 
+                  'control', 
+                  'treatment'),
+  rand = rand(),
+   choice = rand>=0.5, # first use of a new value 3
+    b_1 = ifelse(choice, # first use of a new value 4
+                  'treatment', 
+                  'contol'),
+    b_2 = ifelse(choice, 
+                  'control', 
+                  'treatment'),
+  rand = rand(),
+   choice = rand>=0.5, # first use of a new value 5
+    c_1 = ifelse(choice, # first use of a new value 6
+                  'treatment', 
+                  'contol'),
+    c_2 = ifelse(choice, 
+                  'control', 
+                  'treatment'),
+  rand = rand(),
+   choice = rand>=0.5, # first use of a new value 7
+    d_1 = ifelse(choice, # first use of a new value 8
+                  'treatment', 
+                  'contol'),
+    d_2 = ifelse(choice, 
+                  'control', 
+                  'treatment'),
+  rand = rand(),
+   choice = rand>=0.5, # first use of a new value 9
+    e_1 = ifelse(choice, # first use of a new value 10
+                  'treatment', 
+                  'contol'),
+    e_2 = ifelse(choice, 
+                  'control', 
+                  'treatment')
+  )
+
+cat(format(plan))
+```
+
+

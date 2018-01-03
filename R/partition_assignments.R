@@ -36,14 +36,17 @@ partition_assignments <- function(parsed) {
   while(any(de$group<=0)) {
     # sweep forward in order greedily taking anything
     have <- which(de$group>0)
+    usedInGroup <- NULL
     formedInGroup <- NULL
     for(i in 1:n) {
       lhsi <- de$parsed[[i]]$symbols_produced
       if( (de$group[[i]]<=0) &&  # available to take
           (!any(lhsi %in% formedInGroup)) && # not assigned to in this block
+          (!any(lhsi %in% usedInGroup)) &&  # not used to in this block
           (length(intersect(de$deps[[i]], formedInGroup))<=0) && # not using a new value
           (length(setdiff(de$deps[[i]], have))<=0) # all pre-conditions met
       ) {
+        usedInGroup <- unique(c(usedInGroup, parsed[[i]]$symbols_used))
         formedInGroup <- c(formedInGroup, lhsi)
         de$group[[i]] <- group
       }

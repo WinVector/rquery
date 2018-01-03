@@ -212,16 +212,16 @@ cat(format(dq))
 
     table('d') %.>%
      extend(.,
-      probability := exp(assessmentTotal * scale) / sum(exp(assessmentTotal * scale)),
-      count := count(1),
+       := probability := exp(assessmentTotal * scale) / sum(exp(assessmentTotal * scale)),
+       := count := count(1),
       p= subjectID) %.>%
      extend(.,
-      rank := rank(),
+       := rank := rank(),
       p= subjectID,
       o= probability, surveyCategory) %.>%
      rename(.,
       c('diagnosis' := 'surveyCategory')) %.>%
-     select_rows(., rank = count) %.>%
+     select_rows(.,  := rank = count) %.>%
      select_columns(., subjectID, diagnosis, probability) %.>%
      orderby(., subjectID)
 

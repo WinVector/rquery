@@ -123,12 +123,14 @@ parse_se <- function(source, assignments, env,
   for(i in seq_len(n)) {
     ni <- names(assignments)[[i]]
     ai <- assignments[[i]]
-    ei <- parse(text = paste(ni, ":=", ai))[[1]]
+    ei <- parse(text = ai)[[1]]
     pi <- tokenize_for_SQL(ei,
                         colnames = have,
                         env = env)
+    pi$symbols_produced <- unique(c(pi$symbols_produced, ni))
     pi$parsed <- to_query(pi$parsed_toks,
                           db_info = db_inf)
+    pi$presentation <- paste(ni, ":=", pi$presentation)
     have <- unique(c(have, pi$symbols_produced))
     parsed[[i]] <- pi
   }
@@ -147,10 +149,13 @@ parse_nse <- function(source, exprs, env,
                            string_quote_char = '"')
   parsed <- vector(n, mode = 'list')
   for(i in seq_len(n)) {
+    ni <- names(exprs)[[i]]
     ei <- exprs[[i]]
     pi <- tokenize_for_SQL(ei,
                         colnames = have,
                         env = env)
+    pi$symbols_produced <- unique(c(pi$symbols_produced, ni))
+    pi$presentation <- paste(ni, ":=", pi$presentation)
     pi$parsed <- to_query(pi$parsed_toks,
                           db_info = db_inf)
     have <- unique(c(have, pi$symbols_produced))
