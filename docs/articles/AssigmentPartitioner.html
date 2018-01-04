@@ -75,7 +75,7 @@
       <h1>Assignment Paritioner</h1>
                         <h4 class="author">John Mount, Win-Vector LLC</h4>
             
-            <h4 class="date">2018-01-03</h4>
+            <h4 class="date">2018-01-04</h4>
           </div>
 
     
@@ -87,10 +87,11 @@
 <p>This partitioning method can lead to far fewer groups than the straightforward method of breaking up the sequence of expressions at each new-value use.</p>
 <p>Here is a non-trivial example (notice we use <code>=</code> for assignment, that is a requirement of <code><a href="http://www.rdocumentation.org/packages/seplyr/topics/mutate_se">seplyr::mutate_se()</a></code>):</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">"rquery"</span>)</code></pre></div>
-<pre><code>## Loading required package: wrapr</code></pre>
-<pre><code>## Loading required package: cdata</code></pre>
+<pre><code>Loading required package: wrapr</code></pre>
+<pre><code>Loading required package: cdata</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">src &lt;-<span class="st"> </span><span class="kw"><a href="../reference/table_source.html">table_source</a></span>(<span class="st">"example_table"</span>,
-                    <span class="kw">c</span>())
+                    <span class="dt">columns =</span> <span class="st">"id"</span>)
+
 plan &lt;-<span class="st"> </span><span class="kw"><a href="../reference/extend_nse.html">extend_nse</a></span>(src,
   <span class="dt">rand_a =</span> <span class="kw">rand</span>(),
    <span class="dt">choice_a =</span> rand_a<span class="op">&gt;=</span><span class="fl">0.5</span>, <span class="co"># first use of a new value 1</span>
@@ -135,32 +136,33 @@ plan &lt;-<span class="st"> </span><span class="kw"><a href="../reference/extend
   )
 
 <span class="kw">cat</span>(<span class="kw">format</span>(plan))</code></pre></div>
-<pre><code>## table('example_table') %.&gt;%
-##  extend(.,
-##   rand_a := rand(),
-##   rand_b := rand(),
-##   rand_c := rand(),
-##   rand_d := rand(),
-##   rand_e := rand()) %.&gt;%
-##  extend(.,
-##   choice_a := rand_a &gt;= 0.5,
-##   choice_b := rand_b &gt;= 0.5,
-##   choice_c := rand_c &gt;= 0.5,
-##   choice_d := rand_d &gt;= 0.5,
-##   choice_e := rand_e &gt;= 0.5) %.&gt;%
-##  extend(.,
-##   a_1 := ifelse(choice_a, "treatment", "contol"),
-##   a_2 := ifelse(choice_a, "control", "treatment"),
-##   b_1 := ifelse(choice_b, "treatment", "contol"),
-##   b_2 := ifelse(choice_b, "control", "treatment"),
-##   c_1 := ifelse(choice_c, "treatment", "contol"),
-##   c_2 := ifelse(choice_c, "control", "treatment"),
-##   d_1 := ifelse(choice_d, "treatment", "contol"),
-##   d_2 := ifelse(choice_d, "control", "treatment"),
-##   e_1 := ifelse(choice_e, "treatment", "contol"),
-##   e_2 := ifelse(choice_e, "control", "treatment"))</code></pre>
-<p>Notice <code><a href="http://www.rdocumentation.org/packages/rquery/topics/extend_se">rquery::extend_se</a></code> split the work into 3 groups. The straightforward method (with no statement re-ordering) of splitting into non-dependent groups would have to split the mutate at each first use of a new value: yielding 10 splits or 11 mutate stages. For why a low number of execution stages is important please see <a href="http://winvector.github.io/FluidData/partition_mutate.html">here</a>.</p>
-<p>Note re-using variable values does limit the planner’s ability to efficiently partition the the statement. The planner still emits safe and correct code, but unless it were to be allowed to introduce new variable names it must break sequences in more places (note prior to <code>seplyr</code> version <code>0.5.2</code> some dependencies were missed, leading to possibly unsafe code). We show this effect below.</p>
+<pre><code>table('example_table') %.&gt;%
+ extend(.,
+  rand_a := rand(),
+  rand_b := rand(),
+  rand_c := rand(),
+  rand_d := rand(),
+  rand_e := rand()) %.&gt;%
+ extend(.,
+  choice_a := rand_a &gt;= 0.5,
+  choice_b := rand_b &gt;= 0.5,
+  choice_c := rand_c &gt;= 0.5,
+  choice_d := rand_d &gt;= 0.5,
+  choice_e := rand_e &gt;= 0.5) %.&gt;%
+ extend(.,
+  a_1 := ifelse(choice_a, "treatment", "contol"),
+  a_2 := ifelse(choice_a, "control", "treatment"),
+  b_1 := ifelse(choice_b, "treatment", "contol"),
+  b_2 := ifelse(choice_b, "control", "treatment"),
+  c_1 := ifelse(choice_c, "treatment", "contol"),
+  c_2 := ifelse(choice_c, "control", "treatment"),
+  d_1 := ifelse(choice_d, "treatment", "contol"),
+  d_2 := ifelse(choice_d, "control", "treatment"),
+  e_1 := ifelse(choice_e, "treatment", "contol"),
+  e_2 := ifelse(choice_e, "control", "treatment"))</code></pre>
+<p>Notice <code><a href="http://www.rdocumentation.org/packages/rquery/topics/extend_se">rquery::extend_se()</a></code> split the work into 3 unambiguous groups. The statements inside each group can now be executed in any order (or even in parallel) with no ambiguity of meaning or risk of error.</p>
+<p>A straightforward method (with no statement re-ordering) of splitting into non-dependent groups would have to split the mutate at each first use of a new value: yielding 10 splits or 11 mutate stages. For why a low number of execution stages is important please see <a href="http://winvector.github.io/FluidData/partition_mutate.html">here</a>.</p>
+<p>Note: re-using variable variable names does limit the planner’s ability to efficiently partition the the statement. The planner still emits safe and correct code, but unless it were to be allowed to introduce new variable names it must break sequences in more places (note prior to <code>seplyr</code> version <code>0.5.2</code> some dependencies were missed, leading to possibly unsafe code). We show this effect below.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">plan &lt;-<span class="st"> </span><span class="kw"><a href="../reference/extend_nse.html">extend_nse</a></span>(src,
   <span class="dt">rand =</span> <span class="kw">rand</span>(),
    <span class="dt">choice =</span> rand<span class="op">&gt;=</span><span class="fl">0.5</span>, <span class="co"># first use of a new value 1</span>
@@ -205,38 +207,38 @@ plan &lt;-<span class="st"> </span><span class="kw"><a href="../reference/extend
   )
 
 <span class="kw">cat</span>(<span class="kw">format</span>(plan))</code></pre></div>
-<pre><code>## table('example_table') %.&gt;%
-##  extend(.,
-##   rand := rand()) %.&gt;%
-##  extend(.,
-##   choice := rand &gt;= 0.5) %.&gt;%
-##  extend(.,
-##   a_1 := ifelse(choice, "treatment", "contol"),
-##   a_2 := ifelse(choice, "control", "treatment"),
-##   rand := rand()) %.&gt;%
-##  extend(.,
-##   choice := rand &gt;= 0.5) %.&gt;%
-##  extend(.,
-##   b_1 := ifelse(choice, "treatment", "contol"),
-##   b_2 := ifelse(choice, "control", "treatment"),
-##   rand := rand()) %.&gt;%
-##  extend(.,
-##   choice := rand &gt;= 0.5) %.&gt;%
-##  extend(.,
-##   c_1 := ifelse(choice, "treatment", "contol"),
-##   c_2 := ifelse(choice, "control", "treatment"),
-##   rand := rand()) %.&gt;%
-##  extend(.,
-##   choice := rand &gt;= 0.5) %.&gt;%
-##  extend(.,
-##   d_1 := ifelse(choice, "treatment", "contol"),
-##   d_2 := ifelse(choice, "control", "treatment"),
-##   rand := rand()) %.&gt;%
-##  extend(.,
-##   choice := rand &gt;= 0.5) %.&gt;%
-##  extend(.,
-##   e_1 := ifelse(choice, "treatment", "contol"),
-##   e_2 := ifelse(choice, "control", "treatment"))</code></pre>
+<pre><code>table('example_table') %.&gt;%
+ extend(.,
+  rand := rand()) %.&gt;%
+ extend(.,
+  choice := rand &gt;= 0.5) %.&gt;%
+ extend(.,
+  a_1 := ifelse(choice, "treatment", "contol"),
+  a_2 := ifelse(choice, "control", "treatment"),
+  rand := rand()) %.&gt;%
+ extend(.,
+  choice := rand &gt;= 0.5) %.&gt;%
+ extend(.,
+  b_1 := ifelse(choice, "treatment", "contol"),
+  b_2 := ifelse(choice, "control", "treatment"),
+  rand := rand()) %.&gt;%
+ extend(.,
+  choice := rand &gt;= 0.5) %.&gt;%
+ extend(.,
+  c_1 := ifelse(choice, "treatment", "contol"),
+  c_2 := ifelse(choice, "control", "treatment"),
+  rand := rand()) %.&gt;%
+ extend(.,
+  choice := rand &gt;= 0.5) %.&gt;%
+ extend(.,
+  d_1 := ifelse(choice, "treatment", "contol"),
+  d_2 := ifelse(choice, "control", "treatment"),
+  rand := rand()) %.&gt;%
+ extend(.,
+  choice := rand &gt;= 0.5) %.&gt;%
+ extend(.,
+  e_1 := ifelse(choice, "treatment", "contol"),
+  e_2 := ifelse(choice, "control", "treatment"))</code></pre>
 </div>
   </div>
 
