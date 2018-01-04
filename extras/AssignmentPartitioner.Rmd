@@ -1,13 +1,10 @@
 ---
-title: "Assignment Paritioner"
-author: "John Mount, Win-Vector LLC"
-date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Assignment Paritioner}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+title: "Assignment Partitioner"
+author: "Win-Vector LLC"
+date: "1/4/2018"
+output: github_document
 ---
+
 
 `rquery::extend_se()` and `rquery::extend_nse()` each automatically partition a sequence of assignments so that no statement is using any value created in the same partition element or group.  This is to eliminate potentially dangerous ambiguity in statements.
 
@@ -153,6 +150,81 @@ DBI::dbGetQuery(my_db, sql2) %.>%
 ```
 
 Notice the returned tables are identical (as they should be).
+
+The current (as of 2018-01-04) `CRAN` version of `dplyr` (even with the new `dbplyr` version `1.2.0`), however gives an *incorrect* result on databases.  Notice the *exact same choice* is (incorrectly) used across all groups (`a` through `e`).
+
+```{r dplyr2}
+library("dplyr")
+packageVersion("dplyr")
+packageVersion("dbplyr")
+
+dR <- dplyr::tbl(my_db, "example_table")
+
+pipeline <- . %>%
+  mutate(
+   choice = rand_a>=0.5, 
+    a_1 = ifelse(choice, 
+                  'T', 
+                  'C'),
+    a_2 = ifelse(choice, 
+                  'C', 
+                  'T'),
+   choice = rand_b>=0.5, 
+    b_1 = ifelse(choice, 
+                  'T', 
+                  'C'),
+    b_2 = ifelse(choice, 
+                  'C', 
+                  'T'),
+   choice = rand_c>=0.5, 
+    c_1 = ifelse(choice, 
+                  'T', 
+                  'C'),
+    c_2 = ifelse(choice, 
+                  'C', 
+                  'T'),
+   choice = rand_d>=0.5, 
+    d_1 = ifelse(choice, 
+                  'T', 
+                  'C'),
+    d_2 = ifelse(choice, 
+                  'C', 
+                  'T'),
+   choice = rand_e>=0.5, 
+    e_1 = ifelse(choice, 
+                  'T', 
+                  'C'),
+    e_2 = ifelse(choice, 
+                  'C', 
+                  'T')
+  ) %>%
+  select(a_1, a_2, b_1, b_2,
+         c_1, c_2, d_1, d_2,
+         e_1, e_2)
+ 
+
+dR %>% 
+  pipeline %>%
+  knitr::kable()
+```
+
+In-memory `dplyr` appears to reproduce our original correct result.
+
+```{r dplyrmem}
+d %>% 
+  pipeline %>%
+  knitr::kable()
+```
+
+
+Inspecting the `dplyr` generated `SQL` shows what was in fact executed on the database.  For some reason `choice` is repeatedly set to `rand_a >= 0.5` (never using the other specified groups).
+
+```{r dplyrsql, comment=""}
+dR %>% 
+  pipeline %>%
+  show_query()
+```
+
 
 ```{r cleanup}
 DBI::dbDisconnect(my_db)
