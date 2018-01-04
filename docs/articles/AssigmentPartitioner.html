@@ -218,7 +218,8 @@ plan &lt;-<span class="st"> </span>d1 <span class="op">%.&gt;%</span>
                   <span class="st">'T'</span>)
   ) <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/select_columns.html">select_columns</a></span>(., 
-                 <span class="kw">qc</span>(a_<span class="dv">1</span>, a_<span class="dv">2</span>, b_<span class="dv">1</span>, b_<span class="dv">2</span>,
+                 <span class="kw">qc</span>(id,
+                    a_<span class="dv">1</span>, a_<span class="dv">2</span>, b_<span class="dv">1</span>, b_<span class="dv">2</span>,
                     c_<span class="dv">1</span>, c_<span class="dv">2</span>, d_<span class="dv">1</span>, d_<span class="dv">2</span>,
                     e_<span class="dv">1</span>, e_<span class="dv">2</span>))
 
@@ -241,11 +242,12 @@ plan &lt;-<span class="st"> </span>d1 <span class="op">%.&gt;%</span>
   d_2 := ifelse(choice_d, "C", "T"),
   e_1 := ifelse(choice_e, "T", "C"),
   e_2 := ifelse(choice_e, "C", "T")) %.&gt;%
- select_columns(., a_1, a_2, b_1, b_2, c_1, c_2, d_1, d_2, e_1, e_2)</code></pre>
+ select_columns(., id, a_1, a_2, b_1, b_2, c_1, c_2, d_1, d_2, e_1, e_2)</code></pre>
 <p>Notice <code><a href="http://www.rdocumentation.org/packages/rquery/topics/extend_se">rquery::extend_se()</a></code> split the work into 3 unambiguous groups. The statements inside each group can now be executed in any order (or even in parallel) with no ambiguity of meaning or risk of error.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sql &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(plan, my_db)
 <span class="kw">cat</span>(sql)</code></pre></div>
 <pre><code>SELECT
+ `id`,
  `a_1`,
  `a_2`,
  `b_1`,
@@ -263,6 +265,7 @@ FROM (
   `choice_c`,
   `choice_d`,
   `choice_e`,
+  `id`,
   ( CASE WHEN ( `choice_a` ) THEN ( 'T' ) ELSE ( 'C' ) END )  AS `a_1`,
   ( CASE WHEN ( `choice_a` ) THEN ( 'C' ) ELSE ( 'T' ) END )  AS `a_2`,
   ( CASE WHEN ( `choice_b` ) THEN ( 'T' ) ELSE ( 'C' ) END )  AS `b_1`,
@@ -275,6 +278,7 @@ FROM (
   ( CASE WHEN ( `choice_e` ) THEN ( 'C' ) ELSE ( 'T' ) END )  AS `e_2`
  FROM (
   SELECT
+   `id`,
    `rand_a`,
    `rand_b`,
    `rand_c`,
@@ -287,6 +291,7 @@ FROM (
    `rand_e` &gt;= 0.5  AS `choice_e`
   FROM (
    SELECT
+    `example_table`.`id`,
     `example_table`.`rand_a`,
     `example_table`.`rand_b`,
     `example_table`.`rand_c`,
@@ -301,6 +306,7 @@ FROM (
 <span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</code></pre></div>
 <table class="table">
 <thead><tr class="header">
+<th align="right">id</th>
 <th align="left">a_1</th>
 <th align="left">a_2</th>
 <th align="left">b_1</th>
@@ -314,6 +320,7 @@ FROM (
 </tr></thead>
 <tbody>
 <tr class="odd">
+<td align="right">1</td>
 <td align="left">T</td>
 <td align="left">C</td>
 <td align="left">C</td>
@@ -326,6 +333,7 @@ FROM (
 <td align="left">C</td>
 </tr>
 <tr class="even">
+<td align="right">2</td>
 <td align="left">T</td>
 <td align="left">C</td>
 <td align="left">C</td>
@@ -338,6 +346,7 @@ FROM (
 <td align="left">C</td>
 </tr>
 <tr class="odd">
+<td align="right">3</td>
 <td align="left">T</td>
 <td align="left">C</td>
 <td align="left">T</td>
@@ -350,6 +359,7 @@ FROM (
 <td align="left">C</td>
 </tr>
 <tr class="even">
+<td align="right">4</td>
 <td align="left">T</td>
 <td align="left">C</td>
 <td align="left">T</td>
@@ -362,6 +372,7 @@ FROM (
 <td align="left">C</td>
 </tr>
 <tr class="odd">
+<td align="right">5</td>
 <td align="left">T</td>
 <td align="left">C</td>
 <td align="left">C</td>
@@ -374,6 +385,7 @@ FROM (
 <td align="left">C</td>
 </tr>
 <tr class="even">
+<td align="right">6</td>
 <td align="left">C</td>
 <td align="left">T</td>
 <td align="left">T</td>
@@ -386,6 +398,7 @@ FROM (
 <td align="left">C</td>
 </tr>
 <tr class="odd">
+<td align="right">7</td>
 <td align="left">T</td>
 <td align="left">C</td>
 <td align="left">T</td>
@@ -398,6 +411,7 @@ FROM (
 <td align="left">C</td>
 </tr>
 <tr class="even">
+<td align="right">8</td>
 <td align="left">T</td>
 <td align="left">C</td>
 <td align="left">T</td>
@@ -452,7 +466,8 @@ FROM (
                   <span class="st">'T'</span>)
   ) <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/select_columns.html">select_columns</a></span>(., 
-                 <span class="kw">qc</span>(a_<span class="dv">1</span>, a_<span class="dv">2</span>, b_<span class="dv">1</span>, b_<span class="dv">2</span>,
+                 <span class="kw">qc</span>(id,
+                    a_<span class="dv">1</span>, a_<span class="dv">2</span>, b_<span class="dv">1</span>, b_<span class="dv">2</span>,
                     c_<span class="dv">1</span>, c_<span class="dv">2</span>, d_<span class="dv">1</span>, d_<span class="dv">2</span>,
                     e_<span class="dv">1</span>, e_<span class="dv">2</span>))
 
@@ -483,12 +498,13 @@ FROM (
  extend(.,
   e_1 := ifelse(choice, "T", "C"),
   e_2 := ifelse(choice, "C", "T")) %.&gt;%
- select_columns(., a_1, a_2, b_1, b_2, c_1, c_2, d_1, d_2, e_1, e_2)</code></pre>
+ select_columns(., id, a_1, a_2, b_1, b_2, c_1, c_2, d_1, d_2, e_1, e_2)</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sql2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(plan2, my_db)
 DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery">dbGetQuery</a></span>(my_db, sql2) <span class="op">%.&gt;%</span>
 <span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</code></pre></div>
 <table class="table">
 <thead><tr class="header">
+<th align="right">id</th>
 <th align="left">a_1</th>
 <th align="left">a_2</th>
 <th align="left">b_1</th>
@@ -502,6 +518,7 @@ DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation
 </tr></thead>
 <tbody>
 <tr class="odd">
+<td align="right">1</td>
 <td align="left">T</td>
 <td align="left">C</td>
 <td align="left">C</td>
@@ -514,6 +531,7 @@ DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation
 <td align="left">C</td>
 </tr>
 <tr class="even">
+<td align="right">2</td>
 <td align="left">T</td>
 <td align="left">C</td>
 <td align="left">C</td>
@@ -526,6 +544,7 @@ DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation
 <td align="left">C</td>
 </tr>
 <tr class="odd">
+<td align="right">3</td>
 <td align="left">T</td>
 <td align="left">C</td>
 <td align="left">T</td>
@@ -538,6 +557,7 @@ DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation
 <td align="left">C</td>
 </tr>
 <tr class="even">
+<td align="right">4</td>
 <td align="left">T</td>
 <td align="left">C</td>
 <td align="left">T</td>
@@ -550,6 +570,7 @@ DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation
 <td align="left">C</td>
 </tr>
 <tr class="odd">
+<td align="right">5</td>
 <td align="left">T</td>
 <td align="left">C</td>
 <td align="left">C</td>
@@ -562,6 +583,7 @@ DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation
 <td align="left">C</td>
 </tr>
 <tr class="even">
+<td align="right">6</td>
 <td align="left">C</td>
 <td align="left">T</td>
 <td align="left">T</td>
@@ -574,6 +596,7 @@ DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation
 <td align="left">C</td>
 </tr>
 <tr class="odd">
+<td align="right">7</td>
 <td align="left">T</td>
 <td align="left">C</td>
 <td align="left">T</td>
@@ -586,6 +609,7 @@ DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation
 <td align="left">C</td>
 </tr>
 <tr class="even">
+<td align="right">8</td>
 <td align="left">T</td>
 <td align="left">C</td>
 <td align="left">T</td>

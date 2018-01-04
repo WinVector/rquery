@@ -89,7 +89,8 @@ plan <- d1 %.>%
                   'T')
   ) %.>%
   select_columns(., 
-                 qc(a_1, a_2, b_1, b_2,
+                 qc(id,
+                    a_1, a_2, b_1, b_2,
                     c_1, c_2, d_1, d_2,
                     e_1, e_2))
 
@@ -114,7 +115,7 @@ cat(format(plan))
       d_2 := ifelse(choice_d, "C", "T"),
       e_1 := ifelse(choice_e, "T", "C"),
       e_2 := ifelse(choice_e, "C", "T")) %.>%
-     select_columns(., a_1, a_2, b_1, b_2, c_1, c_2, d_1, d_2, e_1, e_2)
+     select_columns(., id, a_1, a_2, b_1, b_2, c_1, c_2, d_1, d_2, e_1, e_2)
 
 Notice `rquery::extend_se()` split the work into 3 unambiguous groups. The statements inside each group can now be executed in any order (or even in parallel) with no ambiguity of meaning or risk of error.
 
@@ -124,6 +125,7 @@ cat(sql)
 ```
 
     SELECT
+     `id`,
      `a_1`,
      `a_2`,
      `b_1`,
@@ -141,6 +143,7 @@ cat(sql)
       `choice_c`,
       `choice_d`,
       `choice_e`,
+      `id`,
       ( CASE WHEN ( `choice_a` ) THEN ( 'T' ) ELSE ( 'C' ) END )  AS `a_1`,
       ( CASE WHEN ( `choice_a` ) THEN ( 'C' ) ELSE ( 'T' ) END )  AS `a_2`,
       ( CASE WHEN ( `choice_b` ) THEN ( 'T' ) ELSE ( 'C' ) END )  AS `b_1`,
@@ -153,6 +156,7 @@ cat(sql)
       ( CASE WHEN ( `choice_e` ) THEN ( 'C' ) ELSE ( 'T' ) END )  AS `e_2`
      FROM (
       SELECT
+       `id`,
        `rand_a`,
        `rand_b`,
        `rand_c`,
@@ -165,6 +169,7 @@ cat(sql)
        `rand_e` >= 0.5  AS `choice_e`
       FROM (
        SELECT
+        `example_table`.`id`,
         `example_table`.`rand_a`,
         `example_table`.`rand_b`,
         `example_table`.`rand_c`,
@@ -181,16 +186,16 @@ DBI::dbGetQuery(my_db, sql) %.>%
   knitr::kable(.)
 ```
 
-| a\_1 | a\_2 | b\_1 | b\_2 | c\_1 | c\_2 | d\_1 | d\_2 | e\_1 | e\_2 |
-|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|
-| T    | C    | C    | T    | C    | T    | C    | T    | T    | C    |
-| T    | C    | C    | T    | T    | C    | T    | C    | T    | C    |
-| T    | C    | T    | C    | C    | T    | C    | T    | T    | C    |
-| T    | C    | T    | C    | C    | T    | T    | C    | T    | C    |
-| T    | C    | C    | T    | T    | C    | C    | T    | T    | C    |
-| C    | T    | T    | C    | C    | T    | T    | C    | T    | C    |
-| T    | C    | T    | C    | C    | T    | T    | C    | T    | C    |
-| T    | C    | T    | C    | T    | C    | C    | T    | C    | T    |
+|   id| a\_1 | a\_2 | b\_1 | b\_2 | c\_1 | c\_2 | d\_1 | d\_2 | e\_1 | e\_2 |
+|----:|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|
+|    1| T    | C    | C    | T    | C    | T    | C    | T    | T    | C    |
+|    2| T    | C    | C    | T    | T    | C    | T    | C    | T    | C    |
+|    3| T    | C    | T    | C    | C    | T    | C    | T    | T    | C    |
+|    4| T    | C    | T    | C    | C    | T    | T    | C    | T    | C    |
+|    5| T    | C    | C    | T    | T    | C    | C    | T    | T    | C    |
+|    6| C    | T    | T    | C    | C    | T    | T    | C    | T    | C    |
+|    7| T    | C    | T    | C    | C    | T    | T    | C    | T    | C    |
+|    8| T    | C    | T    | C    | T    | C    | C    | T    | C    | T    |
 
 A straightforward method (with no statement re-ordering) of splitting into non-dependent groups would have to split the mutate at each first use of a new value: yielding more mutate stages. For why a low number of execution stages is important please see [here](http://winvector.github.io/FluidData/partition_mutate.html).
 
@@ -236,7 +241,8 @@ plan2 <- d1 %.>%
                   'T')
   ) %.>%
   select_columns(., 
-                 qc(a_1, a_2, b_1, b_2,
+                 qc(id,
+                    a_1, a_2, b_1, b_2,
                     c_1, c_2, d_1, d_2,
                     e_1, e_2))
 
@@ -269,7 +275,7 @@ cat(format(plan2))
      extend(.,
       e_1 := ifelse(choice, "T", "C"),
       e_2 := ifelse(choice, "C", "T")) %.>%
-     select_columns(., a_1, a_2, b_1, b_2, c_1, c_2, d_1, d_2, e_1, e_2)
+     select_columns(., id, a_1, a_2, b_1, b_2, c_1, c_2, d_1, d_2, e_1, e_2)
 
 ``` r
 sql2 <- to_sql(plan2, my_db)
@@ -277,16 +283,16 @@ DBI::dbGetQuery(my_db, sql2) %.>%
   knitr::kable(.)
 ```
 
-| a\_1 | a\_2 | b\_1 | b\_2 | c\_1 | c\_2 | d\_1 | d\_2 | e\_1 | e\_2 |
-|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|
-| T    | C    | C    | T    | C    | T    | C    | T    | T    | C    |
-| T    | C    | C    | T    | T    | C    | T    | C    | T    | C    |
-| T    | C    | T    | C    | C    | T    | C    | T    | T    | C    |
-| T    | C    | T    | C    | C    | T    | T    | C    | T    | C    |
-| T    | C    | C    | T    | T    | C    | C    | T    | T    | C    |
-| C    | T    | T    | C    | C    | T    | T    | C    | T    | C    |
-| T    | C    | T    | C    | C    | T    | T    | C    | T    | C    |
-| T    | C    | T    | C    | T    | C    | C    | T    | C    | T    |
+|   id| a\_1 | a\_2 | b\_1 | b\_2 | c\_1 | c\_2 | d\_1 | d\_2 | e\_1 | e\_2 |
+|----:|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|
+|    1| T    | C    | C    | T    | C    | T    | C    | T    | T    | C    |
+|    2| T    | C    | C    | T    | T    | C    | T    | C    | T    | C    |
+|    3| T    | C    | T    | C    | C    | T    | C    | T    | T    | C    |
+|    4| T    | C    | T    | C    | C    | T    | T    | C    | T    | C    |
+|    5| T    | C    | C    | T    | T    | C    | C    | T    | T    | C    |
+|    6| C    | T    | T    | C    | C    | T    | T    | C    | T    | C    |
+|    7| T    | C    | T    | C    | C    | T    | T    | C    | T    | C    |
+|    8| T    | C    | T    | C    | T    | C    | C    | T    | C    | T    |
 
 Notice the returned tables are identical (as they should be).
 
@@ -360,7 +366,8 @@ pipeline <- . %>%
                   'C', 
                   'T')
   ) %>%
-  select(a_1, a_2, b_1, b_2,
+  select(id,
+         a_1, a_2, b_1, b_2,
          c_1, c_2, d_1, d_2,
          e_1, e_2)
  
@@ -370,16 +377,16 @@ dR %>%
   knitr::kable()
 ```
 
-| a\_1 | a\_2 | b\_1 | b\_2 | c\_1 | c\_2 | d\_1 | d\_2 | e\_1 | e\_2 |
-|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|
-| T    | C    | T    | C    | T    | C    | T    | C    | T    | C    |
-| T    | C    | T    | C    | T    | C    | T    | C    | T    | C    |
-| T    | C    | T    | C    | T    | C    | T    | C    | T    | C    |
-| T    | C    | T    | C    | T    | C    | T    | C    | T    | C    |
-| T    | C    | T    | C    | T    | C    | T    | C    | T    | C    |
-| C    | T    | C    | T    | C    | T    | C    | T    | C    | T    |
-| T    | C    | T    | C    | T    | C    | T    | C    | T    | C    |
-| T    | C    | T    | C    | T    | C    | T    | C    | T    | C    |
+|   id| a\_1 | a\_2 | b\_1 | b\_2 | c\_1 | c\_2 | d\_1 | d\_2 | e\_1 | e\_2 |
+|----:|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|
+|    1| T    | C    | T    | C    | T    | C    | T    | C    | T    | C    |
+|    2| T    | C    | T    | C    | T    | C    | T    | C    | T    | C    |
+|    3| T    | C    | T    | C    | T    | C    | T    | C    | T    | C    |
+|    4| T    | C    | T    | C    | T    | C    | T    | C    | T    | C    |
+|    5| T    | C    | T    | C    | T    | C    | T    | C    | T    | C    |
+|    6| C    | T    | C    | T    | C    | T    | C    | T    | C    | T    |
+|    7| T    | C    | T    | C    | T    | C    | T    | C    | T    | C    |
+|    8| T    | C    | T    | C    | T    | C    | T    | C    | T    | C    |
 
 In-memory `dplyr` appears to reproduce our original correct result.
 
@@ -389,16 +396,16 @@ d %>%
   knitr::kable()
 ```
 
-| a\_1 | a\_2 | b\_1 | b\_2 | c\_1 | c\_2 | d\_1 | d\_2 | e\_1 | e\_2 |
-|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|
-| T    | C    | C    | T    | C    | T    | C    | T    | T    | C    |
-| T    | C    | C    | T    | T    | C    | T    | C    | T    | C    |
-| T    | C    | T    | C    | C    | T    | C    | T    | T    | C    |
-| T    | C    | T    | C    | C    | T    | T    | C    | T    | C    |
-| T    | C    | C    | T    | T    | C    | C    | T    | T    | C    |
-| C    | T    | T    | C    | C    | T    | T    | C    | T    | C    |
-| T    | C    | T    | C    | C    | T    | T    | C    | T    | C    |
-| T    | C    | T    | C    | T    | C    | C    | T    | C    | T    |
+|   id| a\_1 | a\_2 | b\_1 | b\_2 | c\_1 | c\_2 | d\_1 | d\_2 | e\_1 | e\_2 |
+|----:|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|
+|    1| T    | C    | C    | T    | C    | T    | C    | T    | T    | C    |
+|    2| T    | C    | C    | T    | T    | C    | T    | C    | T    | C    |
+|    3| T    | C    | T    | C    | C    | T    | C    | T    | T    | C    |
+|    4| T    | C    | T    | C    | C    | T    | T    | C    | T    | C    |
+|    5| T    | C    | C    | T    | T    | C    | C    | T    | T    | C    |
+|    6| C    | T    | T    | C    | C    | T    | T    | C    | T    | C    |
+|    7| T    | C    | T    | C    | C    | T    | T    | C    | T    | C    |
+|    8| T    | C    | T    | C    | T    | C    | C    | T    | C    | T    |
 
 Inspecting the `dplyr` generated `SQL` shows what was in fact executed on the database. For some reason `choice` is repeatedly set to `rand_a >= 0.5` (never using the other specified groups).
 
@@ -409,7 +416,7 @@ dR %>%
 ```
 
     <SQL>
-    SELECT `a_1`, `a_2`, `b_1`, `b_2`, `c_1`, `c_2`, `d_1`, `d_2`, `e_1`, `e_2`
+    SELECT `id`, `a_1`, `a_2`, `b_1`, `b_2`, `c_1`, `c_2`, `d_1`, `d_2`, `e_1`, `e_2`
     FROM (SELECT `id`, `rand_a`, `rand_b`, `rand_c`, `rand_d`, `rand_e`, `choice`, `a_1`, `a_2`, `b_1`, `b_2`, `c_1`, `c_2`, `d_1`, `d_2`, CASE WHEN (`choice`) THEN ('T') WHEN NOT(`choice`) THEN ('C') END AS `e_1`, CASE WHEN (`choice`) THEN ('C') WHEN NOT(`choice`) THEN ('T') END AS `e_2`
     FROM (SELECT `id`, `rand_a`, `rand_b`, `rand_c`, `rand_d`, `rand_e`, `rand_a` >= 0.5 AS `choice`, `a_1`, `a_2`, `b_1`, `b_2`, `c_1`, `c_2`, CASE WHEN (`choice`) THEN ('T') WHEN NOT(`choice`) THEN ('C') END AS `d_1`, CASE WHEN (`choice`) THEN ('C') WHEN NOT(`choice`) THEN ('T') END AS `d_2`
     FROM (SELECT `id`, `rand_a`, `rand_b`, `rand_c`, `rand_d`, `rand_e`, `rand_a` >= 0.5 AS `choice`, `a_1`, `a_2`, `b_1`, `b_2`, CASE WHEN (`choice`) THEN ('T') WHEN NOT(`choice`) THEN ('C') END AS `c_1`, CASE WHEN (`choice`) THEN ('C') WHEN NOT(`choice`) THEN ('T') END AS `c_2`

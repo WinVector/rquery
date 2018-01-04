@@ -76,7 +76,8 @@ plan <- d1 %.>%
                   'T')
   ) %.>%
   select_columns(., 
-                 qc(a_1, a_2, b_1, b_2,
+                 qc(id,
+                    a_1, a_2, b_1, b_2,
                     c_1, c_2, d_1, d_2,
                     e_1, e_2))
 
@@ -139,7 +140,8 @@ plan2 <- d1 %.>%
                   'T')
   ) %.>%
   select_columns(., 
-                 qc(a_1, a_2, b_1, b_2,
+                 qc(id,
+                    a_1, a_2, b_1, b_2,
                     c_1, c_2, d_1, d_2,
                     e_1, e_2))
 
