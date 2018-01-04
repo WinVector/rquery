@@ -11,25 +11,20 @@ vignette: >
 
 `rquery::extend_se()` and `rquery::extend_nse()` each partition a sequence of assignments so that no statement is using any value created in the same partition element or group.  This is to eliminate ambiguity in statements.
 
-For such a partition the evaluation result does not depend on the order of execution of the statements in each group (as they are all independent of each other's left-hand-sides).  A no-dependency small number of 
-groups partition is *very* helpful when executing expressions on `SQL` based 
-data interfaces (such as `Apache Spark`).
+For such a partition the evaluation result does not depend on the order of execution of the statements in each group (as they are all independent of each other's left-hand-sides).  A no-dependency small number of groups partition is *very* helpful when executing expressions on `SQL` based data interfaces (such as `Apache Spark`).
 
-The method used to partition expressions is
-to scan the remaining expressions in order taking any that: have all their values available from earlier groups,
-do not use a value formed in the current group, and do not overwrite a value formed in the current group.
+The method used to partition expressions is to scan the remaining expressions in order taking any that: have all their values available from earlier groups, do not use a value formed in the current group, and do not overwrite a value formed in the current group.
 
-This partitioning method can lead to far fewer
-groups than the straightforward method of breaking up the sequence of expressions
-at each new-value use.
+This partitioning method can lead to far fewer groups than the straightforward method of breaking up the sequence of expressions at each new-value use.
 
 Here is a non-trivial example (notice we use `=` for assignment, that is a requirement of `seplyr::mutate_se()`):
 
-```{r ex1}
+```{r ex1, comment=""}
 library("rquery")
 
 src <- table_source("example_table",
-                    c())
+                    columns = "id")
+
 plan <- extend_nse(src,
   rand_a = rand(),
    choice_a = rand_a>=0.5, # first use of a new value 1
@@ -76,16 +71,13 @@ plan <- extend_nse(src,
 cat(format(plan))
 ```
 
-Notice `rquery::extend_se` split the work into 3 groups.
-The straightforward method (with no statement re-ordering) of splitting into
-non-dependent groups would have to split the mutate at each first use of a 
-new value: yielding 10 splits or 11 mutate stages.  For why a low number
-of execution stages is 
-important please see [here](http://winvector.github.io/FluidData/partition_mutate.html).
+Notice `rquery::extend_se()` split the work into 3 unambiguous groups.  The statements inside each group can now be executed in any order (or even in parallel) with no ambiguity of meaning or risk of error.
 
-Note re-using variable values does limit the planner's ability to efficiently partition the the statement.  The planner still emits safe and correct code, but unless it were to be allowed to introduce new variable names it must break sequences in more places (note prior to `seplyr` version `0.5.2` some dependencies were missed, leading to possibly unsafe code).  We show this effect below.
+A straightforward method (with no statement re-ordering) of splitting into non-dependent groups would have to split the mutate at each first use of a new value: yielding 10 splits or 11 mutate stages.  For why a low number of execution stages is important please see [here](http://winvector.github.io/FluidData/partition_mutate.html).
 
-```{r reuse}
+Note: re-using variable variable names does limit the planner's ability to efficiently partition the the statement.  The planner still emits safe and correct code, but unless it were to be allowed to introduce new variable names it must break sequences in more places (note prior to `seplyr` version `0.5.2` some dependencies were missed, leading to possibly unsafe code).  We show this effect below.
+
+```{r reuse, comment=""}
 plan <- extend_nse(src,
   rand = rand(),
    choice = rand>=0.5, # first use of a new value 1
