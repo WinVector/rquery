@@ -148,19 +148,22 @@
 <span class='fu'>execute</span>(<span class='no'>q</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>d</span>)</div><div class='output co'>#&gt;   AUC  R2  D         c
 #&gt; 1 0.6 0.2 NA 0.4472136
 #&gt; 2 0.6 0.1 NA 0.3162278</div><div class='input'>
-<span class='co'># # with wrapr version 1.1.0 or greater:</span>
-<span class='co'># d %.&gt;% q</span>
-<span class='co'># # run (and build result for) ad-hoc query</span>
-<span class='co'># d %.&gt;%</span>
-<span class='co'>#   extend_nse(., c := sqrt(R2)) %.&gt;%</span>
-<span class='co'>#   orderby(., "R2", desc = TRUE) %.&gt;%</span>
-<span class='co'>#   execute(.)</span>
-<span class='co'># # print ad-hoc query (result only available for printing)</span>
-<span class='co'># d %.&gt;%</span>
-<span class='co'>#   extend_nse(., c := sqrt(R2)) %.&gt;%</span>
-<span class='co'>#   orderby(., "R2", desc = TRUE)</span>
-
-<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>winvector_temp_db_handle</span>$<span class='no'>db</span>)</div></pre>
+<span class='no'>d</span> <span class='kw'>%.&gt;%</span> <span class='no'>q</span></div><div class='output co'>#&gt;   AUC  R2  D         c
+#&gt; 1 0.6 0.2 NA 0.4472136
+#&gt; 2 0.6 0.1 NA 0.3162278</div><div class='input'><span class='co'># run (and build result for) ad-hoc query</span>
+<span class='no'>d</span> <span class='kw'>%.&gt;%</span>
+  <span class='fu'><a href='extend_nse.html'>extend_nse</a></span>(<span class='no'>.</span>, <span class='no'>c</span> <span class='kw'>:=</span> <span class='fu'>sqrt</span>(<span class='no'>R2</span>)) <span class='kw'>%.&gt;%</span>
+  <span class='fu'><a href='orderby.html'>orderby</a></span>(<span class='no'>.</span>, <span class='st'>"R2"</span>, <span class='kw'>desc</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>%.&gt;%</span>
+  <span class='fu'>execute</span>(<span class='no'>.</span>)</div><div class='output co'>#&gt;   AUC  R2  D z         c
+#&gt; 1 0.6 0.2 NA 2 0.4472136
+#&gt; 2 0.6 0.1 NA 2 0.3162278</div><div class='input'><span class='co'># print ad-hoc query (result only available for printing)</span>
+<span class='no'>d</span> <span class='kw'>%.&gt;%</span>
+  <span class='fu'><a href='extend_nse.html'>extend_nse</a></span>(<span class='no'>.</span>, <span class='no'>c</span> <span class='kw'>:=</span> <span class='fu'>sqrt</span>(<span class='no'>R2</span>)) <span class='kw'>%.&gt;%</span>
+  <span class='fu'><a href='orderby.html'>orderby</a></span>(<span class='no'>.</span>, <span class='st'>"R2"</span>, <span class='kw'>desc</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt;   AUC  R2  D z         c
+#&gt; 1 0.6 0.2 NA 2 0.4472136
+#&gt; 2 0.6 0.1 NA 2 0.3162278</div><div class='input'>
+<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>winvector_temp_db_handle</span>$<span class='no'>db</span>)
+<span class='no'>winvector_temp_db_handle</span> <span class='kw'>&lt;-</span> <span class='kw'>NULL</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

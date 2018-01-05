@@ -13,8 +13,8 @@ Description: Supplies relational algebra style commands for SQL based data manip
 License: GPL-3
 Encoding: UTF-8
 Depends:
-  wrapr (>= 1.0.2),
-  cdata (>= 0.5.0)
+  wrapr (>= 1.1.0),
+  cdata (>= 0.5.1)
 Imports:
   DBI,
   RSQLite

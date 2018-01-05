@@ -26,19 +26,19 @@
 #'
 #' execute(q, data = d)
 #'
-#' # # with wrapr version 1.1.0 or greater:
-#' # d %.>% q
-#' # # run (and build result for) ad-hoc query
-#' # d %.>%
-#' #   extend_nse(., c := sqrt(R2)) %.>%
-#' #   orderby(., "R2", desc = TRUE) %.>%
-#' #   execute(.)
-#' # # print ad-hoc query (result only available for printing)
-#' # d %.>%
-#' #   extend_nse(., c := sqrt(R2)) %.>%
-#' #   orderby(., "R2", desc = TRUE)
+#' d %.>% q
+#' # run (and build result for) ad-hoc query
+#' d %.>%
+#'   extend_nse(., c := sqrt(R2)) %.>%
+#'   orderby(., "R2", desc = TRUE) %.>%
+#'   execute(.)
+#' # print ad-hoc query (result only available for printing)
+#' d %.>%
+#'   extend_nse(., c := sqrt(R2)) %.>%
+#'   orderby(., "R2", desc = TRUE)
 #'
 #' DBI::dbDisconnect(winvector_temp_db_handle$db)
+#' winvector_temp_db_handle <- NULL
 #'
 #' @export
 #'
@@ -113,19 +113,19 @@ rquery_apply_to_data_frame <- function(pipe_left_arg,
 #'
 #' execute(q, data = d)
 #'
-#' # # with wrapr version 1.1.0 or greater:
-#' # d %.>% q
-#' # # run (and build result for) ad-hoc query
-#' # d %.>%
-#' #   extend_nse(., c := sqrt(R2)) %.>%
-#' #   orderby(., "R2", desc = TRUE) %.>%
-#' #   execute(.)
-#' # # print ad-hoc query (result only available for printing)
-#' # d %.>%
-#' #   extend_nse(., c := sqrt(R2)) %.>%
-#' #   orderby(., "R2", desc = TRUE)
+#' d %.>% q
+#' # run (and build result for) ad-hoc query
+#' d %.>%
+#'   extend_nse(., c := sqrt(R2)) %.>%
+#'   orderby(., "R2", desc = TRUE) %.>%
+#'   execute(.)
+#' # print ad-hoc query (result only available for printing)
+#' d %.>%
+#'   extend_nse(., c := sqrt(R2)) %.>%
+#'   orderby(., "R2", desc = TRUE)
 #'
 #' DBI::dbDisconnect(winvector_temp_db_handle$db)
+#' winvector_temp_db_handle <- NULL
 #'
 #' @export
 #'
