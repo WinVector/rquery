@@ -84,7 +84,7 @@ plan <- d1 %.>%
 cat(format(plan))
 ```
 
-Notice `rquery::extend_se()` split the work into 3 unambiguous groups.  The statements inside each group can now be executed in any order (or even in parallel) with no ambiguity of meaning or risk of error.
+Notice `rquery::extend_se()` split the work into 3 unambiguous groups.  The statements inside each group can now be executed in any order (or even in parallel) with no ambiguity of meaning or risk of error.  The goal was: split into a small number of groups such that the observable execution semantics are very close to executing the original statements in order in completely separate groups (which is likely what a user intends).
 
 ```{r sql1, comment=""}
 sql <- to_sql(plan, my_db)
