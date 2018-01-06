@@ -9,8 +9,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-`rquery`'s primary workflow is building database operator pipelines that start with
-models of the table involved.
+`rquery`'s primary workflow is building re-usable database operator pipelines.
 
 Let's try an example. First let's set up our example database and data.
 
@@ -38,10 +37,12 @@ Now we can define a query over this table.
 ```{r q1}
 q <- d %.>%
   select_rows_nse(., R2 > 0.14) %.>%
-  extend_nse(., c = sqrt(R2))
+  extend_nse(., c = sqrt(R2)) %.>%
+  select_columns(., c("AUC", "R2", "c"))
 ```
 
 The idea is:
+
   * The variable `d` is a table model (name of the table and a set of assumed column names) that allows us to reason about an actual database table to specified later.
   * The query `q` is a sequence of operators we can hold, examine, and alter.
 
@@ -100,7 +101,8 @@ dL %.>%
 
 dL %.>%
   select_rows_nse(., R2 > 0.14) %.>%
-  extend_nse(., c = sqrt(R2)) %.>%
+  extend_nse(., c = sqrt(R2))  %.>%
+  select_columns(., c("AUC", "R2", "c")) %.>%
   knitr::kable(.)
 ```
 
@@ -109,7 +111,8 @@ Using a function wrapper we can also save ad hoc pipelines for later use.
 ```{r dfahs}
 q2 <- . := {
   select_rows_nse(., R2 > 0.14) %.>%
-  extend_nse(., c = sqrt(R2))
+  extend_nse(., c = sqrt(R2)) %.>%
+  select_columns(., c("AUC", "R2", "c"))
 }
 
 dL %.>% 
@@ -120,16 +123,37 @@ dL %.>%
 Or we can use a table model based pipeline directly (without needing additional wrapping).
 
 ```{r dm}
+needed_columns <- columns_used(q)
+print(needed_columns)
+
 q3 <- table_source(table_name = 'tmp', 
-                   columns = colnames(dL)) %.>%
+                   columns = needed_columns$d) %.>%
   select_rows_nse(., R2 > 0.14) %.>%
-  extend_nse(., c = sqrt(R2))
+  extend_nse(., c = sqrt(R2)) %.>%
+  select_columns(., c("AUC", "R2", "c"))
 
 dL %.>% 
   q3 %.>%
   knitr::kable(.)
 ```
 
+For stored queries we either need the table model (which places a bound on what columns are 
+thought to exist in the table) or a function wrapper (which allows us to use the later
+to be named table as our future table bound).
+
+We can also use the original pipeline `q`, but only after removing the original backing table
+(for safety the ad hoc system will not overwrite existing tables).
+
+```{r dmuseq}
+DBI::dbExecute(db, "DROP TABLE d")
+
+dL %.>% 
+  q %.>%
+  knitr::kable(.)
+```
+
+
+And that is the ad hoc query system for `rquery`.
 
 ```{r cleanup}
 DBI::dbDisconnect(winvector_temp_db_handle$db)

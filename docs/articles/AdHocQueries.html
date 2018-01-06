@@ -84,7 +84,7 @@
     
     
 <div class="contents">
-<p><code>rquery</code>’s primary workflow is building database operator pipelines that start with models of the table involved.</p>
+<p><code>rquery</code>’s primary workflow is building re-usable database operator pipelines.</p>
 <p>Let’s try an example. First let’s set up our example database and data.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">"rquery"</span>)</code></pre></div>
 <pre><code>## Loading required package: wrapr</code></pre>
@@ -114,59 +114,63 @@ d &lt;-<span class="st"> </span><span class="kw"><a href="../reference/dbi_table
 <p>Now we can define a query over this table.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">q &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/select_rows_nse.html">select_rows_nse</a></span>(., R2 <span class="op">&gt;</span><span class="st"> </span><span class="fl">0.14</span>) <span class="op">%.&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="../reference/extend_nse.html">extend_nse</a></span>(., <span class="dt">c =</span> <span class="kw">sqrt</span>(R2))</code></pre></div>
-<p>The idea is: * The variable <code>d</code> is a table model (name of the table and a set of assumed column names) that allows us to reason about an actual database table to specified later. * The query <code>q</code> is a sequence of operators we can hold, examine, and alter.</p>
+<span class="st">  </span><span class="kw"><a href="../reference/extend_nse.html">extend_nse</a></span>(., <span class="dt">c =</span> <span class="kw">sqrt</span>(R2)) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/select_columns.html">select_columns</a></span>(., <span class="kw">c</span>(<span class="st">"AUC"</span>, <span class="st">"R2"</span>, <span class="st">"c"</span>))</code></pre></div>
+<p>The idea is:</p>
+<ul>
+<li>The variable <code>d</code> is a table model (name of the table and a set of assumed column names) that allows us to reason about an actual database table to specified later.</li>
+<li>The query <code>q</code> is a sequence of operators we can hold, examine, and alter.</li>
+</ul>
 <p>We can print the query/operator pipeline:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw">format</span>(q))</code></pre></div>
 <pre><code>table('d') %.&gt;%
  select_rows(.,  := R2 &gt; 0.14) %.&gt;%
  extend(.,
-  c := sqrt(R2))</code></pre>
+  c := sqrt(R2)) %.&gt;%
+ select_columns(., AUC, R2, c)</code></pre>
 <p>And we can ask questions of it:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/column_names.html">column_names</a></span>(q)</code></pre></div>
-<pre><code>## [1] "AUC" "c"   "D"   "R2"  "z"</code></pre>
+<pre><code>## [1] "AUC" "R2"  "c"</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/tables_used.html">tables_used</a></span>(q)</code></pre></div>
 <pre><code>## $d
 ## [1] "table('d')"</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/columns_used.html">columns_used</a></span>(q)</code></pre></div>
 <pre><code>## $d
-## [1] "AUC" "R2"  "D"   "z"</code></pre>
+## [1] "AUC" "R2"</code></pre>
 <p>And we can convert the operator pipeline to <code>SQL</code> which can then be applied to an actual database table.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sql &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(q, db)
 <span class="kw">cat</span>(sql)</code></pre></div>
 <pre><code>SELECT
  `AUC`,
- `D`,
  `R2`,
- `z`,
- sqrt ( `R2` )  AS `c`
+ `c`
 FROM (
- SELECT * FROM (
-  SELECT
-   `d`.`AUC`,
-   `d`.`R2`,
-   `d`.`D`,
-   `d`.`z`
-  FROM
-   `d`
- ) tsql_0000
- WHERE `R2` &gt; 0.14
- ) tsql_0001</code></pre>
+ SELECT
+  `AUC`,
+  `R2`,
+  sqrt ( `R2` )  AS `c`
+ FROM (
+  SELECT * FROM (
+   SELECT
+    `d`.`AUC`,
+    `d`.`R2`
+   FROM
+    `d`
+  ) tsql_0000
+  WHERE `R2` &gt; 0.14
+  ) tsql_0001
+) tsql_0002</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery">dbGetQuery</a></span>(db, sql) <span class="op">%.&gt;%</span>
 <span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">AUC</th>
-<th align="right">D</th>
 <th align="right">R2</th>
-<th align="right">z</th>
 <th align="right">c</th>
 </tr></thead>
 <tbody><tr class="odd">
 <td align="right">0.6</td>
-<td align="right">NA</td>
 <td align="right">0.2</td>
-<td align="right">2</td>
 <td align="right">0.4472136</td>
 </tr></tbody>
 </table>
@@ -198,28 +202,26 @@ dL <span class="op">%.&gt;%</span>
 </table>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dL <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/select_rows_nse.html">select_rows_nse</a></span>(., R2 <span class="op">&gt;</span><span class="st"> </span><span class="fl">0.14</span>) <span class="op">%.&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="../reference/extend_nse.html">extend_nse</a></span>(., <span class="dt">c =</span> <span class="kw">sqrt</span>(R2)) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/extend_nse.html">extend_nse</a></span>(., <span class="dt">c =</span> <span class="kw">sqrt</span>(R2))  <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/select_columns.html">select_columns</a></span>(., <span class="kw">c</span>(<span class="st">"AUC"</span>, <span class="st">"R2"</span>, <span class="st">"c"</span>)) <span class="op">%.&gt;%</span>
 <span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">AUC</th>
-<th align="right">D</th>
 <th align="right">R2</th>
-<th align="right">z</th>
 <th align="right">c</th>
 </tr></thead>
 <tbody><tr class="odd">
 <td align="right">0.6</td>
-<td align="right">NA</td>
 <td align="right">0.2</td>
-<td align="right">2</td>
 <td align="right">0.4472136</td>
 </tr></tbody>
 </table>
 <p>Using a function wrapper we can also save ad hoc pipelines for later use.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">q2 &lt;-<span class="st"> </span>. <span class="op">:</span><span class="er">=</span><span class="st"> </span>{
   <span class="kw"><a href="../reference/select_rows_nse.html">select_rows_nse</a></span>(., R2 <span class="op">&gt;</span><span class="st"> </span><span class="fl">0.14</span>) <span class="op">%.&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="../reference/extend_nse.html">extend_nse</a></span>(., <span class="dt">c =</span> <span class="kw">sqrt</span>(R2))
+<span class="st">  </span><span class="kw"><a href="../reference/extend_nse.html">extend_nse</a></span>(., <span class="dt">c =</span> <span class="kw">sqrt</span>(R2)) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/select_columns.html">select_columns</a></span>(., <span class="kw">c</span>(<span class="st">"AUC"</span>, <span class="st">"R2"</span>, <span class="st">"c"</span>))
 }
 
 dL <span class="op">%.&gt;%</span><span class="st"> </span>
@@ -228,24 +230,25 @@ dL <span class="op">%.&gt;%</span><span class="st"> </span>
 <table class="table">
 <thead><tr class="header">
 <th align="right">AUC</th>
-<th align="right">D</th>
 <th align="right">R2</th>
-<th align="right">z</th>
 <th align="right">c</th>
 </tr></thead>
 <tbody><tr class="odd">
 <td align="right">0.6</td>
-<td align="right">NA</td>
 <td align="right">0.2</td>
-<td align="right">2</td>
 <td align="right">0.4472136</td>
 </tr></tbody>
 </table>
 <p>Or we can use a table model based pipeline directly (without needing additional wrapping).</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">needed_columns &lt;-<span class="st"> </span><span class="kw"><a href="../reference/columns_used.html">columns_used</a></span>(q)
+<span class="kw">print</span>(needed_columns)</code></pre></div>
+<pre><code>## $d
+## [1] "AUC" "R2"</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">q3 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/table_source.html">table_source</a></span>(<span class="dt">table_name =</span> <span class="st">'tmp'</span>, 
-                   <span class="dt">columns =</span> <span class="kw">colnames</span>(dL)) <span class="op">%.&gt;%</span>
+                   <span class="dt">columns =</span> needed_columns<span class="op">$</span>d) <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/select_rows_nse.html">select_rows_nse</a></span>(., R2 <span class="op">&gt;</span><span class="st"> </span><span class="fl">0.14</span>) <span class="op">%.&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="../reference/extend_nse.html">extend_nse</a></span>(., <span class="dt">c =</span> <span class="kw">sqrt</span>(R2))
+<span class="st">  </span><span class="kw"><a href="../reference/extend_nse.html">extend_nse</a></span>(., <span class="dt">c =</span> <span class="kw">sqrt</span>(R2)) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/select_columns.html">select_columns</a></span>(., <span class="kw">c</span>(<span class="st">"AUC"</span>, <span class="st">"R2"</span>, <span class="st">"c"</span>))
 
 dL <span class="op">%.&gt;%</span><span class="st"> </span>
 <span class="st">  </span>q3 <span class="op">%.&gt;%</span>
@@ -253,19 +256,35 @@ dL <span class="op">%.&gt;%</span><span class="st"> </span>
 <table class="table">
 <thead><tr class="header">
 <th align="right">AUC</th>
-<th align="right">D</th>
 <th align="right">R2</th>
-<th align="right">z</th>
 <th align="right">c</th>
 </tr></thead>
 <tbody><tr class="odd">
 <td align="right">0.6</td>
-<td align="right">NA</td>
 <td align="right">0.2</td>
-<td align="right">2</td>
 <td align="right">0.4472136</td>
 </tr></tbody>
 </table>
+<p>For stored queries we either need the table model (which places a bound on what columns are thought to exist in the table) or a function wrapper (which allows us to use the later to be named table as our future table bound).</p>
+<p>We can also use the original pipeline <code>q</code>, but only after removing the original backing table (for safety the ad hoc system will not overwrite existing tables).</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbExecute">dbExecute</a></span>(db, <span class="st">"DROP TABLE d"</span>)</code></pre></div>
+<pre><code>## [1] 1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dL <span class="op">%.&gt;%</span><span class="st"> </span>
+<span class="st">  </span>q <span class="op">%.&gt;%</span>
+<span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="right">AUC</th>
+<th align="right">R2</th>
+<th align="right">c</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td align="right">0.6</td>
+<td align="right">0.2</td>
+<td align="right">0.4472136</td>
+</tr></tbody>
+</table>
+<p>And that is the ad hoc query system for <code>rquery</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect">dbDisconnect</a></span>(winvector_temp_db_handle<span class="op">$</span>db)
 winvector_temp_db_handle &lt;-<span class="st"> </span><span class="ot">NULL</span></code></pre></div>
 </div>
