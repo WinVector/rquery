@@ -3,6 +3,9 @@ Assignment Paritioner
 John Mount, Win-Vector LLC
 2018-01-06
 
+rquery example
+--------------
+
 `rquery::extend_se()` and `rquery::extend_nse()` each automatically partition a sequence of assignments so that no statement is using any value created in the same partition element or group. This is to eliminate potentially dangerous ambiguity in statements.
 
 For such a partition: the evaluation result does not depend on the order of execution of the statements in each group (as they are all independent of each other's left-hand-sides). A no-dependency small number of groups partition is *very* helpful when executing expressions on `SQL` based data interfaces (such as `Apache Spark`).
@@ -283,6 +286,9 @@ DBI::dbGetQuery(my_db, sql2) %.>%
 |    4| T    | C    | T    | C    | T    | C    | T    | C    | C    | T    |
 
 Notice the returned tables are identical (as they should be).
+
+dplyr example
+-------------
 
 `dplyr` on databases, on the other hand, has trouble with this sort of statement (prior to [factoring/partitioning](https://winvector.github.io/seplyr/reference/factor_mutate.html)).
 
