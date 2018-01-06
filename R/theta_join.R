@@ -152,6 +152,7 @@ theta_join_nse <- function(a, b,
                           jointype = 'INNER',
                           suffix = c("_a", "_b"),
                           env = parent.frame()) {
+  exprq <- substitute(expr)
   if(is.data.frame(a) || is.data.frame(b)) {
     if((!is.data.frame(a)) || (!is.data.frame(b))) {
       stop("rquery::theta_join_nse if one input is a data.frame, both must be")
@@ -164,7 +165,7 @@ theta_join_nse <- function(a, b,
     dnodeb <- table_source(tmp_namea, colnames(b))
     dnodeb$data <- b
     enode <- theta_join_nse(dnodea, dnodeb,
-                            expr,
+                            deparse(exprq),
                             jointype = jointype,
                             suffix = suffix,
                             env = env)
@@ -176,7 +177,6 @@ theta_join_nse <- function(a, b,
   vnam <- setdiff(paste("rquery_thetajoin_condition",
                         1:(length(have)+1), sep = "_"),
                   have)[[1]]
-  exprq <- substitute(expr)
   parsed <- parse_nse(a, list(exprq),
                       env = env,
                       have = have)
