@@ -68,18 +68,18 @@ select_rows_se <- function(source, expr,
 #'
 select_rows_nse <- function(source, expr,
                             env = parent.frame()) {
+  exprq <- substitute(expr)
   if(is.data.frame(source)) {
     tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
     dnode <- table_source(tmp_name, colnames(source))
     dnode$data <- source
-    enode <- select_rows_nse(dnode, expr,
+    enode <- select_rows_se(dnode, deparse(exprq),
                              env = env)
     return(enode)
   }
   have <- column_names(source)
   vnam <- setdiff(paste("rquery_select_condition", 1:(length(have)+1), sep = "_"),
                   have)[[1]]
-  exprq <- substitute(expr)
   parsed <- parse_nse(source, list(exprq), env = env)
   parsed[[1]]$symbols_produced <- vnam
   assignments <- unpack_assignments(source, parsed)

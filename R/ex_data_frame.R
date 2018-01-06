@@ -147,3 +147,8 @@ execute <- function(node_tree,
   }
   NULL
 }
+
+#' @export
+as.data.frame.relop <- function (x, row.names = NULL, optional = FALSE, ...) {
+  execute(x, env = parent.frame())
+}

@@ -1,0 +1,138 @@
+---
+title: "Ad Hoc Queries"
+author: "John Mount, Win-Vector LLC"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Ad Hoc Queries}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+`rquery`'s primary workflow is building database operator pipelines that start with
+models of the table involved.
+
+Let's try an example. First let's set up our example database and data.
+
+```{r setup}
+library("rquery")
+db = DBI::dbConnect(RSQLite::SQLite(), 
+                    ":memory:")
+RSQLite::initExtension(db)
+
+DBI::dbWriteTable(db,
+                  'd',
+                  data.frame(AUC = 0.6, 
+                             R2 = c(0.1, 0.2), 
+                             D = NA, z = 2),
+                  overwrite = TRUE,
+                  temporary = TRUE)
+d <- dbi_table(db, 'd')
+print(d)
+
+qlook(db, d$table_name)
+```
+
+Now we can define a query over this table.
+
+```{r q1}
+q <- d %.>%
+  select_rows_nse(., R2 > 0.14) %.>%
+  extend_nse(., c = sqrt(R2))
+```
+
+The idea is:
+  * The variable `d` is a table model (name of the table and a set of assumed column names) that allows us to reason about an actual database table to specified later.
+  * The query `q` is a sequence of operators we can hold, examine, and alter.
+
+We can print the query/operator pipeline:
+
+```{r q1p, comment=""}
+cat(format(q))
+```
+
+And we can ask questions of it:
+
+```{r q1q}
+column_names(q)
+
+tables_used(q)
+
+columns_used(q)
+```
+
+And we can convert the operator pipeline to `SQL` which can then be applied
+to an actual database table.
+
+```{r q1s, comment=""}
+sql <- to_sql(q, db)
+cat(sql)
+```
+
+```{r q1e}
+DBI::dbGetQuery(db, sql) %.>%
+  knitr::kable(.)
+```
+
+`rquery` also has an "Ad Hoc" mode for interactive analysis.  
+In this mode things are sped up in that the use can work with in-memory tables
+and also skip the table modeling step.
+
+Let's first set the global variable `winvector_temp_db_handle` to our 
+database handle so the ad hoc mode knows which database to use to implement
+the analyses.
+
+```{r defdb}
+winvector_temp_db_handle <- list(db = db)
+```
+
+TODO: inspect all `data.frame` nse promoters.
+
+We can now run operators directly on in-memory `data.frame`s.
+
+```{r df1}
+dL <-  data.frame(AUC = 0.6, 
+                  R2 = c(0.1, 0.2), 
+                  D = NA, z = 2)
+
+dL %.>%
+  select_rows_nse(., R2 > 0.14) %.>%
+  knitr::kable(.)
+
+dL %.>%
+  select_rows_nse(., R2 > 0.14) %.>%
+  extend_nse(., c = sqrt(R2)) %.>%
+  knitr::kable(.)
+```
+
+Using a function wrapper we can also save ad hoc pipelines for later use.
+
+```{r dfahs}
+q2 <- . := {
+  select_rows_nse(., R2 > 0.14) %.>%
+  extend_nse(., c = sqrt(R2))
+}
+
+dL %.>% 
+  q2 %.>%
+  knitr::kable(.)
+```
+
+Or we can use a table model based pipleline directly (without needing additional wraping).
+
+```{r dm}
+q3 <- table_source(table_name = 'tmp', 
+                   columns = colnames(dL)) %.>%
+  select_rows_nse(., R2 > 0.14) %.>%
+  extend_nse(., c = sqrt(R2))
+
+dL %.>% 
+  q3 %.>%
+  knitr::kable(.)
+```
+
+
+```{r cleanup}
+DBI::dbDisconnect(winvector_temp_db_handle$db)
+winvector_temp_db_handle <- NULL
+```
