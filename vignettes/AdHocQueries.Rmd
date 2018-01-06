@@ -9,6 +9,8 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+# Database Operator Pipelines
+
 `rquery`'s primary workflow is building re-usable database operator pipelines.
 
 Let's try an example. First let's set up our example database and data.
@@ -74,6 +76,8 @@ cat(sql)
 DBI::dbGetQuery(db, sql) %.>%
   knitr::kable(.)
 ```
+
+# Ad Hoc mode
 
 `rquery` also has an "Ad Hoc" mode for interactive analysis.  
 In this mode things are sped up in that the use can work with in-memory tables
@@ -152,8 +156,93 @@ dL %.>%
   knitr::kable(.)
 ```
 
+# How Ad Hoc Mode Works
 
-And that is the ad hoc query system for `rquery`.
+Ad Hoc mode is implemented on top of `wrapr::%.>%` using a couple of `R` tricks.
+Unlike `magrittr::%>%` the `wrapr::%.>%` operator does not delay evaluation or capture
+the entire pipeline, it actually executes it arguments in order at the time of deceleration.
+
+## Basic ad hoc mode
+
+The basic version of ad hoc mode is implemented by overriding the `S3` classes 
+`as.data.frame()` and `print()` for our `rquery::"relop"` operator trees / pipelines.
+
+
+Consider our earlier ad hoc pipeline:
+
+```{r adhocp1}
+z <- dL %.>%
+  select_rows_nse(., R2 > 0.14) %.>%
+  extend_nse(., c = sqrt(R2))  %.>%
+  select_columns(., c("AUC", "R2", "c"))
+
+class(z)
+```
+
+Notice `z` declares class `"relop"`.  This means `z` is a `rquery` operator tree.
+Formatting it shows that it is starts with "`table+()`" node, meaning the operator tree has a reference
+to an in-memory `data.frame` bound into it.
+
+
+```{r adhocp2, comment=""}
+
+cat(format(z))
+
+cat(to_sql(z, db))
+```
+
+
+The production of `SQL` and execution is triggered if we pass `z` to one of the generic `S3`
+functions `as.data.frame()` or `print()` (including the possible implicit `print()` implied by 
+`R`'s statement rules):
+
+```{r adhocqp}
+print(z)
+
+as.data.frame(z)
+```
+
+`knitr::kable()` itself calls `as.data.frame()` at some point, allowing `z` results
+to formatted by passing to `knitr::kable()`:
+
+```{r adhocqk}
+knitr::kable(z)
+```
+
+## Stored ad hoc pipeline mode
+
+To re-use regular operator trees as ad hoc pipelines we need one more trick: the operator tree
+object needs to act as if it were a function. To achieve the above we add a [`wrapr::"wrapr_applicable"`](https://winvector.github.io/wrapr/articles/wrapr_applicable.html) class deceleration to our `rqeyr::"relop"` operator/query nodes.  This gives us the ability to treat an `rquery` operator tree as a data processing pipeline.  Results are then produced by overriding the `S3` methods `as.data.frame()` and `print()`.
+
+This is a bit simpler if demonstrated.  
+
+```{r qpiplelinea}
+class(q)
+```
+
+```{r qpiplelineaf, comment=""}
+cat(format(q))
+```
+
+```{r qexq}
+dL %.>% 
+  q %.>%
+  knitr::kable(.)
+```
+
+For an `R` object `q` that adds `"wrapr_applicable"` to its class declarations the `wrapr` pipeline operator (`%.>%`)
+will interpret "`dL %.>% q`" as essentially "`(q$wrapr_function)(dL)`".  The `"wrapr_applicable"` facility allows objects to declare what sort of function they would like to be treated a in a pipeline (and the actual signature of the call is "`(q$wrapr_function)(dL, q, parent.frame())`", so the object is given a reference to itself as the second argument of the special function).
+
+
+# Cleanup
+
+The ad hoc method defaults to using a transient `RSQLite` database connection.  
+Our a non-transient `DBI` database connection can be specified by adding one as the "`db`" value
+in a list bound to the global variable "`winvector_temp_db_handle`" (as we did in this note).
+If one has done this one can use a more powerful database (such as `PostgeSQL` which has window 
+functions).  In this case one should also probably close the `DB` connection or at least break
+the reference when finished as follows.
+
 
 ```{r cleanup}
 DBI::dbDisconnect(winvector_temp_db_handle$db)

@@ -84,6 +84,9 @@
     
     
 <div class="contents">
+<div id="database-operator-pipelines" class="section level1">
+<h1 class="hasAnchor">
+<a href="#database-operator-pipelines" class="anchor"></a>Database Operator Pipelines</h1>
 <p><code>rquery</code>’s primary workflow is building re-usable database operator pipelines.</p>
 <p>Let’s try an example. First let’s set up our example database and data.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">"rquery"</span>)</code></pre></div>
@@ -174,6 +177,10 @@ FROM (
 <td align="right">0.4472136</td>
 </tr></tbody>
 </table>
+</div>
+<div id="ad-hoc-mode" class="section level1">
+<h1 class="hasAnchor">
+<a href="#ad-hoc-mode" class="anchor"></a>Ad Hoc mode</h1>
 <p><code>rquery</code> also has an “Ad Hoc” mode for interactive analysis.<br>
 In this mode things are sped up in that the use can work with in-memory tables and also skip the table modeling step.</p>
 <p>Let’s first set the global variable <code>winvector_temp_db_handle</code> to our database handle so the ad hoc mode knows which database to use to implement the analyses.</p>
@@ -284,13 +291,131 @@ dL <span class="op">%.&gt;%</span><span class="st"> </span>
 <td align="right">0.4472136</td>
 </tr></tbody>
 </table>
-<p>And that is the ad hoc query system for <code>rquery</code>.</p>
+</div>
+<div id="how-ad-hoc-mode-works" class="section level1">
+<h1 class="hasAnchor">
+<a href="#how-ad-hoc-mode-works" class="anchor"></a>How Ad Hoc Mode Works</h1>
+<p>Ad Hoc mode is implemented on top of <code>wrapr::%.&gt;%</code> using a couple of <code>R</code> tricks. Unlike <code>magrittr::%&gt;%</code> the <code>wrapr::%.&gt;%</code> operator does not delay evaluation or capture the entire pipeline, it actually executes it arguments in order at the time of deceleration.</p>
+<div id="basic-ad-hoc-mode" class="section level2">
+<h2 class="hasAnchor">
+<a href="#basic-ad-hoc-mode" class="anchor"></a>Basic ad hoc mode</h2>
+<p>The basic version of ad hoc mode is implemented by overriding the <code>S3</code> classes <code>as.data.frame()</code> and <code>print()</code> for our <code>rquery::"relop"</code> operator trees / pipelines.</p>
+<p>Consider our earlier ad hoc pipeline:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">z &lt;-<span class="st"> </span>dL <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/select_rows_nse.html">select_rows_nse</a></span>(., R2 <span class="op">&gt;</span><span class="st"> </span><span class="fl">0.14</span>) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/extend_nse.html">extend_nse</a></span>(., <span class="dt">c =</span> <span class="kw">sqrt</span>(R2))  <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/select_columns.html">select_columns</a></span>(., <span class="kw">c</span>(<span class="st">"AUC"</span>, <span class="st">"R2"</span>, <span class="st">"c"</span>))
+
+<span class="kw">class</span>(z)</code></pre></div>
+<pre><code>## [1] "relop_select_columns" "relop"                "wrapr_applicable"</code></pre>
+<p>Notice <code>z</code> declares class <code>"relop"</code>. This means <code>z</code> is a <code>rquery</code> operator tree. Formatting it shows that it is starts with “<code>table+()</code>” node, meaning the operator tree has a reference to an in-memory <code>data.frame</code> bound into it.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw">format</span>(z))</code></pre></div>
+<pre><code>table+('rquery_tmp_eqfb6509hqjuunkzgcts_0000000000') %.&gt;%
+ select_rows(., rquery_select_condition_1 := R2 &gt; 0.14) %.&gt;%
+ extend(.,
+  c := sqrt(R2)) %.&gt;%
+ select_columns(., AUC, R2, c)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(z, db))</code></pre></div>
+<pre><code>SELECT
+ `AUC`,
+ `R2`,
+ `c`
+FROM (
+ SELECT
+  `AUC`,
+  `R2`,
+  sqrt ( `R2` )  AS `c`
+ FROM (
+  SELECT * FROM (
+   SELECT
+    `rquery_tmp_eqfb6509hqjuunkzgcts_0000000000`.`AUC`,
+    `rquery_tmp_eqfb6509hqjuunkzgcts_0000000000`.`R2`
+   FROM
+    `rquery_tmp_eqfb6509hqjuunkzgcts_0000000000`
+  ) tsql_0000
+  WHERE `R2` &gt; 0.14
+  ) tsql_0001
+) tsql_0002</code></pre>
+<p>The production of <code>SQL</code> and execution is triggered if we pass <code>z</code> to one of the generic <code>S3</code> functions <code>as.data.frame()</code> or <code>print()</code> (including the possible implicit <code>print()</code> implied by <code>R</code>’s statement rules):</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(z)</code></pre></div>
+<pre><code>##   AUC  R2         c
+## 1 0.6 0.2 0.4472136</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">as.data.frame</span>(z)</code></pre></div>
+<pre><code>##   AUC  R2         c
+## 1 0.6 0.2 0.4472136</code></pre>
+<p><code><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">knitr::kable()</a></code> itself calls <code>as.data.frame()</code> at some point, allowing <code>z</code> results to formatted by passing to <code><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">knitr::kable()</a></code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(z)</code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="right">AUC</th>
+<th align="right">R2</th>
+<th align="right">c</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td align="right">0.6</td>
+<td align="right">0.2</td>
+<td align="right">0.4472136</td>
+</tr></tbody>
+</table>
+</div>
+<div id="stored-ad-hoc-pipeline-mode" class="section level2">
+<h2 class="hasAnchor">
+<a href="#stored-ad-hoc-pipeline-mode" class="anchor"></a>Stored ad hoc pipeline mode</h2>
+<p>To re-use regular operator trees as ad hoc pipelines we need one more trick: the operator tree object needs to act as if it were a function. To achieve the above we add a <a href="https://winvector.github.io/wrapr/articles/wrapr_applicable.html"><code>wrapr::"wrapr_applicable"</code></a> class deceleration to our <code>rqeyr::"relop"</code> operator/query nodes. This gives us the ability to treat an <code>rquery</code> operator tree as a data processing pipeline. Results are then produced by overriding the <code>S3</code> methods <code>as.data.frame()</code> and <code>print()</code>.</p>
+<p>This is a bit simpler if demonstrated.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">class</span>(q)</code></pre></div>
+<pre><code>## [1] "relop_select_columns" "relop"                "wrapr_applicable"</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw">format</span>(q))</code></pre></div>
+<pre><code>table('d') %.&gt;%
+ select_rows(.,  := R2 &gt; 0.14) %.&gt;%
+ extend(.,
+  c := sqrt(R2)) %.&gt;%
+ select_columns(., AUC, R2, c)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dL <span class="op">%.&gt;%</span><span class="st"> </span>
+<span class="st">  </span>q <span class="op">%.&gt;%</span>
+<span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="right">AUC</th>
+<th align="right">R2</th>
+<th align="right">c</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td align="right">0.6</td>
+<td align="right">0.2</td>
+<td align="right">0.4472136</td>
+</tr></tbody>
+</table>
+<p>For an <code>R</code> object <code>q</code> that adds <code>"wrapr_applicable"</code> to its class declarations the <code>wrapr</code> pipeline operator (<code>%.&gt;%</code>) will interpret “<code>dL %.&gt;% q</code>” as essentially “<code>(q$wrapr_function)(dL)</code>”. The <code>"wrapr_applicable"</code> facility allows objects to declare what sort of function they would like to be treated a in a pipeline (and the actual signature of the call is “<code>(q$wrapr_function)(dL, q, parent.frame())</code>”, so the object is given a reference to itself as the second argument of the special function).</p>
+</div>
+</div>
+<div id="cleanup" class="section level1">
+<h1 class="hasAnchor">
+<a href="#cleanup" class="anchor"></a>Cleanup</h1>
+<p>The ad hoc method defaults to using a transient <code>RSQLite</code> database connection.<br>
+Our a non-transient <code>DBI</code> database connection can be specified by adding one as the “<code>db</code>” value in a list bound to the global variable “<code>winvector_temp_db_handle</code>” (as we did in this note). If one has done this one can use a more powerful database (such as <code>PostgeSQL</code> which has window functions). In this case one should also probably close the <code>DB</code> connection or at least break the reference when finished as follows.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect">dbDisconnect</a></span>(winvector_temp_db_handle<span class="op">$</span>db)
 winvector_temp_db_handle &lt;-<span class="st"> </span><span class="ot">NULL</span></code></pre></div>
+</div>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+        <div id="tocnav">
+      <h2 class="hasAnchor">
+<a href="#tocnav" class="anchor"></a>Contents</h2>
+      <ul class="nav nav-pills nav-stacked">
+<li><a href="#database-operator-pipelines">Database Operator Pipelines</a></li>
+      <li><a href="#ad-hoc-mode">Ad Hoc mode</a></li>
+      <li>
+<a href="#how-ad-hoc-mode-works">How Ad Hoc Mode Works</a><ul class="nav nav-pills nav-stacked">
+<li><a href="#basic-ad-hoc-mode">Basic ad hoc mode</a></li>
+      <li><a href="#stored-ad-hoc-pipeline-mode">Stored ad hoc pipeline mode</a></li>
+      </ul>
+</li>
+      <li><a href="#cleanup">Cleanup</a></li>
+      </ul>
+</div>
       </div>
 
 </div>
