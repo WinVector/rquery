@@ -24,7 +24,7 @@ library("rquery")
 
 # example data
 set.seed(3463)
-d <- data.frame(id = seq_len(8))
+d <- data.frame(id = seq_len(4))
 for(group in c('a', 'b', 'c', 'd', 'e')) {
   d[[paste0("rand_", group)]] <- runif(nrow(d))
 }
@@ -154,7 +154,8 @@ DBI::dbGetQuery(my_db, sql2) %.>%
   knitr::kable(.)
 ```
 
-Notice the returned tables are identical (as they should be).
+Notice the returned tables are identical (as they should be, [which
+is not always the case for database backed `dplyr`](https://github.com/WinVector/rquery/blob/master/extras/AssigmentPartitioner.md#dplyr-example)).
 
 ```{r cleanup}
 DBI::dbDisconnect(my_db)

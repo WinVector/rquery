@@ -94,7 +94,7 @@
 <pre><code>Loading required package: cdata</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># example data</span>
 <span class="kw">set.seed</span>(<span class="dv">3463</span>)
-d &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">id =</span> <span class="kw">seq_len</span>(<span class="dv">8</span>))
+d &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">id =</span> <span class="kw">seq_len</span>(<span class="dv">4</span>))
 <span class="cf">for</span>(group <span class="cf">in</span> <span class="kw">c</span>(<span class="st">'a'</span>, <span class="st">'b'</span>, <span class="st">'c'</span>, <span class="st">'d'</span>, <span class="st">'e'</span>)) {
   d[[<span class="kw">paste0</span>(<span class="st">"rand_"</span>, group)]] &lt;-<span class="st"> </span><span class="kw">runif</span>(<span class="kw">nrow</span>(d))
 }
@@ -118,66 +118,34 @@ d1 <span class="op">%.&gt;%</span>
 <tr class="odd">
 <td align="right">1</td>
 <td align="right">0.8438177</td>
+<td align="right">0.9459773</td>
 <td align="right">0.2941489</td>
+<td align="right">0.1054046</td>
 <td align="right">0.3038159</td>
-<td align="right">0.2995439</td>
-<td align="right">0.5480026</td>
 </tr>
 <tr class="even">
 <td align="right">2</td>
 <td align="right">0.9045364</td>
+<td align="right">0.4839231</td>
 <td align="right">0.4654982</td>
+<td align="right">0.6617276</td>
 <td align="right">0.9056346</td>
-<td align="right">0.8120420</td>
-<td align="right">0.9372185</td>
 </tr>
 <tr class="odd">
 <td align="right">3</td>
 <td align="right">0.5496617</td>
+<td align="right">0.6112306</td>
 <td align="right">0.6989960</td>
+<td align="right">0.6536909</td>
 <td align="right">0.1683751</td>
-<td align="right">0.4343531</td>
-<td align="right">0.8829880</td>
 </tr>
 <tr class="even">
 <td align="right">4</td>
 <td align="right">0.6545816</td>
-<td align="right">0.9678277</td>
-<td align="right">0.0597492</td>
-<td align="right">0.9255471</td>
-<td align="right">0.9309038</td>
-</tr>
-<tr class="odd">
-<td align="right">5</td>
-<td align="right">0.9459773</td>
-<td align="right">0.1054046</td>
-<td align="right">0.5010538</td>
-<td align="right">0.0601368</td>
-<td align="right">0.7485002</td>
-</tr>
-<tr class="even">
-<td align="right">6</td>
-<td align="right">0.4839231</td>
-<td align="right">0.6617276</td>
-<td align="right">0.3697797</td>
-<td align="right">0.8623212</td>
-<td align="right">0.5131579</td>
-</tr>
-<tr class="odd">
-<td align="right">7</td>
-<td align="right">0.6112306</td>
-<td align="right">0.6536909</td>
-<td align="right">0.2838900</td>
-<td align="right">0.6700042</td>
-<td align="right">0.9088256</td>
-</tr>
-<tr class="even">
-<td align="right">8</td>
 <td align="right">0.6593733</td>
+<td align="right">0.9678277</td>
 <td align="right">0.8316179</td>
-<td align="right">0.7254980</td>
-<td align="right">0.3012025</td>
-<td align="right">0.4575715</td>
+<td align="right">0.0597492</td>
 </tr>
 </tbody>
 </table>
@@ -326,14 +294,14 @@ FROM (
 <td align="right">1</td>
 <td align="left">T</td>
 <td align="left">C</td>
+<td align="left">T</td>
+<td align="left">C</td>
 <td align="left">C</td>
 <td align="left">T</td>
 <td align="left">C</td>
 <td align="left">T</td>
 <td align="left">C</td>
 <td align="left">T</td>
-<td align="left">T</td>
-<td align="left">C</td>
 </tr>
 <tr class="even">
 <td align="right">2</td>
@@ -341,8 +309,8 @@ FROM (
 <td align="left">C</td>
 <td align="left">C</td>
 <td align="left">T</td>
-<td align="left">T</td>
 <td align="left">C</td>
+<td align="left">T</td>
 <td align="left">T</td>
 <td align="left">C</td>
 <td align="left">T</td>
@@ -354,12 +322,12 @@ FROM (
 <td align="left">C</td>
 <td align="left">T</td>
 <td align="left">C</td>
-<td align="left">C</td>
 <td align="left">T</td>
 <td align="left">C</td>
 <td align="left">T</td>
-<td align="left">T</td>
 <td align="left">C</td>
+<td align="left">C</td>
+<td align="left">T</td>
 </tr>
 <tr class="even">
 <td align="right">4</td>
@@ -367,62 +335,10 @@ FROM (
 <td align="left">C</td>
 <td align="left">T</td>
 <td align="left">C</td>
-<td align="left">C</td>
-<td align="left">T</td>
 <td align="left">T</td>
 <td align="left">C</td>
 <td align="left">T</td>
 <td align="left">C</td>
-</tr>
-<tr class="odd">
-<td align="right">5</td>
-<td align="left">T</td>
-<td align="left">C</td>
-<td align="left">C</td>
-<td align="left">T</td>
-<td align="left">T</td>
-<td align="left">C</td>
-<td align="left">C</td>
-<td align="left">T</td>
-<td align="left">T</td>
-<td align="left">C</td>
-</tr>
-<tr class="even">
-<td align="right">6</td>
-<td align="left">C</td>
-<td align="left">T</td>
-<td align="left">T</td>
-<td align="left">C</td>
-<td align="left">C</td>
-<td align="left">T</td>
-<td align="left">T</td>
-<td align="left">C</td>
-<td align="left">T</td>
-<td align="left">C</td>
-</tr>
-<tr class="odd">
-<td align="right">7</td>
-<td align="left">T</td>
-<td align="left">C</td>
-<td align="left">T</td>
-<td align="left">C</td>
-<td align="left">C</td>
-<td align="left">T</td>
-<td align="left">T</td>
-<td align="left">C</td>
-<td align="left">T</td>
-<td align="left">C</td>
-</tr>
-<tr class="even">
-<td align="right">8</td>
-<td align="left">T</td>
-<td align="left">C</td>
-<td align="left">T</td>
-<td align="left">C</td>
-<td align="left">T</td>
-<td align="left">C</td>
-<td align="left">C</td>
-<td align="left">T</td>
 <td align="left">C</td>
 <td align="left">T</td>
 </tr>
@@ -524,14 +440,14 @@ DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation
 <td align="right">1</td>
 <td align="left">T</td>
 <td align="left">C</td>
+<td align="left">T</td>
+<td align="left">C</td>
 <td align="left">C</td>
 <td align="left">T</td>
 <td align="left">C</td>
 <td align="left">T</td>
 <td align="left">C</td>
 <td align="left">T</td>
-<td align="left">T</td>
-<td align="left">C</td>
 </tr>
 <tr class="even">
 <td align="right">2</td>
@@ -539,8 +455,8 @@ DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation
 <td align="left">C</td>
 <td align="left">C</td>
 <td align="left">T</td>
-<td align="left">T</td>
 <td align="left">C</td>
+<td align="left">T</td>
 <td align="left">T</td>
 <td align="left">C</td>
 <td align="left">T</td>
@@ -552,12 +468,12 @@ DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation
 <td align="left">C</td>
 <td align="left">T</td>
 <td align="left">C</td>
-<td align="left">C</td>
 <td align="left">T</td>
 <td align="left">C</td>
 <td align="left">T</td>
-<td align="left">T</td>
 <td align="left">C</td>
+<td align="left">C</td>
+<td align="left">T</td>
 </tr>
 <tr class="even">
 <td align="right">4</td>
@@ -565,68 +481,16 @@ DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation
 <td align="left">C</td>
 <td align="left">T</td>
 <td align="left">C</td>
-<td align="left">C</td>
-<td align="left">T</td>
 <td align="left">T</td>
 <td align="left">C</td>
 <td align="left">T</td>
 <td align="left">C</td>
-</tr>
-<tr class="odd">
-<td align="right">5</td>
-<td align="left">T</td>
-<td align="left">C</td>
-<td align="left">C</td>
-<td align="left">T</td>
-<td align="left">T</td>
-<td align="left">C</td>
-<td align="left">C</td>
-<td align="left">T</td>
-<td align="left">T</td>
-<td align="left">C</td>
-</tr>
-<tr class="even">
-<td align="right">6</td>
-<td align="left">C</td>
-<td align="left">T</td>
-<td align="left">T</td>
-<td align="left">C</td>
-<td align="left">C</td>
-<td align="left">T</td>
-<td align="left">T</td>
-<td align="left">C</td>
-<td align="left">T</td>
-<td align="left">C</td>
-</tr>
-<tr class="odd">
-<td align="right">7</td>
-<td align="left">T</td>
-<td align="left">C</td>
-<td align="left">T</td>
-<td align="left">C</td>
-<td align="left">C</td>
-<td align="left">T</td>
-<td align="left">T</td>
-<td align="left">C</td>
-<td align="left">T</td>
-<td align="left">C</td>
-</tr>
-<tr class="even">
-<td align="right">8</td>
-<td align="left">T</td>
-<td align="left">C</td>
-<td align="left">T</td>
-<td align="left">C</td>
-<td align="left">T</td>
-<td align="left">C</td>
-<td align="left">C</td>
-<td align="left">T</td>
 <td align="left">C</td>
 <td align="left">T</td>
 </tr>
 </tbody>
 </table>
-<p>Notice the returned tables are identical (as they should be).</p>
+<p>Notice the returned tables are identical (as they should be, <a href="https://github.com/WinVector/rquery/blob/master/extras/AssigmentPartitioner.md#dplyr-example">which is not always the case for database backed <code>dplyr</code></a>).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect">dbDisconnect</a></span>(my_db)</code></pre></div>
 </div>
   </div>
