@@ -174,7 +174,6 @@ FROM (
 In this mode things are sped up in that the use can work with in-memory tables and also skip the table modeling step.</p>
 <p>Let’s first set the global variable <code>winvector_temp_db_handle</code> to our database handle so the ad hoc mode knows which database to use to implement the analyses.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">winvector_temp_db_handle &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">db =</span> db)</code></pre></div>
-<p>TODO: inspect all <code>data.frame</code> nse promoters.</p>
 <p>We can now run operators directly on in-memory <code>data.frame</code>s.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dL &lt;-<span class="st">  </span><span class="kw">data.frame</span>(<span class="dt">AUC =</span> <span class="fl">0.6</span>, 
                   <span class="dt">R2 =</span> <span class="kw">c</span>(<span class="fl">0.1</span>, <span class="fl">0.2</span>), 
@@ -242,7 +241,7 @@ dL <span class="op">%.&gt;%</span><span class="st"> </span>
 <td align="right">0.4472136</td>
 </tr></tbody>
 </table>
-<p>Or we can use a table model based pipleline directly (without needing additional wraping).</p>
+<p>Or we can use a table model based pipeline directly (without needing additional wrapping).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">q3 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/table_source.html">table_source</a></span>(<span class="dt">table_name =</span> <span class="st">'tmp'</span>, 
                    <span class="dt">columns =</span> <span class="kw">colnames</span>(dL)) <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/select_rows_nse.html">select_rows_nse</a></span>(., R2 <span class="op">&gt;</span><span class="st"> </span><span class="fl">0.14</span>) <span class="op">%.&gt;%</span>

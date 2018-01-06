@@ -86,7 +86,6 @@ the analyses.
 winvector_temp_db_handle <- list(db = db)
 ```
 
-TODO: inspect all `data.frame` nse promoters.
 
 We can now run operators directly on in-memory `data.frame`s.
 
@@ -118,7 +117,7 @@ dL %.>%
   knitr::kable(.)
 ```
 
-Or we can use a table model based pipleline directly (without needing additional wraping).
+Or we can use a table model based pipeline directly (without needing additional wrapping).
 
 ```{r dm}
 q3 <- table_source(table_name = 'tmp', 
