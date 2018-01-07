@@ -11,33 +11,16 @@ library("microbenchmark")
 
 
 ```{r data}
-nrep <- 1000
-
 dL <- data.frame(
   subjectID = c(1,                   
                 1,
                 2,                   
                 2),
-  surveyCategory = c(
-    'withdrawal behavior',
-    'positive re-framing',
-    'withdrawal behavior',
-    'positive re-framing'
-  ),
   assessmentTotal = c(5,                 
                       2,
                       3,                  
                       4),
-  irrelevantCol1 = "irrel1",
-  irrelevantCol2 = "irrel2",
   stringsAsFactors = FALSE)
-norig <- nrow(dL)
-dL <- dL[rep(seq_len(norig), nrep), , drop=FALSE]
-dL$subjectID <- paste((seq_len(nrow(dL)) -1)%/% norig,
-                      dL$subjectID, 
-                      sep = "_")
-rownames(dL) <- NULL
-head(dL)
 ```
 
 
@@ -50,14 +33,7 @@ dplyr_pipeline <- . %>%
   group_by(subjectID) %>%
     mutate(probability =
              exp(assessmentTotal * scale)/
-             sum(exp(assessmentTotal * scale))) %>%
-    arrange(probability, surveyCategory) %>%
-    filter(row_number() == n()) %>%
-    ungroup() %>%
-    rename(diagnosis = surveyCategory) %>%
-    select(subjectID, diagnosis, probability) %>%
-    arrange(subjectID) %>%
-    collect()
+             sum(exp(assessmentTotal * scale)))
   
 dplyr_local <- function() {
   dL %>% dplyr_pipeline
