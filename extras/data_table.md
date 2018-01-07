@@ -50,7 +50,7 @@ dq <- d %.>%
                exp(assessmentTotal * scale)/
                sum(exp(assessmentTotal * scale)),
              count := sum(one),
-             rank:= rank(probability),
+             rank := rank(probability),
              partitionby = 'subjectID') %.>%
   extend_nse(.,
              isdiagnosis := rank == count,
@@ -63,17 +63,17 @@ cat(format(dq))
 
     table('dL') %.>%
      extend(.,
-      one := 1) %.>%
+       := one := 1) %.>%
      extend(.,
-      probability := exp(assessmentTotal * scale) / sum(exp(assessmentTotal * scale)),
-      count := sum(one),
+       := probability := exp(assessmentTotal * scale) / sum(exp(assessmentTotal * scale)),
+       := count := sum(one),
       p= subjectID) %.>%
      extend(.,
-      rank := rank(probability),
+       := rank := rank(probability),
       p= subjectID) %.>%
      extend(.,
-      isdiagnosis := rank = count,
-      diagnosis := surveyCategory)
+       := isdiagnosis := rank = count,
+       := diagnosis := surveyCategory)
 
 ``` r
 # translation to data.table

@@ -46,7 +46,7 @@ dq <- d %.>%
                exp(assessmentTotal * scale)/
                sum(exp(assessmentTotal * scale)),
              count := sum(one),
-             rank:= rank(probability),
+             rank := rank(probability),
              partitionby = 'subjectID') %.>%
   extend_nse(.,
              isdiagnosis := rank == count,
