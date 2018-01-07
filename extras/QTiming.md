@@ -63,8 +63,6 @@ dL <- data.frame(
                       2,
                       3,                  
                       4),
-  irrelevantCol1 = "irrel1",
-  irrelevantCol2 = "irrel2",
   stringsAsFactors = FALSE)
 norig <- nrow(dL)
 dL <- dL[rep(seq_len(norig), nrep), , drop=FALSE]
@@ -75,20 +73,13 @@ rownames(dL) <- NULL
 head(dL)
 ```
 
-    ##   subjectID      surveyCategory assessmentTotal irrelevantCol1
-    ## 1       0_1 withdrawal behavior               5         irrel1
-    ## 2       0_1 positive re-framing               2         irrel1
-    ## 3       0_2 withdrawal behavior               3         irrel1
-    ## 4       0_2 positive re-framing               4         irrel1
-    ## 5       1_1 withdrawal behavior               5         irrel1
-    ## 6       1_1 positive re-framing               2         irrel1
-    ##   irrelevantCol2
-    ## 1         irrel2
-    ## 2         irrel2
-    ## 3         irrel2
-    ## 4         irrel2
-    ## 5         irrel2
-    ## 6         irrel2
+    ##   subjectID      surveyCategory assessmentTotal
+    ## 1       0_1 withdrawal behavior               5
+    ## 2       0_1 positive re-framing               2
+    ## 3       0_2 withdrawal behavior               3
+    ## 4       0_2 positive re-framing               4
+    ## 5       1_1 withdrawal behavior               5
+    ## 6       1_1 positive re-framing               2
 
 ``` r
 dR <- rquery::dbi_copy_to(db, 'dR',
@@ -101,12 +92,10 @@ cdata::qlook(db, dR$table_name)
     ## table "dR" PqConnection 
     ##  nrow: 40000 
     ##  NOTE: "obs" below is count of sample, not number of rows of data.
-    ## 'data.frame':    10 obs. of  5 variables:
+    ## 'data.frame':    10 obs. of  3 variables:
     ##  $ subjectID      : chr  "0_1" "0_1" "0_2" "0_2" ...
     ##  $ surveyCategory : chr  "withdrawal behavior" "positive re-framing" "withdrawal behavior" "positive re-framing" ...
     ##  $ assessmentTotal: num  5 2 3 4 5 2 3 4 5 2
-    ##  $ irrelevantCol1 : chr  "irrel1" "irrel1" "irrel1" "irrel1" ...
-    ##  $ irrelevantCol2 : chr  "irrel2" "irrel2" "irrel2" "irrel2" ...
 
 ``` r
 dT <- dplyr::tbl(db, dR$table_name)
@@ -114,12 +103,10 @@ dplyr::glimpse(dT)
 ```
 
     ## Observations: NA
-    ## Variables: 5
+    ## Variables: 3
     ## $ subjectID       <chr> "0_1", "0_1", "0_2", "0_2", "1_1", "1_1", "1_2...
     ## $ surveyCategory  <chr> "withdrawal behavior", "positive re-framing", ...
     ## $ assessmentTotal <dbl> 5, 2, 3, 4, 5, 2, 3, 4, 5, 2, 3, 4, 5, 2, 3, 4...
-    ## $ irrelevantCol1  <chr> "irrel1", "irrel1", "irrel1", "irrel1", "irrel...
-    ## $ irrelevantCol2  <chr> "irrel2", "irrel2", "irrel2", "irrel2", "irrel...
 
 Now we declare our operation pipelines, both on local (in-memory `data.frame`) and remote (already in a database) data.
 
@@ -269,15 +256,15 @@ print(tm)
 
     ## Unit: milliseconds
     ##                     expr       min        lq      mean    median        uq
-    ##     nrow(rquery_local())  381.1088  399.5456  466.0389  430.1784  498.4860
-    ##  nrow(rquery_database())  249.3077  257.4781  288.2167  264.4856  298.8743
-    ##      nrow(dplyr_local()) 1206.1829 1243.1470 1365.7743 1314.5443 1422.0327
-    ##   nrow(dplyr_database())  399.1491  410.6539  454.7992  421.1326  456.3880
+    ##     nrow(rquery_local())  368.0192  382.7690  423.3241  400.5242  448.4758
+    ##  nrow(rquery_database())  250.0215  259.9966  290.8274  265.4543  297.6644
+    ##      nrow(dplyr_local()) 1223.6523 1264.4248 1360.7346 1340.0468 1413.8974
+    ##   nrow(dplyr_database())  395.0837  415.7955  452.9298  425.1077  469.5841
     ##        max neval
-    ##   860.6808   100
-    ##   641.1706   100
-    ##  2051.2886   100
-    ##   731.2170   100
+    ##   647.6779   100
+    ##   635.7132   100
+    ##  1828.4999   100
+    ##   751.2784   100
 
 ``` r
 autoplot(tm)
@@ -301,10 +288,10 @@ knitr::kable(tb)
 
 |     | test             |  replications|  elapsed|  relative|  user.self|  sys.self|  user.child|  sys.child|
 |-----|:-----------------|-------------:|--------:|---------:|----------:|---------:|-----------:|----------:|
-| 4   | dplyr\_database  |           100|   59.814|     2.250|     18.697|     0.435|           0|          0|
-| 3   | dplyr\_local     |           100|  131.143|     4.933|    129.200|     0.864|           0|          0|
-| 2   | rquery\_database |           100|   26.585|     1.000|      5.051|     0.238|           0|          0|
-| 1   | rquery\_local    |           100|   42.401|     1.595|     16.124|     0.776|           0|          0|
+| 4   | dplyr\_database  |           100|   47.994|     1.732|     15.485|     0.387|           0|          0|
+| 3   | dplyr\_local     |           100|  136.136|     4.913|    131.988|     1.142|           0|          0|
+| 2   | rquery\_database |           100|   27.707|     1.000|      5.228|     0.247|           0|          0|
+| 1   | rquery\_local    |           100|   39.883|     1.439|     14.305|     0.646|           0|          0|
 
 And that is it. `rquery` isn't slow, even on local data!
 

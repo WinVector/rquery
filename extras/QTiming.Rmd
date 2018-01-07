@@ -45,8 +45,6 @@ dL <- data.frame(
                       2,
                       3,                  
                       4),
-  irrelevantCol1 = "irrel1",
-  irrelevantCol2 = "irrel2",
   stringsAsFactors = FALSE)
 norig <- nrow(dL)
 dL <- dL[rep(seq_len(norig), nrep), , drop=FALSE]
