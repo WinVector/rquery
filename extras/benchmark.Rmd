@@ -10,12 +10,6 @@ library("microbenchmark")
 library("rbenchmark")
 library("ggplot2")
 
-db <- DBI::dbConnect(RPostgres::Postgres(),
-                     host = 'localhost',
-                     port = 5432,
-                     user = 'postgres',
-                     password = 'pg')
-winvector_temp_db_handle <- list(db = db)
 ```
 
 
@@ -47,15 +41,6 @@ dL$subjectID <- paste((seq_len(nrow(dL)) -1)%/% norig,
                       sep = "_")
 rownames(dL) <- NULL
 head(dL)
-
-dR <- rquery::dbi_copy_to(db, 'dR',
-                  dL,
-                  temporary = TRUE, 
-                  overwrite = TRUE)
-cdata::qlook(db, dR$table_name)
-
-dT <- dplyr::tbl(db, dR$table_name)
-dplyr::glimpse(dT)
 ```
 
 
@@ -81,15 +66,13 @@ dplyr_local <- function() {
   dL %>% dplyr_pipeline
 }
 
-dplyr_database <- function() {
-  dT %>% dplyr_pipeline
-}
 ```
 
 ```{r timings}
 # failing in knitr, but not when run in console
 tm <- microbenchmark(
-  dplyr_local())
+  dplyr_local() 
+  )
 print(tm)
 autoplot(tm)
 ```
@@ -97,14 +80,8 @@ autoplot(tm)
 ```{r timingsr, eval=FALSE, include=FALSE}
 # failing in knitr, but not when run in console
 tm <- benchmark(
-  dplyr_local = { dplyr_local() },
-  dplyr_database = { dplyr_database() }
+  dplyr_local = { dplyr_local() }
 )
-knitr::kable(tm)
+print(tm)
 ```
 
-
-```{r dbcleanup}
-winvector_temp_db_handle <- NULL
-DBI::dbDisconnect(db)
-```
