@@ -7,9 +7,6 @@ output: github_document
 ```{r dbsetup}
 library("dplyr")
 library("microbenchmark")
-library("rbenchmark")
-library("ggplot2")
-
 ```
 
 
@@ -74,14 +71,6 @@ tm <- microbenchmark(
   dplyr_local() 
   )
 print(tm)
-autoplot(tm)
 ```
 
-```{r timingsr, eval=FALSE, include=FALSE}
-# failing in knitr, but not when run in console
-tm <- benchmark(
-  dplyr_local = { dplyr_local() }
-)
-print(tm)
-```
 
