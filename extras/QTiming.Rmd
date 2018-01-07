@@ -22,7 +22,7 @@ winvector_temp_db_handle <- list(db = db)
 
 
 ```{r data}
-nrep <- 1000
+nrep <- 10000
 
 dL <- data.frame(
   subjectID = c(1,                   
@@ -89,14 +89,16 @@ rquery_pipeline <- . := {
 
 rquery_local <- function() {
  dL %.>% 
-    rquery_pipeline
+    rquery_pipeline %.>%
+    as.data.frame(.) # force execution
 }
 
 rquery_database <- function() {
  dR %.>% 
     rquery_pipeline %.>% 
     to_sql(., db) %.>% 
-    DBI::dbGetQuery(db, .)
+    DBI::dbGetQuery(db, .) %.>%
+    as.data.frame(.) # shouldn't be needed
 }
 
 # this is a function, 
@@ -105,46 +107,72 @@ dplyr_pipeline <- . %>%
   group_by(subjectID) %>%
     mutate(probability =
              exp(assessmentTotal * scale)/
-             sum(exp(assessmentTotal * scale))) %>%
+             sum(exp(assessmentTotal * scale)), na.rm = TRUE) %>%
     arrange(probability, surveyCategory) %>%
     filter(row_number() == n()) %>%
     ungroup() %>%
     rename(diagnosis = surveyCategory) %>%
     select(subjectID, diagnosis, probability) %>%
-    arrange(subjectID) %>%
-    collect()
+    arrange(subjectID)
   
 dplyr_local <- function() {
-  dL %>% dplyr_pipeline
+  dL %>% 
+    dplyr_pipeline
 }
 
 dplyr_database <- function() {
-  dT %>% dplyr_pipeline
+  dT %>% 
+    dplyr_pipeline %>%
+    collect()
 }
 ```
 
-These timings are strange.  One theory is the query cache is getting in the way at some point (possibly not everything we think is executing is executing).
+```{r show}
+head(rquery_local())
+
+head(rquery_database())
+
+head(dplyr_local())
+
+head(dplyr_database())
+```
+
+I have tried to get rid of the warnings that
+the dplyr database pipeline is producing, but adding the "`na.rm = TRUE`" appears to have no effect.
+
+
 
 ```{r timings, warning=FALSE}
+# check from: 
+# https://cran.r-project.org/web/packages/microbenchmark/microbenchmark.pdf
+my_check <- function(values) {
+  all(sapply(values[-1], 
+             function(x) identical(values[[1]], x)))
+}
+
 tm <- microbenchmark(
-  rquery_local(),
-  rquery_database(),
-  dplyr_local(),
-  dplyr_database())
+  nrow(rquery_local()),
+  nrow(rquery_database()),
+  nrow(dplyr_local()),
+  nrow(dplyr_database()),
+  check=my_check)
 print(tm)
 autoplot(tm)
 ```
 
+`rquery` appears to be fast.  The extra time for "`rquery` local" is because `rquery`
+doesn't *really* have a local mode, it has to copy the data to the database and back
+in that case.
+
 ```{r timingsr,  warning=FALSE}
 tb <- benchmark(
-  rquery_local = { rquery_local() },
-  rquery_database = { rquery_database() },
-  dplyr_local = { dplyr_local() },
-  dplyr_database = { dplyr_database() }
+  rquery_local = { nrow(rquery_local()) },
+  rquery_database = { nrow(rquery_database()) },
+  dplyr_local = { nrow(dplyr_local()) },
+  dplyr_database = { nrow(dplyr_database()) }
 )
 knitr::kable(tb)
 ```
-
 
 ```{r dbcleanup}
 winvector_temp_db_handle <- NULL
