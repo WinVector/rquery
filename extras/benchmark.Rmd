@@ -25,20 +25,17 @@ dL <- data.frame(
 
 
 ```{query}
-scale <- 0.237
-
 # this is a function, 
 # so body not evaluated until used
 dplyr_pipeline <- . %>%
   group_by(subjectID) %>%
     mutate(probability =
-             exp(assessmentTotal * scale)/
-             sum(exp(assessmentTotal * scale)))
+             exp(assessmentTotal)/
+             sum(exp(assessmentTotal)))
   
 dplyr_local <- function() {
   dL %>% dplyr_pipeline
 }
-
 ```
 
 ```{r timings}
