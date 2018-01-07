@@ -123,13 +123,15 @@ dplyr_database <- function() {
 }
 ```
 
+These timings are strange.  One theory is the query cache is getting in the way at some point (possibly not everything we think is executing is executing).
+
 ```{r timings, warning=FALSE}
 tm <- microbenchmark(
   rquery_local(),
   rquery_database(),
   dplyr_local(),
   dplyr_database())
-knitr::kable(tm)
+print(tm)
 autoplot(tm)
 ```
 
