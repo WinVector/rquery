@@ -1,0 +1,110 @@
+---
+title: "benchmark"
+date: "1/7/2018"
+output: github_document
+---
+
+```{r dbsetup}
+library("dplyr")
+library("microbenchmark")
+library("rbenchmark")
+library("ggplot2")
+
+db <- DBI::dbConnect(RPostgres::Postgres(),
+                     host = 'localhost',
+                     port = 5432,
+                     user = 'postgres',
+                     password = 'pg')
+winvector_temp_db_handle <- list(db = db)
+```
+
+
+```{r data}
+nrep <- 1000
+
+dL <- data.frame(
+  subjectID = c(1,                   
+                1,
+                2,                   
+                2),
+  surveyCategory = c(
+    'withdrawal behavior',
+    'positive re-framing',
+    'withdrawal behavior',
+    'positive re-framing'
+  ),
+  assessmentTotal = c(5,                 
+                      2,
+                      3,                  
+                      4),
+  irrelevantCol1 = "irrel1",
+  irrelevantCol2 = "irrel2",
+  stringsAsFactors = FALSE)
+norig <- nrow(dL)
+dL <- dL[rep(seq_len(norig), nrep), , drop=FALSE]
+dL$subjectID <- paste((seq_len(nrow(dL)) -1)%/% norig,
+                      dL$subjectID, 
+                      sep = "_")
+rownames(dL) <- NULL
+head(dL)
+
+dR <- rquery::dbi_copy_to(db, 'dR',
+                  dL,
+                  temporary = TRUE, 
+                  overwrite = TRUE)
+cdata::qlook(db, dR$table_name)
+
+dT <- dplyr::tbl(db, dR$table_name)
+dplyr::glimpse(dT)
+```
+
+
+```{query}
+scale <- 0.237
+
+# this is a function, 
+# so body not evaluated until used
+dplyr_pipeline <- . %>%
+  group_by(subjectID) %>%
+    mutate(probability =
+             exp(assessmentTotal * scale)/
+             sum(exp(assessmentTotal * scale))) %>%
+    arrange(probability, surveyCategory) %>%
+    filter(row_number() == n()) %>%
+    ungroup() %>%
+    rename(diagnosis = surveyCategory) %>%
+    select(subjectID, diagnosis, probability) %>%
+    arrange(subjectID) %>%
+    collect()
+  
+dplyr_local <- function() {
+  dL %>% dplyr_pipeline
+}
+
+dplyr_database <- function() {
+  dT %>% dplyr_pipeline
+}
+```
+
+```{r timings}
+# failing in knitr, but not when run in console
+tm <- microbenchmark(
+  dplyr_local())
+print(tm)
+autoplot(tm)
+```
+
+```{r timingsr, eval=FALSE, include=FALSE}
+# failing in knitr, but not when run in console
+tm <- benchmark(
+  dplyr_local = { dplyr_local() },
+  dplyr_database = { dplyr_database() }
+)
+knitr::kable(tm)
+```
+
+
+```{r dbcleanup}
+winvector_temp_db_handle <- NULL
+DBI::dbDisconnect(db)
+```
