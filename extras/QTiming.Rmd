@@ -5,6 +5,11 @@ date: "1/7/2018"
 output: github_document
 ---
 
+Let's time both [`rquery`](https://winvector.github.io/rquery/) and [`dplyr`]( https://CRAN.R-project.org/package=dplyr) on a non-trivial example.  
+
+First let's load our
+packages, establish a database connection, and declare an [`rquery` ad hoc execution service](https://winvector.github.io/rquery/articles/AdHocQueries.html) (the "`winvector_temp_db_handle`").
+
 ```{r dbsetup}
 library("rquery")
 library("dplyr")
@@ -20,6 +25,7 @@ db <- DBI::dbConnect(RPostgres::Postgres(),
 winvector_temp_db_handle <- list(db = db)
 ```
 
+We now build and extended version of the example from [Let’s Have Some Sympathy For The Part-time R User](http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/).
 
 ```{r data}
 nrep <- 10000
@@ -60,6 +66,8 @@ dT <- dplyr::tbl(db, dR$table_name)
 dplyr::glimpse(dT)
 ```
 
+Now we declare our operation pipelines, both on local (in-memory `data.frame`) and
+remote (already in a database) data.
 
 ```{r query}
 scale <- 0.237
@@ -127,6 +135,8 @@ dplyr_database <- function() {
 }
 ```
 
+Let's inspect the functions.
+
 ```{r show}
 head(rquery_local())
 
@@ -140,7 +150,7 @@ head(dplyr_database())
 I have tried to get rid of the warnings that
 the dplyr database pipeline is producing, but adding the "`na.rm = TRUE`" appears to have no effect.
 
-
+Now let's measure the speeds with `microbenchmark`.
 
 ```{r timings, warning=FALSE}
 # check from: 
@@ -162,7 +172,10 @@ autoplot(tm)
 
 `rquery` appears to be fast.  The extra time for "`rquery` local" is because `rquery`
 doesn't *really* have a local mode, it has to copy the data to the database and back
-in that case.
+in that case.  I currently guess `rquery` and `dplyr` are both picking up parallelism 
+in the database.
+
+Let's re-measure with `rbenchmark`,
 
 ```{r timingsr,  warning=FALSE}
 tb <- benchmark(
@@ -173,6 +186,8 @@ tb <- benchmark(
 )
 knitr::kable(tb)
 ```
+
+And that is it.  `rquery` isn't slow, even on local data!
 
 ```{r dbcleanup}
 winvector_temp_db_handle <- NULL
