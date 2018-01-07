@@ -251,20 +251,21 @@ tm <- microbenchmark(
   nrow(dplyr_local()),
   nrow(dplyr_database()),
   check=my_check)
+saveRDS(tm, "qtimings.RDS")
 print(tm)
 ```
 
     ## Unit: milliseconds
     ##                     expr       min        lq      mean    median        uq
-    ##     nrow(rquery_local())  368.0192  382.7690  423.3241  400.5242  448.4758
-    ##  nrow(rquery_database())  250.0215  259.9966  290.8274  265.4543  297.6644
-    ##      nrow(dplyr_local()) 1223.6523 1264.4248 1360.7346 1340.0468 1413.8974
-    ##   nrow(dplyr_database())  395.0837  415.7955  452.9298  425.1077  469.5841
+    ##     nrow(rquery_local())  359.4705  372.1709  439.1822  411.3225  469.9902
+    ##  nrow(rquery_database())  246.3488  253.6998  290.0197  283.4059  304.1263
+    ##      nrow(dplyr_local()) 1180.9699 1215.6167 1349.3828 1281.5570 1418.4243
+    ##   nrow(dplyr_database())  398.3803  405.4809  460.2645  414.8006  476.8592
     ##        max neval
-    ##   647.6779   100
-    ##   635.7132   100
-    ##  1828.4999   100
-    ##   751.2784   100
+    ##  1070.8485   100
+    ##   609.4656   100
+    ##  2663.4163   100
+    ##  1566.6889   100
 
 ``` r
 autoplot(tm)
@@ -288,10 +289,10 @@ knitr::kable(tb)
 
 |     | test             |  replications|  elapsed|  relative|  user.self|  sys.self|  user.child|  sys.child|
 |-----|:-----------------|-------------:|--------:|---------:|----------:|---------:|-----------:|----------:|
-| 4   | dplyr\_database  |           100|   47.994|     1.732|     15.485|     0.387|           0|          0|
-| 3   | dplyr\_local     |           100|  136.136|     4.913|    131.988|     1.142|           0|          0|
-| 2   | rquery\_database |           100|   27.707|     1.000|      5.228|     0.247|           0|          0|
-| 1   | rquery\_local    |           100|   39.883|     1.439|     14.305|     0.646|           0|          0|
+| 4   | dplyr\_database  |           100|   40.712|     1.251|     13.359|     0.297|           0|          0|
+| 3   | dplyr\_local     |           100|  138.698|     4.260|    131.084|     1.412|           0|          0|
+| 2   | rquery\_database |           100|   32.555|     1.000|      5.491|     0.294|           0|          0|
+| 1   | rquery\_local    |           100|   53.778|     1.652|     16.660|     0.846|           0|          0|
 
 And that is it. `rquery` isn't slow, even on local data!
 

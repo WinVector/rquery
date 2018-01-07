@@ -164,6 +164,7 @@ tm <- microbenchmark(
   nrow(dplyr_local()),
   nrow(dplyr_database()),
   check=my_check)
+saveRDS(tm, "qtimings.RDS")
 print(tm)
 autoplot(tm)
 ```
