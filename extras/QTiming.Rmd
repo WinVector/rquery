@@ -61,7 +61,7 @@ dplyr::glimpse(dT)
 ```
 
 
-```{query}
+```{r query}
 scale <- 0.237
 
 # this is a function, 
@@ -123,26 +123,24 @@ dplyr_database <- function() {
 }
 ```
 
-```{r timings, eval=FALSE, include=FALSE}
-# failing in knitr, but not when run in console
+```{r timings, warning=FALSE}
 tm <- microbenchmark(
   rquery_local(),
   rquery_database(),
   dplyr_local(),
   dplyr_database())
-print(tm)
+knitr::kable(tm)
 autoplot(tm)
 ```
 
-```{r timingsr}
-# failing in knitr, but not when run in console
-tm <- benchmark(
+```{r timingsr,  warning=FALSE}
+tb <- benchmark(
   rquery_local = { rquery_local() },
   rquery_database = { rquery_database() },
   dplyr_local = { dplyr_local() },
   dplyr_database = { dplyr_database() }
 )
-knitr::kable(tm)
+knitr::kable(tb)
 ```
 
 
