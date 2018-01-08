@@ -177,6 +177,18 @@ dplyr_local <- function() {
     dplyr_pipeline
 }
 
+dplyr_round_trip <- function() {
+  dTmp <- dplyr::copy_to(db, dLocal, "dplyr_tmp",
+                         # overwrite = TRUE,
+                         temporary = TRUE
+                         )
+  res <- dTmp %>% 
+    dplyr_pipeline %>%
+    collect()
+  dplyr::db_drop_table(db, "dplyr_tmp")
+  res
+}
+
 dplyr_database_pull <- function() {
   dTbl %>% 
     dplyr_pipeline %>%
@@ -305,6 +317,7 @@ tm <- microbenchmark(
   nrow(rquery_database_pull()),
   rquery_database_count(),
   nrow(dplyr_local()),
+  nrow(dplyr_round_trip()),
   nrow(dplyr_database_pull()),
   dplyr_database_count(),
   nrow(data.table_local())
@@ -315,21 +328,23 @@ print(tm)
 
     ## Unit: milliseconds
     ##                          expr       min        lq      mean    median
-    ##          nrow(rquery_local())  342.2402  347.6063  360.5564  354.2437
-    ##  nrow(rquery_database_pull())  234.4064  238.1877  242.5422  239.1950
-    ##       rquery_database_count()  202.6709  204.5242  207.7822  205.9777
-    ##           nrow(dplyr_local()) 1138.5136 1151.6660 1184.0101 1161.7648
-    ##   nrow(dplyr_database_pull())  377.9763  384.2265  397.9107  385.9140
-    ##        dplyr_database_count()  364.3134  369.1134  378.9403  372.3799
-    ##      nrow(data.table_local())  220.0828  226.5959  240.8028  230.9515
+    ##          nrow(rquery_local())  337.2405  344.5674  355.1654  348.8562
+    ##  nrow(rquery_database_pull())  228.6788  234.6082  242.9893  237.3575
+    ##       rquery_database_count()  200.2667  202.9156  209.4105  205.1442
+    ##           nrow(dplyr_local()) 1152.7496 1180.8069 1217.5715 1192.1386
+    ##      nrow(dplyr_round_trip())  571.5436  583.5926  597.5366  587.5621
+    ##   nrow(dplyr_database_pull())  370.2830  375.6542  385.9769  379.8664
+    ##        dplyr_database_count()  355.9304  362.9655  372.4483  366.9658
+    ##      nrow(data.table_local())  220.4467  236.4563  259.3759  242.1348
     ##         uq       max neval
-    ##   361.7870  543.9606   100
-    ##   243.0044  294.4359   100
-    ##   208.1822  279.4446   100
-    ##  1205.4690 1518.8667   100
-    ##   395.7561  547.4420   100
-    ##   376.7639  524.2173   100
-    ##   236.9222  315.1740   100
+    ##   356.1518  462.9935   100
+    ##   242.2643  337.5072   100
+    ##   209.1377  309.0142   100
+    ##  1228.1974 1498.4659   100
+    ##   594.2685  783.9291   100
+    ##   386.2082  500.1132   100
+    ##   371.9168  456.3380   100
+    ##   296.5508  375.2274   100
 
 ``` r
 autoplot(tm)
@@ -347,6 +362,7 @@ tb <- benchmark(
   rquery_database_pull = { nrow(rquery_database_pull()) },
   rquery_database_count = { rquery_database_count() },
   dplyr_local = { nrow(dplyr_local()) },
+  dplyr_round_trip = { nrow(dplyr_round_trip()) },
   dplyr_database_pull = { nrow(dplyr_database_pull()) },
   dplyr_database_count = { dplyr_database_count() },
   data.table_local = { nrow(data.table_local()) }
@@ -356,15 +372,16 @@ knitr::kable(tb)
 
 |     | test                    |  replications|  elapsed|  relative|  user.self|  sys.self|  user.child|  sys.child|
 |-----|:------------------------|-------------:|--------:|---------:|----------:|---------:|-----------:|----------:|
-| 7   | data.table\_local       |           100|   24.749|     1.195|     24.333|     0.365|           0|          0|
-| 6   | dplyr\_database\_count  |           100|   37.315|     1.801|     12.088|     0.049|           0|          0|
-| 5   | dplyr\_database\_pull   |           100|   39.237|     1.894|     12.617|     0.280|           0|          0|
-| 4   | dplyr\_local            |           100|  117.066|     5.651|    115.968|     0.780|           0|          0|
-| 3   | rquery\_database\_count |           100|   20.716|     1.000|      1.990|     0.016|           0|          0|
-| 2   | rquery\_database\_pull  |           100|   24.163|     1.166|      4.332|     0.221|           0|          0|
-| 1   | rquery\_local           |           100|   36.048|     1.740|     12.880|     0.578|           0|          0|
+| 8   | data.table\_local       |           100|   25.549|     1.244|     25.094|     0.349|           0|          0|
+| 7   | dplyr\_database\_count  |           100|   36.808|     1.792|     11.848|     0.040|           0|          0|
+| 6   | dplyr\_database\_pull   |           100|   38.242|     1.862|     12.288|     0.252|           0|          0|
+| 4   | dplyr\_local            |           100|  119.885|     5.838|    119.038|     0.684|           0|          0|
+| 5   | dplyr\_round\_trip      |           100|   58.940|     2.870|     21.162|     0.600|           0|          0|
+| 3   | rquery\_database\_count |           100|   20.536|     1.000|      1.925|     0.014|           0|          0|
+| 2   | rquery\_database\_pull  |           100|   24.556|     1.196|      4.355|     0.235|           0|          0|
+| 1   | rquery\_local           |           100|   35.574|     1.732|     12.815|     0.571|           0|          0|
 
-And that is it. `rquery` isn't slow, even on local data!
+And that is it. `rquery` shows competitive performance.
 
 ``` r
 winvector_temp_db_handle <- NULL

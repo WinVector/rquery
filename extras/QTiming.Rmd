@@ -134,6 +134,18 @@ dplyr_local <- function() {
     dplyr_pipeline
 }
 
+dplyr_round_trip <- function() {
+  dTmp <- dplyr::copy_to(db, dLocal, "dplyr_tmp",
+                         # overwrite = TRUE,
+                         temporary = TRUE
+                         )
+  res <- dTmp %>% 
+    dplyr_pipeline %>%
+    collect()
+  dplyr::db_drop_table(db, "dplyr_tmp")
+  res
+}
+
 dplyr_database_pull <- function() {
   dTbl %>% 
     dplyr_pipeline %>%
@@ -194,6 +206,7 @@ tm <- microbenchmark(
   nrow(rquery_database_pull()),
   rquery_database_count(),
   nrow(dplyr_local()),
+  nrow(dplyr_round_trip()),
   nrow(dplyr_database_pull()),
   dplyr_database_count(),
   nrow(data.table_local())
@@ -216,6 +229,7 @@ tb <- benchmark(
   rquery_database_pull = { nrow(rquery_database_pull()) },
   rquery_database_count = { rquery_database_count() },
   dplyr_local = { nrow(dplyr_local()) },
+  dplyr_round_trip = { nrow(dplyr_round_trip()) },
   dplyr_database_pull = { nrow(dplyr_database_pull()) },
   dplyr_database_count = { dplyr_database_count() },
   data.table_local = { nrow(data.table_local()) }
@@ -223,7 +237,7 @@ tb <- benchmark(
 knitr::kable(tb)
 ```
 
-And that is it.  `rquery` isn't slow, even on local data!
+And that is it.  `rquery` shows competitive performance.
 
 ```{r dbcleanup}
 winvector_temp_db_handle <- NULL
