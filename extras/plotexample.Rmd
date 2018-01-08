@@ -38,7 +38,9 @@ colormap = runs := c(highlightcolor,
 
 tr <- timings[timings$expr %in% runs, , drop=FALSE]
 tr$expr <- factor(tr$expr, levels = rev(runs))
-plotbenchmark(tr, colormap, "In-Memory Task Runtimes by Implementation")
+plotbenchmark(tr, colormap, 
+              title = "In-Memory Task Runtimes by Implementation",
+              subtitle = "Database enhanced dplyr shown for comparison")
 
 
 
