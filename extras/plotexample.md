@@ -25,7 +25,7 @@ colormap = runs := c(highlightcolor,
 
 tr <- timings[timings$expr %in% runs, , drop=FALSE]
 tr$expr <- factor(tr$expr, levels = rev(runs))
-plotbenchmark(tr, colormap, "Comparison of In-Memory Task Runtimes by Implementation")
+plotbenchmark(tr, colormap, "In-Memory Task Runtimes by Implementation")
 ```
 
 ![](plotexample_files/figure-markdown_github/unnamed-chunk-1-1.png)
@@ -46,7 +46,9 @@ colormap = runs := c(greycolor,
 
 tr <- timings[timings$expr %in% runs, , drop=FALSE]
 tr$expr <- factor(tr$expr, levels = rev(runs))
-plotbenchmark(tr, colormap, "Comparison of Pure Database Task Runtimes by Implementation")
+plotbenchmark(tr, colormap, 
+              title = "Pure Database Task Runtimes by Implementation",
+              subtitle = "In-memory task runtimes included for comparison")
 ```
 
 ![](plotexample_files/figure-markdown_github/unnamed-chunk-1-2.png)

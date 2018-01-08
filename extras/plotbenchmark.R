@@ -1,5 +1,5 @@
 
-plotbenchmark = function(timings, colormap, title) {
+plotbenchmark = function(timings, colormap, title, subtitle=NULL) {
   timings = timings %>%
     mutate(microseconds = time/1e6)
 
@@ -12,7 +12,9 @@ plotbenchmark = function(timings, colormap, title) {
     geom_point(data=means, aes(x=expr, y=mean), shape=3) +
     scale_color_manual(values=colormap) +
     scale_fill_manual(values=colormap) +
-    coord_flip() + ggtitle(title) +
-    theme(legend.position="none")
+    coord_flip() +
+    theme(legend.position="none") +
+    ggtitle(title, subtitle=subtitle)
+
 
 }
