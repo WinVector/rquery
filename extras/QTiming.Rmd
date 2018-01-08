@@ -149,12 +149,12 @@ dplyr_database_count <- function() {
 
 .datatable.aware <- TRUE
 
-datatable <- function() {
+data.table_local <- function() {
   dDT <- data.table::data.table(dLocal)
-  dDT[, one := 1 ][
+  dDT[
    , probability := exp ( assessmentTotal * scale ) / 
         sum ( exp ( assessmentTotal * scale ) ) ,subjectID ][
-   , count := sum ( one ) ,subjectID ][
+   , count := sum ( 1 ) ,subjectID ][
    , rank := rank ( probability ) ,subjectID ][
    rank == count ][
    , diagnosis := surveyCategory ][
@@ -179,7 +179,7 @@ head(dplyr_database_pull())
 
 dplyr_database_count()
 
-head(datatable())
+head(data.table_local())
 ```
 
 I have tried to get rid of the warnings that
@@ -195,7 +195,7 @@ tm <- microbenchmark(
   nrow(dplyr_local()),
   nrow(dplyr_database_pull()),
   dplyr_database_count(),
-  nrow(datatable())
+  nrow(data.table_local())
 )
 saveRDS(tm, "qtimings.RDS")
 print(tm)
@@ -217,7 +217,7 @@ tb <- benchmark(
   dplyr_local = { nrow(dplyr_local()) },
   dplyr_database_pull = { nrow(dplyr_database_pull()) },
   dplyr_database_count = { dplyr_database_count() },
-  data.table = { nrow(datatable()) }
+  data.table_local = { nrow(data.table_local()) }
 )
 knitr::kable(tb)
 ```
