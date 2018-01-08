@@ -9,6 +9,7 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 library(ggplot2)
+library(wrapr)
 
 source("plotbenchmark.R")
 
@@ -17,16 +18,24 @@ source("plotbenchmark.R")
 ```{r}
 
 timings = readRDS("qtimings.RDS")
-
 timings$expr <- as.character(timings$expr)
+
+# colors
+highlightcolor = "#b2df8a"
+backgroundcolor = "#a6cee3"
 
 runs <- c("nrow(data.table_local())", 
           "nrow(rquery_local())",
           "nrow(dplyr_local())",
           "nrow(dplyr_round_trip())")
+colormap = runs := c(highlightcolor,
+                     highlightcolor,
+                     highlightcolor,
+                     backgroundcolor)
+
 tr <- timings[timings$expr %in% runs, , drop=FALSE]
 tr$expr <- factor(tr$expr, levels = rev(runs))
-plotbenchmark(tr, "Comparison of Task Runtimes by Implementation")
+plotbenchmark(tr, colormap, "Comparison of Task Runtimes by Implementation")
 
 followups <- c("nrow(rquery_local())",
                "nrow(rquery_database_pull())", 
@@ -34,8 +43,14 @@ followups <- c("nrow(rquery_local())",
                "nrow(dplyr_round_trip())",
                "nrow(dplyr_database_pull())",
                "dplyr_database_count()")     
+colormap = followups := c(highlightcolor,
+                          backgroundcolor,
+                          backgroundcolor,
+                          highlightcolor,
+                          backgroundcolor,
+                          backgroundcolor)
 tf <- timings[timings$expr %in% followups, , drop=FALSE]
 tf$expr <- factor(tf$expr, levels = rev(followups))
-plotbenchmark(tf, "Breakdown of Transport Costs")
+plotbenchmark(tf, colormap, "Breakdown of Transport Costs")
 
 ```

@@ -1,5 +1,5 @@
 
-plotbenchmark = function(timings, title) {
+plotbenchmark = function(timings, colormap, title) {
   timings = timings %>%
     mutate(microseconds = time/1e6)
 
@@ -8,8 +8,11 @@ plotbenchmark = function(timings, title) {
     summarize(mean = mean(microseconds))
 
   ggplot(timings, aes(x = expr, y=microseconds)) +
-    geom_violin(fill="darkolivegreen3", color="darkolivegreen3") +
+    geom_violin(aes(fill=expr, color=expr)) +
     geom_point(data=means, aes(x=expr, y=mean), shape=3) +
-    coord_flip() + ggtitle(title)
+    scale_color_manual(values=colormap) +
+    scale_fill_manual(values=colormap) +
+    coord_flip() + ggtitle(title) +
+    theme(legend.position="none")
 
 }
