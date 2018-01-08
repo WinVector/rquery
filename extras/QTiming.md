@@ -138,13 +138,22 @@ rquery_pipeline <- . := {
 
 rquery_local <- function() {
  dL %.>% 
-    rquery_pipeline %.>%
+    rquery_pipeline(.) %.>%
     as.data.frame(.) # force execution
 }
 
-rquery_database <- function() {
+rquery_database_pull <- function() {
  dR %.>% 
-    rquery_pipeline %.>% 
+    rquery_pipeline(.) %.>% 
+    to_sql(., db) %.>% 
+    DBI::dbGetQuery(db, .) %.>%
+    as.data.frame(.) # shouldn't be needed
+}
+
+rquery_database_count <- function() {
+ dR %.>% 
+    rquery_pipeline(.) %.>% 
+    sql_node(., "n" := "COUNT(1)") %.>% 
     to_sql(., db) %.>% 
     DBI::dbGetQuery(db, .) %.>%
     as.data.frame(.) # shouldn't be needed
@@ -169,9 +178,16 @@ dplyr_local <- function() {
     dplyr_pipeline
 }
 
-dplyr_database <- function() {
+dplyr_database_pull <- function() {
   dT %>% 
     dplyr_pipeline %>%
+    collect()
+}
+
+dplyr_database_count <- function() {
+  dT %>% 
+    dplyr_pipeline %>%
+    tally() %>%
     collect()
 }
 ```
@@ -191,7 +207,7 @@ head(rquery_local())
     ## 6    1001_1 withdrawal behavior   0.6706221
 
 ``` r
-head(rquery_database())
+head(rquery_database_pull())
 ```
 
     ##   subjectID           diagnosis probability
@@ -201,6 +217,13 @@ head(rquery_database())
     ## 4    1000_2 positive re-framing   0.5589742
     ## 5     100_1 withdrawal behavior   0.6706221
     ## 6    1001_1 withdrawal behavior   0.6706221
+
+``` r
+rquery_database_count()
+```
+
+    ##       n
+    ## 1 20000
 
 ``` r
 head(dplyr_local())
@@ -217,7 +240,7 @@ head(dplyr_local())
     ## 6 10_2      positive re-framing       0.559
 
 ``` r
-head(dplyr_database())
+head(dplyr_database_pull())
 ```
 
     ## Warning: Missing values are always removed in SQL.
@@ -233,39 +256,50 @@ head(dplyr_database())
     ## 5 100_1     withdrawal behavior       0.671
     ## 6 1001_1    withdrawal behavior       0.671
 
+``` r
+dplyr_database_count()
+```
+
+    ## Warning: Missing values are always removed in SQL.
+    ## Use `sum(x, na.rm = TRUE)` to silence this warning
+
+    ## # A tibble: 1 x 1
+    ##   n              
+    ##   <S3: integer64>
+    ## 1 20000
+
 I have tried to get rid of the warnings that the dplyr database pipeline is producing, but adding the "`na.rm = TRUE`" appears to have no effect.
 
 Now let's measure the speeds with `microbenchmark`.
 
 ``` r
-# check from: 
-# https://cran.r-project.org/web/packages/microbenchmark/microbenchmark.pdf
-my_check <- function(values) {
-  all(sapply(values[-1], 
-             function(x) identical(values[[1]], x)))
-}
-
 tm <- microbenchmark(
   nrow(rquery_local()),
-  nrow(rquery_database()),
+  nrow(rquery_database_pull()),
+  rquery_database_count(),
   nrow(dplyr_local()),
-  nrow(dplyr_database()),
-  check=my_check)
+  nrow(dplyr_database_pull()),
+  dplyr_database_count()
+)
 saveRDS(tm, "qtimings.RDS")
 print(tm)
 ```
 
     ## Unit: milliseconds
-    ##                     expr       min        lq      mean    median        uq
-    ##     nrow(rquery_local())  359.4705  372.1709  439.1822  411.3225  469.9902
-    ##  nrow(rquery_database())  246.3488  253.6998  290.0197  283.4059  304.1263
-    ##      nrow(dplyr_local()) 1180.9699 1215.6167 1349.3828 1281.5570 1418.4243
-    ##   nrow(dplyr_database())  398.3803  405.4809  460.2645  414.8006  476.8592
-    ##        max neval
-    ##  1070.8485   100
-    ##   609.4656   100
-    ##  2663.4163   100
-    ##  1566.6889   100
+    ##                          expr       min        lq      mean    median
+    ##          nrow(rquery_local())  347.0009  367.3597  399.5183  391.8472
+    ##  nrow(rquery_database_pull())  236.3240  241.7570  247.5268  244.0472
+    ##       rquery_database_count()  204.8124  208.4124  210.9013  210.2774
+    ##           nrow(dplyr_local()) 1160.4595 1185.0844 1213.8399 1201.2079
+    ##   nrow(dplyr_database_pull())  384.6472  390.5708  398.3258  393.0531
+    ##        dplyr_database_count()  370.0449  375.9891  387.6053  379.5784
+    ##         uq       max neval
+    ##   415.3627  555.1790   100
+    ##   247.2130  338.1666   100
+    ##   212.4763  225.7300   100
+    ##  1242.8940 1325.6799   100
+    ##   398.0071  469.1715   100
+    ##   385.4854  569.0657   100
 
 ``` r
 autoplot(tm)
@@ -280,19 +314,23 @@ Let's re-measure with `rbenchmark`,
 ``` r
 tb <- benchmark(
   rquery_local = { nrow(rquery_local()) },
-  rquery_database = { nrow(rquery_database()) },
+  rquery_database_pull = { nrow(rquery_database_pull()) },
+  rquery_database_count = { rquery_database_count() },
   dplyr_local = { nrow(dplyr_local()) },
-  dplyr_database = { nrow(dplyr_database()) }
+  dplyr_database_pull = { nrow(dplyr_database_pull()) },
+  dplyr_database_count = { dplyr_database_count() }
 )
 knitr::kable(tb)
 ```
 
-|     | test             |  replications|  elapsed|  relative|  user.self|  sys.self|  user.child|  sys.child|
-|-----|:-----------------|-------------:|--------:|---------:|----------:|---------:|-----------:|----------:|
-| 4   | dplyr\_database  |           100|   40.712|     1.251|     13.359|     0.297|           0|          0|
-| 3   | dplyr\_local     |           100|  138.698|     4.260|    131.084|     1.412|           0|          0|
-| 2   | rquery\_database |           100|   32.555|     1.000|      5.491|     0.294|           0|          0|
-| 1   | rquery\_local    |           100|   53.778|     1.652|     16.660|     0.846|           0|          0|
+|     | test                    |  replications|  elapsed|  relative|  user.self|  sys.self|  user.child|  sys.child|
+|-----|:------------------------|-------------:|--------:|---------:|----------:|---------:|-----------:|----------:|
+| 6   | dplyr\_database\_count  |           100|   39.693|     1.867|     12.854|     0.153|           0|          0|
+| 5   | dplyr\_database\_pull   |           100|   40.567|     1.908|     13.012|     0.329|           0|          0|
+| 4   | dplyr\_local            |           100|  123.173|     5.794|    121.167|     1.105|           0|          0|
+| 3   | rquery\_database\_count |           100|   21.260|     1.000|      2.032|     0.025|           0|          0|
+| 2   | rquery\_database\_pull  |           100|   24.552|     1.155|      4.401|     0.232|           0|          0|
+| 1   | rquery\_local           |           100|   48.091|     2.262|     13.072|     0.612|           0|          0|
 
 And that is it. `rquery` isn't slow, even on local data!
 

@@ -95,13 +95,22 @@ rquery_pipeline <- . := {
 
 rquery_local <- function() {
  dL %.>% 
-    rquery_pipeline %.>%
+    rquery_pipeline(.) %.>%
     as.data.frame(.) # force execution
 }
 
-rquery_database <- function() {
+rquery_database_pull <- function() {
  dR %.>% 
-    rquery_pipeline %.>% 
+    rquery_pipeline(.) %.>% 
+    to_sql(., db) %.>% 
+    DBI::dbGetQuery(db, .) %.>%
+    as.data.frame(.) # shouldn't be needed
+}
+
+rquery_database_count <- function() {
+ dR %.>% 
+    rquery_pipeline(.) %.>% 
+    sql_node(., "n" := "COUNT(1)") %.>% 
     to_sql(., db) %.>% 
     DBI::dbGetQuery(db, .) %.>%
     as.data.frame(.) # shouldn't be needed
@@ -126,9 +135,16 @@ dplyr_local <- function() {
     dplyr_pipeline
 }
 
-dplyr_database <- function() {
+dplyr_database_pull <- function() {
   dT %>% 
     dplyr_pipeline %>%
+    collect()
+}
+
+dplyr_database_count <- function() {
+  dT %>% 
+    dplyr_pipeline %>%
+    tally() %>%
     collect()
 }
 ```
@@ -138,11 +154,15 @@ Let's inspect the functions.
 ```{r show}
 head(rquery_local())
 
-head(rquery_database())
+head(rquery_database_pull())
+
+rquery_database_count()
 
 head(dplyr_local())
 
-head(dplyr_database())
+head(dplyr_database_pull())
+
+dplyr_database_count()
 ```
 
 I have tried to get rid of the warnings that
@@ -151,19 +171,14 @@ the dplyr database pipeline is producing, but adding the "`na.rm = TRUE`" appear
 Now let's measure the speeds with `microbenchmark`.
 
 ```{r timings, warning=FALSE}
-# check from: 
-# https://cran.r-project.org/web/packages/microbenchmark/microbenchmark.pdf
-my_check <- function(values) {
-  all(sapply(values[-1], 
-             function(x) identical(values[[1]], x)))
-}
-
 tm <- microbenchmark(
   nrow(rquery_local()),
-  nrow(rquery_database()),
+  nrow(rquery_database_pull()),
+  rquery_database_count(),
   nrow(dplyr_local()),
-  nrow(dplyr_database()),
-  check=my_check)
+  nrow(dplyr_database_pull()),
+  dplyr_database_count()
+)
 saveRDS(tm, "qtimings.RDS")
 print(tm)
 autoplot(tm)
@@ -179,9 +194,11 @@ Let's re-measure with `rbenchmark`,
 ```{r timingsr,  warning=FALSE}
 tb <- benchmark(
   rquery_local = { nrow(rquery_local()) },
-  rquery_database = { nrow(rquery_database()) },
+  rquery_database_pull = { nrow(rquery_database_pull()) },
+  rquery_database_count = { rquery_database_count() },
   dplyr_local = { nrow(dplyr_local()) },
-  dplyr_database = { nrow(dplyr_database()) }
+  dplyr_database_pull = { nrow(dplyr_database_pull()) },
+  dplyr_database_count = { dplyr_database_count() }
 )
 knitr::kable(tb)
 ```
