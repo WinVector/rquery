@@ -152,9 +152,10 @@ dplyr_database_count <- function() {
 data.table_local <- function() {
   dDT <- data.table::data.table(dLocal)
   dDT[
+   , one := 1 ][
    , probability := exp ( assessmentTotal * scale ) / 
         sum ( exp ( assessmentTotal * scale ) ) ,subjectID ][
-   , count := sum ( 1 ) ,subjectID ][
+   , count := sum ( one ) ,subjectID ][
    , rank := rank ( probability ) ,subjectID ][
    rank == count ][
    , diagnosis := surveyCategory ][
