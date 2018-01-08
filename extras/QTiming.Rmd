@@ -17,7 +17,6 @@ packages, establish a database connection, and declare an [`rquery` ad hoc execu
 library("rquery")
 library("dplyr")
 library("microbenchmark")
-library("rbenchmark")
 library("ggplot2")
 
 db <- DBI::dbConnect(RPostgres::Postgres(),
@@ -121,6 +120,16 @@ rquery_database_pull <- function() {
     as.data.frame(.) # shouldn't be needed
 }
 
+rquery_database_land <- function() {
+ tabName <- "rquery_tmpx"
+ sqlc <- dR %.>% 
+    rquery_pipeline(.) %.>% 
+    to_sql(., db)
+ DBI::dbExecute(db, paste("CREATE TABLE", tabName, "AS", sqlc))
+ DBI::dbExecute(db, paste("DROP TABLE", tabName))
+ NULL
+}
+
 rquery_database_count <- function() {
  dR %.>% 
     rquery_pipeline(.) %.>% 
@@ -167,6 +176,15 @@ dplyr_database_pull <- function() {
     collect()
 }
 
+dplyr_database_land <- function() {
+  tabName = "dplyr_ctmpx"
+  dTbl %>% 
+    dplyr_pipeline %>%
+    compute(name = tabName)
+  dplyr::db_drop_table(db, table = tabName)
+  NULL
+}
+
 dplyr_database_count <- function() {
   dTbl %>% 
     dplyr_pipeline %>%
@@ -197,11 +215,15 @@ Let's inspect the functions.
 ```{r show}
 head(rquery_local())
 
+rquery_database_land()
+
 head(rquery_database_pull())
 
 rquery_database_count()
 
 head(dplyr_local())
+
+dplyr_database_land()
 
 head(dplyr_database_pull())
 
@@ -219,14 +241,16 @@ Now let's measure the speeds with `microbenchmark`.
 
 ```{r timings, warning=FALSE}
 tm <- microbenchmark(
-  nrow(rquery_local()),
-  nrow(rquery_database_pull()),
-  rquery_database_count(),
-  nrow(dplyr_local()),
-  nrow(dplyr_round_trip()),
-  nrow(dplyr_database_pull()),
-  dplyr_database_count(),
-  nrow(data.table_local())
+  "rquery in memory" = nrow(rquery_local()),
+  "rquery from db to memory" = nrow(rquery_database_pull()),
+  "rquery database count" = rquery_database_count(),
+  "rquery database land" = rquery_database_land(),
+  "dplyr in memory" = nrow(dplyr_local()),
+  "dplyr from memory to db and back" = nrow(dplyr_round_trip()),
+  "dplyr from db to memory" = nrow(dplyr_database_pull()),
+  "dplyr database count" = dplyr_database_count(),
+  "dplyr database land" = dplyr_database_land(),
+  "data.table in memory" = nrow(data.table_local())
 )
 saveRDS(tm, "qtimings.RDS")
 print(tm)
@@ -238,30 +262,14 @@ doesn't *really* have a local mode, it has to copy the data to the database and 
 in that case.  I currently guess `rquery` and `dplyr` are both picking up parallelism 
 in the database.
 
-Let's re-measure with `rbenchmark`,
 
-```{r timingsr,  warning=FALSE}
-tb <- benchmark(
-  rquery_local = { nrow(rquery_local()) },
-  rquery_database_pull = { nrow(rquery_database_pull()) },
-  rquery_database_count = { rquery_database_count() },
-  dplyr_local = { nrow(dplyr_local()) },
-  dplyr_round_trip = { nrow(dplyr_round_trip()) },
-  dplyr_database_pull = { nrow(dplyr_database_pull()) },
-  dplyr_database_count = { dplyr_database_count() },
-  data.table_local = { nrow(data.table_local()) }
-)
-knitr::kable(tb)
+```{r sessioninfo}
+sessionInfo()
 ```
-
-And that is it.  `rquery` shows competitive performance.
 
 ```{r dbcleanup}
 winvector_temp_db_handle <- NULL
 DBI::dbDisconnect(db)
 ```
 
-```{r sessioninfo}
-sessionInfo()
-```
 

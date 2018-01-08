@@ -34,7 +34,6 @@ library("dplyr")
 
 ``` r
 library("microbenchmark")
-library("rbenchmark")
 library("ggplot2")
 
 db <- DBI::dbConnect(RPostgres::Postgres(),
@@ -244,6 +243,16 @@ rquery_database_pull <- function() {
     as.data.frame(.) # shouldn't be needed
 }
 
+rquery_database_land <- function() {
+ tabName <- "rquery_tmpx"
+ sqlc <- dR %.>% 
+    rquery_pipeline(.) %.>% 
+    to_sql(., db)
+ DBI::dbExecute(db, paste("CREATE TABLE", tabName, "AS", sqlc))
+ DBI::dbExecute(db, paste("DROP TABLE", tabName))
+ NULL
+}
+
 rquery_database_count <- function() {
  dR %.>% 
     rquery_pipeline(.) %.>% 
@@ -290,6 +299,15 @@ dplyr_database_pull <- function() {
     collect()
 }
 
+dplyr_database_land <- function() {
+  tabName = "dplyr_ctmpx"
+  dTbl %>% 
+    dplyr_pipeline %>%
+    compute(name = tabName)
+  dplyr::db_drop_table(db, table = tabName)
+  NULL
+}
+
 dplyr_database_count <- function() {
   dTbl %>% 
     dplyr_pipeline %>%
@@ -329,6 +347,12 @@ head(rquery_local())
     ## 6    1001_1 withdrawal behavior   0.6706221
 
 ``` r
+rquery_database_land()
+```
+
+    ## NULL
+
+``` r
 head(rquery_database_pull())
 ```
 
@@ -360,6 +384,15 @@ head(dplyr_local())
     ## 4 1_2       positive re-framing       0.559
     ## 5 10_1      withdrawal behavior       0.671
     ## 6 10_2      positive re-framing       0.559
+
+``` r
+dplyr_database_land()
+```
+
+    ## Warning: Missing values are always removed in SQL.
+    ## Use `sum(x, na.rm = TRUE)` to silence this warning
+
+    ## NULL
 
 ``` r
 head(dplyr_database_pull())
@@ -425,38 +458,44 @@ Now let's measure the speeds with `microbenchmark`.
 
 ``` r
 tm <- microbenchmark(
-  nrow(rquery_local()),
-  nrow(rquery_database_pull()),
-  rquery_database_count(),
-  nrow(dplyr_local()),
-  nrow(dplyr_round_trip()),
-  nrow(dplyr_database_pull()),
-  dplyr_database_count(),
-  nrow(data.table_local())
+  "rquery in memory" = nrow(rquery_local()),
+  "rquery from db to memory" = nrow(rquery_database_pull()),
+  "rquery database count" = rquery_database_count(),
+  "rquery database land" = rquery_database_land(),
+  "dplyr in memory" = nrow(dplyr_local()),
+  "dplyr from memory to db and back" = nrow(dplyr_round_trip()),
+  "dplyr from db to memory" = nrow(dplyr_database_pull()),
+  "dplyr database count" = dplyr_database_count(),
+  "dplyr database land" = dplyr_database_land(),
+  "data.table in memory" = nrow(data.table_local())
 )
 saveRDS(tm, "qtimings.RDS")
 print(tm)
 ```
 
     ## Unit: milliseconds
-    ##                          expr       min        lq      mean    median
-    ##          nrow(rquery_local())  338.5910  346.6847  355.2401  350.7220
-    ##  nrow(rquery_database_pull())  232.7599  237.0171  242.3963  238.8823
-    ##       rquery_database_count()  200.9072  203.5124  205.8142  205.2113
-    ##           nrow(dplyr_local()) 1124.8141 1160.2013 1181.5530 1169.8703
-    ##      nrow(dplyr_round_trip())  582.1342  589.7269  601.8554  594.8831
-    ##   nrow(dplyr_database_pull())  375.0196  381.8920  387.3386  384.1301
-    ##        dplyr_database_count()  362.2815  366.6759  371.8732  368.4880
-    ##      nrow(data.table_local())  222.2083  230.9325  244.3440  234.3815
+    ##                              expr       min        lq      mean    median
+    ##                  rquery in memory  338.0329  346.3425  356.9680  350.5681
+    ##          rquery from db to memory  230.2711  234.8920  238.6950  237.0220
+    ##             rquery database count  200.0920  201.6072  204.1580  203.3501
+    ##              rquery database land  243.7931  247.9001  252.3964  249.6551
+    ##                   dplyr in memory 1143.1698 1171.5308 1198.7541 1182.4760
+    ##  dplyr from memory to db and back  581.0464  592.8454  605.3947  597.1829
+    ##           dplyr from db to memory  377.4007  384.3856  391.5575  386.0956
+    ##              dplyr database count  363.6085  368.7647  375.8188  370.3699
+    ##               dplyr database land  422.5462  427.7195  433.6740  429.9692
+    ##              data.table in memory  226.2244  236.6309  253.0496  241.0503
     ##         uq       max neval
-    ##   358.4723  417.6405   100
-    ##   241.6796  311.0033   100
-    ##   207.0893  219.9315   100
-    ##  1197.2733 1311.3099   100
-    ##   603.9659  685.7064   100
-    ##   386.9447  484.4347   100
-    ##   372.3387  447.0920   100
-    ##   238.7326  369.1141   100
+    ##   356.3063  434.9296   100
+    ##   240.0035  309.2471   100
+    ##   204.9661  220.5763   100
+    ##   254.4340  290.4968   100
+    ##  1210.4098 1606.1421   100
+    ##   606.1846  748.9984   100
+    ##   390.4352  458.5678   100
+    ##   375.2306  456.6592   100
+    ##   435.2400  497.8037   100
+    ##   248.3687  375.3060   100
 
 ``` r
 autoplot(tm)
@@ -465,40 +504,6 @@ autoplot(tm)
 ![](QTiming_files/figure-markdown_github/timings-1.png)
 
 `rquery` appears to be fast. The extra time for "`rquery` local" is because `rquery` doesn't *really* have a local mode, it has to copy the data to the database and back in that case. I currently guess `rquery` and `dplyr` are both picking up parallelism in the database.
-
-Let's re-measure with `rbenchmark`,
-
-``` r
-tb <- benchmark(
-  rquery_local = { nrow(rquery_local()) },
-  rquery_database_pull = { nrow(rquery_database_pull()) },
-  rquery_database_count = { rquery_database_count() },
-  dplyr_local = { nrow(dplyr_local()) },
-  dplyr_round_trip = { nrow(dplyr_round_trip()) },
-  dplyr_database_pull = { nrow(dplyr_database_pull()) },
-  dplyr_database_count = { dplyr_database_count() },
-  data.table_local = { nrow(data.table_local()) }
-)
-knitr::kable(tb)
-```
-
-|     | test                    |  replications|  elapsed|  relative|  user.self|  sys.self|  user.child|  sys.child|
-|-----|:------------------------|-------------:|--------:|---------:|----------:|---------:|-----------:|----------:|
-| 8   | data.table\_local       |           100|   25.755|     1.207|     25.115|     0.450|           0|          0|
-| 7   | dplyr\_database\_count  |           100|   38.154|     1.789|     12.331|     0.094|           0|          0|
-| 6   | dplyr\_database\_pull   |           100|   39.778|     1.865|     12.710|     0.321|           0|          0|
-| 4   | dplyr\_local            |           100|  121.714|     5.706|    119.428|     1.198|           0|          0|
-| 5   | dplyr\_round\_trip      |           100|   62.476|     2.929|     21.863|     0.705|           0|          0|
-| 3   | rquery\_database\_count |           100|   21.331|     1.000|      2.061|     0.023|           0|          0|
-| 2   | rquery\_database\_pull  |           100|   25.208|     1.182|      4.519|     0.242|           0|          0|
-| 1   | rquery\_local           |           100|   36.946|     1.732|     13.119|     0.628|           0|          0|
-
-And that is it. `rquery` shows competitive performance.
-
-``` r
-winvector_temp_db_handle <- NULL
-DBI::dbDisconnect(db)
-```
 
 ``` r
 sessionInfo()
@@ -519,23 +524,28 @@ sessionInfo()
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ## [1] bindrcpp_0.2         ggplot2_2.2.1        rbenchmark_1.0.0    
-    ## [4] microbenchmark_1.4-3 dplyr_0.7.4          rquery_0.2.0        
-    ## [7] cdata_0.5.1          wrapr_1.1.1         
+    ## [1] bindrcpp_0.2         ggplot2_2.2.1        microbenchmark_1.4-3
+    ## [4] dplyr_0.7.4          rquery_0.2.0         cdata_0.5.1         
+    ## [7] wrapr_1.1.1         
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] Rcpp_0.12.14.2      highr_0.6           dbplyr_1.2.0       
-    ##  [4] pillar_1.0.1        compiler_3.4.3      plyr_1.8.4         
-    ##  [7] bindr_0.1           tools_3.4.3         RPostgres_1.0-4    
-    ## [10] digest_0.6.13       bit_1.1-12          evaluate_0.10.1    
-    ## [13] tibble_1.4.1        gtable_0.2.0        pkgconfig_2.0.1    
-    ## [16] rlang_0.1.6         cli_1.0.0           DBI_0.7            
-    ## [19] yaml_2.1.16         withr_2.1.1         stringr_1.2.0      
-    ## [22] knitr_1.18          hms_0.4.0           tidyselect_0.2.3   
-    ## [25] rprojroot_1.3-2     bit64_0.9-7         grid_3.4.3         
-    ## [28] data.table_1.10.4-3 glue_1.2.0          R6_2.2.2           
-    ## [31] rmarkdown_1.8       purrr_0.2.4         blob_1.1.0         
-    ## [34] magrittr_1.5        backports_1.1.2     scales_0.5.0       
-    ## [37] htmltools_0.3.6     assertthat_0.2.0    colorspace_1.3-2   
-    ## [40] utf8_1.1.3          stringi_1.1.6       lazyeval_0.2.1     
-    ## [43] munsell_0.4.3       crayon_1.3.4
+    ##  [1] Rcpp_0.12.14.2      dbplyr_1.2.0        pillar_1.0.1       
+    ##  [4] compiler_3.4.3      plyr_1.8.4          bindr_0.1          
+    ##  [7] tools_3.4.3         RPostgres_1.0-4     digest_0.6.13      
+    ## [10] bit_1.1-12          evaluate_0.10.1     tibble_1.4.1       
+    ## [13] gtable_0.2.0        pkgconfig_2.0.1     rlang_0.1.6        
+    ## [16] cli_1.0.0           DBI_0.7             yaml_2.1.16        
+    ## [19] withr_2.1.1         stringr_1.2.0       knitr_1.18         
+    ## [22] hms_0.4.0           tidyselect_0.2.3    rprojroot_1.3-2    
+    ## [25] bit64_0.9-7         grid_3.4.3          data.table_1.10.4-3
+    ## [28] glue_1.2.0          R6_2.2.2            rmarkdown_1.8      
+    ## [31] purrr_0.2.4         blob_1.1.0          magrittr_1.5       
+    ## [34] backports_1.1.2     scales_0.5.0        htmltools_0.3.6    
+    ## [37] assertthat_0.2.0    colorspace_1.3-2    utf8_1.1.3         
+    ## [40] stringi_1.1.6       lazyeval_0.2.1      munsell_0.4.3      
+    ## [43] crayon_1.3.4
+
+``` r
+winvector_temp_db_handle <- NULL
+DBI::dbDisconnect(db)
+```
