@@ -8,8 +8,11 @@ timings = readRDS("qtimings.RDS")
 timings$expr <- as.character(timings$expr)
 
 # colors
-highlightcolor = "#b2df8a"
+highlightcolor = "#33a02c"
 backgroundcolor = "#a6cee3"
+reruncolor = "#b2df8a"
+greycolor = "darkgrey"
+
 
 runs <- c("nrow(data.table_local())", 
           "nrow(rquery_local())",
@@ -22,10 +25,31 @@ colormap = runs := c(highlightcolor,
 
 tr <- timings[timings$expr %in% runs, , drop=FALSE]
 tr$expr <- factor(tr$expr, levels = rev(runs))
-plotbenchmark(tr, colormap, "Comparison of Task Runtimes by Implementation")
+plotbenchmark(tr, colormap, "Comparison of In-Memory Task Runtimes by Implementation")
 ```
 
 ![](plotexample_files/figure-markdown_github/unnamed-chunk-1-1.png)
+
+``` r
+runs <- c("nrow(data.table_local())", 
+          "nrow(rquery_local())",
+          "rquery_database_count()",
+          "nrow(dplyr_local())",
+          "nrow(dplyr_round_trip())",
+          "dplyr_database_count()")
+colormap = runs := c(greycolor,
+                     greycolor,
+                     highlightcolor,
+                     greycolor,
+                     greycolor,
+                     highlightcolor)
+
+tr <- timings[timings$expr %in% runs, , drop=FALSE]
+tr$expr <- factor(tr$expr, levels = rev(runs))
+plotbenchmark(tr, colormap, "Comparison of Pure Database Task Runtimes by Implementation")
+```
+
+![](plotexample_files/figure-markdown_github/unnamed-chunk-1-2.png)
 
 ``` r
 followups <- c("nrow(rquery_local())",
@@ -36,13 +60,13 @@ followups <- c("nrow(rquery_local())",
                "dplyr_database_count()")     
 colormap = followups := c(highlightcolor,
                           backgroundcolor,
-                          backgroundcolor,
+                          reruncolor,
                           highlightcolor,
                           backgroundcolor,
-                          backgroundcolor)
+                          reruncolor)
 tf <- timings[timings$expr %in% followups, , drop=FALSE]
 tf$expr <- factor(tf$expr, levels = rev(followups))
 plotbenchmark(tf, colormap, "Breakdown of Transport Costs")
 ```
 
-![](plotexample_files/figure-markdown_github/unnamed-chunk-1-2.png)
+![](plotexample_files/figure-markdown_github/unnamed-chunk-1-3.png)
