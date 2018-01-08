@@ -3,7 +3,9 @@ QTiming
 Win-Vector LLC
 1/7/2018
 
-Let's time both [`rquery`](https://winvector.github.io/rquery/) and [`dplyr`](https://CRAN.R-project.org/package=dplyr) on a non-trivial example.
+Let's time [`rquery`](https://winvector.github.io/rquery/), [`dplyr`](https://CRAN.R-project.org/package=dplyr), and [`data.table`](https://CRAN.R-project.org/package=data.table) on a non-trivial example.
+
+These timings are on an late 2014 Mac Mini with 8GB of RAM running OSX 10.12.6, version 3.4.3 (2017-11-30) -- "Kite-Eating Tree", and the current (2018-01-07) CRAN versions of all packages (except `rquery`, which is not yet up on CRAN). We are getting database services from PostgreSQL version `9.6.1` in a docker container.
 
 First let's load our packages, establish a database connection, and declare an [`rquery` ad hoc execution service](https://winvector.github.io/rquery/articles/AdHocQueries.html) (the "`winvector_temp_db_handle`").
 
@@ -41,7 +43,100 @@ db <- DBI::dbConnect(RPostgres::Postgres(),
                      user = 'postgres',
                      password = 'pg')
 winvector_temp_db_handle <- list(db = db)
+
+packageVersion("rquery")
 ```
+
+    ## [1] '0.2.0'
+
+``` r
+packageVersion("dplyr")
+```
+
+    ## [1] '0.7.4'
+
+``` r
+packageVersion("dbplyr")
+```
+
+    ## [1] '1.2.0'
+
+``` r
+packageVersion("DBI")
+```
+
+    ## [1] '0.7'
+
+``` r
+packageVersion("data.table")
+```
+
+    ## [1] '1.10.4.3'
+
+``` r
+packageVersion("RPostgres")
+```
+
+    ## [1] '1.0.4'
+
+``` r
+print(db)
+```
+
+    ## <PqConnection> postgres@localhost:5432
+
+``` r
+DBI::dbGetQuery(db, "SELECT version()")
+```
+
+    ##                                                                                    version
+    ## 1 PostgreSQL 9.6.1 on x86_64-pc-linux-gnu, compiled by gcc (Debian 4.9.2-10) 4.9.2, 64-bit
+
+``` r
+R.Version()
+```
+
+    ## $platform
+    ## [1] "x86_64-apple-darwin15.6.0"
+    ## 
+    ## $arch
+    ## [1] "x86_64"
+    ## 
+    ## $os
+    ## [1] "darwin15.6.0"
+    ## 
+    ## $system
+    ## [1] "x86_64, darwin15.6.0"
+    ## 
+    ## $status
+    ## [1] ""
+    ## 
+    ## $major
+    ## [1] "3"
+    ## 
+    ## $minor
+    ## [1] "4.3"
+    ## 
+    ## $year
+    ## [1] "2017"
+    ## 
+    ## $month
+    ## [1] "11"
+    ## 
+    ## $day
+    ## [1] "30"
+    ## 
+    ## $`svn rev`
+    ## [1] "73796"
+    ## 
+    ## $language
+    ## [1] "R"
+    ## 
+    ## $version.string
+    ## [1] "R version 3.4.3 (2017-11-30)"
+    ## 
+    ## $nickname
+    ## [1] "Kite-Eating Tree"
 
 We now build and extended version of the example from [Let’s Have Some Sympathy For The Part-time R User](http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/).
 
@@ -296,6 +391,23 @@ dplyr_database_count()
     ## 1 20000
 
 ``` r
+head(dplyr_round_trip())
+```
+
+    ## Warning: Missing values are always removed in SQL.
+    ## Use `sum(x, na.rm = TRUE)` to silence this warning
+
+    ## # A tibble: 6 x 3
+    ##   subjectID diagnosis           probability
+    ##   <chr>     <chr>                     <dbl>
+    ## 1 0_1       withdrawal behavior       0.671
+    ## 2 0_2       positive re-framing       0.559
+    ## 3 1000_1    withdrawal behavior       0.671
+    ## 4 1000_2    positive re-framing       0.559
+    ## 5 100_1     withdrawal behavior       0.671
+    ## 6 1001_1    withdrawal behavior       0.671
+
+``` r
 head(data.table_local())
 ```
 
@@ -328,23 +440,23 @@ print(tm)
 
     ## Unit: milliseconds
     ##                          expr       min        lq      mean    median
-    ##          nrow(rquery_local())  337.2405  344.5674  355.1654  348.8562
-    ##  nrow(rquery_database_pull())  228.6788  234.6082  242.9893  237.3575
-    ##       rquery_database_count()  200.2667  202.9156  209.4105  205.1442
-    ##           nrow(dplyr_local()) 1152.7496 1180.8069 1217.5715 1192.1386
-    ##      nrow(dplyr_round_trip())  571.5436  583.5926  597.5366  587.5621
-    ##   nrow(dplyr_database_pull())  370.2830  375.6542  385.9769  379.8664
-    ##        dplyr_database_count()  355.9304  362.9655  372.4483  366.9658
-    ##      nrow(data.table_local())  220.4467  236.4563  259.3759  242.1348
+    ##          nrow(rquery_local())  338.5910  346.6847  355.2401  350.7220
+    ##  nrow(rquery_database_pull())  232.7599  237.0171  242.3963  238.8823
+    ##       rquery_database_count()  200.9072  203.5124  205.8142  205.2113
+    ##           nrow(dplyr_local()) 1124.8141 1160.2013 1181.5530 1169.8703
+    ##      nrow(dplyr_round_trip())  582.1342  589.7269  601.8554  594.8831
+    ##   nrow(dplyr_database_pull())  375.0196  381.8920  387.3386  384.1301
+    ##        dplyr_database_count()  362.2815  366.6759  371.8732  368.4880
+    ##      nrow(data.table_local())  222.2083  230.9325  244.3440  234.3815
     ##         uq       max neval
-    ##   356.1518  462.9935   100
-    ##   242.2643  337.5072   100
-    ##   209.1377  309.0142   100
-    ##  1228.1974 1498.4659   100
-    ##   594.2685  783.9291   100
-    ##   386.2082  500.1132   100
-    ##   371.9168  456.3380   100
-    ##   296.5508  375.2274   100
+    ##   358.4723  417.6405   100
+    ##   241.6796  311.0033   100
+    ##   207.0893  219.9315   100
+    ##  1197.2733 1311.3099   100
+    ##   603.9659  685.7064   100
+    ##   386.9447  484.4347   100
+    ##   372.3387  447.0920   100
+    ##   238.7326  369.1141   100
 
 ``` r
 autoplot(tm)
@@ -372,14 +484,14 @@ knitr::kable(tb)
 
 |     | test                    |  replications|  elapsed|  relative|  user.self|  sys.self|  user.child|  sys.child|
 |-----|:------------------------|-------------:|--------:|---------:|----------:|---------:|-----------:|----------:|
-| 8   | data.table\_local       |           100|   25.549|     1.244|     25.094|     0.349|           0|          0|
-| 7   | dplyr\_database\_count  |           100|   36.808|     1.792|     11.848|     0.040|           0|          0|
-| 6   | dplyr\_database\_pull   |           100|   38.242|     1.862|     12.288|     0.252|           0|          0|
-| 4   | dplyr\_local            |           100|  119.885|     5.838|    119.038|     0.684|           0|          0|
-| 5   | dplyr\_round\_trip      |           100|   58.940|     2.870|     21.162|     0.600|           0|          0|
-| 3   | rquery\_database\_count |           100|   20.536|     1.000|      1.925|     0.014|           0|          0|
-| 2   | rquery\_database\_pull  |           100|   24.556|     1.196|      4.355|     0.235|           0|          0|
-| 1   | rquery\_local           |           100|   35.574|     1.732|     12.815|     0.571|           0|          0|
+| 8   | data.table\_local       |           100|   25.755|     1.207|     25.115|     0.450|           0|          0|
+| 7   | dplyr\_database\_count  |           100|   38.154|     1.789|     12.331|     0.094|           0|          0|
+| 6   | dplyr\_database\_pull   |           100|   39.778|     1.865|     12.710|     0.321|           0|          0|
+| 4   | dplyr\_local            |           100|  121.714|     5.706|    119.428|     1.198|           0|          0|
+| 5   | dplyr\_round\_trip      |           100|   62.476|     2.929|     21.863|     0.705|           0|          0|
+| 3   | rquery\_database\_count |           100|   21.331|     1.000|      2.061|     0.023|           0|          0|
+| 2   | rquery\_database\_pull  |           100|   25.208|     1.182|      4.519|     0.242|           0|          0|
+| 1   | rquery\_local           |           100|   36.946|     1.732|     13.119|     0.628|           0|          0|
 
 And that is it. `rquery` shows competitive performance.
 
@@ -387,3 +499,43 @@ And that is it. `rquery` shows competitive performance.
 winvector_temp_db_handle <- NULL
 DBI::dbDisconnect(db)
 ```
+
+``` r
+sessionInfo()
+```
+
+    ## R version 3.4.3 (2017-11-30)
+    ## Platform: x86_64-apple-darwin15.6.0 (64-bit)
+    ## Running under: macOS Sierra 10.12.6
+    ## 
+    ## Matrix products: default
+    ## BLAS: /Library/Frameworks/R.framework/Versions/3.4/Resources/lib/libRblas.0.dylib
+    ## LAPACK: /Library/Frameworks/R.framework/Versions/3.4/Resources/lib/libRlapack.dylib
+    ## 
+    ## locale:
+    ## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+    ## 
+    ## attached base packages:
+    ## [1] stats     graphics  grDevices utils     datasets  methods   base     
+    ## 
+    ## other attached packages:
+    ## [1] bindrcpp_0.2         ggplot2_2.2.1        rbenchmark_1.0.0    
+    ## [4] microbenchmark_1.4-3 dplyr_0.7.4          rquery_0.2.0        
+    ## [7] cdata_0.5.1          wrapr_1.1.1         
+    ## 
+    ## loaded via a namespace (and not attached):
+    ##  [1] Rcpp_0.12.14.2      highr_0.6           dbplyr_1.2.0       
+    ##  [4] pillar_1.0.1        compiler_3.4.3      plyr_1.8.4         
+    ##  [7] bindr_0.1           tools_3.4.3         RPostgres_1.0-4    
+    ## [10] digest_0.6.13       bit_1.1-12          evaluate_0.10.1    
+    ## [13] tibble_1.4.1        gtable_0.2.0        pkgconfig_2.0.1    
+    ## [16] rlang_0.1.6         cli_1.0.0           DBI_0.7            
+    ## [19] yaml_2.1.16         withr_2.1.1         stringr_1.2.0      
+    ## [22] knitr_1.18          hms_0.4.0           tidyselect_0.2.3   
+    ## [25] rprojroot_1.3-2     bit64_0.9-7         grid_3.4.3         
+    ## [28] data.table_1.10.4-3 glue_1.2.0          R6_2.2.2           
+    ## [31] rmarkdown_1.8       purrr_0.2.4         blob_1.1.0         
+    ## [34] magrittr_1.5        backports_1.1.2     scales_0.5.0       
+    ## [37] htmltools_0.3.6     assertthat_0.2.0    colorspace_1.3-2   
+    ## [40] utf8_1.1.3          stringi_1.1.6       lazyeval_0.2.1     
+    ## [43] munsell_0.4.3       crayon_1.3.4

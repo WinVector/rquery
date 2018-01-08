@@ -5,7 +5,10 @@ date: "1/7/2018"
 output: github_document
 ---
 
-Let's time both [`rquery`](https://winvector.github.io/rquery/) and [`dplyr`]( https://CRAN.R-project.org/package=dplyr) on a non-trivial example.  
+Let's time [`rquery`](https://winvector.github.io/rquery/), [`dplyr`]( https://CRAN.R-project.org/package=dplyr), and [`data.table`](https://CRAN.R-project.org/package=data.table ) on a non-trivial example.
+
+These timings are on an late 2014 Mac Mini with 8GB of RAM running OSX 10.12.6, 
+ version 3.4.3 (2017-11-30) -- "Kite-Eating Tree", and the current (2018-01-07) CRAN versions of all packages (except `rquery`, which is not yet up on CRAN).  We are getting database services from PostgreSQL version `9.6.1` in a docker container.
 
 First let's load our
 packages, establish a database connection, and declare an [`rquery` ad hoc execution service](https://winvector.github.io/rquery/articles/AdHocQueries.html) (the "`winvector_temp_db_handle`").
@@ -23,6 +26,18 @@ db <- DBI::dbConnect(RPostgres::Postgres(),
                      user = 'postgres',
                      password = 'pg')
 winvector_temp_db_handle <- list(db = db)
+
+packageVersion("rquery")
+packageVersion("dplyr")
+packageVersion("dbplyr")
+packageVersion("DBI")
+packageVersion("data.table")
+packageVersion("RPostgres")
+
+print(db)
+DBI::dbGetQuery(db, "SELECT version()")
+
+R.Version()
 ```
 
 We now build and extended version of the example from [Let’s Have Some Sympathy For The Part-time R User](http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/).
@@ -192,6 +207,8 @@ head(dplyr_database_pull())
 
 dplyr_database_count()
 
+head(dplyr_round_trip())
+
 head(data.table_local())
 ```
 
@@ -243,3 +260,8 @@ And that is it.  `rquery` shows competitive performance.
 winvector_temp_db_handle <- NULL
 DBI::dbDisconnect(db)
 ```
+
+```{r sessioninfo}
+sessionInfo()
+```
+
