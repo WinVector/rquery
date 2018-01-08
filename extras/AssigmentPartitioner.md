@@ -1,7 +1,7 @@
 Assignment Paritioner
 ================
 John Mount, Win-Vector LLC
-2018-01-06
+2018-01-07
 
 rquery example
 --------------
@@ -372,7 +372,40 @@ dplyr::tbl(my_db, "example_table") %>%
 |    3| T    | C    | T    | C    | T    | C    | T    | C    | T    | C    |
 |    4| T    | C    | T    | C    | T    | C    | T    | C    | T    | C    |
 
-Notice in the above that all of the groups (`a` through `e`) erroneously make identical selections.
+Notice in the above that all of the groups (`a` through `e`) erroneously make identical selections. Re-factoring the mutate using [`seplyr::factor_mutate()`](https://winvector.github.io/seplyr/reference/factor_mutate.html) re-writes the expression into the following (which work properly, as we see below):
+
+``` r
+dplyr::tbl(my_db, "example_table") %>%
+   mutate(choice = rand_a >= 0.5) %>%
+   mutate(a_1 = ifelse(choice, "T", "C"),
+          a_2 = ifelse(choice, "C", "T")) %>%
+   mutate(choice = rand_b >= 0.5) %>%
+   mutate(b_1 = ifelse(choice, "T", "C"),
+          b_2 = ifelse(choice, "C", "T")) %>%
+   mutate(choice = rand_c >= 0.5) %>%
+   mutate(c_1 = ifelse(choice, "T", "C"),
+          c_2 = ifelse(choice, "C", "T")) %>%
+   mutate(choice = rand_d >= 0.5) %>%
+   mutate(d_1 = ifelse(choice, "T", "C"),
+          d_2 = ifelse(choice, "C", "T")) %>%
+   mutate(choice = rand_e >= 0.5) %>%
+   mutate(e_1 = ifelse(choice, "T", "C"),
+          e_2 = ifelse(choice, "C", "T"))  %>%
+  select(id,
+         a_1, a_2, b_1, b_2,
+         c_1, c_2, d_1, d_2,
+         e_1, e_2) %>%
+  knitr::kable()
+```
+
+|   id| a\_1 | a\_2 | b\_1 | b\_2 | c\_1 | c\_2 | d\_1 | d\_2 | e\_1 | e\_2 |
+|----:|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|:-----|
+|    1| T    | C    | T    | C    | C    | T    | C    | T    | C    | T    |
+|    2| T    | C    | C    | T    | C    | T    | T    | C    | T    | C    |
+|    3| T    | C    | T    | C    | T    | C    | T    | C    | C    | T    |
+|    4| T    | C    | T    | C    | T    | C    | T    | C    | C    | T    |
+
+Or the query can be run through [`seplyr::mutate_nse()`](https://winvector.github.io/seplyr/reference/mutate_nse.html) which (as of `seplyr` version `0.5.2`) as a built-in statement partitioner strong enough to safely execute the statement in stages.
 
 ``` r
 DBI::dbDisconnect(my_db)
