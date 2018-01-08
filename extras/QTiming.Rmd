@@ -30,7 +30,7 @@ We now build and extended version of the example from [Let’s Have Some Sympath
 ```{r data}
 nrep <- 10000
 
-dL <- data.frame(
+dLocal <- data.frame(
   subjectID = c(1,                   
                 1,
                 2,                   
@@ -46,22 +46,22 @@ dL <- data.frame(
                       3,                  
                       4),
   stringsAsFactors = FALSE)
-norig <- nrow(dL)
-dL <- dL[rep(seq_len(norig), nrep), , drop=FALSE]
-dL$subjectID <- paste((seq_len(nrow(dL)) -1)%/% norig,
-                      dL$subjectID, 
+norig <- nrow(dLocal)
+dLocal <- dLocal[rep(seq_len(norig), nrep), , drop=FALSE]
+dLocal$subjectID <- paste((seq_len(nrow(dLocal)) -1)%/% norig,
+                      dLocal$subjectID, 
                       sep = "_")
-rownames(dL) <- NULL
-head(dL)
+rownames(dLocal) <- NULL
+head(dLocal)
 
 dR <- rquery::dbi_copy_to(db, 'dR',
-                  dL,
+                  dLocal,
                   temporary = TRUE, 
                   overwrite = TRUE)
 cdata::qlook(db, dR$table_name)
 
-dT <- dplyr::tbl(db, dR$table_name)
-dplyr::glimpse(dT)
+dTbl <- dplyr::tbl(db, dR$table_name)
+dplyr::glimpse(dTbl)
 ```
 
 Now we declare our operation pipelines, both on local (in-memory `data.frame`) and
@@ -92,9 +92,8 @@ rquery_pipeline <- . := {
 }
 
 
-
 rquery_local <- function() {
- dL %.>% 
+ dLocal %.>% 
     rquery_pipeline(.) %.>%
     as.data.frame(.) # force execution
 }
@@ -131,22 +130,38 @@ dplyr_pipeline <- . %>%
     arrange(subjectID)
   
 dplyr_local <- function() {
-  dL %>% 
+  dLocal %>% 
     dplyr_pipeline
 }
 
 dplyr_database_pull <- function() {
-  dT %>% 
+  dTbl %>% 
     dplyr_pipeline %>%
     collect()
 }
 
 dplyr_database_count <- function() {
-  dT %>% 
+  dTbl %>% 
     dplyr_pipeline %>%
     tally() %>%
     collect()
 }
+
+.datatable.aware <- TRUE
+
+datatable <- function() {
+  dDT <- data.table::data.table(dLocal)
+  dDT[, one := 1 ][
+   , probability := exp ( assessmentTotal * scale ) / 
+        sum ( exp ( assessmentTotal * scale ) ) ,subjectID ][
+   , count := sum ( one ) ,subjectID ][
+   , rank := rank ( probability ) ,subjectID ][
+   rank == count ][
+   , diagnosis := surveyCategory ][
+   , c('subjectID', 'diagnosis', 'probability') ][
+   order(subjectID) ]
+}
+
 ```
 
 Let's inspect the functions.
@@ -163,6 +178,8 @@ head(dplyr_local())
 head(dplyr_database_pull())
 
 dplyr_database_count()
+
+head(datatable())
 ```
 
 I have tried to get rid of the warnings that
@@ -177,7 +194,8 @@ tm <- microbenchmark(
   rquery_database_count(),
   nrow(dplyr_local()),
   nrow(dplyr_database_pull()),
-  dplyr_database_count()
+  dplyr_database_count(),
+  nrow(datatable())
 )
 saveRDS(tm, "qtimings.RDS")
 print(tm)
@@ -198,7 +216,8 @@ tb <- benchmark(
   rquery_database_count = { rquery_database_count() },
   dplyr_local = { nrow(dplyr_local()) },
   dplyr_database_pull = { nrow(dplyr_database_pull()) },
-  dplyr_database_count = { dplyr_database_count() }
+  dplyr_database_count = { dplyr_database_count() },
+  data.table = { nrow(datatable()) }
 )
 knitr::kable(tb)
 ```
