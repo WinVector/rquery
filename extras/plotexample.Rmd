@@ -1,0 +1,41 @@
+---
+title: "Plotting example"
+author: "Nina Zumel"
+date: "January 8, 2018"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(ggplot2)
+
+source("plotbenchmark.R")
+
+```
+
+```{r}
+
+timings = readRDS("qtimings.RDS")
+
+timings$expr <- as.character(timings$expr)
+
+runs <- c("nrow(data.table_local())", 
+          "nrow(rquery_local())",
+          "nrow(dplyr_local())",
+          "nrow(dplyr_round_trip())")
+tr <- timings[timings$expr %in% runs, , drop=FALSE]
+tr$expr <- factor(tr$expr, levels = rev(runs))
+plotbenchmark(tr, "Comparison of Task Runtimes by Implementation")
+
+followups <- c("nrow(rquery_local())",
+               "nrow(rquery_database_pull())", 
+               "rquery_database_count()", 
+               "nrow(dplyr_round_trip())",
+               "nrow(dplyr_database_pull())",
+               "dplyr_database_count()")     
+tf <- timings[timings$expr %in% followups, , drop=FALSE]
+tf$expr <- factor(tf$expr, levels = rev(followups))
+plotbenchmark(tf, "Breakdown of Transport Costs")
+
+```
