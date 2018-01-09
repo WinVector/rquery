@@ -8,7 +8,7 @@ output: github_document
 Let's time [`rquery`](https://winvector.github.io/rquery/), [`dplyr`]( https://CRAN.R-project.org/package=dplyr), and [`data.table`](https://CRAN.R-project.org/package=data.table ) on a non-trivial example.
 
 These timings are on an late 2014 Mac Mini with 8GB of RAM running OSX 10.12.6, 
- version 3.4.3 (2017-11-30) -- "Kite-Eating Tree", and the current (2018-01-07) CRAN versions of all packages (except `rquery`, which is not yet up on CRAN).  We are getting database services from PostgreSQL version `9.6.1` in a docker container.
+version 3.4.3 (2017-11-30) -- "Kite-Eating Tree", and the current (2018-01-07) CRAN versions of all packages (except `rquery`, which is not yet up on CRAN).  We are getting database services from PostgreSQL version `9.6.1` in a docker container.
 
 First let's load our
 packages, establish a database connection, and declare an [`rquery` ad hoc execution service](https://winvector.github.io/rquery/articles/AdHocQueries.html) (the "`winvector_temp_db_handle`").
@@ -63,15 +63,15 @@ dLocal <- data.frame(
 norig <- nrow(dLocal)
 dLocal <- dLocal[rep(seq_len(norig), nrep), , drop=FALSE]
 dLocal$subjectID <- paste((seq_len(nrow(dLocal)) -1)%/% norig,
-                      dLocal$subjectID, 
-                      sep = "_")
+                          dLocal$subjectID, 
+                          sep = "_")
 rownames(dLocal) <- NULL
 head(dLocal)
 
 dR <- rquery::dbi_copy_to(db, 'dR',
-                  dLocal,
-                  temporary = TRUE, 
-                  overwrite = TRUE)
+                          dLocal,
+                          temporary = TRUE, 
+                          overwrite = TRUE)
 cdata::qlook(db, dR$table_name)
 
 dTbl <- dplyr::tbl(db, dR$table_name)
@@ -107,13 +107,13 @@ rquery_pipeline <- . := {
 
 
 rquery_local <- function() {
- dLocal %.>% 
+  dLocal %.>% 
     rquery_pipeline(.) %.>%
     as.data.frame(.) # force execution
 }
 
 rquery_database_pull <- function() {
- dR %.>% 
+  dR %.>% 
     rquery_pipeline(.) %.>% 
     to_sql(., db) %.>% 
     DBI::dbGetQuery(db, .) %.>%
@@ -121,17 +121,17 @@ rquery_database_pull <- function() {
 }
 
 rquery_database_land <- function() {
- tabName <- "rquery_tmpx"
- sqlc <- dR %.>% 
+  tabName <- "rquery_tmpx"
+  sqlc <- dR %.>% 
     rquery_pipeline(.) %.>% 
     to_sql(., db)
- DBI::dbExecute(db, paste("CREATE TABLE", tabName, "AS", sqlc))
- DBI::dbExecute(db, paste("DROP TABLE", tabName))
- NULL
+  DBI::dbExecute(db, paste("CREATE TABLE", tabName, "AS", sqlc))
+  DBI::dbExecute(db, paste("DROP TABLE", tabName))
+  NULL
 }
 
 rquery_database_count <- function() {
- dR %.>% 
+  dR %.>% 
     rquery_pipeline(.) %.>% 
     sql_node(., "n" := "COUNT(1)") %.>% 
     to_sql(., db) %.>% 
@@ -143,19 +143,43 @@ rquery_database_count <- function() {
 # so body not evaluated until used
 dplyr_pipeline <- . %>%
   group_by(subjectID) %>%
-    mutate(probability =
-             exp(assessmentTotal * scale)/
-             sum(exp(assessmentTotal * scale)), na.rm = TRUE) %>%
-    arrange(probability, surveyCategory) %>%
-    filter(row_number() == n()) %>%
-    ungroup() %>%
-    rename(diagnosis = surveyCategory) %>%
-    select(subjectID, diagnosis, probability) %>%
-    arrange(subjectID)
-  
+  mutate(probability =
+           exp(assessmentTotal * scale)/
+           sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
+  arrange(probability, surveyCategory) %>%
+  filter(row_number() == n()) %>%
+  ungroup() %>%
+  rename(diagnosis = surveyCategory) %>%
+  select(subjectID, diagnosis, probability) %>%
+  arrange(subjectID)
+
+# this is a function, 
+# so body not evaluated until used
+# pipeline re-factored to have filter outside
+# mutate 
+# work around: https://github.com/tidyverse/dplyr/issues/3294
+dplyr_pipeline2 <- . %>%
+  group_by(subjectID) %>%
+  mutate(probability =
+           exp(assessmentTotal * scale)/
+           sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
+  arrange(probability, surveyCategory) %>%
+  mutate(count = n(), rank = row_number()) %>%
+  ungroup() %>%
+  filter(count == rank) %>%
+  rename(diagnosis = surveyCategory) %>%
+  select(subjectID, diagnosis, probability) %>%
+  arrange(subjectID)
+
+
 dplyr_local <- function() {
   dLocal %>% 
     dplyr_pipeline
+}
+
+dplyr_local_no_grouped_filter <- function() {
+  dLocal %>% 
+    dplyr_pipeline2
 }
 
 dplyr_tbl <- function() {
@@ -168,7 +192,7 @@ dplyr_round_trip <- function() {
   dTmp <- dplyr::copy_to(db, dLocal, "dplyr_tmp",
                          # overwrite = TRUE,
                          temporary = TRUE
-                         )
+  )
   res <- dTmp %>% 
     dplyr_pipeline %>%
     collect()
@@ -203,15 +227,15 @@ dplyr_database_count <- function() {
 data.table_local <- function() {
   dDT <- data.table::data.table(dLocal)
   dDT[
-   , one := 1 ][
-   , probability := exp ( assessmentTotal * scale ) / 
+    , one := 1 ][
+      , probability := exp ( assessmentTotal * scale ) / 
         sum ( exp ( assessmentTotal * scale ) ) ,subjectID ][
-   , count := sum ( one ) ,subjectID ][
-   , rank := rank ( probability ) ,subjectID ][
-   rank == count ][
-   , diagnosis := surveyCategory ][
-   , c('subjectID', 'diagnosis', 'probability') ][
-   order(subjectID) ]
+          , count := sum ( one ) ,subjectID ][
+            , rank := rank ( probability ) ,subjectID ][
+              rank == count ][
+                , diagnosis := surveyCategory ][
+                  , c('subjectID', 'diagnosis', 'probability') ][
+                    order(subjectID) ]
 }
 
 ```
@@ -231,6 +255,8 @@ head(dplyr_local())
 
 head(dplyr_tbl())
 
+head(dplyr_local_no_grouped_filter())
+
 dplyr_database_land()
 
 head(dplyr_database_pull())
@@ -242,12 +268,9 @@ head(dplyr_round_trip())
 head(data.table_local())
 ```
 
-I have tried to get rid of the warnings that
-the dplyr database pipeline is producing, but adding the "`na.rm = TRUE`" appears to have no effect.
-
 Now let's measure the speeds with `microbenchmark`.
 
-```{r timings, warning=FALSE}
+```{r timings}
 tm <- microbenchmark(
   "rquery in memory" = nrow(rquery_local()),
   "rquery from db to memory" = nrow(rquery_database_pull()),
@@ -255,6 +278,7 @@ tm <- microbenchmark(
   "rquery database land" = rquery_database_land(),
   "dplyr in memory" = nrow(dplyr_local()),
   "dplyr tbl in memory" = nrow(dplyr_tbl()),
+  "dplyr in memory no grouped filter" = nrow(dplyr_local_no_grouped_filter()),
   "dplyr from memory to db and back" = nrow(dplyr_round_trip()),
   "dplyr from db to memory" = nrow(dplyr_database_pull()),
   "dplyr database count" = dplyr_database_count(),

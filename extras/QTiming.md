@@ -161,8 +161,8 @@ dLocal <- data.frame(
 norig <- nrow(dLocal)
 dLocal <- dLocal[rep(seq_len(norig), nrep), , drop=FALSE]
 dLocal$subjectID <- paste((seq_len(nrow(dLocal)) -1)%/% norig,
-                      dLocal$subjectID, 
-                      sep = "_")
+                          dLocal$subjectID, 
+                          sep = "_")
 rownames(dLocal) <- NULL
 head(dLocal)
 ```
@@ -177,9 +177,9 @@ head(dLocal)
 
 ``` r
 dR <- rquery::dbi_copy_to(db, 'dR',
-                  dLocal,
-                  temporary = TRUE, 
-                  overwrite = TRUE)
+                          dLocal,
+                          temporary = TRUE, 
+                          overwrite = TRUE)
 cdata::qlook(db, dR$table_name)
 ```
 
@@ -230,13 +230,13 @@ rquery_pipeline <- . := {
 
 
 rquery_local <- function() {
- dLocal %.>% 
+  dLocal %.>% 
     rquery_pipeline(.) %.>%
     as.data.frame(.) # force execution
 }
 
 rquery_database_pull <- function() {
- dR %.>% 
+  dR %.>% 
     rquery_pipeline(.) %.>% 
     to_sql(., db) %.>% 
     DBI::dbGetQuery(db, .) %.>%
@@ -244,17 +244,17 @@ rquery_database_pull <- function() {
 }
 
 rquery_database_land <- function() {
- tabName <- "rquery_tmpx"
- sqlc <- dR %.>% 
+  tabName <- "rquery_tmpx"
+  sqlc <- dR %.>% 
     rquery_pipeline(.) %.>% 
     to_sql(., db)
- DBI::dbExecute(db, paste("CREATE TABLE", tabName, "AS", sqlc))
- DBI::dbExecute(db, paste("DROP TABLE", tabName))
- NULL
+  DBI::dbExecute(db, paste("CREATE TABLE", tabName, "AS", sqlc))
+  DBI::dbExecute(db, paste("DROP TABLE", tabName))
+  NULL
 }
 
 rquery_database_count <- function() {
- dR %.>% 
+  dR %.>% 
     rquery_pipeline(.) %.>% 
     sql_node(., "n" := "COUNT(1)") %.>% 
     to_sql(., db) %.>% 
@@ -266,19 +266,43 @@ rquery_database_count <- function() {
 # so body not evaluated until used
 dplyr_pipeline <- . %>%
   group_by(subjectID) %>%
-    mutate(probability =
-             exp(assessmentTotal * scale)/
-             sum(exp(assessmentTotal * scale)), na.rm = TRUE) %>%
-    arrange(probability, surveyCategory) %>%
-    filter(row_number() == n()) %>%
-    ungroup() %>%
-    rename(diagnosis = surveyCategory) %>%
-    select(subjectID, diagnosis, probability) %>%
-    arrange(subjectID)
-  
+  mutate(probability =
+           exp(assessmentTotal * scale)/
+           sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
+  arrange(probability, surveyCategory) %>%
+  filter(row_number() == n()) %>%
+  ungroup() %>%
+  rename(diagnosis = surveyCategory) %>%
+  select(subjectID, diagnosis, probability) %>%
+  arrange(subjectID)
+
+# this is a function, 
+# so body not evaluated until used
+# pipeline re-factored to have filter outside
+# mutate 
+# work around: https://github.com/tidyverse/dplyr/issues/3294
+dplyr_pipeline2 <- . %>%
+  group_by(subjectID) %>%
+  mutate(probability =
+           exp(assessmentTotal * scale)/
+           sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
+  arrange(probability, surveyCategory) %>%
+  mutate(count = n(), rank = row_number()) %>%
+  ungroup() %>%
+  filter(count == rank) %>%
+  rename(diagnosis = surveyCategory) %>%
+  select(subjectID, diagnosis, probability) %>%
+  arrange(subjectID)
+
+
 dplyr_local <- function() {
   dLocal %>% 
     dplyr_pipeline
+}
+
+dplyr_local_no_grouped_filter <- function() {
+  dLocal %>% 
+    dplyr_pipeline2
 }
 
 dplyr_tbl <- function() {
@@ -291,7 +315,7 @@ dplyr_round_trip <- function() {
   dTmp <- dplyr::copy_to(db, dLocal, "dplyr_tmp",
                          # overwrite = TRUE,
                          temporary = TRUE
-                         )
+  )
   res <- dTmp %>% 
     dplyr_pipeline %>%
     collect()
@@ -326,15 +350,15 @@ dplyr_database_count <- function() {
 data.table_local <- function() {
   dDT <- data.table::data.table(dLocal)
   dDT[
-   , one := 1 ][
-   , probability := exp ( assessmentTotal * scale ) / 
+    , one := 1 ][
+      , probability := exp ( assessmentTotal * scale ) / 
         sum ( exp ( assessmentTotal * scale ) ) ,subjectID ][
-   , count := sum ( one ) ,subjectID ][
-   , rank := rank ( probability ) ,subjectID ][
-   rank == count ][
-   , diagnosis := surveyCategory ][
-   , c('subjectID', 'diagnosis', 'probability') ][
-   order(subjectID) ]
+          , count := sum ( one ) ,subjectID ][
+            , rank := rank ( probability ) ,subjectID ][
+              rank == count ][
+                , diagnosis := surveyCategory ][
+                  , c('subjectID', 'diagnosis', 'probability') ][
+                    order(subjectID) ]
 }
 ```
 
@@ -406,20 +430,28 @@ head(dplyr_tbl())
     ## 6 10_2      positive re-framing       0.559
 
 ``` r
-dplyr_database_land()
+head(dplyr_local_no_grouped_filter())
 ```
 
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
+    ## # A tibble: 6 x 3
+    ##   subjectID diagnosis           probability
+    ##   <chr>     <chr>                     <dbl>
+    ## 1 0_1       withdrawal behavior       0.671
+    ## 2 0_2       positive re-framing       0.559
+    ## 3 1_1       withdrawal behavior       0.671
+    ## 4 1_2       positive re-framing       0.559
+    ## 5 10_1      withdrawal behavior       0.671
+    ## 6 10_2      positive re-framing       0.559
+
+``` r
+dplyr_database_land()
+```
 
     ## NULL
 
 ``` r
 head(dplyr_database_pull())
 ```
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
 
     ## # A tibble: 6 x 3
     ##   subjectID diagnosis           probability
@@ -435,9 +467,6 @@ head(dplyr_database_pull())
 dplyr_database_count()
 ```
 
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
     ## # A tibble: 1 x 1
     ##   n              
     ##   <S3: integer64>
@@ -446,9 +475,6 @@ dplyr_database_count()
 ``` r
 head(dplyr_round_trip())
 ```
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
 
     ## # A tibble: 6 x 3
     ##   subjectID diagnosis           probability
@@ -472,8 +498,6 @@ head(data.table_local())
     ## 5:    1001_1 withdrawal behavior   0.6706221
     ## 6:    1001_2 positive re-framing   0.5589742
 
-I have tried to get rid of the warnings that the dplyr database pipeline is producing, but adding the "`na.rm = TRUE`" appears to have no effect.
-
 Now let's measure the speeds with `microbenchmark`.
 
 ``` r
@@ -484,6 +508,7 @@ tm <- microbenchmark(
   "rquery database land" = rquery_database_land(),
   "dplyr in memory" = nrow(dplyr_local()),
   "dplyr tbl in memory" = nrow(dplyr_tbl()),
+  "dplyr in memory no grouped filter" = nrow(dplyr_local_no_grouped_filter()),
   "dplyr from memory to db and back" = nrow(dplyr_round_trip()),
   "dplyr from db to memory" = nrow(dplyr_database_pull()),
   "dplyr database count" = dplyr_database_count(),
@@ -495,30 +520,32 @@ print(tm)
 ```
 
     ## Unit: milliseconds
-    ##                              expr       min        lq      mean    median
-    ##                  rquery in memory  328.0728  336.0248  348.9022  341.7903
-    ##          rquery from db to memory  228.6553  233.6692  241.3775  236.3287
-    ##             rquery database count  197.3547  199.8863  205.0232  202.2044
-    ##              rquery database land  215.8881  219.0504  225.4068  222.1974
-    ##                   dplyr in memory 1154.1058 1178.2106 1216.6328 1199.7923
-    ##               dplyr tbl in memory 1149.7905 1178.3605 1221.1426 1205.5290
-    ##  dplyr from memory to db and back  571.5949  582.3418  597.7249  589.5422
-    ##           dplyr from db to memory  378.0434  382.6512  394.0518  388.9095
-    ##              dplyr database count  362.6965  366.5104  381.2126  371.7462
-    ##               dplyr database land  405.9930  414.2762  427.4243  420.7753
-    ##              data.table in memory  221.9142  231.7129  245.5059  235.4587
+    ##                               expr       min        lq      mean    median
+    ##                   rquery in memory  334.0138  341.0500  351.8533  343.7035
+    ##           rquery from db to memory  233.7840  237.9159  242.0225  239.9403
+    ##              rquery database count  201.3855  203.8096  209.2856  206.8966
+    ##               rquery database land  219.9695  222.2951  226.2210  224.7656
+    ##                    dplyr in memory 1169.9833 1187.4873 1218.1652 1203.2572
+    ##                dplyr tbl in memory 1166.6005 1187.9391 1220.6487 1209.3074
+    ##  dplyr in memory no grouped filter  797.6704  810.6433  828.3852  819.2832
+    ##   dplyr from memory to db and back  581.9714  589.8316  601.7506  593.9001
+    ##            dplyr from db to memory  381.4828  389.3130  398.5827  392.1577
+    ##               dplyr database count  368.0964  372.2241  384.0213  376.4548
+    ##                dplyr database land  413.6107  420.9743  433.5997  425.6041
+    ##               data.table in memory  228.9100  238.0072  255.7200  241.4864
     ##         uq       max neval
-    ##   350.7701  484.1194   100
-    ##   246.6065  286.4307   100
-    ##   207.5664  229.3356   100
-    ##   226.9068  301.5706   100
-    ##  1225.8812 1686.8563   100
-    ##  1246.1907 1446.1053   100
-    ##   602.5101  691.9847   100
-    ##   396.7632  456.4350   100
-    ##   386.4398  467.5669   100
-    ##   431.4690  533.8189   100
-    ##   245.2958  322.9150   100
+    ##   351.3692  433.6665   100
+    ##   243.4975  273.8257   100
+    ##   210.7183  256.1843   100
+    ##   228.6040  259.0445   100
+    ##  1239.4636 1395.2350   100
+    ##  1247.1471 1334.2401   100
+    ##   834.7829  919.9848   100
+    ##   610.1044  714.5768   100
+    ##   398.1949  473.9394   100
+    ##   385.7359  574.7918   100
+    ##   432.8575  521.0920   100
+    ##   254.1840  337.7042   100
 
 ``` r
 autoplot(tm)

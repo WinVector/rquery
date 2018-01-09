@@ -38,8 +38,8 @@ greycolor = "darkgrey"
 ``` r
 runs <- c("data.table in memory", 
           "rquery in memory",
-          "dplyr in memory",
           "dplyr tbl in memory",
+          "dplyr in memory no grouped filter ",
           "dplyr from memory to db and back")
 colormap = runs := c(highlightcolor,
                      highlightcolor,
@@ -61,8 +61,8 @@ runs <- c("data.table in memory",
           "rquery in memory",
           "rquery database count",
           "rquery database land",
-          "dplyr in memory",
           "dplyr tbl in memory",
+          "dplyr in memory no grouped filter ",
           "dplyr from memory to db and back",
           "dplyr database count",
           "dplyr database land")
