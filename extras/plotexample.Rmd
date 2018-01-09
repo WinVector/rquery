@@ -31,10 +31,12 @@ greycolor = "darkgrey"
 runs <- c("data.table in memory", 
           "rquery in memory",
           "dplyr in memory",
+          "dplyr tbl in memory",
           "dplyr from memory to db and back")
 colormap = runs := c(highlightcolor,
                      highlightcolor,
                      highlightcolor,
+                     backgroundcolor,
                      backgroundcolor)
 
 tr <- timings[timings$expr %in% runs, , drop=FALSE]
@@ -50,6 +52,7 @@ runs <- c("data.table in memory",
           "rquery database count",
           "rquery database land",
           "dplyr in memory",
+          "dplyr tbl in memory",
           "dplyr from memory to db and back",
           "dplyr database count",
           "dplyr database land")
@@ -57,6 +60,7 @@ colormap = runs := c(greycolor,
                      greycolor,
                      highlightcolor,
                      highlightcolor,
+                     greycolor,
                      greycolor,
                      greycolor,
                      highlightcolor,

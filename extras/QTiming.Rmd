@@ -158,6 +158,12 @@ dplyr_local <- function() {
     dplyr_pipeline
 }
 
+dplyr_tbl <- function() {
+  dLocal %>%
+    as_tibble %>%
+    dplyr_pipeline
+}
+
 dplyr_round_trip <- function() {
   dTmp <- dplyr::copy_to(db, dLocal, "dplyr_tmp",
                          # overwrite = TRUE,
@@ -223,6 +229,8 @@ rquery_database_count()
 
 head(dplyr_local())
 
+head(dplyr_tbl())
+
 dplyr_database_land()
 
 head(dplyr_database_pull())
@@ -246,6 +254,7 @@ tm <- microbenchmark(
   "rquery database count" = rquery_database_count(),
   "rquery database land" = rquery_database_land(),
   "dplyr in memory" = nrow(dplyr_local()),
+  "dplyr tbl in memory" = nrow(dplyr_tbl()),
   "dplyr from memory to db and back" = nrow(dplyr_round_trip()),
   "dplyr from db to memory" = nrow(dplyr_database_pull()),
   "dplyr database count" = dplyr_database_count(),

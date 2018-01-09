@@ -281,6 +281,12 @@ dplyr_local <- function() {
     dplyr_pipeline
 }
 
+dplyr_tbl <- function() {
+  dLocal %>%
+    as_tibble %>%
+    dplyr_pipeline
+}
+
 dplyr_round_trip <- function() {
   dTmp <- dplyr::copy_to(db, dLocal, "dplyr_tmp",
                          # overwrite = TRUE,
@@ -386,6 +392,20 @@ head(dplyr_local())
     ## 6 10_2      positive re-framing       0.559
 
 ``` r
+head(dplyr_tbl())
+```
+
+    ## # A tibble: 6 x 3
+    ##   subjectID diagnosis           probability
+    ##   <chr>     <chr>                     <dbl>
+    ## 1 0_1       withdrawal behavior       0.671
+    ## 2 0_2       positive re-framing       0.559
+    ## 3 1_1       withdrawal behavior       0.671
+    ## 4 1_2       positive re-framing       0.559
+    ## 5 10_1      withdrawal behavior       0.671
+    ## 6 10_2      positive re-framing       0.559
+
+``` r
 dplyr_database_land()
 ```
 
@@ -463,6 +483,7 @@ tm <- microbenchmark(
   "rquery database count" = rquery_database_count(),
   "rquery database land" = rquery_database_land(),
   "dplyr in memory" = nrow(dplyr_local()),
+  "dplyr tbl in memory" = nrow(dplyr_tbl()),
   "dplyr from memory to db and back" = nrow(dplyr_round_trip()),
   "dplyr from db to memory" = nrow(dplyr_database_pull()),
   "dplyr database count" = dplyr_database_count(),
@@ -475,27 +496,29 @@ print(tm)
 
     ## Unit: milliseconds
     ##                              expr       min        lq      mean    median
-    ##                  rquery in memory  338.0329  346.3425  356.9680  350.5681
-    ##          rquery from db to memory  230.2711  234.8920  238.6950  237.0220
-    ##             rquery database count  200.0920  201.6072  204.1580  203.3501
-    ##              rquery database land  243.7931  247.9001  252.3964  249.6551
-    ##                   dplyr in memory 1143.1698 1171.5308 1198.7541 1182.4760
-    ##  dplyr from memory to db and back  581.0464  592.8454  605.3947  597.1829
-    ##           dplyr from db to memory  377.4007  384.3856  391.5575  386.0956
-    ##              dplyr database count  363.6085  368.7647  375.8188  370.3699
-    ##               dplyr database land  422.5462  427.7195  433.6740  429.9692
-    ##              data.table in memory  226.2244  236.6309  253.0496  241.0503
+    ##                  rquery in memory  328.0728  336.0248  348.9022  341.7903
+    ##          rquery from db to memory  228.6553  233.6692  241.3775  236.3287
+    ##             rquery database count  197.3547  199.8863  205.0232  202.2044
+    ##              rquery database land  215.8881  219.0504  225.4068  222.1974
+    ##                   dplyr in memory 1154.1058 1178.2106 1216.6328 1199.7923
+    ##               dplyr tbl in memory 1149.7905 1178.3605 1221.1426 1205.5290
+    ##  dplyr from memory to db and back  571.5949  582.3418  597.7249  589.5422
+    ##           dplyr from db to memory  378.0434  382.6512  394.0518  388.9095
+    ##              dplyr database count  362.6965  366.5104  381.2126  371.7462
+    ##               dplyr database land  405.9930  414.2762  427.4243  420.7753
+    ##              data.table in memory  221.9142  231.7129  245.5059  235.4587
     ##         uq       max neval
-    ##   356.3063  434.9296   100
-    ##   240.0035  309.2471   100
-    ##   204.9661  220.5763   100
-    ##   254.4340  290.4968   100
-    ##  1210.4098 1606.1421   100
-    ##   606.1846  748.9984   100
-    ##   390.4352  458.5678   100
-    ##   375.2306  456.6592   100
-    ##   435.2400  497.8037   100
-    ##   248.3687  375.3060   100
+    ##   350.7701  484.1194   100
+    ##   246.6065  286.4307   100
+    ##   207.5664  229.3356   100
+    ##   226.9068  301.5706   100
+    ##  1225.8812 1686.8563   100
+    ##  1246.1907 1446.1053   100
+    ##   602.5101  691.9847   100
+    ##   396.7632  456.4350   100
+    ##   386.4398  467.5669   100
+    ##   431.4690  533.8189   100
+    ##   245.2958  322.9150   100
 
 ``` r
 autoplot(tm)
