@@ -44,7 +44,7 @@ runs <- c("data.table in memory",
 colormap = runs := c(highlightcolor,
                      highlightcolor,
                      highlightcolor,
-                     backgroundcolor,
+                     highlightcolor,
                      backgroundcolor)
 
 tr <- timings[timings$expr %in% runs, , drop=FALSE]
