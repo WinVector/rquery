@@ -1,7 +1,9 @@
 Plotting example
 ================
-Nina Zumel
+John Mount, Nina Zumel
 January 10, 2018
+
+As a follow-up to ["rquery: Fast Data Manipulation in R"](http://www.win-vector.com/blog/2018/01/rquery-fast-data-manipulation-in-r/) I re-ran the experiment with a nice "base R" implementation of the calculation added to the assessments. It turns out base R is much faster than any of the alternatives.
 
 ``` r
 knitr::opts_chunk$set(echo = TRUE)
@@ -57,7 +59,7 @@ colormap = runs := c(highlightcolor,
 tr <- timings[timings$expr %in% runs, , drop=FALSE]
 tr$expr <- factor(tr$expr, levels = rev(runs))
 plotbenchmark(tr, colormap, 
-              title = "In-Memory Task Runtimes by Implementation",
+              title = "In-Memory Runtimes by Implementation (smaller better)",
               subtitle = "Database enhanced dplyr shown for comparison")
 ```
 
