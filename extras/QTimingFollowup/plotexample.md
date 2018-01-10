@@ -65,6 +65,8 @@ plotbenchmark(tr, colormap,
 
 ![](plotexample_files/figure-markdown_github/unnamed-chunk-1-1.png)
 
+Note: `"rquery in memory"` is `rquery` starting and finishing with in-memory `data.frame`s, the implementation uses a user chosen SQL engine (usually one of PostgreSQL, SparkSQL, or SQLite; in this case PostgreSQL).
+
 ``` r
 summary <- tr %.>% 
   as.data.frame(.) %.>%
