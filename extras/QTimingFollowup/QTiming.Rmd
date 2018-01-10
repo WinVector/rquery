@@ -42,8 +42,7 @@ R.Version()
 We now build and extended version of the example from [Let’s Have Some Sympathy For The Part-time R User](http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/).
 
 ```{r data}
-#nrep <- 10000
-nrep <- 100
+nrep <- 10000
 
 
 dLocal <- data.frame(
