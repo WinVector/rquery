@@ -72,7 +72,8 @@ Note: `"rquery in memory"` is `rquery` starting and finishing with in-memory `da
 ``` r
 summary <- tr %.>% 
   as.data.frame(.) %.>%
-  project_nse(., "expr", durationMS = avg(time)/1000000 ) %.>%
+  project_nse(., groupby = "expr", 
+              durationMS := avg(time)/1000000 ) %.>%
   orderby(., "durationMS") %>%
   execute(.)
 baseTiming <- summary$durationMS[[which(summary$expr == 
