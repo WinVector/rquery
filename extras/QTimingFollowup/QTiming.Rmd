@@ -44,6 +44,7 @@ We now build and extended version of the example from [Let’s Have Some Sympath
 ```{r data}
 nrep <- 10000
 
+
 dLocal <- data.frame(
   subjectID = c(1,                   
                 1,
@@ -86,11 +87,50 @@ scale <- 0.237
 
 # base-R function
 # could also try base::split() or base:table()
-base_r_calculate <- function(.) {
-  cats <- base::sort(base::unique(.$surveyCategory))
+base_r_calculate_tabular <- function(d) {
+  d <- d[order(d$subjectID, d$surveyCategory), , drop=FALSE]
+  # compute un-normalized probability
+  d$probability <- exp(d$assessmentTotal * scale)
+  # set up of for selection
+  dmax <- stats::aggregate(d$probability, 
+                           by = list(subjectID = d$subjectID), 
+                           FUN = max)
+  maxv <- dmax$x
+  names(maxv) <- dmax$subjectID
+  # set up for normalization
+  dsum <- stats::aggregate(d$probability, 
+                           by = list(subjectID = d$subjectID), 
+                           FUN = sum)
+  sumv <- dsum$x
+  names(sumv) <- dsum$subjectID
+  # start selection
+  d$maxv <- maxv[d$subjectID]
+  d <- d[d$probability >= d$maxv, 
+                   , 
+                   drop=FALSE]
+  # de-dup
+  d$rownum <- seq_len(nrow(d))
+  drow <-  stats::aggregate(d$rownum, 
+                           by = list(subjectID = d$subjectID), 
+                           FUN = min)
+  minv <- drow$x
+  names(minv) <- drow$subjectID
+  d$rmin <- minv[d$subjectID]
+  d <- d[d$rownum <= d$rmin, , drop=FALSE]
+  # renormalize
+  d$probability <- d$probability/sumv[d$subjectID]
+  d <- d[, c("subjectID", "surveyCategory", "probability")]
+  colnames(d)[[2]] <- "diagnosis"
+  d
+}
+
+# base-R function
+# could also try base::split() or base:table()
+base_r_calculate_brute_force <- function(d) {
+  cats <- base::sort(base::unique(d$surveyCategory))
   res <- NULL
   for(ci in cats) {
-    di <- .[.$surveyCategory == ci, , drop=FALSE]
+    di <- d[d$surveyCategory == ci, , drop=FALSE]
     di <- di[base::order(di$subjectID), , drop=FALSE]
     di$probability <- exp(di$assessmentTotal * scale)
     if(length(base::unique(di$subjectID))!=nrow(di)) {
@@ -143,8 +183,12 @@ rquery_pipeline <- . := {
 }
 
 
-base_R_calculation <- function() {
-  base_r_calculate(dLocal)
+base_R_brute_calculation <- function() {
+  base_r_calculate_brute_force(dLocal)
+}
+
+base_R_tabular_calculation <- function() {
+  base_r_calculate_tabular(dLocal)
 }
 
 rquery_local <- function() {
@@ -284,7 +328,9 @@ data.table_local <- function() {
 Let's inspect the functions.
 
 ```{r show}
-head(base_R_calculation())
+head(base_R_brute_calculation())
+
+head(base_R_tabular_calculation())
 
 head(rquery_local())
 
@@ -313,6 +359,9 @@ head(data.table_local())
 
 Now let's measure the speeds with `microbenchmark`.
 
+base_R_brute_calculation
+base_R_tabular_calculation
+
 ```{r timings}
 tm <- microbenchmark(
   "rquery in memory" = nrow(rquery_local()),
@@ -327,7 +376,8 @@ tm <- microbenchmark(
   "dplyr database count" = dplyr_database_count(),
   "dplyr database land" = dplyr_database_land(),
   "data.table in memory" = nrow(data.table_local()),
-  "base R calculation" = nrow(base_R_calculation())
+  "base R tabular calculation" = nrow(base_R_tabular_calculation()),
+  "base R sequential calculation" = nrow(base_R_brute_calculation())
 )
 saveRDS(tm, "qtimings.RDS")
 print(tm)

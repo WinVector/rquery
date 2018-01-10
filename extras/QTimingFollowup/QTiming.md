@@ -142,6 +142,7 @@ We now build and extended version of the example from [Let’s Have Some Sympath
 ``` r
 nrep <- 10000
 
+
 dLocal <- data.frame(
   subjectID = c(1,                   
                 1,
@@ -209,11 +210,50 @@ scale <- 0.237
 
 # base-R function
 # could also try base::split() or base:table()
-base_r_calculate <- function(.) {
-  cats <- base::sort(base::unique(.$surveyCategory))
+base_r_calculate_tabular <- function(d) {
+  d <- d[order(d$subjectID, d$surveyCategory), , drop=FALSE]
+  # compute un-normalized probability
+  d$probability <- exp(d$assessmentTotal * scale)
+  # set up of for selection
+  dmax <- stats::aggregate(d$probability, 
+                           by = list(subjectID = d$subjectID), 
+                           FUN = max)
+  maxv <- dmax$x
+  names(maxv) <- dmax$subjectID
+  # set up for normalization
+  dsum <- stats::aggregate(d$probability, 
+                           by = list(subjectID = d$subjectID), 
+                           FUN = sum)
+  sumv <- dsum$x
+  names(sumv) <- dsum$subjectID
+  # start selection
+  d$maxv <- maxv[d$subjectID]
+  d <- d[d$probability >= d$maxv, 
+                   , 
+                   drop=FALSE]
+  # de-dup
+  d$rownum <- seq_len(nrow(d))
+  drow <-  stats::aggregate(d$rownum, 
+                           by = list(subjectID = d$subjectID), 
+                           FUN = min)
+  minv <- drow$x
+  names(minv) <- drow$subjectID
+  d$rmin <- minv[d$subjectID]
+  d <- d[d$rownum <= d$rmin, , drop=FALSE]
+  # renormalize
+  d$probability <- d$probability/sumv[d$subjectID]
+  d <- d[, c("subjectID", "surveyCategory", "probability")]
+  colnames(d)[[2]] <- "diagnosis"
+  d
+}
+
+# base-R function
+# could also try base::split() or base:table()
+base_r_calculate_brute_force <- function(d) {
+  cats <- base::sort(base::unique(d$surveyCategory))
   res <- NULL
   for(ci in cats) {
-    di <- .[.$surveyCategory == ci, , drop=FALSE]
+    di <- d[d$surveyCategory == ci, , drop=FALSE]
     di <- di[base::order(di$subjectID), , drop=FALSE]
     di$probability <- exp(di$assessmentTotal * scale)
     if(length(base::unique(di$subjectID))!=nrow(di)) {
@@ -266,8 +306,12 @@ rquery_pipeline <- . := {
 }
 
 
-base_R_calculation <- function() {
-  base_r_calculate(dLocal)
+base_R_brute_calculation <- function() {
+  base_r_calculate_brute_force(dLocal)
+}
+
+base_R_tabular_calculation <- function() {
+  base_r_calculate_tabular(dLocal)
 }
 
 rquery_local <- function() {
@@ -406,7 +450,7 @@ data.table_local <- function() {
 Let's inspect the functions.
 
 ``` r
-head(base_R_calculation())
+head(base_R_brute_calculation())
 ```
 
     ##   subjectID           diagnosis probability
@@ -416,6 +460,18 @@ head(base_R_calculation())
     ## 4       1_2 positive re-framing   0.5589742
     ## 5      10_1 withdrawal behavior   0.6706221
     ## 6      10_2 positive re-framing   0.5589742
+
+``` r
+head(base_R_tabular_calculation())
+```
+
+    ##    subjectID           diagnosis probability
+    ## 1        0_1 withdrawal behavior   0.6706221
+    ## 4        0_2 positive re-framing   0.5589742
+    ## 5        1_1 withdrawal behavior   0.6706221
+    ## 8        1_2 positive re-framing   0.5589742
+    ## 41      10_1 withdrawal behavior   0.6706221
+    ## 44      10_2 positive re-framing   0.5589742
 
 ``` r
 head(rquery_local())
@@ -553,6 +609,8 @@ head(data.table_local())
 
 Now let's measure the speeds with `microbenchmark`.
 
+base\_R\_brute\_calculation base\_R\_tabular\_calculation
+
 ``` r
 tm <- microbenchmark(
   "rquery in memory" = nrow(rquery_local()),
@@ -567,7 +625,8 @@ tm <- microbenchmark(
   "dplyr database count" = dplyr_database_count(),
   "dplyr database land" = dplyr_database_land(),
   "data.table in memory" = nrow(data.table_local()),
-  "base R calculation" = nrow(base_R_calculation())
+  "base R tabular calculation" = nrow(base_R_tabular_calculation()),
+  "base R sequential calculation" = nrow(base_R_brute_calculation())
 )
 saveRDS(tm, "qtimings.RDS")
 print(tm)
@@ -575,33 +634,35 @@ print(tm)
 
     ## Unit: milliseconds
     ##                               expr       min        lq      mean    median
-    ##                   rquery in memory  338.5778  345.0848  366.3083  352.5776
-    ##           rquery from db to memory  238.1384  242.9598  263.2348  248.3051
-    ##              rquery database count  201.5620  205.1261  219.3199  207.8607
-    ##               rquery database land  219.8073  224.3644  240.6531  227.4856
-    ##                    dplyr in memory 1184.5901 1218.1610 1294.3855 1259.1721
-    ##                dplyr tbl in memory 1195.1735 1216.3445 1299.4138 1239.3117
-    ##  dplyr in memory no grouped filter  797.7003  823.3247  887.9344  838.6137
-    ##   dplyr from memory to db and back  582.2046  593.7035  641.3167  606.4866
-    ##            dplyr from db to memory  380.5071  388.6457  418.5102  397.8149
-    ##               dplyr database count  362.8623  369.7437  393.7041  374.8956
-    ##                dplyr database land  409.0511  419.2396  453.5904  426.4157
-    ##               data.table in memory  223.6260  239.5823  271.6285  250.7280
-    ##                 base R calculation  103.6687  107.3793  117.8552  108.7494
+    ##                   rquery in memory  339.2819  346.5192  365.5742  352.0665
+    ##           rquery from db to memory  231.5717  241.7728  255.2745  248.3432
+    ##              rquery database count  199.4778  203.2662  218.1638  207.3330
+    ##               rquery database land  217.7878  222.1298  232.1719  226.3787
+    ##                    dplyr in memory 1184.7168 1216.0992 1295.3127 1252.2095
+    ##                dplyr tbl in memory 1185.1292 1213.8207 1288.5267 1250.9576
+    ##  dplyr in memory no grouped filter  803.8868  828.5966  894.1179  860.5143
+    ##   dplyr from memory to db and back  581.7443  595.5464  641.5124  613.4384
+    ##            dplyr from db to memory  380.1288  390.5660  421.6581  398.8316
+    ##               dplyr database count  366.0760  372.9545  404.8615  381.3254
+    ##                dplyr database land  413.1878  419.5564  445.5154  427.9188
+    ##               data.table in memory  231.8094  243.6267  272.8844  254.1875
+    ##         base R tabular calculation  484.2003  540.7298  574.0857  567.0941
+    ##      base R sequential calculation  104.9290  108.4058  116.1558  111.1875
     ##         uq       max neval
-    ##   376.7631  506.7574   100
-    ##   262.8230  444.6093   100
-    ##   222.1878  363.6475   100
-    ##   241.3619  367.6876   100
-    ##  1315.0064 1747.4000   100
-    ##  1306.6853 2006.2742   100
-    ##   907.5601 1248.0352   100
-    ##   653.5436 1031.8507   100
-    ##   428.0231  762.1354   100
-    ##   395.1924  612.0238   100
-    ##   461.2342  678.1096   100
-    ##   299.2129  442.9820   100
-    ##   114.0765  206.3084   100
+    ##   366.8266  656.4589   100
+    ##   263.9711  323.2430   100
+    ##   215.8895  382.0567   100
+    ##   233.4544  341.6554   100
+    ##  1316.9411 2266.1614   100
+    ##  1316.9795 1680.5972   100
+    ##   918.3206 1601.6495   100
+    ##   658.8230 1325.0461   100
+    ##   418.8582  930.1331   100
+    ##   410.8621  869.8656   100
+    ##   452.0623  834.5970   100
+    ##   288.9526  432.2933   100
+    ##   581.4651  885.9790   100
+    ##   118.3874  217.7817   100
 
 ``` r
 autoplot(tm)

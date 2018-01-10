@@ -5,9 +5,9 @@ January 10, 2018
 
 As a follow-up to ["rquery: Fast Data Manipulation in R"](http://www.win-vector.com/blog/2018/01/rquery-fast-data-manipulation-in-r/) we [re-ran the experiment with a nice "base `R`" (or "pure `R`") implementation of the calculation added to the assessments](https://github.com/WinVector/rquery/blob/master/extras/QTimingFollowup/QTiming.md).
 
-It turns out base `R` is much faster than any of the alternatives.
+It turns out base `R` can be much faster than any of the alternatives.
 
-That should not come as a surprise, but we think there are some current gaps in R teaching that make it surprising to many. There is a bit of a "this package is in C/C++, so it is going to be fast" fallacy. Also it has probably been a while since somebody publicly investigated exactly how large the "this package is a little slower at runtime, but the notation allows faster development" trade off actually is (and one also should think hard on the stability and clarity of some newer notations).
+That should not come as a surprise, but we think there are some current gaps in R teaching that make it surprising to many. There is a bit of a "this package is in C/C++, so it is going to be fast" fallacy. Also it has probably been a while since somebody publicly investigated exactly how large the "this package is a little slower at runtime, but the notation allows faster development" trade off actually is.
 
 ``` r
 knitr::opts_chunk$set(echo = TRUE)
@@ -47,13 +47,15 @@ greycolor = "darkgrey"
 ```
 
 ``` r
-runs <- c("base R calculation",
+runs <- c("base R tabular calculation",
+          "base R sequential calculation",
           "data.table in memory", 
           "rquery in memory",
           "dplyr tbl in memory",
           "dplyr in memory no grouped filter",
           "dplyr from memory to db and back")
 colormap = runs := c(highlightcolor,
+                     highlightcolor,
                      highlightcolor,
                      highlightcolor,
                      highlightcolor,
@@ -78,8 +80,7 @@ summary <- tr %.>%
               durationMS := avg(time)/1000000 ) %.>%
   orderby(., "durationMS") %>%
   execute(.)
-baseTiming <- summary$durationMS[[which(summary$expr == 
-                                          "base R calculation")]]
+baseTiming <- min(summary$durationMS)
 summary$relativeDuration <- summary$durationMS / baseTiming
 
 knitr::kable(summary)
@@ -87,9 +88,10 @@ knitr::kable(summary)
 
 | expr                              |  durationMS|  relativeDuration|
 |:----------------------------------|-----------:|-----------------:|
-| base R calculation                |    117.8552|          1.000000|
-| data.table in memory              |    271.6285|          2.304765|
-| rquery in memory                  |    366.3083|          3.108122|
-| dplyr from memory to db and back  |    641.3167|          5.441566|
-| dplyr in memory no grouped filter |    887.9344|          7.534115|
-| dplyr tbl in memory               |   1299.4138|         11.025514|
+| base R sequential calculation     |    116.1558|          1.000000|
+| data.table in memory              |    272.8844|          2.349297|
+| rquery in memory                  |    365.5742|          3.147275|
+| base R tabular calculation        |    574.0857|          4.942377|
+| dplyr from memory to db and back  |    641.5124|          5.522862|
+| dplyr in memory no grouped filter |    894.1179|          7.697575|
+| dplyr tbl in memory               |   1288.5267|         11.093089|
