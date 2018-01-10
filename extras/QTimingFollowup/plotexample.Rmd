@@ -5,11 +5,11 @@ date: "January 10, 2018"
 output: github_document
 ---
 
-As a follow-up to ["rquery: Fast Data Manipulation in R"](http://www.win-vector.com/blog/2018/01/rquery-fast-data-manipulation-in-r/)
-we [re-ran the experiment with a nice "base R" implementation of the calculation
-added to the assessments](https://github.com/WinVector/rquery/blob/master/extras/QTimingFollowup/QTiming.md).  
+As a follow-up to ["rquery: Fast Data Manipulation in R"](http://www.win-vector.com/blog/2018/01/rquery-fast-data-manipulation-in-r/) we [re-ran the experiment with a nice "base `R`" (or "pure `R`") implementation of the calculation added to the assessments](https://github.com/WinVector/rquery/blob/master/extras/QTimingFollowup/QTiming.md).  
 
-It turns out base R is much faster than any of the alternatives.  That should not come as a surprise, but we think there are some current gaps in R teaching that make it surprising to many.
+It turns out base `R` is much faster than any of the alternatives.  
+
+That should not come as a surprise, but we think there are some current gaps in R teaching that make it surprising to many.  There is a bit of a "this package is in C/C++, so it is going to be fast" fallacy.  Also it has probably been a while since somebody publicly investigated exactly how large the "this package is a little slower at runtime, but the notation allows faster development" trade off actually is (and one also should think hard on the stability and clarity of some newer notations).
 
 ```{r setup}
 knitr::opts_chunk$set(echo = TRUE)
