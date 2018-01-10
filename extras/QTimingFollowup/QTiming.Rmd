@@ -42,7 +42,8 @@ R.Version()
 We now build and extended version of the example from [Let’s Have Some Sympathy For The Part-time R User](http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/).
 
 ```{r data}
-nrep <- 10000
+#nrep <- 10000
+nrep <- 100
 
 
 dLocal <- data.frame(
@@ -126,7 +127,7 @@ base_r_calculate_tabular <- function(d) {
 
 # base-R function
 # could also try base::split() or base:table()
-base_r_calculate_brute_force <- function(d) {
+base_r_calculate_sequenced <- function(d) {
   cats <- base::sort(base::unique(d$surveyCategory))
   res <- NULL
   for(ci in cats) {
@@ -161,6 +162,44 @@ base_r_calculate_brute_force <- function(d) {
   res
 }
 
+
+
+# base-R function
+# could also try base::split() or base:table()
+base_r_calculate_rows <- function(d) {
+  d <- d[base::order(d$subjectID, d$surveyCategory), , drop=FALSE]
+  d$probability <- exp(d$assessmentTotal * scale)
+  ids <- sort(unique(d$subjectID))
+  totals <- numeric(length(ids))
+  names(totals) <- ids
+  n <- nrow(d)
+  choices <- logical(n)
+  sum <- 0
+  maxID <- 1
+  for(i in seq_len(n)) {
+    id <- d$subjectID[[i]]
+    probi <- d$probability[[i]]
+    sum <- sum + probi
+    if(probi>d$probability[[maxID]]) {
+      maxID <- i
+    }
+    end_of_group <- (i>=n) || (d$subjectID[[i+1]]!=id)
+    if(end_of_group) {
+      choices[[maxID]] <- TRUE
+      totals[id] <- sum
+      sum <- 0
+      maxID <- i+1
+    }
+  }
+  d <- d[choices, , drop=FALSE]
+  d$probability <- d$probability/totals[d$subjectID]
+  d <- d[, c("subjectID", 
+               "surveyCategory", 
+               "probability")]
+  colnames(d)[[2]] <- "diagnosis"
+  d
+}
+
 # this is a function, 
 # so body not evaluated until used
 rquery_pipeline <- . := {
@@ -183,8 +222,12 @@ rquery_pipeline <- . := {
 }
 
 
-base_R_brute_calculation <- function() {
-  base_r_calculate_brute_force(dLocal)
+base_R_row_calculation <- function() {
+  base_r_calculate_rows(dLocal)
+}
+
+base_R_sequential_calculation <- function() {
+  base_r_calculate_sequenced(dLocal)
 }
 
 base_R_tabular_calculation <- function() {
@@ -328,7 +371,9 @@ data.table_local <- function() {
 Let's inspect the functions.
 
 ```{r show}
-head(base_R_brute_calculation())
+head(base_R_sequential_calculation())
+
+head(base_R_row_calculation())
 
 head(base_R_tabular_calculation())
 
@@ -359,8 +404,6 @@ head(data.table_local())
 
 Now let's measure the speeds with `microbenchmark`.
 
-base_R_brute_calculation
-base_R_tabular_calculation
 
 ```{r timings}
 tm <- microbenchmark(
@@ -377,7 +420,8 @@ tm <- microbenchmark(
   "dplyr database land" = dplyr_database_land(),
   "data.table in memory" = nrow(data.table_local()),
   "base R tabular calculation" = nrow(base_R_tabular_calculation()),
-  "base R sequential calculation" = nrow(base_R_brute_calculation())
+  "base R sequential calculation" = nrow(base_R_sequential_calculation()),
+  "base R row calculation" = nrow(base_R_row_calculation())
 )
 saveRDS(tm, "qtimings.RDS")
 print(tm)
