@@ -85,7 +85,7 @@ remote (already in a database) data.
 scale <- 0.237
 
 # base-R function
-# could also try base::split or base:table()
+# could also try base::split() or base:table()
 base_r_calculate <- function(.) {
   cats <- base::sort(base::unique(.$surveyCategory))
   res <- NULL
@@ -110,12 +110,15 @@ base_r_calculate <- function(.) {
       }
       change <- di$probability > res$probability
       res$diagnosis[change] <- ci
-      res$bestScore <- base::pmax(res$bestScore, di$probability)
+      res$bestScore <- base::pmax(res$bestScore, 
+                                  di$probability)
       res$totalProb <- res$totalProb + di$probability
     }
   }
   res$probability <- res$bestScore/res$totalProb
-  res <- res[, c("subjectID", "diagnosis", "probability")]
+  res <- res[, c("subjectID", 
+                 "diagnosis", 
+                 "probability")]
   res
 }
 

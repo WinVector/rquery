@@ -208,7 +208,7 @@ Now we declare our operation pipelines, both on local (in-memory `data.frame`) a
 scale <- 0.237
 
 # base-R function
-# could also try base::split or base:table()
+# could also try base::split() or base:table()
 base_r_calculate <- function(.) {
   cats <- base::sort(base::unique(.$surveyCategory))
   res <- NULL
@@ -233,12 +233,15 @@ base_r_calculate <- function(.) {
       }
       change <- di$probability > res$probability
       res$diagnosis[change] <- ci
-      res$bestScore <- base::pmax(res$bestScore, di$probability)
+      res$bestScore <- base::pmax(res$bestScore, 
+                                  di$probability)
       res$totalProb <- res$totalProb + di$probability
     }
   }
   res$probability <- res$bestScore/res$totalProb
-  res <- res[, c("subjectID", "diagnosis", "probability")]
+  res <- res[, c("subjectID", 
+                 "diagnosis", 
+                 "probability")]
   res
 }
 
@@ -573,33 +576,33 @@ print(tm)
 
     ## Unit: milliseconds
     ##                               expr       min        lq      mean    median
-    ##                   rquery in memory  331.3445  336.3601  353.6315  342.4272
-    ##           rquery from db to memory  229.9893  234.8405  244.4260  238.9127
-    ##              rquery database count  197.3697  200.7630  208.5301  203.3758
-    ##               rquery database land  217.3916  221.3471  229.4024  224.5418
-    ##                    dplyr in memory 1145.5213 1166.1353 1226.2294 1196.9226
-    ##                dplyr tbl in memory 1145.0432 1165.3451 1211.7760 1195.8398
-    ##  dplyr in memory no grouped filter  781.7878  794.1610  834.1066  806.3473
-    ##   dplyr from memory to db and back  568.0726  578.4423  607.0985  588.8712
-    ##            dplyr from db to memory  368.7477  380.1578  396.5106  386.0021
-    ##               dplyr database count  355.9827  364.3262  378.7473  367.7704
-    ##                dplyr database land  406.9444  412.4883  434.8319  419.6782
-    ##               data.table in memory  218.3582  227.0017  246.1304  232.4839
-    ##                 base R calculation  101.4029  104.7553  111.3464  106.7166
+    ##                   rquery in memory  334.1647  341.3915  352.8966  345.6721
+    ##           rquery from db to memory  233.1291  238.1438  245.5712  241.0541
+    ##              rquery database count  199.2574  202.7939  208.5357  204.8367
+    ##               rquery database land  218.7993  221.7240  227.9928  223.9128
+    ##                    dplyr in memory 1170.2533 1191.4094 1227.1228 1210.1410
+    ##                dplyr tbl in memory 1163.8400 1191.8942 1232.2004 1203.9675
+    ##  dplyr in memory no grouped filter  789.1251  810.6329  832.8824  819.5475
+    ##   dplyr from memory to db and back  576.6763  587.8465  609.6689  597.0787
+    ##            dplyr from db to memory  380.0923  384.8038  404.3639  390.5359
+    ##               dplyr database count  364.5660  369.8106  383.3781  372.4496
+    ##                dplyr database land  412.9613  416.5123  428.1614  419.6974
+    ##               data.table in memory  222.6391  231.2268  247.3955  236.4102
+    ##                 base R calculation  103.3688  105.8873  111.3837  107.8619
     ##         uq       max neval
-    ##   351.6444  546.1538   100
-    ##   245.7293  334.1683   100
-    ##   209.4835  290.1858   100
-    ##   230.9200  290.2188   100
-    ##  1239.7999 1678.0601   100
-    ##  1239.0794 1425.8560   100
-    ##   848.2500 1184.9574   100
-    ##   611.2596  800.6058   100
-    ##   396.3311  580.8279   100
-    ##   378.2934  542.2299   100
-    ##   433.8364  591.7851   100
-    ##   261.1739  326.2404   100
-    ##   109.7203  205.6838   100
+    ##   354.2675  442.7954   100
+    ##   247.3242  292.6800   100
+    ##   207.4279  283.2240   100
+    ##   227.4590  295.6404   100
+    ##  1252.2385 1448.1387   100
+    ##  1258.7511 1660.0235   100
+    ##   851.5627  950.9684   100
+    ##   619.1018  877.7501   100
+    ##   407.0184  548.0586   100
+    ##   378.0282  558.5397   100
+    ##   427.3272  562.3572   100
+    ##   248.5532  357.8896   100
+    ##   110.0546  183.8431   100
 
 ``` r
 autoplot(tm)
