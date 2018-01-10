@@ -1,0 +1,63 @@
+---
+title: "Plotting example"
+author: "Nina Zumel"
+date: "January 10, 2018"
+output: github_document
+---
+
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(ggplot2)
+library(wrapr)
+library(rquery)
+
+source("../plotbenchmark.R")
+
+timings = readRDS("qtimings.RDS")
+timings$expr <- as.character(timings$expr)
+
+# colors
+highlightcolor = "#33a02c"
+backgroundcolor = "#a6cee3"
+reruncolor = "#b2df8a"
+greycolor = "darkgrey"
+
+```
+
+```{r}
+
+
+
+runs <- c("base R calculation",
+          "data.table in memory", 
+          "rquery in memory",
+          "dplyr tbl in memory",
+          "dplyr in memory no grouped filter",
+          "dplyr from memory to db and back")
+colormap = runs := c(highlightcolor,
+                     highlightcolor,
+                     highlightcolor,
+                     highlightcolor,
+                     highlightcolor,
+                     backgroundcolor)
+
+tr <- timings[timings$expr %in% runs, , drop=FALSE]
+tr$expr <- factor(tr$expr, levels = rev(runs))
+plotbenchmark(tr, colormap, 
+              title = "In-Memory Task Runtimes by Implementation",
+              subtitle = "Database enhanced dplyr shown for comparison")
+
+
+summary <- tr %.>% 
+  as.data.frame(.) %.>%
+  project_nse(., "expr", durationMS = avg(time)/1000000 ) %.>%
+  orderby(., "durationMS") %>%
+  execute(.)
+baseTiming <- summary$durationMS[[which(summary$expr == 
+                                          "base R calculation")]]
+summary$relativeDuration <- summary$durationMS / baseTiming
+
+knitr::kable(summary)
+
+```
