@@ -221,7 +221,6 @@ base_r_calculate <- function(.) {
     }
     if(is.null(res)) {
       res <- data.frame(subjectID = di$subjectID,
-                        probability = di$probability,
                         totalProb = di$probability,
                         bestScore = di$probability,
                         diagnosis = ci,
@@ -231,7 +230,7 @@ base_r_calculate <- function(.) {
          (!all(di$subjectID == res$subjectID))) {
         stop("base_r_calculate saw irregular data")
       }
-      change <- di$probability > res$probability
+      change <- di$probability > res$bestScore
       res$diagnosis[change] <- ci
       res$bestScore <- base::pmax(res$bestScore, 
                                   di$probability)
@@ -576,33 +575,33 @@ print(tm)
 
     ## Unit: milliseconds
     ##                               expr       min        lq      mean    median
-    ##                   rquery in memory  334.1647  341.3915  352.8966  345.6721
-    ##           rquery from db to memory  233.1291  238.1438  245.5712  241.0541
-    ##              rquery database count  199.2574  202.7939  208.5357  204.8367
-    ##               rquery database land  218.7993  221.7240  227.9928  223.9128
-    ##                    dplyr in memory 1170.2533 1191.4094 1227.1228 1210.1410
-    ##                dplyr tbl in memory 1163.8400 1191.8942 1232.2004 1203.9675
-    ##  dplyr in memory no grouped filter  789.1251  810.6329  832.8824  819.5475
-    ##   dplyr from memory to db and back  576.6763  587.8465  609.6689  597.0787
-    ##            dplyr from db to memory  380.0923  384.8038  404.3639  390.5359
-    ##               dplyr database count  364.5660  369.8106  383.3781  372.4496
-    ##                dplyr database land  412.9613  416.5123  428.1614  419.6974
-    ##               data.table in memory  222.6391  231.2268  247.3955  236.4102
-    ##                 base R calculation  103.3688  105.8873  111.3837  107.8619
+    ##                   rquery in memory  338.5778  345.0848  366.3083  352.5776
+    ##           rquery from db to memory  238.1384  242.9598  263.2348  248.3051
+    ##              rquery database count  201.5620  205.1261  219.3199  207.8607
+    ##               rquery database land  219.8073  224.3644  240.6531  227.4856
+    ##                    dplyr in memory 1184.5901 1218.1610 1294.3855 1259.1721
+    ##                dplyr tbl in memory 1195.1735 1216.3445 1299.4138 1239.3117
+    ##  dplyr in memory no grouped filter  797.7003  823.3247  887.9344  838.6137
+    ##   dplyr from memory to db and back  582.2046  593.7035  641.3167  606.4866
+    ##            dplyr from db to memory  380.5071  388.6457  418.5102  397.8149
+    ##               dplyr database count  362.8623  369.7437  393.7041  374.8956
+    ##                dplyr database land  409.0511  419.2396  453.5904  426.4157
+    ##               data.table in memory  223.6260  239.5823  271.6285  250.7280
+    ##                 base R calculation  103.6687  107.3793  117.8552  108.7494
     ##         uq       max neval
-    ##   354.2675  442.7954   100
-    ##   247.3242  292.6800   100
-    ##   207.4279  283.2240   100
-    ##   227.4590  295.6404   100
-    ##  1252.2385 1448.1387   100
-    ##  1258.7511 1660.0235   100
-    ##   851.5627  950.9684   100
-    ##   619.1018  877.7501   100
-    ##   407.0184  548.0586   100
-    ##   378.0282  558.5397   100
-    ##   427.3272  562.3572   100
-    ##   248.5532  357.8896   100
-    ##   110.0546  183.8431   100
+    ##   376.7631  506.7574   100
+    ##   262.8230  444.6093   100
+    ##   222.1878  363.6475   100
+    ##   241.3619  367.6876   100
+    ##  1315.0064 1747.4000   100
+    ##  1306.6853 2006.2742   100
+    ##   907.5601 1248.0352   100
+    ##   653.5436 1031.8507   100
+    ##   428.0231  762.1354   100
+    ##   395.1924  612.0238   100
+    ##   461.2342  678.1096   100
+    ##   299.2129  442.9820   100
+    ##   114.0765  206.3084   100
 
 ``` r
 autoplot(tm)

@@ -98,7 +98,6 @@ base_r_calculate <- function(.) {
     }
     if(is.null(res)) {
       res <- data.frame(subjectID = di$subjectID,
-                        probability = di$probability,
                         totalProb = di$probability,
                         bestScore = di$probability,
                         diagnosis = ci,
@@ -108,7 +107,7 @@ base_r_calculate <- function(.) {
          (!all(di$subjectID == res$subjectID))) {
         stop("base_r_calculate saw irregular data")
       }
-      change <- di$probability > res$probability
+      change <- di$probability > res$bestScore
       res$diagnosis[change] <- ci
       res$bestScore <- base::pmax(res$bestScore, 
                                   di$probability)

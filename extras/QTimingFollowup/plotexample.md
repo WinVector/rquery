@@ -87,9 +87,9 @@ knitr::kable(summary)
 
 | expr                              |  durationMS|  relativeDuration|
 |:----------------------------------|-----------:|-----------------:|
-| base R calculation                |    111.3837|          1.000000|
-| data.table in memory              |    247.3955|          2.221111|
-| rquery in memory                  |    352.8966|          3.168298|
-| dplyr from memory to db and back  |    609.6689|          5.473594|
-| dplyr in memory no grouped filter |    832.8824|          7.477599|
-| dplyr tbl in memory               |   1232.2004|         11.062667|
+| base R calculation                |    117.8552|          1.000000|
+| data.table in memory              |    271.6285|          2.304765|
+| rquery in memory                  |    366.3083|          3.108122|
+| dplyr from memory to db and back  |    641.3167|          5.441566|
+| dplyr in memory no grouped filter |    887.9344|          7.534115|
+| dplyr tbl in memory               |   1299.4138|         11.025514|
