@@ -219,7 +219,7 @@ to_sql.relop_project <- function (x,
     q <- paste0(q,
                "\n",
                prefix, "GROUP BY\n",
-               prefix, " ", paste(cols, collapse = " AND "))
+               prefix, " ", paste(cols, collapse = ", "))
   }
   if(append_cr) {
     q <- paste0(q, "\n")
