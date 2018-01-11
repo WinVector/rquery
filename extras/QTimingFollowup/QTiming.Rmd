@@ -414,6 +414,22 @@ Now let's measure the speeds with `microbenchmark`.
 ```{r timings}
 timings <- NULL
 
+expressions <- list("rquery in memory" = bquote({ nrow(rquery_local())}),
+    # "rquery from db to memory" =  bquote({nrow(rquery_database_pull())}),
+    "rquery database count" =  bquote({rquery_database_count()}),
+    "rquery database land" =  bquote({rquery_database_land()}),
+    # "dplyr in memory" =  bquote({nrow(dplyr_local())}),
+    "dplyr tbl in memory" =  bquote({nrow(dplyr_tbl())}),
+    "dplyr in memory no grouped filter" =  bquote({nrow(dplyr_local_no_grouped_filter())}),
+    "dplyr from memory to db and back" =  bquote({nrow(dplyr_round_trip())}),
+    # "dplyr from db to memory" =  bquote({nrow(dplyr_database_pull())}),
+    "dplyr database count" =  bquote({dplyr_database_count()}),
+    "dplyr database land" =  bquote({dplyr_database_land()}),
+    "data.table in memory" =  bquote({nrow(data.table_local())}),
+    "base R tabular calculation" =  bquote({nrow(base_R_tabular_calculation())}),
+    "base R sequential calculation" =  bquote({nrow(base_R_sequential_calculation())}),
+    "base R row calculation" =  bquote({nrow(base_R_row_calculation())})
+)
 for(nrep in c(1, 10, 100, 1000, 10000, 100000, 1000000)) {
   print(nrep)
   dLocal <- mkData(nrep)
@@ -423,35 +439,28 @@ for(nrep in c(1, 10, 100, 1000, 10000, 100000, 1000000)) {
                             overwrite = TRUE)
   dTbl <- dplyr::tbl(db, dR$table_name)
   tm <- microbenchmark(
-    "rquery in memory" = nrow(rquery_local()),
-    # "rquery from db to memory" = nrow(rquery_database_pull()),
-    "rquery database count" = rquery_database_count(),
-    "rquery database land" = rquery_database_land(),
-    # "dplyr in memory" = nrow(dplyr_local()),
-    "dplyr tbl in memory" = nrow(dplyr_tbl()),
-    "dplyr in memory no grouped filter" = nrow(dplyr_local_no_grouped_filter()),
-    "dplyr from memory to db and back" = nrow(dplyr_round_trip()),
-    # "dplyr from db to memory" = nrow(dplyr_database_pull()),
-    "dplyr database count" = dplyr_database_count(),
-    "dplyr database land" = dplyr_database_land(),
-    "data.table in memory" = nrow(data.table_local()),
-    "base R tabular calculation" = nrow(base_R_tabular_calculation()),
-    "base R sequential calculation" = nrow(base_R_sequential_calculation()),
-    "base R row calculation" = nrow(base_R_row_calculation())
+    list = expressions,
+    times = 10L
   )
   print(tm)
   print(autoplot(tm))
   tmi <- as.data.frame(tm)
   tmi$data_size <- nrow(dLocal)
   timings <- rbind(timings, tmi)
+  baddies <- unique(tmi$expr[tmi$time > 10*1e+9])
+  for(bi in baddies) {
+    expressions[[bi]] <- NULL
+  }
+  if(length(expressions)<=0) {
+    break
+  }
 }
 saveRDS(timings, "qtimings.RDS")
 ```
 
 `rquery` appears to be fast.  The extra time for "`rquery` local" is because `rquery`
 doesn't *really* have a local mode, it has to copy the data to the database and back
-in that case.  I currently guess `rquery` and `dplyr` are both picking up parallelism 
-in the database.
+in that case.
 
 
 ```{r sessioninfo}

@@ -52,11 +52,12 @@ colormap = runs := c(highlightcolor,
 tr <- timings[timings$expr %in% runs, , drop=FALSE]
 tr$expr <- factor(tr$expr, levels = rev(runs))
 sizes <- sort(unique(tr$data_size))
-tr$facet <- reorder(paste0("data rows: ", sizes), sizes)
-plotbenchmark(tr, colormap, 
-              title = "In-Memory Runtimes by Implementation (smaller better)",
-              subtitle = "Database enhanced dplyr shown for comparison") + 
-  facet_wrap(~ facet)
+for(sz in sizes) {
+  trs <- tr[tr$data_size==sz, , drop=FALSE]
+  print(plotbenchmark(trs, colormap, 
+                title = paste0("Runtimes (smaller better), data rows: ", sz),
+                subtitle = "Database enhanced dplyr shown for comparison") )
+}
 ```
 
 Note: `"rquery in memory"` is `rquery` starting and finishing with in-memory 
