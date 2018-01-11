@@ -14,7 +14,7 @@ plotbenchmark = function(timings, colormap, title, subtitle=NULL) {
     scale_fill_manual(values=colormap) +
     coord_flip() +
     theme(legend.position="none") +
-    xlab("Benchmark Task") +
+    xlab("Benchmark Implementation") +
     ylab("Duration in MS") +
     ggtitle(title, subtitle=subtitle)
 }

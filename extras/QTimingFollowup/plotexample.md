@@ -94,58 +94,55 @@ knitr::kable(summary)
 
 | expr                              |  data\_size|    durationMS|  relativeDuration|
 |:----------------------------------|-----------:|-------------:|-----------------:|
-| base R row calculation            |       4e+00|  8.142369e-01|      1.000000e+00|
-| base R sequential calculation     |       4e+00|  1.681830e+00|      2.065529e+00|
-| base R tabular calculation        |       4e+00|  3.500383e+00|      4.298973e+00|
-| data.table in memory              |       4e+00|  4.542401e+00|      5.578721e+00|
-| dplyr tbl in memory               |       4e+00|  2.274884e+01|      2.793885e+01|
-| dplyr in memory no grouped filter |       4e+00|  2.308071e+01|      2.834643e+01|
-| rquery in memory                  |       4e+00|  4.032271e+01|      4.952208e+01|
-| dplyr from memory to db and back  |       4e+00|  1.610944e+02|      1.978470e+02|
-| base R sequential calculation     |       4e+01|  1.464613e+00|      1.798755e+00|
-| base R row calculation            |       4e+01|  1.478195e+00|      1.815436e+00|
-| base R tabular calculation        |       4e+01|  3.291921e+00|      4.042953e+00|
-| data.table in memory              |       4e+01|  3.898316e+00|      4.787692e+00|
-| dplyr in memory no grouped filter |       4e+01|  2.200082e+01|      2.702017e+01|
-| dplyr tbl in memory               |       4e+01|  2.207029e+01|      2.710549e+01|
-| rquery in memory                  |       4e+01|  4.603565e+01|      5.653840e+01|
-| dplyr from memory to db and back  |       4e+01|  1.500021e+02|      1.842242e+02|
-| base R sequential calculation     |       4e+02|  1.594000e+00|      1.957661e+00|
-| base R tabular calculation        |       4e+02|  5.641278e+00|      6.928301e+00|
-| data.table in memory              |       4e+02|  6.150488e+00|      7.553684e+00|
-| base R row calculation            |       4e+02|  1.178774e+01|      1.447704e+01|
-| dplyr in memory no grouped filter |       4e+02|  2.582843e+01|      3.172102e+01|
-| dplyr tbl in memory               |       4e+02|  2.939436e+01|      3.610050e+01|
-| rquery in memory                  |       4e+02|  4.047464e+01|      4.970868e+01|
-| dplyr from memory to db and back  |       4e+02|  1.327213e+02|      1.630008e+02|
-| base R sequential calculation     |       4e+03|  8.151204e+00|      1.001085e+01|
-| data.table in memory              |       4e+03|  2.668934e+01|      3.277835e+01|
-| base R tabular calculation        |       4e+03|  3.717665e+01|      4.565827e+01|
-| rquery in memory                  |       4e+03|  6.318726e+01|      7.760305e+01|
-| dplyr in memory no grouped filter |       4e+03|  9.006206e+01|      1.106092e+02|
-| dplyr tbl in memory               |       4e+03|  1.225142e+02|      1.504651e+02|
-| dplyr from memory to db and back  |       4e+03|  1.708256e+02|      2.097984e+02|
-| base R row calculation            |       4e+03|  1.789041e+02|      2.197199e+02|
-| base R sequential calculation     |       4e+04|  1.114282e+02|      1.368498e+02|
-| data.table in memory              |       4e+04|  2.514926e+02|      3.088691e+02|
-| rquery in memory                  |       4e+04|  3.566062e+02|      4.379637e+02|
-| base R tabular calculation        |       4e+04|  5.738032e+02|      7.047128e+02|
-| dplyr from memory to db and back  |       4e+04|  6.011190e+02|      7.382606e+02|
-| dplyr in memory no grouped filter |       4e+04|  8.327460e+02|      1.022732e+03|
-| dplyr tbl in memory               |       4e+04|  1.241371e+03|      1.524582e+03|
-| base R row calculation            |       4e+04|  1.196411e+04|      1.469365e+04|
-| base R sequential calculation     |       4e+05|  1.539166e+03|      1.890317e+03|
-| data.table in memory              |       4e+05|  2.584407e+03|      3.174024e+03|
-| rquery in memory                  |       4e+05|  4.359878e+03|      5.354557e+03|
-| dplyr from memory to db and back  |       4e+05|  4.815202e+03|      5.913761e+03|
-| base R tabular calculation        |       4e+05|  7.082258e+03|      8.698031e+03|
-| dplyr in memory no grouped filter |       4e+05|  1.023800e+04|      1.257373e+04|
-| dplyr tbl in memory               |       4e+05|  1.504158e+04|      1.847322e+04|
-| base R sequential calculation     |       4e+06|  2.163105e+04|      2.656604e+04|
-| data.table in memory              |       4e+06|  3.020697e+04|      3.709851e+04|
-| rquery in memory                  |       4e+06|  5.274460e+04|      6.477795e+04|
-| dplyr from memory to db and back  |       4e+06|  6.378353e+04|      7.833534e+04|
-| base R tabular calculation        |       4e+06|  8.922455e+04|      1.095806e+05|
+| base R sequential calculation     |       4e+00|  1.301663e+00|      1.000000e+00|
+| base R tabular calculation        |       4e+00|  2.944919e+00|      2.262428e+00|
+| data.table in memory              |       4e+00|  3.459755e+00|      2.657950e+00|
+| dplyr tbl in memory               |       4e+00|  2.049734e+01|      1.574704e+01|
+| dplyr in memory no grouped filter |       4e+00|  2.377391e+01|      1.826426e+01|
+| rquery in memory                  |       4e+00|  3.670664e+01|      2.819980e+01|
+| dplyr from memory to db and back  |       4e+00|  1.350114e+02|      1.037222e+02|
+| base R sequential calculation     |       4e+01|  1.329386e+00|      1.021298e+00|
+| base R tabular calculation        |       4e+01|  2.908628e+00|      2.234548e+00|
+| data.table in memory              |       4e+01|  3.522076e+00|      2.705827e+00|
+| dplyr tbl in memory               |       4e+01|  1.975426e+01|      1.517617e+01|
+| dplyr in memory no grouped filter |       4e+01|  1.995960e+01|      1.533392e+01|
+| rquery in memory                  |       4e+01|  3.772173e+01|      2.897964e+01|
+| dplyr from memory to db and back  |       4e+01|  1.304257e+02|      1.001993e+02|
+| base R sequential calculation     |       4e+02|  1.755118e+00|      1.348366e+00|
+| base R tabular calculation        |       4e+02|  5.564920e+00|      4.275238e+00|
+| data.table in memory              |       4e+02|  5.971650e+00|      4.587708e+00|
+| dplyr in memory no grouped filter |       4e+02|  2.669408e+01|      2.050768e+01|
+| dplyr tbl in memory               |       4e+02|  2.870596e+01|      2.205330e+01|
+| rquery in memory                  |       4e+02|  3.939951e+01|      3.026860e+01|
+| dplyr from memory to db and back  |       4e+02|  1.326026e+02|      1.018716e+02|
+| base R sequential calculation     |       4e+03|  8.870607e+00|      6.814825e+00|
+| data.table in memory              |       4e+03|  2.926444e+01|      2.248234e+01|
+| base R tabular calculation        |       4e+03|  3.696395e+01|      2.839748e+01|
+| rquery in memory                  |       4e+03|  6.561312e+01|      5.040714e+01|
+| dplyr in memory no grouped filter |       4e+03|  9.242966e+01|      7.100890e+01|
+| dplyr tbl in memory               |       4e+03|  1.279663e+02|      9.830983e+01|
+| dplyr from memory to db and back  |       4e+03|  1.764393e+02|      1.355491e+02|
+| base R sequential calculation     |       4e+04|  1.081891e+02|      8.311606e+01|
+| data.table in memory              |       4e+04|  2.673961e+02|      2.054265e+02|
+| rquery in memory                  |       4e+04|  3.592062e+02|      2.759594e+02|
+| base R tabular calculation        |       4e+04|  5.509727e+02|      4.232837e+02|
+| dplyr from memory to db and back  |       4e+04|  6.068102e+02|      4.661807e+02|
+| dplyr in memory no grouped filter |       4e+04|  8.289808e+02|      6.368628e+02|
+| dplyr tbl in memory               |       4e+04|  1.229089e+03|      9.442453e+02|
+| base R sequential calculation     |       4e+05|  1.623535e+03|      1.247277e+03|
+| data.table in memory              |       4e+05|  2.882483e+03|      2.214461e+03|
+| rquery in memory                  |       4e+05|  4.705146e+03|      3.614719e+03|
+| dplyr from memory to db and back  |       4e+05|  5.351083e+03|      4.110958e+03|
+| base R tabular calculation        |       4e+05|  7.684973e+03|      5.903965e+03|
+| dplyr in memory no grouped filter |       4e+05|  1.091728e+04|      8.387176e+03|
+| dplyr tbl in memory               |       4e+05|  1.648691e+04|      1.266603e+04|
+| base R sequential calculation     |       4e+06|  2.285761e+04|      1.756031e+04|
+| data.table in memory              |       4e+06|  3.125141e+04|      2.400883e+04|
+| rquery in memory                  |       4e+06|  5.605219e+04|      4.306198e+04|
+| dplyr from memory to db and back  |       4e+06|  6.520245e+04|      5.009165e+04|
+| base R tabular calculation        |       4e+06|  9.707545e+04|      7.457801e+04|
+| dplyr in memory no grouped filter |       4e+06|  1.328798e+05|      1.020847e+05|
+| dplyr tbl in memory               |       4e+06|  1.938084e+05|      1.488929e+05|
 
 ``` r
 summary$expr <- reorder(summary$expr, -summary$durationMS)
