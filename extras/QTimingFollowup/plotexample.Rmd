@@ -76,7 +76,15 @@ summary$relativeDuration <- summary$durationMS / baseTiming
 knitr::kable(summary)
 
 summary$expr <- reorder(summary$expr, -summary$durationMS)
-ggplot(data=summary, aes(x=data_size, y=durationMS, color=expr)) +
-  geom_point() + geom_line()
+ggplot(data=summary, aes(x=data_size, y=durationMS, 
+                         color=expr, shape =expr)) +
+  geom_point() + geom_line() + scale_x_log10() + scale_y_log10() +
+  ggtitle("Task Duration as a Function of Implementation and Data Size")
+
+ggplot(data=summary, aes(x=data_size, y=data_size/durationMS, 
+                         color=expr, shape=expr)) +
+  geom_point() + geom_line() + scale_x_log10() + 
+  ylab("Row Per Millisecond") +
+  ggtitle("Rows Per Millisecond as Function of Implementation and Data Size")
 
 ```

@@ -146,8 +146,32 @@ knitr::kable(summary)
 
 ``` r
 summary$expr <- reorder(summary$expr, -summary$durationMS)
-ggplot(data=summary, aes(x=data_size, y=durationMS, color=expr)) +
-  geom_point() + geom_line()
+ggplot(data=summary, aes(x=data_size, y=durationMS, 
+                         color=expr, shape =expr)) +
+  geom_point() + geom_line() + scale_x_log10() + scale_y_log10() +
+  ggtitle("Task Duration as a Function of Implementation and Data Size")
 ```
 
+    ## Warning: The shape palette can deal with a maximum of 6 discrete values
+    ## because more than 6 becomes difficult to discriminate; you have 7.
+    ## Consider specifying shapes manually if you must have them.
+
+    ## Warning: Removed 7 rows containing missing values (geom_point).
+
 ![](plotexample_files/figure-markdown_github/unnamed-chunk-2-1.png)
+
+``` r
+ggplot(data=summary, aes(x=data_size, y=data_size/durationMS, 
+                         color=expr, shape=expr)) +
+  geom_point() + geom_line() + scale_x_log10() + 
+  ylab("Row Per Millisecond") +
+  ggtitle("Rows Per Millisecond as Function of Implementation and Data Size")
+```
+
+    ## Warning: The shape palette can deal with a maximum of 6 discrete values
+    ## because more than 6 becomes difficult to discriminate; you have 7.
+    ## Consider specifying shapes manually if you must have them.
+
+    ## Warning: Removed 7 rows containing missing values (geom_point).
+
+![](plotexample_files/figure-markdown_github/unnamed-chunk-2-2.png)
