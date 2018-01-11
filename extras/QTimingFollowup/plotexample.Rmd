@@ -32,7 +32,8 @@ greycolor = "darkgrey"
 ```
 
 ```{r}
-runs <- c("base R tabular calculation",
+runs <- c("base R row calculation",
+          "base R tabular calculation",
           "base R sequential calculation",
           "data.table in memory", 
           "rquery in memory",
@@ -45,13 +46,17 @@ colormap = runs := c(highlightcolor,
                      highlightcolor,
                      highlightcolor,
                      highlightcolor,
+                     highlightcolor,
                      backgroundcolor)
 
 tr <- timings[timings$expr %in% runs, , drop=FALSE]
 tr$expr <- factor(tr$expr, levels = rev(runs))
+sizes <- sort(unique(tr$data_size))
+tr$facet <- reorder(paste0("data rows: ", sizes), sizes)
 plotbenchmark(tr, colormap, 
               title = "In-Memory Runtimes by Implementation (smaller better)",
-              subtitle = "Database enhanced dplyr shown for comparison")
+              subtitle = "Database enhanced dplyr shown for comparison") + 
+  facet_wrap(~ facet)
 ```
 
 Note: `"rquery in memory"` is `rquery` starting and finishing with in-memory 
@@ -60,13 +65,17 @@ Note: `"rquery in memory"` is `rquery` starting and finishing with in-memory
 ```{r}
 summary <- tr %.>% 
   as.data.frame(.) %.>%
-  project_nse(., groupby = "expr", 
+  project_nse(., groupby = c("expr", "data_size"), 
               durationMS := avg(time)/1000000 ) %.>%
-  orderby(., "durationMS") %>%
+  orderby(., c("data_size", "durationMS")) %>%
   execute(.)
 baseTiming <- min(summary$durationMS)
 summary$relativeDuration <- summary$durationMS / baseTiming
 
 knitr::kable(summary)
+
+summary$expr <- reorder(summary$expr, -summary$durationMS)
+ggplot(data=summary, aes(x=data_size, y=durationMS, color=expr)) +
+  geom_point() + geom_line()
 
 ```

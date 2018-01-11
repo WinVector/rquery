@@ -42,40 +42,47 @@ R.Version()
 We now build and extended version of the example from [Let’s Have Some Sympathy For The Part-time R User](http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/).
 
 ```{r data}
-nrep <- 10000
+nrep <- 10
 
 
-dLocal <- data.frame(
-  subjectID = c(1,                   
-                1,
-                2,                   
-                2),
-  surveyCategory = c(
-    'withdrawal behavior',
-    'positive re-framing',
-    'withdrawal behavior',
-    'positive re-framing'
-  ),
-  assessmentTotal = c(5,                 
-                      2,
-                      3,                  
-                      4),
-  stringsAsFactors = FALSE)
-norig <- nrow(dLocal)
-dLocal <- dLocal[rep(seq_len(norig), nrep), , drop=FALSE]
-dLocal$subjectID <- paste((seq_len(nrow(dLocal)) -1)%/% norig,
-                          dLocal$subjectID, 
-                          sep = "_")
-rownames(dLocal) <- NULL
-head(dLocal)
+mkData <- function(nrep) {
+  dLocal <- data.frame(
+    subjectID = c(1,                   
+                  1,
+                  2,                   
+                  2),
+    surveyCategory = c(
+      'withdrawal behavior',
+      'positive re-framing',
+      'withdrawal behavior',
+      'positive re-framing'
+    ),
+    assessmentTotal = c(5,                 
+                        2,
+                        3,                  
+                        4),
+    stringsAsFactors = FALSE)
+  norig <- nrow(dLocal)
+  dLocal <- dLocal[rep(seq_len(norig), nrep), , drop=FALSE]
+  dLocal$subjectID <- paste((seq_len(nrow(dLocal)) -1)%/% norig,
+                            dLocal$subjectID, 
+                            sep = "_")
+  rownames(dLocal) <- NULL
 
+  dLocal
+}
+
+dLocal <- mkData(nrep)
 dR <- rquery::dbi_copy_to(db, 'dR',
                           dLocal,
                           temporary = TRUE, 
                           overwrite = TRUE)
+dTbl <- dplyr::tbl(db, dR$table_name)
+
+head(dLocal)
+
 cdata::qlook(db, dR$table_name)
 
-dTbl <- dplyr::tbl(db, dR$table_name)
 dplyr::glimpse(dTbl)
 ```
 
@@ -405,26 +412,40 @@ Now let's measure the speeds with `microbenchmark`.
 
 
 ```{r timings}
-tm <- microbenchmark(
-  "rquery in memory" = nrow(rquery_local()),
-  "rquery from db to memory" = nrow(rquery_database_pull()),
-  "rquery database count" = rquery_database_count(),
-  "rquery database land" = rquery_database_land(),
-  "dplyr in memory" = nrow(dplyr_local()),
-  "dplyr tbl in memory" = nrow(dplyr_tbl()),
-  "dplyr in memory no grouped filter" = nrow(dplyr_local_no_grouped_filter()),
-  "dplyr from memory to db and back" = nrow(dplyr_round_trip()),
-  "dplyr from db to memory" = nrow(dplyr_database_pull()),
-  "dplyr database count" = dplyr_database_count(),
-  "dplyr database land" = dplyr_database_land(),
-  "data.table in memory" = nrow(data.table_local()),
-  "base R tabular calculation" = nrow(base_R_tabular_calculation()),
-  "base R sequential calculation" = nrow(base_R_sequential_calculation()),
-  "base R row calculation" = nrow(base_R_row_calculation())
-)
-saveRDS(tm, "qtimings.RDS")
-print(tm)
-autoplot(tm)
+timings <- NULL
+
+for(nrep in c(1, 10, 100, 1000, 10000, 100000, 1000000)) {
+  print(nrep)
+  dLocal <- mkData(nrep)
+  dR <- rquery::dbi_copy_to(db, 'dR',
+                            dLocal,
+                            temporary = TRUE, 
+                            overwrite = TRUE)
+  dTbl <- dplyr::tbl(db, dR$table_name)
+  tm <- microbenchmark(
+    "rquery in memory" = nrow(rquery_local()),
+    # "rquery from db to memory" = nrow(rquery_database_pull()),
+    "rquery database count" = rquery_database_count(),
+    "rquery database land" = rquery_database_land(),
+    # "dplyr in memory" = nrow(dplyr_local()),
+    "dplyr tbl in memory" = nrow(dplyr_tbl()),
+    "dplyr in memory no grouped filter" = nrow(dplyr_local_no_grouped_filter()),
+    "dplyr from memory to db and back" = nrow(dplyr_round_trip()),
+    # "dplyr from db to memory" = nrow(dplyr_database_pull()),
+    "dplyr database count" = dplyr_database_count(),
+    "dplyr database land" = dplyr_database_land(),
+    "data.table in memory" = nrow(data.table_local()),
+    "base R tabular calculation" = nrow(base_R_tabular_calculation()),
+    "base R sequential calculation" = nrow(base_R_sequential_calculation()),
+    "base R row calculation" = nrow(base_R_row_calculation())
+  )
+  print(tm)
+  print(autoplot(tm))
+  tmi <- as.data.frame(tm)
+  tmi$data_size <- nrow(dLocal)
+  timings <- rbind(timings, tmi)
+}
+saveRDS(timings, "qtimings.RDS")
 ```
 
 `rquery` appears to be fast.  The extra time for "`rquery` local" is because `rquery`
