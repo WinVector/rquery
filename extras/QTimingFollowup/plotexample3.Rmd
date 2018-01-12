@@ -105,6 +105,7 @@ ggplot(data=compsF, aes(x=data_size, y=data_size/durationMS,
             color=baseline_color, alpha=0.1, size=0) +
   scale_x_log10() + ylab("Rows Per Millisecond") +
   #facet_wrap(~gp, ncol=1)  + 
+  scale_y_log10() +
   scale_color_brewer("Implementation", palette="Dark2") + 
   scale_shape_discrete("Implementation") + 
   ggtitle("Rows/MS by Implementation and Data Size (larger is better)", 
