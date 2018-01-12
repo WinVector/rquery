@@ -17,15 +17,20 @@ library("rquery")
 library("dplyr")
 library("microbenchmark")
 library("ggplot2")
+source("fns.R")
 
-db <- DBI::dbConnect(RPostgres::Postgres(),
-                     host = 'wvdbtest.cv9xgzsc2qa1.us-west-2.rds.amazonaws.com',
-                     port = 5432,
-                     user = 'wvdbinstance',
-                     password = 'wvdb9327262643664',
-                     dbname = 'wvdb')
-
-winvector_temp_db_handle <- list(db = db)
+db <- NULL
+# db <- DBI::dbConnect(RPostgres::Postgres(),
+#                      host = 'wvdbtest.cv9xgzsc2qa1.us-west-2.rds.amazonaws.com',
+#                      port = 5432,
+#                      user = 'wvdbinstance',
+#                      password = 'wvdb9327262643664',
+#                      dbname = 'wvdb')
+if(!is.null(db)) {
+  winvector_temp_db_handle <- list(db = db)
+  print(db)
+  DBI::dbGetQuery(db, "SELECT version()", stringsAsFactors = FALSE)
+}
 
 packageVersion("rquery")
 packageVersion("dplyr")
@@ -33,9 +38,6 @@ packageVersion("dbplyr")
 packageVersion("DBI")
 packageVersion("data.table")
 packageVersion("RPostgres")
-
-print(db)
-DBI::dbGetQuery(db, "SELECT version()")
 
 R.Version()
 ```
@@ -45,46 +47,22 @@ We now build and extended version of the example from [Let’s Have Some Sympath
 ```{r data}
 nrep <- 10
 
-
-mkData <- function(nrep) {
-  dLocal <- data.frame(
-    subjectID = c(1,                   
-                  1,
-                  2,                   
-                  2),
-    surveyCategory = c(
-      'withdrawal behavior',
-      'positive re-framing',
-      'withdrawal behavior',
-      'positive re-framing'
-    ),
-    assessmentTotal = c(5,                 
-                        2,
-                        3,                  
-                        4),
-    stringsAsFactors = FALSE)
-  norig <- nrow(dLocal)
-  dLocal <- dLocal[rep(seq_len(norig), nrep), , drop=FALSE]
-  dLocal$subjectID <- paste((seq_len(nrow(dLocal)) -1)%/% norig,
-                            dLocal$subjectID, 
-                            sep = "_")
-  rownames(dLocal) <- NULL
-
-  dLocal
-}
-
 dLocal <- mkData(nrep)
-dR <- rquery::dbi_copy_to(db, 'dR',
-                          dLocal,
-                          temporary = TRUE, 
-                          overwrite = TRUE)
-dTbl <- dplyr::tbl(db, dR$table_name)
-
 head(dLocal)
 
-cdata::qlook(db, dR$table_name)
+dR <- NULL
+dTbl <- NULL
 
-dplyr::glimpse(dTbl)
+if(!is.null(db)) {
+  dR <- rquery::dbi_copy_to(db, 'dR',
+                            dLocal,
+                            temporary = TRUE, 
+                            overwrite = TRUE)
+  dTbl <- dplyr::tbl(db, dR$table_name)
+  cdata::qlook(db, dR$table_name)
+
+  dplyr::glimpse(dTbl)
+}
 ```
 
 Now we declare our operation pipelines, both on local (in-memory `data.frame`) and
@@ -92,142 +70,6 @@ remote (already in a database) data.
 
 ```{r query}
 scale <- 0.237
-
-# base-R function
-# could also try base::split() or base:table()
-base_r_calculate_tabular <- function(d) {
-  d <- d[order(d$subjectID, d$surveyCategory), , drop=FALSE]
-  # compute un-normalized probability
-  d$probability <- exp(d$assessmentTotal * scale)
-  # set up of for selection
-  dmax <- stats::aggregate(d$probability, 
-                           by = list(subjectID = d$subjectID), 
-                           FUN = max)
-  maxv <- dmax$x
-  names(maxv) <- dmax$subjectID
-  # set up for normalization
-  dsum <- stats::aggregate(d$probability, 
-                           by = list(subjectID = d$subjectID), 
-                           FUN = sum)
-  sumv <- dsum$x
-  names(sumv) <- dsum$subjectID
-  # start selection
-  d$maxv <- maxv[d$subjectID]
-  d <- d[d$probability >= d$maxv, 
-                   , 
-                   drop=FALSE]
-  # de-dup
-  d$rownum <- seq_len(nrow(d))
-  drow <-  stats::aggregate(d$rownum, 
-                           by = list(subjectID = d$subjectID), 
-                           FUN = min)
-  minv <- drow$x
-  names(minv) <- drow$subjectID
-  d$rmin <- minv[d$subjectID]
-  d <- d[d$rownum <= d$rmin, , drop=FALSE]
-  # renormalize
-  d$probability <- d$probability/sumv[d$subjectID]
-  d <- d[, c("subjectID", "surveyCategory", "probability")]
-  colnames(d)[[2]] <- "diagnosis"
-  d
-}
-
-# base-R function
-# could also try base::split() or base:table()
-base_r_calculate_sequenced <- function(d) {
-  cats <- base::sort(base::unique(d$surveyCategory))
-  res <- NULL
-  for(ci in cats) {
-    di <- d[d$surveyCategory == ci, , drop=FALSE]
-    di <- di[base::order(di$subjectID), , drop=FALSE]
-    di$probability <- exp(di$assessmentTotal * scale)
-    if(length(base::unique(di$subjectID))!=nrow(di)) {
-      stop("base_r_calculate repeated subjectID")
-    }
-    if(is.null(res)) {
-      res <- data.frame(subjectID = di$subjectID,
-                        totalProb = di$probability,
-                        bestScore = di$probability,
-                        diagnosis = ci,
-                        stringsAsFactors = FALSE)
-    } else {
-      if((nrow(di)!=nrow(res)) ||
-         (!all(di$subjectID == res$subjectID))) {
-        stop("base_r_calculate saw irregular data")
-      }
-      change <- di$probability > res$bestScore
-      res$diagnosis[change] <- ci
-      res$bestScore <- base::pmax(res$bestScore, 
-                                  di$probability)
-      res$totalProb <- res$totalProb + di$probability
-    }
-  }
-  res$probability <- res$bestScore/res$totalProb
-  res <- res[, c("subjectID", 
-                 "diagnosis", 
-                 "probability")]
-  res
-}
-
-
-
-# base-R function
-# could also try base::split() or base:table()
-base_r_calculate_rows <- function(d) {
-  d <- d[base::order(d$subjectID, d$surveyCategory), , drop=FALSE]
-  d$probability <- exp(d$assessmentTotal * scale)
-  ids <- sort(unique(d$subjectID))
-  totals <- numeric(length(ids))
-  names(totals) <- ids
-  n <- nrow(d)
-  choices <- logical(n)
-  sum <- 0
-  maxID <- 1
-  for(i in seq_len(n)) {
-    id <- d$subjectID[[i]]
-    probi <- d$probability[[i]]
-    sum <- sum + probi
-    if(probi>d$probability[[maxID]]) {
-      maxID <- i
-    }
-    end_of_group <- (i>=n) || (d$subjectID[[i+1]]!=id)
-    if(end_of_group) {
-      choices[[maxID]] <- TRUE
-      totals[id] <- sum
-      sum <- 0
-      maxID <- i+1
-    }
-  }
-  d <- d[choices, , drop=FALSE]
-  d$probability <- d$probability/totals[d$subjectID]
-  d <- d[, c("subjectID", 
-               "surveyCategory", 
-               "probability")]
-  colnames(d)[[2]] <- "diagnosis"
-  d
-}
-
-# this is a function, 
-# so body not evaluated until used
-rquery_pipeline <- . := {
-  extend_nse(.,
-             probability :=
-               exp(assessmentTotal * scale)/
-               sum(exp(assessmentTotal * scale)),
-             count := count(1),
-             partitionby = 'subjectID') %.>%
-    extend_nse(.,
-               rank := rank(),
-               partitionby = 'subjectID',
-               orderby = c('probability', 'surveyCategory'))  %.>%
-    rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
-    select_rows_nse(., rank == count) %.>%
-    select_columns(., c('subjectID', 
-                        'diagnosis', 
-                        'probability')) %.>%
-    orderby(., 'subjectID') 
-}
-
 
 base_R_row_calculation <- function() {
   base_r_calculate_rows(dLocal)
@@ -244,15 +86,15 @@ base_R_tabular_calculation <- function() {
 rquery_local <- function() {
   dLocal %.>% 
     rquery_pipeline(.) %.>%
-    as.data.frame(.) # force execution
+    as.data.frame(., stringsAsFactors = FALSE) # force execution
 }
 
 rquery_database_pull <- function() {
   dR %.>% 
     rquery_pipeline(.) %.>% 
     to_sql(., db) %.>% 
-    DBI::dbGetQuery(db, .) %.>%
-    as.data.frame(.) # shouldn't be needed
+    DBI::dbGetQuery(db, ., stringsAsFactors = FALSE) %.>%
+    as.data.frame(., stringsAsFactors = FALSE) # shouldn't be needed
 }
 
 rquery_database_land <- function() {
@@ -270,41 +112,10 @@ rquery_database_count <- function() {
     rquery_pipeline(.) %.>% 
     sql_node(., "n" := "COUNT(1)") %.>% 
     to_sql(., db) %.>% 
-    DBI::dbGetQuery(db, .) %.>%
-    as.data.frame(.) # shouldn't be needed
+    DBI::dbGetQuery(db, ., stringsAsFactors = FALSE) %.>%
+    as.data.frame(., stringsAsFactors = FALSE) # shouldn't be needed
 }
 
-# this is a function, 
-# so body not evaluated until used
-dplyr_pipeline <- . %>%
-  group_by(subjectID) %>%
-  mutate(probability =
-           exp(assessmentTotal * scale)/
-           sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
-  arrange(probability, surveyCategory) %>%
-  filter(row_number() == n()) %>%
-  ungroup() %>%
-  rename(diagnosis = surveyCategory) %>%
-  select(subjectID, diagnosis, probability) %>%
-  arrange(subjectID)
-
-# this is a function, 
-# so body not evaluated until used
-# pipeline re-factored to have filter outside
-# mutate 
-# work around: https://github.com/tidyverse/dplyr/issues/3294
-dplyr_pipeline2 <- . %>%
-  group_by(subjectID) %>%
-  mutate(probability =
-           exp(assessmentTotal * scale)/
-           sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
-  arrange(probability, surveyCategory) %>%
-  mutate(count = n(), rank = row_number()) %>%
-  ungroup() %>%
-  filter(count == rank) %>%
-  rename(diagnosis = surveyCategory) %>%
-  select(subjectID, diagnosis, probability) %>%
-  arrange(subjectID)
 
 
 dplyr_local <- function() {
@@ -357,21 +168,6 @@ dplyr_database_count <- function() {
     collect()
 }
 
-.datatable.aware <- TRUE
-
-data.table_local <- function() {
-  dDT <- data.table::data.table(dLocal)
-  dDT[
-    , one := 1 ][
-      , probability := exp ( assessmentTotal * scale ) / 
-        sum ( exp ( assessmentTotal * scale ) ) ,subjectID ][
-          , count := sum ( one ) ,subjectID ][
-            , rank := rank ( probability ) ,subjectID ][
-              rank == count ][
-                , diagnosis := surveyCategory ][
-                  , c('subjectID', 'diagnosis', 'probability') ][
-                    order(subjectID) ]
-}
 
 ```
 
@@ -384,29 +180,31 @@ head(base_R_row_calculation())
 
 head(base_R_tabular_calculation())
 
-head(rquery_local())
-
-rquery_database_land()
-
-head(rquery_database_pull())
-
-rquery_database_count()
-
 head(dplyr_local())
 
 head(dplyr_tbl())
 
 head(dplyr_local_no_grouped_filter())
 
-dplyr_database_land()
-
-head(dplyr_database_pull())
-
-dplyr_database_count()
-
-head(dplyr_round_trip())
-
 head(data.table_local())
+
+if(!is.null(db)) {
+  head(rquery_local())
+  
+  rquery_database_land()
+  
+  head(rquery_database_pull())
+  
+  rquery_database_count()
+  
+  dplyr_database_land()
+  
+  head(dplyr_database_pull())
+  
+  dplyr_database_count()
+  
+  head(dplyr_round_trip())
+}
 ```
 
 Now let's measure the speeds with `microbenchmark`.
@@ -416,14 +214,14 @@ Now let's measure the speeds with `microbenchmark`.
 timings <- NULL
 
 expressions <- list(
-    "rquery in memory" = bquote({ nrow(rquery_local())}),
+    # "rquery in memory" = bquote({ nrow(rquery_local())}),
     # "rquery from db to memory" =  bquote({nrow(rquery_database_pull())}),
     # "rquery database count" =  bquote({rquery_database_count()}),
     # "rquery database land" =  bquote({rquery_database_land()}),
     # "dplyr in memory" =  bquote({nrow(dplyr_local())}),
     # "dplyr tbl in memory" =  bquote({nrow(dplyr_tbl())}),
     "dplyr in memory no grouped filter" =  bquote({nrow(dplyr_local_no_grouped_filter())}),
-    "dplyr from memory to db and back" =  bquote({nrow(dplyr_round_trip())}),
+    # "dplyr from memory to db and back" =  bquote({nrow(dplyr_round_trip())}),
     # "dplyr from db to memory" =  bquote({nrow(dplyr_database_pull())}),
     # "dplyr database count" =  bquote({dplyr_database_count()}),
     # "dplyr database land" =  bquote({dplyr_database_land()}),
@@ -435,21 +233,25 @@ expressions <- list(
 
 prune <- FALSE
 
-for(nrep in c(1, 10, 100, 1000, 10000, 100000, 1000000, 10000000)) {
+for(nrep in c(1, 10, 100, 1000, 10000, 100000, 1000000)) {
   print(nrep)
   dLocal <- mkData(nrep)
-  dR <- rquery::dbi_copy_to(db, 'dR',
-                            dLocal,
-                            temporary = TRUE, 
-                            overwrite = TRUE)
-  dTbl <- dplyr::tbl(db, dR$table_name)
+  dR <- NULL
+  dTbl <- NULL
+  if(!is.null(db)) {
+    dR <- rquery::dbi_copy_to(db, 'dR',
+                              dLocal,
+                              temporary = TRUE, 
+                              overwrite = TRUE)
+    dTbl <- dplyr::tbl(db, dR$table_name)
+  }
   tm <- microbenchmark(
     list = expressions,
     times = 5L
   )
   print(tm)
   print(autoplot(tm))
-  tmi <- as.data.frame(tm)
+  tmi <- as.data.frame(tm, stringsAsFactors = FALSE)
   tmi$data_size <- nrow(dLocal)
   timings <- rbind(timings, tmi)
   if(prune) {
