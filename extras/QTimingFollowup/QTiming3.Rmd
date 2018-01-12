@@ -7,7 +7,7 @@ output: github_document
 
 Let's time [`rquery`](https://winvector.github.io/rquery/), [`dplyr`]( https://CRAN.R-project.org/package=dplyr), and [`data.table`](https://CRAN.R-project.org/package=data.table ) on a non-trivial example.
 
-These timings are on an Amazon m4.2xlarge (8 vCPU, 32GB RAM) running Ubuntu Server 16.04 LTS (HVM),with the database being PostgreSQL 9.6.5 on a db.4.2xlarge instance.
+These timings are on an Amazon EC2 c5.3.xlarge 16 vCPUs 32GB RAM Ubuntu Server 16.04 LTS (HVM).
 
 First let's load our
 packages, establish a database connection, and declare an [`rquery` ad hoc execution service](https://winvector.github.io/rquery/articles/AdHocQueries.html) (the "`winvector_temp_db_handle`").
@@ -278,7 +278,11 @@ sessionInfo()
 
 ```{r dbcleanup}
 winvector_temp_db_handle <- NULL
-DBI::dbDisconnect(db)
+if(!is.null(db)) {
+  DBI::dbDisconnect(db)
+  db <- NULL
+}
 ```
+
 
 

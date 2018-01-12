@@ -277,7 +277,10 @@ sessionInfo()
 
 ```{r dbcleanup}
 winvector_temp_db_handle <- NULL
-DBI::dbDisconnect(db)
+if(!is.null(db)) {
+  DBI::dbDisconnect(db)
+  db <- NULL
+}
 ```
 
 
