@@ -673,17 +673,18 @@ Now let's measure the speeds with `microbenchmark`.
 ``` r
 timings <- NULL
 
-expressions <- list("rquery in memory" = bquote({ nrow(rquery_local())}),
+expressions <- list(
+    "rquery in memory" = bquote({ nrow(rquery_local())}),
     # "rquery from db to memory" =  bquote({nrow(rquery_database_pull())}),
-    "rquery database count" =  bquote({rquery_database_count()}),
-    "rquery database land" =  bquote({rquery_database_land()}),
+    # "rquery database count" =  bquote({rquery_database_count()}),
+    # "rquery database land" =  bquote({rquery_database_land()}),
     # "dplyr in memory" =  bquote({nrow(dplyr_local())}),
-    "dplyr tbl in memory" =  bquote({nrow(dplyr_tbl())}),
+    # "dplyr tbl in memory" =  bquote({nrow(dplyr_tbl())}),
     "dplyr in memory no grouped filter" =  bquote({nrow(dplyr_local_no_grouped_filter())}),
     "dplyr from memory to db and back" =  bquote({nrow(dplyr_round_trip())}),
     # "dplyr from db to memory" =  bquote({nrow(dplyr_database_pull())}),
-    "dplyr database count" =  bquote({dplyr_database_count()}),
-    "dplyr database land" =  bquote({dplyr_database_land()}),
+    # "dplyr database count" =  bquote({dplyr_database_count()}),
+    # "dplyr database land" =  bquote({dplyr_database_land()}),
     "data.table in memory" =  bquote({nrow(data.table_local())}),
     # "base R row calculation" =  bquote({nrow(base_R_row_calculation())}),
     "base R tabular calculation" =  bquote({nrow(base_R_tabular_calculation())}),
@@ -702,7 +703,7 @@ for(nrep in c(1, 10, 100, 1000, 10000, 100000, 1000000)) {
   dTbl <- dplyr::tbl(db, dR$table_name)
   tm <- microbenchmark(
     list = expressions,
-    times = 10L
+    times = 5L
   )
   print(tm)
   print(autoplot(tm))
@@ -724,203 +725,133 @@ for(nrep in c(1, 10, 100, 1000, 10000, 100000, 1000000)) {
     ## [1] 1
     ## Unit: milliseconds
     ##                               expr        min         lq       mean
-    ##                   rquery in memory  35.275822  35.459316  36.706637
-    ##              rquery database count  20.968550  22.110666  25.394548
-    ##               rquery database land  27.866863  28.796505  30.283396
-    ##                dplyr tbl in memory  18.002100  18.372758  20.497336
-    ##  dplyr in memory no grouped filter  19.167499  19.792182  23.773914
-    ##   dplyr from memory to db and back 126.244953 128.213893 135.011388
-    ##               dplyr database count 120.086749 122.044516 133.587845
-    ##                dplyr database land 143.258933 143.815383 146.665686
-    ##               data.table in memory   3.221432   3.335601   3.459755
-    ##         base R tabular calculation   2.575181   2.592733   2.944919
-    ##      base R sequential calculation   1.037406   1.088024   1.301663
+    ##                   rquery in memory  39.779078  40.604831  46.008557
+    ##  dplyr in memory no grouped filter  18.564219  19.308280  22.576138
+    ##   dplyr from memory to db and back 140.867699 142.886331 150.198291
+    ##               data.table in memory   3.226908   3.574737   3.931861
+    ##         base R tabular calculation   2.945471   3.701218   3.887709
+    ##      base R sequential calculation   1.153425   1.244825   1.455623
     ##      median         uq        max neval
-    ##   36.684519  37.474583  39.454573    10
-    ##   22.974068  27.687178  39.584981    10
-    ##   29.998531  31.653162  33.388999    10
-    ##   19.224795  22.900207  25.514718    10
-    ##   20.853391  25.694889  42.495387    10
-    ##  129.954030 140.455800 151.757783    10
-    ##  122.775190 126.032123 209.369473    10
-    ##  144.710857 146.994803 154.484835    10
-    ##    3.466945   3.624933   3.684667    10
-    ##    2.806853   2.952123   4.419043    10
-    ##    1.136255   1.335111   2.532545    10
+    ##   47.925985  48.416692  53.316199     5
+    ##   23.415737  24.127623  27.464833     5
+    ##  153.913708 156.088499 157.235219     5
+    ##    3.685620   4.292286   4.879756     5
+    ##    4.208066   4.285243   4.298547     5
+    ##    1.269249   1.498711   2.111904     5
 
 ![](QTiming_files/figure-markdown_github/timings-1.png)
 
     ## [1] 10
-    ## Unit: milliseconds
+    ## Unit: microseconds
     ##                               expr        min         lq       mean
-    ##                   rquery in memory  34.186959  36.312021  37.721733
-    ##              rquery database count  19.768439  20.364913  21.662205
-    ##               rquery database land  28.343121  28.803452  29.741973
-    ##                dplyr tbl in memory  17.709002  18.207098  19.754256
-    ##  dplyr in memory no grouped filter  19.056936  19.566140  19.959601
-    ##   dplyr from memory to db and back 124.708300 127.280218 130.425726
-    ##               dplyr database count 120.867955 121.209250 123.510832
-    ##                dplyr database land 142.220359 143.269195 144.689622
-    ##               data.table in memory   3.272065   3.341882   3.522076
-    ##         base R tabular calculation   2.742046   2.806366   2.908628
-    ##      base R sequential calculation   1.056398   1.090940   1.329385
+    ##                   rquery in memory  36983.583  38317.728  39021.424
+    ##  dplyr in memory no grouped filter  19396.651  21082.539  21471.000
+    ##   dplyr from memory to db and back 130052.588 133140.925 150847.222
+    ##               data.table in memory   3681.336   3698.568   3975.883
+    ##         base R tabular calculation   2798.403   3232.110   3282.165
+    ##      base R sequential calculation    928.326    991.878   1056.529
     ##      median         uq        max neval
-    ##   37.548345  39.798456  40.702955    10
-    ##   20.937771  23.867173  24.491327    10
-    ##   29.603540  30.402717  32.245322    10
-    ##   18.942428  19.357534  25.946998    10
-    ##   19.836039  19.952188  21.806798    10
-    ##  128.323673 129.077197 152.659083    10
-    ##  123.561470 124.386850 127.384125    10
-    ##  144.452221 145.714166 148.817203    10
-    ##    3.401024   3.791001   4.016664    10
-    ##    2.896818   3.022597   3.075682    10
-    ##    1.117241   1.180817   3.182559    10
+    ##   39005.246  39673.826  41126.736     5
+    ##   21648.587  22359.139  22868.086     5
+    ##  135362.162 141360.473 214319.964     5
+    ##    3773.286   3959.441   4766.785     5
+    ##    3305.883   3459.265   3615.162     5
+    ##    1062.741   1082.826   1216.872     5
 
 ![](QTiming_files/figure-markdown_github/timings-2.png)
 
     ## [1] 100
     ## Unit: milliseconds
     ##                               expr        min         lq       mean
-    ##                   rquery in memory  36.691947  38.764010  39.399514
-    ##              rquery database count  21.190458  22.229819  23.509549
-    ##               rquery database land  30.054286  30.255128  34.040829
-    ##                dplyr tbl in memory  26.640734  26.753023  28.705963
-    ##  dplyr in memory no grouped filter  24.424390  24.721543  26.694084
-    ##   dplyr from memory to db and back 128.383756 128.900060 132.602552
-    ##               dplyr database count 120.996916 122.176968 128.787012
-    ##                dplyr database land 142.748124 143.258938 151.774151
-    ##               data.table in memory   5.253314   5.538949   5.971650
-    ##         base R tabular calculation   5.327949   5.370912   5.564920
-    ##      base R sequential calculation   1.411605   1.507603   1.755118
+    ##                   rquery in memory  45.374020  46.294484  47.072182
+    ##  dplyr in memory no grouped filter  24.094707  27.294293  28.286300
+    ##   dplyr from memory to db and back 140.645574 143.696647 145.192086
+    ##               data.table in memory   5.172672   5.796121   5.854938
+    ##         base R tabular calculation   5.588602   5.659447   6.575956
+    ##      base R sequential calculation   1.441087   1.464886   1.703016
     ##      median         uq        max neval
-    ##   39.227018  39.806816  42.535729    10
-    ##   22.779916  24.569199  26.921635    10
-    ##   31.073324  31.788094  61.027302    10
-    ##   28.513522  30.550003  31.003563    10
-    ##   26.882137  27.645667  30.685553    10
-    ##  130.596852 132.864990 148.461020    10
-    ##  122.932785 125.106899 179.788278    10
-    ##  145.857548 149.000882 192.630536    10
-    ##    5.891063   6.372643   7.217993    10
-    ##    5.502181   5.770583   5.958840    10
-    ##    1.541833   1.663978   3.628899    10
+    ##   47.220991  48.082977  48.388440     5
+    ##   27.942542  30.314388  31.785571     5
+    ##  143.735844 145.222944 152.659419     5
+    ##    6.073777   6.099753   6.132367     5
+    ##    6.017738   7.654077   7.959916     5
+    ##    1.493083   1.968719   2.147307     5
 
 ![](QTiming_files/figure-markdown_github/timings-3.png)
 
     ## [1] 1000
     ## Unit: milliseconds
     ##                               expr        min         lq       mean
-    ##                   rquery in memory  62.240949  63.497385  65.613117
-    ##              rquery database count  34.784402  35.986230  37.075851
-    ##               rquery database land  43.845733  45.224200  49.663749
-    ##                dplyr tbl in memory 122.956474 123.173159 127.966278
-    ##  dplyr in memory no grouped filter  87.037731  89.760679  92.429663
-    ##   dplyr from memory to db and back 165.232936 166.213898 176.439299
-    ##               dplyr database count 138.212064 139.808216 146.840964
-    ##                dplyr database land 163.322838 164.373917 175.669322
-    ##               data.table in memory  24.943112  26.848204  29.264435
-    ##         base R tabular calculation  34.923932  35.517849  36.963948
-    ##      base R sequential calculation   7.710513   7.785088   8.870607
-    ##      median         uq       max neval
-    ##   64.394587  66.036390  76.01949    10
-    ##   36.945357  37.272312  42.14548    10
-    ##   46.296071  47.023835  81.59570    10
-    ##  125.155047 128.730291 148.82684    10
-    ##   91.054384  92.313521 104.55609    10
-    ##  169.474874 188.926898 202.39035    10
-    ##  143.351626 152.023774 168.62783    10
-    ##  166.094347 169.348829 258.83993    10
-    ##   27.650205  29.358684  42.81951    10
-    ##   36.223365  36.962857  43.20510    10
-    ##    7.946266   8.285506  17.05297    10
+    ##                   rquery in memory  63.799510  70.289440  73.351117
+    ##  dplyr in memory no grouped filter  95.765897  96.989377 102.568832
+    ##   dplyr from memory to db and back 190.494263 194.157079 201.852673
+    ##               data.table in memory  27.745193  28.749478  29.367093
+    ##         base R tabular calculation  38.610091  38.942476  42.299791
+    ##      base R sequential calculation   7.833727   7.922312   9.918581
+    ##      median        uq       max neval
+    ##   70.846050  75.32106  86.49953     5
+    ##  102.361925 106.93272 110.79424     5
+    ##  198.262015 201.47412 224.87589     5
+    ##   29.652164  30.24766  30.44098     5
+    ##   40.472232  44.68272  48.79143     5
+    ##    9.376368  10.22822  14.23228     5
 
 ![](QTiming_files/figure-markdown_github/timings-4.png)
 
     ## [1] 10000
     ## Unit: milliseconds
-    ##                               expr       min        lq      mean    median
-    ##                   rquery in memory  342.6769  347.0060  359.2062  348.8588
-    ##              rquery database count  201.5343  203.4338  204.9993  204.0121
-    ##               rquery database land  221.4394  222.0239  227.0595  225.4057
-    ##                dplyr tbl in memory 1184.8494 1211.7016 1229.0892 1221.7607
-    ##  dplyr in memory no grouped filter  810.3147  819.4261  828.9808  824.0485
-    ##   dplyr from memory to db and back  588.5373  592.5309  606.8102  601.2274
-    ##               dplyr database count  368.9639  369.1326  372.7465  371.3514
-    ##                dplyr database land  413.5361  415.9080  424.0785  419.5638
-    ##               data.table in memory  232.3168  236.9555  267.3961  241.6737
-    ##         base R tabular calculation  489.5771  500.4831  550.9727  570.6838
-    ##      base R sequential calculation  105.4358  106.2565  108.1891  107.8456
-    ##         uq       max neval
-    ##   353.4182  436.2139    10
-    ##   206.2752  212.4329    10
-    ##   227.1074  242.0219    10
-    ##  1244.4000 1300.9269    10
-    ##   841.8792  852.5668    10
-    ##   612.4579  663.0745    10
-    ##   376.2852  381.3455    10
-    ##   421.7336  455.1814    10
-    ##   324.2687  332.3841    10
-    ##   590.1135  597.5852    10
-    ##   109.2313  112.4869    10
+    ##                               expr      min       lq     mean   median
+    ##                   rquery in memory 350.8030 354.5570 356.4407 355.4688
+    ##  dplyr in memory no grouped filter 854.7167 868.4790 921.7664 932.9553
+    ##   dplyr from memory to db and back 609.1121 620.8294 628.8664 636.4191
+    ##               data.table in memory 243.9566 244.1184 267.9669 249.6896
+    ##         base R tabular calculation 522.3331 524.7129 584.2030 597.0069
+    ##      base R sequential calculation 112.9495 113.9135 116.4230 115.4937
+    ##        uq      max neval
+    ##  360.6519 360.7230     5
+    ##  965.3655 987.3157     5
+    ##  636.6790 641.2924     5
+    ##  259.8860 342.1838     5
+    ##  599.4288 677.5333     5
+    ##  116.3002 123.4581     5
 
 ![](QTiming_files/figure-markdown_github/timings-5.png)
 
     ## [1] 1e+05
     ## Unit: seconds
     ##                               expr       min        lq      mean    median
-    ##                   rquery in memory  4.248772  4.322726  4.705146  4.685321
-    ##              rquery database count  2.914666  2.958786  3.201528  3.029489
-    ##               rquery database land  3.104646  3.108849  3.529717  3.219996
-    ##                dplyr tbl in memory 14.951601 15.017907 16.486908 15.979535
-    ##  dplyr in memory no grouped filter 10.136586 10.269898 10.917278 10.778662
-    ##   dplyr from memory to db and back  4.794815  4.905432  5.351083  5.145552
-    ##               dplyr database count  3.329416  3.387248  3.561656  3.548532
-    ##                dplyr database land  3.415441  3.473637  3.621872  3.608901
-    ##               data.table in memory  2.619223  2.684118  2.882483  2.716862
-    ##         base R tabular calculation  6.773490  6.956928  7.684973  7.146159
-    ##      base R sequential calculation  1.477328  1.527098  1.623535  1.608895
+    ##                   rquery in memory  4.453670  4.509838  4.571556  4.520286
+    ##  dplyr in memory no grouped filter 11.170001 11.764354 12.406127 11.864324
+    ##   dplyr from memory to db and back  5.068130  5.214379  5.933581  5.398077
+    ##               data.table in memory  2.769182  2.861850  3.010747  2.923166
+    ##         base R tabular calculation  7.440759  7.631743  8.152371  8.119025
+    ##      base R sequential calculation  1.581804  1.583368  1.615387  1.595716
     ##         uq       max neval
-    ##   5.023437  5.383822    10
-    ##   3.278131  4.059372    10
-    ##   3.411172  5.721698    10
-    ##  17.322392 20.680209    10
-    ##  10.983491 13.200597    10
-    ##   5.527079  6.820657    10
-    ##   3.693479  4.064957    10
-    ##   3.678917  3.972836    10
-    ##   2.967374  3.601426    10
-    ##   8.700373  9.868621    10
-    ##   1.630215  2.045693    10
+    ##   4.542765  4.831220     5
+    ##  12.699587 14.532367     5
+    ##   5.461384  8.525936     5
+    ##   2.926903  3.572634     5
+    ##   8.463293  9.107037     5
+    ##   1.639279  1.676766     5
 
 ![](QTiming_files/figure-markdown_github/timings-6.png)
 
     ## [1] 1e+06
     ## Unit: seconds
     ##                               expr       min        lq      mean    median
-    ##                   rquery in memory  51.53797  52.54550  56.05219  54.94732
-    ##              rquery database count  37.31170  37.90091  38.89447  38.95924
-    ##               rquery database land  38.30829  38.95225  43.62137  44.88007
-    ##                dplyr tbl in memory 183.30329 183.49821 193.80837 194.73786
-    ##  dplyr in memory no grouped filter 122.80937 126.17845 132.87984 131.14359
-    ##   dplyr from memory to db and back  60.96287  62.13837  65.20245  62.91296
-    ##               dplyr database count  45.48334  46.52205  50.52453  47.59175
-    ##                dplyr database land  46.95389  47.97101  49.38060  48.15996
-    ##               data.table in memory  27.89087  28.89632  31.25141  30.37458
-    ##         base R tabular calculation  87.45792  89.81391  97.07545  93.40767
-    ##      base R sequential calculation  21.65428  22.12080  22.85761  22.55359
+    ##                   rquery in memory  52.67148  53.65697  56.06100  56.24083
+    ##  dplyr in memory no grouped filter 127.01978 138.48831 142.55213 143.16143
+    ##   dplyr from memory to db and back  62.72159  63.55872  68.04412  69.97168
+    ##               data.table in memory  31.25936  31.37426  32.28334  32.29254
+    ##         base R tabular calculation  90.81726  91.65821  92.42295  91.92901
+    ##      base R sequential calculation  21.68840  22.01426  22.23780  22.02414
     ##         uq       max neval
-    ##   56.20417  68.87183    10
-    ##   39.26412  42.09080    10
-    ##   46.39751  48.80525    10
-    ##  197.04689 215.59232    10
-    ##  137.54028 153.41201    10
-    ##   64.95390  82.90235    10
-    ##   51.95067  62.71559    10
-    ##   51.81494  54.21004    10
-    ##   33.14701  38.06063    10
-    ##  106.98940 111.26226    10
-    ##   23.50381  25.73523    10
+    ##   58.31786  59.41784     5
+    ##  147.02555 157.06555     5
+    ##   70.56332  73.40530     5
+    ##   32.65741  33.83316     5
+    ##   93.44314  94.26713     5
+    ##   22.64043  22.82177     5
 
 ![](QTiming_files/figure-markdown_github/timings-7.png)
 

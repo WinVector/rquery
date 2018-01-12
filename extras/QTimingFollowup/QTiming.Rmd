@@ -414,17 +414,18 @@ Now let's measure the speeds with `microbenchmark`.
 ```{r timings}
 timings <- NULL
 
-expressions <- list("rquery in memory" = bquote({ nrow(rquery_local())}),
+expressions <- list(
+    "rquery in memory" = bquote({ nrow(rquery_local())}),
     # "rquery from db to memory" =  bquote({nrow(rquery_database_pull())}),
-    "rquery database count" =  bquote({rquery_database_count()}),
-    "rquery database land" =  bquote({rquery_database_land()}),
+    # "rquery database count" =  bquote({rquery_database_count()}),
+    # "rquery database land" =  bquote({rquery_database_land()}),
     # "dplyr in memory" =  bquote({nrow(dplyr_local())}),
-    "dplyr tbl in memory" =  bquote({nrow(dplyr_tbl())}),
+    # "dplyr tbl in memory" =  bquote({nrow(dplyr_tbl())}),
     "dplyr in memory no grouped filter" =  bquote({nrow(dplyr_local_no_grouped_filter())}),
     "dplyr from memory to db and back" =  bquote({nrow(dplyr_round_trip())}),
     # "dplyr from db to memory" =  bquote({nrow(dplyr_database_pull())}),
-    "dplyr database count" =  bquote({dplyr_database_count()}),
-    "dplyr database land" =  bquote({dplyr_database_land()}),
+    # "dplyr database count" =  bquote({dplyr_database_count()}),
+    # "dplyr database land" =  bquote({dplyr_database_land()}),
     "data.table in memory" =  bquote({nrow(data.table_local())}),
     # "base R row calculation" =  bquote({nrow(base_R_row_calculation())}),
     "base R tabular calculation" =  bquote({nrow(base_R_tabular_calculation())}),
@@ -443,7 +444,7 @@ for(nrep in c(1, 10, 100, 1000, 10000, 100000, 1000000)) {
   dTbl <- dplyr::tbl(db, dR$table_name)
   tm <- microbenchmark(
     list = expressions,
-    times = 10L
+    times = 5L
   )
   print(tm)
   print(autoplot(tm))
