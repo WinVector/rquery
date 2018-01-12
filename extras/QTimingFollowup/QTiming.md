@@ -35,13 +35,19 @@ library("dplyr")
 ``` r
 library("microbenchmark")
 library("ggplot2")
+source("fns.R")
 
-db <- DBI::dbConnect(RPostgres::Postgres(),
-                     host = 'localhost',
-                     port = 5432,
-                     user = 'postgres',
-                     password = 'pg')
-winvector_temp_db_handle <- list(db = db)
+db <- NULL
+# db <- DBI::dbConnect(RPostgres::Postgres(),
+#                      host = 'localhost',
+#                      port = 5432,
+#                      user = 'postgres',
+#                      password = 'pg')
+if(!is.null(db)) {
+  winvector_temp_db_handle <- list(db = db)
+  print(db)
+  DBI::dbGetQuery(db, "SELECT version()", stringsAsFactors = FALSE)
+}
 
 packageVersion("rquery")
 ```
@@ -77,19 +83,6 @@ packageVersion("RPostgres")
 ```
 
     ## [1] '1.0.4'
-
-``` r
-print(db)
-```
-
-    ## <PqConnection> postgres@localhost:5432
-
-``` r
-DBI::dbGetQuery(db, "SELECT version()")
-```
-
-    ##                                                                                    version
-    ## 1 PostgreSQL 9.6.1 on x86_64-pc-linux-gnu, compiled by gcc (Debian 4.9.2-10) 4.9.2, 64-bit
 
 ``` r
 R.Version()
@@ -142,41 +135,7 @@ We now build and extended version of the example from [Let’s Have Some Sympath
 ``` r
 nrep <- 10
 
-
-mkData <- function(nrep) {
-  dLocal <- data.frame(
-    subjectID = c(1,                   
-                  1,
-                  2,                   
-                  2),
-    surveyCategory = c(
-      'withdrawal behavior',
-      'positive re-framing',
-      'withdrawal behavior',
-      'positive re-framing'
-    ),
-    assessmentTotal = c(5,                 
-                        2,
-                        3,                  
-                        4),
-    stringsAsFactors = FALSE)
-  norig <- nrow(dLocal)
-  dLocal <- dLocal[rep(seq_len(norig), nrep), , drop=FALSE]
-  dLocal$subjectID <- paste((seq_len(nrow(dLocal)) -1)%/% norig,
-                            dLocal$subjectID, 
-                            sep = "_")
-  rownames(dLocal) <- NULL
-
-  dLocal
-}
-
 dLocal <- mkData(nrep)
-dR <- rquery::dbi_copy_to(db, 'dR',
-                          dLocal,
-                          temporary = TRUE, 
-                          overwrite = TRUE)
-dTbl <- dplyr::tbl(db, dR$table_name)
-
 head(dLocal)
 ```
 
@@ -189,167 +148,26 @@ head(dLocal)
     ## 6       1_1 positive re-framing               2
 
 ``` r
-cdata::qlook(db, dR$table_name)
+dR <- NULL
+dTbl <- NULL
+
+if(!is.null(db)) {
+  dR <- rquery::dbi_copy_to(db, 'dR',
+                            dLocal,
+                            temporary = TRUE, 
+                            overwrite = TRUE)
+  dTbl <- dplyr::tbl(db, dR$table_name)
+  
+  cdata::qlook(db, dR$table_name)
+  
+  dplyr::glimpse(dTbl)
+}
 ```
-
-    ## table "dR" PqConnection 
-    ##  nrow: 40 
-    ##  NOTE: "obs" below is count of sample, not number of rows of data.
-    ## 'data.frame':    10 obs. of  3 variables:
-    ##  $ subjectID      : chr  "0_1" "0_1" "0_2" "0_2" ...
-    ##  $ surveyCategory : chr  "withdrawal behavior" "positive re-framing" "withdrawal behavior" "positive re-framing" ...
-    ##  $ assessmentTotal: num  5 2 3 4 5 2 3 4 5 2
-
-``` r
-dplyr::glimpse(dTbl)
-```
-
-    ## Observations: NA
-    ## Variables: 3
-    ## $ subjectID       <chr> "0_1", "0_1", "0_2", "0_2", "1_1", "1_1", "1_2...
-    ## $ surveyCategory  <chr> "withdrawal behavior", "positive re-framing", ...
-    ## $ assessmentTotal <dbl> 5, 2, 3, 4, 5, 2, 3, 4, 5, 2, 3, 4, 5, 2, 3, 4...
 
 Now we declare our operation pipelines, both on local (in-memory `data.frame`) and remote (already in a database) data.
 
 ``` r
 scale <- 0.237
-
-# base-R function
-# could also try base::split() or base:table()
-base_r_calculate_tabular <- function(d) {
-  d <- d[order(d$subjectID, d$surveyCategory), , drop=FALSE]
-  # compute un-normalized probability
-  d$probability <- exp(d$assessmentTotal * scale)
-  # set up of for selection
-  dmax <- stats::aggregate(d$probability, 
-                           by = list(subjectID = d$subjectID), 
-                           FUN = max)
-  maxv <- dmax$x
-  names(maxv) <- dmax$subjectID
-  # set up for normalization
-  dsum <- stats::aggregate(d$probability, 
-                           by = list(subjectID = d$subjectID), 
-                           FUN = sum)
-  sumv <- dsum$x
-  names(sumv) <- dsum$subjectID
-  # start selection
-  d$maxv <- maxv[d$subjectID]
-  d <- d[d$probability >= d$maxv, 
-                   , 
-                   drop=FALSE]
-  # de-dup
-  d$rownum <- seq_len(nrow(d))
-  drow <-  stats::aggregate(d$rownum, 
-                           by = list(subjectID = d$subjectID), 
-                           FUN = min)
-  minv <- drow$x
-  names(minv) <- drow$subjectID
-  d$rmin <- minv[d$subjectID]
-  d <- d[d$rownum <= d$rmin, , drop=FALSE]
-  # renormalize
-  d$probability <- d$probability/sumv[d$subjectID]
-  d <- d[, c("subjectID", "surveyCategory", "probability")]
-  colnames(d)[[2]] <- "diagnosis"
-  d
-}
-
-# base-R function
-# could also try base::split() or base:table()
-base_r_calculate_sequenced <- function(d) {
-  cats <- base::sort(base::unique(d$surveyCategory))
-  res <- NULL
-  for(ci in cats) {
-    di <- d[d$surveyCategory == ci, , drop=FALSE]
-    di <- di[base::order(di$subjectID), , drop=FALSE]
-    di$probability <- exp(di$assessmentTotal * scale)
-    if(length(base::unique(di$subjectID))!=nrow(di)) {
-      stop("base_r_calculate repeated subjectID")
-    }
-    if(is.null(res)) {
-      res <- data.frame(subjectID = di$subjectID,
-                        totalProb = di$probability,
-                        bestScore = di$probability,
-                        diagnosis = ci,
-                        stringsAsFactors = FALSE)
-    } else {
-      if((nrow(di)!=nrow(res)) ||
-         (!all(di$subjectID == res$subjectID))) {
-        stop("base_r_calculate saw irregular data")
-      }
-      change <- di$probability > res$bestScore
-      res$diagnosis[change] <- ci
-      res$bestScore <- base::pmax(res$bestScore, 
-                                  di$probability)
-      res$totalProb <- res$totalProb + di$probability
-    }
-  }
-  res$probability <- res$bestScore/res$totalProb
-  res <- res[, c("subjectID", 
-                 "diagnosis", 
-                 "probability")]
-  res
-}
-
-
-
-# base-R function
-# could also try base::split() or base:table()
-base_r_calculate_rows <- function(d) {
-  d <- d[base::order(d$subjectID, d$surveyCategory), , drop=FALSE]
-  d$probability <- exp(d$assessmentTotal * scale)
-  ids <- sort(unique(d$subjectID))
-  totals <- numeric(length(ids))
-  names(totals) <- ids
-  n <- nrow(d)
-  choices <- logical(n)
-  sum <- 0
-  maxID <- 1
-  for(i in seq_len(n)) {
-    id <- d$subjectID[[i]]
-    probi <- d$probability[[i]]
-    sum <- sum + probi
-    if(probi>d$probability[[maxID]]) {
-      maxID <- i
-    }
-    end_of_group <- (i>=n) || (d$subjectID[[i+1]]!=id)
-    if(end_of_group) {
-      choices[[maxID]] <- TRUE
-      totals[id] <- sum
-      sum <- 0
-      maxID <- i+1
-    }
-  }
-  d <- d[choices, , drop=FALSE]
-  d$probability <- d$probability/totals[d$subjectID]
-  d <- d[, c("subjectID", 
-               "surveyCategory", 
-               "probability")]
-  colnames(d)[[2]] <- "diagnosis"
-  d
-}
-
-# this is a function, 
-# so body not evaluated until used
-rquery_pipeline <- . := {
-  extend_nse(.,
-             probability :=
-               exp(assessmentTotal * scale)/
-               sum(exp(assessmentTotal * scale)),
-             count := count(1),
-             partitionby = 'subjectID') %.>%
-    extend_nse(.,
-               rank := rank(),
-               partitionby = 'subjectID',
-               orderby = c('probability', 'surveyCategory'))  %.>%
-    rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
-    select_rows_nse(., rank == count) %.>%
-    select_columns(., c('subjectID', 
-                        'diagnosis', 
-                        'probability')) %.>%
-    orderby(., 'subjectID') 
-}
-
 
 base_R_row_calculation <- function() {
   base_r_calculate_rows(dLocal)
@@ -366,15 +184,15 @@ base_R_tabular_calculation <- function() {
 rquery_local <- function() {
   dLocal %.>% 
     rquery_pipeline(.) %.>%
-    as.data.frame(.) # force execution
+    as.data.frame(., stringsAsFactors = FALSE) # force execution
 }
 
 rquery_database_pull <- function() {
   dR %.>% 
     rquery_pipeline(.) %.>% 
     to_sql(., db) %.>% 
-    DBI::dbGetQuery(db, .) %.>%
-    as.data.frame(.) # shouldn't be needed
+    DBI::dbGetQuery(db, ., stringsAsFactors = FALSE) %.>%
+    as.data.frame(., stringsAsFactors = FALSE) # shouldn't be needed
 }
 
 rquery_database_land <- function() {
@@ -392,41 +210,9 @@ rquery_database_count <- function() {
     rquery_pipeline(.) %.>% 
     sql_node(., "n" := "COUNT(1)") %.>% 
     to_sql(., db) %.>% 
-    DBI::dbGetQuery(db, .) %.>%
-    as.data.frame(.) # shouldn't be needed
+    DBI::dbGetQuery(db, ., stringsAsFactors = FALSE) %.>%
+    as.data.frame(., stringsAsFactors = FALSE) # shouldn't be needed
 }
-
-# this is a function, 
-# so body not evaluated until used
-dplyr_pipeline <- . %>%
-  group_by(subjectID) %>%
-  mutate(probability =
-           exp(assessmentTotal * scale)/
-           sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
-  arrange(probability, surveyCategory) %>%
-  filter(row_number() == n()) %>%
-  ungroup() %>%
-  rename(diagnosis = surveyCategory) %>%
-  select(subjectID, diagnosis, probability) %>%
-  arrange(subjectID)
-
-# this is a function, 
-# so body not evaluated until used
-# pipeline re-factored to have filter outside
-# mutate 
-# work around: https://github.com/tidyverse/dplyr/issues/3294
-dplyr_pipeline2 <- . %>%
-  group_by(subjectID) %>%
-  mutate(probability =
-           exp(assessmentTotal * scale)/
-           sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
-  arrange(probability, surveyCategory) %>%
-  mutate(count = n(), rank = row_number()) %>%
-  ungroup() %>%
-  filter(count == rank) %>%
-  rename(diagnosis = surveyCategory) %>%
-  select(subjectID, diagnosis, probability) %>%
-  arrange(subjectID)
 
 
 dplyr_local <- function() {
@@ -478,22 +264,6 @@ dplyr_database_count <- function() {
     tally() %>%
     collect()
 }
-
-.datatable.aware <- TRUE
-
-data.table_local <- function() {
-  dDT <- data.table::data.table(dLocal)
-  dDT[
-    , one := 1 ][
-      , probability := exp ( assessmentTotal * scale ) / 
-        sum ( exp ( assessmentTotal * scale ) ) ,subjectID ][
-          , count := sum ( one ) ,subjectID ][
-            , rank := rank ( probability ) ,subjectID ][
-              rank == count ][
-                , diagnosis := surveyCategory ][
-                  , c('subjectID', 'diagnosis', 'probability') ][
-                    order(subjectID) ]
-}
 ```
 
 Let's inspect the functions.
@@ -533,43 +303,6 @@ head(base_R_tabular_calculation())
     ## 8        1_2 positive re-framing   0.5589742
     ## 9        2_1 withdrawal behavior   0.6706221
     ## 12       2_2 positive re-framing   0.5589742
-
-``` r
-head(rquery_local())
-```
-
-    ##   subjectID           diagnosis probability
-    ## 1       0_1 withdrawal behavior   0.6706221
-    ## 2       0_2 positive re-framing   0.5589742
-    ## 3       1_1 withdrawal behavior   0.6706221
-    ## 4       1_2 positive re-framing   0.5589742
-    ## 5       2_1 withdrawal behavior   0.6706221
-    ## 6       2_2 positive re-framing   0.5589742
-
-``` r
-rquery_database_land()
-```
-
-    ## NULL
-
-``` r
-head(rquery_database_pull())
-```
-
-    ##   subjectID           diagnosis probability
-    ## 1       0_1 withdrawal behavior   0.6706221
-    ## 2       0_2 positive re-framing   0.5589742
-    ## 3       1_1 withdrawal behavior   0.6706221
-    ## 4       1_2 positive re-framing   0.5589742
-    ## 5       2_1 withdrawal behavior   0.6706221
-    ## 6       2_2 positive re-framing   0.5589742
-
-``` r
-rquery_database_count()
-```
-
-    ##    n
-    ## 1 20
 
 ``` r
 head(dplyr_local())
@@ -614,49 +347,6 @@ head(dplyr_local_no_grouped_filter())
     ## 6 2_2       positive re-framing       0.559
 
 ``` r
-dplyr_database_land()
-```
-
-    ## NULL
-
-``` r
-head(dplyr_database_pull())
-```
-
-    ## # A tibble: 6 x 3
-    ##   subjectID diagnosis           probability
-    ##   <chr>     <chr>                     <dbl>
-    ## 1 0_1       withdrawal behavior       0.671
-    ## 2 0_2       positive re-framing       0.559
-    ## 3 1_1       withdrawal behavior       0.671
-    ## 4 1_2       positive re-framing       0.559
-    ## 5 2_1       withdrawal behavior       0.671
-    ## 6 2_2       positive re-framing       0.559
-
-``` r
-dplyr_database_count()
-```
-
-    ## # A tibble: 1 x 1
-    ##   n              
-    ##   <S3: integer64>
-    ## 1 20
-
-``` r
-head(dplyr_round_trip())
-```
-
-    ## # A tibble: 6 x 3
-    ##   subjectID diagnosis           probability
-    ##   <chr>     <chr>                     <dbl>
-    ## 1 0_1       withdrawal behavior       0.671
-    ## 2 0_2       positive re-framing       0.559
-    ## 3 1_1       withdrawal behavior       0.671
-    ## 4 1_2       positive re-framing       0.559
-    ## 5 2_1       withdrawal behavior       0.671
-    ## 6 2_2       positive re-framing       0.559
-
-``` r
 head(data.table_local())
 ```
 
@@ -668,20 +358,40 @@ head(data.table_local())
     ## 5:       2_1 withdrawal behavior   0.6706221
     ## 6:       2_2 positive re-framing   0.5589742
 
+``` r
+if(!is.null(db)) {
+  head(rquery_local())
+  
+  rquery_database_land()
+  
+  head(rquery_database_pull())
+  
+  rquery_database_count()
+  
+  dplyr_database_land()
+  
+  head(dplyr_database_pull())
+  
+  dplyr_database_count()
+  
+  head(dplyr_round_trip())
+}
+```
+
 Now let's measure the speeds with `microbenchmark`.
 
 ``` r
 timings <- NULL
 
 expressions <- list(
-    "rquery in memory" = bquote({ nrow(rquery_local())}),
+    # "rquery in memory" = bquote({ nrow(rquery_local())}),
     # "rquery from db to memory" =  bquote({nrow(rquery_database_pull())}),
     # "rquery database count" =  bquote({rquery_database_count()}),
     # "rquery database land" =  bquote({rquery_database_land()}),
     # "dplyr in memory" =  bquote({nrow(dplyr_local())}),
     # "dplyr tbl in memory" =  bquote({nrow(dplyr_tbl())}),
     "dplyr in memory no grouped filter" =  bquote({nrow(dplyr_local_no_grouped_filter())}),
-    "dplyr from memory to db and back" =  bquote({nrow(dplyr_round_trip())}),
+    # "dplyr from memory to db and back" =  bquote({nrow(dplyr_round_trip())}),
     # "dplyr from db to memory" =  bquote({nrow(dplyr_database_pull())}),
     # "dplyr database count" =  bquote({dplyr_database_count()}),
     # "dplyr database land" =  bquote({dplyr_database_land()}),
@@ -696,18 +406,22 @@ prune <- FALSE
 for(nrep in c(1, 10, 100, 1000, 10000, 100000, 1000000)) {
   print(nrep)
   dLocal <- mkData(nrep)
-  dR <- rquery::dbi_copy_to(db, 'dR',
-                            dLocal,
-                            temporary = TRUE, 
-                            overwrite = TRUE)
-  dTbl <- dplyr::tbl(db, dR$table_name)
+  dR <- NULL
+  dTbl <- NULL
+  if(!is.null(db)) {
+    dR <- rquery::dbi_copy_to(db, 'dR',
+                              dLocal,
+                              temporary = TRUE, 
+                              overwrite = TRUE)
+    dTbl <- dplyr::tbl(db, dR$table_name)
+  }
   tm <- microbenchmark(
     list = expressions,
     times = 5L
   )
   print(tm)
   print(autoplot(tm))
-  tmi <- as.data.frame(tm)
+  tmi <- as.data.frame(tm, stringsAsFactors = FALSE)
   tmi$data_size <- nrow(dLocal)
   timings <- rbind(timings, tmi)
   if(prune) {
@@ -723,135 +437,107 @@ for(nrep in c(1, 10, 100, 1000, 10000, 100000, 1000000)) {
 ```
 
     ## [1] 1
-    ## Unit: milliseconds
-    ##                               expr        min         lq       mean
-    ##                   rquery in memory  39.779078  40.604831  46.008557
-    ##  dplyr in memory no grouped filter  18.564219  19.308280  22.576138
-    ##   dplyr from memory to db and back 140.867699 142.886331 150.198291
-    ##               data.table in memory   3.226908   3.574737   3.931861
-    ##         base R tabular calculation   2.945471   3.701218   3.887709
-    ##      base R sequential calculation   1.153425   1.244825   1.455623
-    ##      median         uq        max neval
-    ##   47.925985  48.416692  53.316199     5
-    ##   23.415737  24.127623  27.464833     5
-    ##  153.913708 156.088499 157.235219     5
-    ##    3.685620   4.292286   4.879756     5
-    ##    4.208066   4.285243   4.298547     5
-    ##    1.269249   1.498711   2.111904     5
+    ## Unit: microseconds
+    ##                               expr       min        lq      mean    median
+    ##  dplyr in memory no grouped filter 20081.843 21950.741 22634.161 22423.122
+    ##               data.table in memory  3215.362  3256.698  4273.250  3956.023
+    ##         base R tabular calculation  2676.416  2680.018  3617.027  2970.067
+    ##      base R sequential calculation   951.693  1017.004  1285.237  1038.503
+    ##         uq       max neval
+    ##  23013.445 25701.655     5
+    ##   5180.384  5757.783     5
+    ##   3104.936  6653.699     5
+    ##   1157.469  2261.515     5
 
 ![](QTiming_files/figure-markdown_github/timings-1.png)
 
     ## [1] 10
-    ## Unit: microseconds
-    ##                               expr        min         lq       mean
-    ##                   rquery in memory  36983.583  38317.728  39021.424
-    ##  dplyr in memory no grouped filter  19396.651  21082.539  21471.000
-    ##   dplyr from memory to db and back 130052.588 133140.925 150847.222
-    ##               data.table in memory   3681.336   3698.568   3975.883
-    ##         base R tabular calculation   2798.403   3232.110   3282.165
-    ##      base R sequential calculation    928.326    991.878   1056.529
-    ##      median         uq        max neval
-    ##   39005.246  39673.826  41126.736     5
-    ##   21648.587  22359.139  22868.086     5
-    ##  135362.162 141360.473 214319.964     5
-    ##    3773.286   3959.441   4766.785     5
-    ##    3305.883   3459.265   3615.162     5
-    ##    1062.741   1082.826   1216.872     5
+    ## Unit: milliseconds
+    ##                               expr       min        lq      mean    median
+    ##  dplyr in memory no grouped filter 18.660366 19.722157 20.358343 20.916360
+    ##               data.table in memory  3.110576  3.197681  3.352857  3.228199
+    ##         base R tabular calculation  2.647719  2.670854  2.829938  2.781028
+    ##      base R sequential calculation  1.012027  1.014694  1.134927  1.080395
+    ##         uq       max neval
+    ##  20.964506 21.528325     5
+    ##   3.555649  3.672182     5
+    ##   2.825525  3.224562     5
+    ##   1.086058  1.481460     5
 
 ![](QTiming_files/figure-markdown_github/timings-2.png)
 
     ## [1] 100
     ## Unit: milliseconds
-    ##                               expr        min         lq       mean
-    ##                   rquery in memory  45.374020  46.294484  47.072182
-    ##  dplyr in memory no grouped filter  24.094707  27.294293  28.286300
-    ##   dplyr from memory to db and back 140.645574 143.696647 145.192086
-    ##               data.table in memory   5.172672   5.796121   5.854938
-    ##         base R tabular calculation   5.588602   5.659447   6.575956
-    ##      base R sequential calculation   1.441087   1.464886   1.703016
-    ##      median         uq        max neval
-    ##   47.220991  48.082977  48.388440     5
-    ##   27.942542  30.314388  31.785571     5
-    ##  143.735844 145.222944 152.659419     5
-    ##    6.073777   6.099753   6.132367     5
-    ##    6.017738   7.654077   7.959916     5
-    ##    1.493083   1.968719   2.147307     5
+    ##                               expr       min        lq      mean    median
+    ##  dplyr in memory no grouped filter 22.669109 23.592071 24.015004 23.999698
+    ##               data.table in memory  5.119279  5.181336  7.087883  5.451549
+    ##         base R tabular calculation  5.058928  5.147611  5.284115  5.299227
+    ##      base R sequential calculation  1.409780  1.466084  1.522841  1.565979
+    ##         uq       max neval
+    ##  24.609760 25.204384     5
+    ##   5.527909 14.159344     5
+    ##   5.303029  5.611782     5
+    ##   1.570969  1.601392     5
 
 ![](QTiming_files/figure-markdown_github/timings-3.png)
 
     ## [1] 1000
     ## Unit: milliseconds
-    ##                               expr        min         lq       mean
-    ##                   rquery in memory  63.799510  70.289440  73.351117
-    ##  dplyr in memory no grouped filter  95.765897  96.989377 102.568832
-    ##   dplyr from memory to db and back 190.494263 194.157079 201.852673
-    ##               data.table in memory  27.745193  28.749478  29.367093
-    ##         base R tabular calculation  38.610091  38.942476  42.299791
-    ##      base R sequential calculation   7.833727   7.922312   9.918581
-    ##      median        uq       max neval
-    ##   70.846050  75.32106  86.49953     5
-    ##  102.361925 106.93272 110.79424     5
-    ##  198.262015 201.47412 224.87589     5
-    ##   29.652164  30.24766  30.44098     5
-    ##   40.472232  44.68272  48.79143     5
-    ##    9.376368  10.22822  14.23228     5
+    ##                               expr       min        lq      mean    median
+    ##  dplyr in memory no grouped filter 85.754280 85.929779 94.654138 88.969166
+    ##               data.table in memory 24.379719 26.399666 27.081402 26.459844
+    ##         base R tabular calculation 36.763997 36.788362 38.937554 38.891825
+    ##      base R sequential calculation  7.572615  7.880037  8.231179  8.159244
+    ##         uq        max neval
+    ##  94.866048 117.751419     5
+    ##  28.742125  29.425656     5
+    ##  39.006449  43.237138     5
+    ##   8.661103   8.882894     5
 
 ![](QTiming_files/figure-markdown_github/timings-4.png)
 
     ## [1] 10000
     ## Unit: milliseconds
     ##                               expr      min       lq     mean   median
-    ##                   rquery in memory 350.8030 354.5570 356.4407 355.4688
-    ##  dplyr in memory no grouped filter 854.7167 868.4790 921.7664 932.9553
-    ##   dplyr from memory to db and back 609.1121 620.8294 628.8664 636.4191
-    ##               data.table in memory 243.9566 244.1184 267.9669 249.6896
-    ##         base R tabular calculation 522.3331 524.7129 584.2030 597.0069
-    ##      base R sequential calculation 112.9495 113.9135 116.4230 115.4937
+    ##  dplyr in memory no grouped filter 816.4125 822.9419 826.4549 829.3220
+    ##               data.table in memory 239.9854 240.6386 254.8661 242.7468
+    ##         base R tabular calculation 501.2060 558.1601 565.6389 562.5540
+    ##      base R sequential calculation 104.6783 108.9845 109.4886 110.2807
     ##        uq      max neval
-    ##  360.6519 360.7230     5
-    ##  965.3655 987.3157     5
-    ##  636.6790 641.2924     5
-    ##  259.8860 342.1838     5
-    ##  599.4288 677.5333     5
-    ##  116.3002 123.4581     5
+    ##  829.7719 833.8263     5
+    ##  245.5178 305.4421     5
+    ##  576.7551 629.5195     5
+    ##  110.6984 112.8009     5
 
 ![](QTiming_files/figure-markdown_github/timings-5.png)
 
     ## [1] 1e+05
     ## Unit: seconds
     ##                               expr       min        lq      mean    median
-    ##                   rquery in memory  4.453670  4.509838  4.571556  4.520286
-    ##  dplyr in memory no grouped filter 11.170001 11.764354 12.406127 11.864324
-    ##   dplyr from memory to db and back  5.068130  5.214379  5.933581  5.398077
-    ##               data.table in memory  2.769182  2.861850  3.010747  2.923166
-    ##         base R tabular calculation  7.440759  7.631743  8.152371  8.119025
-    ##      base R sequential calculation  1.581804  1.583368  1.615387  1.595716
+    ##  dplyr in memory no grouped filter 10.273704 10.404244 10.548351 10.444627
+    ##               data.table in memory  2.593409  2.631182  2.689273  2.713473
+    ##         base R tabular calculation  6.811532  6.943840  6.990008  6.956764
+    ##      base R sequential calculation  1.471420  1.483063  1.552604  1.551256
     ##         uq       max neval
-    ##   4.542765  4.831220     5
-    ##  12.699587 14.532367     5
-    ##   5.461384  8.525936     5
-    ##   2.926903  3.572634     5
-    ##   8.463293  9.107037     5
-    ##   1.639279  1.676766     5
+    ##  10.665635 10.953545     5
+    ##   2.742851  2.765448     5
+    ##   7.105706  7.132200     5
+    ##   1.619016  1.638265     5
 
 ![](QTiming_files/figure-markdown_github/timings-6.png)
 
     ## [1] 1e+06
     ## Unit: seconds
     ##                               expr       min        lq      mean    median
-    ##                   rquery in memory  52.67148  53.65697  56.06100  56.24083
-    ##  dplyr in memory no grouped filter 127.01978 138.48831 142.55213 143.16143
-    ##   dplyr from memory to db and back  62.72159  63.55872  68.04412  69.97168
-    ##               data.table in memory  31.25936  31.37426  32.28334  32.29254
-    ##         base R tabular calculation  90.81726  91.65821  92.42295  91.92901
-    ##      base R sequential calculation  21.68840  22.01426  22.23780  22.02414
+    ##  dplyr in memory no grouped filter 130.81599 131.09589 132.43224 131.78721
+    ##               data.table in memory  28.62938  28.65105  30.51792  28.72840
+    ##         base R tabular calculation  83.28940  87.21334  88.45402  88.40691
+    ##      base R sequential calculation  21.55591  21.73302  21.98456  22.03053
     ##         uq       max neval
-    ##   58.31786  59.41784     5
-    ##  147.02555 157.06555     5
-    ##   70.56332  73.40530     5
-    ##   32.65741  33.83316     5
-    ##   93.44314  94.26713     5
-    ##   22.64043  22.82177     5
+    ##  133.03484 135.42728     5
+    ##   32.04523  34.53553     5
+    ##   89.41110  93.94936     5
+    ##   22.29596  22.30735     5
 
 ![](QTiming_files/figure-markdown_github/timings-7.png)
 
@@ -885,23 +571,22 @@ sessionInfo()
     ## [7] wrapr_1.1.1         
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] Rcpp_0.12.14.2      dbplyr_1.2.0        pillar_1.0.1       
-    ##  [4] compiler_3.4.3      plyr_1.8.4          bindr_0.1          
-    ##  [7] tools_3.4.3         RPostgres_1.0-4     digest_0.6.13      
-    ## [10] bit_1.1-12          evaluate_0.10.1     tibble_1.4.1       
-    ## [13] gtable_0.2.0        pkgconfig_2.0.1     rlang_0.1.6        
-    ## [16] cli_1.0.0           DBI_0.7             yaml_2.1.16        
-    ## [19] withr_2.1.1         stringr_1.2.0       knitr_1.18         
-    ## [22] hms_0.4.0           tidyselect_0.2.3    rprojroot_1.3-2    
-    ## [25] bit64_0.9-7         grid_3.4.3          data.table_1.10.4-3
-    ## [28] glue_1.2.0          R6_2.2.2            rmarkdown_1.8      
-    ## [31] purrr_0.2.4         blob_1.1.0          magrittr_1.5       
-    ## [34] backports_1.1.2     scales_0.5.0        htmltools_0.3.6    
-    ## [37] assertthat_0.2.0    colorspace_1.3-2    utf8_1.1.3         
-    ## [40] stringi_1.1.6       lazyeval_0.2.1      munsell_0.4.3      
-    ## [43] crayon_1.3.4
+    ##  [1] Rcpp_0.12.14.2      knitr_1.18          bindr_0.1          
+    ##  [4] magrittr_1.5        munsell_0.4.3       colorspace_1.3-2   
+    ##  [7] R6_2.2.2            rlang_0.1.6         plyr_1.8.4         
+    ## [10] stringr_1.2.0       tools_3.4.3         grid_3.4.3         
+    ## [13] data.table_1.10.4-3 gtable_0.2.0        utf8_1.1.3         
+    ## [16] cli_1.0.0           htmltools_0.3.6     lazyeval_0.2.1     
+    ## [19] yaml_2.1.16         rprojroot_1.3-2     digest_0.6.13      
+    ## [22] assertthat_0.2.0    tibble_1.4.1        crayon_1.3.4       
+    ## [25] glue_1.2.0          evaluate_0.10.1     rmarkdown_1.8      
+    ## [28] stringi_1.1.6       compiler_3.4.3      pillar_1.0.1       
+    ## [31] scales_0.5.0        backports_1.1.2     pkgconfig_2.0.1
 
 ``` r
 winvector_temp_db_handle <- NULL
-DBI::dbDisconnect(db)
+if(!is.null(db)) {
+  DBI::dbDisconnect(db)
+  db <- NULL
+}
 ```
