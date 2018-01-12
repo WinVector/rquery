@@ -1,7 +1,7 @@
 Plotting example
 ================
 John Mount, Nina Zumel
-January 10, 2018
+January 12, 2018
 
 As a follow-up to ["rquery: Fast Data Manipulation in R"](http://www.win-vector.com/blog/2018/01/rquery-fast-data-manipulation-in-r/) we [re-ran the experiment with a nice "base `R`" (or "pure `R`") implementation of the calculation added to the assessments](https://github.com/WinVector/rquery/blob/master/extras/QTimingFollowup/QTiming.md).
 
@@ -75,7 +75,7 @@ for(sz in sizes) {
 }
 ```
 
-![](plotexample3_files/figure-markdown_github/unnamed-chunk-1-1.png)![](plotexample3_files/figure-markdown_github/unnamed-chunk-1-2.png)![](plotexample3_files/figure-markdown_github/unnamed-chunk-1-3.png)![](plotexample3_files/figure-markdown_github/unnamed-chunk-1-4.png)![](plotexample3_files/figure-markdown_github/unnamed-chunk-1-5.png)![](plotexample3_files/figure-markdown_github/unnamed-chunk-1-6.png)![](plotexample3_files/figure-markdown_github/unnamed-chunk-1-7.png)![](plotexample3_files/figure-markdown_github/unnamed-chunk-1-8.png)
+![](plotexample3_files/figure-markdown_github/unnamed-chunk-1-1.png)![](plotexample3_files/figure-markdown_github/unnamed-chunk-1-2.png)![](plotexample3_files/figure-markdown_github/unnamed-chunk-1-3.png)![](plotexample3_files/figure-markdown_github/unnamed-chunk-1-4.png)![](plotexample3_files/figure-markdown_github/unnamed-chunk-1-5.png)![](plotexample3_files/figure-markdown_github/unnamed-chunk-1-6.png)![](plotexample3_files/figure-markdown_github/unnamed-chunk-1-7.png)
 
 Note: `"rquery in memory"` is `rquery` starting and finishing with in-memory `data.frame`s, the implementation uses a user chosen SQL engine (usually one of PostgreSQL, SparkSQL, or SQLite; in this case PostgreSQL).
 
