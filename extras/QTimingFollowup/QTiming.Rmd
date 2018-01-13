@@ -7,7 +7,7 @@ output: github_document
 
 Let's time [`rquery`](https://winvector.github.io/rquery/), [`dplyr`]( https://CRAN.R-project.org/package=dplyr), and [`data.table`](https://CRAN.R-project.org/package=data.table ) on a non-trivial example.
 
-These timings are on a late 2014 Mac Mini with 8GB of RAM running OSX 10.12.6, version 3.4.3 (2017-11-30) -- "Kite-Eating Tree", and the current (2018-01-07) CRAN versions of all packages (except `rquery`, which is not yet up on CRAN).  We are getting database services from PostgreSQL version `9.6.1` in a docker container.
+These timings are on a late 2014 Mac Mini with 8GB of RAM running OSX 10.12.6, R version 3.4.3 (2017-11-30) -- "Kite-Eating Tree", and the current (2018-01-07) CRAN versions of all packages (except `rquery`, which is not yet up on CRAN).  We are getting database services from PostgreSQL version `9.6.1` in a docker container.
 
 First let's load our
 packages, establish a database connection, and declare an [`rquery` ad hoc execution service](https://winvector.github.io/rquery/articles/AdHocQueries.html) (the "`winvector_temp_db_handle`").

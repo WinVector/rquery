@@ -1,7 +1,7 @@
 Plotting example
 ================
 John Mount, Nina Zumel
-January 10, 2018
+January 13, 2018
 
 As a follow-up to ["rquery: Fast Data Manipulation in R"](http://www.win-vector.com/blog/2018/01/rquery-fast-data-manipulation-in-r/) we [re-ran the experiment with a nice "base `R`" (or "pure `R`") implementation of the calculation added to the assessments](https://github.com/WinVector/rquery/blob/master/extras/QTimingFollowup/QTiming.md).
 
@@ -47,24 +47,19 @@ greycolor = "darkgrey"
 ```
 
 ``` r
-runs <- c("base R row calculation",
-          "base R tabular calculation",
-          "base R sequential calculation",
-          "base R cframe calculation",
-          "data.table in memory", 
-          "rquery in memory",
-          "dplyr tbl in memory",
-          "dplyr in memory no grouped filter",
-          "dplyr from memory to db and back")
+runs <- c(
+  "base R cframe calculation",
+  "base R tabular calculation",
+  "data.table in memory",
+  "dplyr in memory no grouped filter",
+  "dplyr tbl in memory"
+)
 colormap = runs := c(highlightcolor,
+                     backgroundcolor,
                      highlightcolor,
                      highlightcolor,
-                     highlightcolor,
-                     highlightcolor,
-                     highlightcolor,
-                     highlightcolor,
-                     highlightcolor,
-                     backgroundcolor)
+                     highlightcolor
+                    )
 
 tr <- timings[timings$expr %in% runs, , drop=FALSE]
 tr$expr <- factor(tr$expr, levels = rev(runs))
@@ -102,33 +97,26 @@ compsF$gp = "base R sequential, data.table, and rquery"
 compsF$gp[contains("dplyr", vars=compsF$expr)] = "dplyr variations"
 
 # control the ordering of the tasks
-compsF$expr = factor(compsF$expr, 
-                     levels=c(
-                       "base R cframe calculation",
-                       "base R sequential calculation",
-                       "data.table in memory",
-                       "rquery in memory",
-                       "dplyr from memory to db and back",
-                       "dplyr in memory no grouped filter",
-                       "dplyr tbl in memory"
-                     ))
+compsF$expr = factor(compsF$expr, levels=runs)
 
 
 ggplot(data=compsF, aes(x=data_size, y=data_size/durationMS, 
-                         color=expr)) +
+                        color=expr)) +
   geom_point(aes(shape=expr)) + geom_line() + 
   geom_line(data=baselineF, 
             aes(x=data_size, y=data_size/durationMS), 
             color=baseline_color, linetype=2, size=1) +
   geom_ribbon(data=baselineF, 
-            aes(x=data_size, ymax=data_size/durationMS, ymin=0), 
-            color=baseline_color, alpha=0.1, size=0) +
+              aes(x=data_size, ymax=data_size/durationMS, ymin=0), 
+              color=baseline_color, alpha=0.1, size=0) +
   scale_x_log10() + ylab("Rows Per Millisecond") +
   #facet_wrap(~gp, ncol=1)  + 
   scale_y_log10() +
   scale_color_brewer("Implementation", palette="Dark2") + 
   scale_shape_discrete("Implementation") + 
-  ggtitle("Rows/MS by Implementation and Data Size (larger is better)", 
+  ggtitle(paste("Rows/MS by Implementation and Data Size (larger is better)", 
+                "2014 Mac Mini with 8GB of RAM running OSX 10.12.6",
+                sep="\n"),
           subtitle="Base R tabular calculation rate shown dashed for comparison")
 ```
 
