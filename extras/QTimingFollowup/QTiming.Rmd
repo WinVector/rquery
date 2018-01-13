@@ -22,11 +22,11 @@ source("cscan.R")
 source("fns.R")
 
 db <- NULL
-# db <- DBI::dbConnect(RPostgres::Postgres(),
-#                      host = 'localhost',
-#                      port = 5432,
-#                      user = 'postgres',
-#                      password = 'pg')
+db <- DBI::dbConnect(RPostgres::Postgres(),
+                     host = 'localhost',
+                     port = 5432,
+                     user = 'postgres',
+                     password = 'pg')
 if(!is.null(db)) {
   winvector_temp_db_handle <- list(db = db)
   print(db)
@@ -236,6 +236,7 @@ Now let's measure the speeds with `microbenchmark`.
 ```{r timings}
 timings <- NULL
 
+
 expressions <- list(
     # "rquery in memory" = bquote({ nrow(rquery_local())}),
     # "rquery from db to memory" =  bquote({nrow(rquery_database_pull())}),
@@ -255,9 +256,39 @@ expressions <- list(
     "base R cframe calculation" =  bquote({nrow(base_R_cframe_calculation())})
 )
 
+if(!is.null(db)) {
+  expressions <- 
+    c(expressions,
+      list(
+        "rquery from memory to db and back" = bquote({ nrow(rquery_local())}),
+        # "rquery from db to memory" =  bquote({nrow(rquery_database_pull())}),
+        "rquery database count" =  bquote({rquery_database_count()}),
+        "rquery database land" =  bquote({rquery_database_land()}),
+        # "dplyr in memory" =  bquote({nrow(dplyr_local())}),
+        # "dplyr tbl in memory" =  bquote({nrow(dplyr_tbl())}),
+        "dplyr from memory to db and back" =  bquote({nrow(dplyr_round_trip())}),
+        # "dplyr from db to memory" =  bquote({nrow(dplyr_database_pull())}),
+        "dplyr database count" =  bquote({dplyr_database_count()}),
+        "dplyr database land" =  bquote({dplyr_database_land()})
+      ))
+}
+
 prune <- FALSE
 
-for(nrep in c(1, 10, 100, 1000, 10000, 100000, 1000000)) {
+for(nrep in c(1,
+              5,
+              10, 
+              50,
+              100, 
+              500,
+              1000,
+              5000,
+              10000,
+              50000,
+              100000, 
+              500000,
+              1000000,
+              5000000)) {
   print(nrep)
   dLocal <- mkData(nrep)
   dR <- NULL
@@ -271,7 +302,7 @@ for(nrep in c(1, 10, 100, 1000, 10000, 100000, 1000000)) {
   }
   tm <- microbenchmark(
     list = expressions,
-    times = 5L
+    times = 10L
   )
   print(tm)
   print(autoplot(tm))
@@ -290,10 +321,6 @@ for(nrep in c(1, 10, 100, 1000, 10000, 100000, 1000000)) {
 }
 saveRDS(timings, "qtimings.RDS")
 ```
-
-`rquery` appears to be relatively fast.  Some of the time for "`rquery` local" is because `rquery`
-doesn't *really* have a local mode, it has to copy the data to the database and back
-in that case.
 
 
 ```{r sessioninfo}
