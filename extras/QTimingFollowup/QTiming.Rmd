@@ -236,8 +236,7 @@ expressions <- list(
     # "base R row calculation" =  bquote({nrow(base_R_row_calculation())}),
     "base R tabular calculation" =  bquote({nrow(base_R_tabular_calculation())}),
     "base R sequential calculation" =  bquote({nrow(base_R_sequential_calculation())}),
-    "base R cframe calculation" =  bquote({nrow(base_R_cframe_calculation())}),
-    base_r_calculate_cframe
+    "base R cframe calculation" =  bquote({nrow(base_R_cframe_calculation())})
 )
 
 prune <- FALSE
