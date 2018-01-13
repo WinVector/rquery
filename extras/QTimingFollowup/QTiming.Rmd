@@ -178,21 +178,37 @@ dplyr_database_count <- function() {
 Let's inspect the functions.
 
 ```{r show}
-head(base_R_sequential_calculation())
 
-head(base_R_cframe_calculation())
+check <- base_R_sequential_calculation()
+head(check)
 
-head(base_R_row_calculation())
+if(!equiv_res(check, base_R_cframe_calculation())) {
+  stop("mismatch")
+}
 
-head(base_R_tabular_calculation())
+if(!equiv_res(check, base_R_row_calculation())) {
+  stop("mismatch")
+}
 
-head(dplyr_local())
+if(!equiv_res(check, base_R_tabular_calculation())) {
+  stop("mismatch")
+}
 
-head(dplyr_tbl())
+if(!equiv_res(check, dplyr_local())) {
+  stop("mismatch")
+}
 
-head(dplyr_local_no_grouped_filter())
+if(!equiv_res(check, dplyr_tbl())) {
+  stop("mismatch")
+}
 
-head(data.table_local())
+if(!equiv_res(check, dplyr_local_no_grouped_filter())) {
+  stop("mismatch")
+}
+
+if(!equiv_res(check, data.table_local())) {
+  stop("mismatch")
+}
 
 if(!is.null(db)) {
   head(rquery_local())

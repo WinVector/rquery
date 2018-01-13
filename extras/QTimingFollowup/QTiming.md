@@ -35,6 +35,7 @@ library("dplyr")
 ``` r
 library("microbenchmark")
 library("ggplot2")
+source("cscan.R")
 source("fns.R")
 
 db <- NULL
@@ -140,12 +141,12 @@ head(dLocal)
 ```
 
     ##   subjectID      surveyCategory assessmentTotal
-    ## 1       0_1 withdrawal behavior               5
-    ## 2       0_1 positive re-framing               2
-    ## 3       0_2 withdrawal behavior               3
-    ## 4       0_2 positive re-framing               4
-    ## 5       1_1 withdrawal behavior               5
-    ## 6       1_1 positive re-framing               2
+    ## 1        s1 withdrawal behavior               2
+    ## 2        s1 positive re-framing               6
+    ## 3       s10 withdrawal behavior               1
+    ## 4       s10 positive re-framing               6
+    ## 5        s2 withdrawal behavior               5
+    ## 6        s2 positive re-framing               1
 
 ``` r
 dR <- NULL
@@ -176,6 +177,11 @@ base_R_row_calculation <- function() {
 base_R_sequential_calculation <- function() {
   base_r_calculate_sequenced(dLocal)
 }
+
+base_R_cframe_calculation <- function() {
+  base_r_calculate_cframe(dLocal)
+}
+
 
 base_R_tabular_calculation <- function() {
   base_r_calculate_tabular(dLocal)
@@ -269,96 +275,47 @@ dplyr_database_count <- function() {
 Let's inspect the functions.
 
 ``` r
-head(base_R_sequential_calculation())
+check <- base_R_sequential_calculation()
+head(check)
 ```
 
     ##   subjectID           diagnosis probability
-    ## 1       0_1 withdrawal behavior   0.6706221
-    ## 2       0_2 positive re-framing   0.5589742
-    ## 3       1_1 withdrawal behavior   0.6706221
-    ## 4       1_2 positive re-framing   0.5589742
-    ## 5       2_1 withdrawal behavior   0.6706221
-    ## 6       2_2 positive re-framing   0.5589742
+    ## 1        s1 positive re-framing   0.7207128
+    ## 2       s10 positive re-framing   0.7658456
+    ## 3        s2 withdrawal behavior   0.7207128
+    ## 4        s3 withdrawal behavior   0.5589742
+    ## 5        s4 withdrawal behavior   0.6706221
+    ## 6        s5 withdrawal behavior   0.5589742
 
 ``` r
-head(base_R_row_calculation())
-```
+if(!equiv_res(check, base_R_cframe_calculation())) {
+  stop("mismatch")
+}
 
-    ##    subjectID           diagnosis probability
-    ## 1        0_1 withdrawal behavior   0.6706221
-    ## 4        0_2 positive re-framing   0.5589742
-    ## 5        1_1 withdrawal behavior   0.6706221
-    ## 8        1_2 positive re-framing   0.5589742
-    ## 9        2_1 withdrawal behavior   0.6706221
-    ## 12       2_2 positive re-framing   0.5589742
+if(!equiv_res(check, base_R_row_calculation())) {
+  stop("mismatch")
+}
 
-``` r
-head(base_R_tabular_calculation())
-```
+if(!equiv_res(check, base_R_tabular_calculation())) {
+  stop("mismatch")
+}
 
-    ##    subjectID           diagnosis probability
-    ## 1        0_1 withdrawal behavior   0.6706221
-    ## 4        0_2 positive re-framing   0.5589742
-    ## 5        1_1 withdrawal behavior   0.6706221
-    ## 8        1_2 positive re-framing   0.5589742
-    ## 9        2_1 withdrawal behavior   0.6706221
-    ## 12       2_2 positive re-framing   0.5589742
+if(!equiv_res(check, dplyr_local())) {
+  stop("mismatch")
+}
 
-``` r
-head(dplyr_local())
-```
+if(!equiv_res(check, dplyr_tbl())) {
+  stop("mismatch")
+}
 
-    ## # A tibble: 6 x 3
-    ##   subjectID diagnosis           probability
-    ##   <chr>     <chr>                     <dbl>
-    ## 1 0_1       withdrawal behavior       0.671
-    ## 2 0_2       positive re-framing       0.559
-    ## 3 1_1       withdrawal behavior       0.671
-    ## 4 1_2       positive re-framing       0.559
-    ## 5 2_1       withdrawal behavior       0.671
-    ## 6 2_2       positive re-framing       0.559
+if(!equiv_res(check, dplyr_local_no_grouped_filter())) {
+  stop("mismatch")
+}
 
-``` r
-head(dplyr_tbl())
-```
+if(!equiv_res(check, data.table_local())) {
+  stop("mismatch")
+}
 
-    ## # A tibble: 6 x 3
-    ##   subjectID diagnosis           probability
-    ##   <chr>     <chr>                     <dbl>
-    ## 1 0_1       withdrawal behavior       0.671
-    ## 2 0_2       positive re-framing       0.559
-    ## 3 1_1       withdrawal behavior       0.671
-    ## 4 1_2       positive re-framing       0.559
-    ## 5 2_1       withdrawal behavior       0.671
-    ## 6 2_2       positive re-framing       0.559
-
-``` r
-head(dplyr_local_no_grouped_filter())
-```
-
-    ## # A tibble: 6 x 3
-    ##   subjectID diagnosis           probability
-    ##   <chr>     <chr>                     <dbl>
-    ## 1 0_1       withdrawal behavior       0.671
-    ## 2 0_2       positive re-framing       0.559
-    ## 3 1_1       withdrawal behavior       0.671
-    ## 4 1_2       positive re-framing       0.559
-    ## 5 2_1       withdrawal behavior       0.671
-    ## 6 2_2       positive re-framing       0.559
-
-``` r
-head(data.table_local())
-```
-
-    ##    subjectID           diagnosis probability
-    ## 1:       0_1 withdrawal behavior   0.6706221
-    ## 2:       0_2 positive re-framing   0.5589742
-    ## 3:       1_1 withdrawal behavior   0.6706221
-    ## 4:       1_2 positive re-framing   0.5589742
-    ## 5:       2_1 withdrawal behavior   0.6706221
-    ## 6:       2_2 positive re-framing   0.5589742
-
-``` r
 if(!is.null(db)) {
   head(rquery_local())
   
@@ -398,7 +355,8 @@ expressions <- list(
     "data.table in memory" =  bquote({nrow(data.table_local())}),
     # "base R row calculation" =  bquote({nrow(base_R_row_calculation())}),
     "base R tabular calculation" =  bquote({nrow(base_R_tabular_calculation())}),
-    "base R sequential calculation" =  bquote({nrow(base_R_sequential_calculation())})
+    "base R sequential calculation" =  bquote({nrow(base_R_sequential_calculation())}),
+    "base R cframe calculation" =  bquote({nrow(base_R_cframe_calculation())})
 )
 
 prune <- FALSE
@@ -439,105 +397,119 @@ for(nrep in c(1, 10, 100, 1000, 10000, 100000, 1000000)) {
     ## [1] 1
     ## Unit: microseconds
     ##                               expr       min        lq      mean    median
-    ##  dplyr in memory no grouped filter 20081.843 21950.741 22634.161 22423.122
-    ##               data.table in memory  3215.362  3256.698  4273.250  3956.023
-    ##         base R tabular calculation  2676.416  2680.018  3617.027  2970.067
-    ##      base R sequential calculation   951.693  1017.004  1285.237  1038.503
+    ##  dplyr in memory no grouped filter 18029.631 18090.968 19874.981 18463.753
+    ##               data.table in memory  2950.063  3103.032  3889.781  3307.760
+    ##         base R tabular calculation  2435.566  2504.637  2709.560  2574.058
+    ##      base R sequential calculation   977.839  1084.292  1350.896  1124.360
+    ##          base R cframe calculation   715.917   728.655  1113.571   852.240
     ##         uq       max neval
-    ##  23013.445 25701.655     5
-    ##   5180.384  5757.783     5
-    ##   3104.936  6653.699     5
-    ##   1157.469  2261.515     5
+    ##  21837.053 22953.502     5
+    ##   4061.275  6026.776     5
+    ##   2616.704  3416.836     5
+    ##   1312.295  2255.693     5
+    ##   1364.072  1906.972     5
 
 ![](QTiming_files/figure-markdown_github/timings-1.png)
 
     ## [1] 10
-    ## Unit: milliseconds
-    ##                               expr       min        lq      mean    median
-    ##  dplyr in memory no grouped filter 18.660366 19.722157 20.358343 20.916360
-    ##               data.table in memory  3.110576  3.197681  3.352857  3.228199
-    ##         base R tabular calculation  2.647719  2.670854  2.829938  2.781028
-    ##      base R sequential calculation  1.012027  1.014694  1.134927  1.080395
-    ##         uq       max neval
-    ##  20.964506 21.528325     5
-    ##   3.555649  3.672182     5
-    ##   2.825525  3.224562     5
-    ##   1.086058  1.481460     5
+    ## Unit: microseconds
+    ##                               expr       min        lq       mean
+    ##  dplyr in memory no grouped filter 17355.091 18630.765 19207.5024
+    ##               data.table in memory  2943.796  3322.241  3333.8378
+    ##         base R tabular calculation  2569.796  2668.071  2700.2576
+    ##      base R sequential calculation   927.529   946.671   997.9274
+    ##          base R cframe calculation   733.461   735.768   791.9200
+    ##     median        uq       max neval
+    ##  18830.311 20029.578 21191.767     5
+    ##   3429.761  3467.780  3505.611     5
+    ##   2689.146  2726.026  2848.249     5
+    ##    969.794  1064.785  1080.858     5
+    ##    757.234   863.170   869.967     5
 
 ![](QTiming_files/figure-markdown_github/timings-2.png)
 
     ## [1] 100
-    ## Unit: milliseconds
-    ##                               expr       min        lq      mean    median
-    ##  dplyr in memory no grouped filter 22.669109 23.592071 24.015004 23.999698
-    ##               data.table in memory  5.119279  5.181336  7.087883  5.451549
-    ##         base R tabular calculation  5.058928  5.147611  5.284115  5.299227
-    ##      base R sequential calculation  1.409780  1.466084  1.522841  1.565979
-    ##         uq       max neval
-    ##  24.609760 25.204384     5
-    ##   5.527909 14.159344     5
-    ##   5.303029  5.611782     5
-    ##   1.570969  1.601392     5
+    ## Unit: microseconds
+    ##                               expr       min        lq       mean
+    ##  dplyr in memory no grouped filter 20776.812 20790.092 21135.6410
+    ##               data.table in memory  3888.047  4001.204  4736.0464
+    ##         base R tabular calculation  3838.324  4195.901  4267.3548
+    ##      base R sequential calculation  1129.205  1134.532  1226.1660
+    ##          base R cframe calculation   777.307   810.077   831.7708
+    ##     median        uq       max neval
+    ##  20813.288 20934.969 22363.044     5
+    ##   4378.748  4859.964  6552.269     5
+    ##   4337.077  4340.997  4624.475     5
+    ##   1257.995  1301.191  1307.907     5
+    ##    819.349   842.008   910.113     5
 
 ![](QTiming_files/figure-markdown_github/timings-3.png)
 
     ## [1] 1000
     ## Unit: milliseconds
     ##                               expr       min        lq      mean    median
-    ##  dplyr in memory no grouped filter 85.754280 85.929779 94.654138 88.969166
-    ##               data.table in memory 24.379719 26.399666 27.081402 26.459844
-    ##         base R tabular calculation 36.763997 36.788362 38.937554 38.891825
-    ##      base R sequential calculation  7.572615  7.880037  8.231179  8.159244
-    ##         uq        max neval
-    ##  94.866048 117.751419     5
-    ##  28.742125  29.425656     5
-    ##  39.006449  43.237138     5
-    ##   8.661103   8.882894     5
+    ##  dplyr in memory no grouped filter 53.277379 56.283258 56.518534 56.986974
+    ##               data.table in memory 13.895675 15.157758 16.099401 15.159958
+    ##         base R tabular calculation 17.630975 19.665729 20.274555 21.255697
+    ##      base R sequential calculation  3.507768  3.747842  4.064723  3.756977
+    ##          base R cframe calculation  1.297327  1.384422  1.405739  1.385828
+    ##         uq       max neval
+    ##  57.194273 58.850788     5
+    ##  16.662014 19.621598     5
+    ##  21.300897 21.519477     5
+    ##   4.240363  5.070664     5
+    ##   1.427788  1.533329     5
 
 ![](QTiming_files/figure-markdown_github/timings-4.png)
 
     ## [1] 10000
     ## Unit: milliseconds
-    ##                               expr      min       lq     mean   median
-    ##  dplyr in memory no grouped filter 816.4125 822.9419 826.4549 829.3220
-    ##               data.table in memory 239.9854 240.6386 254.8661 242.7468
-    ##         base R tabular calculation 501.2060 558.1601 565.6389 562.5540
-    ##      base R sequential calculation 104.6783 108.9845 109.4886 110.2807
-    ##        uq      max neval
-    ##  829.7719 833.8263     5
-    ##  245.5178 305.4421     5
-    ##  576.7551 629.5195     5
-    ##  110.6984 112.8009     5
+    ##                               expr        min         lq      mean
+    ##  dplyr in memory no grouped filter 407.194608 409.381147 412.74636
+    ##               data.table in memory 117.525634 118.002116 122.24871
+    ##         base R tabular calculation 203.172277 204.752756 231.25617
+    ##      base R sequential calculation  28.440738  28.773298  30.25059
+    ##          base R cframe calculation   5.421187   8.243956  22.46094
+    ##      median        uq       max neval
+    ##  412.053400 413.20493 421.89774     5
+    ##  118.017227 126.21587 131.48272     5
+    ##  209.426222 269.21866 269.71093     5
+    ##   29.872876  30.70347  33.46255     5
+    ##    9.429168  11.45645  77.75396     5
 
 ![](QTiming_files/figure-markdown_github/timings-5.png)
 
     ## [1] 1e+05
-    ## Unit: seconds
+    ## Unit: milliseconds
     ##                               expr       min        lq      mean    median
-    ##  dplyr in memory no grouped filter 10.273704 10.404244 10.548351 10.444627
-    ##               data.table in memory  2.593409  2.631182  2.689273  2.713473
-    ##         base R tabular calculation  6.811532  6.943840  6.990008  6.956764
-    ##      base R sequential calculation  1.471420  1.483063  1.552604  1.551256
+    ##  dplyr in memory no grouped filter 5009.6724 5071.2713 5336.1437 5360.2855
+    ##               data.table in memory 1209.0905 1216.4174 1359.4933 1290.7941
+    ##         base R tabular calculation 3286.6013 3350.1026 3469.2846 3413.1398
+    ##      base R sequential calculation  435.7051  436.9898  501.5108  472.5926
+    ##          base R cframe calculation  118.9245  144.8517  167.6424  167.3377
     ##         uq       max neval
-    ##  10.665635 10.953545     5
-    ##   2.742851  2.765448     5
-    ##   7.105706  7.132200     5
-    ##   1.619016  1.638265     5
+    ##  5386.3364 5853.1527     5
+    ##  1309.0351 1772.1296     5
+    ##  3632.4043 3664.1749     5
+    ##   500.0462  662.2201     5
+    ##   202.6292  204.4689     5
 
 ![](QTiming_files/figure-markdown_github/timings-6.png)
 
     ## [1] 1e+06
     ## Unit: seconds
     ##                               expr       min        lq      mean    median
-    ##  dplyr in memory no grouped filter 130.81599 131.09589 132.43224 131.78721
-    ##               data.table in memory  28.62938  28.65105  30.51792  28.72840
-    ##         base R tabular calculation  83.28940  87.21334  88.45402  88.40691
-    ##      base R sequential calculation  21.55591  21.73302  21.98456  22.03053
+    ##  dplyr in memory no grouped filter 60.196606 63.884183 64.697394 65.729426
+    ##               data.table in memory 12.482061 12.927247 13.910871 12.944006
+    ##         base R tabular calculation 36.533878 37.097115 39.022185 37.229347
+    ##      base R sequential calculation  5.215866  5.409082  5.579928  5.647000
+    ##          base R cframe calculation  1.573378  1.663325  1.864483  1.904648
     ##         uq       max neval
-    ##  133.03484 135.42728     5
-    ##   32.04523  34.53553     5
-    ##   89.41110  93.94936     5
-    ##   22.29596  22.30735     5
+    ##  66.460299 67.216457     5
+    ##  13.288324 17.912717     5
+    ##  38.935957 45.314626     5
+    ##   5.781366  5.846327     5
+    ##   1.963380  2.217684     5
 
 ![](QTiming_files/figure-markdown_github/timings-7.png)
 
@@ -575,13 +547,12 @@ sessionInfo()
     ##  [4] magrittr_1.5        munsell_0.4.3       colorspace_1.3-2   
     ##  [7] R6_2.2.2            rlang_0.1.6         plyr_1.8.4         
     ## [10] stringr_1.2.0       tools_3.4.3         grid_3.4.3         
-    ## [13] data.table_1.10.4-3 gtable_0.2.0        utf8_1.1.3         
-    ## [16] cli_1.0.0           htmltools_0.3.6     lazyeval_0.2.1     
-    ## [19] yaml_2.1.16         rprojroot_1.3-2     digest_0.6.13      
-    ## [22] assertthat_0.2.0    tibble_1.4.1        crayon_1.3.4       
-    ## [25] glue_1.2.0          evaluate_0.10.1     rmarkdown_1.8      
-    ## [28] stringi_1.1.6       compiler_3.4.3      pillar_1.0.1       
-    ## [31] scales_0.5.0        backports_1.1.2     pkgconfig_2.0.1
+    ## [13] data.table_1.10.4-3 gtable_0.2.0        htmltools_0.3.6    
+    ## [16] lazyeval_0.2.1      yaml_2.1.16         rprojroot_1.3-2    
+    ## [19] digest_0.6.13       assertthat_0.2.0    tibble_1.4.1       
+    ## [22] glue_1.2.0          evaluate_0.10.1     rmarkdown_1.8      
+    ## [25] stringi_1.1.6       compiler_3.4.3      pillar_1.0.1       
+    ## [28] scales_0.5.0        backports_1.1.2     pkgconfig_2.0.1
 
 ``` r
 winvector_temp_db_handle <- NULL

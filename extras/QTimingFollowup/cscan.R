@@ -40,7 +40,7 @@ build_cframe <- function(groupid, catid) {
   nids <- length(ids)
   mp <- 1:nids
   names(mp) <- ids
-  cats <- unique(catid)
+  cats <- sort(unique(catid))
   cols <- lapply(cats,
                  function(ci) {
                    hit <- catid==ci
@@ -71,21 +71,21 @@ build_cframe <- function(groupid, catid) {
 #' @export
 #'
 grouped_arg_max <- function(cframe, v) {
-  maxes <- cframe[[1]]
-  maxvs <- v[maxes]
+  selidxs <- cframe[[1]]
+  maxvs <- v[selidxs]
   nc <- ncol(cframe)
   if(nc>1) {
     for(j in 2:nc) {
       idxs <- cframe[[j]]
       vs <- v[idxs]
-      wants <- vs > maxes
+      wants <- vs > maxvs
       wants[is.na(wants)] <- FALSE
-      maxes[wants] <- idxs[wants]
+      selidxs[wants] <- idxs[wants]
       maxvs[wants] <- vs[wants]
     }
   }
-  names(maxes) <- rownames(cframe)
-  maxes
+  names(selidxs) <- rownames(cframe)
+  selidxs
 }
 
 #' Compute grouped sum().

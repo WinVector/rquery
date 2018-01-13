@@ -1,29 +1,33 @@
 
+equiv_res <- function(a, b) {
+  if(nrow(a)!=nrow(b)) {
+    return(FALSE)
+  }
+  a <- a[order(a$subjectID), ]
+  b <- b[order(b$subjectID), ]
+  if(!all(a$subjectID == b$subjectID)) {
+    return(FALSE)
+  }
+  if(!all(a$diagnosis == b$diagnosis)) {
+    return(FALSE)
+  }
+  if(max(abs(a$probability - b$probability))>1.0e-5) {
+    return(FALSE)
+  }
+  return(TRUE)
+}
+
 
 mkData <- function(nrep) {
   dLocal <- data.frame(
-    subjectID = c(1,
-                  1,
-                  2,
-                  2),
+    subjectID = sort(rep(paste0('s', 1:nrep),2)),
     surveyCategory = c(
-      'withdrawal behavior',
-      'positive re-framing',
       'withdrawal behavior',
       'positive re-framing'
     ),
-    assessmentTotal = c(5,
-                        2,
-                        3,
-                        4),
     stringsAsFactors = FALSE)
-  norig <- nrow(dLocal)
-  dLocal <- dLocal[rep(seq_len(norig), nrep), , drop=FALSE]
-  dLocal$subjectID <- paste((seq_len(nrow(dLocal)) -1)%/% norig,
-                            dLocal$subjectID,
-                            sep = "_")
-  rownames(dLocal) <- NULL
-
+  dLocal$assessmentTotal =
+    sample.int(10, nrow(dLocal), replace=TRUE)-1
   dLocal
 }
 
@@ -112,7 +116,7 @@ base_r_calculate_cframe <- function(d) {
   totals <- grouped_sum(cframe, d$probability)
   res <- data.frame(subjectID = rownames(cframe),
                     diagnosis = d$surveyCategory[selections],
-                    probability = d$probability/totals,
+                    probability = d$probability[selections]/totals,
                     stringsAsFactors = FALSE)
   res
 }
@@ -157,6 +161,7 @@ base_r_calculate_rows <- function(d) {
 
 # this is a function,
 # so body not evaluated until used
+# # TODO: need to reverse survyCategory sorting
 rquery_pipeline <- . := {
   extend_nse(.,
              probability :=
@@ -184,7 +189,7 @@ dplyr_pipeline <- . %>%
   mutate(probability =
            exp(assessmentTotal * scale)/
            sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
-  arrange(probability, surveyCategory) %>%
+  arrange(probability, desc(surveyCategory)) %>%
   filter(row_number() == n()) %>%
   ungroup() %>%
   rename(diagnosis = surveyCategory) %>%
@@ -201,7 +206,7 @@ dplyr_pipeline2 <- . %>%
   mutate(probability =
            exp(assessmentTotal * scale)/
            sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
-  arrange(probability, surveyCategory) %>%
+  arrange(probability, desc(surveyCategory)) %>%
   mutate(count = n(), rank = row_number()) %>%
   ungroup() %>%
   filter(count == rank) %>%
@@ -211,6 +216,7 @@ dplyr_pipeline2 <- . %>%
 
 .datatable.aware <- TRUE
 
+# TODO: break ties by ranking by probability and -surveyCategory
 data.table_local <- function() {
   dDT <- data.table::data.table(dLocal)
   dDT[

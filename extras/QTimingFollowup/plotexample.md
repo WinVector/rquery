@@ -50,12 +50,14 @@ greycolor = "darkgrey"
 runs <- c("base R row calculation",
           "base R tabular calculation",
           "base R sequential calculation",
+          "base R cframe calculation",
           "data.table in memory", 
           "rquery in memory",
           "dplyr tbl in memory",
           "dplyr in memory no grouped filter",
           "dplyr from memory to db and back")
 colormap = runs := c(highlightcolor,
+                     highlightcolor,
                      highlightcolor,
                      highlightcolor,
                      highlightcolor,
@@ -100,14 +102,16 @@ compsF$gp = "base R sequential, data.table, and rquery"
 compsF$gp[contains("dplyr", vars=compsF$expr)] = "dplyr variations"
 
 # control the ordering of the tasks
-compsF$expr = factor(compsF$expr, levels=c(
+compsF$expr = factor(compsF$expr, 
+                     levels=c(
+                       "base R cframe calculation",
                        "base R sequential calculation",
                        "data.table in memory",
                        "rquery in memory",
                        "dplyr from memory to db and back",
                        "dplyr in memory no grouped filter",
                        "dplyr tbl in memory"
-                       ))
+                     ))
 
 
 ggplot(data=compsF, aes(x=data_size, y=data_size/durationMS, 
