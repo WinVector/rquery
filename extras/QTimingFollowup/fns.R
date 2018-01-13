@@ -67,8 +67,7 @@ base_r_calculate_tabular <- function(d) {
   d
 }
 
-# base-R function
-# could also try base::split() or base:table()
+# base-R function sequencing accross categories
 base_r_calculate_sequenced <- function(d) {
   cats <- base::sort(base::unique(d$surveyCategory))
   res <- NULL
@@ -101,6 +100,20 @@ base_r_calculate_sequenced <- function(d) {
   res <- res[, c("subjectID",
                  "diagnosis",
                  "probability")]
+  res
+}
+
+
+# base-R function sequencing accross categories
+base_r_calculate_cframe <- function(d) {
+  d$probability <- exp(d$assessmentTotal * scale)
+  cframe <- build_cframe(d$subjectID, d$surveyCategory)
+  selections <- grouped_arg_max(cframe, d$probability)
+  totals <- grouped_sum(cframe, d$probability)
+  res <- data.frame(subjectID = rownames(cframe),
+                    diagnosis = d$surveyCategory[selections],
+                    probability = d$probability/totals,
+                    stringsAsFactors = FALSE)
   res
 }
 
