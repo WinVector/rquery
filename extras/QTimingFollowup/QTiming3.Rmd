@@ -1,13 +1,13 @@
 ---
 title: "QTiming3"
 author: "Win-Vector LLC"
-date: "1/11/2018"
+date: "1/13/2018"
 output: github_document
 ---
 
 Let's time [`rquery`](https://winvector.github.io/rquery/), [`dplyr`]( https://CRAN.R-project.org/package=dplyr), and [`data.table`](https://CRAN.R-project.org/package=data.table ) on a non-trivial example.
 
-These timings are on an Amazon EC2 c5.3.xlarge 16 vCPUs 32GB RAM Ubuntu Server 16.04 LTS (HVM).
+These timings are on an Amazon EC2 c5.4xlarge 16 vcpu 32GB RAM, 128GB block storage, Ubuntu Server 16.04 LTS (HVM).
 
 First let's load our
 packages, establish a database connection, and declare an [`rquery` ad hoc execution service](https://winvector.github.io/rquery/articles/AdHocQueries.html) (the "`winvector_temp_db_handle`").
@@ -17,15 +17,15 @@ library("rquery")
 library("dplyr")
 library("microbenchmark")
 library("ggplot2")
+source("cscan.R")
 source("fns.R")
 
 db <- NULL
-# db <- DBI::dbConnect(RPostgres::Postgres(),
-#                      host = 'wvdbtest.cv9xgzsc2qa1.us-west-2.rds.amazonaws.com',
-#                      port = 5432,
-#                      user = 'wvdbinstance',
-#                      password = 'wvdb9327262643664',
-#                      dbname = 'wvdb')
+db <- DBI::dbConnect(RPostgres::Postgres(),
+                     host = 'localhost',
+                     port = 5432,
+                     user = 'ruser',
+                     password = 'ruser')
 if(!is.null(db)) {
   winvector_temp_db_handle <- list(db = db)
   print(db)
@@ -49,7 +49,6 @@ nrep <- 10
 
 dLocal <- mkData(nrep)
 head(dLocal)
-
 dR <- NULL
 dTbl <- NULL
 
@@ -59,8 +58,9 @@ if(!is.null(db)) {
                             temporary = TRUE, 
                             overwrite = TRUE)
   dTbl <- dplyr::tbl(db, dR$table_name)
+  
   cdata::qlook(db, dR$table_name)
-
+  
   dplyr::glimpse(dTbl)
 }
 ```
@@ -78,6 +78,11 @@ base_R_row_calculation <- function() {
 base_R_sequential_calculation <- function() {
   base_r_calculate_sequenced(dLocal)
 }
+
+base_R_cframe_calculation <- function() {
+  base_r_calculate_cframe(dLocal)
+}
+
 
 base_R_tabular_calculation <- function() {
   base_r_calculate_tabular(dLocal)
@@ -115,7 +120,6 @@ rquery_database_count <- function() {
     DBI::dbGetQuery(db, ., stringsAsFactors = FALSE) %.>%
     as.data.frame(., stringsAsFactors = FALSE) # shouldn't be needed
 }
-
 
 
 dplyr_local <- function() {
@@ -168,25 +172,43 @@ dplyr_database_count <- function() {
     collect()
 }
 
-
 ```
 
 Let's inspect the functions.
 
 ```{r show}
-head(base_R_sequential_calculation())
 
-head(base_R_row_calculation())
+check <- base_R_sequential_calculation()
+head(check)
 
-head(base_R_tabular_calculation())
+if(!equiv_res(check, base_R_cframe_calculation())) {
+  stop("mismatch")
+}
 
-head(dplyr_local())
+if(!equiv_res(check, base_R_row_calculation())) {
+  stop("mismatch")
+}
 
-head(dplyr_tbl())
+if(!equiv_res(check, base_R_tabular_calculation())) {
+  stop("mismatch")
+}
 
-head(dplyr_local_no_grouped_filter())
+if(!equiv_res(check, dplyr_local())) {
+  stop("mismatch")
+}
 
-head(data.table_local())
+if(!equiv_res(check, dplyr_tbl())) {
+  stop("mismatch")
+}
+
+if(!equiv_res(check, dplyr_local_no_grouped_filter())) {
+  stop("mismatch")
+}
+
+if(!equiv_res(check, data.table_local())) {
+  # haven't worked on data.table tie breaking yet
+  #stop("mismatch")
+}
 
 if(!is.null(db)) {
   head(rquery_local())
@@ -207,11 +229,13 @@ if(!is.null(db)) {
 }
 ```
 
+
 Now let's measure the speeds with `microbenchmark`.
 
 
 ```{r timings}
 timings <- NULL
+
 
 expressions <- list(
     # "rquery in memory" = bquote({ nrow(rquery_local())}),
@@ -228,12 +252,36 @@ expressions <- list(
     "data.table in memory" =  bquote({nrow(data.table_local())}),
     # "base R row calculation" =  bquote({nrow(base_R_row_calculation())}),
     "base R tabular calculation" =  bquote({nrow(base_R_tabular_calculation())}),
-    "base R sequential calculation" =  bquote({nrow(base_R_sequential_calculation())})
+    "base R sequential calculation" =  bquote({nrow(base_R_sequential_calculation())}),
+    "base R cframe calculation" =  bquote({nrow(base_R_cframe_calculation())})
 )
+
+if(!is.null(db)) {
+  expressions <- 
+    c(expressions,
+      list(
+        "rquery from memory to db and back" = bquote({ nrow(rquery_local())}),
+        # "rquery from db to memory" =  bquote({nrow(rquery_database_pull())}),
+        "rquery database count" =  bquote({rquery_database_count()}),
+        "rquery database land" =  bquote({rquery_database_land()}),
+        # "dplyr in memory" =  bquote({nrow(dplyr_local())}),
+        # "dplyr tbl in memory" =  bquote({nrow(dplyr_tbl())}),
+        "dplyr from memory to db and back" =  bquote({nrow(dplyr_round_trip())}),
+        # "dplyr from db to memory" =  bquote({nrow(dplyr_database_pull())}),
+        "dplyr database count" =  bquote({dplyr_database_count()}),
+        "dplyr database land" =  bquote({dplyr_database_land()})
+      ))
+}
 
 prune <- FALSE
 
-for(nrep in c(1, 10, 100, 1000, 10000, 100000, 1000000)) {
+for(nrep in c(1,
+              10, 
+              100, 
+              1000,
+              10000,
+              100000, 
+              1000000)) {
   print(nrep)
   dLocal <- mkData(nrep)
   dR <- NULL
@@ -267,10 +315,6 @@ for(nrep in c(1, 10, 100, 1000, 10000, 100000, 1000000)) {
 saveRDS(timings, "qtimings3.RDS")
 ```
 
-`rquery` appears to be relatively fast.  Some of the time for "`rquery` local" is because `rquery`
-doesn't *really* have a local mode, it has to copy the data to the database and back
-in that case.
-
 
 ```{r sessioninfo}
 sessionInfo()
@@ -283,6 +327,5 @@ if(!is.null(db)) {
   db <- NULL
 }
 ```
-
 
 
