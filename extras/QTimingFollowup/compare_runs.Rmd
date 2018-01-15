@@ -77,7 +77,7 @@ ggplot(data=compsF, aes(x=data_size, y=data_size/durationMS,
   scale_y_log10() +
   scale_color_brewer(palette="Dark2") + 
   facet_wrap(~machine, ncol=2) + 
-  theme(legend.position = "bottom") + 
+  theme(legend.position = "bottom", legend.title=element_blank()) + 
   ggtitle("Rows/MS by Implementation and Data Size (larger is better)",
           subtitle="Idiomatic Base R rate shown dashed for comparison")
 
