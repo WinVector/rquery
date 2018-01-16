@@ -1,0 +1,332 @@
+---
+title: "QTiming4"
+author: "Win-Vector LLC"
+date: "1/15/2018"
+output: github_document
+---
+
+Let's time [`rquery`](https://winvector.github.io/rquery/), [`dplyr`]( https://CRAN.R-project.org/package=dplyr), and [`data.table`](https://CRAN.R-project.org/package=data.table ) on a non-trivial example.
+
+These timings are on a late 2014 Mac Mini with 8GB of RAM running OSX 10.12.6, R version 3.4.3 (2017-11-30) -- "Kite-Eating Tree", and the current (2018-01-07) CRAN versions of all packages (except `rquery`, which is not yet up on CRAN).  We are getting database services from PostgreSQL version `9.6.1` in a docker container.
+
+First let's load our
+packages, establish a database connection, and declare an [`rquery` ad hoc execution service](https://winvector.github.io/rquery/articles/AdHocQueries.html) (the "`winvector_temp_db_handle`").
+
+```{r dbsetup}
+library("rquery")
+library("dplyr")
+library("microbenchmark")
+library("data.table")
+library("ggplot2")
+source("cscan.R")
+source("fns.R")
+
+
+db <- NULL
+# db <- DBI::dbConnect(RPostgres::Postgres(),
+#                      host = 'localhost',
+#                      port = 5432,
+#                      user = 'postgres',
+#                      password = 'pg')
+if(!is.null(db)) {
+  winvector_temp_db_handle <- list(db = db)
+  print(db)
+  DBI::dbGetQuery(db, "SELECT version()", stringsAsFactors = FALSE)
+}
+
+packageVersion("rquery")
+packageVersion("dplyr")
+packageVersion("dbplyr")
+packageVersion("DBI")
+packageVersion("data.table")
+packageVersion("RPostgres")
+
+R.Version()
+```
+
+We now build and extended version of the example from [Let’s Have Some Sympathy For The Part-time R User](http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/).
+
+```{r data}
+nrep <- 10
+
+dLocal <- mkData(nrep)
+head(dLocal)
+dR <- NULL
+dTbl <- NULL
+
+if(!is.null(db)) {
+  dR <- rquery::dbi_copy_to(db, 'dR',
+                            dLocal,
+                            temporary = TRUE, 
+                            overwrite = TRUE)
+  dTbl <- dplyr::tbl(db, dR$table_name)
+  
+  cdata::qlook(db, dR$table_name)
+  
+  dplyr::glimpse(dTbl)
+}
+```
+
+Now we declare our operation pipelines, both on local (in-memory `data.frame`) and
+remote (already in a database) data.
+
+```{r query}
+scale <- 0.237
+
+base_R_row_calculation <- function() {
+  base_r_calculate_rows(dLocal)
+}
+
+base_R_sequential_calculation <- function() {
+  base_r_calculate_sequenced(dLocal)
+}
+
+base_R_cframe_calculation <- function() {
+  base_r_calculate_cframe(dLocal)
+}
+
+
+base_R_tabular_calculation <- function() {
+  base_r_calculate_tabular(dLocal)
+}
+
+rquery_local <- function() {
+  dLocal %.>% 
+    rquery_pipeline(.) %.>%
+    as.data.frame(., stringsAsFactors = FALSE) # force execution
+}
+
+rquery_database_pull <- function() {
+  dR %.>% 
+    rquery_pipeline(.) %.>% 
+    to_sql(., db) %.>% 
+    DBI::dbGetQuery(db, ., stringsAsFactors = FALSE) %.>%
+    as.data.frame(., stringsAsFactors = FALSE) # shouldn't be needed
+}
+
+rquery_database_land <- function() {
+  tabName <- "rquery_tmpx"
+  sqlc <- dR %.>% 
+    rquery_pipeline(.) %.>% 
+    to_sql(., db)
+  DBI::dbExecute(db, paste("CREATE TABLE", tabName, "AS", sqlc))
+  DBI::dbExecute(db, paste("DROP TABLE", tabName))
+  NULL
+}
+
+rquery_database_count <- function() {
+  dR %.>% 
+    rquery_pipeline(.) %.>% 
+    sql_node(., "n" := "COUNT(1)") %.>% 
+    to_sql(., db) %.>% 
+    DBI::dbGetQuery(db, ., stringsAsFactors = FALSE) %.>%
+    as.data.frame(., stringsAsFactors = FALSE) # shouldn't be needed
+}
+
+
+dplyr_local <- function() {
+  dLocal %>% 
+    dplyr_pipeline
+}
+
+dplyr_local_no_grouped_filter <- function() {
+  dLocal %>% 
+    dplyr_pipeline2
+}
+
+dplyr_tbl <- function() {
+  dLocal %>%
+    as_tibble %>%
+    dplyr_pipeline
+}
+
+dplyr_round_trip <- function() {
+  dTmp <- dplyr::copy_to(db, dLocal, "dplyr_tmp",
+                         # overwrite = TRUE,
+                         temporary = TRUE
+  )
+  res <- dTmp %>% 
+    dplyr_pipeline %>%
+    collect()
+  dplyr::db_drop_table(db, "dplyr_tmp")
+  res
+}
+
+dplyr_database_pull <- function() {
+  dTbl %>% 
+    dplyr_pipeline %>%
+    collect()
+}
+
+dplyr_database_land <- function() {
+  tabName = "dplyr_ctmpx"
+  dTbl %>% 
+    dplyr_pipeline %>%
+    compute(name = tabName)
+  dplyr::db_drop_table(db, table = tabName)
+  NULL
+}
+
+dplyr_database_count <- function() {
+  dTbl %>% 
+    dplyr_pipeline %>%
+    tally() %>%
+    collect()
+}
+
+```
+
+Let's inspect the functions.
+
+```{r show}
+
+check <- base_R_sequential_calculation()
+head(check)
+
+if(!equiv_res(check, base_R_cframe_calculation())) {
+  stop("mismatch")
+}
+
+if(!equiv_res(check, base_R_row_calculation())) {
+  stop("mismatch")
+}
+
+if(!equiv_res(check, base_R_tabular_calculation())) {
+  stop("mismatch")
+}
+
+if(!equiv_res(check, dplyr_local())) {
+  stop("mismatch")
+}
+
+if(!equiv_res(check, dplyr_tbl())) {
+  stop("mismatch")
+}
+
+if(!equiv_res(check, dplyr_local_no_grouped_filter())) {
+  stop("mismatch")
+}
+
+if(!equiv_res(check, data.table_local())) {
+  stop("mismatch")
+}
+
+if(!is.null(db)) {
+  head(rquery_local())
+  
+  rquery_database_land()
+  
+  head(rquery_database_pull())
+  
+  rquery_database_count()
+  
+  dplyr_database_land()
+  
+  head(dplyr_database_pull())
+  
+  dplyr_database_count()
+  
+  head(dplyr_round_trip())
+}
+```
+
+
+Now let's measure the speeds with `microbenchmark`.
+
+
+```{r timings}
+timings <- NULL
+
+
+expressions <- list(
+    # "rquery in memory" = bquote({ nrow(rquery_local())}),
+    # "rquery from db to memory" =  bquote({nrow(rquery_database_pull())}),
+    # "rquery database count" =  bquote({rquery_database_count()}),
+    # "rquery database land" =  bquote({rquery_database_land()}),
+    # "dplyr in memory" =  bquote({nrow(dplyr_local())}),
+    # "dplyr tbl in memory" =  bquote({nrow(dplyr_tbl())}),
+    "dplyr in memory no grouped filter" =  bquote({nrow(dplyr_local_no_grouped_filter())}),
+    # "dplyr from memory to db and back" =  bquote({nrow(dplyr_round_trip())}),
+    # "dplyr from db to memory" =  bquote({nrow(dplyr_database_pull())}),
+    # "dplyr database count" =  bquote({dplyr_database_count()}),
+    # "dplyr database land" =  bquote({dplyr_database_land()}),
+    "data.table in memory" =  bquote({nrow(data.table_local())}),
+    # "base R row calculation" =  bquote({nrow(base_R_row_calculation())}),
+    "base R tabular calculation" =  bquote({nrow(base_R_tabular_calculation())}),
+    # "base R sequential calculation" =  bquote({nrow(base_R_sequential_calculation())})
+    "base R cframe calculation" =  bquote({nrow(base_R_cframe_calculation())})
+)
+
+if(!is.null(db)) {
+  expressions <- 
+    c(expressions,
+      list(
+        "rquery from memory to db and back" = bquote({ nrow(rquery_local())}),
+        # "rquery from db to memory" =  bquote({nrow(rquery_database_pull())}),
+        "rquery database count" =  bquote({rquery_database_count()}),
+        "rquery database land" =  bquote({rquery_database_land()}),
+        # "dplyr in memory" =  bquote({nrow(dplyr_local())}),
+        # "dplyr tbl in memory" =  bquote({nrow(dplyr_tbl())}),
+        "dplyr from memory to db and back" =  bquote({nrow(dplyr_round_trip())}),
+        # "dplyr from db to memory" =  bquote({nrow(dplyr_database_pull())}),
+        "dplyr database count" =  bquote({dplyr_database_count()}),
+        "dplyr database land" =  bquote({dplyr_database_land()})
+      ))
+}
+
+prune <- FALSE
+
+for(nrep in c(1,
+              10, 
+              100, 
+              1000,
+              10000,
+              100000, 
+              1000000)) {
+  print(nrep)
+  dLocal <- mkData(nrep)
+  dR <- NULL
+  dTbl <- NULL
+  if(!is.null(db)) {
+    dR <- rquery::dbi_copy_to(db, 'dR',
+                              dLocal,
+                              temporary = TRUE, 
+                              overwrite = TRUE)
+    dTbl <- dplyr::tbl(db, dR$table_name)
+  }
+  tm <- microbenchmark(
+    list = expressions,
+    times = 5L
+  )
+  print(tm)
+  print(autoplot(tm))
+  tmi <- as.data.frame(tm, stringsAsFactors = FALSE)
+  tmi$data_size <- nrow(dLocal)
+  timings <- rbind(timings, tmi)
+  if(prune) {
+    baddies <- unique(tmi$expr[tmi$time > 10*1e+9])
+    for(bi in baddies) {
+      expressions[[bi]] <- NULL
+    }
+    if(length(expressions)<=0) {
+      break
+    }
+  }
+}
+saveRDS(timings, "qtimings4.RDS")
+```
+
+
+```{r sessioninfo}
+sessionInfo()
+```
+
+```{r dbcleanup}
+winvector_temp_db_handle <- NULL
+if(!is.null(db)) {
+  DBI::dbDisconnect(db)
+  db <- NULL
+}
+```
+
+

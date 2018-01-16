@@ -162,7 +162,7 @@ base_r_calculate_rows <- function(d) {
 # this is a function,
 # so body not evaluated until used
 # # TODO: need to reverse survyCategory sorting
-rquery_pipeline <- . := {
+rquery_pipeline <- function(.) {
   extend_nse(.,
              probability :=
                exp(assessmentTotal * scale)/
@@ -215,18 +215,17 @@ dplyr_pipeline2 <- . %>%
   arrange(subjectID)
 
 .datatable.aware <- TRUE
+# library(data.table) # can't load into namespace as it overides :=
 
-# TODO: break ties by ranking by probability and -surveyCategory
+# improved code from:
+# http://www.win-vector.com/blog/2018/01/base-r-can-be-fast/#comment-66746
 data.table_local <- function() {
   dDT <- data.table::data.table(dLocal)
-  dDT[
-    , one := 1 ][
-      , probability := exp ( assessmentTotal * scale ) /
-        sum ( exp ( assessmentTotal * scale ) ) ,subjectID ][
-          , count := sum ( one ) ,subjectID ][
-            , rank := rank ( probability ) ,subjectID ][
-              rank == count ][
-                , diagnosis := surveyCategory ][
-                  , c('subjectID', 'diagnosis', 'probability') ][
-                    order(subjectID) ]
+  dDT <- dDT[,list(diagnosis = surveyCategory,
+                   probability = exp (assessmentTotal * scale ) /
+                     sum ( exp ( assessmentTotal * scale ) ))
+             ,subjectID ]
+  setorder(dDT, subjectID, probability, -diagnosis)
+  dDT <- dDT[,.SD[.N],subjectID]
+  setorder(dDT, subjectID)
 }
