@@ -13,20 +13,20 @@ First let's load our
 packages, establish a database connection, and declare an [`rquery` ad hoc execution service](https://winvector.github.io/rquery/articles/AdHocQueries.html) (the "`winvector_temp_db_handle`").
 
 ```{r dbsetup}
+library("data.table")  # load first so we can overwrite := with rquery
 library("rquery")
 library("dplyr")
 library("microbenchmark")
-library("data.table")
 library("ggplot2")
 source("cscan.R")
 source("fns.R")
 
 db <- NULL
-db <- DBI::dbConnect(RPostgres::Postgres(),
-                     host = 'localhost',
-                     port = 5432,
-                     user = 'ruser',
-                     password = 'ruser')
+# db <- DBI::dbConnect(RPostgres::Postgres(),
+#                      host = 'localhost',
+#                      port = 5432,
+#                      user = 'ruser',
+#                      password = 'ruser')
 if(!is.null(db)) {
   winvector_temp_db_handle <- list(db = db)
   print(db)
@@ -207,8 +207,7 @@ if(!equiv_res(check, dplyr_local_no_grouped_filter())) {
 }
 
 if(!equiv_res(check, data.table_local())) {
-  # haven't worked on data.table tie breaking yet
-  #stop("mismatch")
+  stop("mismatch")
 }
 
 if(!is.null(db)) {
