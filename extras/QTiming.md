@@ -1,7 +1,7 @@
 QTiming
 ================
 Win-Vector LLC
-1/7/2018
+1/16/2018
 
 Let's time [`rquery`](https://winvector.github.io/rquery/), [`dplyr`](https://CRAN.R-project.org/package=dplyr), and [`data.table`](https://CRAN.R-project.org/package=data.table) on a non-trivial example.
 
@@ -10,10 +10,18 @@ These timings are on an late 2014 Mac Mini with 8GB of RAM running OSX 10.12.6, 
 First let's load our packages, establish a database connection, and declare an [`rquery` ad hoc execution service](https://winvector.github.io/rquery/articles/AdHocQueries.html) (the "`winvector_temp_db_handle`").
 
 ``` r
+library("data.table")
 library("rquery")
 ```
 
     ## Loading required package: wrapr
+
+    ## 
+    ## Attaching package: 'wrapr'
+
+    ## The following object is masked from 'package:data.table':
+    ## 
+    ##     :=
 
     ## Loading required package: cdata
 
@@ -23,6 +31,10 @@ library("dplyr")
 
     ## 
     ## Attaching package: 'dplyr'
+
+    ## The following objects are masked from 'package:data.table':
+    ## 
+    ##     between, first, last
 
     ## The following objects are masked from 'package:stats':
     ## 
@@ -209,7 +221,7 @@ scale <- 0.237
 
 # this is a function, 
 # so body not evaluated until used
-rquery_pipeline <- . := {
+rquery_pipeline <- function(.) {
   extend_nse(.,
              probability :=
                exp(assessmentTotal * scale)/
@@ -347,18 +359,17 @@ dplyr_database_count <- function() {
 
 .datatable.aware <- TRUE
 
+# improved code from:
+# http://www.win-vector.com/blog/2018/01/base-r-can-be-fast/#comment-66746
 data.table_local <- function() {
   dDT <- data.table::data.table(dLocal)
-  dDT[
-    , one := 1 ][
-      , probability := exp ( assessmentTotal * scale ) / 
-        sum ( exp ( assessmentTotal * scale ) ) ,subjectID ][
-          , count := sum ( one ) ,subjectID ][
-            , rank := rank ( probability ) ,subjectID ][
-              rank == count ][
-                , diagnosis := surveyCategory ][
-                  , c('subjectID', 'diagnosis', 'probability') ][
-                    order(subjectID) ]
+  dDT <- dDT[,list(diagnosis = surveyCategory,
+                   probability = exp (assessmentTotal * scale ) /
+                     sum ( exp ( assessmentTotal * scale ) ))
+             ,subjectID ]
+  setorder(dDT, subjectID, probability, -diagnosis)
+  dDT <- dDT[,.SD[.N],subjectID]
+  setorder(dDT, subjectID)
 }
 ```
 
@@ -520,32 +531,32 @@ print(tm)
 ```
 
     ## Unit: milliseconds
-    ##                               expr       min        lq      mean    median
-    ##                   rquery in memory  334.0138  341.0500  351.8533  343.7035
-    ##           rquery from db to memory  233.7840  237.9159  242.0225  239.9403
-    ##              rquery database count  201.3855  203.8096  209.2856  206.8966
-    ##               rquery database land  219.9695  222.2951  226.2210  224.7656
-    ##                    dplyr in memory 1169.9833 1187.4873 1218.1652 1203.2572
-    ##                dplyr tbl in memory 1166.6005 1187.9391 1220.6487 1209.3074
-    ##  dplyr in memory no grouped filter  797.6704  810.6433  828.3852  819.2832
-    ##   dplyr from memory to db and back  581.9714  589.8316  601.7506  593.9001
-    ##            dplyr from db to memory  381.4828  389.3130  398.5827  392.1577
-    ##               dplyr database count  368.0964  372.2241  384.0213  376.4548
-    ##                dplyr database land  413.6107  420.9743  433.5997  425.6041
-    ##               data.table in memory  228.9100  238.0072  255.7200  241.4864
-    ##         uq       max neval
-    ##   351.3692  433.6665   100
-    ##   243.4975  273.8257   100
-    ##   210.7183  256.1843   100
-    ##   228.6040  259.0445   100
-    ##  1239.4636 1395.2350   100
-    ##  1247.1471 1334.2401   100
-    ##   834.7829  919.9848   100
-    ##   610.1044  714.5768   100
-    ##   398.1949  473.9394   100
-    ##   385.7359  574.7918   100
-    ##   432.8575  521.0920   100
-    ##   254.1840  337.7042   100
+    ##                               expr       min         lq       mean
+    ##                   rquery in memory  331.1481  339.70475  368.73137
+    ##           rquery from db to memory  227.5671  236.38861  245.76324
+    ##              rquery database count  197.9027  203.53253  220.77405
+    ##               rquery database land  217.3059  222.45132  241.63163
+    ##                    dplyr in memory 1170.3002 1205.02615 1274.89690
+    ##                dplyr tbl in memory 1172.2231 1204.95762 1259.71581
+    ##  dplyr in memory no grouped filter  801.5207  828.98199  869.17229
+    ##   dplyr from memory to db and back  577.4491  593.47428  630.04918
+    ##            dplyr from db to memory  376.1548  388.82214  423.56023
+    ##               dplyr database count  362.0931  372.82307  389.89221
+    ##                dplyr database land  409.8194  421.51907  446.92628
+    ##               data.table in memory   58.9573   65.47642   76.00341
+    ##      median         uq       max neval
+    ##   348.68603  387.00349  536.9070   100
+    ##   238.95166  245.93533  321.7778   100
+    ##   207.14355  223.10563  376.4466   100
+    ##   227.05600  249.73893  466.2631   100
+    ##  1231.85948 1289.23797 1991.6406   100
+    ##  1233.97733 1297.75145 1660.2237   100
+    ##   847.72725  893.80326 1232.6215   100
+    ##   606.20566  658.66738  809.4304   100
+    ##   394.35024  429.16525 1023.7962   100
+    ##   377.40662  394.76364  752.7342   100
+    ##   428.51148  459.61294  635.2797   100
+    ##    69.97359   76.76492  186.0538   100
 
 ``` r
 autoplot(tm)
@@ -576,24 +587,20 @@ sessionInfo()
     ## other attached packages:
     ## [1] bindrcpp_0.2         ggplot2_2.2.1        microbenchmark_1.4-3
     ## [4] dplyr_0.7.4          rquery_0.2.0         cdata_0.5.1         
-    ## [7] wrapr_1.1.1         
+    ## [7] wrapr_1.1.1          data.table_1.10.4-3 
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] Rcpp_0.12.14.2      dbplyr_1.2.0        pillar_1.0.1       
-    ##  [4] compiler_3.4.3      plyr_1.8.4          bindr_0.1          
-    ##  [7] tools_3.4.3         RPostgres_1.0-4     digest_0.6.13      
-    ## [10] bit_1.1-12          evaluate_0.10.1     tibble_1.4.1       
-    ## [13] gtable_0.2.0        pkgconfig_2.0.1     rlang_0.1.6        
-    ## [16] cli_1.0.0           DBI_0.7             yaml_2.1.16        
-    ## [19] withr_2.1.1         stringr_1.2.0       knitr_1.18         
-    ## [22] hms_0.4.0           tidyselect_0.2.3    rprojroot_1.3-2    
-    ## [25] bit64_0.9-7         grid_3.4.3          data.table_1.10.4-3
-    ## [28] glue_1.2.0          R6_2.2.2            rmarkdown_1.8      
-    ## [31] purrr_0.2.4         blob_1.1.0          magrittr_1.5       
-    ## [34] backports_1.1.2     scales_0.5.0        htmltools_0.3.6    
-    ## [37] assertthat_0.2.0    colorspace_1.3-2    utf8_1.1.3         
-    ## [40] stringi_1.1.6       lazyeval_0.2.1      munsell_0.4.3      
-    ## [43] crayon_1.3.4
+    ##  [1] Rcpp_0.12.14.2   dbplyr_1.2.0     pillar_1.0.1     compiler_3.4.3  
+    ##  [5] plyr_1.8.4       bindr_0.1        tools_3.4.3      RPostgres_1.0-4 
+    ##  [9] digest_0.6.13    bit_1.1-12       evaluate_0.10.1  tibble_1.4.1    
+    ## [13] gtable_0.2.0     pkgconfig_2.0.1  rlang_0.1.6      cli_1.0.0       
+    ## [17] DBI_0.7          yaml_2.1.16      withr_2.1.1      stringr_1.2.0   
+    ## [21] knitr_1.18       hms_0.4.0        tidyselect_0.2.3 rprojroot_1.3-2 
+    ## [25] bit64_0.9-7      grid_3.4.3       glue_1.2.0       R6_2.2.2        
+    ## [29] rmarkdown_1.8    purrr_0.2.4      blob_1.1.0       magrittr_1.5    
+    ## [33] backports_1.1.2  scales_0.5.0     htmltools_0.3.6  assertthat_0.2.0
+    ## [37] colorspace_1.3-2 utf8_1.1.3       stringi_1.1.6    lazyeval_0.2.1  
+    ## [41] munsell_0.4.3    crayon_1.3.4
 
 ``` r
 winvector_temp_db_handle <- NULL

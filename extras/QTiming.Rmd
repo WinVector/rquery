@@ -1,7 +1,7 @@
 ---
 title: "QTiming"
 author: "Win-Vector LLC"
-date: "1/7/2018"
+date: "1/16/2018"
 output: github_document
 ---
 
@@ -14,6 +14,7 @@ First let's load our
 packages, establish a database connection, and declare an [`rquery` ad hoc execution service](https://winvector.github.io/rquery/articles/AdHocQueries.html) (the "`winvector_temp_db_handle`").
 
 ```{r dbsetup}
+library("data.table")
 library("rquery")
 library("dplyr")
 library("microbenchmark")
@@ -86,7 +87,7 @@ scale <- 0.237
 
 # this is a function, 
 # so body not evaluated until used
-rquery_pipeline <- . := {
+rquery_pipeline <- function(.) {
   extend_nse(.,
              probability :=
                exp(assessmentTotal * scale)/
@@ -224,18 +225,17 @@ dplyr_database_count <- function() {
 
 .datatable.aware <- TRUE
 
+# improved code from:
+# http://www.win-vector.com/blog/2018/01/base-r-can-be-fast/#comment-66746
 data.table_local <- function() {
   dDT <- data.table::data.table(dLocal)
-  dDT[
-    , one := 1 ][
-      , probability := exp ( assessmentTotal * scale ) / 
-        sum ( exp ( assessmentTotal * scale ) ) ,subjectID ][
-          , count := sum ( one ) ,subjectID ][
-            , rank := rank ( probability ) ,subjectID ][
-              rank == count ][
-                , diagnosis := surveyCategory ][
-                  , c('subjectID', 'diagnosis', 'probability') ][
-                    order(subjectID) ]
+  dDT <- dDT[,list(diagnosis = surveyCategory,
+                   probability = exp (assessmentTotal * scale ) /
+                     sum ( exp ( assessmentTotal * scale ) ))
+             ,subjectID ]
+  setorder(dDT, subjectID, probability, -diagnosis)
+  dDT <- dDT[,.SD[.N],subjectID]
+  setorder(dDT, subjectID)
 }
 
 ```
