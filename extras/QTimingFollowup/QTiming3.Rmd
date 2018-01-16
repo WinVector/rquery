@@ -16,6 +16,7 @@ packages, establish a database connection, and declare an [`rquery` ad hoc execu
 library("rquery")
 library("dplyr")
 library("microbenchmark")
+library("data.table")
 library("ggplot2")
 source("cscan.R")
 source("fns.R")
