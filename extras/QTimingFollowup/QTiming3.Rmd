@@ -22,11 +22,11 @@ source("cscan.R")
 source("fns.R")
 
 db <- NULL
-# db <- DBI::dbConnect(RPostgres::Postgres(),
-#                      host = 'localhost',
-#                      port = 5432,
-#                      user = 'ruser',
-#                      password = 'ruser')
+db <- DBI::dbConnect(RPostgres::Postgres(),
+                     host = 'localhost',
+                     port = 5432,
+                     user = 'ruser',
+                     password = 'ruser')
 if(!is.null(db)) {
   winvector_temp_db_handle <- list(db = db)
   print(db)
@@ -252,7 +252,7 @@ expressions <- list(
     "data.table in memory" =  bquote({nrow(data.table_local())}),
     # "base R row calculation" =  bquote({nrow(base_R_row_calculation())}),
     "base R tabular calculation" =  bquote({nrow(base_R_tabular_calculation())}),
-    "base R sequential calculation" =  bquote({nrow(base_R_sequential_calculation())}),
+    # "base R sequential calculation" =  bquote({nrow(base_R_sequential_calculation())}),
     "base R cframe calculation" =  bquote({nrow(base_R_cframe_calculation())})
 )
 

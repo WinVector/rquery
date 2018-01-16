@@ -252,7 +252,7 @@ expressions <- list(
     "data.table in memory" =  bquote({nrow(data.table_local())}),
     # "base R row calculation" =  bquote({nrow(base_R_row_calculation())}),
     "base R tabular calculation" =  bquote({nrow(base_R_tabular_calculation())}),
-    "base R sequential calculation" =  bquote({nrow(base_R_sequential_calculation())}),
+    # "base R sequential calculation" =  bquote({nrow(base_R_sequential_calculation())}),
     "base R cframe calculation" =  bquote({nrow(base_R_cframe_calculation())})
 )
 
