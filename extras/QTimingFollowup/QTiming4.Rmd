@@ -211,6 +211,22 @@ if(!equiv_res(check, data.table_local())) {
   stop("mismatch")
 }
 
+# From: http://www.win-vector.com/blog/2018/01/base-r-can-be-fast/#comment-66751
+data.table_local4 <- function(dLocal) {
+ dDT <- data.table::data.table(dLocal)
+ setnames(dDT, "surveyCategory", "diagnosis")
+ dDT[,expaTs:=exp(assessmentTotal*scale)]
+ dDT[,sum_expaTs:=sum(expaTs),subjectID] # precalculate -> this uses gsum internally
+ dDT[,probability := expaTs / sum_expaTs]
+ dDT[,c("assessmentTotal","expaTs","sum_expaTs"):=NULL]
+ setorder(dDT, subjectID, -probability, diagnosis)
+ dDT[,.SD[1],subjectID]
+}
+
+if(!equiv_res(check, data.table_local4(dLocal))) {
+  stop("mismatch")
+}
+
 if(!is.null(db)) {
   head(rquery_local())
   
@@ -237,6 +253,18 @@ Now let's measure the speeds with `microbenchmark`.
 ```{r timings}
 timings <- NULL
 
+# improved code from:
+# http://www.win-vector.com/blog/2018/01/base-r-can-be-fast/#comment-66746
+data.table_local3 <- function() {
+  dDT <- data.table::data.table(dLocal)
+  dDT <- dDT[,list(diagnosis = surveyCategory,
+                   probability = exp (assessmentTotal * scale ) /
+                     sum ( exp ( assessmentTotal * scale ) ))
+             ,subjectID ]
+  setorder(dDT, subjectID, probability, -diagnosis)
+  dDT <- dDT[,.SD[.N],subjectID]
+  setorder(dDT, subjectID)
+}
 
 expressions <- list(
     # "rquery in memory" = bquote({ nrow(rquery_local())}),
@@ -250,7 +278,7 @@ expressions <- list(
     # "dplyr from db to memory" =  bquote({nrow(dplyr_database_pull())}),
     # "dplyr database count" =  bquote({dplyr_database_count()}),
     # "dplyr database land" =  bquote({dplyr_database_land()}),
-    "data.table in memory" =  bquote({nrow(data.table_local())}),
+    "data.table in memory" =  bquote({nrow(data.table_local4(dLocal))}),
     # "base R row calculation" =  bquote({nrow(base_R_row_calculation())}),
     "base R tabular calculation" =  bquote({nrow(base_R_tabular_calculation())}),
     # "base R sequential calculation" =  bquote({nrow(base_R_sequential_calculation())})
@@ -283,8 +311,9 @@ for(nrep in c(1,
               10000,
               100000, 
               1000000)) {
-  print(nrep)
+  print(paste("nrep:", nrep))
   dLocal <- mkData(nrep)
+  print(paste("rows:", nrow(dLocal)))
   dR <- NULL
   dTbl <- NULL
   if(!is.null(db)) {
@@ -299,7 +328,8 @@ for(nrep in c(1,
     times = 5L
   )
   print(tm)
-  print(autoplot(tm))
+  plt <- autoplot(tm) + ggtitle(paste0("rows: ", nrow(dLocal)))
+  print(plt)
   tmi <- as.data.frame(tm, stringsAsFactors = FALSE)
   tmi$data_size <- nrow(dLocal)
   timings <- rbind(timings, tmi)

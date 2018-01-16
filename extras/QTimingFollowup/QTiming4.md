@@ -10,10 +10,18 @@ These timings are on a late 2014 Mac Mini with 8GB of RAM running OSX 10.12.6, R
 First let's load our packages, establish a database connection, and declare an [`rquery` ad hoc execution service](https://winvector.github.io/rquery/articles/AdHocQueries.html) (the "`winvector_temp_db_handle`").
 
 ``` r
+library("data.table")  # load first so we can overwrite := with rquery
 library("rquery")
 ```
 
     ## Loading required package: wrapr
+
+    ## 
+    ## Attaching package: 'wrapr'
+
+    ## The following object is masked from 'package:data.table':
+    ## 
+    ##     :=
 
     ## Loading required package: cdata
 
@@ -23,6 +31,10 @@ library("dplyr")
 
     ## 
     ## Attaching package: 'dplyr'
+
+    ## The following objects are masked from 'package:data.table':
+    ## 
+    ##     between, first, last
 
     ## The following objects are masked from 'package:stats':
     ## 
@@ -34,21 +46,6 @@ library("dplyr")
 
 ``` r
 library("microbenchmark")
-library("data.table")
-```
-
-    ## 
-    ## Attaching package: 'data.table'
-
-    ## The following objects are masked from 'package:dplyr':
-    ## 
-    ##     between, first, last
-
-    ## The following object is masked from 'package:wrapr':
-    ## 
-    ##     :=
-
-``` r
 library("ggplot2")
 source("cscan.R")
 source("fns.R")
@@ -158,11 +155,11 @@ head(dLocal)
 
     ##   subjectID      surveyCategory assessmentTotal
     ## 1        s1 withdrawal behavior               3
-    ## 2        s1 positive re-framing               9
-    ## 3       s10 withdrawal behavior               8
-    ## 4       s10 positive re-framing               3
-    ## 5        s2 withdrawal behavior               2
-    ## 6        s2 positive re-framing               8
+    ## 2        s1 positive re-framing               8
+    ## 3       s10 withdrawal behavior               9
+    ## 4       s10 positive re-framing               1
+    ## 5        s2 withdrawal behavior               3
+    ## 6        s2 positive re-framing               5
 
 ``` r
 dR <- NULL
@@ -296,12 +293,12 @@ head(check)
 ```
 
     ##   subjectID           diagnosis probability
-    ## 1        s1 positive re-framing   0.8056518
-    ## 2       s10 withdrawal behavior   0.7658456
-    ## 3        s2 positive re-framing   0.8056518
-    ## 4        s3 withdrawal behavior   0.5589742
-    ## 5        s4 positive re-framing   0.6163301
-    ## 6        s5 withdrawal behavior   0.6163301
+    ## 1        s1 positive re-framing   0.7658456
+    ## 2       s10 withdrawal behavior   0.8694381
+    ## 3        s2 positive re-framing   0.6163301
+    ## 4        s3 positive re-framing   0.6706221
+    ## 5        s4 positive re-framing   0.5000000
+    ## 6        s5 positive re-framing   0.6163301
 
 ``` r
 if(!equiv_res(check, base_R_cframe_calculation())) {
@@ -332,6 +329,22 @@ if(!equiv_res(check, data.table_local())) {
   stop("mismatch")
 }
 
+# From: http://www.win-vector.com/blog/2018/01/base-r-can-be-fast/#comment-66751
+data.table_local4 <- function(dLocal) {
+ dDT <- data.table::data.table(dLocal)
+ setnames(dDT, "surveyCategory", "diagnosis")
+ dDT[,expaTs:=exp(assessmentTotal*scale)]
+ dDT[,sum_expaTs:=sum(expaTs),subjectID] # precalculate -> this uses gsum internally
+ dDT[,probability := expaTs / sum_expaTs]
+ dDT[,c("assessmentTotal","expaTs","sum_expaTs"):=NULL]
+ setorder(dDT, subjectID, -probability, diagnosis)
+ dDT[,.SD[1],subjectID]
+}
+
+if(!equiv_res(check, data.table_local4(dLocal))) {
+  stop("mismatch")
+}
+
 if(!is.null(db)) {
   head(rquery_local())
   
@@ -356,6 +369,18 @@ Now let's measure the speeds with `microbenchmark`.
 ``` r
 timings <- NULL
 
+# improved code from:
+# http://www.win-vector.com/blog/2018/01/base-r-can-be-fast/#comment-66746
+data.table_local3 <- function() {
+  dDT <- data.table::data.table(dLocal)
+  dDT <- dDT[,list(diagnosis = surveyCategory,
+                   probability = exp (assessmentTotal * scale ) /
+                     sum ( exp ( assessmentTotal * scale ) ))
+             ,subjectID ]
+  setorder(dDT, subjectID, probability, -diagnosis)
+  dDT <- dDT[,.SD[.N],subjectID]
+  setorder(dDT, subjectID)
+}
 
 expressions <- list(
     # "rquery in memory" = bquote({ nrow(rquery_local())}),
@@ -369,7 +394,7 @@ expressions <- list(
     # "dplyr from db to memory" =  bquote({nrow(dplyr_database_pull())}),
     # "dplyr database count" =  bquote({dplyr_database_count()}),
     # "dplyr database land" =  bquote({dplyr_database_land()}),
-    "data.table in memory" =  bquote({nrow(data.table_local())}),
+    "data.table in memory" =  bquote({nrow(data.table_local4(dLocal))}),
     # "base R row calculation" =  bquote({nrow(base_R_row_calculation())}),
     "base R tabular calculation" =  bquote({nrow(base_R_tabular_calculation())}),
     # "base R sequential calculation" =  bquote({nrow(base_R_sequential_calculation())})
@@ -402,8 +427,9 @@ for(nrep in c(1,
               10000,
               100000, 
               1000000)) {
-  print(nrep)
+  print(paste("nrep:", nrep))
   dLocal <- mkData(nrep)
+  print(paste("rows:", nrow(dLocal)))
   dR <- NULL
   dTbl <- NULL
   if(!is.null(db)) {
@@ -418,7 +444,8 @@ for(nrep in c(1,
     times = 5L
   )
   print(tm)
-  print(autoplot(tm))
+  plt <- autoplot(tm) + ggtitle(paste0("rows: ", nrow(dLocal)))
+  print(plt)
   tmi <- as.data.frame(tm, stringsAsFactors = FALSE)
   tmi$data_size <- nrow(dLocal)
   timings <- rbind(timings, tmi)
@@ -434,108 +461,115 @@ for(nrep in c(1,
 }
 ```
 
-    ## [1] 1
+    ## [1] "nrep: 1"
+    ## [1] "rows: 2"
     ## Unit: microseconds
     ##                               expr       min        lq      mean    median
-    ##  dplyr in memory no grouped filter 20456.661 25218.594 26065.584 25260.418
-    ##               data.table in memory  1543.898  2053.692  3224.170  2171.979
-    ##         base R tabular calculation  2250.084  3246.387  3140.688  3349.276
-    ##          base R cframe calculation   694.016   801.401  1470.955  1072.940
+    ##  dplyr in memory no grouped filter 17093.711 18502.633 20873.779 18885.434
+    ##               data.table in memory  2398.241  2461.082  2838.094  2461.398
+    ##         base R tabular calculation  2174.808  2181.188  2578.358  2303.722
+    ##          base R cframe calculation   677.162   712.871  1095.345  1058.710
     ##         uq       max neval
-    ##  25730.883 33661.363     5
-    ##   2260.777  8090.506     5
-    ##   3403.702  3453.992     5
-    ##   1719.685  3066.734     5
+    ##  22898.726 26988.391     5
+    ##   3063.820  3805.928     5
+    ##   2330.217  3901.855     5
+    ##   1281.909  1746.075     5
 
 ![](QTiming4_files/figure-markdown_github/timings-1.png)
 
-    ## [1] 10
+    ## [1] "nrep: 10"
+    ## [1] "rows: 20"
     ## Unit: microseconds
     ##                               expr       min        lq      mean    median
-    ##  dplyr in memory no grouped filter 18075.328 18961.904 21128.619 20050.965
-    ##               data.table in memory  2039.548  2056.572  2167.230  2088.699
-    ##         base R tabular calculation  2574.168  2586.104  3119.151  3123.936
-    ##          base R cframe calculation   717.658   774.146   942.837   819.216
+    ##  dplyr in memory no grouped filter 18103.938 23419.238 23386.661 24279.069
+    ##               data.table in memory  2642.359  3085.040  3201.963  3266.684
+    ##         base R tabular calculation  2692.558  3144.201  3407.787  3374.973
+    ##          base R cframe calculation   726.014  1072.098  1075.301  1111.188
     ##         uq       max neval
-    ##  22228.320 26326.577     5
-    ##   2316.605  2334.726     5
-    ##   3654.679  3656.869     5
-    ##   1181.305  1221.860     5
+    ##  25208.984 25922.075     5
+    ##   3316.276  3699.456     5
+    ##   3477.826  4349.377     5
+    ##   1157.387  1309.818     5
 
 ![](QTiming4_files/figure-markdown_github/timings-2.png)
 
-    ## [1] 100
+    ## [1] "nrep: 100"
+    ## [1] "rows: 200"
     ## Unit: microseconds
     ##                               expr       min        lq      mean    median
-    ##  dplyr in memory no grouped filter 22011.682 26295.649 27595.784 27105.854
-    ##               data.table in memory  2150.935  2536.765  2825.180  2784.072
-    ##         base R tabular calculation  4461.988  5088.133  5712.782  6085.197
-    ##          base R cframe calculation   813.244   884.347  1015.407   928.185
+    ##  dplyr in memory no grouped filter 22284.477 22516.579 25150.174 24497.526
+    ##               data.table in memory  3221.646  3254.257  3428.856  3430.565
+    ##         base R tabular calculation  3888.089  4323.419  5325.524  5992.453
+    ##          base R cframe calculation   936.452   994.121  1142.918  1181.963
     ##         uq       max neval
-    ##  29415.315 33150.420     5
-    ##   3199.540  3454.590     5
-    ##   6312.489  6616.104     5
-    ##   1035.777  1415.483     5
+    ##  28092.619 28359.668     5
+    ##   3556.454  3681.357     5
+    ##   6095.100  6328.557     5
+    ##   1263.678  1338.374     5
 
 ![](QTiming4_files/figure-markdown_github/timings-3.png)
 
-    ## [1] 1000
+    ## [1] "nrep: 1000"
+    ## [1] "rows: 2000"
     ## Unit: milliseconds
     ##                               expr       min        lq      mean    median
-    ##  dplyr in memory no grouped filter 51.950343 52.497947 60.056860 53.788355
-    ##               data.table in memory  4.187219  4.283458  5.293557  5.075521
-    ##         base R tabular calculation 18.645295 21.111560 24.992765 26.527032
-    ##          base R cframe calculation  1.167351  1.188322  1.322083  1.202917
-    ##         uq       max neval
-    ##  67.823803 74.223851     5
-    ##   6.410136  6.511451     5
-    ##  27.694791 30.985146     5
-    ##   1.322319  1.729508     5
+    ##  dplyr in memory no grouped filter 51.674285 77.150215 75.517975 81.633480
+    ##               data.table in memory  3.339440  3.474448  4.040997  4.318096
+    ##         base R tabular calculation 18.842085 19.221082 23.318909 21.780901
+    ##          base R cframe calculation  1.193218  1.368413  1.443241  1.380113
+    ##        uq       max neval
+    ##  82.51997 84.611928     5
+    ##   4.35286  4.720141     5
+    ##  27.78488 28.965598     5
+    ##   1.40330  1.871162     5
 
 ![](QTiming4_files/figure-markdown_github/timings-4.png)
 
-    ## [1] 10000
+    ## [1] "nrep: 10000"
+    ## [1] "rows: 20000"
     ## Unit: milliseconds
-    ##                               expr       min         lq       mean
-    ##  dplyr in memory no grouped filter 407.57227 408.732015 456.534921
-    ##               data.table in memory  32.67173  33.568880  34.395952
-    ##         base R tabular calculation 204.51553 206.352193 231.718029
-    ##          base R cframe calculation   6.08986   7.912128   9.934207
+    ##                               expr        min         lq       mean
+    ##  dplyr in memory no grouped filter 401.330091 434.587584 480.510831
+    ##               data.table in memory   9.889524  12.812629  15.485638
+    ##         base R tabular calculation 223.716139 257.465046 292.931891
+    ##          base R cframe calculation   6.575244   6.707435   9.369459
     ##     median        uq       max neval
-    ##  473.07169 481.51620 511.78242     5
-    ##   34.16621  35.38507  36.18787     5
-    ##  212.23632 265.52503 269.96108     5
-    ##   10.91302  12.20499  12.55103     5
+    ##  479.98477 483.86224 602.78948     5
+    ##   13.94164  20.20621  20.57819     5
+    ##  300.67289 338.20146 344.60392     5
+    ##    9.78236  11.01194  12.77032     5
 
 ![](QTiming4_files/figure-markdown_github/timings-5.png)
 
-    ## [1] 1e+05
+    ## [1] "nrep: 1e+05"
+    ## [1] "rows: 200000"
     ## Unit: milliseconds
-    ##                               expr        min        lq      mean
-    ##  dplyr in memory no grouped filter 4883.60637 4920.4777 4987.7614
-    ##               data.table in memory  314.09463  341.8826  386.0243
-    ##         base R tabular calculation 3168.06444 3176.0435 3190.6416
-    ##          base R cframe calculation   96.01012  123.7556  161.3585
-    ##     median        uq       max neval
-    ##  4957.4360 5018.8377 5158.4490     5
-    ##   366.2532  443.0243  464.8669     5
-    ##  3183.9118 3199.3232 3225.8650     5
-    ##   189.1735  194.2884  203.5648     5
+    ##                               expr        min         lq      mean
+    ##  dplyr in memory no grouped filter 4931.53225 4963.63557 5651.3629
+    ##               data.table in memory   70.09192   73.99669  104.3876
+    ##         base R tabular calculation 3087.54650 3175.19333 3249.3754
+    ##          base R cframe calculation   95.02364  101.13144  179.5916
+    ##      median        uq       max neval
+    ##  5178.66185 5911.1958 7271.7890     5
+    ##    86.96318  101.8792  189.0069     5
+    ##  3228.73675 3230.2300 3525.1706     5
+    ##   190.81691  250.2387  260.7472     5
 
 ![](QTiming4_files/figure-markdown_github/timings-6.png)
 
-    ## [1] 1e+06
-    ## Unit: seconds
-    ##                               expr       min        lq      mean    median
-    ##  dplyr in memory no grouped filter 58.452147 58.836308 59.561076 59.124187
-    ##               data.table in memory  2.751876  2.966301  3.003676  3.053672
-    ##         base R tabular calculation 34.320397 34.862663 35.064516 35.130647
-    ##          base R cframe calculation  1.307976  1.344955  1.469113  1.509459
-    ##         uq       max neval
-    ##  59.709718 61.683019     5
-    ##   3.080143  3.166388     5
-    ##  35.318436 35.690435     5
-    ##   1.563261  1.619915     5
+    ## [1] "nrep: 1e+06"
+    ## [1] "rows: 2000000"
+    ## Unit: milliseconds
+    ##                               expr        min         lq      mean
+    ##  dplyr in memory no grouped filter 58101.8360 58388.8882 61621.171
+    ##               data.table in memory   873.8924   957.7749  1041.705
+    ##         base R tabular calculation 34946.6670 36124.8858 36788.736
+    ##          base R cframe calculation  1399.6995  1657.8473  1733.163
+    ##     median        uq       max neval
+    ##  58509.173 66193.804 66912.155     5
+    ##   1054.780  1128.150  1193.927     5
+    ##  36151.583 36491.518 40229.027     5
+    ##   1744.881  1750.348  2113.041     5
 
 ![](QTiming4_files/figure-markdown_github/timings-7.png)
 
@@ -562,9 +596,9 @@ sessionInfo()
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ## [1] bindrcpp_0.2         ggplot2_2.2.1        data.table_1.10.4-3 
-    ## [4] microbenchmark_1.4-3 dplyr_0.7.4          rquery_0.2.0        
-    ## [7] cdata_0.5.1          wrapr_1.1.1         
+    ## [1] bindrcpp_0.2         ggplot2_2.2.1        microbenchmark_1.4-3
+    ## [4] dplyr_0.7.4          rquery_0.2.0         cdata_0.5.1         
+    ## [7] wrapr_1.1.1          data.table_1.10.4-3 
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] Rcpp_0.12.14.2   knitr_1.18       bindr_0.1        magrittr_1.5    
