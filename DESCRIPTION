@@ -17,7 +17,8 @@ Depends:
   cdata (>= 0.5.1)
 Imports:
   DBI,
-  RSQLite
+  RSQLite,
+  utils
 Suggests:
     sparklyr (>= 0.6.4),
     RPostgreSQL,

@@ -37,7 +37,8 @@ table_source <- function(table_name, columns) {
   r <- list(source = list(),
             table_name = table_name,
             parsed = NULL,
-            columns = columns)
+            columns = columns,
+            data = NULL)
   r <- relop_decorate("relop_table_source", r)
   r
 }
@@ -279,9 +280,10 @@ to_pre_sql.relop_table_source  <- function (x,
 #' @export
 #'
 dim.relop_table_source <- function(x) {
-  q <- paste0("SELECT COUNT(1) FROM ",
-              DBI::dbQuoteIdentifier(my_db, x$table_name))
-  rowcount <- DBI::dbGetQuery(my_db, q)[1, 1, drop = TRUE]
+  rowcount <- NA
+  if(!is.null(x$data)) {
+    rowcount <- nrow(x$data)
+  }
   c(rowcount, length(column_names(x)))
 }
 

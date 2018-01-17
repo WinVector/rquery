@@ -120,22 +120,6 @@ tables_used.relop <- function(node, ...) {
 }
 
 
-
-#' @export
-print.relop <- function(x, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguemnts")
-  }
-  res <- execute(x, env = parent.frame())
-  if(!is.null(res)) {
-    print(res)
-  } else {
-    txt <- format(x)
-    txt <- trimws(gsub("[ \t\r\n]+", " ", txt), which = "both")
-    print(txt, ...)
-  }
-}
-
 #' Return SQL implementation of operation tree.
 #'
 #' @param x rquery operation tree.

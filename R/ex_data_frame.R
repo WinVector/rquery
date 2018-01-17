@@ -8,6 +8,7 @@
 #' @param pipe_left_arg data.frame
 #' @param pipe_right_arg rquery rel_op operation tree.
 #' @param pipe_environment environment to look for "winvector_temp_db_handle" in.
+#' @param result_limit numeric if not null limit result to this many rows.
 #' @return data.frame result
 #'
 #' @examples
@@ -24,14 +25,14 @@
 #'
 #' rquery_apply_to_data_frame(d, q)
 #'
-#' execute(q, data = d)
+#' execute_data_frame(q, data = d)
 #'
 #' d %.>% q
 #' # run (and build result for) ad-hoc query
 #' d %.>%
 #'   extend_nse(., c := sqrt(R2)) %.>%
 #'   orderby(., "R2", desc = TRUE) %.>%
-#'   execute(.)
+#'   execute_data_frame(.)
 #' # print ad-hoc query (result only available for printing)
 #' d %.>%
 #'   extend_nse(., c := sqrt(R2)) %.>%
@@ -44,7 +45,8 @@
 #'
 rquery_apply_to_data_frame <- function(pipe_left_arg,
                                        pipe_right_arg,
-                                       pipe_environment = parent.frame()) {
+                                       pipe_environment = parent.frame(),
+                                       result_limit = NULL) {
   d <- pipe_left_arg
   node_tree <- pipe_right_arg
   env <- pipe_environment
@@ -81,6 +83,9 @@ rquery_apply_to_data_frame <- function(pipe_left_arg,
                     temporary = TRUE,
                     overwrite = FALSE)
   sql <- to_sql(node_tree, my_db)
+  if(!is.null(result_limit)) {
+    sql <- paste(sql, "LIMIT", result_limit)
+  }
   res <- DBI::dbGetQuery(my_db, sql)
   x <- DBI::dbExecute(my_db, paste("DROP TABLE", tabName))
   if(need_close) {
@@ -89,12 +94,13 @@ rquery_apply_to_data_frame <- function(pipe_left_arg,
   res
 }
 
-#' Attempt to execute a pipeline (assuming it has local data)
+#' Attempt to execute a pipeline (assuming it has local data, or is passed local data).
 #'
 #' @param node_tree rquery relop pipeline.
 #' @param ... force later arguments to bind by name.
 #' @param env environment to work in.
 #' @param data data.frame to evaluate.
+#' @param result_limit numeric if not null limit result to this many rows.
 #' @return executed pipleline or NULL if not executable.
 #'
 #' @examples
@@ -111,14 +117,14 @@ rquery_apply_to_data_frame <- function(pipe_left_arg,
 #'
 #' rquery_apply_to_data_frame(d, q)
 #'
-#' execute(q, data = d)
+#' execute_data_frame(q, data = d)
 #'
 #' d %.>% q
 #' # run (and build result for) ad-hoc query
 #' d %.>%
 #'   extend_nse(., c := sqrt(R2)) %.>%
 #'   orderby(., "R2", desc = TRUE) %.>%
-#'   execute(.)
+#'   execute_data_frame(.)
 #' # print ad-hoc query (result only available for printing)
 #' d %.>%
 #'   extend_nse(., c := sqrt(R2)) %.>%
@@ -129,10 +135,11 @@ rquery_apply_to_data_frame <- function(pipe_left_arg,
 #'
 #' @export
 #'
-execute <- function(node_tree,
+execute_data_frame <- function(node_tree,
                ...,
                env = parent.frame(),
-               data = NULL) {
+               data = NULL,
+               result_limit = NULL) {
   if(length(list(...))>0) {
     stop("rquery: unexpected arguments")
   }
@@ -142,13 +149,63 @@ execute <- function(node_tree,
     if(is.null(data)) {
       data <- tabs[[1]]$data
     }
-    res <- rquery_apply_to_data_frame(data, node_tree, env)
+    res <- rquery_apply_to_data_frame(data, node_tree,
+                                      pipe_environment = env,
+                                      result_limit = result_limit)
     return(res)
   }
   NULL
 }
 
 #' @export
-as.data.frame.relop <- function (x, row.names = NULL, optional = FALSE, ...) {
-  execute(x, env = parent.frame())
+as.data.frame.relop <- function (x,
+                                 row.names = NULL,
+                                 optional = FALSE,
+                                 ...) {
+  dotargs <- list(...)
+  n <- NULL
+  if(!is.null(dotargs$n)) {
+    n <- dotargs$n
+  }
+  execute_data_frame(x,
+          env = parent.frame(), result_limit = n)
 }
+
+
+#' @export
+print.relop <- function(x, ...) {
+  dotargs <- list(...)
+  n <- NULL
+  if(!is.null(dotargs$n)) {
+    n <- dotargs$n
+  }
+  res <- execute_data_frame(x,
+                 env = parent.frame(), result_limit = n)
+  if(!is.null(res)) {
+    print(res)
+  } else {
+    txt <- format(x)
+    txt <- trimws(gsub("[ \t\r\n]+", " ", txt), which = "both")
+    print(txt, ...)
+  }
+}
+
+#' @importFrom utils head
+NULL
+
+#' @export
+head.relop <- function(x, ...) {
+  dotargs <- list(...)
+  n <- 6
+  if(!is.null(dotargs$n)) {
+    n <- dotargs$n
+  }
+  res <- execute_data_frame(x,
+                 env = parent.frame(), result_limit = n)
+  if(!is.null(res)) {
+    res
+  } else {
+    x
+  }
+}
+
