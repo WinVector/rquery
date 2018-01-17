@@ -275,3 +275,14 @@ to_pre_sql.relop_table_source  <- function (x,
   }
   pre_sql_table(x$table_name, x$columns)
 }
+
+#' @export
+#'
+dim.relop_table_source <- function(x) {
+  q <- paste0("SELECT COUNT(1) FROM ",
+              DBI::dbQuoteIdentifier(my_db, x$table_name))
+  rowcount <- DBI::dbGetQuery(my_db, q)[1, 1, drop = TRUE]
+  c(rowcount, length(column_names(x)))
+}
+
+

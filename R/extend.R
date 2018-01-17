@@ -364,3 +364,11 @@ to_sql.relop_extend <- function (x,
   }
   q
 }
+
+#' @export
+#'
+dim.relop_extend <- function(x) {
+  ncol <- length(column_names(x))
+  nrow <- nrow(x$source[[1]])
+  c(nrow, ncol)
+}

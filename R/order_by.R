@@ -162,3 +162,11 @@ to_sql.relop_orderby <- function (x,
   }
   q
 }
+
+#' @export
+#'
+dim.relop_orderby <- function(x) {
+  ncol <- length(column_names(x))
+  nrow <- nrow(x$source[[1]])
+  c(nrow, ncol)
+}

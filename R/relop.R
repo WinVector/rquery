@@ -175,3 +175,11 @@ to_pre_sql <- function (x,
   UseMethod("to_pre_sql", x)
 }
 
+
+#' @export
+#'
+dim.relop <- function(x) {
+  c(NA_real_, length(column_names(x)))
+}
+
+

@@ -120,3 +120,10 @@ to_sql.relop_sql <- function (x,
   }
   q
 }
+
+#' @export
+#'
+dim.relop_sql <- function(x) {
+  c(NA_real_, NA_real_)
+}
+
