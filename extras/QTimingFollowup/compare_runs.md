@@ -62,7 +62,9 @@ ggplot(data=compsF, aes(x=data_size, y=data_size/durationMS,
   geom_ribbon(data=baselineF, 
               aes(x=data_size, ymax=data_size/durationMS, ymin=0), 
               color=baseline_color, alpha=0.1, size=0) +
-  scale_x_log10() + ylab("Rows Per Millisecond") +
+  scale_x_log10() + 
+  ylab("Throughput in Rows Per Millisecond") +
+  xlab("Data Set Size in Rows") +
   scale_y_log10() +
   scale_color_brewer(palette="Dark2") + 
   facet_wrap(~machine, ncol=2) + 
