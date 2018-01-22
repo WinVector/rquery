@@ -6,7 +6,7 @@ rquery
 `rquery`
 ========
 
-[`rquery`](https://winvector.github.io/rquery/) is a query generator based on [Codd's relational algebra](https://en.wikipedia.org/wiki/Relational_algebra) (updated to reflect lessons learned from working with [`R`](https://www.r-project.org), [`SQL`](https://en.wikipedia.org/wiki/SQL), and [`dplyr`](https://CRAN.R-project.org/package=dplyr) at big data scale in production). One goal of this experiment is to see if `SQL` would be more fun if it had a sequential data-flow or pipe notation.
+[`rquery`](https://winvector.github.io/rquery/) is a query generator based on [Codd's relational algebra](https://en.wikipedia.org/wiki/Relational_algebra) (updated to reflect lessons learned from working with [`R`](https://www.r-project.org), [`SQL`](https://en.wikipedia.org/wiki/SQL), and [`dplyr`](https://CRAN.R-project.org/package=dplyr) at big data scale in production). One goal of this experiment is to see if `SQL` would be more fun teachable if it had a sequential data-flow or pipe notation.
 
 `rquery` is currently experimental, and not yet recommended for production use.
 

@@ -5,5 +5,5 @@
 ^.*.log$
 ^logs$
 ^extras$
-
+^cran-comments\.md$
 ^_pkgdown\.yml$
