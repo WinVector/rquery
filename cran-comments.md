@@ -3,8 +3,8 @@
 ## Test environments
 
   * Windows
-  In-progress.
-  
+  * using R Under development (unstable) (2018-01-20 r74146)
+  * using platform: x86_64-w64-mingw32 (64-bit)
 
   * OSX
   * using R version 3.4.3 (2017-11-30)
@@ -31,5 +31,5 @@ New package, now reverse dependencies.
 
      devtools::revdep()
      character(0)
-
-
+     
+Note: "Edgar F. Codd"" and "observable" are both spelled correctly.
