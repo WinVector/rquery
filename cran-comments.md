@@ -1,4 +1,5 @@
 
+Re-submitted with corrected spelling (entities in single quotes) in DESCRIPTION as requested.
 
 ## Test environments
 
@@ -32,4 +33,4 @@ New package, now reverse dependencies.
      devtools::revdep()
      character(0)
      
-Note: "Edgar F. Codd"" and "observable" are both spelled correctly.
+Note: "Edgar F. Codd", "SQL", and "observable" are all spelled correctly.

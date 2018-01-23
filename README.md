@@ -226,8 +226,3 @@ cat(format(dq))
      orderby(., subjectID)
 
 We also can stand `rquery` up on non-`DBI` sources such as [`SparkR`](https://github.com/WinVector/rquery/blob/master/extras/SparkRExample.md) and perhaps even [`data.table`](https://github.com/WinVector/rquery/blob/master/extras/data_table.md).
-
-Conclusion
-==========
-
-`rquery` is still in early development (and not yet ready for extensive use in production), but it is maturing fast. Our current intent is to bring in sponsors, partners, and R community voices to help develop and steer rquery.

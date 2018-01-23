@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 )
 ```
 
+The primary purpose of `rquery` is `SQL` query generation.  We demonstrate this below.
 
 ```{r ex, warning=FALSE, message=FALSE, include=FALSE}
 library("rquery")

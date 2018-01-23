@@ -44,6 +44,9 @@ pre_sql_string <- function(value) {
 #' represents a string constant
 #'   value character string
 #'
+#' @param value character, token string
+#' @return pre_sql_token class
+#'
 #' @noRd
 #'
 pre_sql_token <- function(value) {
@@ -56,6 +59,9 @@ pre_sql_token <- function(value) {
 #' pre_sql_expr
 #'
 #' represents an expression.  Unnamed list of pre_sql_terms and character.
+#'
+#' @param terms character, term vector
+#' @return pre_sql_expr class
 #'
 #' @noRd
 #'
@@ -88,6 +94,7 @@ pre_sql_expr <- function(terms) {
 #'
 #' @param tablename characer name of table
 #' @param columns character column names
+#' @return pre_sql table details
 #'
 #' @noRd
 #'
@@ -144,6 +151,16 @@ format.pre_sql_token <- function(x, ...) {
   paste(as.character(x$value), collapse = " ")
 }
 
+#' Convert a pre_sql token object to SQL query text.
+#'
+#' @param x the pre_sql token
+#' @param db_info representation of the database to convert to
+#' @param ... force later arguments to be by name
+#' @param source_table concrete table for query
+#' @param source_limit numeric limit on rows from this source table
+#' @param using TBD
+#' @return SQL query text
+#'
 #' @noRd
 #'
 to_query.pre_sql_token <- function (x,
@@ -170,7 +187,16 @@ to_query.pre_sql_token <- function (x,
   paste(as.character(x$value), collapse = " ")
 }
 
-
+#' Convert a pre_sql expr object to SQL query text.
+#'
+#' @param x the pre_sql expr
+#' @param db_info representation of the database to convert to
+#' @param ... force later arguments to be by name
+#' @param source_table concrete table for query
+#' @param source_limit numeric limit on rows from this source table
+#' @param using TBD
+#' @return SQL query text
+#'
 #' @noRd
 #'
 to_query.pre_sql_expr <- function (x,
@@ -270,6 +296,15 @@ place_subqs <- function (x,
   UseMethod("place_subqs", x)
 }
 
+#' Convert a pre_sql op object to SQL query text.
+#'
+#' @param x the pre_sql op
+#' @param db_info representation of the database to convert to
+#' @param subqs subqueries
+#' @param ... force later arguments to be by name
+#' @param source_limit numeric limit on rows from this source table
+#' @param using TBD
+#' @return SQL query text
 #'
 #' @noRd
 #'
@@ -285,7 +320,16 @@ place_subqs.pre_sql_op <- function (x,
   subqs[[1]]
 }
 
-
+#' Convert a pre_sql op object to SQL query text.
+#'
+#' @param x the pre_sql op
+#' @param db_info representation of the database to convert to
+#' @param ... force later arguments to be by name
+#' @param source_table concrete table for query
+#' @param source_limit numeric limit on rows from this source table
+#' @param using TBD
+#' @return SQL query text
+#'
 #' @noRd
 #'
 to_query.pre_sql_op <- function (x,
