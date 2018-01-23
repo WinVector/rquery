@@ -310,7 +310,7 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
   p= subjectID,
   o= probability, surveyCategory) %.&gt;%
  rename(.,
-  c('diagnosis' := 'surveyCategory')) %.&gt;%
+  c('diagnosis' = 'surveyCategory')) %.&gt;%
  select_rows(.,  := rank = count) %.&gt;%
  select_columns(., subjectID, diagnosis, probability) %.&gt;%
  orderby(., subjectID)</code></pre>

@@ -75,7 +75,7 @@ format.relop_rename_columns <- function(x, ...) {
          " %.>%\n ",
          "rename(.,\n",
          "  ", gsub("\n", "\n  ",
-                    wrapr::map_to_char(x$cmap),
+                    wrapr::map_to_char(x$cmap, sep = "\n  "),
                     fixed = TRUE), ")",
          "\n")
 }

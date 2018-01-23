@@ -220,7 +220,7 @@ cat(format(dq))
       p= subjectID,
       o= probability, surveyCategory) %.>%
      rename(.,
-      c('diagnosis' := 'surveyCategory')) %.>%
+      c('diagnosis' = 'surveyCategory')) %.>%
      select_rows(.,  := rank = count) %.>%
      select_columns(., subjectID, diagnosis, probability) %.>%
      orderby(., subjectID)
