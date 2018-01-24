@@ -130,7 +130,9 @@ parse_se <- function(source, assignments, env,
     pi$symbols_produced <- unique(c(pi$symbols_produced, ni))
     pi$parsed <- to_query(pi$parsed_toks,
                           db_info = db_inf)
-    pi$presentation <- paste(ni, ":=", pi$presentation)
+    if((!is.null(ni)) && (nchar(as.character(ni))>0)) {
+      pi$presentation <- paste(ni, ":=", pi$presentation)
+    }
     have <- unique(c(have, pi$symbols_produced))
     parsed[[i]] <- pi
   }
@@ -155,7 +157,9 @@ parse_nse <- function(source, exprs, env,
                         colnames = have,
                         env = env)
     pi$symbols_produced <- unique(c(pi$symbols_produced, ni))
-    pi$presentation <- paste(ni, ":=", pi$presentation)
+    if((!is.null(ni)) && (nchar(as.character(ni))>0)) {
+      pi$presentation <- paste(ni, ":=", pi$presentation)
+    }
     pi$parsed <- to_query(pi$parsed_toks,
                           db_info = db_inf)
     have <- unique(c(have, pi$symbols_produced))

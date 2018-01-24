@@ -302,16 +302,16 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw">format</span>(dq))</code></pre></div>
 <pre><code>table('d') %.&gt;%
  extend(.,
-   := probability := exp(assessmentTotal * scale) / sum(exp(assessmentTotal * scale)),
-   := count := count(1),
+  probability := exp(assessmentTotal * scale) / sum(exp(assessmentTotal * scale)),
+  count := count(1),
   p= subjectID) %.&gt;%
  extend(.,
-   := rank := rank(),
+  rank := rank(),
   p= subjectID,
   o= probability, surveyCategory) %.&gt;%
  rename(.,
   c('diagnosis' = 'surveyCategory')) %.&gt;%
- select_rows(.,  := rank = count) %.&gt;%
+ select_rows(., rank = count) %.&gt;%
  select_columns(., subjectID, diagnosis, probability) %.&gt;%
  orderby(., subjectID)</code></pre>
 <p>We also can stand <code>rquery</code> up on non-<code>DBI</code> sources such as <a href="https://github.com/WinVector/rquery/blob/master/extras/SparkRExample.md"><code>SparkR</code></a> and perhaps even <a href="https://github.com/WinVector/rquery/blob/master/extras/data_table.md"><code>data.table</code></a>.</p>
@@ -323,6 +323,8 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
     <h2 class="hasAnchor">
 <a href="#sidebar" class="anchor"></a>Links</h2>
 <ul class="list-unstyled">
+<li>Download from CRAN at <br><a href="https://cran.r-project.org/package=rquery">https://​cran.r-project.org/​package=rquery</a>
+</li>
 <li>Browse source code at <br><a href="https://github.com/WinVector/rquery/">https://​github.com/​WinVector/​rquery/​</a>
 </li>
 </ul>
