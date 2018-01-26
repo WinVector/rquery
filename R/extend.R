@@ -10,8 +10,8 @@
 #' @param parsed parsed assignment expressions.
 #' @param ... force later arguments to bind by name
 #' @param partitionby partitioning (window function) terms.
-#' @param orderby ordering (window function) terms.
-#' @param desc reverse order
+#' @param orderby ordering (in window function) terms.
+#' @param rev_orderby reverse order (in window function)
 #' @return extend node.
 #'
 #'
@@ -21,7 +21,7 @@ extend_impl <- function(source, parsed,
                         ...,
                         partitionby = NULL,
                         orderby = NULL,
-                        desc = FALSE) {
+                        rev_orderby = NULL) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
   }
@@ -34,7 +34,7 @@ extend_impl <- function(source, parsed,
             parsed = parsed,
             partitionby = partitionby,
             orderby = orderby,
-            desc = desc,
+            rev_orderby = rev_orderby,
             assignments = assignments,
             columns = names(assignments))
   r <- relop_decorate("relop_extend", r)
@@ -50,8 +50,8 @@ extend_impl <- function(source, parsed,
 #' @param parsed parsed assignment expressions.
 #' @param ... force later arguments to bind by name
 #' @param partitionby partitioning (window function) terms.
-#' @param orderby ordering (window function) terms.
-#' @param desc reverse order
+#' @param orderby ordering (in window function) terms.
+#' @param rev_orderby reverse ordering (in window function) terms.
 #' @return extend node.
 #'
 #'
@@ -61,7 +61,7 @@ extend_impl_list <- function(source, parsed,
                              ...,
                              partitionby = NULL,
                              orderby = NULL,
-                             desc = FALSE) {
+                             rev_orderby = NULL) {
   parts <- partition_assignments(parsed)
   ndchain <- source
   for(parti in parts) {
@@ -69,7 +69,7 @@ extend_impl_list <- function(source, parsed,
     ndchain <- extend_impl(ndchain, parsedi,
                            partitionby = partitionby,
                            orderby = orderby,
-                           desc = desc)
+                           rev_orderby = rev_orderby)
   }
   ndchain
 }
@@ -89,8 +89,8 @@ extend_impl_list <- function(source, parsed,
 #' @param assignments new column assignment expressions.
 #' @param ... force later arguments to bind by name
 #' @param partitionby partitioning (window function) terms.
-#' @param orderby ordering (window function) terms.
-#' @param desc reverse order
+#' @param orderby ordering (in window function) terms.
+#' @param rev_orderby reverse ordering (in window function) terms.
 #' @param env environment to look for values in.
 #' @return extend node.
 #'
@@ -119,7 +119,7 @@ extend_se <- function(source, assignments,
                    ...,
                    partitionby = NULL,
                    orderby = NULL,
-                   desc = FALSE,
+                   rev_orderby = NULL,
                    env = parent.frame()) {
   if(length(list(...))>0) {
     stop("unexpected arguemnts")
@@ -132,7 +132,7 @@ extend_se <- function(source, assignments,
                        assignments = assignments,
                        partitionby = partitionby,
                        orderby = orderby,
-                       desc = desc,
+                       rev_orderby = rev_orderby,
                        env = env)
     return(enode)
   }
@@ -141,7 +141,7 @@ extend_se <- function(source, assignments,
               parsed = parsed,
               partitionby = partitionby,
               orderby = orderby,
-              desc = desc)
+              rev_orderby = rev_orderby)
 }
 
 
@@ -158,8 +158,8 @@ extend_se <- function(source, assignments,
 #' @param source source to select from.
 #' @param ... new column assignment expressions.
 #' @param partitionby partitioning (window function) terms.
-#' @param orderby ordering (window function) terms.
-#' @param desc reverse order
+#' @param orderby ordering (in window function) terms.
+#' @param rev_orderby reverse ordering (in window function) terms.
 #' @param env environment to look for values in.
 #' @return extend node.
 #'
@@ -181,7 +181,7 @@ extend_nse <- function(source,
                    ...,
                    partitionby = NULL,
                    orderby = NULL,
-                   desc = FALSE,
+                   rev_orderby = NULL,
                    env = parent.frame()) {
   if(is.data.frame(source)) {
     tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
@@ -191,7 +191,7 @@ extend_nse <- function(source,
                         ...,
                         partitionby = partitionby,
                         orderby = orderby,
-                        desc = desc,
+                        rev_orderby = rev_orderby,
                         env = env)
     return(enode)
   }
@@ -201,7 +201,7 @@ extend_nse <- function(source,
               parsed = parsed,
               partitionby = partitionby,
               orderby = orderby,
-              desc = desc)
+              rev_orderby = rev_orderby)
 }
 
 
@@ -225,10 +225,23 @@ format.relop_extend <- function(x, ...) {
                      paste(x$partitionb, collapse = ", "))
   }
   oterms <- ""
+  ocols <- NULL
   if(length(x$orderby)>0) {
+    ocols <- vapply(x$orderby,
+                    function(ci) {
+                      paste0("\"", ci, "\"")
+                    }, character(1))
+  }
+  if(length(x$rev_orderby)>0) {
+    rcols <- vapply(x$rev_orderby,
+                    function(ci) {
+                      paste0("\"", ci, "\" DESC")
+                    }, character(1))
+    ocols <- c(ocols, rcols)
+  }
+  if(length(ocols)>0) {
     oterms <- paste0(",\n  o= ",
-      paste(x$orderby, collapse = ", "),
-      ifelse(x$desc, " DESC", ""))
+      paste(x$orderby, collapse = ", "))
   }
   origTerms <- vapply(x$parsed,
                       function(pi) {
@@ -319,7 +332,7 @@ to_sql.relop_extend <- function (x,
   derived <- NULL
   if(length(re_assignments)>0) {
     windowTerm <- ""
-    if((length(x$partitionby)>0) || (length(x$orderby)>0)) {
+    if((length(x$partitionby)>0) || (length(x$orderby)>0) || (length(x$rev_orderby)>0)) {
       windowTerm <- "OVER ( "
       if(length(x$partitionby)>0) {
         pcols <- vapply(x$partitionby,
@@ -330,17 +343,24 @@ to_sql.relop_extend <- function (x,
                              " PARTITION BY ",
                              paste(pcols, collapse = ", "))
       }
+      ocols <- NULL
       if(length(x$orderby)>0) {
         ocols <- vapply(x$orderby,
                         function(ci) {
                           quote_identifier(db, ci)
                         }, character(1))
+      }
+      if(length(x$rev_orderby)>0) {
+        rcols <- vapply(x$rev_orderby,
+                        function(ci) {
+                          paste(quote_identifier(db, ci), "DESC")
+                        }, character(1))
+        ocols <- c(ocols, rcols)
+      }
+      if(length(ocols)>0) {
         windowTerm <- paste0(windowTerm,
                              " ORDER BY ",
                              paste(ocols, collapse = ", "))
-        if(x$desc) {
-          windowTerm <- paste(windowTerm, "DESC")
-        }
       }
       windowTerm <- paste(windowTerm, ")")
     }

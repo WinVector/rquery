@@ -52,7 +52,7 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../index.html">
+  <a href="..//index.html">
     <span class="fa fa-home fa-lg"></span>
      
   </a>
@@ -105,8 +105,8 @@
     <p>Create a node similar to a Codd extend relational operator (add derived columns).</p>
     
 
-    <pre class="usage"><span class='fu'>extend_nse</span>(<span class='no'>source</span>, <span class='no'>...</span>, <span class='kw'>partitionby</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>orderby</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>desc</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
+    <pre class="usage"><span class='fu'>extend_nse</span>(<span class='no'>source</span>, <span class='no'>...</span>, <span class='kw'>partitionby</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>orderby</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>rev_orderby</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -125,11 +125,11 @@
     </tr>
     <tr>
       <th>orderby</th>
-      <td><p>ordering (window function) terms.</p></td>
+      <td><p>ordering (in window function) terms.</p></td>
     </tr>
     <tr>
-      <th>desc</th>
-      <td><p>reverse order</p></td>
+      <th>rev_orderby</th>
+      <td><p>reverse ordering (in window function) terms.</p></td>
     </tr>
     <tr>
       <th>env</th>

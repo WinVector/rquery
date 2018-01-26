@@ -82,7 +82,7 @@ pre_sql_expr <- function(terms) {
 #  where_exprs list of  pre_sql_expr s.
 #  group_terms list of pre_sql_identifier s.
 #  order_terms list of pre_sql_identifier s.
-#  desc logical
+#  rev_terms list of pre_sql_identifier s.
 #  limit numeric
 
 
@@ -111,7 +111,7 @@ pre_sql_table <- function(tablename, columns) {
             where_exprs = list(),
             group_terms = list(),
             order_terms = list(),
-            desc = FALSE,
+            rev_terms = list(),
             limit = NA_real_)
 
   class(t) <- c("pre_sql_op", "pre_sql")
@@ -460,16 +460,14 @@ add_limit <- function(x, limit) {
 #'
 #' @param x pre_sql_op node to add order terms to
 #' @param order_terms character, order by terms
-#' @param desc logical set/clear desc
+#' @param rev_terms character, reverse order by terms
 #' @return modified node
 #'
 #' @noRd
 #'
-add_orderby <- function(x, order_terms, desc = NA) {
+add_orderby <- function(x, order_terms = NULL, rev_terms = NULL) {
   x$order_terms <- unique(c(x$order_terms, order_terms))
-  if((!is.null(desc)) && (!is.na(desc))) {
-    x$desc = desc
-  }
+  x$rev_terms <- unique(c(x$rev_terms, rev_terms))
   x
 }
 
