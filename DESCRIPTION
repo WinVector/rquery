@@ -2,7 +2,7 @@ Package: rquery
 Type: Package
 Title: Relational Query Generator for Data Manipulation
 Version: 0.3.0
-Date: 2018-01-25
+Date: 2018-01-29
 Authors@R: c(
     person("John", "Mount", email = "jmount@win-vector.com", role = c("aut", "cre")),
     person(family = "Win-Vector LLC", role = c("cph"))
@@ -17,7 +17,7 @@ Description: A query generator based on Edgar F. Codd's relational
     or pipelines as observable objects (able to report both columns
     produced and columns used), optimized 'SQL' generation as an explicit
     user visible modeling step, and convenience methods for applying query
-    trees to in-memory data.frames.
+    trees to in-memory 'data.frame's.
 License: GPL-3
 Encoding: UTF-8
 Depends:
