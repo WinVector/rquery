@@ -124,7 +124,23 @@ dL %.>%
   knitr::kable(.)
 ```
 
-Or we can use a table model based pipeline directly (without needing additional wrapping).
+Or we can use a table model based pipeline directly (without needing additional wrapping).  To do this we need to define an S3 function as follows.
+
+```{r s3redef}
+#' Pipe step operator (wrapr 1.2.0 version, wrapr 1.1.1 uses a function value).
+#'
+#' @param pipe_left_arg pipe_left_arg argument
+#' @param pipe_right_arg substitute(pipe_right_arg) argument
+#' @param pipe_environment environment to evaluate in
+#' @return result
+#'
+#'
+wrapr_function.relop <- function(pipe_left_arg, pipe_right_arg,
+                                 pipe_environment) {
+  rquery_apply_to_data_frame(pipe_left_arg, pipe_right_arg,
+                             pipe_environment)
+}
+```
 
 ```{r dm}
 needed_columns <- columns_used(q)
@@ -211,8 +227,7 @@ knitr::kable(z)
 
 ## Stored ad hoc pipeline mode
 
-To re-use regular operator trees as ad hoc pipelines we need one more trick: the operator tree
-object needs to act as if it were a function. To achieve the above we add a [`wrapr::"wrapr_applicable"`](https://winvector.github.io/wrapr/articles/wrapr_applicable.html) class deceleration to our `rqeyr::"relop"` operator/query nodes.  This gives us the ability to treat an `rquery` operator tree as a data processing pipeline.  Results are then produced by overriding the `S3` methods `as.data.frame()` and `print()`.
+To re-use regular operator trees as ad hoc pipelines we need one more trick: the operator tree object needs to act as if it were a function. To achieve the above we add a [`wrapr::"wrapr_applicable"`](https://winvector.github.io/wrapr/articles/wrapr_applicable.html) class deceleration to our `rqeyr::"relop"` operator/query nodes.  This gives us the ability to treat an `rquery` operator tree as a data processing pipeline.  Results are then produced by overriding the `S3` methods `as.data.frame()` and `print()`.
 
 This is a bit simpler if demonstrated.  
 

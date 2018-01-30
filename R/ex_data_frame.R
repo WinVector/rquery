@@ -27,7 +27,8 @@
 #'
 #' execute_data_frame(q, data = d)
 #'
-#' d %.>% q
+#' # # requires S3 method wrapr_function.relop defined
+#' # d %.>% q
 #' # run (and build result for) ad-hoc query
 #' d %.>%
 #'   extend_nse(., c := sqrt(R2)) %.>%
@@ -119,7 +120,8 @@ rquery_apply_to_data_frame <- function(pipe_left_arg,
 #'
 #' execute_data_frame(q, data = d)
 #'
-#' d %.>% q
+#' # # requires S3 method wrapr_function.relop defined
+#' # d %.>% q
 #' # run (and build result for) ad-hoc query
 #' d %.>%
 #'   extend_nse(., c := sqrt(R2)) %.>%

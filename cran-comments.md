@@ -1,5 +1,4 @@
 
-Re-submitted with corrected spelling (entities in single quotes) in DESCRIPTION as requested.
 
 ## Test environments
 
@@ -13,18 +12,15 @@ Re-submitted with corrected spelling (entities in single quotes) in DESCRIPTION 
 
 ## R CMD check results
 
-R CMD check --as-cran rquery_0.2.0.tar.gz 
+R CMD check --as-cran rquery_0.3.0.tar.gz 
 
-   * this is package ‘rquery’ version ‘0.2.0’
+   * this is package ‘rquery’ version ‘0.3.0’
    * checking CRAN incoming feasibility ... NOTE
    Maintainer: ‘John Mount <jmount@win-vector.com>’
-
-   New submission
 
 Status: 1 NOTE
 
 No other NOTES, WARNINGS, or ERRORs.
-
 
 ## Reverse dependencies
 

@@ -2,7 +2,7 @@ Package: rquery
 Type: Package
 Title: Relational Query Generator for Data Manipulation
 Version: 0.3.0
-Date: 2018-01-29
+Date: 2018-01-30
 Authors@R: c(
     person("John", "Mount", email = "jmount@win-vector.com", role = c("aut", "cre")),
     person(family = "Win-Vector LLC", role = c("cph"))
@@ -21,7 +21,7 @@ Description: A query generator based on Edgar F. Codd's relational
 License: GPL-3
 Encoding: UTF-8
 Depends:
-  wrapr (>= 1.2.0),
+  wrapr (>= 1.1.1),
   cdata (>= 0.5.2)
 Imports:
   DBI,
@@ -38,4 +38,4 @@ LazyData: true
 RoxygenNote: 6.0.1
 ByteCompile: true
 VignetteBuilder: knitr
-Remotes: github::WinVector/wrapr
+
