@@ -18,6 +18,6 @@ NULL
 
 
 
-#' @importFrom wrapr %.>% :=
+#' @importFrom wrapr %.>% := wrapr_function pipe_step
 #' @importFrom cdata makeTempNameGenerator
 NULL

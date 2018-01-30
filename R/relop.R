@@ -8,10 +8,26 @@
 #   parsed: list of parsed expressions.
 
 
+
+#' Pipe step operator
+#'
+#' @param pipe_left_arg pipe_left_arg argument
+#' @param pipe_right_arg substitute(pipe_right_arg) argument
+#' @param pipe_environment environment to evaluate in
+#' @return result
+#'
+#' @export
+#'
+wrapr_function.relop <- function(pipe_left_arg, pipe_right_arg,
+                             pipe_environment) {
+  rquery_apply_to_data_frame(pipe_left_arg, pipe_right_arg,
+                             pipe_environment)
+}
+
+
 # add class info and helpers to a relop node.
 relop_decorate <- function(class_name, r) {
   class(r) <- c(class_name, "relop", "wrapr_applicable")
-  r$wrapr_function <- rquery_apply_to_data_frame
   r
 }
 

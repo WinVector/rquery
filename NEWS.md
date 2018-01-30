@@ -3,6 +3,7 @@
  
  * Fix "desc".
  * Minor format change in rename (anticipate wrapr 1.2.0).
+ * Switch to S3 wrapr_applicable.
 
 # rquery 0.2.0 2017/01/22
 
