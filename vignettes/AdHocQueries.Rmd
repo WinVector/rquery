@@ -127,19 +127,7 @@ dL %.>%
 Or we can use a table model based pipeline directly (without needing additional wrapping).  To do this we need to define an S3 function as follows.
 
 ```{r s3redef}
-#' Pipe step operator (wrapr 1.2.0 version, wrapr 1.1.1 uses a function value).
-#'
-#' @param pipe_left_arg pipe_left_arg argument
-#' @param pipe_right_arg substitute(pipe_right_arg) argument
-#' @param pipe_environment environment to evaluate in
-#' @return result
-#'
-#'
-wrapr_function.relop <- function(pipe_left_arg, pipe_right_arg,
-                                 pipe_environment) {
-  rquery_apply_to_data_frame(pipe_left_arg, pipe_right_arg,
-                             pipe_environment)
-}
+print(rquery:::wrapr_function.relop)
 ```
 
 ```{r dm}

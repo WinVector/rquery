@@ -1,5 +1,9 @@
 
-# rquery 0.3.0 2017/01/31
+# rquery 0.3.0 2018/01/31
+
+ * Move to wrapr 1.2.0.
+ 
+# rquery 0.3.0 2018/01/31
  
  * Fix "desc".
  * Minor format change in rename (anticipate wrapr 1.2.0).

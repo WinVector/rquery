@@ -28,8 +28,6 @@
 # add class info and helpers to a relop node.
 relop_decorate <- function(class_name, r) {
   class(r) <- c(class_name, "relop", "wrapr_applicable")
-  # for wrapr 1.1.1, TODO: remove
-  r$wrapr_function <- rquery_apply_to_data_frame
   r
 }
 
