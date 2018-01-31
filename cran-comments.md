@@ -3,14 +3,13 @@ Maintenance update to move off soon to be deprecated 'wrapr' APIs (to unblock up
 
 ## Test environments
 
-  * Windows
-  * using R Under development (unstable) (2018-01-20 r74146)
-  * using platform: x86_64-w64-mingw32 (64-bit)
-
   * OSX
   * using R version 3.4.3 (2017-11-30)
   * using platform: x86_64-apple-darwin15.6.0 (64-bit)
 
+  * Linux
+  * using R version 3.4.0 (2017-04-21)
+  * using platform: x86_64-pc-linux-gnu (64-bit)
 
 ## R CMD check results
 
