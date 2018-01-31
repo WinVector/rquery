@@ -1,9 +1,9 @@
 
-# rquery 0.3.0 2017/01/29
+# rquery 0.3.0 2017/01/31
  
  * Fix "desc".
  * Minor format change in rename (anticipate wrapr 1.2.0).
- * Get ready for S3 wrapr_applicable and pipe_step.
+ * Get ready for S3 wrapr_applicable and pipe_step (un-block wrapr 1.2.0 release).
 
 # rquery 0.2.0 2017/01/22
 
