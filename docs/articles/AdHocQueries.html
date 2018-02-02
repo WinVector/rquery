@@ -253,7 +253,7 @@ dL <span class="op">%.&gt;%</span><span class="st"> </span>
 ##   rquery_apply_to_data_frame(pipe_left_arg, pipe_right_arg,
 ##                              pipe_environment)
 ## }
-## &lt;bytecode: 0x7fb0865c67f0&gt;
+## &lt;bytecode: 0x7ff461218c00&gt;
 ## &lt;environment: namespace:rquery&gt;</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">needed_columns &lt;-<span class="st"> </span><span class="kw"><a href="../reference/columns_used.html">columns_used</a></span>(q)
 <span class="kw">print</span>(needed_columns)</code></pre></div>
@@ -315,10 +315,10 @@ dL <span class="op">%.&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw"><a href="../reference/select_columns.html">select_columns</a></span>(., <span class="kw">c</span>(<span class="st">"AUC"</span>, <span class="st">"R2"</span>, <span class="st">"c"</span>))
 
 <span class="kw">class</span>(z)</code></pre></div>
-<pre><code>## [1] "relop_select_columns" "relop"                "wrapr_applicable"</code></pre>
+<pre><code>## [1] "relop_select_columns" "relop"</code></pre>
 <p>Notice <code>z</code> declares class <code>"relop"</code>. This means <code>z</code> is a <code>rquery</code> operator tree. Formatting it shows that it is starts with “<code>table+()</code>” node, meaning the operator tree has a reference to an in-memory <code>data.frame</code> bound into it.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw">format</span>(z))</code></pre></div>
-<pre><code>table+('rquery_tmp_ibqqhwdcgbgwy3dmrakz_0000000000') %.&gt;%
+<pre><code>table+('rquery_tmp_nliqzgb2clsj3hi1pp3t_0000000000') %.&gt;%
  select_rows(., rquery_select_condition_1 := R2 &gt; 0.14) %.&gt;%
  extend(.,
   c := sqrt(R2)) %.&gt;%
@@ -336,10 +336,10 @@ FROM (
  FROM (
   SELECT * FROM (
    SELECT
-    `rquery_tmp_ibqqhwdcgbgwy3dmrakz_0000000000`.`AUC`,
-    `rquery_tmp_ibqqhwdcgbgwy3dmrakz_0000000000`.`R2`
+    `rquery_tmp_nliqzgb2clsj3hi1pp3t_0000000000`.`AUC`,
+    `rquery_tmp_nliqzgb2clsj3hi1pp3t_0000000000`.`R2`
    FROM
-    `rquery_tmp_ibqqhwdcgbgwy3dmrakz_0000000000`
+    `rquery_tmp_nliqzgb2clsj3hi1pp3t_0000000000`
   ) tsql_0000
   WHERE `R2` &gt; 0.14
   ) tsql_0001
@@ -369,10 +369,10 @@ FROM (
 <div id="stored-ad-hoc-pipeline-mode" class="section level2">
 <h2 class="hasAnchor">
 <a href="#stored-ad-hoc-pipeline-mode" class="anchor"></a>Stored ad hoc pipeline mode</h2>
-<p>To re-use regular operator trees as ad hoc pipelines we need one more trick: the operator tree object needs to act as if it were a function. To achieve the above we add a <a href="https://winvector.github.io/wrapr/articles/wrapr_applicable.html"><code>wrapr::"wrapr_applicable"</code></a> class deceleration to our <code>rqeyr::"relop"</code> operator/query nodes. This gives us the ability to treat an <code>rquery</code> operator tree as a data processing pipeline. Results are then produced by overriding the <code>S3</code> methods <code>as.data.frame()</code> and <code>print()</code>.</p>
+<p>To re-use regular operator trees as ad hoc pipelines we need one more trick: the operator tree object needs to act as if it were a function. As of version <code>1.2.0</code> <code>wrapr</code> de-references right-hand side names as functions or as surrgate functions through the <code>S3</code> method <code>wrapr_function()</code> (dispatched by the class of its second or right hand side argument). This gives us the ability to treat an <code>rquery</code> operator tree as a data processing pipeline. Results are then produced by overriding the <code>S3</code> methods <code>as.data.frame()</code> and <code>print()</code>.</p>
 <p>This is a bit simpler if demonstrated.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">class</span>(q)</code></pre></div>
-<pre><code>## [1] "relop_select_columns" "relop"                "wrapr_applicable"</code></pre>
+<pre><code>## [1] "relop_select_columns" "relop"</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw">format</span>(q))</code></pre></div>
 <pre><code>table('d') %.&gt;%
  select_rows(., R2 &gt; 0.14) %.&gt;%
@@ -394,7 +394,7 @@ FROM (
 <td align="right">0.4472136</td>
 </tr></tbody>
 </table>
-<p>For an <code>R</code> object <code>q</code> that adds <code>"wrapr_applicable"</code> to its class declarations the <code>wrapr</code> pipeline operator (<code>%.&gt;%</code>) will interpret “<code>dL %.&gt;% q</code>” as essentially “<code>(q$wrapr_function)(dL)</code>”. The <code>"wrapr_applicable"</code> facility allows objects to declare what sort of function they would like to be treated a in a pipeline (and the actual signature of the call is “<code>(q$wrapr_function)(dL, q, parent.frame())</code>”, so the object is given a reference to itself as the second argument of the special function).</p>
+<p>For an <code>R</code> language name <code>q</code>, the <code>wrapr</code> pipeline operator (<code>%.&gt;%</code>) will interpret “<code>dL %.&gt;% q</code>” as <code>q(dL)</code> (if <code>q</code> is a function), or as “<code>wrapr_function(dL,q)</code>” (dispatched by the class of <code>q</code>). This facility allows objects to declare what sort of function they would like to be treated a in a pipeline.</p>
 </div>
 </div>
 <div id="cleanup" class="section level1">

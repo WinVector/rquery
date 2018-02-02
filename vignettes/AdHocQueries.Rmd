@@ -215,7 +215,7 @@ knitr::kable(z)
 
 ## Stored ad hoc pipeline mode
 
-To re-use regular operator trees as ad hoc pipelines we need one more trick: the operator tree object needs to act as if it were a function. To achieve the above we add a [`wrapr::"wrapr_applicable"`](https://winvector.github.io/wrapr/articles/wrapr_applicable.html) class deceleration to our `rqeyr::"relop"` operator/query nodes.  This gives us the ability to treat an `rquery` operator tree as a data processing pipeline.  Results are then produced by overriding the `S3` methods `as.data.frame()` and `print()`.
+To re-use regular operator trees as ad hoc pipelines we need one more trick: the operator tree object needs to act as if it were a function. As of version `1.2.0` `wrapr` de-references right-hand side names as functions or as surrgate functions through the `S3` method `wrapr_function()` (dispatched by the class of its second or right hand side argument).  This gives us the ability to treat an `rquery` operator tree as a data processing pipeline.  Results are then produced by overriding the `S3` methods `as.data.frame()` and `print()`.
 
 This is a bit simpler if demonstrated.  
 
@@ -233,8 +233,8 @@ dL %.>%
   knitr::kable(.)
 ```
 
-For an `R` object `q` that adds `"wrapr_applicable"` to its class declarations the `wrapr` pipeline operator (`%.>%`)
-will interpret "`dL %.>% q`" as essentially "`(q$wrapr_function)(dL)`".  The `"wrapr_applicable"` facility allows objects to declare what sort of function they would like to be treated a in a pipeline (and the actual signature of the call is "`(q$wrapr_function)(dL, q, parent.frame())`", so the object is given a reference to itself as the second argument of the special function).
+For an `R` language name `q`, the `wrapr` pipeline operator (`%.>%`)
+will interpret "`dL %.>% q`" as `q(dL)` (if `q` is a function), or as "`wrapr_function(dL,q)`" (dispatched by the class of `q`).  This facility allows objects to declare what sort of function they would like to be treated a in a pipeline.
 
 
 # Cleanup

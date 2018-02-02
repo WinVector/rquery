@@ -12,8 +12,7 @@
 
 # add class info and helpers to a relop node.
 relop_decorate <- function(class_name, r) {
-  class(r) <- c(class_name, "relop",
-                "wrapr_applicable")
+  class(r) <- c(class_name, "relop")
   r
 }
 

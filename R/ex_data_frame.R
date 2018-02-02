@@ -3,7 +3,6 @@
 #' Execture node_tree in an enviroment where d is the only data.
 #'
 #' Default DB uses RSQLite (so some functions are not supported).
-#' Functionality is through \code{"wrapr_applicable"}: \url{https://winvector.github.io/wrapr/articles/wrapr_applicable.html}.
 #'
 #' @param pipe_left_arg data.frame
 #' @param pipe_right_arg rquery rel_op operation tree.
