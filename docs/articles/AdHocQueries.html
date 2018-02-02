@@ -253,7 +253,7 @@ dL <span class="op">%.&gt;%</span><span class="st"> </span>
 ##   rquery_apply_to_data_frame(pipe_left_arg, pipe_right_arg,
 ##                              pipe_environment)
 ## }
-## &lt;bytecode: 0x7fc4993af720&gt;
+## &lt;bytecode: 0x7fb0865c67f0&gt;
 ## &lt;environment: namespace:rquery&gt;</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">needed_columns &lt;-<span class="st"> </span><span class="kw"><a href="../reference/columns_used.html">columns_used</a></span>(q)
 <span class="kw">print</span>(needed_columns)</code></pre></div>
@@ -318,7 +318,7 @@ dL <span class="op">%.&gt;%</span><span class="st"> </span>
 <pre><code>## [1] "relop_select_columns" "relop"                "wrapr_applicable"</code></pre>
 <p>Notice <code>z</code> declares class <code>"relop"</code>. This means <code>z</code> is a <code>rquery</code> operator tree. Formatting it shows that it is starts with “<code>table+()</code>” node, meaning the operator tree has a reference to an in-memory <code>data.frame</code> bound into it.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw">format</span>(z))</code></pre></div>
-<pre><code>table+('rquery_tmp_97m9musjctitt066oyxu_0000000000') %.&gt;%
+<pre><code>table+('rquery_tmp_ibqqhwdcgbgwy3dmrakz_0000000000') %.&gt;%
  select_rows(., rquery_select_condition_1 := R2 &gt; 0.14) %.&gt;%
  extend(.,
   c := sqrt(R2)) %.&gt;%
@@ -336,10 +336,10 @@ FROM (
  FROM (
   SELECT * FROM (
    SELECT
-    `rquery_tmp_97m9musjctitt066oyxu_0000000000`.`AUC`,
-    `rquery_tmp_97m9musjctitt066oyxu_0000000000`.`R2`
+    `rquery_tmp_ibqqhwdcgbgwy3dmrakz_0000000000`.`AUC`,
+    `rquery_tmp_ibqqhwdcgbgwy3dmrakz_0000000000`.`R2`
    FROM
-    `rquery_tmp_97m9musjctitt066oyxu_0000000000`
+    `rquery_tmp_ibqqhwdcgbgwy3dmrakz_0000000000`
   ) tsql_0000
   WHERE `R2` &gt; 0.14
   ) tsql_0001
