@@ -45,7 +45,7 @@ select_columns <- function(source, columns) {
 #' @export
 column_names.relop_select_columns <- function (x, ...) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   x$columns
 }
@@ -53,7 +53,7 @@ column_names.relop_select_columns <- function (x, ...) {
 #' @export
 format.relop_select_columns <- function(x, ...) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   paste0(trimws(format(x$source[[1]]), which = "right"),
          " %.>%\n ",
@@ -99,7 +99,7 @@ to_sql.relop_select_columns <- function (x,
                                          append_cr = TRUE,
                                          using = NULL) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   using <- calc_using_relop_select_columns(x,
                                            using = using)

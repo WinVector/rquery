@@ -9,25 +9,11 @@
 
 
 
-# #' Pipe step operator (requires wrapr 1.2.0 or newer).
-# #'
-# #' @param pipe_left_arg pipe_left_arg argument
-# #' @param pipe_right_arg substitute(pipe_right_arg) argument
-# #' @param pipe_environment environment to evaluate in
-# #' @return result
-# #'
-# #' @export
-# #'
-# wrapr_function.relop <- function(pipe_left_arg, pipe_right_arg,
-#                              pipe_environment) {
-#   rquery_apply_to_data_frame(pipe_left_arg, pipe_right_arg,
-#                              pipe_environment)
-# }
-
 
 # add class info and helpers to a relop node.
 relop_decorate <- function(class_name, r) {
-  class(r) <- c(class_name, "relop", "wrapr_applicable")
+  class(r) <- c(class_name, "relop",
+                "wrapr_applicable")
   r
 }
 
@@ -46,7 +32,7 @@ column_names <- function (x, ...) {
 #' @export
 column_names.relop <- function (x, ...) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   subs <- lapply(x$source,
                  column_names)
@@ -78,7 +64,7 @@ columns_used.relop <- function (x,
                                 using = NULL,
                                 contract = FALSE) {
   if(length(list(...))>0) {
-    stop("rquery:columns_used: unexpected arguemnts")
+    stop("rquery:columns_used: unexpected arguments")
   }
   subs <- lapply(x$source,
                  columns_used)
@@ -123,7 +109,7 @@ tables_used <- function(node, ...) {
 #' @export
 tables_used.relop <- function(node, ...) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   r <- list()
   for(si in node$source) {

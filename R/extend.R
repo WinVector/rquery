@@ -23,7 +23,7 @@ extend_impl <- function(source, parsed,
                         orderby = NULL,
                         rev_orderby = NULL) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   have <- column_names(source)
   check_have_cols(have, partitionby, "rquery::extend partitionby")
@@ -120,7 +120,7 @@ extend_se <- function(source, assignments,
                    rev_orderby = NULL,
                    env = parent.frame()) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   if(is.data.frame(source)) {
     tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
@@ -204,7 +204,7 @@ extend_nse <- function(source,
 #' @export
 column_names.relop_extend <- function (x, ...) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   sort(unique(c(column_names(x$source[[1]]), x$columns)))
 }
@@ -213,7 +213,7 @@ column_names.relop_extend <- function (x, ...) {
 #' @export
 format.relop_extend <- function(x, ...) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   pterms <- ""
   if(length(x$partitionby)>0) {
@@ -279,7 +279,7 @@ columns_used.relop_extend <- function (x, ...,
                                        using = NULL,
                                        contract = FALSE) {
   if(length(list(...))>0) {
-    stop("rquery:columns_used: unexpected arguemnts")
+    stop("rquery:columns_used: unexpected arguments")
   }
   cols <- calc_used_relop_extend(x,
                                  using = using,
@@ -300,7 +300,7 @@ to_sql.relop_extend <- function (x,
                                  append_cr = TRUE,
                                  using = NULL) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   # re-quote expr
   re_quoted <- redo_parse_quoting(x$parsed, db)

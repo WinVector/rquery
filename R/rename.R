@@ -55,7 +55,7 @@ rename_columns <- function(source, cmap) {
 #' @export
 column_names.relop_rename_columns <- function (x, ...) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   sc <- column_names(x$source[[1]])
   rmap <- names(x$cmap)
@@ -69,7 +69,7 @@ column_names.relop_rename_columns <- function (x, ...) {
 #' @export
 format.relop_rename_columns <- function(x, ...) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   paste0(trimws(format(x$source[[1]]), which = "right"),
          " %.>%\n ",
@@ -122,7 +122,7 @@ to_sql.relop_rename_columns <- function (x,
                                          append_cr = TRUE,
                                          using = NULL) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   qmap <- calc_used_relop_rename_columns(x, using=using)
   colsV <- vapply(as.character(qmap),

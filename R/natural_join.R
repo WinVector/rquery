@@ -71,7 +71,7 @@ natural_join <- function(a, b,
 #' @export
 format.relop_natural_join <- function(x, ...) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   a <- trimws(format(x$source[[1]]), which = "right")
   b <- trimws(format(x$source[[2]]), which = "right")
@@ -136,7 +136,7 @@ to_sql.relop_natural_join <- function (x,
                                        append_cr = TRUE,
                                        using = NULL) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   using <- calc_used_relop_natural_join(x,
                                         using=using)

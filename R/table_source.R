@@ -114,7 +114,7 @@ dbi_table <- function(db, table_name) {
 #' @export
 tables_used.relop_table_source <- function(node, ...) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   r <- list(node)
   names(r) <- node$table_name
@@ -124,7 +124,7 @@ tables_used.relop_table_source <- function(node, ...) {
 #' @export
 column_names.relop_table_source <- function (x, ...) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   x$columns
 }
@@ -134,7 +134,7 @@ columns_used_relop_table_source <- function (x, ...,
                                              using = NULL,
                                              contract = FALSE) {
   if(length(list(...))>0) {
-    stop("columns_used_relop_table_source: unexpected arguemnts")
+    stop("columns_used_relop_table_source: unexpected arguments")
   }
   cols <- x$columns
   if(length(using)>0) {
@@ -168,7 +168,7 @@ to_sql.relop_table_source <- function (x,
                                        append_cr = TRUE,
                                        using = NULL) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   prefix <- paste(rep(' ', indent_level), collapse = '')
   tabnam <- quote_identifier(db,  x$table_name)
@@ -196,7 +196,7 @@ to_sql.relop_table_source <- function (x,
 #' @export
 format.relop_table_source <- function(x, ...) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   sym <- ""
   if(!is.null(x$data)) {
@@ -209,7 +209,7 @@ format.relop_table_source <- function(x, ...) {
 #' @export
 print.relop_table_source <- function(x, ...) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   txt <- format(x)
   txt <- trimws(gsub("[ \t\r\n]+", " ", txt), which = "both")

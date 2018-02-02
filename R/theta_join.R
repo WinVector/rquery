@@ -198,7 +198,7 @@ theta_join_nse <- function(a, b,
 #' @export
 column_names.relop_theta_join <- function (x, ...) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   c(as.character(x$cmap[['a']]), as.character(x$cmap[['b']]))
 }
@@ -207,7 +207,7 @@ column_names.relop_theta_join <- function (x, ...) {
 #' @export
 format.relop_theta_join <- function(x, ...) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   a <- trimws(format(x$source[[1]]), which = "right")
   b <- trimws(format(x$source[[2]]), which = "right")
@@ -290,7 +290,7 @@ to_sql.relop_theta_join <- function (x,
                                      append_cr = TRUE,
                                      using = NULL) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   # re-quote expr
   re_quoted <- redo_parse_quoting(x$parsed, db)

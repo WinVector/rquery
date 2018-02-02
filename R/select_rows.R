@@ -95,7 +95,7 @@ select_rows_nse <- function(source, expr,
 #' @export
 format.relop_select_rows <- function(x, ...) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   paste0(trimws(format(x$source[[1]]), which="right"),
          " %.>%\n ",
@@ -143,7 +143,7 @@ to_sql.relop_select_rows <- function (x,
                                       append_cr = TRUE,
                                       using = NULL) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   # re-quote expr
   re_quoted <- redo_parse_quoting(x$parsed, db)

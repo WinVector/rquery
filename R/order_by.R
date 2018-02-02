@@ -39,7 +39,7 @@ orderby <- function(source,
                      rev_cols = NULL,
                      limit = NULL) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   if(is.data.frame(source)) {
     tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
@@ -68,7 +68,7 @@ orderby <- function(source,
 #' @export
 format.relop_orderby <- function(x, ...) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   ot <- c(x$orderby)
   if(length(x$rev_orderby)>0) {
@@ -128,7 +128,7 @@ to_sql.relop_orderby <- function (x,
                                    append_cr = TRUE,
                                    using = NULL) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   cols1 <- column_names(x$source[[1]])
   cols <- vapply(cols1,

@@ -107,7 +107,7 @@ project_nse <- function(source, groupby, ...,
 #' @export
 column_names.relop_project <- function (x, ...) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   x$columns
 }
@@ -116,7 +116,7 @@ column_names.relop_project <- function (x, ...) {
 #' @export
 format.relop_project <- function(x, ...) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   origTerms <- vapply(x$parsed,
                       function(pi) {
@@ -156,7 +156,7 @@ columns_used.relop_project <- function (x, ...,
                                         using = NULL,
                                         contract = FALSE) {
   if(length(list(...))>0) {
-    stop("rquery:columns_used: unexpected arguemnts")
+    stop("rquery:columns_used: unexpected arguments")
   }
   cols <- calc_used_relop_project(x,
                                   using = using,
@@ -177,7 +177,7 @@ to_sql.relop_project <- function (x,
                                   append_cr = TRUE,
                                   using = NULL) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   # re-quote expr
   re_quoted <- redo_parse_quoting(x$parsed, db)

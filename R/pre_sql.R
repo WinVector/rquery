@@ -170,7 +170,7 @@ to_query.pre_sql_token <- function (x,
                                     source_limit = NA_real_,
                                     using = NULL) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   if(x$token_type == "column") {
     if((!is.null(source_table)) && (!is.na(source_table))) {
@@ -206,7 +206,7 @@ to_query.pre_sql_expr <- function (x,
                                    source_limit = NA_real_,
                                    using = NULL) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   terms <- vapply(x,
                   function(ti) {
@@ -240,7 +240,7 @@ build_subqs <- function(x,
                         source_limit = NA_real_,
                         using = NULL) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   if(!is.null(x$source_table)) {
     subq <- list(quote_identifier(db_info, x$source_table))
@@ -339,7 +339,7 @@ to_query.pre_sql_op <- function (x,
                                  source_limit = NA_real_,
                                  using = NULL) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   subqs <- build_subqs(x = x,
                        db_info = db_info,

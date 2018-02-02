@@ -33,7 +33,7 @@ rquery_db_info <- function(indentifier_quote_char,
 #'
 quote_identifier <- function (x, id, ...) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   if("rquery_db_info" %in% class(x)) {
     return(x$dbqi(id))
@@ -52,7 +52,7 @@ quote_identifier <- function (x, id, ...) {
 #'
 quote_string <- function (x, s, ...) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   if("rquery_db_info" %in% class(x)) {
     return(x$dbqs(s))

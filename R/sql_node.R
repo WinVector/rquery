@@ -42,7 +42,7 @@ sql_node <- function(source, exprs, mods = NULL) {
 #' @export
 column_names.relop_sql <- function (x, ...) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   names(x$exprs)
 }
@@ -52,7 +52,7 @@ column_names.relop_sql <- function (x, ...) {
 #' @export
 format.relop_sql <- function(x, ...) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   assignments <- paste(names(x$exprs), ":=", as.character(x$exprs))
   modsstr <- ""
@@ -90,7 +90,7 @@ to_sql.relop_sql <- function (x,
                               append_cr = TRUE,
                               using = NULL) {
   if(length(list(...))>0) {
-    stop("unexpected arguemnts")
+    stop("unexpected arguments")
   }
   colsA <- vapply(names(x$exprs),
                   function(ci) {
