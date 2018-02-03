@@ -47,6 +47,9 @@ rquery_apply_to_data_frame <- function(pipe_left_arg,
                                        pipe_right_arg,
                                        pipe_environment = parent.frame(),
                                        result_limit = NULL) {
+  if(!is.data.frame(pipe_left_arg)) {
+    stop("rquery::rquery_apply_to_data_frame pipe_left_arg must be a data.frame")
+  }
   d <- pipe_left_arg
   node_tree <- pipe_right_arg
   env <- pipe_environment

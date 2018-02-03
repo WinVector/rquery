@@ -31,7 +31,7 @@ DBI::dbWriteTable(db,
 d <- dbi_table(db, 'd')
 print(d)
 
-qlook(db, d$table_name)
+DBI::dbGetQuery(db, to_sql(d, db))
 ```
 
 Now we can define a query over this table.

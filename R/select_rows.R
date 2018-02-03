@@ -45,7 +45,7 @@ select_rows_se.relop <- function(source, expr,
 #' @export
 select_rows_se.data.frame <- function(source, expr,
                                       env = parent.frame()) {
-  tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
+  tmp_name <- mkTempNameGenerator("rquery_tmp")()
   dnode <- table_source(tmp_name, colnames(source))
   dnode$data <- source
   enode <- select_rows_se(dnode, expr,
@@ -104,7 +104,7 @@ select_rows_nse.relop <- function(source, expr,
 select_rows_nse.data.frame <- function(source, expr,
                             env = parent.frame()) {
   exprq <- substitute(expr)
-  tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
+  tmp_name <- mkTempNameGenerator("rquery_tmp")()
   dnode <- table_source(tmp_name, colnames(source))
   dnode$data <- source
   enode <- select_rows_se(dnode, deparse(exprq),

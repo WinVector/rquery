@@ -27,6 +27,9 @@ mkTempNameGenerator <- function(prefix) {
   if((length(prefix)!=1)||(!is.character(prefix))) {
     stop("rquery::mkTempNameGenerator prefix must be a string")
   }
+  alphabet <- c(as.character(0:9))
+  suffix <- paste(base::sample(alphabet, size=20, replace= TRUE),
+                  collapse = '')
   count <- 0
   nameList <- list()
   function(..., peek=FALSE, dumpList=FALSE, remove=NULL) {
@@ -47,7 +50,7 @@ mkTempNameGenerator <- function(prefix) {
       nameList[victims] <<- NULL
       return(victims)
     }
-    nm <- paste(prefix, sprintf('%04d',count), sep='_')
+    nm <- paste(prefix, suffix, sprintf('%010d',count), sep='_')
     nameList[[nm]] <<- 1
     count <<- count + 1
     nm

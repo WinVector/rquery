@@ -38,7 +38,7 @@ sql_node.relop <- function(source, exprs, mods = NULL) {
 
 #' @export
 sql_node.data.frame <- function(source, exprs, mods = NULL) {
-  tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
+  tmp_name <- mkTempNameGenerator("rquery_tmp")()
   dnode <- table_source(tmp_name, colnames(source))
   dnode$data <- source
   enode <- sql_node(dnode, exprs = exprs, mods = mods)

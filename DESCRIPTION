@@ -21,8 +21,7 @@ Description: A query generator based on Edgar F. Codd's relational
 License: GPL-3
 Encoding: UTF-8
 Depends:
-  wrapr (>= 1.2.0),
-  cdata (>= 0.5.2)
+  wrapr (>= 1.2.0)
 Imports:
   DBI,
   RSQLite,

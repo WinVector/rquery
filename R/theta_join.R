@@ -128,7 +128,7 @@ theta_join_se.data.frame <- function(a, b,
   if(!is.data.frame(b)) {
     stop("rquery::theta_join_se.data.frame b must also be a data.frame")
   }
-  nmgen <- cdata::makeTempNameGenerator("rquery_tmp")
+  nmgen <- mkTempNameGenerator("rquery_tmp")
   tmp_namea <- nmgen()
   dnodea <- table_source(tmp_namea, colnames(a))
   dnodea$data <- a
@@ -230,7 +230,7 @@ theta_join_nse.data.frame <- function(a, b,
   if(!is.data.frame(b)) {
     stop("rquery::theta_join_nse.data.frame b must also be a data.frame")
   }
-  nmgen <- cdata::makeTempNameGenerator("rquery_tmp")
+  nmgen <- mkTempNameGenerator("rquery_tmp")
   tmp_namea <- nmgen()
   dnodea <- table_source(tmp_namea, colnames(a))
   dnodea$data <- a

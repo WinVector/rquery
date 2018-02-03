@@ -91,7 +91,6 @@
 <p>Let’s try an example. First let’s set up our example database and data.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">"rquery"</span>)</code></pre></div>
 <pre><code>## Loading required package: wrapr</code></pre>
-<pre><code>## Loading required package: cdata</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">db =<span class="st"> </span>DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbConnect">dbConnect</a></span>(RSQLite<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/RSQLite/topics/SQLite">SQLite</a></span>(), 
                     <span class="st">":memory:"</span>)
 RSQLite<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/RSQLite/topics/initExtension">initExtension</a></span>(db)
@@ -106,14 +105,10 @@ DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation
 d &lt;-<span class="st"> </span><span class="kw"><a href="../reference/dbi_table.html">dbi_table</a></span>(db, <span class="st">'d'</span>)
 <span class="kw">print</span>(d)</code></pre></div>
 <pre><code>## [1] "table('d')"</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">qlook</span>(db, d<span class="op">$</span>table_name)</code></pre></div>
-<pre><code>## table `d` SQLiteConnection 
-##  nrow: 2 
-## 'data.frame':    2 obs. of  4 variables:
-##  $ AUC: num  0.6 0.6
-##  $ R2 : num  0.1 0.2
-##  $ D  : int  NA NA
-##  $ z  : num  2 2</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery">dbGetQuery</a></span>(db, <span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(d, db))</code></pre></div>
+<pre><code>##   AUC  R2  D z
+## 1 0.6 0.1 NA 2
+## 2 0.6 0.2 NA 2</code></pre>
 <p>Now we can define a query over this table.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">q &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/select_rows_nse.html">select_rows_nse</a></span>(., R2 <span class="op">&gt;</span><span class="st"> </span><span class="fl">0.14</span>) <span class="op">%.&gt;%</span>
@@ -159,10 +154,10 @@ FROM (
     `d`.`R2`
    FROM
     `d`
-  ) tsql_0000
+  ) tsql_27137768489080779951_0000000000
   WHERE `R2` &gt; 0.14
-  ) tsql_0001
-) tsql_0002</code></pre>
+  ) tsql_27137768489080779951_0000000001
+) tsql_27137768489080779951_0000000002</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery">dbGetQuery</a></span>(db, sql) <span class="op">%.&gt;%</span>
 <span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</code></pre></div>
 <table class="table">
@@ -253,7 +248,7 @@ dL <span class="op">%.&gt;%</span><span class="st"> </span>
 ##   rquery_apply_to_data_frame(pipe_left_arg, pipe_right_arg,
 ##                              pipe_environment)
 ## }
-## &lt;bytecode: 0x7fedee6c6ab0&gt;
+## &lt;bytecode: 0x7feb977d0b48&gt;
 ## &lt;environment: namespace:rquery&gt;</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">needed_columns &lt;-<span class="st"> </span><span class="kw"><a href="../reference/columns_used.html">columns_used</a></span>(q)
 <span class="kw">print</span>(needed_columns)</code></pre></div>
@@ -326,7 +321,7 @@ dL <span class="op">%.&gt;%</span><span class="st"> </span>
 <pre><code>## [1] "relop_select_columns" "relop"</code></pre>
 <p>Notice <code>z</code> declares class <code>"relop"</code>. This means <code>z</code> is a <code>rquery</code> operator tree. Formatting it shows that it is starts with “<code>table+()</code>” node, meaning the operator tree has a reference to an in-memory <code>data.frame</code> bound into it.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw">format</span>(z))</code></pre></div>
-<pre><code>table+('rquery_tmp_8uru6fcs49tbnqojrl8b_0000000000') %.&gt;%
+<pre><code>table+('rquery_tmp_16006830157045291527_0000000000') %.&gt;%
  select_rows(., rquery_select_condition_1 := R2 &gt; 0.14) %.&gt;%
  extend(.,
   c := sqrt(R2)) %.&gt;%
@@ -344,14 +339,14 @@ FROM (
  FROM (
   SELECT * FROM (
    SELECT
-    `rquery_tmp_8uru6fcs49tbnqojrl8b_0000000000`.`AUC`,
-    `rquery_tmp_8uru6fcs49tbnqojrl8b_0000000000`.`R2`
+    `rquery_tmp_16006830157045291527_0000000000`.`AUC`,
+    `rquery_tmp_16006830157045291527_0000000000`.`R2`
    FROM
-    `rquery_tmp_8uru6fcs49tbnqojrl8b_0000000000`
-  ) tsql_0000
+    `rquery_tmp_16006830157045291527_0000000000`
+  ) tsql_28809493865351915311_0000000000
   WHERE `R2` &gt; 0.14
-  ) tsql_0001
-) tsql_0002</code></pre>
+  ) tsql_28809493865351915311_0000000001
+) tsql_28809493865351915311_0000000002</code></pre>
 <p>The production of <code>SQL</code> and execution is triggered if we pass <code>z</code> to one of the generic <code>S3</code> functions <code>as.data.frame()</code> or <code>print()</code> (including the possible implicit <code>print()</code> implied by <code>R</code>’s statement rules):</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(z)</code></pre></div>
 <pre><code>##   AUC  R2         c

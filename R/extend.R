@@ -150,7 +150,7 @@ extend_se.data.frame <- function(source, assignments,
   if(length(list(...))>0) {
     stop("unexpected arguments")
   }
-  tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
+  tmp_name <- mkTempNameGenerator("rquery_tmp")()
   dnode <- table_source(tmp_name, colnames(source))
   dnode$data <- source
   enode <- extend_se(dnode,
@@ -227,7 +227,7 @@ extend_nse.data.frame <- function(source,
                                   orderby = NULL,
                                   rev_orderby = NULL,
                                   env = parent.frame()) {
-  tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
+  tmp_name <- mkTempNameGenerator("rquery_tmp")()
   dnode <- table_source(tmp_name, colnames(source))
   dnode$data <- source
   enode <- extend_nse(dnode,

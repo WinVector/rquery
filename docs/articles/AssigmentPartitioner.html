@@ -91,7 +91,6 @@
 <p>Here is a non-trivial database based example (demonstrating methods that might be used in big data work such as with <code>Spark</code>). We are going to assign pairs of items to complimentary treatment (“T”) and control (“C”) groups based on already populated pseudo-random numbers (pre-populating the pseudo-random numbers is to avoid <a href="https://winvector.github.io/rquery/reference/if_else_block.html">known issues in using <code>rand()</code> in <code>RSQlite</code></a>, and would not be necessary with other databases).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">"rquery"</span>)</code></pre></div>
 <pre><code>Loading required package: wrapr</code></pre>
-<pre><code>Loading required package: cdata</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># example data</span>
 <span class="kw">set.seed</span>(<span class="dv">3463</span>)
 d &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">id =</span> <span class="kw">seq_len</span>(<span class="dv">4</span>))
@@ -270,9 +269,9 @@ FROM (
     `example_table`.`rand_e`
    FROM
     `example_table`
-   ) tsql_0000
-  ) tsql_0001
-) tsql_0002</code></pre>
+   ) tsql_53272849086359897594_0000000000
+  ) tsql_53272849086359897594_0000000001
+) tsql_53272849086359897594_0000000002</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery">dbGetQuery</a></span>(my_db, sql) <span class="op">%.&gt;%</span>
 <span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</code></pre></div>
 <table class="table">

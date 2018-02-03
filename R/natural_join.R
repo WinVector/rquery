@@ -72,7 +72,7 @@ natural_join.data.frame <- function(a, b,
   if(!is.data.frame(b)) {
     stop("rquery::natural_join.data.frame b must also be a data.frame")
   }
-  nmgen <- cdata::makeTempNameGenerator("rquery_tmp")
+  nmgen <- mkTempNameGenerator("rquery_tmp")
   tmp_namea <- nmgen()
   dnodea <- table_source(tmp_namea, colnames(a))
   dnodea$data <- a

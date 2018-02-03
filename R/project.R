@@ -67,7 +67,7 @@ project_se.relop <- function(source, groupby, assignments,
 #' @export
 project_se.data.frame <- function(source, groupby, assignments,
                                   env = parent.frame()) {
-  tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
+  tmp_name <- mkTempNameGenerator("rquery_tmp")()
   dnode <- table_source(tmp_name, colnames(source))
   dnode$data <- source
   enode <- project_se(dnode, groupby, assignments,
@@ -116,7 +116,7 @@ project_nse.relop <- function(source, groupby, ...,
 #' @export
 project_nse.data.frame <- function(source, groupby, ...,
                                    env = parent.frame()) {
-  tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
+  tmp_name <- mkTempNameGenerator("rquery_tmp")()
   dnode <- table_source(tmp_name, colnames(source))
   dnode$data <- source
   enode <- project_nse(dnode, groupby, ...,

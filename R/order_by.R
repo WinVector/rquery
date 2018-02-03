@@ -71,7 +71,7 @@ orderby.data.frame <- function(source,
   if(length(list(...))>0) {
     stop("unexpected arguments")
   }
-  tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
+  tmp_name <- mkTempNameGenerator("rquery_tmp")()
   dnode <- table_source(tmp_name, colnames(source))
   dnode$data <- source
   enode <- orderby(dnode,

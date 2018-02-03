@@ -43,7 +43,7 @@ select_columns.data.frame <- function(source, columns) {
   if(length(columns)<=0) {
     stop("rquery::select_columns must select at least 1 column")
   }
-  tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
+  tmp_name <- mkTempNameGenerator("rquery_tmp")()
   dnode <- table_source(tmp_name, colnames(source))
   dnode$data <- source
   enode <- select_columns(dnode, columns)
