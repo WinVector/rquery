@@ -160,11 +160,9 @@ dL %.>%
   knitr::kable(.)
 ```
 
-# How Ad Hoc Mode Works
+# Ad Hoc Mode Works
 
 Ad Hoc mode is implemented on top of `wrapr::%.>%` using a couple of `R` tricks.
-Unlike `magrittr::%>%` the `wrapr::%.>%` operator does not delay evaluation or capture
-the entire pipeline, it actually executes it arguments in order at the time of deceleration.
 
 ## Basic ad hoc mode
 
@@ -213,7 +211,7 @@ to formatted by passing to `knitr::kable()`:
 knitr::kable(z)
 ```
 
-## Stored ad hoc pipeline mode
+## Stored ad hoc pipeline
 
 To re-use regular operator trees as ad hoc pipelines we need one more trick: the operator tree object needs to act as if it were a function. As of version `1.2.0` `wrapr` de-references right-hand side names as functions or as surrgate functions through the `S3` method `wrapr_function()` (dispatched by the class of its second or right hand side argument).  This gives us the ability to treat an `rquery` operator tree as a data processing pipeline.  Results are then produced by overriding the `S3` methods `as.data.frame()` and `print()`.
 
