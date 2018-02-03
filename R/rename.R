@@ -20,6 +20,11 @@
 #' @export
 #'
 rename_columns <- function(source, cmap) {
+  UseMethod("rename_columns", source)
+}
+
+#' @export
+rename_columns.relop <- function(source, cmap) {
   if(length(cmap)<=0) {
     stop("rquery::rename_columns must rename at least 1 column")
   }
@@ -28,13 +33,6 @@ rename_columns <- function(source, cmap) {
   }
   if(length(cmap)!=length(unique(names(cmap)))) {
     stop("rquery::rename_columns map keys must be unique")
-  }
-  if(is.data.frame(source)) {
-    tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
-    dnode <- table_source(tmp_name, colnames(source))
-    dnode$data <- source
-    enode <- rename_columns(dnode, cmap)
-    return(enode)
   }
   have <- column_names(source)
   check_have_cols(have, as.character(cmap), "rquery::rename_columns cmap")
@@ -49,6 +47,24 @@ rename_columns <- function(source, cmap) {
             cmap = cmap)
   r <- relop_decorate("relop_rename_columns", r)
   r
+}
+
+#' @export
+rename_columns.data.frame <- function(source, cmap) {
+  if(length(cmap)<=0) {
+    stop("rquery::rename_columns must rename at least 1 column")
+  }
+  if(length(cmap)!=length(unique(as.character(cmap)))) {
+    stop("rquery::rename_columns map values must be unique")
+  }
+  if(length(cmap)!=length(unique(names(cmap)))) {
+    stop("rquery::rename_columns map keys must be unique")
+  }
+  tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
+  dnode <- table_source(tmp_name, colnames(source))
+  dnode$data <- source
+  enode <- rename_columns(dnode, cmap)
+  return(enode)
 }
 
 

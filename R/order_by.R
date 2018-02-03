@@ -38,18 +38,17 @@ orderby <- function(source,
                      ...,
                      rev_cols = NULL,
                      limit = NULL) {
+  UseMethod("orderby", source)
+}
+
+#' @export
+orderby.relop <- function(source,
+                    cols = NULL,
+                    ...,
+                    rev_cols = NULL,
+                    limit = NULL) {
   if(length(list(...))>0) {
     stop("unexpected arguments")
-  }
-  if(is.data.frame(source)) {
-    tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
-    dnode <- table_source(tmp_name, colnames(source))
-    dnode$data <- source
-    enode <- orderby(dnode,
-                     orderby = cols,
-                     rev_orderby = rev_cols,
-                     limit = limit)
-    return(enode)
   }
   have <- column_names(source)
   check_have_cols(have, c(cols, rev_cols), "rquery::orderby orderterms")
@@ -62,6 +61,26 @@ orderby <- function(source,
   r <- relop_decorate("relop_orderby", r)
   r
 }
+
+#' @export
+orderby.data.frame <- function(source,
+                    cols = NULL,
+                    ...,
+                    rev_cols = NULL,
+                    limit = NULL) {
+  if(length(list(...))>0) {
+    stop("unexpected arguments")
+  }
+  tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
+  dnode <- table_source(tmp_name, colnames(source))
+  dnode$data <- source
+  enode <- orderby(dnode,
+                   orderby = cols,
+                   rev_orderby = rev_cols,
+                   limit = limit)
+  return(enode)
+}
+
 
 
 

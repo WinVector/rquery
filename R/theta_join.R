@@ -75,23 +75,21 @@ theta_join_se <- function(a, b,
                           jointype = 'INNER',
                           suffix = c("_a", "_b"),
                           env = parent.frame()) {
-  if(is.data.frame(a) || is.data.frame(b)) {
-    if((!is.data.frame(a)) || (!is.data.frame(b))) {
-      stop("rquery::theta_join_se if one input is a data.frame, both must be")
-    }
-    nmgen <- cdata::makeTempNameGenerator("rquery_tmp")
-    tmp_namea <- nmgen()
-    dnodea <- table_source(tmp_namea, colnames(a))
-    dnodea$data <- a
-    tmp_nameb <- nmgen()
-    dnodeb <- table_source(tmp_namea, colnames(b))
-    dnodeb$data <- b
-    enode <- theta_join_se(dnodea, dnodeb,
-                           expr,
-                           jointype = jointype,
-                           suffix = suffix,
-                           env = env)
-    return(enode)
+  UseMethod("theta_join_se", a)
+}
+
+#' @export
+theta_join_se.relop <- function(a, b,
+                                expr,
+                                ...,
+                                jointype = 'INNER',
+                                suffix = c("_a", "_b"),
+                                env = parent.frame()) {
+  if(length(list(...))>0) {
+    stop("rquery::theta_join_se unexpected arguments")
+  }
+  if(!("relop" %in% class(b))) {
+    stop("rquery::theta_join_se.relop b must also be of class relop")
   }
   usesa <- column_names(a)
   usesb <- column_names(b)
@@ -115,6 +113,37 @@ theta_join_se <- function(a, b,
   r <- relop_decorate("relop_theta_join", r)
   r
 }
+
+
+#' @export
+theta_join_se.data.frame <- function(a, b,
+                                     expr,
+                                     ...,
+                                     jointype = 'INNER',
+                                     suffix = c("_a", "_b"),
+                                     env = parent.frame()) {
+  if(length(list(...))>0) {
+    stop("rquery::theta_join_se unexpected arguments")
+  }
+  if(!is.data.frame(b)) {
+    stop("rquery::theta_join_se.data.frame b must also be a data.frame")
+  }
+  nmgen <- cdata::makeTempNameGenerator("rquery_tmp")
+  tmp_namea <- nmgen()
+  dnodea <- table_source(tmp_namea, colnames(a))
+  dnodea$data <- a
+  tmp_nameb <- nmgen()
+  dnodeb <- table_source(tmp_namea, colnames(b))
+  dnodeb$data <- b
+  enode <- theta_join_se(dnodea, dnodeb,
+                         expr,
+                         jointype = jointype,
+                         suffix = suffix,
+                         env = env)
+  return(enode)
+}
+
+
 
 
 #' Make a theta_join node.
@@ -147,29 +176,25 @@ theta_join_se <- function(a, b,
 #' @export
 #'
 theta_join_nse <- function(a, b,
-                          expr,
-                          ...,
-                          jointype = 'INNER',
-                          suffix = c("_a", "_b"),
-                          env = parent.frame()) {
+                           expr,
+                           ...,
+                           jointype = 'INNER',
+                           suffix = c("_a", "_b"),
+                           env = parent.frame()) {
+  UseMethod("theta_join_nse", a)
+}
+
+
+#' @export
+theta_join_nse.relop <- function(a, b,
+                                 expr,
+                                 ...,
+                                 jointype = 'INNER',
+                                 suffix = c("_a", "_b"),
+                                 env = parent.frame()) {
   exprq <- substitute(expr)
-  if(is.data.frame(a) || is.data.frame(b)) {
-    if((!is.data.frame(a)) || (!is.data.frame(b))) {
-      stop("rquery::theta_join_nse if one input is a data.frame, both must be")
-    }
-    nmgen <- cdata::makeTempNameGenerator("rquery_tmp")
-    tmp_namea <- nmgen()
-    dnodea <- table_source(tmp_namea, colnames(a))
-    dnodea$data <- a
-    tmp_nameb <- nmgen()
-    dnodeb <- table_source(tmp_namea, colnames(b))
-    dnodeb$data <- b
-    enode <- theta_join_nse(dnodea, dnodeb,
-                            deparse(exprq),
-                            jointype = jointype,
-                            suffix = suffix,
-                            env = env)
-    return(enode)
+  if(!("relop" %in% class(b))) {
+    stop("rquery::theta_join_nse.relop b must also be of class relop")
   }
   usesa <- column_names(a)
   usesb <- column_names(b)
@@ -193,6 +218,35 @@ theta_join_nse <- function(a, b,
   r <- relop_decorate("relop_theta_join", r)
   r
 }
+
+#' @export
+theta_join_nse.data.frame <- function(a, b,
+                                      expr,
+                                      ...,
+                                      jointype = 'INNER',
+                                      suffix = c("_a", "_b"),
+                                      env = parent.frame()) {
+  exprq <- substitute(expr)
+  if(!is.data.frame(b)) {
+    stop("rquery::theta_join_nse.data.frame b must also be a data.frame")
+  }
+  nmgen <- cdata::makeTempNameGenerator("rquery_tmp")
+  tmp_namea <- nmgen()
+  dnodea <- table_source(tmp_namea, colnames(a))
+  dnodea$data <- a
+  tmp_nameb <- nmgen()
+  dnodeb <- table_source(tmp_namea, colnames(b))
+  dnodeb$data <- b
+  enode <- theta_join_nse(dnodea, dnodeb,
+                          deparse(exprq),
+                          jointype = jointype,
+                          suffix = suffix,
+                          env = env)
+  return(enode)
+}
+
+
+
 
 
 #' @export

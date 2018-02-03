@@ -54,17 +54,29 @@ project_impl <- function(source, groupby, parsed) {
 #'
 project_se <- function(source, groupby, assignments,
                        env = parent.frame()) {
-  if(is.data.frame(source)) {
-    tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
-    dnode <- table_source(tmp_name, colnames(source))
-    dnode$data <- source
-    enode <- project_se(dnode, groupby, assignments,
-                        env = env)
-    return(enode)
-  }
+  UseMethod("project_se", source)
+}
+
+#' @export
+project_se.relop <- function(source, groupby, assignments,
+                             env = parent.frame()) {
   parsed <- parse_se(source, assignments, env = env)
   project_impl(source, groupby, parsed)
 }
+
+#' @export
+project_se.data.frame <- function(source, groupby, assignments,
+                                  env = parent.frame()) {
+  tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
+  dnode <- table_source(tmp_name, colnames(source))
+  dnode$data <- source
+  enode <- project_se(dnode, groupby, assignments,
+                      env = env)
+  return(enode)
+}
+
+
+
 
 #' project data by grouping, and adding aggregate columns.
 #'
@@ -90,17 +102,26 @@ project_se <- function(source, groupby, assignments,
 #'
 project_nse <- function(source, groupby, ...,
                         env = parent.frame()) {
-  if(is.data.frame(source)) {
-    tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
-    dnode <- table_source(tmp_name, colnames(source))
-    dnode$data <- source
-    enode <- project_nse(dnode, groupby, ...,
-                         env = env)
-    return(enode)
-  }
+  UseMethod("project_nse", source)
+}
+
+#' @export
+project_nse.relop <- function(source, groupby, ...,
+                        env = parent.frame()) {
   exprs <-  eval(substitute(alist(...)))
   parsed <- parse_nse(source, exprs, env = env)
   project_impl(source, groupby, parsed)
+}
+
+#' @export
+project_nse.data.frame <- function(source, groupby, ...,
+                                   env = parent.frame()) {
+  tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
+  dnode <- table_source(tmp_name, colnames(source))
+  dnode$data <- source
+  enode <- project_nse(dnode, groupby, ...,
+                       env = env)
+  return(enode)
 }
 
 

@@ -20,15 +20,13 @@
 #' @export
 #'
 select_columns <- function(source, columns) {
+  UseMethod("select_columns", source)
+}
+
+#' @export
+select_columns.relop <- function(source, columns) {
   if(length(columns)<=0) {
     stop("rquery::select_columns must select at least 1 column")
-  }
-  if(is.data.frame(source)) {
-    tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
-    dnode <- table_source(tmp_name, colnames(source))
-    dnode$data <- source
-    enode <- select_columns(dnode, columns)
-    return(enode)
   }
   have <- column_names(source)
   check_have_cols(have, columns, "rquery::select_columns columns")
@@ -39,6 +37,19 @@ select_columns <- function(source, columns) {
   r <- relop_decorate("relop_select_columns", r)
   r
 }
+
+#' @export
+select_columns.data.frame <- function(source, columns) {
+  if(length(columns)<=0) {
+    stop("rquery::select_columns must select at least 1 column")
+  }
+  tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
+  dnode <- table_source(tmp_name, colnames(source))
+  dnode$data <- source
+  enode <- select_columns(dnode, columns)
+  return(enode)
+}
+
 
 
 

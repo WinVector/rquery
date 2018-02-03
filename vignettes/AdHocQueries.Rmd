@@ -162,12 +162,17 @@ dL %.>%
 
 # Ad Hoc Mode Works
 
-Ad Hoc mode is implemented on top of `wrapr::%.>%` using a couple of `R` tricks.
+Ad Hoc mode is implemented on top of `wrapr::%.>%` using a few fine 
+points of `R` programming:
+
+ * `S3` deceleration of query nodes, allowing different effects when the data source is another query node or a `data.frame`.
+ * `S3` overrides of `as.data.frame()`, `print()` and `head()` to trigger execution of pipelines.
+ * [`wrapr`](https://winvector.github.io/wrapr/) pipeline controls to allow `S3` dispatch of pipeline stages.
 
 ## Basic ad hoc mode
 
 The basic version of ad hoc mode is implemented by overriding the `S3` classes 
-`as.data.frame()` and `print()` for our `rquery::"relop"` operator trees / pipelines.
+`as.data.frame()`, `print()` and `head()` for our `rquery::"relop"` operator trees / pipelines.
 
 
 Consider our earlier ad hoc pipeline:
@@ -213,7 +218,7 @@ knitr::kable(z)
 
 ## Stored ad hoc pipeline
 
-To re-use regular operator trees as ad hoc pipelines we need one more trick: the operator tree object needs to act as if it were a function. As of version `1.2.0` `wrapr` de-references right-hand side names as functions or as surrgate functions through the `S3` method `wrapr_function()` (dispatched by the class of its second or right hand side argument).  This gives us the ability to treat an `rquery` operator tree as a data processing pipeline.  Results are then produced by overriding the `S3` methods `as.data.frame()` and `print()`.
+To re-use regular operator trees as ad hoc pipelines we need one more trick: the operator tree object needs to act as if it were a function. As of version `1.2.0` `wrapr` de-references right-hand side names as functions or as surrogate functions through the `S3` method `wrapr_function()` (dispatched by the class of its second or right hand side argument).  This gives us the ability to treat an `rquery` operator tree as a data processing pipeline.  Results are then produced by overriding the `S3` methods `as.data.frame()` and `print()`.
 
 This is a bit simpler if demonstrated.  
 

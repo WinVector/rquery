@@ -1,7 +1,8 @@
 
-# rquery 0.3.1 2018/02/02
+# rquery 0.3.1 2018/02/03
 
  * Move to wrapr 1.2.0.
+ * Make methods S3.
  
 # rquery 0.3.0 2018/01/31
  

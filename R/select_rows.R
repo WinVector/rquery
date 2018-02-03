@@ -22,14 +22,12 @@
 #'
 select_rows_se <- function(source, expr,
                            env = parent.frame()) {
-  if(is.data.frame(source)) {
-    tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
-    dnode <- table_source(tmp_name, colnames(source))
-    dnode$data <- source
-    enode <- select_rows_se(dnode, expr,
-                            env = env)
-    return(enode)
-  }
+  UseMethod("select_rows_se", source)
+}
+
+#' @export
+select_rows_se.relop <- function(source, expr,
+                                 env = parent.frame()) {
   have <- column_names(source)
   vnam <- setdiff(paste("rquery_select_condition", 1:(length(have)+1), sep = "_"),
                   have)[[1]]
@@ -43,6 +41,19 @@ select_rows_se <- function(source, expr,
   r <- relop_decorate("relop_select_rows", r)
   r
 }
+
+#' @export
+select_rows_se.data.frame <- function(source, expr,
+                                      env = parent.frame()) {
+  tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
+  dnode <- table_source(tmp_name, colnames(source))
+  dnode$data <- source
+  enode <- select_rows_se(dnode, expr,
+                          env = env)
+  return(enode)
+}
+
+
 
 #' Make a select rows node.
 #'
@@ -68,15 +79,13 @@ select_rows_se <- function(source, expr,
 #'
 select_rows_nse <- function(source, expr,
                             env = parent.frame()) {
+  UseMethod("select_rows_nse", source)
+}
+
+#' @export
+select_rows_nse.relop <- function(source, expr,
+                            env = parent.frame()) {
   exprq <- substitute(expr)
-  if(is.data.frame(source)) {
-    tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
-    dnode <- table_source(tmp_name, colnames(source))
-    dnode$data <- source
-    enode <- select_rows_se(dnode, deparse(exprq),
-                             env = env)
-    return(enode)
-  }
   have <- column_names(source)
   vnam <- setdiff(paste("rquery_select_condition", 1:(length(have)+1), sep = "_"),
                   have)[[1]]
@@ -90,6 +99,20 @@ select_rows_nse <- function(source, expr,
   r <- relop_decorate("relop_select_rows", r)
   r
 }
+
+#' @export
+select_rows_nse.data.frame <- function(source, expr,
+                            env = parent.frame()) {
+  exprq <- substitute(expr)
+  tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
+  dnode <- table_source(tmp_name, colnames(source))
+  dnode$data <- source
+  enode <- select_rows_se(dnode, deparse(exprq),
+                          env = env)
+  return(enode)
+}
+
+
 
 
 #' @export

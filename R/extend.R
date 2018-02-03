@@ -114,32 +114,52 @@ extend_impl_list <- function(source, parsed,
 #' @export
 #'
 extend_se <- function(source, assignments,
-                   ...,
-                   partitionby = NULL,
-                   orderby = NULL,
-                   rev_orderby = NULL,
-                   env = parent.frame()) {
+                      ...,
+                      partitionby = NULL,
+                      orderby = NULL,
+                      rev_orderby = NULL,
+                      env = parent.frame()) {
+  UseMethod("extend_se", source)
+}
+
+#' @export
+extend_se.relop <- function(source, assignments,
+                            ...,
+                            partitionby = NULL,
+                            orderby = NULL,
+                            rev_orderby = NULL,
+                            env = parent.frame()) {
   if(length(list(...))>0) {
     stop("unexpected arguments")
   }
-  if(is.data.frame(source)) {
-    tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
-    dnode <- table_source(tmp_name, colnames(source))
-    dnode$data <- source
-    enode <- extend_se(dnode,
-                       assignments = assignments,
-                       partitionby = partitionby,
-                       orderby = orderby,
-                       rev_orderby = rev_orderby,
-                       env = env)
-    return(enode)
-  }
   parsed <- parse_se(source, assignments, env = env)
   extend_impl_list(source = source,
-              parsed = parsed,
-              partitionby = partitionby,
-              orderby = orderby,
-              rev_orderby = rev_orderby)
+                   parsed = parsed,
+                   partitionby = partitionby,
+                   orderby = orderby,
+                   rev_orderby = rev_orderby)
+}
+
+#' @export
+extend_se.data.frame <- function(source, assignments,
+                                 ...,
+                                 partitionby = NULL,
+                                 orderby = NULL,
+                                 rev_orderby = NULL,
+                                 env = parent.frame()) {
+  if(length(list(...))>0) {
+    stop("unexpected arguments")
+  }
+  tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
+  dnode <- table_source(tmp_name, colnames(source))
+  dnode$data <- source
+  enode <- extend_se(dnode,
+                     assignments = assignments,
+                     partitionby = partitionby,
+                     orderby = orderby,
+                     rev_orderby = rev_orderby,
+                     env = env)
+  return(enode)
 }
 
 
@@ -174,30 +194,49 @@ extend_se <- function(source, assignments,
 #' @export
 #'
 extend_nse <- function(source,
-                   ...,
-                   partitionby = NULL,
-                   orderby = NULL,
-                   rev_orderby = NULL,
-                   env = parent.frame()) {
-  if(is.data.frame(source)) {
-    tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
-    dnode <- table_source(tmp_name, colnames(source))
-    dnode$data <- source
-    enode <- extend_nse(dnode,
-                        ...,
-                        partitionby = partitionby,
-                        orderby = orderby,
-                        rev_orderby = rev_orderby,
-                        env = env)
-    return(enode)
-  }
+                       ...,
+                       partitionby = NULL,
+                       orderby = NULL,
+                       rev_orderby = NULL,
+                       env = parent.frame()) {
+  UseMethod("extend_nse", source)
+}
+
+#' @export
+#'
+extend_nse.relop <- function(source,
+                             ...,
+                             partitionby = NULL,
+                             orderby = NULL,
+                             rev_orderby = NULL,
+                             env = parent.frame()) {
   exprs <-  eval(substitute(alist(...)))
   parsed <- parse_nse(source, exprs, env = env)
   extend_impl_list(source = source,
-              parsed = parsed,
-              partitionby = partitionby,
-              orderby = orderby,
-              rev_orderby = rev_orderby)
+                   parsed = parsed,
+                   partitionby = partitionby,
+                   orderby = orderby,
+                   rev_orderby = rev_orderby)
+}
+
+#' @export
+#'
+extend_nse.data.frame <- function(source,
+                                  ...,
+                                  partitionby = NULL,
+                                  orderby = NULL,
+                                  rev_orderby = NULL,
+                                  env = parent.frame()) {
+  tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
+  dnode <- table_source(tmp_name, colnames(source))
+  dnode$data <- source
+  enode <- extend_nse(dnode,
+                      ...,
+                      partitionby = partitionby,
+                      orderby = orderby,
+                      rev_orderby = rev_orderby,
+                      env = env)
+  return(enode)
 }
 
 

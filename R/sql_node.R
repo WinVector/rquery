@@ -22,13 +22,11 @@
 #' @export
 #'
 sql_node <- function(source, exprs, mods = NULL) {
-  if(is.data.frame(source)) {
-    tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
-    dnode <- table_source(tmp_name, colnames(source))
-    dnode$data <- source
-    enode <- sql_node(dnode, exprs = exprs, mods = mods)
-    return(enode)
-  }
+  UseMethod("sql_node", source)
+}
+
+#' @export
+sql_node.relop <- function(source, exprs, mods = NULL) {
   r <- list(source = list(source),
             table_name = NULL,
             parsed = NULL,
@@ -37,6 +35,17 @@ sql_node <- function(source, exprs, mods = NULL) {
   r <- relop_decorate("relop_sql", r)
   r
 }
+
+#' @export
+sql_node.data.frame <- function(source, exprs, mods = NULL) {
+  tmp_name <- cdata::makeTempNameGenerator("rquery_tmp")()
+  dnode <- table_source(tmp_name, colnames(source))
+  dnode$data <- source
+  enode <- sql_node(dnode, exprs = exprs, mods = mods)
+  return(enode)
+}
+
+
 
 
 #' @export
