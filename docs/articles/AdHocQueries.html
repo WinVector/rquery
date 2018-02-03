@@ -154,10 +154,10 @@ FROM (
     `d`.`R2`
    FROM
     `d`
-  ) tsql_27137768489080779951_0000000000
+  ) tsql_26714339387658214179_0000000000
   WHERE `R2` &gt; 0.14
-  ) tsql_27137768489080779951_0000000001
-) tsql_27137768489080779951_0000000002</code></pre>
+  ) tsql_26714339387658214179_0000000001
+) tsql_26714339387658214179_0000000002</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery">dbGetQuery</a></span>(db, sql) <span class="op">%.&gt;%</span>
 <span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</code></pre></div>
 <table class="table">
@@ -248,7 +248,7 @@ dL <span class="op">%.&gt;%</span><span class="st"> </span>
 ##   rquery_apply_to_data_frame(pipe_left_arg, pipe_right_arg,
 ##                              pipe_environment)
 ## }
-## &lt;bytecode: 0x7feb977d0b48&gt;
+## &lt;bytecode: 0x7f9614c0f7b8&gt;
 ## &lt;environment: namespace:rquery&gt;</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">needed_columns &lt;-<span class="st"> </span><span class="kw"><a href="../reference/columns_used.html">columns_used</a></span>(q)
 <span class="kw">print</span>(needed_columns)</code></pre></div>
@@ -321,7 +321,7 @@ dL <span class="op">%.&gt;%</span><span class="st"> </span>
 <pre><code>## [1] "relop_select_columns" "relop"</code></pre>
 <p>Notice <code>z</code> declares class <code>"relop"</code>. This means <code>z</code> is a <code>rquery</code> operator tree. Formatting it shows that it is starts with “<code>table+()</code>” node, meaning the operator tree has a reference to an in-memory <code>data.frame</code> bound into it.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw">format</span>(z))</code></pre></div>
-<pre><code>table+('rquery_tmp_16006830157045291527_0000000000') %.&gt;%
+<pre><code>table+('rquery_tmp_92935453923624233784_0000000000') %.&gt;%
  select_rows(., rquery_select_condition_1 := R2 &gt; 0.14) %.&gt;%
  extend(.,
   c := sqrt(R2)) %.&gt;%
@@ -339,14 +339,14 @@ FROM (
  FROM (
   SELECT * FROM (
    SELECT
-    `rquery_tmp_16006830157045291527_0000000000`.`AUC`,
-    `rquery_tmp_16006830157045291527_0000000000`.`R2`
+    `rquery_tmp_92935453923624233784_0000000000`.`AUC`,
+    `rquery_tmp_92935453923624233784_0000000000`.`R2`
    FROM
-    `rquery_tmp_16006830157045291527_0000000000`
-  ) tsql_28809493865351915311_0000000000
+    `rquery_tmp_92935453923624233784_0000000000`
+  ) tsql_75119150817968386918_0000000000
   WHERE `R2` &gt; 0.14
-  ) tsql_28809493865351915311_0000000001
-) tsql_28809493865351915311_0000000002</code></pre>
+  ) tsql_75119150817968386918_0000000001
+) tsql_75119150817968386918_0000000002</code></pre>
 <p>The production of <code>SQL</code> and execution is triggered if we pass <code>z</code> to one of the generic <code>S3</code> functions <code>as.data.frame()</code> or <code>print()</code> (including the possible implicit <code>print()</code> implied by <code>R</code>’s statement rules):</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(z)</code></pre></div>
 <pre><code>##   AUC  R2         c

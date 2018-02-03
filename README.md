@@ -167,13 +167,13 @@ cat(to_sql(dq, my_db, source_limit = 1000))
            `d`.`assessmentTotal`
           FROM
            `d` LIMIT 1000
-          ) tsql_71050743174122436707_0000000000
-         ) tsql_71050743174122436707_0000000001
-       ) tsql_71050743174122436707_0000000002
-      ) tsql_71050743174122436707_0000000003
+          ) tsql_65859113476449221672_0000000000
+         ) tsql_65859113476449221672_0000000001
+       ) tsql_65859113476449221672_0000000002
+      ) tsql_65859113476449221672_0000000003
       WHERE `rank` = `count`
-     ) tsql_71050743174122436707_0000000004
-    ) tsql_71050743174122436707_0000000005 ORDER BY `subjectID`
+     ) tsql_65859113476449221672_0000000004
+    ) tsql_65859113476449221672_0000000005 ORDER BY `subjectID`
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
