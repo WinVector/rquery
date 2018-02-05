@@ -1,12 +1,12 @@
 
 
-#' Execture node_tree in an enviroment where d is the only data.
+#' Execture optree in an enviroment where d is the only data.
 #'
 #' Default DB uses RSQLite (so some functions are not supported).
 #'
-#' @param pipe_left_arg data.frame
-#' @param pipe_right_arg rquery rel_op operation tree.
-#' @param pipe_environment environment to look for "winvector_temp_db_handle" in.
+#' @param d data.frame
+#' @param optree rquery rel_op operation tree.
+#' @param env environment to look for "winvector_temp_db_handle" in.
 #' @param result_limit numeric if not null limit result to this many rows.
 #' @return data.frame result
 #'
@@ -18,15 +18,15 @@
 #' RSQLite::initExtension(winvector_temp_db_handle$db)
 #'
 #' d <- data.frame(AUC = 0.6, R2 = c(0.1, 0.2), D = NA, z = 2)
-#' q <- table_source("d", c("AUC", "R2", "D")) %.>%
+#' optree <- table_source("d", c("AUC", "R2", "D")) %.>%
 #' 	extend_nse(., c := sqrt(R2)) %.>%
 #'   orderby(., rev_cols = "R2")
 #'
-#' rquery_apply_to_data_frame(d, q)
+#' rquery_apply_to_data_frame(d, optree)
 #'
-#' execute_data_frame(q, data = d)
+#' execute_data_frame(optree, data = d)
 #'
-#' d %.>% q
+#' d %.>% optree
 #'
 #' # run (and build result for) ad-hoc query
 #' d %.>%
@@ -43,17 +43,14 @@
 #'
 #' @export
 #'
-rquery_apply_to_data_frame <- function(pipe_left_arg,
-                                       pipe_right_arg,
-                                       pipe_environment = parent.frame(),
+rquery_apply_to_data_frame <- function(d,
+                                       optree,
+                                       env = parent.frame(),
                                        result_limit = NULL) {
-  if(!is.data.frame(pipe_left_arg)) {
-    stop("rquery::rquery_apply_to_data_frame pipe_left_arg must be a data.frame")
+  if(!is.data.frame(d)) {
+    stop("rquery::rquery_apply_to_data_frame d must be a data.frame")
   }
-  d <- pipe_left_arg
-  node_tree <- pipe_right_arg
-  env <- pipe_environment
-  tabs <- tables_used(node_tree)
+  tabs <- tables_used(optree)
   tabName <- c()
   if(length(tabs)!=1) {
     for(ni in names(tabs)) {
@@ -66,7 +63,7 @@ rquery_apply_to_data_frame <- function(pipe_left_arg,
     tabName <- names(tabs)[[1]]
   }
   if(length(tabName)!=1) {
-    stop("rquery::rquery_apply_to_data_frame node_tree must reference exactly one table or exactly one unbound table.")
+    stop("rquery::rquery_apply_to_data_frame optree must reference exactly one table or exactly one unbound table.")
   }
   need_close <- FALSE
   db_handle <- base::mget("winvector_temp_db_handle",
@@ -85,7 +82,7 @@ rquery_apply_to_data_frame <- function(pipe_left_arg,
                     d,
                     temporary = TRUE,
                     overwrite = FALSE)
-  sql <- to_sql(node_tree, my_db)
+  sql <- to_sql(optree, my_db)
   if(!is.null(result_limit)) {
     sql <- paste(sql, "LIMIT", result_limit)
   }
@@ -99,7 +96,7 @@ rquery_apply_to_data_frame <- function(pipe_left_arg,
 
 #' Attempt to execute a pipeline (assuming it has local data, or is passed local data).
 #'
-#' @param node_tree rquery relop pipeline.
+#' @param optree rquery relop pipeline.
 #' @param ... force later arguments to bind by name.
 #' @param env environment to work in.
 #' @param data data.frame to evaluate.
@@ -114,15 +111,15 @@ rquery_apply_to_data_frame <- function(pipe_left_arg,
 #' RSQLite::initExtension(winvector_temp_db_handle$db)
 #'
 #' d <- data.frame(AUC = 0.6, R2 = c(0.1, 0.2), D = NA, z = 2)
-#' q <- table_source("d", c("AUC", "R2", "D")) %.>%
+#' optree <- table_source("d", c("AUC", "R2", "D")) %.>%
 #' 	extend_nse(., c := sqrt(R2)) %.>%
 #'   orderby(.,  rev_cols = "R2")
 #'
-#' rquery_apply_to_data_frame(d, q)
+#' rquery_apply_to_data_frame(d, optree)
 #'
-#' execute_data_frame(q, data = d)
+#' execute_data_frame(optree, data = d)
 #'
-#' d %.>% q
+#' d %.>% optree
 #' # run (and build result for) ad-hoc query
 #' d %.>%
 #'   extend_nse(., c := sqrt(R2)) %.>%
@@ -138,7 +135,7 @@ rquery_apply_to_data_frame <- function(pipe_left_arg,
 #'
 #' @export
 #'
-execute_data_frame <- function(node_tree,
+execute_data_frame <- function(optree,
                ...,
                env = parent.frame(),
                data = NULL,
@@ -146,14 +143,14 @@ execute_data_frame <- function(node_tree,
   if(length(list(...))>0) {
     stop("rquery: unexpected arguments")
   }
-  tabs <- tables_used(node_tree)
+  tabs <- tables_used(optree)
   if( (length(tabs)==1) &&
      ((!is.null(data)) || (!is.null(tabs[[1]]$data))) ) {
     if(is.null(data)) {
       data <- tabs[[1]]$data
     }
-    res <- rquery_apply_to_data_frame(data, node_tree,
-                                      pipe_environment = env,
+    res <- rquery_apply_to_data_frame(data, optree,
+                                      env = env,
                                       result_limit = result_limit)
     return(res)
   }
