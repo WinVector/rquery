@@ -251,6 +251,6 @@ the reference when finished as follows.
 
 
 ```{r cleanup}
-DBI::dbDisconnect(winvector_temp_db_handle$db)
 winvector_temp_db_handle <- NULL
+DBI::dbDisconnect(db)
 ```
