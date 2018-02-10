@@ -18,5 +18,5 @@ NULL
 
 
 
-#' @importFrom wrapr %.>% := wrapr_function pipe_step
+#' @importFrom wrapr %.>% :=
 NULL

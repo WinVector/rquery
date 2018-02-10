@@ -68,9 +68,6 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/AdHocQueries.html">Ad Hoc Queries</a>
-    </li>
-    <li>
       <a href="../articles/AssigmentPartitioner.html">Assignment Paritioner</a>
     </li>
     <li>
@@ -133,8 +130,8 @@
 <span class='no'>eqn</span> <span class='kw'>&lt;-</span> <span class='fu'>rename_columns</span>(<span class='no'>d</span>, <span class='fu'>c</span>(<span class='st'>'AUC2'</span> <span class='kw'>:=</span> <span class='st'>'AUC'</span>, <span class='st'>'R'</span> <span class='kw'>:=</span> <span class='st'>'R2'</span>))
 <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>eqn</span>))</div><div class='output co'>#&gt; table('d') %.&gt;%
 #&gt;  rename(.,
-#&gt;   c('AUC2' = 'AUC',
-#&gt;     'R' = 'R2'))</div><div class='input'><span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>eqn</span>, <span class='no'>my_db</span>)
+#&gt;   c('AUC2' := 'AUC',
+#&gt;     'R' := 'R2'))</div><div class='input'><span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>eqn</span>, <span class='no'>my_db</span>)
 <span class='fu'>cat</span>(<span class='no'>sql</span>)</div><div class='output co'>#&gt; SELECT
 #&gt;  `AUC` AS `AUC2`,
 #&gt;  `R2` AS `R`,
@@ -146,7 +143,7 @@
 #&gt;   `d`.`z`
 #&gt;  FROM
 #&gt;   `d`
-#&gt; ) tsql_20166337694515858573_0000000000</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;   AUC2   R z
+#&gt; ) tsql_77593170710789316807_0000000000</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;   AUC2   R z
 #&gt; 1  0.6 0.2 3</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

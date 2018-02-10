@@ -1,5 +1,5 @@
 
-Maintenance update to move off soon to be deprecated 'wrapr' APIs (to unblock updates to the 'wrapr' package).
+Maintenance update to move off more soon to be changed 'wrapr' APIs (to unblock updates to the 'wrapr' package).
 
 ## Test environments
 
@@ -7,18 +7,19 @@ Maintenance update to move off soon to be deprecated 'wrapr' APIs (to unblock up
   * using R version 3.4.3 (2017-11-30)
   * using platform: x86_64-apple-darwin15.6.0 (64-bit)
 
-  * Linux
-  * using R version 3.4.0 (2017-04-21)
-  * using platform: x86_64-pc-linux-gnu (64-bit)
+  * Windows
 
 ## R CMD check results
 
-R CMD check --as-cran rquery_0.3.0.tar.gz 
+R CMD check --as-cran rquery_0.3.1.tar.gz 
 
-  * this is package ‘rquery’ version ‘0.3.0’
+  * checking extension type ... Package
+  * this is package ‘rquery’ version ‘0.3.1’
   * package encoding: UTF-8
-  * checking CRAN incoming feasibility ...Note_to_CRAN_maintainers
+  * checking CRAN incoming feasibility ... Note_to_CRAN_maintainers
     Maintainer: ‘John Mount <jmount@win-vector.com>’
+   * checking package namespace information ... OK
+   * checking package dependencies ... OK
 
 Status: OK
 
