@@ -8,6 +8,9 @@ Maintenance update to move off more soon to be changed 'wrapr' APIs (to unblock 
   * using platform: x86_64-apple-darwin15.6.0 (64-bit)
 
   * Windows
+  * using R Under development (unstable) (2018-02-09 r74240)
+  * using platform: x86_64-w64-mingw32 (64-bit)
+  
 
 ## R CMD check results
 
