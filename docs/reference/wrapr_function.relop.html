@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Make a select columns node (not a relational operation). — select_columns • rquery</title>
+<title>Execute pipeline treating pipe_left_arg as local data to
+be copied into database. — wrapr_function.relop • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -95,50 +96,49 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Make a select columns node (not a relational operation).</h1>
+    <h1>Execute pipeline treating pipe_left_arg as local data to
+be copied into database.</h1>
     </div>
 
     
-    <p>Make a select columns node (not a relational operation).</p>
+    <p>Execute pipeline treating pipe_left_arg as local data to
+be copied into database.</p>
     
 
-    <pre class="usage"><span class='fu'>select_columns</span>(<span class='no'>source</span>, <span class='no'>columns</span>)</pre>
+    <pre class="usage"><span class='co'># S3 method for relop</span>
+<span class='fu'>wrapr_function</span>(<span class='no'>pipe_left_arg</span>, <span class='no'>pipe_right_arg</span>, <span class='no'>pipe_environment</span>,
+  <span class='kw'>pipe_name</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>source</th>
-      <td><p>source to select from.</p></td>
+      <th>pipe_left_arg</th>
+      <td><p>data.frame</p></td>
     </tr>
     <tr>
-      <th>columns</th>
-      <td><p>list of distinct column names.</p></td>
+      <th>pipe_right_arg</th>
+      <td><p>rquery relop operation tree</p></td>
+    </tr>
+    <tr>
+      <th>pipe_environment</th>
+      <td><p>environment to execute in</p></td>
+    </tr>
+    <tr>
+      <th>pipe_name</th>
+      <td><p>name of pipling symbol</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>select columns node.</p>
+    <p>data.frame</p>
+    
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <p><code><a href='rquery_apply_to_data_frame.html'>rquery_apply_to_data_frame</a></code></p>
     
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-<span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
-<span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dbi_copy_to.html'>dbi_copy_to</a></span>(<span class='no'>my_db</span>, <span class='st'>'d'</span>,
-                <span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>0.6</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>0.2</span>))
-<span class='no'>eqn</span> <span class='kw'>&lt;-</span> <span class='fu'>select_columns</span>(<span class='no'>d</span>, <span class='st'>'AUC'</span>)
-<span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>eqn</span>))</div><div class='output co'>#&gt; table('d') %.&gt;%
-#&gt;  select_columns(., AUC)</div><div class='input'><span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>eqn</span>, <span class='no'>my_db</span>)
-<span class='fu'>cat</span>(<span class='no'>sql</span>)</div><div class='output co'>#&gt; SELECT
-#&gt;  `AUC`
-#&gt; FROM (
-#&gt;  SELECT
-#&gt;   `d`.`AUC`
-#&gt;  FROM
-#&gt;   `d`
-#&gt; ) tsql_98564863522039172198_0000000000</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;   AUC
-#&gt; 1 0.6</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -146,9 +146,9 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-      
-      <li><a href="#examples">Examples</a></li>
-    </ul>
+
+      <li><a href="#see-also">See also</a></li>
+          </ul>
 
   </div>
 </div>

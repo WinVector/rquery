@@ -149,7 +149,9 @@
 <span class='fu'><a href='execute_data_frame.html'>execute_data_frame</a></span>(<span class='no'>optree</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>d</span>)</div><div class='output co'>#&gt;   AUC  R2  D         c
 #&gt; 1 0.6 0.2 NA 0.4472136
 #&gt; 2 0.6 0.1 NA 0.3162278</div><div class='input'>
-<span class='no'>d</span> <span class='kw'>%.&gt;%</span> <span class='no'>optree</span></div><div class='output co'>#&gt; [1] "table('d') %.&gt;% extend(., c := sqrt(R2)) %.&gt;% orderby(., desc(R2))"</div><div class='input'>
+<span class='no'>d</span> <span class='kw'>%.&gt;%</span> <span class='no'>optree</span></div><div class='output co'>#&gt;   AUC  R2  D         c
+#&gt; 1 0.6 0.2 NA 0.4472136
+#&gt; 2 0.6 0.1 NA 0.3162278</div><div class='input'>
 <span class='co'># run (and build result for) ad-hoc query</span>
 <span class='no'>d</span> <span class='kw'>%.&gt;%</span>
   <span class='fu'><a href='extend_nse.html'>extend_nse</a></span>(<span class='no'>.</span>, <span class='no'>c</span> <span class='kw'>:=</span> <span class='fu'>sqrt</span>(<span class='no'>R2</span>)) <span class='kw'>%.&gt;%</span>

@@ -209,3 +209,23 @@ head.relop <- function(x, ...) {
   }
 }
 
+#' Execute pipeline treating pipe_left_arg as local data to
+#' be copied into database.
+#'
+#' @param pipe_left_arg data.frame
+#' @param pipe_right_arg rquery relop operation tree
+#' @param pipe_environment environment to execute in
+#' @param pipe_name name of pipling symbol
+#' @return data.frame
+#'
+#' @seealso \code{\link{rquery_apply_to_data_frame}}
+#'
+#' @export
+wrapr_function.relop <-function(pipe_left_arg,
+                                pipe_right_arg,
+                                pipe_environment,
+                                pipe_name = NULL) {
+  return(rquery_apply_to_data_frame(pipe_left_arg,
+                                    pipe_right_arg,
+                                    pipe_environment))
+}

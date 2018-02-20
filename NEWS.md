@@ -2,6 +2,7 @@
 # rquery 0.3.2 2018/02/20
 
  * Move to wrapr 1.2.0
+ * Add wrapr_function.relop().
 
 # rquery 0.3.1 2018/02/10
 
