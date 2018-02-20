@@ -1,4 +1,8 @@
 
+# rquery 0.3.2 2018/02/20
+
+ * Move to wrapr 1.2.0
+
 # rquery 0.3.1 2018/02/10
 
  * Be compatible with both wrapr 1.1.1 and 1.2.0.

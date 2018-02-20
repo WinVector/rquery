@@ -60,7 +60,7 @@ rename_columns.data.frame <- function(source, cmap) {
   if(length(cmap)!=length(unique(names(cmap)))) {
     stop("rquery::rename_columns map keys must be unique")
   }
-  tmp_name <- mkTempNameGenerator("rquery_tmp")()
+  tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- table_source(tmp_name, colnames(source))
   dnode$data <- source
   enode <- rename_columns(dnode, cmap)
@@ -134,7 +134,7 @@ to_sql.relop_rename_columns <- function (x,
                                          ...,
                                          source_limit = NULL,
                                          indent_level = 0,
-                                         tnum = mkTempNameGenerator('tsql'),
+                                         tnum = mk_tmp_name_source('tsql'),
                                          append_cr = TRUE,
                                          using = NULL) {
   if(length(list(...))>0) {

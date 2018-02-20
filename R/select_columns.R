@@ -43,7 +43,7 @@ select_columns.data.frame <- function(source, columns) {
   if(length(columns)<=0) {
     stop("rquery::select_columns must select at least 1 column")
   }
-  tmp_name <- mkTempNameGenerator("rquery_tmp")()
+  tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- table_source(tmp_name, colnames(source))
   dnode$data <- source
   enode <- select_columns(dnode, columns)
@@ -106,7 +106,7 @@ to_sql.relop_select_columns <- function (x,
                                          ...,
                                          source_limit = NULL,
                                          indent_level = 0,
-                                         tnum = mkTempNameGenerator('tsql'),
+                                         tnum = mk_tmp_name_source('tsql'),
                                          append_cr = TRUE,
                                          using = NULL) {
   if(length(list(...))>0) {

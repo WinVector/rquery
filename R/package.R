@@ -18,5 +18,5 @@ NULL
 
 
 
-#' @importFrom wrapr %.>% :=
+#' @importFrom wrapr %.>% := mk_tmp_name_source
 NULL

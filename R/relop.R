@@ -140,7 +140,7 @@ to_sql <- function (x,
                     ...,
                     source_limit = NULL,
                     indent_level = 0,
-                    tnum = mkTempNameGenerator('tsql'),
+                    tnum = mk_tmp_name_source('tsql'),
                     append_cr = TRUE,
                     using = NULL) {
   UseMethod("to_sql", x)

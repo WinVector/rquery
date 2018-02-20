@@ -130,8 +130,8 @@
 <span class='no'>eqn</span> <span class='kw'>&lt;-</span> <span class='fu'>rename_columns</span>(<span class='no'>d</span>, <span class='fu'>c</span>(<span class='st'>'AUC2'</span> <span class='kw'>:=</span> <span class='st'>'AUC'</span>, <span class='st'>'R'</span> <span class='kw'>:=</span> <span class='st'>'R2'</span>))
 <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>eqn</span>))</div><div class='output co'>#&gt; table('d') %.&gt;%
 #&gt;  rename(.,
-#&gt;   c('AUC2' := 'AUC',
-#&gt;     'R' := 'R2'))</div><div class='input'><span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>eqn</span>, <span class='no'>my_db</span>)
+#&gt;   c('AUC2' = 'AUC',
+#&gt;     'R' = 'R2'))</div><div class='input'><span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>eqn</span>, <span class='no'>my_db</span>)
 <span class='fu'>cat</span>(<span class='no'>sql</span>)</div><div class='output co'>#&gt; SELECT
 #&gt;  `AUC` AS `AUC2`,
 #&gt;  `R2` AS `R`,

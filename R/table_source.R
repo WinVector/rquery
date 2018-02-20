@@ -164,7 +164,7 @@ to_sql.relop_table_source <- function (x,
                                        ...,
                                        source_limit = NULL,
                                        indent_level = 0,
-                                       tnum = mkTempNameGenerator('tsql'),
+                                       tnum = mk_tmp_name_source('tsql'),
                                        append_cr = TRUE,
                                        using = NULL) {
   if(length(list(...))>0) {

@@ -72,7 +72,7 @@ natural_join.data.frame <- function(a, b,
   if(!is.data.frame(b)) {
     stop("rquery::natural_join.data.frame b must also be a data.frame")
   }
-  nmgen <- mkTempNameGenerator("rquery_tmp")
+  nmgen <- mk_tmp_name_source("rquery_tmp")
   tmp_namea <- nmgen()
   dnodea <- table_source(tmp_namea, colnames(a))
   dnodea$data <- a
@@ -151,7 +151,7 @@ to_sql.relop_natural_join <- function (x,
                                        ...,
                                        source_limit = NULL,
                                        indent_level = 0,
-                                       tnum = mkTempNameGenerator('tsql'),
+                                       tnum = mk_tmp_name_source('tsql'),
                                        append_cr = TRUE,
                                        using = NULL) {
   if(length(list(...))>0) {

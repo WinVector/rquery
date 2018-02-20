@@ -45,7 +45,7 @@ select_rows_se.relop <- function(source, expr,
 #' @export
 select_rows_se.data.frame <- function(source, expr,
                                       env = parent.frame()) {
-  tmp_name <- mkTempNameGenerator("rquery_tmp")()
+  tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- table_source(tmp_name, colnames(source))
   dnode$data <- source
   enode <- select_rows_se(dnode, expr,
@@ -104,7 +104,7 @@ select_rows_nse.relop <- function(source, expr,
 select_rows_nse.data.frame <- function(source, expr,
                             env = parent.frame()) {
   exprq <- substitute(expr)
-  tmp_name <- mkTempNameGenerator("rquery_tmp")()
+  tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- table_source(tmp_name, colnames(source))
   dnode$data <- source
   enode <- select_rows_se(dnode, deparse(exprq),
@@ -162,7 +162,7 @@ to_sql.relop_select_rows <- function (x,
                                       ...,
                                       source_limit = NULL,
                                       indent_level = 0,
-                                      tnum = mkTempNameGenerator('tsql'),
+                                      tnum = mk_tmp_name_source('tsql'),
                                       append_cr = TRUE,
                                       using = NULL) {
   if(length(list(...))>0) {

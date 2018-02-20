@@ -38,7 +38,7 @@ sql_node.relop <- function(source, exprs, mods = NULL) {
 
 #' @export
 sql_node.data.frame <- function(source, exprs, mods = NULL) {
-  tmp_name <- mkTempNameGenerator("rquery_tmp")()
+  tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- table_source(tmp_name, colnames(source))
   dnode$data <- source
   enode <- sql_node(dnode, exprs = exprs, mods = mods)
@@ -95,7 +95,7 @@ to_sql.relop_sql <- function (x,
                               ...,
                               source_limit = NULL,
                               indent_level = 0,
-                              tnum = mkTempNameGenerator('tsql'),
+                              tnum = mk_tmp_name_source('tsql'),
                               append_cr = TRUE,
                               using = NULL) {
   if(length(list(...))>0) {
