@@ -1,8 +1,9 @@
 
-# rquery 0.3.2 2018/02/20
+# rquery 0.3.2 2018/02/25
 
  * Move to wrapr 1.2.0
  * Add wrapr_function.relop().
+ * Column checks on extend.
 
 # rquery 0.3.1 2018/02/10
 

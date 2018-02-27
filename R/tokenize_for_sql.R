@@ -143,7 +143,8 @@ tokenize_for_SQL_r <- function(lexpr,
   res <- list(presentation = paste(as.character(lexpr), collapse = ' '),
               parsed_toks = list(),
               symbols_used = character(0),
-              symbols_produced = character(0))
+              symbols_produced = character(0),
+              free_symbols = character(0))
   # just in case (establishes an invarient of n>=1)
   if(n<=0) {
     return(res)
@@ -206,6 +207,7 @@ tokenize_for_SQL_r <- function(lexpr,
       }
       # finding functions in the env is a problem here
     }
+    res$free_symbols <- lexpr
     # fall back
     res$parsed_toks <- list(pre_sql_token(paste(as.character(lexpr), collapse = " ")))
     return(res)
