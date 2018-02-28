@@ -30,6 +30,7 @@
 #' DBI::dbGetQuery(my_db, sql)
 #' DBI::dbDisconnect(my_db)
 #'
+#' @seealso \code{\link{dbi_table}}
 #'
 #' @export
 #'
@@ -81,6 +82,8 @@ listFields <- function(my_db, tableName) {
 #' @param db database connection
 #' @param table_name name of table
 #' @return a relop representation of the data
+#'
+#' @seealso \code{\link{table_source}}
 #'
 #' @examples
 #'
