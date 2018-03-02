@@ -102,7 +102,7 @@
     <p>Make a general SQL node.</p>
     
 
-    <pre class="usage"><span class='fu'>sql_node</span>(<span class='no'>source</span>, <span class='no'>exprs</span>, <span class='kw'>mods</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>sql_node</span>(<span class='no'>source</span>, <span class='no'>exprs</span>, <span class='no'>...</span>, <span class='kw'>mods</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>orig_columns</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -116,8 +116,16 @@
       <td><p>SQL expressions</p></td>
     </tr>
     <tr>
+      <th>...</th>
+      <td><p>force later arguments to bind by name</p></td>
+    </tr>
+    <tr>
       <th>mods</th>
       <td><p>SQL modifiers (GROUP BY, ORDER BY, and so on)</p></td>
+    </tr>
+    <tr>
+      <th>orig_columns</th>
+      <td><p>logical if TRUE select all original columns.</p></td>
     </tr>
     </table>
     
@@ -134,8 +142,10 @@
 <span class='no'>eqn</span> <span class='kw'>&lt;-</span> <span class='fu'>sql_node</span>(<span class='no'>d</span>, <span class='st'>"n"</span> <span class='kw'>:=</span> <span class='st'>"COUNT(1)"</span>)
 <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>eqn</span>))</div><div class='output co'>#&gt; table('d') %.&gt;%
 #&gt;  sql_node(.,
-#&gt;           n := COUNT(1))</div><div class='input'><span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>eqn</span>, <span class='no'>my_db</span>)
+#&gt;           n := COUNT(1),
+#&gt;              *=TRUE)</div><div class='input'><span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>eqn</span>, <span class='no'>my_db</span>)
 <span class='fu'>cat</span>(<span class='no'>sql</span>)</div><div class='output co'>#&gt; SELECT
+#&gt;  *,
 #&gt;  COUNT(1) AS `n`
 #&gt; FROM (
 #&gt;  SELECT
@@ -144,8 +154,8 @@
 #&gt;   `d`.`z`
 #&gt;  FROM
 #&gt;   `d`
-#&gt; ) tsql_96957576338419706867_0000000000</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;   n
-#&gt; 1 1</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)</div></pre>
+#&gt; ) tsql_87151552894593420317_0000000000</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;   AUC  R2 z n
+#&gt; 1 0.6 0.2 3 1</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
