@@ -9,6 +9,8 @@
 #' @param count character, column to write count in.
 #' @return rel_op node or data.frame (depending on input).
 #'
+#' @seealso \code{\link{mark_null_cols}}, \code{\link{replace_null_cols}}
+#'
 #' @examples
 #'
 #'  my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
@@ -52,6 +54,8 @@ count_null_cols <- function(source, cols, count) {
 #' @param source incoming rel_op tree or data.frame.
 #' @param cols named character, values are columns to track, names are where to land indicators.
 #' @return rel_op node or data.frame (depending on input).
+#'
+#' @seealso \code{\link{count_null_cols}}, \code{\link{replace_null_cols}}
 #'
 #' @examples
 #'
@@ -97,6 +101,8 @@ mark_null_cols <- function(source, cols) {
 #' @param cols character, columns to replace NULLs in.
 #' @param val relpacement value.
 #' @return rel_op node or data.frame (depending on input).
+#'
+#' @seealso \code{\link{count_null_cols}}, \code{\link{mark_null_cols}}
 #'
 #' @examples
 #'
