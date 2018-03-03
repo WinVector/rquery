@@ -116,9 +116,18 @@ columns_used.relop_sql <- function (x, ...,
 }
 
 
+# assemble SQL from list of strings (treated as is),
+# names (treated as SQL column names), and
+# lists (first value used, if character treated as SQL constant).
 prep_sql_toks <- function(db, ei) {
   eiq <- vapply(ei,
                 function(eij) {
+                  if(is.list(eij)) {
+                    eij <- eij[[1]]
+                    if(is.character(eij)) {
+                      return(quote_string(db, eij))
+                    }
+                  }
                   if(is.name(eij)) {
                     return(quote_identifier(db, as.character(eij)))
                   }

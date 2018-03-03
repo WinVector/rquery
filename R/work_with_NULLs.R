@@ -163,7 +163,11 @@ mark_null_cols <- function(source, cols) {
 #'
 #'  d <- dbi_copy_to(my_db, 'd',
 #'                   data.frame(AUC = c(NA, 0.5, NA),
-#'                              R2 = c(1.0, 0.9, NA)))
+#'                              R2 = c(1.0, 0.9, NA),
+#'                              cat = c("a", NA, "c"),
+#'                              stringsAsFactors = FALSE))
+#'
+#'  # numeric example
 #'  op_tree <- d %.>% replace_null_cols(., qc(AUC, R2),
 #'                                         0.0)
 #'  cat(format(op_tree))
@@ -172,7 +176,14 @@ mark_null_cols <- function(source, cols) {
 #'  DBI::dbGetQuery(my_db, sql)
 #'
 #'  # ad-hoc mode
-#'  data.frame(AUC=c(1,NA,0.5), R2=c(NA,1,0)) %.>% op_tree
+#'  data.frame(AUC=c(1,NA,0.5), R2=c(NA,1,0), cat= NA) %.>% op_tree
+#'
+#'  # string example
+#'  op_tree <- d %.>% replace_null_cols(., "cat", "")
+#'  cat(format(op_tree))
+#'  sql <- to_sql(op_tree, my_db)
+#'  cat(sql)
+#'  DBI::dbGetQuery(my_db, sql)
 #'
 #'  # cleanup
 #'  rm(list = "winvector_temp_db_handle")
@@ -198,7 +209,7 @@ replace_null_cols <- function(source, cols, val) {
                     list("CASE WHEN",
                          as.name(ci),
                          "IS NULL THEN",
-                         val,
+                         list(val), # get quoting
                          "ELSE",
                          as.name(ci),
                          "END")
@@ -206,10 +217,14 @@ replace_null_cols <- function(source, cols, val) {
   names(terms) <- cols
   nd <- sql_node(source, c(terms, others),
            orig_columns = FALSE)
+  valstr <- format(val)
+  if(is.character(val)) {
+    valstr <- paste0('"', val, '"')
+  }
   nd$display_form <- paste0("replace_null_cols(",
                             paste(cols, collapse = ", "),
                             "; ",
-                            val,
+                            valstr,
                             ")")
   nd
 }

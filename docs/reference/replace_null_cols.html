@@ -140,30 +140,56 @@
 
  <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dbi_copy_to.html'>dbi_copy_to</a></span>(<span class='no'>my_db</span>, <span class='st'>'d'</span>,
                   <span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>NA</span>, <span class='fl'>0.5</span>, <span class='fl'>NA</span>),
-                             <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>1.0</span>, <span class='fl'>0.9</span>, <span class='fl'>NA</span>)))
+                             <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>1.0</span>, <span class='fl'>0.9</span>, <span class='fl'>NA</span>),
+                             <span class='kw'>cat</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"a"</span>, <span class='fl'>NA</span>, <span class='st'>"c"</span>),
+                             <span class='kw'>stringsAsFactors</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>))
+
+ <span class='co'># numeric example</span>
  <span class='no'>op_tree</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span> <span class='fu'>replace_null_cols</span>(<span class='no'>.</span>, <span class='fu'>qc</span>(<span class='no'>AUC</span>, <span class='no'>R2</span>),
                                         <span class='fl'>0.0</span>)
  <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>op_tree</span>))</div><div class='output co'>#&gt; table('d') %.&gt;%
 #&gt;  sql_node(.,
-#&gt;           COALESCE(AUC, R2; 0))</div><div class='input'> <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>op_tree</span>, <span class='no'>my_db</span>)
+#&gt;           replace_null_cols(AUC, R2; 0))</div><div class='input'> <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>op_tree</span>, <span class='no'>my_db</span>)
  <span class='fu'>cat</span>(<span class='no'>sql</span>)</div><div class='output co'>#&gt; SELECT
-#&gt;  CASE WHEN  AUC IS NULL THEN 0 ELSE AUC END AS `AUC`,
-#&gt;  CASE WHEN  R2 IS NULL THEN 0 ELSE R2 END AS `R2`
+#&gt;  CASE WHEN `AUC` IS NULL THEN 0 ELSE `AUC` END AS `AUC`,
+#&gt;  CASE WHEN `R2` IS NULL THEN 0 ELSE `R2` END AS `R2`,
+#&gt;  cat AS `cat`
 #&gt; FROM (
 #&gt;  SELECT
 #&gt;   `d`.`AUC`,
-#&gt;   `d`.`R2`
+#&gt;   `d`.`R2`,
+#&gt;   `d`.`cat`
 #&gt;  FROM
 #&gt;   `d`
-#&gt; ) tsql_58132400991134741975_0000000000</div><div class='input'> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;   AUC  R2
-#&gt; 1 0.0 1.0
-#&gt; 2 0.5 0.9
-#&gt; 3 0.0 0.0</div><div class='input'>
+#&gt; ) tsql_52796708873540545612_0000000000</div><div class='input'> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;   AUC  R2  cat
+#&gt; 1 0.0 1.0    a
+#&gt; 2 0.5 0.9 &lt;NA&gt;
+#&gt; 3 0.0 0.0    c</div><div class='input'>
  <span class='co'># ad-hoc mode</span>
- <span class='fu'>data.frame</span>(<span class='kw'>AUC</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='fl'>1</span>,<span class='fl'>NA</span>,<span class='fl'>0.5</span>), <span class='kw'>R2</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='fl'>NA</span>,<span class='fl'>1</span>,<span class='fl'>0</span>)) <span class='kw'>%.&gt;%</span> <span class='no'>op_tree</span></div><div class='output co'>#&gt;   AUC R2
-#&gt; 1 1.0  0
-#&gt; 2 0.0  1
-#&gt; 3 0.5  0</div><div class='input'>
+ <span class='fu'>data.frame</span>(<span class='kw'>AUC</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='fl'>1</span>,<span class='fl'>NA</span>,<span class='fl'>0.5</span>), <span class='kw'>R2</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='fl'>NA</span>,<span class='fl'>1</span>,<span class='fl'>0</span>), <span class='kw'>cat</span><span class='kw'>=</span> <span class='fl'>NA</span>) <span class='kw'>%.&gt;%</span> <span class='no'>op_tree</span></div><div class='output co'>#&gt;   AUC R2 cat
+#&gt; 1 1.0  0  NA
+#&gt; 2 0.0  1  NA
+#&gt; 3 0.5  0  NA</div><div class='input'>
+ <span class='co'># string example</span>
+ <span class='no'>op_tree</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span> <span class='fu'>replace_null_cols</span>(<span class='no'>.</span>, <span class='st'>"cat"</span>, <span class='st'>""</span>)
+ <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>op_tree</span>))</div><div class='output co'>#&gt; table('d') %.&gt;%
+#&gt;  sql_node(.,
+#&gt;           replace_null_cols(cat; ""))</div><div class='input'> <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>op_tree</span>, <span class='no'>my_db</span>)
+ <span class='fu'>cat</span>(<span class='no'>sql</span>)</div><div class='output co'>#&gt; SELECT
+#&gt;  CASE WHEN `cat` IS NULL THEN '' ELSE `cat` END AS `cat`,
+#&gt;  AUC AS `AUC`,
+#&gt;  R2 AS `R2`
+#&gt; FROM (
+#&gt;  SELECT
+#&gt;   `d`.`AUC`,
+#&gt;   `d`.`R2`,
+#&gt;   `d`.`cat`
+#&gt;  FROM
+#&gt;   `d`
+#&gt; ) tsql_25167288031991808306_0000000000</div><div class='input'> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;   cat AUC  R2
+#&gt; 1   a  NA 1.0
+#&gt; 2     0.5 0.9
+#&gt; 3   c  NA  NA</div><div class='input'>
  <span class='co'># cleanup</span>
  <span class='fu'>rm</span>(<span class='kw'>list</span> <span class='kw'>=</span> <span class='st'>"winvector_temp_db_handle"</span>)
  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)</div></pre>
