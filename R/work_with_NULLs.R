@@ -191,15 +191,18 @@ replace_null_cols <- function(source, cols, val) {
                paste(bad_cols, collapse = ", ")))
   }
   source_cols <- column_names(source)
-  others <- setdiff(source_cols, as.character(cols))
+  others <- as.list(setdiff(source_cols, as.character(cols)))
   names(others) <- others
-  terms <- paste0("CASE WHEN  ",
-                  as.character(cols),
-                  " IS NULL THEN ",
-                  val,
-                  " ELSE ",
-                  as.character(cols),
-                  " END")
+  terms <- lapply(cols,
+                  function(ci) {
+                    list("CASE WHEN",
+                         as.name(ci),
+                         "IS NULL THEN",
+                         val,
+                         "ELSE",
+                         as.name(ci),
+                         "END")
+                  })
   names(terms) <- cols
   nd <- sql_node(source, c(terms, others),
            orig_columns = FALSE)
