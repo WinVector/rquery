@@ -128,8 +128,13 @@ mark_null_cols <- function(source, cols) {
     stop(paste("rquery::mark_null_cols unknown columns:",
                paste(bad_cols, collapse = ", ")))
   }
-  terms <- paste0(as.character(cols), " IS NULL")
-  nd <- sql_node(source, names(cols) := terms,
+  terms <- lapply(cols,
+                  function(ci) {
+                    list(as.name(ci),
+                         "IS NULL")
+                  })
+  names(terms) <- names(cols)
+  nd <- sql_node(source, terms,
            orig_columns = TRUE)
   nd$display_form <- paste0("mark_null_cols(",
                             wrapr::map_to_char(cols),
