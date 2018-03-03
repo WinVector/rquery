@@ -80,6 +80,14 @@ column_names.relop_sql <- function (x, ...) {
 #' @export
 format.relop_sql <- function(x, ...) {
   wrapr::stop_if_dot_args(substitute(list(...)), "format.relop_sql")
+  if(!is.null(x$display_form)) {
+    str <- paste0(trimws(format(x$source[[1]]), which = "right"),
+           " %.>%\n ",
+           "sql_node(.,\n",
+           "          ", x$display_form,
+           ")\n")
+    return(str)
+  }
   assignments <- paste(names(x$exprs), ":=", as.character(x$exprs))
   modsstr <- ""
   indent_sep <- "\n             "

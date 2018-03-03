@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Replace NULLs per row for given column set. — replace_null_cols • rquery</title>
+<title>Replace or COALESCE out NULLs per row for given column set. — replace_null_cols • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -95,7 +95,7 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Replace NULLs per row for given column set.</h1>
+    <h1>Replace or COALESCE out NULLs per row for given column set.</h1>
     </div>
 
     
@@ -145,9 +145,7 @@
                                         <span class='fl'>0.0</span>)
  <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>op_tree</span>))</div><div class='output co'>#&gt; table('d') %.&gt;%
 #&gt;  sql_node(.,
-#&gt;           AUC := CASE WHEN  AUC IS NULL THEN 0 ELSE AUC END
-#&gt;              R2 := CASE WHEN  R2 IS NULL THEN 0 ELSE R2 END,
-#&gt;              *=FALSE)</div><div class='input'> <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>op_tree</span>, <span class='no'>my_db</span>)
+#&gt;           COALESCE(AUC, R2; 0))</div><div class='input'> <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>op_tree</span>, <span class='no'>my_db</span>)
  <span class='fu'>cat</span>(<span class='no'>sql</span>)</div><div class='output co'>#&gt; SELECT
 #&gt;  CASE WHEN  AUC IS NULL THEN 0 ELSE AUC END AS `AUC`,
 #&gt;  CASE WHEN  R2 IS NULL THEN 0 ELSE R2 END AS `R2`
@@ -157,7 +155,7 @@
 #&gt;   `d`.`R2`
 #&gt;  FROM
 #&gt;   `d`
-#&gt; ) tsql_52796708873540545612_0000000000</div><div class='input'> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;   AUC  R2
+#&gt; ) tsql_58132400991134741975_0000000000</div><div class='input'> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;   AUC  R2
 #&gt; 1 0.0 1.0
 #&gt; 2 0.5 0.9
 #&gt; 3 0.0 0.0</div><div class='input'>

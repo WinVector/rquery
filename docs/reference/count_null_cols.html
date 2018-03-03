@@ -144,8 +144,7 @@
  <span class='no'>op_tree</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span> <span class='fu'>count_null_cols</span>(<span class='no'>.</span>, <span class='fu'>c</span>(<span class='st'>"AUC"</span>, <span class='st'>"R2"</span>), <span class='st'>"nnull"</span>)
  <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>op_tree</span>))</div><div class='output co'>#&gt; table('d') %.&gt;%
 #&gt;  sql_node(.,
-#&gt;           nnull := ( CASE WHEN ( AUC IS NULL ) THEN 1 ELSE 0 END ) + ( CASE WHEN ( R2 IS NULL ) THEN 1 ELSE 0 END ),
-#&gt;              *=TRUE)</div><div class='input'> <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>op_tree</span>, <span class='no'>my_db</span>)
+#&gt;           count_NULL(AUC, R2))</div><div class='input'> <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>op_tree</span>, <span class='no'>my_db</span>)
  <span class='fu'>cat</span>(<span class='no'>sql</span>)</div><div class='output co'>#&gt; SELECT
 #&gt;  *,
 #&gt;  ( CASE WHEN ( AUC IS NULL ) THEN 1 ELSE 0 END ) + ( CASE WHEN ( R2 IS NULL ) THEN 1 ELSE 0 END ) AS `nnull`

@@ -42,8 +42,12 @@ count_null_cols <- function(source, cols, count) {
                   cols,
                   " IS NULL ) THEN 1 ELSE 0 END )")
   expr <- paste0(paste(terms, collapse = " + "))
-  sql_node(source, count := expr,
-           orig_columns = TRUE)
+  nd <- sql_node(source, count := expr,
+                 orig_columns = TRUE)
+  nd$display_form <- paste0("count_NULL(",
+                            paste(cols, collapse = ", "),
+                            ")")
+  nd
 }
 
 
@@ -89,11 +93,15 @@ mark_null_cols <- function(source, cols) {
     stop("mark_null_cols: names can not intersect values")
   }
   terms <- paste0(as.character(cols), " IS NULL")
-  sql_node(source, names(cols) := terms,
+  nd <- sql_node(source, names(cols) := terms,
            orig_columns = TRUE)
+  nd$display_form <- paste0("mark_NULL(",
+                            wrapr::map_to_char(cols),
+                            ")")
+  nd
 }
 
-#' Replace NULLs per row for given column set.
+#' Replace or COALESCE out NULLs per row for given column set.
 #'
 #' Build a query that replaces NULL values in selected columns.
 #'
@@ -146,7 +154,13 @@ replace_null_cols <- function(source, cols, val) {
                   as.character(cols),
                   " END")
   names(terms) <- cols
-  sql_node(source, c(terms, others),
+  nd <- sql_node(source, c(terms, others),
            orig_columns = FALSE)
+  nd$display_form <- paste0("COALESCE(",
+                            paste(cols, collapse = ", "),
+                            "; ",
+                            val,
+                            ")")
+  nd
 }
 
