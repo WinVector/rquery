@@ -116,6 +116,17 @@ columns_used.relop_sql <- function (x, ...,
 }
 
 
+prep_sql_toks <- function(db, ei) {
+  eiq <- vapply(ei,
+                function(eij) {
+                  if(is.name(eij)) {
+                    return(quote_identifier(db, as.character(eij)))
+                  }
+                  return(as.character(eij))
+                }, character(1))
+  paste(eiq, collapse = " ")
+}
+
 #' @export
 to_sql.relop_sql <- function (x,
                               db,
@@ -130,7 +141,11 @@ to_sql.relop_sql <- function (x,
                   function(ci) {
                     quote_identifier(db, ci)
                   }, character(1))
-  cols <- paste(as.character(x$exprs), "AS", colsA)
+  sqlexprs <- vapply(x$exprs,
+                     function(ei) {
+                       prep_sql_toks(db, ei)
+                     }, character(1))
+  cols <- paste(sqlexprs, "AS", colsA)
   if(x$orig_columns) {
     cols <- c("*", cols)
   }

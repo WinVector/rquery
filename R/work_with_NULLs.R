@@ -1,4 +1,19 @@
 
+flatten_with_sep <- function(list_of_lists, sep_list) {
+  nl <- length(list_of_lists)
+  if(nl<1) {
+    return(list())
+  }
+  if(nl==1) {
+    return(list_of_lists[[1]])
+  }
+  r <- vector(2*nl-1, mode = "list")
+  r[seq_len(length(r))] <- sep_list
+  r[2*seq_len(nl)-1] <- list_of_lists
+  r <- unlist(r, recursive = FALSE)
+  r
+}
+
 
 #' Count NULLs per row for given column set.
 #'
@@ -38,13 +53,25 @@
 #' @export
 #'
 count_null_cols <- function(source, cols, count) {
-  terms <- paste0("( CASE WHEN ( ",
-                  cols,
-                  " IS NULL ) THEN 1 ELSE 0 END )")
-  expr <- paste0(paste(terms, collapse = " + "))
-  nd <- sql_node(source, count := expr,
+  nc <- length(cols)
+  if(nc<1) {
+    stop("rquery::count_null_cols need at least one column name")
+  }
+  bad_cols <- setdiff(cols, column_names(source))
+  if(length(bad_cols)>0) {
+    stop(paste("rquery::count_null_cols unknown columns:",
+               paste(bad_cols, collapse = ", ")))
+  }
+  terms <- lapply(cols,
+                  function(ci) {
+                    list("( CASE WHEN (",
+                         as.name(ci),
+                         "IS NULL ) THEN 1 ELSE 0 END )")
+                  })
+  expr <- flatten_with_sep(terms, list("+"))
+  nd <- sql_node(source, list(count = expr),
                  orig_columns = TRUE)
-  nd$display_form <- paste0("count_NULL(",
+  nd$display_form <- paste0("count_null_cols(",
                             paste(cols, collapse = ", "),
                             ")")
   nd
@@ -92,10 +119,19 @@ mark_null_cols <- function(source, cols) {
   if(length(intersect(names(cols), as.character(cols)))>0) {
     stop("mark_null_cols: names can not intersect values")
   }
+  nc <- length(cols)
+  if(nc<1) {
+    stop("rquery::mark_null_cols need at least one column name")
+  }
+  bad_cols <- setdiff(cols, column_names(source))
+  if(length(bad_cols)>0) {
+    stop(paste("rquery::mark_null_cols unknown columns:",
+               paste(bad_cols, collapse = ", ")))
+  }
   terms <- paste0(as.character(cols), " IS NULL")
   nd <- sql_node(source, names(cols) := terms,
            orig_columns = TRUE)
-  nd$display_form <- paste0("mark_NULL(",
+  nd$display_form <- paste0("mark_null_cols(",
                             wrapr::map_to_char(cols),
                             ")")
   nd
@@ -140,8 +176,14 @@ mark_null_cols <- function(source, cols) {
 #' @export
 #'
 replace_null_cols <- function(source, cols, val) {
-  if(length(intersect(names(cols), as.character(cols)))>0) {
-    stop("replace_null_cols: names can not intersect values")
+  nc <- length(cols)
+  if(nc<1) {
+    stop("rquery::replace_null_cols need at least one column name")
+  }
+  bad_cols <- setdiff(cols, column_names(source))
+  if(length(bad_cols)>0) {
+    stop(paste("rquery::replace_null_cols unknown columns:",
+               paste(bad_cols, collapse = ", ")))
   }
   source_cols <- column_names(source)
   others <- setdiff(source_cols, as.character(cols))
@@ -156,7 +198,7 @@ replace_null_cols <- function(source, cols, val) {
   names(terms) <- cols
   nd <- sql_node(source, c(terms, others),
            orig_columns = FALSE)
-  nd$display_form <- paste0("COALESCE(",
+  nd$display_form <- paste0("replace_null_cols(",
                             paste(cols, collapse = ", "),
                             "; ",
                             val,
