@@ -33,7 +33,8 @@
 #'   extend_nse(., c := sqrt(R2)) %.>%
 #'   orderby(., rev_cols = "R2") %.>%
 #'   execute_data_frame(.)
-#' # print ad-hoc query (result only available for printing)
+#' # print ad-hoc query (result only available for printing,
+#' # as the RHS is not a name- execution is not triggered)
 #' d %.>%
 #'   extend_nse(., c := sqrt(R2)) %.>%
 #'   orderby(., rev_cols = "R2")
@@ -82,15 +83,20 @@ rquery_apply_to_data_frame <- function(d,
                     d,
                     temporary = TRUE,
                     overwrite = FALSE)
-  sql <- to_sql(optree, my_db)
-  if(length(sql)!=1) {
-    stop("rquery::rquery_apply_to_data_frame can only handle length-1 pure SQL")
-  }
+  res_name = mk_tmp_name_source('rqatmp')()
+  materialize(optree,
+              my_db,
+              table_name = res_name,
+              overwrite = TRUE,
+              temporary = TRUE)
+  sql <- paste("SELECT * FROM",
+               DBI::dbQuoteIdentifier(my_db, res_name))
   if(!is.null(result_limit)) {
     sql <- paste(sql, "LIMIT", result_limit)
   }
   res <- DBI::dbGetQuery(my_db, sql)
   x <- DBI::dbExecute(my_db, paste("DROP TABLE", tabName))
+  x <- DBI::dbExecute(my_db, paste("DROP TABLE", res_name))
   if(need_close) {
     DBI::dbDisconnect(my_db)
   }
