@@ -77,3 +77,79 @@ materialize <- function(optree,
   }
   dbi_table(db, table_name)
 }
+
+
+
+
+#' Create a materialize node.
+#'
+#' @param source incoming source (relop node or data.frame).
+#' @param outgoing_table_name character, name of table to write.
+#' @param ... force later arguments to be by name
+#' @param overwrite logical, if TRUE overwrite tables
+#' @param temporary logical, if TRUE use temporary tables
+#' @return rsummary node
+#'
+#' @examples
+#'
+#'  d <- data.frame(p= c(TRUE, FALSE, NA),
+#'                  s= NA,
+#'                  w= 1:3,
+#'                  x= c(NA,2,3),
+#'                  y= factor(c(3,5,NA)),
+#'                  z= c('a',NA,'a'),
+#'                  stringsAsFactors=FALSE)
+#'  db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#'  RSQLite::initExtension(db)
+#'  DBI::dbWriteTable(db, "dRemote", d,
+#'                    overwrite = TRUE,
+#'                    temporary = TRUE)
+#'
+#'  ops <- dbi_table(db, "dRemote") %.>%
+#'    extend_nse(., v := ifelse(x>2, "x", "y")) %.>%
+#'    materialize_node(., outgoing_table_name = "intermediate") %.>%
+#'    extend_nse(., v2 := ifelse(x>2, "x", "y"))
+#'  cat(format(ops))
+#'
+#'  to_sql(ops, db)
+#'
+#'  reshdl <- materialize(ops, db)
+#'  DBI::dbGetQuery(db, to_sql(reshdl, db))
+#'
+#'  DBI::dbGetQuery(db, "SELECT * FROM intermediate")
+#'
+#'  DBI::dbDisconnect(db)
+#'
+#' @export
+#'
+materialize_node <- function(source,
+                             ...,
+                             outgoing_table_name = mk_tmp_name_source("mout")(),
+                             overwrite = TRUE,
+                             temporary = TRUE) {
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::materialize_node")
+  if(is.data.frame(source)) {
+    tmp_name <- mk_tmp_name_source("rquery_tmp")()
+    dnode <- table_source(tmp_name, colnames(source))
+    dnode$data <- source
+    source <- dnode
+  }
+  columns_used <- column_names(source)
+  columns_produced <- columns_used
+  force(temporary)
+  force(overwrite)
+  nd <- non_sql_node(source,
+                     f = NULL,
+                     incoming_table_name = outgoing_table_name,
+                     columns_used = columns_used,
+                     outgoing_table_name = outgoing_table_name,
+                     columns_produced = columns_produced,
+                     display_form = paste0("materialize_node(., ",
+                                           outgoing_table_name,
+                                           ")"),
+                     orig_columns = FALSE,
+                     overwrite = overwrite,
+                     temporary = temporary)
+  nd
+}
+

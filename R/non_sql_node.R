@@ -152,13 +152,16 @@ to_sql.relop_non_sql <- function (x,
                     append_cr = append_cr,
                     using = NULL)
   nsubsql <- length(subsql)
-  # TODO: temp control to here
-  step1 <- list(paste0("CREATE TABLE ",
+  step1 <- list(paste0("CREATE ",
+                       ifelse(x$termporary, "TERMPORARY", ""),
+                       " TABLE ",
                        quote_identifier(db, x$incoming_table_name),
                        " AS ",
                        subsql[[nsubsql]]))
   step2 <- NULL
+  step3 <- NULL
   if(!is.null(x$f)) {
+    # full case isolate before and after non-SQL op
     nsql_step <- list(display_form = x$display_form,
                       incoming_table_name = x$incoming_table_name,
                       outgoing_table_name = x$outgoing_table_name,
