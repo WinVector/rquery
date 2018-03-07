@@ -375,7 +375,11 @@ rsummary_node <- function(source,
                      columns_used = columns_used,
                      outgoing_table_name = outgoing_table_name,
                      columns_produced = columns_produced,
-                     display_form = "rsummary",
+                     display_form = paste0("rsummary_node(., ",
+                                           incoming_table_name,
+                                           ", ",
+                                           outgoing_table_name,
+                                           ")"),
                      orig_columns = FALSE)
   nd
 }

@@ -149,15 +149,12 @@ to_sql.relop_non_sql <- function (x,
                        subsql[[nsubsql]]))
   step2 <- NULL
   if(!is.null(x$f)) {
-    step2 <- list(list(text = paste0(x$outgoing_table_name,
-                                     " <- ",
-                                     x$display_form,
-                                     "(",
-                                     x$incoming_table_name,
-                                     ")"),
-                       incoming_table_name = x$incoming_table_name,
-                       outgoing_table_name = x$outgoing_table_name,
-                       f = x$f))
+    nsql_step <- list(display_form = x$display_form,
+                      incoming_table_name = x$incoming_table_name,
+                      outgoing_table_name = x$outgoing_table_name,
+                      f = x$f)
+    class(nsql_step) <- "rquery_non_sql_step"
+    step2 <- list(nsql_step)
   }
   step3 <- list(to_sql(table_source(x$outgoing_table_name, column_names(x)),
                        db = db,
@@ -169,4 +166,15 @@ to_sql.relop_non_sql <- function (x,
   c(subsql[-length(subsql)], step1, step2, step3)
 }
 
+
+
+#' @export
+format.rquery_non_sql_step <- function(x, ...) {
+  paste("non SQL step: ", x$display_form)
+}
+
+#' @export
+print.rquery_non_sql_step <- function(x, ...) {
+  print(format(x))
+}
 
