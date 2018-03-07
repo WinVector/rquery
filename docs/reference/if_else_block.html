@@ -212,19 +212,19 @@ is a reserved column name for this procedure.</p>
 #&gt;    `d`.`edited`
 #&gt;   FROM
 #&gt;    `d`
-#&gt;   ) tsql_20166337694515858573_0000000000
-#&gt;  ) tsql_20166337694515858573_0000000001</div><div class='input'>
+#&gt;   ) tsql_90469385858830292890_0000000000
+#&gt;  ) tsql_90469385858830292890_0000000001</div><div class='input'>
 <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;     i ifebtest_1 ifebtest_2          r a b edited
-#&gt; 1   1          0          0 0.02871257 0 0      0
-#&gt; 2   2          1          0 0.78595116 0 1      0
-#&gt; 3   3          1          0 0.82530786 1 0      0
-#&gt; 4   4          1          1 0.96524042 0 1      1
-#&gt; 5   5          0          1 0.37864118 1 0      1
-#&gt; 6   6          0          1 0.17438633 1 0      1
-#&gt; 7   7          1          1 0.60375040 0 1      1
-#&gt; 8   8          1          1 0.80546373 0 1      1
-#&gt; 9   9          0          1 0.03667941 1 0      1
-#&gt; 10 10          1          1 0.73291067 0 1      1</div><div class='input'>
+#&gt; 1   1          0          0 0.14878272 0 0      0
+#&gt; 2   2          1          0 0.53876017 0 1      0
+#&gt; 3   3          0          0 0.12578923 1 0      0
+#&gt; 4   4          1          1 0.96318175 0 1      1
+#&gt; 5   5          0          1 0.04693501 1 0      1
+#&gt; 6   6          0          1 0.16140918 1 0      1
+#&gt; 7   7          1          1 0.93648743 0 1      1
+#&gt; 8   8          1          1 0.97068136 0 1      1
+#&gt; 9   9          1          1 0.71027405 0 1      1
+#&gt; 10 10          1          1 0.88509093 0 1      1</div><div class='input'>
  <span class='co'># Why we need to land the random selection early</span>
  <span class='co'># for SQLIte:</span>
  <span class='no'>q</span> <span class='kw'>&lt;-</span> <span class='st'>"SELECT r AS r1, r AS r2 FROM (
@@ -232,9 +232,9 @@ is a reserved column name for this procedure.</p>
              SELECT * from ( VALUES(1),(2) )
           ) a
        ) b"</span>
- <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>q</span>)</div><div class='output co'>#&gt;                     r1                   r2
-#&gt; 1 -8568806318825790569 -6357859206888168879
-#&gt; 2  1026016908405183055 -4199818456634160507</div><div class='input'>
+ <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>q</span>)</div><div class='output co'>#&gt;                     r1                  r2
+#&gt; 1 -6883751972070869669 7720698726444620053
+#&gt; 2  8100156631195636260 6189818678652721726</div><div class='input'>
 <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

@@ -33,8 +33,7 @@
 #'   extend_nse(., c := sqrt(R2)) %.>%
 #'   orderby(., rev_cols = "R2") %.>%
 #'   execute_data_frame(.)
-#' # print ad-hoc query (result only available for printing,
-#' # as the RHS is not a name- execution is not triggered)
+#' # print ad-hoc query
 #' d %.>%
 #'   extend_nse(., c := sqrt(R2)) %.>%
 #'   orderby(., rev_cols = "R2")
