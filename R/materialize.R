@@ -31,7 +31,7 @@
 #'
 materialize <- function(optree,
                         db,
-                        table_name = mk_tmp_name_source('rquery_mat'),
+                        table_name = mk_tmp_name_source('rquery_mat')(),
                         ...,
                         overwrite = FALSE,
                         temporary = TRUE) {
