@@ -350,13 +350,14 @@ to_sql.relop_extend <- function (x,
   # work on query
   using <- calc_used_relop_extend(x,
                                   using = using)
-  subsql <- to_sql(x$source[[1]],
-                   db = db,
-                   source_limit = source_limit,
-                   indent_level = indent_level + 1,
-                   tnum = tnum,
-                   append_cr = FALSE,
-                   using = using)
+  subsql_list <- to_sql(x$source[[1]],
+                        db = db,
+                        source_limit = source_limit,
+                        indent_level = indent_level + 1,
+                        tnum = tnum,
+                        append_cr = FALSE,
+                        using = using)
+  subsql <- subsql_list[[length(subsql_list)]]
   cols1 <- intersect(column_names(x$source[[1]]), using)
   cols1 <- setdiff(cols1, names(re_assignments)) # allow simple name re-use
   cols <- NULL
@@ -420,7 +421,7 @@ to_sql.relop_extend <- function (x,
   if(append_cr) {
     q <- paste0(q, "\n")
   }
-  q
+  c(subsql_list[-length(subsql_list)], q)
 }
 
 #' @export

@@ -2,7 +2,7 @@
 
 #' Make a general SQL node.
 #'
-#' @param source source to rename from.
+#' @param source source to work from.
 #' @param exprs SQL expressions
 #' @param ... force later arguments to bind by name
 #' @param mods SQL modifiers (GROUP BY, ORDER BY, and so on)
@@ -158,13 +158,14 @@ to_sql.relop_sql <- function (x,
   if(x$orig_columns) {
     cols <- c("*", cols)
   }
-  subsql <- to_sql(x$source[[1]],
-                   db = db,
-                   source_limit = source_limit,
-                   indent_level = indent_level + 1,
-                   tnum = tnum,
-                   append_cr = FALSE,
-                   using = NULL)
+  subsql_list <- to_sql(x$source[[1]],
+                        db = db,
+                        source_limit = source_limit,
+                        indent_level = indent_level + 1,
+                        tnum = tnum,
+                        append_cr = FALSE,
+                        using = NULL)
+  subsql <- subsql_list[[length(subsql_list)]]
   tab <- tnum()
   prefix <- paste(rep(' ', indent_level), collapse = '')
   star_str <- ""
@@ -180,7 +181,7 @@ to_sql.relop_sql <- function (x,
   if(append_cr) {
     q <- paste0(q, "\n")
   }
-  q
+  c(subsql_list[-length(subsql_list)], q)
 }
 
 

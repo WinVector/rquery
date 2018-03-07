@@ -38,7 +38,11 @@ materialize <- function(optree,
   if(length(list(...))>0) {
     stop("unexpected arguments")
   }
-  sql <- to_sql(optree, db)
+  sql_list <- to_sql(optree, db)
+  if(length(sql_list)!=1) {
+    stop("rquery::materialzie can not deal with length()!=1 SQL yet")
+  }
+  sql <- sql_list[[length(sql_list)]]
   sql <- paste0("CREATE ",
                 ifelse(temporary, "TEMPORARY ", ""),
                 "TABLE ",

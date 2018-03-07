@@ -270,15 +270,6 @@ dbi_copy_to <- function(db, table_name, d,
 }
 
 
-#' @export
-#'
-to_pre_sql.relop_table_source  <- function (x,
-                                             ...) {
-  if(length(list(...))>0) {
-    stop("rquery::to_pre_sqlt.relop_table_source  unexpeced arguments")
-  }
-  pre_sql_table(x$table_name, x$columns)
-}
 
 #' @export
 #'

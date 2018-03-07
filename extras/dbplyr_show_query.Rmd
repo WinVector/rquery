@@ -1,0 +1,22 @@
+---
+title: "dbply_query"
+author: "Win-Vector LLC"
+date: "3/7/2018"
+output: github_document
+---
+
+```{r}
+library("dplyr")
+my_db <- DBI::dbConnect(RSQLite::SQLite(),
+                        ":memory:")
+dLocal <- data.frame(x = c(1,2))
+dRemote <- dplyr::copy_to(my_db, dLocal, "dRemote")
+
+
+dRemote %>% mutate(x = x + 1) %>% compute() %>% show_query()
+
+dRemote %>% mutate(x = x + 1) %>% compute() %>% dbplyr::remote_query()
+
+
+DBI::dbDisconnect(my_db)
+```

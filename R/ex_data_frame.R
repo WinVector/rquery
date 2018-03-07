@@ -83,6 +83,9 @@ rquery_apply_to_data_frame <- function(d,
                     temporary = TRUE,
                     overwrite = FALSE)
   sql <- to_sql(optree, my_db)
+  if(length(sql)!=1) {
+    stop("rquery::rquery_apply_to_data_frame can only handle length-1 pure SQL")
+  }
   if(!is.null(result_limit)) {
     sql <- paste(sql, "LIMIT", result_limit)
   }

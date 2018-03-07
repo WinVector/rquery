@@ -206,13 +206,14 @@ to_sql.relop_project <- function (x,
   # work on query
   using <- calc_used_relop_project(x,
                                    using = using)
-  subsql <- to_sql(x$source[[1]],
-                   db = db,
-                   source_limit = source_limit,
-                   indent_level = indent_level + 1,
-                   tnum = tnum,
-                   append_cr = FALSE,
-                   using = using)
+  subsql_list <- to_sql(x$source[[1]],
+                        db = db,
+                        source_limit = source_limit,
+                        indent_level = indent_level + 1,
+                        tnum = tnum,
+                        append_cr = FALSE,
+                        using = using)
+  subsql <- subsql_list[[length(subsql_list)]]
   cols1 <- x$groupby
   cols <- NULL
   if(length(cols1)>0) {
@@ -245,5 +246,5 @@ to_sql.relop_project <- function (x,
   if(append_cr) {
     q <- paste0(q, "\n")
   }
-  q
+  c(subsql_list[-length(subsql_list)], q)
 }

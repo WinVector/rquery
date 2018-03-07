@@ -123,6 +123,8 @@ tables_used.relop <- function(node, ...) {
 
 #' Return SQL implementation of operation tree.
 #'
+#' Add to last argument and pass all others through.
+#'
 #' @param x rquery operation tree.
 #' @param db DBI database handle or rquery_db_info object.
 #' @param ... generic additional arguments (not used).
@@ -146,19 +148,6 @@ to_sql <- function (x,
   UseMethod("to_sql", x)
 }
 
-
-#' Return SQL implementation of operation tree.
-#'
-#' @param x rquery operation tree.
-#' @param ... generic additional arguments (not used).
-#' @return pre_sql_op node
-#'
-#' @export
-#'
-to_pre_sql <- function (x,
-                        ...) {
-  UseMethod("to_pre_sql", x)
-}
 
 
 #' @export
