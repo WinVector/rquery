@@ -103,7 +103,8 @@
     
 
     <pre class="usage"><span class='fu'>rsummary_node</span>(<span class='no'>source</span>, <span class='no'>...</span>, <span class='kw'>incoming_table_name</span> <span class='kw'>=</span> <span class='fu'>mk_tmp_name_source</span>(<span class='st'>"rin"</span>)(),
-  <span class='kw'>outgoing_table_name</span> <span class='kw'>=</span> <span class='fu'>mk_tmp_name_source</span>(<span class='st'>"rout"</span>)(), <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+  <span class='kw'>outgoing_table_name</span> <span class='kw'>=</span> <span class='fu'>mk_tmp_name_source</span>(<span class='st'>"rout"</span>)(), <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -125,8 +126,12 @@
       <td><p>character, name of table to write.</p></td>
     </tr>
     <tr>
+      <th>overwrite</th>
+      <td><p>logical, if TRUE overwrite tables</p></td>
+    </tr>
+    <tr>
       <th>temporary</th>
-      <td><p>logical, if TRUE use temporary table</p></td>
+      <td><p>logical, if TRUE use temporary tables</p></td>
     </tr>
     </table>
     

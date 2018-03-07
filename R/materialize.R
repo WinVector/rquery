@@ -33,8 +33,8 @@ materialize <- function(optree,
                         db,
                         table_name = mk_tmp_name_source('rquery_mat')(),
                         ...,
-                        overwrite = FALSE,
-                        temporary = TRUE) {
+                        overwrite = TRUE,
+                        temporary = FALSE) {
   if(length(list(...))>0) {
     stop("unexpected arguments")
   }
@@ -45,11 +45,25 @@ materialize <- function(optree,
       if(is.character(sqli)) {
         DBI::dbExecute(db, sqli)
       } else {
+        if(sqli$overwrite) {
+          if(DBI::dbExistsTable(db, sqli$outgoing_table_name)) {
+            DBI::dbExecute(db,
+                           paste0("DROP TABLE ",
+                                  quote_identifier(db, sqli$outgoing_table_name)))
+          }
+        }
         sqli$f(db, sqli$incoming_table_name, sqli$outgoing_table_name)
       }
     }
   }
   sql <- sql_list[[length(sql_list)]]
+  if(overwrite) {
+    if(DBI::dbExistsTable(db, table_name)) {
+      DBI::dbExecute(db,
+                     paste0("DROP TABLE ",
+                            quote_identifier(db, table_name)))
+    }
+  }
   if(is.character(sql)) {
     sql <- paste0("CREATE ",
                   ifelse(temporary, "TEMPORARY ", ""),
@@ -57,13 +71,6 @@ materialize <- function(optree,
                   quote_identifier(db, table_name),
                   " AS ",
                   sql)
-    if(overwrite) {
-      if(DBI::dbExistsTable(db, table_name)) {
-        DBI::dbExecute(db,
-                       paste0("DROP TABLE ",
-                              quote_identifier(db, table_name)))
-      }
-    }
     DBI::dbExecute(db, sql)
   } else {
     sql$f(db, sql$incoming_table_name, table_name)

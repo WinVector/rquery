@@ -5,12 +5,12 @@
 #'
 #' @param source source to work from.
 #' @param f implementation signature: f(db, incoming_table_name, outgoing_table_name)
+#' @param ... force later arguments to bind by name
 #' @param incoming_table_name character, name of incoming table
 #' @param columns_used character, incoming columns used
 #' @param outgoing_table_name character, name of produced table
 #' @param columns_produced character, names of columns produced
 #' @param display_form chacter, how to print node
-#' @param ... force later arguments to bind by name
 #' @param orig_columns logical if TRUE select all original columns.
 #' @return sql node.
 #'
@@ -19,13 +19,15 @@
 #'
 non_sql_node <- function(source,
                          f,
+                         ...,
                          incoming_table_name,
                          columns_used,
                          outgoing_table_name,
                          columns_produced,
                          display_form,
-                         ...,
-                         orig_columns = TRUE) {
+                         orig_columns = TRUE,
+                         overwrite = TRUE,
+                         temporary = TRUE) {
   wrapr::stop_if_dot_args(substitute(list(...)), "non_sql_node")
   UseMethod("non_sql_node", source)
 }
@@ -33,13 +35,15 @@ non_sql_node <- function(source,
 #' @noRd
 non_sql_node.relop <- function(source,
                                f,
+                               ...,
                                incoming_table_name,
                                columns_used,
                                outgoing_table_name,
                                columns_produced,
                                display_form,
-                               ...,
-                               orig_columns = TRUE) {
+                               orig_columns = TRUE,
+                               overwrite = TRUE,
+                               temporary = TRUE) {
   wrapr::stop_if_dot_args(substitute(list(...)), "non_sql_node.relop")
   if(is.null(f)) {
     if(incoming_table_name!=outgoing_table_name) {
@@ -58,7 +62,9 @@ non_sql_node.relop <- function(source,
             outgoing_table_name = outgoing_table_name,
             columns_produced = columns_produced,
             display_form = display_form,
-            orig_columns = orig_columns)
+            orig_columns = orig_columns,
+            overwrite = overwrite,
+            temporary = temporary)
   r <- relop_decorate("relop_non_sql", r)
   r
 }
@@ -66,13 +72,15 @@ non_sql_node.relop <- function(source,
 #' @noRd
 non_sql_node.data.frame <- function(source,
                                     f,
+                                    ...,
                                     incoming_table_name,
                                     columns_used,
                                     outgoing_table_name,
                                     columns_produced,
                                     display_form,
-                                    ...,
-                                    orig_columns = TRUE) {
+                                    orig_columns = TRUE,
+                                    overwrite = TRUE,
+                                    temporary = TRUE) {
   wrapr::stop_if_dot_args(substitute(list(...)), "non_sql_node.data.frame")
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- table_source(tmp_name, colnames(source))
@@ -82,9 +90,11 @@ non_sql_node.data.frame <- function(source,
                         incoming_table_name = incoming_table_name,
                         columns_used = columns_used,
                         outgoing_table_name = outgoing_table_name,
-                        columns_produced =  columns_produced,
+                        columns_produced = columns_produced,
                         display_form = display_form,
-                        orig_columns = orig_columns)
+                        orig_columns = orig_columns,
+                        overwrite = overwrite,
+                        temporary = temporary)
   return(enode)
 }
 
@@ -152,6 +162,8 @@ to_sql.relop_non_sql <- function (x,
     nsql_step <- list(display_form = x$display_form,
                       incoming_table_name = x$incoming_table_name,
                       outgoing_table_name = x$outgoing_table_name,
+                      overwrite = x$overwrite,
+                      temporary = x$temporary,
                       f = x$f)
     class(nsql_step) <- "rquery_non_sql_step"
     step2 <- list(nsql_step)

@@ -306,7 +306,8 @@ rsummary <- function(db,
 #' @param incoming_table_name character, name of incoming table.
 #' @param outgoing_table_name character, name of table to write.
 #' @param ... force later arguments to be by name
-#' @param temporary logical, if TRUE use temporary table
+#' @param overwrite logical, if TRUE overwrite tables
+#' @param temporary logical, if TRUE use temporary tables
 #' @return rsummary node
 #'
 #' @examples
@@ -342,6 +343,7 @@ rsummary_node <- function(source,
                           ...,
                           incoming_table_name = mk_tmp_name_source("rin")(),
                           outgoing_table_name = mk_tmp_name_source("rout")(),
+                          overwrite = TRUE,
                           temporary = TRUE) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::rsummary_node")
   if(is.data.frame(source)) {
@@ -364,10 +366,16 @@ rsummary_node <- function(source,
                         "lexmin",
                         "lexmax")
   force(temporary)
-  f <- function(db, incoming_table_name, outgoing_table_name) {
+  force(overwrite)
+  f <- function(db,
+                incoming_table_name,
+                outgoing_table_name) {
     stable <- rsummary(db, incoming_table_name)
-    DBI::dbWriteTable(db, outgoing_table_name, stable,
-                      overwrite = TRUE, temporary = temporary)
+    dbi_copy_to(db,
+                table_name = outgoing_table_name,
+                d = stable,
+                overwrite = overwrite,
+                temporary = temporary)
   }
   nd <- non_sql_node(source,
                      f,
@@ -380,7 +388,9 @@ rsummary_node <- function(source,
                                            ", ",
                                            outgoing_table_name,
                                            ")"),
-                     orig_columns = FALSE)
+                     orig_columns = FALSE,
+                     overwrite = overwrite,
+                     temporary = temporary)
   nd
 }
 
