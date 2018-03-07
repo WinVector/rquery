@@ -39,23 +39,34 @@ materialize <- function(optree,
     stop("unexpected arguments")
   }
   sql_list <- to_sql(optree, db)
-  if(length(sql_list)!=1) {
-    stop("rquery::materialzie can not deal with length()!=1 SQL yet")
-  }
-  sql <- sql_list[[length(sql_list)]]
-  sql <- paste0("CREATE ",
-                ifelse(temporary, "TEMPORARY ", ""),
-                "TABLE ",
-                quote_identifier(db, table_name),
-                " AS ",
-                sql)
-  if(overwrite) {
-    if(DBI::dbExistsTable(db, table_name)) {
-      DBI::dbExecute(db,
-                   paste0("DROP TABLE ",
-                          quote_identifier(db, table_name)))
+  if(length(sql_list)>=2) {
+    for(ii in seq_len(length(sql_list)-1)) {
+      sqli <- sql_list[[ii]]
+      if(is.character(sqli)) {
+        DBI::dbExecute(db, sqli)
+      } else {
+        sqli$f(db, sqli$incoming_table_name, sqli$outgoing_table_name)
+      }
     }
   }
-  DBI::dbExecute(db, sql)
+  sql <- sql_list[[length(sql_list)]]
+  if(is.character(sql)) {
+    sql <- paste0("CREATE ",
+                  ifelse(temporary, "TEMPORARY ", ""),
+                  "TABLE ",
+                  quote_identifier(db, table_name),
+                  " AS ",
+                  sql)
+    if(overwrite) {
+      if(DBI::dbExistsTable(db, table_name)) {
+        DBI::dbExecute(db,
+                       paste0("DROP TABLE ",
+                              quote_identifier(db, table_name)))
+      }
+    }
+    DBI::dbExecute(db, sql)
+  } else {
+    sql$f(db, sql$incoming_table_name, table_name)
+  }
   dbi_table(db, table_name)
 }

@@ -122,9 +122,9 @@ rsummary <- function(db,
                     lexmin = NA_real_,
                     lexmax = NA_real_,
                     stringsAsFactors = FALSE)
-  classtr <- lapply(cclass,function(vi) {
+  classtr <- vapply(cclass,function(vi) {
     paste(vi,collapse=', ')
-  })
+  }, character(1))
   res$class <- classtr[res$column]
   res$index <- match(res$column, cnames)
   if((nrows<1)||(length(workingCols)<1)) {
@@ -297,6 +297,87 @@ rsummary <- function(db,
   res <- res[order(res$index),]
   rownames(res) <- NULL
   res
+}
+
+
+#' Create an rsumary relop operator node.
+#'
+#' @param source incoming source (relop node or data.frame).
+#' @param incoming_table_name character, name of incoming table.
+#' @param outgoing_table_name character, name of table to write.
+#' @param ... force later arguments to be by name
+#' @param temporary logical, if TRUE use temporary table
+#' @return rsummary node
+#'
+#' @examples
+#'
+#'  d <- data.frame(p= c(TRUE, FALSE, NA),
+#'                  s= NA,
+#'                  w= 1:3,
+#'                  x= c(NA,2,3),
+#'                  y= factor(c(3,5,NA)),
+#'                  z= c('a',NA,'a'),
+#'                  stringsAsFactors=FALSE)
+#'  db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#'  RSQLite::initExtension(db)
+#'  DBI::dbWriteTable(db, "dRemote", d,
+#'                    overwrite = TRUE,
+#'                    temporary = TRUE)
+#'
+#'  ops <- dbi_table(db, "dRemote") %.>%
+#'    extend_nse(., v := ifelse(x>2, "x", "y")) %.>%
+#'    rsummary_node(.)
+#'  cat(format(ops))
+#'
+#'  to_sql(ops, db)
+#'
+#'  reshdl <- materialize(ops, db)
+#'  DBI::dbGetQuery(db, to_sql(reshdl, db))
+#'
+#'  DBI::dbDisconnect(db)
+#'
+#' @export
+#'
+rsummary_node <- function(source,
+                          ...,
+                          incoming_table_name = mk_tmp_name_source("rin")(),
+                          outgoing_table_name = mk_tmp_name_source("rout")(),
+                          temporary = TRUE) {
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::rsummary_node")
+  if(is.data.frame(source)) {
+    tmp_name <- mk_tmp_name_source("rquery_tmp")()
+    dnode <- table_source(tmp_name, colnames(source))
+    dnode$data <- source
+    source <- dnode
+  }
+  columns_used <- column_names(source)
+  columns_produced <- c("column",
+                        "index",
+                        "class",
+                        "nrows",
+                        "nna",
+                        "nunique",
+                        "min",
+                        "max",
+                        "mean",
+                        "sd",
+                        "lexmin",
+                        "lexmax")
+  force(temporary)
+  f <- function(db, incoming_table_name, outgoing_table_name) {
+    stable <- rsummary(db, incoming_table_name)
+    DBI::dbWriteTable(db, outgoing_table_name, stable,
+                      overwrite = TRUE, temporary = temporary)
+  }
+  nd <- non_sql_node(source,
+                     f,
+                     incoming_table_name = incoming_table_name,
+                     columns_used = columns_used,
+                     outgoing_table_name = outgoing_table_name,
+                     columns_produced = columns_produced,
+                     display_form = "rsummary",
+                     orig_columns = FALSE)
+  nd
 }
 
 

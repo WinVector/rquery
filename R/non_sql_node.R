@@ -5,10 +5,11 @@
 #'
 #' @param source source to work from.
 #' @param f implementation signature: f(db, incoming_table_name, outgoing_table_name)
-#' @param incoming_table_name
-#' @param columns_used
-#' @param outgoing_table_name
-#' @param columns_produced
+#' @param incoming_table_name character, name of incoming table
+#' @param columns_used character, incoming columns used
+#' @param outgoing_table_name character, name of produced table
+#' @param columns_produced character, names of columns produced
+#' @param display_form chacter, how to print node
 #' @param ... force later arguments to bind by name
 #' @param orig_columns logical if TRUE select all original columns.
 #' @return sql node.
@@ -22,6 +23,7 @@ non_sql_node <- function(source,
                          columns_used,
                          outgoing_table_name,
                          columns_produced,
+                         display_form,
                          ...,
                          orig_columns = TRUE) {
   wrapr::stop_if_dot_args(substitute(list(...)), "non_sql_node")
@@ -35,6 +37,7 @@ non_sql_node.relop <- function(source,
                                columns_used,
                                outgoing_table_name,
                                columns_produced,
+                               display_form,
                                ...,
                                orig_columns = TRUE) {
   wrapr::stop_if_dot_args(substitute(list(...)), "non_sql_node.relop")
@@ -54,6 +57,7 @@ non_sql_node.relop <- function(source,
             columns_used = columns_used,
             outgoing_table_name = outgoing_table_name,
             columns_produced = columns_produced,
+            display_form = display_form,
             orig_columns = orig_columns)
   r <- relop_decorate("relop_non_sql", r)
   r
@@ -66,6 +70,7 @@ non_sql_node.data.frame <- function(source,
                                     columns_used,
                                     outgoing_table_name,
                                     columns_produced,
+                                    display_form,
                                     ...,
                                     orig_columns = TRUE) {
   wrapr::stop_if_dot_args(substitute(list(...)), "non_sql_node.data.frame")
@@ -78,6 +83,7 @@ non_sql_node.data.frame <- function(source,
                         columns_used = columns_used,
                         outgoing_table_name = outgoing_table_name,
                         columns_produced =  columns_produced,
+                        display_form = display_form,
                         orig_columns = orig_columns)
   return(enode)
 }
@@ -100,27 +106,9 @@ column_names.relop_non_sql <- function (x, ...) {
 #' @export
 format.relop_non_sql <- function(x, ...) {
   wrapr::stop_if_dot_args(substitute(list(...)), "format.relop_non_sql")
-  if(!is.null(x$display_form)) {
-    str <- paste0(trimws(format(x$source[[1]]), which = "right"),
-                  " %.>%\n ",
-                  "non_sql_node(.,\n",
-                  "          ", x$display_form,
-                  ")\n")
-    return(str)
-  }
-  assignments <- paste(names(x$exprs), ":=", as.character(x$exprs))
-  modsstr <- ""
-  indent_sep <- "\n             "
-  if(!is.null(x$mods)) {
-    modsstr <- paste(";\n          ", x$mods)
-  }
   paste0(trimws(format(x$source[[1]]), which = "right"),
          " %.>%\n ",
-         "non_sql_node(.,\n",
-         "          ", paste(assignments, collapse = indent_sep),
-         modsstr,
-         ",", indent_sep, "*=", x$orig_columns,
-         ")\n")
+         "non_sql_node(., ", x$display_form, ")\n")
 }
 
 
@@ -161,10 +149,15 @@ to_sql.relop_non_sql <- function (x,
                        subsql[[nsubsql]]))
   step2 <- NULL
   if(!is.null(x$f)) {
-    step2 <- list(text = paste0(quote_identifier(db, x$outgoing_table_name),
-                                " <- ",
-                                x$node_description),
-                  f = x$f)
+    step2 <- list(list(text = paste0(x$outgoing_table_name,
+                                     " <- ",
+                                     x$display_form,
+                                     "(",
+                                     x$incoming_table_name,
+                                     ")"),
+                       incoming_table_name = x$incoming_table_name,
+                       outgoing_table_name = x$outgoing_table_name,
+                       f = x$f))
   }
   step3 <- list(to_sql(table_source(x$outgoing_table_name, column_names(x)),
                        db = db,
