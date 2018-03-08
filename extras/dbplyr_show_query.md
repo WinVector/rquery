@@ -30,14 +30,14 @@ dRemote %>% mutate(x = x + 1) %>% compute() %>% show_query()
 
     ## <SQL>
     ## SELECT *
-    ## FROM `lzjauewxal`
+    ## FROM `vsdkksqtpd`
 
 ``` r
 dRemote %>% mutate(x = x + 1) %>% compute() %>% dbplyr::remote_query()
 ```
 
     ## <SQL> SELECT *
-    ## FROM `gnslkbvyse`
+    ## FROM `xtxmqcqhrg`
 
 ``` r
 DBI::dbDisconnect(my_db)

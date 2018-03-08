@@ -20,3 +20,6 @@ NULL
 
 #' @importFrom wrapr %.>% := mk_tmp_name_source wrapr_function pipe_step
 NULL
+
+#' @importFrom DBI dbGetQuery
+NULL

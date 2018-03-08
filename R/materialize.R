@@ -13,6 +13,8 @@
 #' @param temporary logical if TRUE try to create a temporary table.
 #' @return table handle
 #'
+#' @seealso \code{\link{execute}}, \code{\link{materialize_node}}
+#'
 #' @examples
 #'
 #' my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
@@ -80,6 +82,71 @@ materialize <- function(optree,
 
 
 
+#' Materialize an optree as a table.
+#'
+#' Run the data query.  If table_name is not set results
+#' (up to row_limit rows) are brought back to R. If
+#' table_name is set full results are materailized as a remote
+#' table.
+#'
+#' @param optree relop operation tree.
+#' @param db DBI connecton.
+#' @param ... force later arguments to bind by name.
+#' @param table_name character, name of table to create.
+#' @param row_limit numeric, if set limit to this many rows.
+#' @param overwrite logical if TRUE drop an previous table.
+#' @param temporary logical if TRUE try to create a temporary table.
+#' @return data.frame or table handle.
+#'
+#' @seealso \code{\link{materialize}}
+#'
+#' @examples
+#'
+#' my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#' d <- dbi_copy_to(my_db, 'd',
+#'                 data.frame(AUC = 0.6, R2 = 0.2))
+#' optree <- extend_se(d, c("v" := "AUC + R2", "x" := "pmax(AUC,v)"))
+#' cat(format(optree))
+#'
+#' execute(optree, my_db)
+#'
+#' res_hdl <- execute(optree, my_db, table_name = "res")
+#' print(res_hdl)
+#' DBI::dbGetQuery(my_db, to_sql(res_hdl, my_db))
+#' DBI::dbReadTable(my_db, res_hdl$table_name)
+#' DBI::dbRemoveTable(my_db, res_hdl$table_name)
+#'
+#' DBI::dbDisconnect(my_db)
+#'
+#' @export
+#'
+execute <- function(optree,
+                    db,
+                    ...,
+                    table_name = NULL,
+                    row_limit = 1000000,
+                    overwrite = TRUE,
+                    temporary = FALSE) {
+  table_name_set <- !is.null(table_name)
+  if(!table_name_set) {
+    table_name <-  mk_tmp_name_source('rquery_ex')()
+  }
+  ref <- materialize(optree, db,
+                     table_name = table_name,
+                     overwrite = overwrite,
+                     temporary = temporary)
+  res <- ref
+  if(!table_name_set) {
+    sql <- to_sql(ref, db)
+    if((!is.null(row_limit)) && (!is.na(row_limit))) {
+      sql <- paste(sql, "LIMIT", row_limit)
+    }
+    res <- DBI::dbGetQuery(db, sql)
+    DBI::dbRemoveTable(db, ref$table_name)
+  }
+  res
+}
+
 
 #' Create a materialize node.
 #'
@@ -89,6 +156,8 @@ materialize <- function(optree,
 #' @param overwrite logical, if TRUE overwrite tables
 #' @param temporary logical, if TRUE use temporary tables
 #' @return rsummary node
+#'
+#' @seealso \code{\link{execute}}, \code{\link{materialize}}
 #'
 #' @examples
 #'
