@@ -7,7 +7,7 @@
  * Default sql_node to copying incoming columns.
  * NULL column ops.
  * rsummary().
- * Database on the left and "non SQL" nodes.
+ * "Non SQL" nodes.
 
 # rquery 0.3.1 2018/02/10
 
