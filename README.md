@@ -64,8 +64,9 @@ First we show the Spark/database version of the original example data:
 class(my_db)
 ```
 
-    ## [1] "spark_connection"       "spark_shell_connection"
-    ## [3] "DBIConnection"
+    ## [1] "PqConnection"
+    ## attr(,"package")
+    ## [1] "RPostgres"
 
 ``` r
 print(d)
@@ -131,45 +132,45 @@ cat(to_sql(dq, my_db, source_limit = 1000))
 
     SELECT * FROM (
      SELECT
-      `subjectID`,
-      `diagnosis`,
-      `probability`
+      "subjectID",
+      "diagnosis",
+      "probability"
      FROM (
       SELECT * FROM (
        SELECT
-        `count` AS `count`,
-        `probability` AS `probability`,
-        `rank` AS `rank`,
-        `subjectID` AS `subjectID`,
-        `surveyCategory` AS `diagnosis`
+        "count" AS "count",
+        "probability" AS "probability",
+        "rank" AS "rank",
+        "subjectID" AS "subjectID",
+        "surveyCategory" AS "diagnosis"
        FROM (
         SELECT
-         `count`,
-         `probability`,
-         `subjectID`,
-         `surveyCategory`,
-         rank ( ) OVER (  PARTITION BY `subjectID` ORDER BY `probability`, `surveyCategory` ) AS `rank`
+         "count",
+         "probability",
+         "subjectID",
+         "surveyCategory",
+         rank ( ) OVER (  PARTITION BY "subjectID" ORDER BY "probability", "surveyCategory" ) AS "rank"
         FROM (
          SELECT
-          `subjectID`,
-          `surveyCategory`,
-          `assessmentTotal`,
-          exp ( `assessmentTotal` * 0.237 ) / sum ( exp ( `assessmentTotal` * 0.237 ) ) OVER (  PARTITION BY `subjectID` ) AS `probability`,
-          count ( 1 ) OVER (  PARTITION BY `subjectID` ) AS `count`
+          "subjectID",
+          "surveyCategory",
+          "assessmentTotal",
+          exp ( "assessmentTotal" * 0.237 ) / sum ( exp ( "assessmentTotal" * 0.237 ) ) OVER (  PARTITION BY "subjectID" ) AS "probability",
+          count ( 1 ) OVER (  PARTITION BY "subjectID" ) AS "count"
          FROM (
           SELECT
-           `d`.`subjectID`,
-           `d`.`surveyCategory`,
-           `d`.`assessmentTotal`
+           "d"."subjectID",
+           "d"."surveyCategory",
+           "d"."assessmentTotal"
           FROM
-           `d` LIMIT 1000
-          ) tsql_35998193098555330507_0000000000
-         ) tsql_35998193098555330507_0000000001
-       ) tsql_35998193098555330507_0000000002
-      ) tsql_35998193098555330507_0000000003
-      WHERE `rank` = `count`
-     ) tsql_35998193098555330507_0000000004
-    ) tsql_35998193098555330507_0000000005 ORDER BY `subjectID`
+           "d" LIMIT 1000
+          ) tsql_12773413686523317091_0000000000
+         ) tsql_12773413686523317091_0000000001
+       ) tsql_12773413686523317091_0000000002
+      ) tsql_12773413686523317091_0000000003
+      WHERE "rank" = "count"
+     ) tsql_12773413686523317091_0000000004
+    ) tsql_12773413686523317091_0000000005 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 

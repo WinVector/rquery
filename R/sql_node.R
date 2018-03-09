@@ -77,6 +77,15 @@ sql_node.relop <- function(source, exprs,
                            mods = NULL,
                            orig_columns = TRUE) {
   wrapr::stop_if_dot_args(substitute(list(...)), "sql_node.relop")
+  names_used <- Filter(is.name, unlist(exprs,
+                                       recursive = TRUE,
+                                       use.names = FALSE))
+  names_used <- sort(unique(as.character(names_used)))
+  undef <- setdiff(names_used, column_names(source))
+  if(length(undef)>0) {
+    stop(paste("rquery::sql_node.relop undefined columns:",
+               paste(undef, collapse = ", ")))
+  }
   r <- list(source = list(source),
             table_name = NULL,
             parsed = NULL,
@@ -128,7 +137,11 @@ format.relop_sql <- function(x, ...) {
            ")\n")
     return(str)
   }
-  assignments <- paste(names(x$exprs), ":=", as.character(x$exprs))
+  exprtxt <- vapply(x$exprs,
+                    function(ei) {
+                      paste(as.character(ei), collapse = " ")
+                    }, character(1))
+  assignments <- paste(names(x$exprs), ":=", exprtxt)
   modsstr <- ""
   indent_sep <- "\n             "
   if(!is.null(x$mods)) {

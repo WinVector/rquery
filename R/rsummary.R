@@ -310,6 +310,8 @@ rsummary <- function(db,
 #' @param temporary logical, if TRUE use temporary tables
 #' @return rsummary node
 #'
+#' @seealso \code{\link{non_sql_node}}
+#'
 #' @examples
 #'
 #'  d <- data.frame(p= c(TRUE, FALSE, NA),

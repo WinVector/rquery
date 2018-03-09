@@ -69,7 +69,7 @@ from [Let’s Have Some Sympathy For The Part-time R User](http://www.win-vector
 
 ```{r ex, warning=FALSE, message=FALSE, include=FALSE}
 library("rquery")
-use_spark <- TRUE
+use_spark <- FALSE
 
 if(use_spark) {
   my_db <- sparklyr::spark_connect(version='2.2.0', 
@@ -80,8 +80,8 @@ if(use_spark) {
   my_db <- DBI::dbConnect(driver,
                           host = 'localhost',
                           port = 5432,
-                          user = 'postgres',
-                          password = 'pg')
+                          user = 'johnmount',
+                          password = '')
 }
 
 

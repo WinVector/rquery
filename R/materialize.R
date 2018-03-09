@@ -190,7 +190,7 @@ commencify <- execute
 #' @param temporary logical, if TRUE use temporary tables
 #' @return rsummary node
 #'
-#' @seealso \code{\link{execute}}, \code{\link{materialize}}
+#' @seealso \code{\link{execute}}, \code{\link{materialize}}, \code{\link{non_sql_node}}
 #'
 #' @examples
 #'

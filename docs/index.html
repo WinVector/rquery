@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Relational Query Generator for Data Manipulation • rquery</title>
+<title>Relational Query Generator for Data Manipulation at Scale • rquery</title>
 <!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 <!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
@@ -49,6 +49,9 @@
     </li>
     <li>
       <a href="articles/QueryGeneration.html">Query Generation</a>
+    </li>
+    <li>
+      <a href="articles/rquery_intro.html">rquery Introduction</a>
     </li>
   </ul>
 </li>
@@ -149,8 +152,9 @@
 <p>Let’s work a non-trivial example: the <code>dplyr</code> pipeline from <a href="http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/">Let’s Have Some Sympathy For The Part-time R User</a>.</p>
 <p>First we show the Spark/database version of the original example data:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">class</span>(my_db)</code></pre></div>
-<pre><code>## [1] "spark_connection"       "spark_shell_connection"
-## [3] "DBIConnection"</code></pre>
+<pre><code>## [1] "PqConnection"
+## attr(,"package")
+## [1] "RPostgres"</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(d)</code></pre></div>
 <pre><code>## [1] "table('d')"</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">d <span class="op">%.&gt;%</span>
@@ -226,45 +230,45 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw"><a href="reference/to_sql.html">to_sql</a></span>(dq, my_db, <span class="dt">source_limit =</span> <span class="dv">1000</span>))</code></pre></div>
 <pre><code>SELECT * FROM (
  SELECT
-  `subjectID`,
-  `diagnosis`,
-  `probability`
+  "subjectID",
+  "diagnosis",
+  "probability"
  FROM (
   SELECT * FROM (
    SELECT
-    `count` AS `count`,
-    `probability` AS `probability`,
-    `rank` AS `rank`,
-    `subjectID` AS `subjectID`,
-    `surveyCategory` AS `diagnosis`
+    "count" AS "count",
+    "probability" AS "probability",
+    "rank" AS "rank",
+    "subjectID" AS "subjectID",
+    "surveyCategory" AS "diagnosis"
    FROM (
     SELECT
-     `count`,
-     `probability`,
-     `subjectID`,
-     `surveyCategory`,
-     rank ( ) OVER (  PARTITION BY `subjectID` ORDER BY `probability`, `surveyCategory` ) AS `rank`
+     "count",
+     "probability",
+     "subjectID",
+     "surveyCategory",
+     rank ( ) OVER (  PARTITION BY "subjectID" ORDER BY "probability", "surveyCategory" ) AS "rank"
     FROM (
      SELECT
-      `subjectID`,
-      `surveyCategory`,
-      `assessmentTotal`,
-      exp ( `assessmentTotal` * 0.237 ) / sum ( exp ( `assessmentTotal` * 0.237 ) ) OVER (  PARTITION BY `subjectID` ) AS `probability`,
-      count ( 1 ) OVER (  PARTITION BY `subjectID` ) AS `count`
+      "subjectID",
+      "surveyCategory",
+      "assessmentTotal",
+      exp ( "assessmentTotal" * 0.237 ) / sum ( exp ( "assessmentTotal" * 0.237 ) ) OVER (  PARTITION BY "subjectID" ) AS "probability",
+      count ( 1 ) OVER (  PARTITION BY "subjectID" ) AS "count"
      FROM (
       SELECT
-       `d`.`subjectID`,
-       `d`.`surveyCategory`,
-       `d`.`assessmentTotal`
+       "d"."subjectID",
+       "d"."surveyCategory",
+       "d"."assessmentTotal"
       FROM
-       `d` LIMIT 1000
-      ) tsql_51218359068188595305_0000000000
-     ) tsql_51218359068188595305_0000000001
-   ) tsql_51218359068188595305_0000000002
-  ) tsql_51218359068188595305_0000000003
-  WHERE `rank` = `count`
- ) tsql_51218359068188595305_0000000004
-) tsql_51218359068188595305_0000000005 ORDER BY `subjectID`</code></pre>
+       "d" LIMIT 1000
+      ) tsql_83050437686490283036_0000000000
+     ) tsql_83050437686490283036_0000000001
+   ) tsql_83050437686490283036_0000000002
+  ) tsql_83050437686490283036_0000000003
+  WHERE "rank" = "count"
+ ) tsql_83050437686490283036_0000000004
+) tsql_83050437686490283036_0000000005 ORDER BY "subjectID"</code></pre>
 <p>The query is large, but due to its regular structure it should be very amenable to query optimization.</p>
 <p>A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our <a href="https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md">initial experiments</a> show <code>rquery</code> narrowed queries to be twice as fast as un-narrowed <code>dplyr</code> on a synthetic problem simulating large disk-based queries. We think if we connected directly to <code>Spark</code>’s relational operators (avoiding the <code>SQL</code> layer) we may be able to achieve even faster performance.</p>
 <p>The above optimization is possible because the <code>rquery</code> representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query. For example:</p>

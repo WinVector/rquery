@@ -73,6 +73,9 @@
     <li>
       <a href="../articles/QueryGeneration.html">Query Generation</a>
     </li>
+    <li>
+      <a href="../articles/rquery_intro.html">rquery Introduction</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -173,7 +176,7 @@
    <span class='fu'>sql_node</span>(<span class='no'>.</span>, <span class='st'>"num_missing"</span> <span class='kw'>:=</span> <span class='fu'>list</span>(<span class='no'>expr</span>))
  <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>op_tree</span>))</div><div class='output co'>#&gt; table('d') %.&gt;%
 #&gt;  sql_node(.,
-#&gt;           num_missing := list(0, "+ (CASE WHEN (", v1, "IS NULL ) THEN 1.0 ELSE 0.0 END)", "+ (CASE WHEN (", v2, "IS NULL ) THEN 1.0 ELSE 0.0 END)", "+ (CASE WHEN (", v3, "IS NULL ) THEN 1.0 ELSE 0.0 END)"),
+#&gt;           num_missing := 0 + (CASE WHEN ( v1 IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( v2 IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( v3 IS NULL ) THEN 1.0 ELSE 0.0 END),
 #&gt;              *=TRUE)</div><div class='input'>
  <span class='co'># examine produced SQL</span>
  <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>op_tree</span>, <span class='no'>my_db</span>)

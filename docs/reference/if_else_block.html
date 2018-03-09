@@ -73,6 +73,9 @@
     <li>
       <a href="../articles/QueryGeneration.html">Query Generation</a>
     </li>
+    <li>
+      <a href="../articles/rquery_intro.html">rquery Introduction</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -232,9 +235,9 @@ is a reserved column name for this procedure.</p>
              SELECT * from ( VALUES(1),(2) )
           ) a
        ) b"</span>
- <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>q</span>)</div><div class='output co'>#&gt;                    r1                   r2
-#&gt; 1 2340445502050894091 -6413248009736605182
-#&gt; 2 3977265547918552805   624319382572970010</div><div class='input'>
+ <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>q</span>)</div><div class='output co'>#&gt;                     r1                   r2
+#&gt; 1 -8856601951619123488  9174210395019069614
+#&gt; 2  6502498681732915286 -2293642284288725074</div><div class='input'>
 <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

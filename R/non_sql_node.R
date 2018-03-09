@@ -3,7 +3,7 @@
 
 #' Wrap a non-SQL node.
 #'
-#' @param source source to work from.
+#' @param source source to work from (data.frame or relop node)
 #' @param f implementation signature: f(db, incoming_table_name, outgoing_table_name)
 #' @param ... force later arguments to bind by name
 #' @param incoming_table_name character, name of incoming table
@@ -12,10 +12,13 @@
 #' @param columns_produced character, names of columns produced
 #' @param display_form chacter, how to print node
 #' @param orig_columns logical if TRUE select all original columns.
+#' @param overwrite logical, if TRUE attempt to replace tables.
+#' @param temporary logical, if TRUE mark tables temporary.
 #' @return sql node.
 #'
+#' @seealso \code{\link{rsummary_node}}, \code{\link{materialize_node}}
 #'
-#' @noRd
+#' @export
 #'
 non_sql_node <- function(source,
                          f,
@@ -32,7 +35,7 @@ non_sql_node <- function(source,
   UseMethod("non_sql_node", source)
 }
 
-#' @noRd
+#' @export
 non_sql_node.relop <- function(source,
                                f,
                                ...,
@@ -69,7 +72,7 @@ non_sql_node.relop <- function(source,
   r
 }
 
-#' @noRd
+#' @export
 non_sql_node.data.frame <- function(source,
                                     f,
                                     ...,
