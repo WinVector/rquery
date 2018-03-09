@@ -23,8 +23,8 @@ and databases.
 Package features include: data processing trees
 or pipelines as observable objects (able to report both columns
 produced and columns used), optimized `SQL` generation as an explicit
-user visible modeling step, and convenience methods for applying query
-trees to in-memory `data.frame`s.
+user visible modeling step, convenience methods for applying query
+trees to in-memory `data.frame`s, and low direct package dependencies.
 
 # Pipeable `SQL`
 
@@ -289,7 +289,30 @@ That example worked with `rquery` code that works with both `PostgreSQL` and `Sp
 
 Not all data transform steps can conveniently be written as a single `SQL`
 statement. To work around this potential limitation `rquery` supplies a special
-type of node called 
+type of node called [`non_sql_node()`](https://winvector.github.io/rquery/reference/non_sql_node.html).
+`non_sql_node()` is used to implement arbitrary table to table transforms as
+`rquery` pipeline steps.  Two important examples of `non_sql_node()` are
+[`materialize_node()`](https://winvector.github.io/rquery/reference/materialize_node.html)
+and [`rsummary_node()`](https://winvector.github.io/rquery/reference/rsummary_node.html).
+
+`materialize_node()` can be used to land intermediate results into
+a table.  This can be used both to save intermediate calculation stages
+and to break up the complexity of long data processing pipelines.
+
+`rsummary_node()` builds a table of summary information about another
+database table.  The format is each column of the original table 
+produces a row of summary information in the result table.  Here
+is a simple example.
+
+```{r rsummaryex}
+op_tree %.>%
+  rsummary_node(.) %.>%
+  execute(db, .)
+```
+
+Users can add additional 
+capabilities by writing their own `non_sql_node()`s.
+
 
 # Statement partitioning
 
@@ -303,6 +326,8 @@ type of node called
 
 ## Column narrowing
 
+
+------------
 
 # Appendix: Always clean up on the way out
 
