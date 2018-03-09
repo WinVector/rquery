@@ -107,6 +107,9 @@ materialize <- function(db,
 #' d <- dbi_copy_to(my_db, 'd',
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
 #' optree <- extend_se(d, c("v" := "AUC + R2", "x" := "pmax(AUC,v)"))
+#'
+#' print(optree)
+#'
 #' cat(format(optree))
 #'
 #' execute(my_db, optree)
