@@ -114,16 +114,12 @@ dq <- d %.>%
 We then generate our result:
 
 ``` r
-dq %.>%
-  to_sql(., my_db, source_limit = 1000) %.>%
-  DBI::dbGetQuery(my_db, .) %.>%
-  knitr::kable(.)
+execute(my_db, dq, source_limit = 1000)
 ```
 
-|  subjectID| diagnosis           |  probability|
-|----------:|:--------------------|------------:|
-|          1| withdrawal behavior |    0.6706221|
-|          2| positive re-framing |    0.5589742|
+    ##   subjectID           diagnosis probability
+    ## 1         1 withdrawal behavior   0.6706221
+    ## 2         2 positive re-framing   0.5589742
 
 We see we have quickly reproduced the original result using the new database operators. This means such a calculation could easily be performed at a "big data" scale (using a database or `Spark`; in this case we would not take the results back, but instead use `CREATE TABLE tname AS` to build a remote materialized view of the results).
 
@@ -167,13 +163,13 @@ cat(to_sql(dq, my_db, source_limit = 1000))
            `d`.`assessmentTotal`
           FROM
            `d` LIMIT 1000
-          ) tsql_17397702528120652360_0000000000
-         ) tsql_17397702528120652360_0000000001
-       ) tsql_17397702528120652360_0000000002
-      ) tsql_17397702528120652360_0000000003
+          ) tsql_35998193098555330507_0000000000
+         ) tsql_35998193098555330507_0000000001
+       ) tsql_35998193098555330507_0000000002
+      ) tsql_35998193098555330507_0000000003
       WHERE `rank` = `count`
-     ) tsql_17397702528120652360_0000000004
-    ) tsql_17397702528120652360_0000000005 ORDER BY `subjectID`
+     ) tsql_35998193098555330507_0000000004
+    ) tsql_35998193098555330507_0000000005 ORDER BY `subjectID`
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 

@@ -161,15 +161,15 @@
  <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>ops</span>))</div><div class='output co'>#&gt; table('dRemote') %.&gt;%
 #&gt;  extend(.,
 #&gt;   v := ifelse(x &gt; 2, "x", "y")) %.&gt;%
-#&gt;  non_sql_node(., rsummary_node(., rin_56873414507561965291_0000000000, rout_07629162788807864964_0000000000))</div><div class='input'>
+#&gt;  non_sql_node(., rsummary_node(., rin_75670485587942761404_0000000000, rout_77270454896014758226_0000000000))</div><div class='input'>
  <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>ops</span>, <span class='no'>db</span>)</div><div class='output co'>#&gt; [[1]]
-#&gt; [1] "CREATE  TABLE `rin_56873414507561965291_0000000000` AS  SELECT\n  `p`,\n  `s`,\n  `w`,\n  `x`,\n  `y`,\n  `z`,\n  ( CASE WHEN ( `x` &gt; 2 ) THEN ( 'x' ) ELSE ( 'y' ) END )  AS `v`\n FROM (\n  SELECT\n   `dRemote`.`p`,\n   `dRemote`.`s`,\n   `dRemote`.`w`,\n   `dRemote`.`x`,\n   `dRemote`.`y`,\n   `dRemote`.`z`\n  FROM\n   `dRemote`\n  ) tsql_87151552894593420317_0000000000\n"
+#&gt; [1] "CREATE  TABLE `rin_75670485587942761404_0000000000` AS  SELECT\n  `p`,\n  `s`,\n  `w`,\n  `x`,\n  `y`,\n  `z`,\n  ( CASE WHEN ( `x` &gt; 2 ) THEN ( 'x' ) ELSE ( 'y' ) END )  AS `v`\n FROM (\n  SELECT\n   `dRemote`.`p`,\n   `dRemote`.`s`,\n   `dRemote`.`w`,\n   `dRemote`.`x`,\n   `dRemote`.`y`,\n   `dRemote`.`z`\n  FROM\n   `dRemote`\n  ) tsql_34163859060472103566_0000000000\n"
 #&gt; 
 #&gt; [[2]]
-#&gt; [1] "non SQL step:  rsummary_node(., rin_56873414507561965291_0000000000, rout_07629162788807864964_0000000000)"
+#&gt; [1] "non SQL step:  rsummary_node(., rin_75670485587942761404_0000000000, rout_77270454896014758226_0000000000)"
 #&gt; 
 #&gt; [[3]]
-#&gt; [1] " SELECT\n  `rout_07629162788807864964_0000000000`.`column`,\n  `rout_07629162788807864964_0000000000`.`index`,\n  `rout_07629162788807864964_0000000000`.`class`,\n  `rout_07629162788807864964_0000000000`.`nrows`,\n  `rout_07629162788807864964_0000000000`.`nna`,\n  `rout_07629162788807864964_0000000000`.`nunique`,\n  `rout_07629162788807864964_0000000000`.`min`,\n  `rout_07629162788807864964_0000000000`.`max`,\n  `rout_07629162788807864964_0000000000`.`mean`,\n  `rout_07629162788807864964_0000000000`.`sd`,\n  `rout_07629162788807864964_0000000000`.`lexmin`,\n  `rout_07629162788807864964_0000000000`.`lexmax`\n FROM\n  `rout_07629162788807864964_0000000000`\n"
+#&gt; [1] " SELECT\n  `rout_77270454896014758226_0000000000`.`column`,\n  `rout_77270454896014758226_0000000000`.`index`,\n  `rout_77270454896014758226_0000000000`.`class`,\n  `rout_77270454896014758226_0000000000`.`nrows`,\n  `rout_77270454896014758226_0000000000`.`nna`,\n  `rout_77270454896014758226_0000000000`.`nunique`,\n  `rout_77270454896014758226_0000000000`.`min`,\n  `rout_77270454896014758226_0000000000`.`max`,\n  `rout_77270454896014758226_0000000000`.`mean`,\n  `rout_77270454896014758226_0000000000`.`sd`,\n  `rout_77270454896014758226_0000000000`.`lexmin`,\n  `rout_77270454896014758226_0000000000`.`lexmax`\n FROM\n  `rout_77270454896014758226_0000000000`\n"
 #&gt; </div><div class='input'>
  <span class='no'>reshdl</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='materialize.html'>materialize</a></span>(<span class='no'>db</span>, <span class='no'>ops</span>)
  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>db</span>, <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>reshdl</span>, <span class='no'>db</span>))</div><div class='output co'>#&gt;   column index     class nrows nna nunique min max mean        sd lexmin lexmax

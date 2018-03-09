@@ -100,7 +100,8 @@ format.relop_orderby <- function(x, ...) {
                 paste(ot, collapse = ", "),
                 ""),
          ifelse((length(x$limit)>0) && (length(x$orderby)>0),
-                paste0(", LIMIT ", x$limit),
+                paste0(", LIMIT ",
+                       format(ceiling(x$limit), scientific = FALSE)),
                 ""),
          ")",
          "\n")
@@ -184,7 +185,8 @@ to_sql.relop_orderby <- function (x,
                 paste0(" ORDER BY ", paste(ot, collapse = ", ")),
                 ""),
          ifelse(length(x$limit)>0,
-                paste0(" LIMIT ", x$limit),
+                paste0(" LIMIT ",
+                       format(ceiling(x$limit), scientific = FALSE)),
                 ""))
   if(append_cr) {
     q <- paste0(q, "\n")

@@ -9,6 +9,7 @@
 #' @param optree relop operation tree.
 #' @param table_name character, name of table to create.
 #' @param ... force later arguments to bind by name.
+#' @param source_limit numeric if not NULL limit sources to this many rows.
 #' @param overwrite logical if TRUE drop an previous table.
 #' @param temporary logical if TRUE try to create a temporary table.
 #' @return table handle
@@ -35,13 +36,15 @@ materialize <- function(db,
                         optree,
                         table_name = mk_tmp_name_source('rquery_mat')(),
                         ...,
+                        source_limit = NULL,
                         overwrite = TRUE,
                         temporary = FALSE) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::materialize")
   if(!("relop" %in% class(optree))) {
     stop("rquery::materialize expect optree to be of class relop")
   }
-  sql_list <- to_sql(optree, db)
+  sql_list <- to_sql(optree, db,
+                     source_limit = source_limit)
   if(length(sql_list)>=2) {
     for(ii in seq_len(length(sql_list)-1)) {
       sqli <- sql_list[[ii]]
@@ -83,7 +86,7 @@ materialize <- function(db,
 
 
 
-#' Materialize an optree as a table.
+#' Execute a operator tree, either bringing back the result or landing it as a table.
 #'
 #' Run the data query.  If table_name is not set results
 #' (up to limit rows) are brought back to R. If
@@ -94,12 +97,13 @@ materialize <- function(db,
 #' @param optree relop operation tree.
 #' @param ... force later arguments to bind by name.
 #' @param table_name character, name of table to create.
-#' @param limit numeric, if set limit to this many rows.
+#' @param limit numeric, if set limit to this many rows during data bring back (not used when landing a table).
+#' @param source_limit numeric if not NULL limit sources to this many rows.
 #' @param overwrite logical if TRUE drop an previous table.
 #' @param temporary logical if TRUE try to create a temporary table.
 #' @return data.frame or table handle.
 #'
-#' @seealso \code{\link{materialize}}
+#' @seealso \code{\link{materialize}}, \code{\link{to_sql}}
 #'
 #' @examples
 #'
@@ -116,6 +120,7 @@ materialize <- function(db,
 #'
 #' execute(data.frame(AUC = 1, R2 = 2), optree)
 #'
+#' # land result in database
 #' res_hdl <- execute(my_db, optree, table_name = "res")
 #' print(res_hdl)
 #' DBI::dbGetQuery(my_db, to_sql(res_hdl, my_db))
@@ -131,6 +136,7 @@ execute <- function(source,
                     ...,
                     table_name = NULL,
                     limit = 1000000,
+                    source_limit = NULL,
                     overwrite = TRUE,
                     temporary = FALSE) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::execute")
@@ -151,13 +157,15 @@ execute <- function(source,
   }
   ref <- materialize(db, optree,
                      table_name = table_name,
+                     source_limit = source_limit,
                      overwrite = overwrite,
                      temporary = temporary)
   res <- ref
   if(!table_name_set) {
     sql <- to_sql(ref, db)
     if((!is.null(limit)) && (!is.na(limit))) {
-      sql <- paste(sql, "LIMIT", limit)
+      sql <- paste(sql, "LIMIT",
+                   format(ceiling(limit), scientific = FALSE))
     }
     res <- DBI::dbGetQuery(db, sql)
     DBI::dbRemoveTable(db, ref$table_name)

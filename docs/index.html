@@ -217,29 +217,10 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
                       <span class="st">'probability'</span>)) <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="reference/orderby.html">orderby</a></span>(., <span class="st">'subjectID'</span>)</code></pre></div>
 <p>We then generate our result:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dq <span class="op">%.&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="reference/to_sql.html">to_sql</a></span>(., my_db, <span class="dt">source_limit =</span> <span class="dv">1000</span>) <span class="op">%.&gt;%</span>
-<span class="st">  </span>DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery">dbGetQuery</a></span>(my_db, .) <span class="op">%.&gt;%</span>
-<span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</code></pre></div>
-<table class="table">
-<thead><tr class="header">
-<th align="right">subjectID</th>
-<th align="left">diagnosis</th>
-<th align="right">probability</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="right">1</td>
-<td align="left">withdrawal behavior</td>
-<td align="right">0.6706221</td>
-</tr>
-<tr class="even">
-<td align="right">2</td>
-<td align="left">positive re-framing</td>
-<td align="right">0.5589742</td>
-</tr>
-</tbody>
-</table>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/execute.html">execute</a></span>(my_db, dq, <span class="dt">source_limit =</span> <span class="dv">1000</span>)</code></pre></div>
+<pre><code>##   subjectID           diagnosis probability
+## 1         1 withdrawal behavior   0.6706221
+## 2         2 positive re-framing   0.5589742</code></pre>
 <p>We see we have quickly reproduced the original result using the new database operators. This means such a calculation could easily be performed at a “big data” scale (using a database or <code>Spark</code>; in this case we would not take the results back, but instead use <code>CREATE TABLE tname AS</code> to build a remote materialized view of the results).</p>
 <p>The actual <code>SQL</code> query that produces the result is, in fact, quite involved:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw"><a href="reference/to_sql.html">to_sql</a></span>(dq, my_db, <span class="dt">source_limit =</span> <span class="dv">1000</span>))</code></pre></div>
@@ -277,13 +258,13 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
        `d`.`assessmentTotal`
       FROM
        `d` LIMIT 1000
-      ) tsql_10745753463894671331_0000000000
-     ) tsql_10745753463894671331_0000000001
-   ) tsql_10745753463894671331_0000000002
-  ) tsql_10745753463894671331_0000000003
+      ) tsql_51218359068188595305_0000000000
+     ) tsql_51218359068188595305_0000000001
+   ) tsql_51218359068188595305_0000000002
+  ) tsql_51218359068188595305_0000000003
   WHERE `rank` = `count`
- ) tsql_10745753463894671331_0000000004
-) tsql_10745753463894671331_0000000005 ORDER BY `subjectID`</code></pre>
+ ) tsql_51218359068188595305_0000000004
+) tsql_51218359068188595305_0000000005 ORDER BY `subjectID`</code></pre>
 <p>The query is large, but due to its regular structure it should be very amenable to query optimization.</p>
 <p>A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our <a href="https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md">initial experiments</a> show <code>rquery</code> narrowed queries to be twice as fast as un-narrowed <code>dplyr</code> on a synthetic problem simulating large disk-based queries. We think if we connected directly to <code>Spark</code>’s relational operators (avoiding the <code>SQL</code> layer) we may be able to achieve even faster performance.</p>
 <p>The above optimization is possible because the <code>rquery</code> representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query. For example:</p>

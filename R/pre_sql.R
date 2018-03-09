@@ -393,7 +393,8 @@ to_query.pre_sql_op <- function (x,
   }
   if(!is.na(limit)) {
     q <- paste0(q, "\n",
-                "LIMIT ", limit)
+                "LIMIT ",
+                format(ceiling(limit), scientific = FALSE))
   }
   q
 }

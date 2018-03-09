@@ -183,7 +183,8 @@ to_sql.relop_table_source <- function (x,
               prefix, "FROM\n",
               prefix, " ", tabnam)
   if(!is.null(source_limit)) {
-    q <- paste(q, "LIMIT", source_limit)
+    q <- paste(q, "LIMIT",
+               format(ceiling(source_limit), scientific = FALSE))
   }
   if(append_cr) {
     q <- paste0(q, "\n")

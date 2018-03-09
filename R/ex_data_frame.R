@@ -93,7 +93,8 @@ rquery_apply_to_data_frame <- function(d,
   sql <- paste("SELECT * FROM",
                DBI::dbQuoteIdentifier(my_db, res_name))
   if(!is.null(limit)) {
-    sql <- paste(sql, "LIMIT", limit)
+    sql <- paste(sql, "LIMIT",
+                 format(ceiling(limit), scientific = FALSE))
   }
   res <- DBI::dbGetQuery(my_db, sql)
   x <- DBI::dbExecute(my_db, paste("DROP TABLE", inp_name))
