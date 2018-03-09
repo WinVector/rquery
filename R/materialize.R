@@ -166,6 +166,8 @@ execute <- function(source,
 }
 
 
+# Hyderdrive (science fiction show) version.
+
 #' @rdname execute
 #' @export
 commencify <- execute
