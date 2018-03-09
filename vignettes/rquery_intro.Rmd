@@ -108,7 +108,7 @@ DBI::dbGetQuery(db, "
 
 Using `rquery` we can write the `SQL` composition using pipe notation
 (where composition is written as `x %.>% f %.>% g` instead of 
-`g(f(x))`).  We are going to user [`wrapr`](https://github.com/WinVector/wrapr) 
+`g(f(x))`).  We are going to use [`wrapr`](https://github.com/WinVector/wrapr) 
 [dot-pipe](https://winvector.github.io/wrapr/reference/grapes-.-greater-than-grapes.html) instead of 
 the [`magrittr`](https://CRAN.R-project.org/package=magrittr) pipe to pick up 
 a neat feature we will use later (with the exception of that feature all examples
@@ -188,6 +188,70 @@ op_tree <- op_tree %.>%
   sql_node(., "z" := list(list("1 + ", quote(z))))
 ```
 
+### A non-trivial example
+
+We can build non-trivial operations into `sql_node()`s.  For example 
+we can build a node the calculates for each row how many columns
+contain `NA`/`NULL` as is demonstrated here.
+
+```{r countna}
+# example database connection
+my_db <- DBI::dbConnect(RSQLite::SQLite(),
+                        ":memory:")
+# load up example data
+d2 <- dbi_copy_to(
+  my_db, 'd2',
+  data.frame(v1 = c(1, 2, NA, 3),
+             v2 = c(NA, "b", NA, "c"),
+             v3 = c(NA, NA, 7, 8),
+             stringsAsFactors = FALSE))
+
+# look at table
+execute(my_db, d2)
+
+# get list of columns
+vars <- column_names(d2)
+print(vars)
+
+# build a NA/NULLs per-row counting expression.
+# names are "quoted" by wrapping them with as.name().
+# constants can be quoted by an additional list wrapping.
+expr <- lapply(vars,
+               function(vi) {
+                 list("+ (CASE WHEN (",
+                      as.name(vi),
+                      "IS NULL ) THEN 1.0 ELSE 0.0 END)")
+               })
+expr <- unlist(expr, recursive = FALSE)
+expr <- c(list(0.0), expr)
+cat(paste(unlist(expr), collapse = " "))
+
+# instantiate the operator node
+op_tree_count_null <- d2 %.>%
+  sql_node(., "num_missing" := list(expr))
+cat(format(op_tree_count_null))
+
+# examine produced SQL
+sql <- to_sql(op_tree_count_null, my_db)
+cat(sql)
+
+# execute
+execute(my_db, op_tree_count_null)
+
+
+```
+
+And, as this is an important capability, this exact functionality
+is wrapped in [`count_null_cols()`](https://winvector.github.io/rquery/reference/count_null_cols.html).
+
+```{r countna2}
+# whole process wrapped in convenience node
+d2 %.>%
+  count_null_cols(., vars, "nnull") %.>%
+  execute(my_db, .)
+```
+
+
 # `SQL` first
 
 `rquery` is a "`SQL` first" system.  It is designed only to create `SQL`
@@ -197,8 +261,15 @@ can be used with big data by adding a `table_name` argument (or also by using th
 [`materialize()`](https://winvector.github.io/rquery/reference/materialize.html) method) to land results in a remote table instead of pulling
 them back to `R`.
 
+The mantra of `SQL`-first is data starts in the database, and stays in the database (i.e., it is too large to 
+count on round-tripping through `R`).  Another important `SQL`-first package is [`cdata`](https://github.com/WinVector/cdata/)
+which provides pure `SQL` based implementations of operators that easily generalize pivot/un-pivot, cast/melt, or spread/gather.
+
 The better the database implementation the better `rquery` will be, both in terms
 of performance and in terms of function (such as the availability of `SQL` window functions).
+
+The downside of `SQL` first, is some operators require using the `sql_node()` as
+we are not yet translating some `R` expression idiom to `SQL`.
 
 # Ad-hoc mode
 
@@ -220,8 +291,8 @@ When using the `wrapr` dot pipe the above can be abbreviated as:
 data.frame(v = -2:2) %.>% op_tree
 ```
 
-(Note: the above calculation is triggered by `wrapr` dot pipe
-`S3` `wrapr_function` definitions.)
+(Note: the above calculation is triggered by [`wrapr` dot pipe
+`S3` `wrapr_function`](https://github.com/WinVector/wrapr/blob/master/extras/wrapr_pipe.pdf) extensions.)
 
 Also `rquery` operators can be used directly (without any table description nodes)
 when working with in-memory `data.frame`s.
@@ -313,19 +384,52 @@ op_tree %.>%
 Users can add additional 
 capabilities by writing their own `non_sql_node()`s.
 
+# Standard interfaces
 
-# Statement partitioning
+`rquery` goes out of its way to supply easy to program over
+value-oriented interfaces.  For any meta-programming we 
+suggest
+using [`wrapr::let()`](https://winvector.github.io/wrapr/reference/let.html), a powerful and [well-documented](https://github.com/WinVector/wrapr/blob/master/extras/wrapr_let.pdf) 
+meta-programming system.
+
+# Assignment partitioning
+
+`rquery` accepts many assignment in a `sql_node()` or in 
+a single `extend()` node.  The `extend()` node comes with 
+automatic [assignment partitioning] to ensure correct and
+performant results.
 
 # ifelse device
 
-# correctness
+Another higher-order node is the [`if_else_block()`](https://winvector.github.io/rquery/reference/if_else_block.html) which can
+be used to simulate block-oriented if-else semantics as seen in
+systems such as `SAS` (also meaning `rquery` can be critical porting code from `SAS` to `SQL` based `R`).
 
-# performance
 
-## Comparisons
+# Performance
 
-## Column narrowing
+As `rquery` pipelines are factored into stages 
+similar to the common relational operators they tend to
+be very compatible with downstream query optimizers.  We
+think some of the advantage is the fact that `rquery` deliberately
+does not have a `group_by` operator, but instead considers this
+as the `partitionby` attribute of a [`project()` node](https://winvector.github.io/rquery/reference/project_nse.html)
+(non-trivial example [here](https://github.com/WinVector/rquery/blob/master/README.md)).
 
+We have seen database based `rquery` outperform both in-memory `dplyr`
+and database based `dplyr` (article [here](http://www.win-vector.com/blog/2018/01/rquery-fast-data-manipulation-in-r/)).
+
+In addition `rquery` includes automatic column narrowing: where only columns
+used to construct the final result are pulled from initial tables.  This feature
+has show significant additional performance advantages (article [here](http://www.win-vector.com/blog/2017/12/how-to-greatly-speed-up-your-spark-queries/)).
+
+
+
+# Conclusion
+
+`rquery` is new package, but it is already proving to be correct (avoiding [known data processing issues](http://www.win-vector.com/blog/2018/01/advisory-on-multiple-assignment-dplyrmutate-on-databases/)) and [performant](http://www.win-vector.com/blog/2018/01/advisory-on-multiple-assignment-dplyrmutate-on-databases/).
+For a project primarily interested in working a big data scale (say using `PostgreSQL` or `Spark`)
+`rquery` is the correct specialized tool for specifying data manipulation.
 
 ------------
 

@@ -87,7 +87,7 @@
 <div id="introduction" class="section level1">
 <h1 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h1>
-<p><a href="https://github.com/WinVector/rquery"><code>rquery</code></a> is a <a href="https://en.wikipedia.org/wiki/SQL"><code>SQL</code></a> query generator for <a href="https://www.r-project.org"><code>R</code></a>. It is based on <a href="https://en.wikipedia.org/wiki/Relational_algebra">Edgar F. Codd’s relational algebra</a> plus experience using <code>SQL</code> and <a href="https://CRAN.R-project.org/package=dplyr"><code>dplyr</code></a> at big data scale. The design represents an attempt to make <code>SQL</code> more teachable by denoting composition a sequential pipeline notation instead of nested queries or functions. The implementation delivers reliable high performance data processing on large data systems such as <code>Spark</code> and databases. Package features include: data processing trees or pipelines as observable objects (able to report both columns produced and columns used), optimized <code>SQL</code> generation as an explicit user visible modeling step, and convenience methods for applying query trees to in-memory <code>data.frame</code>s.</p>
+<p><a href="https://github.com/WinVector/rquery"><code>rquery</code></a> is a <a href="https://en.wikipedia.org/wiki/SQL"><code>SQL</code></a> query generator for <a href="https://www.r-project.org"><code>R</code></a>. It is based on <a href="https://en.wikipedia.org/wiki/Relational_algebra">Edgar F. Codd’s relational algebra</a> plus experience using <code>SQL</code> and <a href="https://CRAN.R-project.org/package=dplyr"><code>dplyr</code></a> at big data scale. The design represents an attempt to make <code>SQL</code> more teachable by denoting composition a sequential pipeline notation instead of nested queries or functions. The implementation delivers reliable high performance data processing on large data systems such as <code>Spark</code> and databases. Package features include: data processing trees or pipelines as observable objects (able to report both columns produced and columns used), optimized <code>SQL</code> generation as an explicit user visible modeling step, convenience methods for applying query trees to in-memory <code>data.frame</code>s, and low direct package dependencies.</p>
 </div>
 <div id="pipeable-sql" class="section level1">
 <h1 class="hasAnchor">
@@ -147,7 +147,7 @@ d &lt;-<span class="st"> </span><span class="kw"><a href="../reference/dbi_copy_
 <h2 class="hasAnchor">
 <a href="#sql_node" class="anchor"></a><code><a href="../reference/sql_node.html">sql_node()</a></code>
 </h2>
-<p>Using <code>rquery</code> we can write the <code>SQL</code> composition using pipe notation (where composition is written as <code>x %.&gt;% f %.&gt;% g</code> instead of <code>g(f(x))</code>). We are going to user <a href="https://github.com/WinVector/wrapr"><code>wrapr</code></a> <a href="https://winvector.github.io/wrapr/reference/grapes-.-greater-than-grapes.html">dot-pipe</a> instead of the <a href="https://CRAN.R-project.org/package=magrittr"><code>magrittr</code></a> pipe to pick up a neat feature we will use later (with the exception of that feature all examples will work with the <code>magrittr</code> pipe).</p>
+<p>Using <code>rquery</code> we can write the <code>SQL</code> composition using pipe notation (where composition is written as <code>x %.&gt;% f %.&gt;% g</code> instead of <code>g(f(x))</code>). We are going to use <a href="https://github.com/WinVector/wrapr"><code>wrapr</code></a> <a href="https://winvector.github.io/wrapr/reference/grapes-.-greater-than-grapes.html">dot-pipe</a> instead of the <a href="https://CRAN.R-project.org/package=magrittr"><code>magrittr</code></a> pipe to pick up a neat feature we will use later (with the exception of that feature all examples will work with the <code>magrittr</code> pipe).</p>
 <p>The <code>rquery</code> realization of the above calculation is as follows:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">op_tree &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(., <span class="st">"absv"</span> <span class="op">:</span><span class="er">=</span><span class="st"> "ABS(v)"</span>) <span class="op">%.&gt;%</span>
@@ -172,8 +172,8 @@ FROM (
    `d`.`v`
   FROM
    `d`
- ) tsql_77730293286227562298_0000000000
-) tsql_77730293286227562298_0000000001</code></pre>
+ ) tsql_59663790711495081202_0000000000
+) tsql_59663790711495081202_0000000001</code></pre>
 <p>Notice the above expressions did not add identifier quotes to our use of “<code>v</code>” in “<code>ABS(v)</code>”. This is because the <code>SQL</code> expression is not parsed in <code>R</code>. If we want to identify terms as variables we can wrap them with <code>as.name()</code> or <code>quote()</code> to get the quoting (and other variable oriented features). The extra <code>SELECT</code> step to pull data from the inner table is used by <code>rquery</code> for important column narrowing steps, and can actually improve query performance.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">op_tree &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(., <span class="st">"absv"</span> <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">list</span>(<span class="kw">list</span>(<span class="st">"ABS("</span>, <span class="kw">quote</span>(v), <span class="st">")"</span>))) <span class="op">%.&gt;%</span>
@@ -191,8 +191,8 @@ FROM (
    `d`.`v`
   FROM
    `d`
- ) tsql_64589670367954382879_0000000000
-) tsql_64589670367954382879_0000000001</code></pre>
+ ) tsql_07307537219534696004_0000000000
+) tsql_07307537219534696004_0000000001</code></pre>
 <p>The <code>list(list())</code> notation is how we say in <code>R</code> that we have a single element list (i.e. one expression) that is built up as a list of terms.</p>
 <p><code>op_tree</code> is a an object with its own presentation format:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(op_tree)</code></pre></div>
@@ -228,13 +228,94 @@ FROM (
 <span class="st">  </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(., <span class="st">"z"</span> <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">list</span>(<span class="kw">list</span>(<span class="st">"1 + "</span>, <span class="kw">quote</span>(z))))</code></pre></div>
 <pre><code>## Error in sql_node.relop(., `:=`("z", list(list("1 + ", quote(z))))): rquery::sql_node.relop undefined columns: z</code></pre>
 </div>
+<div id="a-non-trivial-example" class="section level3">
+<h3 class="hasAnchor">
+<a href="#a-non-trivial-example" class="anchor"></a>A non-trivial example</h3>
+<p>We can build non-trivial operations into <code><a href="../reference/sql_node.html">sql_node()</a></code>s. For example we can build a node the calculates for each row how many columns contain <code>NA</code>/<code>NULL</code> as is demonstrated here.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># example database connection</span>
+my_db &lt;-<span class="st"> </span>DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbConnect">dbConnect</a></span>(RSQLite<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/RSQLite/topics/SQLite">SQLite</a></span>(),
+                        <span class="st">":memory:"</span>)
+<span class="co"># load up example data</span>
+d2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/dbi_copy_to.html">dbi_copy_to</a></span>(
+  my_db, <span class="st">'d2'</span>,
+  <span class="kw">data.frame</span>(<span class="dt">v1 =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="ot">NA</span>, <span class="dv">3</span>),
+             <span class="dt">v2 =</span> <span class="kw">c</span>(<span class="ot">NA</span>, <span class="st">"b"</span>, <span class="ot">NA</span>, <span class="st">"c"</span>),
+             <span class="dt">v3 =</span> <span class="kw">c</span>(<span class="ot">NA</span>, <span class="ot">NA</span>, <span class="dv">7</span>, <span class="dv">8</span>),
+             <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>))
+
+<span class="co"># look at table</span>
+<span class="kw"><a href="../reference/execute.html">execute</a></span>(my_db, d2)</code></pre></div>
+<pre><code>##   v1   v2 v3
+## 1  1 &lt;NA&gt; NA
+## 2  2    b NA
+## 3 NA &lt;NA&gt;  7
+## 4  3    c  8</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># get list of columns</span>
+vars &lt;-<span class="st"> </span><span class="kw"><a href="../reference/column_names.html">column_names</a></span>(d2)
+<span class="kw">print</span>(vars)</code></pre></div>
+<pre><code>## [1] "v1" "v2" "v3"</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># build a NA/NULLs per-row counting expression.</span>
+<span class="co"># names are "quoted" by wrapping them with as.name().</span>
+<span class="co"># constants can be quoted by an additional list wrapping.</span>
+expr &lt;-<span class="st"> </span><span class="kw">lapply</span>(vars,
+               <span class="cf">function</span>(vi) {
+                 <span class="kw">list</span>(<span class="st">"+ (CASE WHEN ("</span>,
+                      <span class="kw">as.name</span>(vi),
+                      <span class="st">"IS NULL ) THEN 1.0 ELSE 0.0 END)"</span>)
+               })
+expr &lt;-<span class="st"> </span><span class="kw">unlist</span>(expr, <span class="dt">recursive =</span> <span class="ot">FALSE</span>)
+expr &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">list</span>(<span class="fl">0.0</span>), expr)
+<span class="kw">cat</span>(<span class="kw">paste</span>(<span class="kw">unlist</span>(expr), <span class="dt">collapse =</span> <span class="st">" "</span>))</code></pre></div>
+<pre><code>## 0 + (CASE WHEN ( v1 IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( v2 IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( v3 IS NULL ) THEN 1.0 ELSE 0.0 END)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># instantiate the operator node</span>
+op_tree_count_null &lt;-<span class="st"> </span>d2 <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(., <span class="st">"num_missing"</span> <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">list</span>(expr))
+<span class="kw">cat</span>(<span class="kw">format</span>(op_tree_count_null))</code></pre></div>
+<pre><code>## table('d2') %.&gt;%
+##  sql_node(.,
+##           num_missing := 0 + (CASE WHEN ( v1 IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( v2 IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( v3 IS NULL ) THEN 1.0 ELSE 0.0 END),
+##              *=TRUE)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># examine produced SQL</span>
+sql &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(op_tree_count_null, my_db)
+<span class="kw">cat</span>(sql)</code></pre></div>
+<pre><code>## SELECT
+##  *,
+##  0 + (CASE WHEN ( `v1` IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( `v2` IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( `v3` IS NULL ) THEN 1.0 ELSE 0.0 END) AS `num_missing`
+## FROM (
+##  SELECT
+##   `d2`.`v1`,
+##   `d2`.`v2`,
+##   `d2`.`v3`
+##  FROM
+##   `d2`
+## ) tsql_07937815577486872443_0000000000</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># execute</span>
+<span class="kw"><a href="../reference/execute.html">execute</a></span>(my_db, op_tree_count_null)</code></pre></div>
+<pre><code>##   v1   v2 v3 num_missing
+## 1  1 &lt;NA&gt; NA           2
+## 2  2    b NA           1
+## 3 NA &lt;NA&gt;  7           2
+## 4  3    c  8           0</code></pre>
+<p>And, as this is an important capability, this exact functionality is wrapped in <a href="https://winvector.github.io/rquery/reference/count_null_cols.html"><code><a href="../reference/count_null_cols.html">count_null_cols()</a></code></a>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># whole process wrapped in convenience node</span>
+d2 <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/count_null_cols.html">count_null_cols</a></span>(., vars, <span class="st">"nnull"</span>) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/execute.html">execute</a></span>(my_db, .)</code></pre></div>
+<pre><code>##   v1   v2 v3 count
+## 1  1 &lt;NA&gt; NA     2
+## 2  2    b NA     1
+## 3 NA &lt;NA&gt;  7     2
+## 4  3    c  8     0</code></pre>
+</div>
 </div>
 </div>
 <div id="sql-first" class="section level1">
 <h1 class="hasAnchor">
 <a href="#sql-first" class="anchor"></a><code>SQL</code> first</h1>
 <p><code>rquery</code> is a “<code>SQL</code> first” system. It is designed only to create <code>SQL</code> queries and dispatch them to remote systems (<code>SQLite</code>, <code>Spark</code>, <code>PostgreSQL</code>, <code>Redshift</code>, and other databases) for execution. The <a href="https://winvector.github.io/rquery/reference/execute.html"><code><a href="../reference/execute.html">execute()</a></code></a> method can be used with big data by adding a <code>table_name</code> argument (or also by using the <a href="https://winvector.github.io/rquery/reference/materialize.html"><code><a href="../reference/materialize.html">materialize()</a></code></a> method) to land results in a remote table instead of pulling them back to <code>R</code>.</p>
+<p>The mantra of <code>SQL</code>-first is data starts in the database, and stays in the database (i.e., it is too large to count on round-tripping through <code>R</code>). Another important <code>SQL</code>-first package is <a href="https://github.com/WinVector/cdata/"><code>cdata</code></a> which provides pure <code>SQL</code> based implementations of operators that easily generalize pivot/un-pivot, cast/melt, or spread/gather.</p>
 <p>The better the database implementation the better <code>rquery</code> will be, both in terms of performance and in terms of function (such as the availability of <code>SQL</code> window functions).</p>
+<p>The downside of <code>SQL</code> first, is some operators require using the <code><a href="../reference/sql_node.html">sql_node()</a></code> as we are not yet translating some <code>R</code> expression idiom to <code>SQL</code>.</p>
 </div>
 <div id="ad-hoc-mode" class="section level1">
 <h1 class="hasAnchor">
@@ -258,7 +339,7 @@ FROM (
 ## 3  0    0     0    0
 ## 4  1    1     0    0
 ## 5  2    2     0    0</code></pre>
-<p>(Note: the above calculation is triggered by <code>wrapr</code> dot pipe <code>S3</code> <code>wrapr_function</code> definitions.)</p>
+<p>(Note: the above calculation is triggered by <a href="https://github.com/WinVector/wrapr/blob/master/extras/wrapr_pipe.pdf"><code>wrapr</code> dot pipe <code>S3</code> <code>wrapr_function</code></a> extensions.)</p>
 <p>Also <code>rquery</code> operators can be used directly (without any table description nodes) when working with in-memory <code>data.frame</code>s.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data.frame</span>(<span class="dt">x =</span> <span class="dv">5</span>) <span class="op">%.&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(., <span class="st">"z"</span> <span class="op">:</span><span class="er">=</span><span class="st"> "sqrt(x)"</span>)</code></pre></div>
 <pre><code>##   x        z
@@ -305,31 +386,51 @@ from <a href="http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for
 <div id="non-sql-node" class="section level1">
 <h1 class="hasAnchor">
 <a href="#non-sql-node" class="anchor"></a>Non-<code>SQL</code> node</h1>
-<p>Not all data transform steps can conveniently be written as a single <code>SQL</code> statement. To work around this potential limitation <code>rquery</code> supplies a special type of node called</p>
+<p>Not all data transform steps can conveniently be written as a single <code>SQL</code> statement. To work around this potential limitation <code>rquery</code> supplies a special type of node called <a href="https://winvector.github.io/rquery/reference/non_sql_node.html"><code><a href="../reference/non_sql_node.html">non_sql_node()</a></code></a>. <code><a href="../reference/non_sql_node.html">non_sql_node()</a></code> is used to implement arbitrary table to table transforms as <code>rquery</code> pipeline steps. Two important examples of <code><a href="../reference/non_sql_node.html">non_sql_node()</a></code> are <a href="https://winvector.github.io/rquery/reference/materialize_node.html"><code><a href="../reference/materialize_node.html">materialize_node()</a></code></a> and <a href="https://winvector.github.io/rquery/reference/rsummary_node.html"><code><a href="../reference/rsummary_node.html">rsummary_node()</a></code></a>.</p>
+<p><code><a href="../reference/materialize_node.html">materialize_node()</a></code> can be used to land intermediate results into a table. This can be used both to save intermediate calculation stages and to break up the complexity of long data processing pipelines.</p>
+<p><code><a href="../reference/rsummary_node.html">rsummary_node()</a></code> builds a table of summary information about another database table. The format is each column of the original table produces a row of summary information in the result table. Here is a simple example.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">op_tree <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/rsummary_node.html">rsummary_node</a></span>(.) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/execute.html">execute</a></span>(db, .)</code></pre></div>
+<pre><code>##   column index   class nrows nna nunique min max       mean        sd
+## 1      v     1 numeric     3   0      NA  -5   3 -0.3333333  4.163332
+## 2   absv     2 numeric     3   0      NA   1   5  3.0000000  2.000000
+## 3  delta     3 numeric     3   0      NA   0  10  3.3333333  5.773503
+## 4   prod     4 numeric     3   0      NA   0  50 16.6666667 28.867513
+##   lexmin lexmax
+## 1     NA     NA
+## 2     NA     NA
+## 3     NA     NA
+## 4     NA     NA</code></pre>
+<p>Users can add additional capabilities by writing their own <code><a href="../reference/non_sql_node.html">non_sql_node()</a></code>s.</p>
 </div>
-<div id="statement-partitioning" class="section level1">
+<div id="standard-interfaces" class="section level1">
 <h1 class="hasAnchor">
-<a href="#statement-partitioning" class="anchor"></a>Statement partitioning</h1>
+<a href="#standard-interfaces" class="anchor"></a>Standard interfaces</h1>
+<p><code>rquery</code> goes out of its way to supply easy to program over value-oriented interfaces. For any meta-programming we suggest using <a href="https://winvector.github.io/wrapr/reference/let.html"><code><a href="http://www.rdocumentation.org/packages/wrapr/topics/let">wrapr::let()</a></code></a>, a powerful and <a href="https://github.com/WinVector/wrapr/blob/master/extras/wrapr_let.pdf">well-documented</a> meta-programming system.</p>
+</div>
+<div id="assignment-partitioning" class="section level1">
+<h1 class="hasAnchor">
+<a href="#assignment-partitioning" class="anchor"></a>Assignment partitioning</h1>
+<p><code>rquery</code> accepts many assignment in a <code><a href="../reference/sql_node.html">sql_node()</a></code> or in a single <code>extend()</code> node. The <code>extend()</code> node comes with automatic <a href="#assignment-partitioning">assignment partitioning</a> to ensure correct and performant results.</p>
 </div>
 <div id="ifelse-device" class="section level1">
 <h1 class="hasAnchor">
 <a href="#ifelse-device" class="anchor"></a>ifelse device</h1>
-</div>
-<div id="correctness" class="section level1">
-<h1 class="hasAnchor">
-<a href="#correctness" class="anchor"></a>correctness</h1>
+<p>Another higher-order node is the <a href="https://winvector.github.io/rquery/reference/if_else_block.html"><code><a href="../reference/if_else_block.html">if_else_block()</a></code></a> which can be used to simulate block-oriented if-else semantics as seen in systems such as <code>SAS</code> (also meaning <code>rquery</code> can be critical porting code from <code>SAS</code> to <code>SQL</code> based <code>R</code>).</p>
 </div>
 <div id="performance" class="section level1">
 <h1 class="hasAnchor">
-<a href="#performance" class="anchor"></a>performance</h1>
-<div id="comparisons" class="section level2">
-<h2 class="hasAnchor">
-<a href="#comparisons" class="anchor"></a>Comparisons</h2>
+<a href="#performance" class="anchor"></a>Performance</h1>
+<p>As <code>rquery</code> pipelines are factored into stages similar to the common relational operators they tend to be very compatible with downstream query optimizers. We think some of the advantage is the fact that <code>rquery</code> deliberately does not have a <code>group_by</code> operator, but instead considers this as the <code>partitionby</code> attribute of a <a href="https://winvector.github.io/rquery/reference/project_nse.html"><code>project()</code> node</a> (non-trivial example <a href="https://github.com/WinVector/rquery/blob/master/README.md">here</a>).</p>
+<p>We have seen database based <code>rquery</code> outperform both in-memory <code>dplyr</code> and database based <code>dplyr</code> (article <a href="http://www.win-vector.com/blog/2018/01/rquery-fast-data-manipulation-in-r/">here</a>).</p>
+<p>In addition <code>rquery</code> includes automatic column narrowing: where only columns used to construct the final result are pulled from initial tables. This feature has show significant additional performance advantages (article <a href="http://www.win-vector.com/blog/2017/12/how-to-greatly-speed-up-your-spark-queries/">here</a>).</p>
 </div>
-<div id="column-narrowing" class="section level2">
-<h2 class="hasAnchor">
-<a href="#column-narrowing" class="anchor"></a>Column narrowing</h2>
-</div>
+<div id="conclusion" class="section level1">
+<h1 class="hasAnchor">
+<a href="#conclusion" class="anchor"></a>Conclusion</h1>
+<p><code>rquery</code> is new package, but it is already proving to be correct (avoiding <a href="http://www.win-vector.com/blog/2018/01/advisory-on-multiple-assignment-dplyrmutate-on-databases/">known data processing issues</a>) and <a href="http://www.win-vector.com/blog/2018/01/advisory-on-multiple-assignment-dplyrmutate-on-databases/">performant</a>. For a project primarily interested in working a big data scale (say using <code>PostgreSQL</code> or <code>Spark</code>) <code>rquery</code> is the correct specialized tool for specifying data manipulation.</p>
+<hr>
 </div>
 <div id="appendix-always-clean-up-on-the-way-out" class="section level1">
 <h1 class="hasAnchor">
@@ -356,15 +457,11 @@ DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation
       <li><a href="#table-descriptions">Table descriptions</a></li>
       <li><a href="#operators">Operators</a></li>
       <li><a href="#non-sql-node">Non-<code>SQL</code> node</a></li>
-      <li><a href="#statement-partitioning">Statement partitioning</a></li>
+      <li><a href="#standard-interfaces">Standard interfaces</a></li>
+      <li><a href="#assignment-partitioning">Assignment partitioning</a></li>
       <li><a href="#ifelse-device">ifelse device</a></li>
-      <li><a href="#correctness">correctness</a></li>
-      <li>
-<a href="#performance">performance</a><ul class="nav nav-pills nav-stacked">
-<li><a href="#comparisons">Comparisons</a></li>
-      <li><a href="#column-narrowing">Column narrowing</a></li>
-      </ul>
-</li>
+      <li><a href="#performance">Performance</a></li>
+      <li><a href="#conclusion">Conclusion</a></li>
       <li><a href="#appendix-always-clean-up-on-the-way-out">Appendix: Always clean up on the way out</a></li>
       </ul>
 </div>
