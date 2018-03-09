@@ -9,6 +9,8 @@
  * rsummary().
  * "Non SQL" nodes.
  * New rquery_intro vingette.
+ * Improved help examples.
+ * Stricter argument checking.
 
 # rquery 0.3.1 2018/02/10
 
