@@ -111,6 +111,8 @@ materialize <- function(db,
 #'
 #' execute(my_db, optree)
 #'
+#' execute(data.frame(AUC = 1, R2 = 2), optree)
+#'
 #' res_hdl <- execute(my_db, optree, table_name = "res")
 #' print(res_hdl)
 #' DBI::dbGetQuery(my_db, to_sql(res_hdl, my_db))

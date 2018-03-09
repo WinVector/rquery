@@ -166,10 +166,10 @@
 #&gt;  extend(.,
 #&gt;   v2 := ifelse(x &gt; 2, "x", "y"))</div><div class='input'>
  <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>ops</span>, <span class='no'>db</span>)</div><div class='output co'>#&gt; [[1]]
-#&gt; [1] "CREATE  TABLE `intermediate` AS   SELECT\n   `p`,\n   `s`,\n   `w`,\n   `x`,\n   `y`,\n   `z`,\n   ( CASE WHEN ( `x` &gt; 2 ) THEN ( 'x' ) ELSE ( 'y' ) END )  AS `v`\n  FROM (\n   SELECT\n    `dRemote`.`p`,\n    `dRemote`.`s`,\n    `dRemote`.`w`,\n    `dRemote`.`x`,\n    `dRemote`.`y`,\n    `dRemote`.`z`\n   FROM\n    `dRemote`\n   ) tsql_69193680574520917886_0000000000"
+#&gt; [1] "CREATE  TABLE `intermediate` AS   SELECT\n   `p`,\n   `s`,\n   `w`,\n   `x`,\n   `y`,\n   `z`,\n   ( CASE WHEN ( `x` &gt; 2 ) THEN ( 'x' ) ELSE ( 'y' ) END )  AS `v`\n  FROM (\n   SELECT\n    `dRemote`.`p`,\n    `dRemote`.`s`,\n    `dRemote`.`w`,\n    `dRemote`.`x`,\n    `dRemote`.`y`,\n    `dRemote`.`z`\n   FROM\n    `dRemote`\n   ) tsql_77593170710789316807_0000000000"
 #&gt; 
 #&gt; [[2]]
-#&gt; [1] "SELECT\n `p`,\n `s`,\n `v`,\n `w`,\n `x`,\n `y`,\n `z`,\n ( CASE WHEN ( `x` &gt; 2 ) THEN ( 'x' ) ELSE ( 'y' ) END )  AS `v2`\nFROM (\n  SELECT\n   `intermediate`.`p`,\n   `intermediate`.`s`,\n   `intermediate`.`v`,\n   `intermediate`.`w`,\n   `intermediate`.`x`,\n   `intermediate`.`y`,\n   `intermediate`.`z`\n  FROM\n   `intermediate`\n ) tsql_69193680574520917886_0000000001\n"
+#&gt; [1] "SELECT\n `p`,\n `s`,\n `v`,\n `w`,\n `x`,\n `y`,\n `z`,\n ( CASE WHEN ( `x` &gt; 2 ) THEN ( 'x' ) ELSE ( 'y' ) END )  AS `v2`\nFROM (\n  SELECT\n   `intermediate`.`p`,\n   `intermediate`.`s`,\n   `intermediate`.`v`,\n   `intermediate`.`w`,\n   `intermediate`.`x`,\n   `intermediate`.`y`,\n   `intermediate`.`z`\n  FROM\n   `intermediate`\n ) tsql_77593170710789316807_0000000001\n"
 #&gt; </div><div class='input'>
  <span class='no'>reshdl</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='materialize.html'>materialize</a></span>(<span class='no'>db</span>, <span class='no'>ops</span>)
  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>db</span>, <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>reshdl</span>, <span class='no'>db</span>))</div><div class='output co'>#&gt;    p  s v w  x    y    z v2

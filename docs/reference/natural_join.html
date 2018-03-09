@@ -150,9 +150,9 @@ are coalesced.</p>
 #&gt;   table('d2'),
 #&gt;   j= INNER, by= AUC)</div><div class='input'><span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>eqn</span>, <span class='no'>my_db</span>)
 <span class='fu'>cat</span>(<span class='no'>sql</span>)</div><div class='output co'>#&gt; SELECT
-#&gt;  COALESCE(`tsql_87311830961519019978_0000000000`.`AUC`, `tsql_87311830961519019978_0000000001`.`AUC`) AS `AUC`,
-#&gt;  COALESCE(`tsql_87311830961519019978_0000000000`.`D`, `tsql_87311830961519019978_0000000001`.`D`) AS `D`,
-#&gt;  `tsql_87311830961519019978_0000000000`.`R2` AS `R2`
+#&gt;  COALESCE(`tsql_52678388703792433203_0000000000`.`AUC`, `tsql_52678388703792433203_0000000001`.`AUC`) AS `AUC`,
+#&gt;  COALESCE(`tsql_52678388703792433203_0000000000`.`D`, `tsql_52678388703792433203_0000000001`.`D`) AS `D`,
+#&gt;  `tsql_52678388703792433203_0000000000`.`R2` AS `R2`
 #&gt; FROM (
 #&gt;  SELECT
 #&gt;   `d1`.`AUC`,
@@ -160,16 +160,16 @@ are coalesced.</p>
 #&gt;   `d1`.`D`
 #&gt;  FROM
 #&gt;   `d1`
-#&gt; ) `tsql_87311830961519019978_0000000000`
+#&gt; ) `tsql_52678388703792433203_0000000000`
 #&gt; INNER JOIN (
 #&gt;  SELECT
 #&gt;   `d2`.`AUC`,
 #&gt;   `d2`.`D`
 #&gt;  FROM
 #&gt;   `d2`
-#&gt; ) `tsql_87311830961519019978_0000000001`
+#&gt; ) `tsql_52678388703792433203_0000000001`
 #&gt; ON
-#&gt;  `tsql_87311830961519019978_0000000000`.`AUC` = `tsql_87311830961519019978_0000000001`.`AUC`</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;   AUC   D  R2
+#&gt;  `tsql_52678388703792433203_0000000000`.`AUC` = `tsql_52678388703792433203_0000000001`.`AUC`</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;   AUC   D  R2
 #&gt; 1 0.6 0.3 0.2</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
