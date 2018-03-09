@@ -8,6 +8,7 @@
  * NULL column ops.
  * rsummary().
  * "Non SQL" nodes.
+ * New rquery_intro vingette.
 
 # rquery 0.3.1 2018/02/10
 
