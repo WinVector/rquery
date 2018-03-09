@@ -30,9 +30,8 @@ column_names <- function (x, ...) {
 
 #' @export
 column_names.relop <- function (x, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::column_names.relop")
   subs <- lapply(x$source,
                  column_names)
   return(sort(unique(unlist(subs))))
@@ -62,9 +61,8 @@ columns_used.relop <- function (x,
                                 ...,
                                 using = NULL,
                                 contract = FALSE) {
-  if(length(list(...))>0) {
-    stop("rquery:columns_used: unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::columns_used.relop")
   subs <- lapply(x$source,
                  columns_used)
   res <- list()
@@ -85,7 +83,7 @@ columns_used.relop <- function (x,
 #'
 #' @param node rquery tree to examine.
 #' @param ... (not used)
-#' @return named map of tables used.
+#' @return names of tables used.
 #'
 #' @examples
 #'
@@ -107,17 +105,14 @@ tables_used <- function(node, ...) {
 
 #' @export
 tables_used.relop <- function(node, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguments")
-  }
-  r <- list()
-  for(si in node$source) {
-    ui <- tables_used(si, ...)
-    for(ki in names(ui)) {
-      r[[ki]] <- ui[[ki]]
-    }
-  }
-  r
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::tables_used.relop")
+  tabs <- lapply(node$source,
+         function(si) {
+           tables_used(si)
+         })
+  tabs <- sort(unique(unlist(tabs)))
+  tabs
 }
 
 

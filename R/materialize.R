@@ -5,8 +5,8 @@
 #' that can be applied to relop trees, not as a component to place
 #' in pipelines.
 #'
-#' @param optree relop operation tree.
 #' @param db DBI connecton.
+#' @param optree relop operation tree.
 #' @param table_name character, name of table to create.
 #' @param ... force later arguments to bind by name.
 #' @param overwrite logical if TRUE drop an previous table.
@@ -22,7 +22,7 @@
 #'                 data.frame(AUC = 0.6, R2 = 0.2))
 #' optree <- extend_se(d, c("v" := "AUC + R2", "x" := "pmax(AUC,v)"))
 #' cat(format(optree))
-#' res <- materialize(optree, my_db, "example")
+#' res <- materialize(my_db, optree, "example")
 #' cat(format(res))
 #' sql <- to_sql(res, my_db)
 #' cat(sql)
@@ -31,14 +31,15 @@
 #'
 #' @export
 #'
-materialize <- function(optree,
-                        db,
+materialize <- function(db,
+                        optree,
                         table_name = mk_tmp_name_source('rquery_mat')(),
                         ...,
                         overwrite = TRUE,
                         temporary = FALSE) {
-  if(length(list(...))>0) {
-    stop("unexpected arguments")
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::materialize")
+  if(!("relop" %in% class(optree))) {
+    stop("rquery::materialize expect optree to be of class relop")
   }
   sql_list <- to_sql(optree, db)
   if(length(sql_list)>=2) {
@@ -85,15 +86,15 @@ materialize <- function(optree,
 #' Materialize an optree as a table.
 #'
 #' Run the data query.  If table_name is not set results
-#' (up to row_limit rows) are brought back to R. If
+#' (up to limit rows) are brought back to R. If
 #' table_name is set full results are materailized as a remote
 #' table.
 #'
+#' @param source data.frame or DBI connection.
 #' @param optree relop operation tree.
-#' @param db DBI connecton.
 #' @param ... force later arguments to bind by name.
 #' @param table_name character, name of table to create.
-#' @param row_limit numeric, if set limit to this many rows.
+#' @param limit numeric, if set limit to this many rows.
 #' @param overwrite logical if TRUE drop an previous table.
 #' @param temporary logical if TRUE try to create a temporary table.
 #' @return data.frame or table handle.
@@ -108,9 +109,9 @@ materialize <- function(optree,
 #' optree <- extend_se(d, c("v" := "AUC + R2", "x" := "pmax(AUC,v)"))
 #' cat(format(optree))
 #'
-#' execute(optree, my_db)
+#' execute(my_db, optree)
 #'
-#' res_hdl <- execute(optree, my_db, table_name = "res")
+#' res_hdl <- execute(my_db, optree, table_name = "res")
 #' print(res_hdl)
 #' DBI::dbGetQuery(my_db, to_sql(res_hdl, my_db))
 #' DBI::dbReadTable(my_db, res_hdl$table_name)
@@ -120,26 +121,38 @@ materialize <- function(optree,
 #'
 #' @export
 #'
-execute <- function(optree,
-                    db,
+execute <- function(source,
+                    optree,
                     ...,
                     table_name = NULL,
-                    row_limit = 1000000,
+                    limit = 1000000,
                     overwrite = TRUE,
                     temporary = FALSE) {
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::execute")
+  if(!("relop" %in% class(optree))) {
+    stop("rquery::execute expect optree to be of class relop")
+  }
+  if(is.data.frame(source)) {
+    res <- rquery_apply_to_data_frame(source,
+                                      optree,
+                                      env = parent.frame(),
+                                      limit = limit)
+    return(res)
+  }
+  db <- source # assume it is a DBI connection (they do not share a base class)
   table_name_set <- !is.null(table_name)
   if(!table_name_set) {
     table_name <-  mk_tmp_name_source('rquery_ex')()
   }
-  ref <- materialize(optree, db,
+  ref <- materialize(db, optree,
                      table_name = table_name,
                      overwrite = overwrite,
                      temporary = temporary)
   res <- ref
   if(!table_name_set) {
     sql <- to_sql(ref, db)
-    if((!is.null(row_limit)) && (!is.na(row_limit))) {
-      sql <- paste(sql, "LIMIT", row_limit)
+    if((!is.null(limit)) && (!is.na(limit))) {
+      sql <- paste(sql, "LIMIT", limit)
     }
     res <- DBI::dbGetQuery(db, sql)
     DBI::dbRemoveTable(db, ref$table_name)
@@ -182,7 +195,7 @@ execute <- function(optree,
 #'
 #'  to_sql(ops, db)
 #'
-#'  reshdl <- materialize(ops, db)
+#'  reshdl <- materialize(db, ops)
 #'  DBI::dbGetQuery(db, to_sql(reshdl, db))
 #'
 #'  DBI::dbGetQuery(db, "SELECT * FROM intermediate")

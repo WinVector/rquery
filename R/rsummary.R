@@ -332,7 +332,7 @@ rsummary <- function(db,
 #'
 #'  to_sql(ops, db)
 #'
-#'  reshdl <- materialize(ops, db)
+#'  reshdl <- materialize(db, ops)
 #'  DBI::dbGetQuery(db, to_sql(reshdl, db))
 #'
 #'  DBI::dbDisconnect(db)
