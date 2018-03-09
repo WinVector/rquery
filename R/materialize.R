@@ -163,6 +163,11 @@ execute <- function(source,
 }
 
 
+#' @rdname execute
+#' @export
+commencify <- execute
+
+
 #' Create a materialize node.
 #'
 #' @param source incoming source (relop node or data.frame).
