@@ -10,7 +10,9 @@ output: github_document
 
 `rquery` is currently experimental, and not yet recommended for production use. 
 
-To install: `devtools::install_github("WinVector/rquery")`.
+To install: `devtools::install_github("WinVector/rquery")`.  
+
+A good place to start is the [`rquery` introductory vignette](https://winvector.github.io/rquery/articles/rquery_intro.html).
 
 # Discussion
 

@@ -42,5 +42,33 @@ test_that("test_translation: Works As Expected", {
   res2 <- res2[order(res2$idx), , drop = FALSE]
   expect_equal(c(2, 4, 3, 6, NA), res2$mx)
 
+  d2 <-  d <- dbi_copy_to(
+    db, 'd2',
+    data.frame(idx = 1:3,
+               test = c(0, 5, 10)),
+    temporary = FALSE,
+    overwrite = TRUE)
+
+  ifet <- d2 %.>%
+    extend_se(.,
+              c(qae(x = '',
+                    y = ''),
+                if_else_block(
+                  qe(test > 5),
+                  thenexprs = qae(x = 'a',
+                                  y = 'b'),
+                  elseexprs = qae(x = 'b',
+                                  y = 'a')
+                )))
+  txt3 <- format(ifet)
+  # cat(txt3)
+
+  sql3 <- to_sql(ifet, db)
+  # cat(sql3)
+  res3 <- DBI::dbGetQuery(db, sql3)
+  res3 <- res3[order(res3$idx), , drop = FALSE]
+  expect_equal(c('b', 'b', 'a'), res3$x)
+  expect_equal(c('a', 'a', 'b'), res3$y)
+
   DBI::dbDisconnect(db)
 })

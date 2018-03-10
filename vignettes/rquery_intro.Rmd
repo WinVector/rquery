@@ -33,7 +33,9 @@ Data scientists are well advised to learn to work with `SQL`.
 
 An inessential difficulty in using `SQL` is `SQL` represents
 composition of operations by nesting, which can rapidly become
-confusing and illegible.
+confusing and illegible.  This can be overcome by using a
+query composer such as `rquery` (some more query composers
+are listed [here](https://github.com/WinVector/rquery/blob/master/README.md)).
 
 Let's set up our environment so we can work with examples.
 

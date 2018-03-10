@@ -76,8 +76,11 @@ tokenize_call_for_SQL <- function(lexpr,
     return(res)
   }
   if(callName=='is.na') {
+    if(n!=2) {
+      stop("rquery::tokenize_call_for_SQL expect is.na to have 1 argument")
+    }
     res$presentation <- paste0("is.na(", subpres, ")")
-    res$parsed_toks <- c(ltok("("), subseq,  ltok(")"), ltok("IS NULL"))
+    res$parsed_toks <- c(ltok("("), args[[1]]$parsed_toks, ltok(")"), ltok("IS NULL"))
     return(res)
   }
   if(callName=='ifelse') {
