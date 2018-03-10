@@ -29,7 +29,7 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="/index.html">
+  <a href="index.html">
     <span class="fa fa-home fa-lg"></span>
      
   </a>
@@ -151,15 +151,15 @@
 <p>A lot of the grace of the Codd theory can be recovered through the usual trick changing function composition notation from <code>g(f(x))</code> to <code>x . f() . g()</code>. This experiment is asking (and not for the first time): “what if <code>SQL</code> were piped (expressed composition as a left to right flow, instead of a right to left nesting)?”</p>
 <p>Let’s work a non-trivial example: the <code>dplyr</code> pipeline from <a href="http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/">Let’s Have Some Sympathy For The Part-time R User</a>.</p>
 <p>First we show the Spark/database version of the original example data:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">class</span>(my_db)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">class</span>(my_db)</code></pre></div>
 <pre><code>## [1] "spark_connection"       "spark_shell_connection"
 ## [3] "DBIConnection"</code></pre>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">print</span>(d)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(d)</code></pre></div>
 <pre><code>## [1] "table('d')"</code></pre>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">d <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="st">  </span>rquery<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/rquery/topics/to_sql">to_sql</a></span>(., my_db) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="st">  </span>DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery">dbGetQuery</a></span>(my_db, .) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">d <span class="op">%.&gt;%</span>
+<span class="st">  </span>rquery<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/rquery/topics/to_sql">to_sql</a></span>(., my_db) <span class="op">%.&gt;%</span>
+<span class="st">  </span>DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery">dbGetQuery</a></span>(my_db, .) <span class="op">%.&gt;%</span>
+<span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">subjectID</th>
@@ -200,33 +200,33 @@
 </tbody>
 </table>
 <p>Now we re-write the original calculation in terms of the <code>rquery</code> SQL generating operators.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">scale &lt;-<span class="st"> </span><span class="fl">0.237</span></a>
-<a class="sourceLine" id="cb6-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb6-3" data-line-number="3">dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="st">  </span><span class="kw"><a href="reference/extend_nse.html">extend_nse</a></span>(.,</a>
-<a class="sourceLine" id="cb6-5" data-line-number="5">             probability <span class="op">:</span><span class="er">=</span></a>
-<a class="sourceLine" id="cb6-6" data-line-number="6"><span class="st">               </span><span class="kw">exp</span>(assessmentTotal <span class="op">*</span><span class="st"> </span>scale)<span class="op">/</span></a>
-<a class="sourceLine" id="cb6-7" data-line-number="7"><span class="st">               </span><span class="kw">sum</span>(<span class="kw">exp</span>(assessmentTotal <span class="op">*</span><span class="st"> </span>scale)),</a>
-<a class="sourceLine" id="cb6-8" data-line-number="8">             count <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">count</span>(<span class="dv">1</span>),</a>
-<a class="sourceLine" id="cb6-9" data-line-number="9">             <span class="dt">partitionby =</span> <span class="st">'subjectID'</span>) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb6-10" data-line-number="10"><span class="st">  </span><span class="kw"><a href="reference/extend_nse.html">extend_nse</a></span>(.,</a>
-<a class="sourceLine" id="cb6-11" data-line-number="11">             rank <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">rank</span>(),</a>
-<a class="sourceLine" id="cb6-12" data-line-number="12">             <span class="dt">partitionby =</span> <span class="st">'subjectID'</span>,</a>
-<a class="sourceLine" id="cb6-13" data-line-number="13">             <span class="dt">orderby =</span> <span class="kw">c</span>(<span class="st">'probability'</span>, <span class="st">'surveyCategory'</span>))  <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb6-14" data-line-number="14"><span class="st">  </span><span class="kw"><a href="reference/rename_columns.html">rename_columns</a></span>(., <span class="st">'diagnosis'</span> <span class="op">:</span><span class="er">=</span><span class="st"> 'surveyCategory'</span>) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb6-15" data-line-number="15"><span class="st">  </span><span class="kw"><a href="reference/select_rows_nse.html">select_rows_nse</a></span>(., rank <span class="op">==</span><span class="st"> </span>count) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb6-16" data-line-number="16"><span class="st">  </span><span class="kw"><a href="reference/select_columns.html">select_columns</a></span>(., <span class="kw">c</span>(<span class="st">'subjectID'</span>, </a>
-<a class="sourceLine" id="cb6-17" data-line-number="17">                      <span class="st">'diagnosis'</span>, </a>
-<a class="sourceLine" id="cb6-18" data-line-number="18">                      <span class="st">'probability'</span>)) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb6-19" data-line-number="19"><span class="st">  </span><span class="kw"><a href="reference/orderby.html">orderby</a></span>(., <span class="st">'subjectID'</span>)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">scale &lt;-<span class="st"> </span><span class="fl">0.237</span>
+
+dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="reference/extend_nse.html">extend_nse</a></span>(.,
+             probability <span class="op">:</span><span class="er">=</span>
+<span class="st">               </span><span class="kw">exp</span>(assessmentTotal <span class="op">*</span><span class="st"> </span>scale)<span class="op">/</span>
+<span class="st">               </span><span class="kw">sum</span>(<span class="kw">exp</span>(assessmentTotal <span class="op">*</span><span class="st"> </span>scale)),
+             count <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">count</span>(<span class="dv">1</span>),
+             <span class="dt">partitionby =</span> <span class="st">'subjectID'</span>) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="reference/extend_nse.html">extend_nse</a></span>(.,
+             rank <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">rank</span>(),
+             <span class="dt">partitionby =</span> <span class="st">'subjectID'</span>,
+             <span class="dt">orderby =</span> <span class="kw">c</span>(<span class="st">'probability'</span>, <span class="st">'surveyCategory'</span>))  <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="reference/rename_columns.html">rename_columns</a></span>(., <span class="st">'diagnosis'</span> <span class="op">:</span><span class="er">=</span><span class="st"> 'surveyCategory'</span>) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="reference/select_rows_nse.html">select_rows_nse</a></span>(., rank <span class="op">==</span><span class="st"> </span>count) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="reference/select_columns.html">select_columns</a></span>(., <span class="kw">c</span>(<span class="st">'subjectID'</span>, 
+                      <span class="st">'diagnosis'</span>, 
+                      <span class="st">'probability'</span>)) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="reference/orderby.html">orderby</a></span>(., <span class="st">'subjectID'</span>)</code></pre></div>
 <p>We then generate our result:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw"><a href="reference/execute.html">execute</a></span>(my_db, dq, <span class="dt">source_limit =</span> <span class="dv">1000</span>)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/execute.html">execute</a></span>(my_db, dq, <span class="dt">source_limit =</span> <span class="dv">1000</span>)</code></pre></div>
 <pre><code>##   subjectID           diagnosis probability
 ## 1         1 withdrawal behavior   0.6706221
 ## 2         2 positive re-framing   0.5589742</code></pre>
 <p>We see we have quickly reproduced the original result using the new database operators. This means such a calculation could easily be performed at a “big data” scale (using a database or <code>Spark</code>; in this case we would not take the results back, but instead use <code>CREATE TABLE tname AS</code> to build a remote materialized view of the results).</p>
 <p>The actual <code>SQL</code> query that produces the result is, in fact, quite involved:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw">cat</span>(<span class="kw"><a href="reference/to_sql.html">to_sql</a></span>(dq, my_db, <span class="dt">source_limit =</span> <span class="dv">1000</span>))</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw"><a href="reference/to_sql.html">to_sql</a></span>(dq, my_db, <span class="dt">source_limit =</span> <span class="dv">1000</span>))</code></pre></div>
 <pre><code>SELECT * FROM (
  SELECT
   `subjectID`,
@@ -261,25 +261,25 @@
        `d`.`assessmentTotal`
       FROM
        `d` LIMIT 1000
-      ) tsql_57811477785650316622_0000000000
-     ) tsql_57811477785650316622_0000000001
-   ) tsql_57811477785650316622_0000000002
-  ) tsql_57811477785650316622_0000000003
+      ) tsql_93590839407751531506_0000000000
+     ) tsql_93590839407751531506_0000000001
+   ) tsql_93590839407751531506_0000000002
+  ) tsql_93590839407751531506_0000000003
   WHERE `rank` = `count`
- ) tsql_57811477785650316622_0000000004
-) tsql_57811477785650316622_0000000005 ORDER BY `subjectID`</code></pre>
+ ) tsql_93590839407751531506_0000000004
+) tsql_93590839407751531506_0000000005 ORDER BY `subjectID`</code></pre>
 <p>The query is large, but due to its regular structure it should be very amenable to query optimization.</p>
 <p>A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our <a href="https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md">initial experiments</a> show <code>rquery</code> narrowed queries to be twice as fast as un-narrowed <code>dplyr</code> on a synthetic problem simulating large disk-based queries. We think if we connected directly to <code>Spark</code>’s relational operators (avoiding the <code>SQL</code> layer) we may be able to achieve even faster performance.</p>
 <p>The above optimization is possible because the <code>rquery</code> representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query. For example:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw"><a href="reference/column_names.html">column_names</a></span>(dq)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/column_names.html">column_names</a></span>(dq)</code></pre></div>
 <pre><code>## [1] "diagnosis"   "probability" "subjectID"</code></pre>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw"><a href="reference/tables_used.html">tables_used</a></span>(dq)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/tables_used.html">tables_used</a></span>(dq)</code></pre></div>
 <pre><code>## [1] "d"</code></pre>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="kw"><a href="reference/columns_used.html">columns_used</a></span>(dq)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/columns_used.html">columns_used</a></span>(dq)</code></pre></div>
 <pre><code>## $d
 ## [1] "subjectID"       "surveyCategory"  "assessmentTotal"</code></pre>
 <p>Part of the plan is: the additional record-keeping in the operator nodes would let a potentially powerful query optimizer work over the flow before it gets translated to <code>SQL</code> (perhaps an extension of or successor to <a href="https://winvector.github.io/seplyr/"><code>seplyr</code></a>, which re-plans over <code><a href="http://dplyr.tidyverse.org/reference/mutate.html">dplyr::mutate()</a></code> expressions). At the very least restricting to columns later used and folding selects together would be achievable. One should have a good chance at optimization as the representation is fairly high-level, and many of the operators are relational (meaning there are known legal transforms a query optimizer can use). The flow itself is represented as follows:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="kw">cat</span>(<span class="kw">format</span>(dq))</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw">format</span>(dq))</code></pre></div>
 <pre><code>table('d') %.&gt;%
  extend(.,
   probability := exp(assessmentTotal * scale) / sum(exp(assessmentTotal * scale)),
