@@ -69,7 +69,7 @@ count_null_cols <- function(source, cols, count) {
                          "IS NULL ) THEN 1 ELSE 0 END )")
                   })
   expr <- flatten_with_sep(terms, list("+"))
-  nd <- sql_node(source, list(count = expr),
+  nd <- sql_node(source, count := list(expr),
                  orig_columns = TRUE)
   nd$display_form <- paste0("count_null_cols(",
                             paste(cols, collapse = ", "),
