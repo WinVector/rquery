@@ -1,0 +1,46 @@
+library("rquery")
+context("translation")
+
+
+
+test_that("test_translation: Works As Expected", {
+  db <- DBI::dbConnect(RSQLite::SQLite(),
+                       ":memory:")
+  RSQLite::initExtension(db)
+
+  # example data
+  d <- dbi_copy_to(
+    db, 'd',
+    data.frame(idx = 1:5,
+               x = c(1, NA, 3, 6, NA),
+               y = c(2, 4, NA, 5, NA)),
+    temporary = FALSE,
+    overwrite = TRUE)
+
+  op1 <- d %.>%
+    extend_nse(., na_count := ifelse(is.na(x), 1, 0) +
+                 ifelse(is.na(y), 1, 0))
+  txt1 <- format(op1)
+  # cat(txt1)
+
+  sql1 <- to_sql(op1, db)
+  # cat(sql1)
+
+  res1 <- DBI::dbGetQuery(db, sql1)
+  res1 <- res1[order(res1$idx), , drop = FALSE]
+  expect_equal(c(0, 1, 1, 0, 2), res1$na_count)
+
+  op2 <- d %.>%
+    extend_nse(., mx := pmax(x, y))
+  txt2 <- format(op2)
+  # cat(txt2)
+
+  sql2 <- to_sql(op2, db)
+  # cat(sql2)
+
+  res2 <- DBI::dbGetQuery(db, sql2)
+  res2 <- res2[order(res2$idx), , drop = FALSE]
+  expect_equal(c(2, 4, 3, 6, NA), res2$mx)
+
+  DBI::dbDisconnect(db)
+})

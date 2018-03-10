@@ -133,13 +133,56 @@ tokenize_call_for_SQL <- function(lexpr,
     res$presentation <- paste(lhs$presentation, callName, rhs$presentation)
     return(res)
   }
+  if(callName %in% c("pmin", "pmax")) {
+    if(n!=3) {
+      stop("rquery::tokenize_call_for_SQL expect pmin/pmax to have 2 arguments")
+    }
+    if(callName=="pmax") {
+      comptok <- ltok(">=")
+    } else {
+      comptok <- ltok("<=")
+    }
+    res$parsed_toks <- c(ltok("("),
+                         ltok("CASE"),
+                         ltok("WHEN"),
+                         ltok("("),
+                         args[[1]]$parsed_toks,
+                         ltok(")"),
+                         ltok("IS NULL"),
+                         ltok("THEN"),
+                         ltok("("),
+                         args[[2]]$parsed_toks,
+                         ltok(")"),
+                         ltok("WHEN"),
+                         ltok("("),
+                         args[[2]]$parsed_toks,
+                         ltok(")"),
+                         ltok("IS NULL"),
+                         ltok("THEN"),
+                         ltok("("),
+                         args[[1]]$parsed_toks,
+                         ltok(")"),
+                         ltok("WHEN"),
+                         ltok("("),
+                         args[[1]]$parsed_toks,
+                         ltok(")"),
+                         comptok,
+                         ltok("("),
+                         args[[2]]$parsed_toks,
+                         ltok(")"),
+                         ltok("THEN"),
+                         ltok("("),
+                         args[[1]]$parsed_toks,
+                         ltok(")"),
+                         ltok("ELSE"),
+                         ltok("("),
+                         args[[2]]$parsed_toks,
+                         ltok(")"),
+                         ltok("END"),
+                         ltok(")"))
+    return(res)
+  }
   # default
-  # # TODO: replace pmax/pmin with CASE WHEN
-  # creplacements <- list('pmax' = 'MAX', 'pmin' = 'MIN')
-  # rep <- creplacements[[callName]]
-  # if(!is.null(rep)) {
-  #   callName <- rep
-  # }
   res$parsed_toks <- c(ltok(callName),
                        ltok("("), subseq, ltok(")"))
   res$presentation <- paste0(callName, "(", subpres, ")")

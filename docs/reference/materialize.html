@@ -162,7 +162,7 @@ in pipelines.</p>
 #&gt;  extend(.,
 #&gt;   v := AUC + R2) %.&gt;%
 #&gt;  extend(.,
-#&gt;   x := max(AUC v))</div><div class='input'><span class='no'>res</span> <span class='kw'>&lt;-</span> <span class='fu'>materialize</span>(<span class='no'>my_db</span>, <span class='no'>optree</span>, <span class='st'>"example"</span>)
+#&gt;   x := pmax(AUC, v))</div><div class='input'><span class='no'>res</span> <span class='kw'>&lt;-</span> <span class='fu'>materialize</span>(<span class='no'>my_db</span>, <span class='no'>optree</span>, <span class='st'>"example"</span>)
 <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>res</span>))</div><div class='output co'>#&gt; table('example')</div><div class='input'><span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>res</span>, <span class='no'>my_db</span>)
 <span class='fu'>cat</span>(<span class='no'>sql</span>)</div><div class='output co'>#&gt; SELECT
 #&gt;  `example`.`AUC`,
