@@ -75,6 +75,39 @@ tokenize_call_for_SQL <- function(lexpr,
     res$parsed_toks <- c(ltok("("), ltok("NOT"), ltok("("), subseq, ltok(")"), ltok(")"))
     return(res)
   }
+  if(callName=='is.na') {
+    res$presentation <- paste0("is.na(", subpres, ")")
+    res$parsed_toks <- c(ltok("("), subseq,  ltok(")"), ltok("IS NULL"))
+    return(res)
+  }
+  if(callName=='ifelse') {
+    commas <- which(vapply(subseq,
+                           function(vi) {
+                             (vi$token_type=="token") &&
+                               (vi$value==",")
+                           }, logical(1)))
+    if((length(commas)!=2) ||
+       (commas[[1]]<=1) || (commas[[2]]<=(commas[[1]]+1)) ||
+       (commas[[2]]>=length(subseq))) {
+      stop("rquery::tokenize_call_for_SQL can only parse simple ifelse at this time")
+    }
+    res$parsed_toks <- c(ltok("("),
+                         ltok("CASE WHEN"),
+                         ltok("("),
+                         subseq[1:(commas[[1]]-1)],
+                         ltok(")"),
+                         ltok("THEN"),
+                         ltok("("),
+                         subseq[(commas[[1]]+1):(commas[[2]]-1)],
+                         ltok(")"),
+                         ltok("ELSE"),
+                         ltok("("),
+                         subseq[(commas[[2]]+1):(length(subseq))],
+                         ltok(")"),
+                         ltok("END"),
+                         ltok(")"))
+    return(res)
+  }
   if((n==3) && (callName %in% inlineops)) {
     lhs <- args[[1]]
     rhs <- args[[2]]

@@ -111,8 +111,9 @@ Using `rquery` we can write the `SQL` composition using pipe notation
 `g(f(x))`).  We are going to use [`wrapr`](https://github.com/WinVector/wrapr) 
 [dot-pipe](https://winvector.github.io/wrapr/reference/grapes-.-greater-than-grapes.html) instead of 
 the [`magrittr`](https://CRAN.R-project.org/package=magrittr) pipe to pick up 
-a neat feature we will use later (with the exception of that feature all examples
-will work with the `magrittr` pipe).
+a neat feature we will use later (all other examples
+will work with the `magrittr` pipe).  The "`%.>%`" glyph can
+be [bound to a keyboard shortcut](https://github.com/WinVector/addinexamplesWV) for convenience.
 
 The `rquery` realization of the above calculation is as follows:
 
@@ -125,6 +126,8 @@ execute(db, op_tree)
 
 The above is what we call "piped `SQL`" and represents a major convenience for
 users as the details of how to compose the statements are left to the package.
+The `sql_node()` is a very powerful node.  We will use it in our first
+few examples and move onto more convenient higher level relational nodes.
 
 We can view the `SQL` translation of the operations tree as follows:
 
@@ -156,7 +159,7 @@ identifiers without additional help.
 `op_tree` itself is a an object with its own presentation format:
 
 ```{r printoptree}
-print(op_tree)
+cat(format(op_tree))
 ```
 
 `op_tree` stores an number of important summaries about the proposed query:
@@ -198,19 +201,16 @@ we can build a node the calculates for each row how many columns
 contain `NA`/`NULL` as is demonstrated here.
 
 ```{r countna}
-# example database connection
-my_db <- DBI::dbConnect(RSQLite::SQLite(),
-                        ":memory:")
 # load up example data
 d2 <- dbi_copy_to(
-  my_db, 'd2',
+  db, 'd2',
   data.frame(v1 = c(1, 2, NA, 3),
              v2 = c(NA, "b", NA, "c"),
              v3 = c(NA, NA, 7, 8),
              stringsAsFactors = FALSE))
 
 # look at table
-execute(my_db, d2)
+execute(db, d2)
 
 # get list of columns
 vars <- column_names(d2)
@@ -235,11 +235,11 @@ op_tree_count_null <- d2 %.>%
 cat(format(op_tree_count_null))
 
 # examine produced SQL
-sql <- to_sql(op_tree_count_null, my_db)
+sql <- to_sql(op_tree_count_null, db)
 cat(sql)
 
 # execute
-execute(my_db, op_tree_count_null)
+execute(db, op_tree_count_null)
 ```
 
 And, as this is an important capability, this exact functionality
@@ -249,7 +249,7 @@ is wrapped in [`count_null_cols()`](https://winvector.github.io/rquery/reference
 # whole process wrapped in convenience node
 d2 %.>%
   count_null_cols(., vars, "nnull") %.>%
-  execute(my_db, .)
+  execute(db, .)
 ```
 
 
@@ -352,10 +352,26 @@ conventions.  Notice this covers the [primary `dplyr` operators](http://dplyr.ti
 relational concept, implemented in `SQL` by "ORDER BY").  This correspondence is due to Codd's ideas and `SQL` driving data engineering 
 thinking for almost the last 50 years (both with and without credit or citation).
 
-With relational operators the user can work fast and work further away from syntactic details.  For example with a database that supplies window 
+With relational operators the user can work fast and work further away from syntactic details.
+For example some `R` operators (such as `is.na`) are translated to `SQL` analogues
+(in this case `IS NULL`).
+
+```{r isna}
+d %.>% 
+  extend_nse(., was_na := ifelse(is.na(v), 1, 0)) %.>%
+  to_sql(., db) %.>%
+  cat(.)
+```
+
+The exact translation depends on the database (which is why
+`to_sql()` takes a database argument).  Some care has to be taken
+as `SQL` types are different than `R` types (in particular for some
+databases logical types are not numeric).
+
+With a database that supplies window 
 functions one can quickly work the "logistic scoring by hand" example from  
 from [Let’s Have Some Sympathy For The Part-time R User](http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/).
-That example worked with `rquery` code that works with both `PostgreSQL` and `Spark` can be found [here](https://github.com/WinVector/rquery/blob/master/README.md).
+This example worked with `rquery` code that works with both `PostgreSQL` and `Spark` can be found [here](https://github.com/WinVector/rquery/blob/master/README.md).
 
 We can demonstrate the pipeline, but the `SQLite` database we are using in this vignette
 does not have the window functions required to execute it.  `PostgreSQL`, `Spark`, and many
@@ -391,7 +407,9 @@ dq <- table_source("d3",
 [`qc()`](https://winvector.github.io/wrapr/reference/qc.html) is "quoting concatenate", 
 a convenience function that lets us skip a few quote marks. No `list()`, `as.name()`, 
 or `quote()` steps are needed as the operator nodes are parsed by `R` to find
-identifiers.
+identifiers.  The `scale` constant was added to the environment as pipelines try to 
+bind constants during pipe construction (else `scale` would be estimated to be
+a missing column name).
 
 Even though we are not going to run this query here, we can still 
 check some properties of the query.
@@ -466,6 +484,8 @@ cat(format(ot))
 ```
 
 Notice the dependent assignment was moved into its own extend block.
+This sort of transform is critical in getting correct results from `SQL`
+([here](http://www.win-vector.com/blog/2018/01/advisory-on-multiple-assignment-dplyrmutate-on-databases/) is an example of what can happen when one does not correctly mitigate this issue).
 
 A node that uses the assignment partitioning and re-ordering is the 
 [`if_else_block()`](https://winvector.github.io/rquery/reference/if_else_block.html) which can
@@ -473,7 +493,7 @@ be used to simulate block-oriented if-else semantics as seen in
 systems such as `SAS` (also meaning `rquery` can be critical porting code from `SAS` to `SQL` based `R`).
 This allows coordinated assignments such as the following:
 
-```{r ifelse}
+```{r ifelseblock}
 ifet <- table_source("d5",
                      columns = "test") %.>%
   extend_se(.,
@@ -510,12 +530,42 @@ as the `partitionby` attribute of a [`project()` node](https://winvector.github.
 (non-trivial example [here](https://github.com/WinVector/rquery/blob/master/README.md)).
 
 We have seen database based `rquery` outperform both in-memory `dplyr`
-and database based `dplyr` (article [here](http://www.win-vector.com/blog/2018/01/rquery-fast-data-manipulation-in-r/)).
+and database based `dplyr` 
+
+> <img src="runtimes_1.png">
+> (Figure from: [here](http://www.win-vector.com/blog/2018/01/rquery-fast-data-manipulation-in-r/).)
 
 In addition `rquery` includes automatic column narrowing: where only columns
 used to construct the final result are pulled from initial tables.  This feature
-has show significant additional performance advantages (article [here](http://www.win-vector.com/blog/2017/12/how-to-greatly-speed-up-your-spark-queries/)).
+is important in production (where data marts can be quite wide) and
+has show significant additional performance advantages
 
+From a coding point of view the automatic narrowing effect looks like this.
+
+```{r}
+wp <- table_source(table = 'd6',
+                   columns = letters[1:5]) %.>%
+  extend_nse(., res := a + b)
+
+# full query
+cat(to_sql(wp, db))
+
+# longer pipeline
+wn <- wp %.>%
+  select_columns(., "res")
+
+# notice select at end of the pipeline automatically 
+# gets propagated back to the beginning of the
+# pipeline
+cat(to_sql(wn, db))
+```
+
+A graph of the the effects of this kind of narrowing (in this case done by hand, as `dplyr` currently 
+does not have the above type of automatic query analysis/optimization) shows the sensitivity
+to this optimization.
+
+> <img src="narrow.png">
+> (Figure from: [here](http://www.win-vector.com/blog/2017/12/how-to-greatly-speed-up-your-spark-queries/).)
 
 
 # Conclusion
