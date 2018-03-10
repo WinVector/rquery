@@ -69,7 +69,7 @@ from [Let’s Have Some Sympathy For The Part-time R User](http://www.win-vector
 
 ```{r ex, warning=FALSE, message=FALSE, include=FALSE}
 library("rquery")
-use_spark <- FALSE
+use_spark <- TRUE
 
 if(use_spark) {
   my_db <- sparklyr::spark_connect(version='2.2.0', 

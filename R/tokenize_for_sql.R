@@ -8,7 +8,7 @@ ltok <- function(v) {
 #' @param lexpr item from  \code{substitute} with length(lexpr)>0 and is.call(lexpr)
 #' @param colnames column names of table
 #' @param env environment to look for values
-#' @return sql info: list(presentation, parsed_toks(list of tokens), symbols_used, symbols_produced)
+#' @return sql info: list(presentation, parsed_toks(list of tokens), symbols_used, symbols_produced, free_symbols)
 #'
 #' @noRd
 #'
@@ -28,7 +28,8 @@ tokenize_call_for_SQL <- function(lexpr,
                                    collapse = ' '),
               parsed_toks = list(),
               symbols_used = character(0),
-              symbols_produced = character(0))
+              symbols_produced = character(0),
+              free_symbols = character(0))
   callName <- as.character(lexpr[[1]])
   args <- list()
   subseq <- list()
@@ -61,6 +62,8 @@ tokenize_call_for_SQL <- function(lexpr,
                                   "symbols_used")
     res$symbols_produced <- merge_fld(args,
                                       "symbols_produced")
+    res$free_symbols <- merge_fld(args,
+                                  "free_symbols")
   }
   if(callName=="(") {
     res$presentation <- paste("(", subpres, ")")
@@ -80,6 +83,7 @@ tokenize_call_for_SQL <- function(lexpr,
       res$symbols_used <- rhs$symbols_used
       res$symbols_produced <- unique(c(as.character(lexpr[[2]]),
                                        rhs$symbols_produced))
+      res$free_symbols <- rhs$free_symbols
       res$presentation <- paste0(lhs$presentation, " := ", rhs$presentation)
       return(res)
     }
@@ -132,7 +136,7 @@ tokenize_call_for_SQL <- function(lexpr,
 #' @param lexpr item from  \code{substitute}
 #' @param colnames column names of table
 #' @param env environment to look for values
-#' @return sql info: list(presentation, parsed_toks(list of tokens), symbols_used, symbols_produced)
+#' @return sql info: list(presentation, parsed_toks(list of tokens), symbols_used, symbols_produced, free_symbols)
 #'
 #' @noRd
 #'
@@ -179,6 +183,8 @@ tokenize_for_SQL_r <- function(lexpr,
                                   "symbols_used")
     res$symbols_produced = merge_fld(sube,
                                      "symbols_produced")
+    res$free_symbols = merge_fld(sube,
+                                 "free_symbols")
     return(res)
   }
   # now have n==1, handle identifiers and constants
@@ -229,7 +235,7 @@ tokenize_for_SQL_r <- function(lexpr,
 #' @param lexpr item from  \code{substitute}
 #' @param colnames column names of table
 #' @param env environment to look for values
-#' @return sql info: list(presentation, parsed_toks(list of tokens), sql_text, symbols_used, symbols_produced)
+#' @return sql info: list(presentation, parsed_toks(list of tokens), sql_text, symbols_used, symbols_produced, free_symbols)
 #'
 #' @examples
 #'

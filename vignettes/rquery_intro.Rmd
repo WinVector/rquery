@@ -445,10 +445,10 @@ meta-programming system.
 # Assignment partitioning
 
 `rquery` accepts many assignment in a `sql_node()` or in 
-a single `extend()` node.  The `extend()` node comes with 
+a single `extend` node.  The `extend` node comes with 
 automatic [assignment partitioning] to ensure correct and
 performant results.  This allows the user to write large 
-`extend()` blocks and know they will be executed correctly.
+`extend` blocks and know they will be executed correctly.
 
 Here is an example.
 
@@ -489,7 +489,8 @@ cat(format(ifet))
 As you can see, the `if_else_block()` works by landing the test in a column and
 then using that column to conditional all further statements. [`qe()`](https://winvector.github.io/wrapr/reference/qe.html) and [`qae()`](https://winvector.github.io/wrapr/reference/qae.html)
 are quoting convenience functions.  Note the `if_else_block` depends on 
-`x` and `y` being defined before entering the block, as they are self-assigned.
+`x` and `y` being defined before entering the block, as they are self-assigned (
+this is checked by the `extend` node).
 The `if_else_block()` returns a list of assignments, which then used in the
 `extend_se()` statement, which in turn is re-factored into a sequence of 
 safe extend nodes.
