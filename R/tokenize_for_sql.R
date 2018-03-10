@@ -81,33 +81,35 @@ tokenize_call_for_SQL <- function(lexpr,
     return(res)
   }
   if(callName=='ifelse') {
-    commas <- which(vapply(subseq,
-                           function(vi) {
-                             (vi$token_type=="token") &&
-                               (vi$value==",")
-                           }, logical(1)))
-    if((length(commas)!=2) ||
-       (commas[[1]]<=1) || (commas[[2]]<=(commas[[1]]+1)) ||
-       (commas[[2]]>=length(subseq))) {
-      stop("rquery::tokenize_call_for_SQL can only parse simple ifelse at this time")
+    if(n!=4) {
+      stop("rquery::tokenize_call_for_SQL expect ifelse to have 3 arguments")
     }
+    res$presentation <- paste0(
+      "ifelse(",
+      args[[1]]$presentation,
+      ", ",
+      args[[2]]$presentation,
+      ", ",
+      args[[3]]$presentation,
+      ")")
     res$parsed_toks <- c(ltok("("),
                          ltok("CASE WHEN"),
                          ltok("("),
-                         subseq[1:(commas[[1]]-1)],
+                         args[[1]]$parsed_toks,
                          ltok(")"),
                          ltok("THEN"),
                          ltok("("),
-                         subseq[(commas[[1]]+1):(commas[[2]]-1)],
+                         args[[2]]$parsed_toks,
                          ltok(")"),
                          ltok("ELSE"),
                          ltok("("),
-                         subseq[(commas[[2]]+1):(length(subseq))],
+                         args[[3]]$parsed_toks,
                          ltok(")"),
                          ltok("END"),
                          ltok(")"))
     return(res)
   }
+  # ifelse back in place.
   if((n==3) && (callName %in% inlineops)) {
     lhs <- args[[1]]
     rhs <- args[[2]]
@@ -131,31 +133,13 @@ tokenize_call_for_SQL <- function(lexpr,
     res$presentation <- paste(lhs$presentation, callName, rhs$presentation)
     return(res)
   }
-  # TODO: make special cases like this table driven
-  if((n==4) && (callName=="ifelse")) {
-    res$parsed_toks <- c(ltok("("), ltok("CASE"), ltok("WHEN"),
-                    ltok("("), args[[1]]$parsed_toks, ltok(")"),
-                    ltok("THEN"),
-                    ltok("("), args[[2]]$parsed_toks, ltok(")"),
-                    ltok("ELSE"),
-                    ltok("("), args[[3]]$parsed_toks, ltok(")"),
-                    ltok("END"), ltok(")"))
-    res$presentation <- paste0(
-      "ifelse(",
-      args[[1]]$presentation,
-      ", ",
-      args[[2]]$presentation,
-      ", ",
-      args[[3]]$presentation,
-      ")")
-    return(res)
-  }
   # default
-  creplacements <- list('pmax' = 'max')
-  rep <- creplacements[[callName]]
-  if(!is.null(rep)) {
-    callName <- rep
-  }
+  # # TODO: replace pmax/pmin with CASE WHEN
+  # creplacements <- list('pmax' = 'MAX', 'pmin' = 'MIN')
+  # rep <- creplacements[[callName]]
+  # if(!is.null(rep)) {
+  #   callName <- rep
+  # }
   res$parsed_toks <- c(ltok(callName),
                        ltok("("), subseq, ltok(")"))
   res$presentation <- paste0(callName, "(", subpres, ")")
