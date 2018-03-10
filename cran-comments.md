@@ -1,5 +1,8 @@
 
-Maintenance update to move off more soon to be changed 'wrapr' APIs (to unblock updates to the 'wrapr' package).
+This update includes: major improvements in documentation (new 
+introduction vignette and some improved help),  some additional 
+package capabilities,  and narrowing of suggested packages (to 
+reduce dependencies and make checking easier and cleaner).
 
 ## Test environments
 
@@ -14,15 +17,15 @@ Maintenance update to move off more soon to be changed 'wrapr' APIs (to unblock 
 
 ## R CMD check results
 
-R CMD check --as-cran rquery_0.3.1.tar.gz 
+R CMD check --as-cran rquery_0.4.0.tar.gz
 
+  * using option ‘--as-cran’
+  * checking for file ‘rquery/DESCRIPTION’ ... OK
   * checking extension type ... Package
-  * this is package ‘rquery’ version ‘0.3.1’
+  * this is package ‘rquery’ version ‘0.4.0’
   * package encoding: UTF-8
   * checking CRAN incoming feasibility ... Note_to_CRAN_maintainers
-    Maintainer: ‘John Mount <jmount@win-vector.com>’
-   * checking package namespace information ... OK
-   * checking package dependencies ... OK
+  Maintainer: ‘John Mount <jmount@win-vector.com>’
 
 Status: OK
 
