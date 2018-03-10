@@ -29,7 +29,7 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="..//index.html">
+  <a href="../index.html">
     <span class="fa fa-home fa-lg"></span>
      
   </a>
@@ -78,7 +78,7 @@
       <h1>Assignment Paritioner</h1>
                         <h4 class="author">John Mount, Win-Vector LLC</h4>
             
-            <h4 class="date">2018-03-09</h4>
+            <h4 class="date">2018-03-10</h4>
           </div>
 
     
@@ -89,22 +89,22 @@
 <p>The method used to partition expressions is to scan the remaining expressions in order taking any that: have all their values available from earlier groups, do not use a value formed in the current group, and do not overwrite a value formed in the current group.</p>
 <p>This partitioning method ensures safe and correct results, and can lead to far fewer groups (and much more efficient queries) than the straightforward method of breaking up the sequence of expressions at each new-value use.</p>
 <p>Here is a non-trivial database based example (demonstrating methods that might be used in big data work such as with <code>Spark</code>). We are going to assign pairs of items to complimentary treatment (“T”) and control (“C”) groups based on already populated pseudo-random numbers (pre-populating the pseudo-random numbers is to avoid <a href="https://winvector.github.io/rquery/reference/if_else_block.html">known issues in using <code>rand()</code> in <code>RSQlite</code></a>, and would not be necessary with other databases).</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(<span class="st">"rquery"</span>)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">"rquery"</span>)</code></pre></div>
 <pre><code>Loading required package: wrapr</code></pre>
 <pre><code>Loading required package: DBI</code></pre>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># example data</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">set.seed</span>(<span class="dv">3463</span>)</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3">d &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">id =</span> <span class="kw">seq_len</span>(<span class="dv">4</span>))</a>
-<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="cf">for</span>(group <span class="cf">in</span> <span class="kw">c</span>(<span class="st">'a'</span>, <span class="st">'b'</span>, <span class="st">'c'</span>, <span class="st">'d'</span>, <span class="st">'e'</span>)) {</a>
-<a class="sourceLine" id="cb4-5" data-line-number="5">  d[[<span class="kw">paste0</span>(<span class="st">"rand_"</span>, group)]] &lt;-<span class="st"> </span><span class="kw">runif</span>(<span class="kw">nrow</span>(d))</a>
-<a class="sourceLine" id="cb4-6" data-line-number="6">}</a>
-<a class="sourceLine" id="cb4-7" data-line-number="7">my_db &lt;-<span class="st"> </span>DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbConnect">dbConnect</a></span>(RSQLite<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/RSQLite/topics/SQLite">SQLite</a></span>(), </a>
-<a class="sourceLine" id="cb4-8" data-line-number="8">                        <span class="st">":memory:"</span>)</a>
-<a class="sourceLine" id="cb4-9" data-line-number="9">d1 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/dbi_copy_to.html">dbi_copy_to</a></span>(my_db, <span class="st">"example_table"</span>, d)</a>
-<a class="sourceLine" id="cb4-10" data-line-number="10">d1 <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb4-11" data-line-number="11"><span class="st">  </span><span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(., my_db) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb4-12" data-line-number="12"><span class="st">  </span>DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery">dbGetQuery</a></span>(my_db, .) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb4-13" data-line-number="13"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># example data</span>
+<span class="kw">set.seed</span>(<span class="dv">3463</span>)
+d &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">id =</span> <span class="kw">seq_len</span>(<span class="dv">4</span>))
+<span class="cf">for</span>(group <span class="cf">in</span> <span class="kw">c</span>(<span class="st">'a'</span>, <span class="st">'b'</span>, <span class="st">'c'</span>, <span class="st">'d'</span>, <span class="st">'e'</span>)) {
+  d[[<span class="kw">paste0</span>(<span class="st">"rand_"</span>, group)]] &lt;-<span class="st"> </span><span class="kw">runif</span>(<span class="kw">nrow</span>(d))
+}
+my_db &lt;-<span class="st"> </span>DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbConnect">dbConnect</a></span>(RSQLite<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/RSQLite/topics/SQLite">SQLite</a></span>(), 
+                        <span class="st">":memory:"</span>)
+d1 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/dbi_copy_to.html">dbi_copy_to</a></span>(my_db, <span class="st">"example_table"</span>, d)
+d1 <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(., my_db) <span class="op">%.&gt;%</span>
+<span class="st">  </span>DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery">dbGetQuery</a></span>(my_db, .) <span class="op">%.&gt;%</span>
+<span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">id</th>
@@ -149,52 +149,52 @@
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co"># design the experiment </span></a>
-<a class="sourceLine" id="cb5-2" data-line-number="2">plan &lt;-<span class="st"> </span>d1 <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/extend_nse.html">extend_nse</a></span>(.,</a>
-<a class="sourceLine" id="cb5-4" data-line-number="4">   <span class="dt">choice_a =</span> rand_a<span class="op">&gt;=</span><span class="fl">0.5</span>, </a>
-<a class="sourceLine" id="cb5-5" data-line-number="5">    <span class="dt">a_1 =</span> <span class="kw">ifelse</span>(choice_a, </a>
-<a class="sourceLine" id="cb5-6" data-line-number="6">                  <span class="st">'T'</span>, </a>
-<a class="sourceLine" id="cb5-7" data-line-number="7">                  <span class="st">'C'</span>),</a>
-<a class="sourceLine" id="cb5-8" data-line-number="8">    <span class="dt">a_2 =</span> <span class="kw">ifelse</span>(choice_a, </a>
-<a class="sourceLine" id="cb5-9" data-line-number="9">                  <span class="st">'C'</span>, </a>
-<a class="sourceLine" id="cb5-10" data-line-number="10">                  <span class="st">'T'</span>),</a>
-<a class="sourceLine" id="cb5-11" data-line-number="11">   <span class="dt">choice_b =</span> rand_b<span class="op">&gt;=</span><span class="fl">0.5</span>, </a>
-<a class="sourceLine" id="cb5-12" data-line-number="12">    <span class="dt">b_1 =</span> <span class="kw">ifelse</span>(choice_b, </a>
-<a class="sourceLine" id="cb5-13" data-line-number="13">                  <span class="st">'T'</span>, </a>
-<a class="sourceLine" id="cb5-14" data-line-number="14">                  <span class="st">'C'</span>),</a>
-<a class="sourceLine" id="cb5-15" data-line-number="15">    <span class="dt">b_2 =</span> <span class="kw">ifelse</span>(choice_b, </a>
-<a class="sourceLine" id="cb5-16" data-line-number="16">                  <span class="st">'C'</span>, </a>
-<a class="sourceLine" id="cb5-17" data-line-number="17">                  <span class="st">'T'</span>),</a>
-<a class="sourceLine" id="cb5-18" data-line-number="18">   <span class="dt">choice_c =</span> rand_c<span class="op">&gt;=</span><span class="fl">0.5</span>, </a>
-<a class="sourceLine" id="cb5-19" data-line-number="19">    <span class="dt">c_1 =</span> <span class="kw">ifelse</span>(choice_c, </a>
-<a class="sourceLine" id="cb5-20" data-line-number="20">                  <span class="st">'T'</span>, </a>
-<a class="sourceLine" id="cb5-21" data-line-number="21">                  <span class="st">'C'</span>),</a>
-<a class="sourceLine" id="cb5-22" data-line-number="22">    <span class="dt">c_2 =</span> <span class="kw">ifelse</span>(choice_c, </a>
-<a class="sourceLine" id="cb5-23" data-line-number="23">                  <span class="st">'C'</span>, </a>
-<a class="sourceLine" id="cb5-24" data-line-number="24">                  <span class="st">'T'</span>),</a>
-<a class="sourceLine" id="cb5-25" data-line-number="25">   <span class="dt">choice_d =</span> rand_d<span class="op">&gt;=</span><span class="fl">0.5</span>, </a>
-<a class="sourceLine" id="cb5-26" data-line-number="26">    <span class="dt">d_1 =</span> <span class="kw">ifelse</span>(choice_d, </a>
-<a class="sourceLine" id="cb5-27" data-line-number="27">                  <span class="st">'T'</span>, </a>
-<a class="sourceLine" id="cb5-28" data-line-number="28">                  <span class="st">'C'</span>),</a>
-<a class="sourceLine" id="cb5-29" data-line-number="29">    <span class="dt">d_2 =</span> <span class="kw">ifelse</span>(choice_d, </a>
-<a class="sourceLine" id="cb5-30" data-line-number="30">                  <span class="st">'C'</span>, </a>
-<a class="sourceLine" id="cb5-31" data-line-number="31">                  <span class="st">'T'</span>),</a>
-<a class="sourceLine" id="cb5-32" data-line-number="32">   <span class="dt">choice_e =</span> rand_e<span class="op">&gt;=</span><span class="fl">0.5</span>, </a>
-<a class="sourceLine" id="cb5-33" data-line-number="33">    <span class="dt">e_1 =</span> <span class="kw">ifelse</span>(choice_e, </a>
-<a class="sourceLine" id="cb5-34" data-line-number="34">                  <span class="st">'T'</span>, </a>
-<a class="sourceLine" id="cb5-35" data-line-number="35">                  <span class="st">'C'</span>),</a>
-<a class="sourceLine" id="cb5-36" data-line-number="36">    <span class="dt">e_2 =</span> <span class="kw">ifelse</span>(choice_e, </a>
-<a class="sourceLine" id="cb5-37" data-line-number="37">                  <span class="st">'C'</span>, </a>
-<a class="sourceLine" id="cb5-38" data-line-number="38">                  <span class="st">'T'</span>)</a>
-<a class="sourceLine" id="cb5-39" data-line-number="39">  ) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb5-40" data-line-number="40"><span class="st">  </span><span class="kw"><a href="../reference/select_columns.html">select_columns</a></span>(., </a>
-<a class="sourceLine" id="cb5-41" data-line-number="41">                 <span class="kw">qc</span>(id,</a>
-<a class="sourceLine" id="cb5-42" data-line-number="42">                    a_<span class="dv">1</span>, a_<span class="dv">2</span>, b_<span class="dv">1</span>, b_<span class="dv">2</span>,</a>
-<a class="sourceLine" id="cb5-43" data-line-number="43">                    c_<span class="dv">1</span>, c_<span class="dv">2</span>, d_<span class="dv">1</span>, d_<span class="dv">2</span>,</a>
-<a class="sourceLine" id="cb5-44" data-line-number="44">                    e_<span class="dv">1</span>, e_<span class="dv">2</span>))</a>
-<a class="sourceLine" id="cb5-45" data-line-number="45"></a>
-<a class="sourceLine" id="cb5-46" data-line-number="46"><span class="kw">cat</span>(<span class="kw">format</span>(plan))</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># design the experiment </span>
+plan &lt;-<span class="st"> </span>d1 <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/extend_nse.html">extend_nse</a></span>(.,
+   <span class="dt">choice_a =</span> rand_a<span class="op">&gt;=</span><span class="fl">0.5</span>, 
+    <span class="dt">a_1 =</span> <span class="kw">ifelse</span>(choice_a, 
+                  <span class="st">'T'</span>, 
+                  <span class="st">'C'</span>),
+    <span class="dt">a_2 =</span> <span class="kw">ifelse</span>(choice_a, 
+                  <span class="st">'C'</span>, 
+                  <span class="st">'T'</span>),
+   <span class="dt">choice_b =</span> rand_b<span class="op">&gt;=</span><span class="fl">0.5</span>, 
+    <span class="dt">b_1 =</span> <span class="kw">ifelse</span>(choice_b, 
+                  <span class="st">'T'</span>, 
+                  <span class="st">'C'</span>),
+    <span class="dt">b_2 =</span> <span class="kw">ifelse</span>(choice_b, 
+                  <span class="st">'C'</span>, 
+                  <span class="st">'T'</span>),
+   <span class="dt">choice_c =</span> rand_c<span class="op">&gt;=</span><span class="fl">0.5</span>, 
+    <span class="dt">c_1 =</span> <span class="kw">ifelse</span>(choice_c, 
+                  <span class="st">'T'</span>, 
+                  <span class="st">'C'</span>),
+    <span class="dt">c_2 =</span> <span class="kw">ifelse</span>(choice_c, 
+                  <span class="st">'C'</span>, 
+                  <span class="st">'T'</span>),
+   <span class="dt">choice_d =</span> rand_d<span class="op">&gt;=</span><span class="fl">0.5</span>, 
+    <span class="dt">d_1 =</span> <span class="kw">ifelse</span>(choice_d, 
+                  <span class="st">'T'</span>, 
+                  <span class="st">'C'</span>),
+    <span class="dt">d_2 =</span> <span class="kw">ifelse</span>(choice_d, 
+                  <span class="st">'C'</span>, 
+                  <span class="st">'T'</span>),
+   <span class="dt">choice_e =</span> rand_e<span class="op">&gt;=</span><span class="fl">0.5</span>, 
+    <span class="dt">e_1 =</span> <span class="kw">ifelse</span>(choice_e, 
+                  <span class="st">'T'</span>, 
+                  <span class="st">'C'</span>),
+    <span class="dt">e_2 =</span> <span class="kw">ifelse</span>(choice_e, 
+                  <span class="st">'C'</span>, 
+                  <span class="st">'T'</span>)
+  ) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/select_columns.html">select_columns</a></span>(., 
+                 <span class="kw">qc</span>(id,
+                    a_<span class="dv">1</span>, a_<span class="dv">2</span>, b_<span class="dv">1</span>, b_<span class="dv">2</span>,
+                    c_<span class="dv">1</span>, c_<span class="dv">2</span>, d_<span class="dv">1</span>, d_<span class="dv">2</span>,
+                    e_<span class="dv">1</span>, e_<span class="dv">2</span>))
+
+<span class="kw">cat</span>(<span class="kw">format</span>(plan))</code></pre></div>
 <pre><code>table('example_table') %.&gt;%
  extend(.,
   choice_a := rand_a &gt;= 0.5,
@@ -215,8 +215,8 @@
   e_2 := ifelse(choice_e, "C", "T")) %.&gt;%
  select_columns(., id, a_1, a_2, b_1, b_2, c_1, c_2, d_1, d_2, e_1, e_2)</code></pre>
 <p>Notice <code><a href="http://www.rdocumentation.org/packages/rquery/topics/extend_se">rquery::extend_se()</a></code> split the work into 3 unambiguous groups. The statements inside each group can now be executed in any order (or even in parallel) with no ambiguity of meaning or risk of error. The goal was: split into a small number of groups such that the observable execution semantics are very close to executing the original statements in order in completely separate groups (which is likely what a user intends).</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">sql &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(plan, my_db)</a>
-<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="kw">cat</span>(sql)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sql &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(plan, my_db)
+<span class="kw">cat</span>(sql)</code></pre></div>
 <pre><code>SELECT
  `id`,
  `a_1`,
@@ -273,8 +273,8 @@ FROM (
    ) tsql_53272849086359897594_0000000000
   ) tsql_53272849086359897594_0000000001
 ) tsql_53272849086359897594_0000000002</code></pre>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery">dbGetQuery</a></span>(my_db, sql) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery">dbGetQuery</a></span>(my_db, sql) <span class="op">%.&gt;%</span>
+<span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">id</th>
@@ -346,51 +346,51 @@ FROM (
 </table>
 <p>A straightforward method (with no statement re-ordering) of splitting into non-dependent groups would have to split the mutate at each first use of a new value: yielding more mutate stages. For why a low number of execution stages is important please see <a href="http://winvector.github.io/FluidData/partition_mutate.html">here</a>.</p>
 <p>Note: re-using variable variable names does limit the planner’s ability to efficiently partition the the statement. The planner still emits safe and correct code, but unless it were to be allowed to introduce new variable names it must break sequences in more places. We show this effect below:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">plan2 &lt;-<span class="st"> </span>d1 <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb10-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/extend_nse.html">extend_nse</a></span>(.,</a>
-<a class="sourceLine" id="cb10-3" data-line-number="3">   <span class="dt">choice =</span> rand_a<span class="op">&gt;=</span><span class="fl">0.5</span>, </a>
-<a class="sourceLine" id="cb10-4" data-line-number="4">    <span class="dt">a_1 =</span> <span class="kw">ifelse</span>(choice, </a>
-<a class="sourceLine" id="cb10-5" data-line-number="5">                  <span class="st">'T'</span>, </a>
-<a class="sourceLine" id="cb10-6" data-line-number="6">                  <span class="st">'C'</span>),</a>
-<a class="sourceLine" id="cb10-7" data-line-number="7">    <span class="dt">a_2 =</span> <span class="kw">ifelse</span>(choice, </a>
-<a class="sourceLine" id="cb10-8" data-line-number="8">                  <span class="st">'C'</span>, </a>
-<a class="sourceLine" id="cb10-9" data-line-number="9">                  <span class="st">'T'</span>),</a>
-<a class="sourceLine" id="cb10-10" data-line-number="10">   <span class="dt">choice =</span> rand_b<span class="op">&gt;=</span><span class="fl">0.5</span>, </a>
-<a class="sourceLine" id="cb10-11" data-line-number="11">    <span class="dt">b_1 =</span> <span class="kw">ifelse</span>(choice, </a>
-<a class="sourceLine" id="cb10-12" data-line-number="12">                  <span class="st">'T'</span>, </a>
-<a class="sourceLine" id="cb10-13" data-line-number="13">                  <span class="st">'C'</span>),</a>
-<a class="sourceLine" id="cb10-14" data-line-number="14">    <span class="dt">b_2 =</span> <span class="kw">ifelse</span>(choice, </a>
-<a class="sourceLine" id="cb10-15" data-line-number="15">                  <span class="st">'C'</span>, </a>
-<a class="sourceLine" id="cb10-16" data-line-number="16">                  <span class="st">'T'</span>),</a>
-<a class="sourceLine" id="cb10-17" data-line-number="17">   <span class="dt">choice =</span> rand_c<span class="op">&gt;=</span><span class="fl">0.5</span>, </a>
-<a class="sourceLine" id="cb10-18" data-line-number="18">    <span class="dt">c_1 =</span> <span class="kw">ifelse</span>(choice, </a>
-<a class="sourceLine" id="cb10-19" data-line-number="19">                  <span class="st">'T'</span>, </a>
-<a class="sourceLine" id="cb10-20" data-line-number="20">                  <span class="st">'C'</span>),</a>
-<a class="sourceLine" id="cb10-21" data-line-number="21">    <span class="dt">c_2 =</span> <span class="kw">ifelse</span>(choice, </a>
-<a class="sourceLine" id="cb10-22" data-line-number="22">                  <span class="st">'C'</span>, </a>
-<a class="sourceLine" id="cb10-23" data-line-number="23">                  <span class="st">'T'</span>),</a>
-<a class="sourceLine" id="cb10-24" data-line-number="24">   <span class="dt">choice =</span> rand_d<span class="op">&gt;=</span><span class="fl">0.5</span>, </a>
-<a class="sourceLine" id="cb10-25" data-line-number="25">    <span class="dt">d_1 =</span> <span class="kw">ifelse</span>(choice, </a>
-<a class="sourceLine" id="cb10-26" data-line-number="26">                  <span class="st">'T'</span>, </a>
-<a class="sourceLine" id="cb10-27" data-line-number="27">                  <span class="st">'C'</span>),</a>
-<a class="sourceLine" id="cb10-28" data-line-number="28">    <span class="dt">d_2 =</span> <span class="kw">ifelse</span>(choice, </a>
-<a class="sourceLine" id="cb10-29" data-line-number="29">                  <span class="st">'C'</span>, </a>
-<a class="sourceLine" id="cb10-30" data-line-number="30">                  <span class="st">'T'</span>),</a>
-<a class="sourceLine" id="cb10-31" data-line-number="31">   <span class="dt">choice =</span> rand_e<span class="op">&gt;=</span><span class="fl">0.5</span>, </a>
-<a class="sourceLine" id="cb10-32" data-line-number="32">    <span class="dt">e_1 =</span> <span class="kw">ifelse</span>(choice, </a>
-<a class="sourceLine" id="cb10-33" data-line-number="33">                  <span class="st">'T'</span>, </a>
-<a class="sourceLine" id="cb10-34" data-line-number="34">                  <span class="st">'C'</span>),</a>
-<a class="sourceLine" id="cb10-35" data-line-number="35">    <span class="dt">e_2 =</span> <span class="kw">ifelse</span>(choice, </a>
-<a class="sourceLine" id="cb10-36" data-line-number="36">                  <span class="st">'C'</span>, </a>
-<a class="sourceLine" id="cb10-37" data-line-number="37">                  <span class="st">'T'</span>)</a>
-<a class="sourceLine" id="cb10-38" data-line-number="38">  ) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb10-39" data-line-number="39"><span class="st">  </span><span class="kw"><a href="../reference/select_columns.html">select_columns</a></span>(., </a>
-<a class="sourceLine" id="cb10-40" data-line-number="40">                 <span class="kw">qc</span>(id,</a>
-<a class="sourceLine" id="cb10-41" data-line-number="41">                    a_<span class="dv">1</span>, a_<span class="dv">2</span>, b_<span class="dv">1</span>, b_<span class="dv">2</span>,</a>
-<a class="sourceLine" id="cb10-42" data-line-number="42">                    c_<span class="dv">1</span>, c_<span class="dv">2</span>, d_<span class="dv">1</span>, d_<span class="dv">2</span>,</a>
-<a class="sourceLine" id="cb10-43" data-line-number="43">                    e_<span class="dv">1</span>, e_<span class="dv">2</span>))</a>
-<a class="sourceLine" id="cb10-44" data-line-number="44"></a>
-<a class="sourceLine" id="cb10-45" data-line-number="45"><span class="kw">cat</span>(<span class="kw">format</span>(plan2))</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">plan2 &lt;-<span class="st"> </span>d1 <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/extend_nse.html">extend_nse</a></span>(.,
+   <span class="dt">choice =</span> rand_a<span class="op">&gt;=</span><span class="fl">0.5</span>, 
+    <span class="dt">a_1 =</span> <span class="kw">ifelse</span>(choice, 
+                  <span class="st">'T'</span>, 
+                  <span class="st">'C'</span>),
+    <span class="dt">a_2 =</span> <span class="kw">ifelse</span>(choice, 
+                  <span class="st">'C'</span>, 
+                  <span class="st">'T'</span>),
+   <span class="dt">choice =</span> rand_b<span class="op">&gt;=</span><span class="fl">0.5</span>, 
+    <span class="dt">b_1 =</span> <span class="kw">ifelse</span>(choice, 
+                  <span class="st">'T'</span>, 
+                  <span class="st">'C'</span>),
+    <span class="dt">b_2 =</span> <span class="kw">ifelse</span>(choice, 
+                  <span class="st">'C'</span>, 
+                  <span class="st">'T'</span>),
+   <span class="dt">choice =</span> rand_c<span class="op">&gt;=</span><span class="fl">0.5</span>, 
+    <span class="dt">c_1 =</span> <span class="kw">ifelse</span>(choice, 
+                  <span class="st">'T'</span>, 
+                  <span class="st">'C'</span>),
+    <span class="dt">c_2 =</span> <span class="kw">ifelse</span>(choice, 
+                  <span class="st">'C'</span>, 
+                  <span class="st">'T'</span>),
+   <span class="dt">choice =</span> rand_d<span class="op">&gt;=</span><span class="fl">0.5</span>, 
+    <span class="dt">d_1 =</span> <span class="kw">ifelse</span>(choice, 
+                  <span class="st">'T'</span>, 
+                  <span class="st">'C'</span>),
+    <span class="dt">d_2 =</span> <span class="kw">ifelse</span>(choice, 
+                  <span class="st">'C'</span>, 
+                  <span class="st">'T'</span>),
+   <span class="dt">choice =</span> rand_e<span class="op">&gt;=</span><span class="fl">0.5</span>, 
+    <span class="dt">e_1 =</span> <span class="kw">ifelse</span>(choice, 
+                  <span class="st">'T'</span>, 
+                  <span class="st">'C'</span>),
+    <span class="dt">e_2 =</span> <span class="kw">ifelse</span>(choice, 
+                  <span class="st">'C'</span>, 
+                  <span class="st">'T'</span>)
+  ) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/select_columns.html">select_columns</a></span>(., 
+                 <span class="kw">qc</span>(id,
+                    a_<span class="dv">1</span>, a_<span class="dv">2</span>, b_<span class="dv">1</span>, b_<span class="dv">2</span>,
+                    c_<span class="dv">1</span>, c_<span class="dv">2</span>, d_<span class="dv">1</span>, d_<span class="dv">2</span>,
+                    e_<span class="dv">1</span>, e_<span class="dv">2</span>))
+
+<span class="kw">cat</span>(<span class="kw">format</span>(plan2))</code></pre></div>
 <pre><code>table('example_table') %.&gt;%
  extend(.,
   choice := rand_a &gt;= 0.5) %.&gt;%
@@ -418,9 +418,9 @@ FROM (
   e_1 := ifelse(choice, "T", "C"),
   e_2 := ifelse(choice, "C", "T")) %.&gt;%
  select_columns(., id, a_1, a_2, b_1, b_2, c_1, c_2, d_1, d_2, e_1, e_2)</code></pre>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1">sql2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(plan2, my_db)</a>
-<a class="sourceLine" id="cb12-2" data-line-number="2">DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery">dbGetQuery</a></span>(my_db, sql2) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb12-3" data-line-number="3"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sql2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(plan2, my_db)
+DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery">dbGetQuery</a></span>(my_db, sql2) <span class="op">%.&gt;%</span>
+<span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">id</th>
@@ -491,7 +491,7 @@ FROM (
 </tbody>
 </table>
 <p>Notice the returned tables are identical (as they should be, <a href="https://github.com/WinVector/rquery/blob/master/extras/AssigmentPartitioner.md#dplyr-example">which is not always the case for database backed <code>dplyr</code></a>).</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect">dbDisconnect</a></span>(my_db)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect">dbDisconnect</a></span>(my_db)</code></pre></div>
 </div>
   </div>
 

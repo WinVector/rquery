@@ -475,14 +475,17 @@ This allows coordinated assignments such as the following:
 
 ```{r ifelse}
 ifet <- table_source("d5",
-                     columns = qc(test, x, y)) %.>%
+                     columns = "test") %.>%
   extend_se(.,
-            if_else_block(qe(test > 5),
-                          thenexprs = qae(x = 'a', 
-                                          y = 'b'),
-                          elseexprs = qae(x = 'b', 
-                                          y = 'a')
-            ))
+            c(qae(x = '',
+                  y = ''),
+              if_else_block(
+                qe(test > 5),
+                thenexprs = qae(x = 'a', 
+                                y = 'b'),
+                elseexprs = qae(x = 'b', 
+                                y = 'a')
+              )))
 cat(format(ifet))
 ```
 

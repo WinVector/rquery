@@ -200,7 +200,7 @@
  <span class='co'># whole process wrapped in convenience node</span>
  <span class='no'>op_tree2</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span>
    <span class='fu'><a href='count_null_cols.html'>count_null_cols</a></span>(<span class='no'>.</span>, <span class='no'>vars</span>, <span class='st'>"nnull"</span>)
- <span class='fu'><a href='execute.html'>execute</a></span>(<span class='no'>my_db</span>, <span class='no'>op_tree2</span>)</div><div class='output co'>#&gt;   v1   v2 v3 count
+ <span class='fu'><a href='execute.html'>execute</a></span>(<span class='no'>my_db</span>, <span class='no'>op_tree2</span>)</div><div class='output co'>#&gt;   v1   v2 v3 nnull
 #&gt; 1  1 &lt;NA&gt; NA     2
 #&gt; 2  2    b NA     1
 #&gt; 3 NA &lt;NA&gt;  7     2
