@@ -12,7 +12,7 @@ some bug fixes.
   * using platform: x86_64-apple-darwin15.6.0 (64-bit)
 
   * Windows
-  * using R Under development (unstable) (2018-02-09 r74240)
+  * using R Under development (unstable) (2018-03-09 r74376)
   * using platform: x86_64-w64-mingw32 (64-bit)
   
 
