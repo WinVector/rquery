@@ -1,4 +1,8 @@
 
+# rquery 0.4.1 2018/03/11
+
+ * Pipe database connection.
+
 # rquery 0.4.0 2018/03/10
 
  * Move to wrapr 1.2.0

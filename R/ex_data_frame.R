@@ -203,7 +203,7 @@ head.relop <- function(x, ...) {
 #' Execute pipeline treating pipe_left_arg as local data to
 #' be copied into database.
 #'
-#' @param pipe_left_arg data.frame
+#' @param pipe_left_arg data.frame or DBI database connection
 #' @param pipe_right_arg rquery relop operation tree
 #' @param pipe_environment environment to execute in
 #' @param pipe_name name of pipling symbol
@@ -211,12 +211,54 @@ head.relop <- function(x, ...) {
 #'
 #' @seealso \code{\link{rquery_apply_to_data_frame}}
 #'
+#' @examples
+#'
+#' # set up example database and
+#' # db execution helper
+#' db <- DBI::dbConnect(RSQLite::SQLite(),
+#'                      ":memory:")
+#' RSQLite::initExtension(db)
+#' winvector_temp_db_handle <- list(db = db)
+#'
+#'
+#' # operations pipeline/tree
+#' optree <- table_source("d", "x") %.>%
+#'   extend_nse(., y = x*x)
+#'
+#' # wrapr dot pipe wrapr_function dispatch
+#' # causes this statment to apply optree
+#' # to d.
+#' data.frame(x = 1:3) %.>% optree
+#'
+#' # remote example
+#' dbi_copy_to(db, "d",
+#'             data.frame(x = 7:8),
+#'             overwrite = TRUE,
+#'             temporary = TRUE)
+#'
+#' # wrapr dot pipe wrapr_function dispatch
+#' # causes this statment to apply optree
+#' # to db.
+#' db %.>% optree
+#'
+#' # clean up
+#' rm(list = "winvector_temp_db_handle")
+#' DBI::dbDisconnect(db)
+#'
 #' @export
+#'
 wrapr_function.relop <- function(pipe_left_arg,
                                  pipe_right_arg,
                                  pipe_environment,
                                  pipe_name = NULL) {
-  return(rquery_apply_to_data_frame(pipe_left_arg,
-                                    pipe_right_arg,
-                                    pipe_environment))
+  if(!("relop" %in% class(pipe_right_arg))) {
+    stop("rquery::wrapr_function.relop expect pipe_right_arg to be of class relop")
+  }
+  if(is.data.frame(pipe_left_arg)) {
+    return(rquery_apply_to_data_frame(pipe_left_arg,
+                                      pipe_right_arg,
+                                      pipe_environment))
+  }
+  # assume pipe_left_arg is a DB connection, execute and bring back result
+  execute(pipe_left_arg, pipe_right_arg)
 }
