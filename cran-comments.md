@@ -1,9 +1,5 @@
 
-This update includes: major improvements in documentation (new 
-introduction vignette and some improved help),  some additional 
-package capabilities, narrowing of suggested packages (to 
-reduce dependencies and make checking easier and cleaner), and
-some bug fixes.
+Minor update.
 
 ## Test environments
 
