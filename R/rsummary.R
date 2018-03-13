@@ -303,14 +303,14 @@ rsummary <- function(db,
 #' Create an rsumary relop operator node.
 #'
 #' @param source incoming source (relop node or data.frame).
+#' @param ... force later arguments to be by name
 #' @param incoming_table_name character, name of incoming table.
 #' @param outgoing_table_name character, name of table to write.
-#' @param ... force later arguments to be by name
 #' @param overwrite logical, if TRUE overwrite tables
 #' @param temporary logical, if TRUE use temporary tables
 #' @return rsummary node
 #'
-#' @seealso \code{\link{non_sql_node}}
+#' @seealso \code{\link{quantile_node}}, \code{\link{non_sql_node}}
 #'
 #' @examples
 #'
