@@ -12,7 +12,7 @@ quantile_col <- function(db, incoming_table_name, probs, ci) {
   if(nrows<1) {
     return(rep(NA, length(probs)))
   }
-  indexes <- round(as.numeric(stats::quantile(seq_len(nrows)), probs = probs))
+  indexes <- round((nrows+0.5)*probs)
   indexes <- pmax(1, indexes)
   indexes <- pmin(nrows, indexes)
   indexes_str <- paste(indexes, collapse = ", ")
