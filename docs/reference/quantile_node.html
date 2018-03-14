@@ -107,8 +107,9 @@
     <p>Please see <a href='https://github.com/WinVector/rquery/blob/master/extras/Summary_Example.md'>https://github.com/WinVector/rquery/blob/master/extras/Summary_Example.md</a> for an example.</p>
     
 
-    <pre class="usage"><span class='fu'>quantile_node</span>(<span class='no'>source</span>, <span class='no'>cols</span>, <span class='no'>...</span>, <span class='kw'>probs_name</span> <span class='kw'>=</span> <span class='st'>"probs"</span>, <span class='kw'>probs</span> <span class='kw'>=</span> <span class='fu'>seq</span>(<span class='fl'>0</span>, <span class='fl'>1</span>,
-  <span class='fl'>0.25</span>), <span class='kw'>incoming_table_name</span> <span class='kw'>=</span> <span class='fu'>mk_tmp_name_source</span>(<span class='st'>"qin"</span>)(),
+    <pre class="usage"><span class='fu'>quantile_node</span>(<span class='no'>source</span>, <span class='kw'>cols</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>, <span class='kw'>probs_name</span> <span class='kw'>=</span> <span class='st'>"probs"</span>,
+  <span class='kw'>probs</span> <span class='kw'>=</span> <span class='fu'>seq</span>(<span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>0.25</span>),
+  <span class='kw'>incoming_table_name</span> <span class='kw'>=</span> <span class='fu'>mk_tmp_name_source</span>(<span class='st'>"qin"</span>)(),
   <span class='kw'>outgoing_table_name</span> <span class='kw'>=</span> <span class='fu'>mk_tmp_name_source</span>(<span class='st'>"qout"</span>)(), <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
@@ -121,7 +122,7 @@
     </tr>
     <tr>
       <th>cols</th>
-      <td><p>character, compute quantiles for these columns</p></td>
+      <td><p>character, compute quantiles for these columns (NULL indicates all columns).</p></td>
     </tr>
     <tr>
       <th>...</th>

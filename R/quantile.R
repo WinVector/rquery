@@ -53,7 +53,7 @@ quantile_cols <- function(db, incoming_table_name, probs, probs_name, cols) {
 #' Please see \url{https://github.com/WinVector/rquery/blob/master/extras/Summary_Example.md} for an example.
 #'
 #' @param source source to select from (relop or data.frame).
-#' @param cols character, compute quantiles for these columns
+#' @param cols character, compute quantiles for these columns (NULL indicates all columns).
 #' @param ... force later arguments to be bound by name
 #' @param probs_name character, column name to write probs in.
 #' @param probs numeric quantiles to compute
@@ -69,7 +69,7 @@ quantile_cols <- function(db, incoming_table_name, probs, probs_name, cols) {
 #' @export
 #'
 quantile_node <- function(source,
-                          cols,
+                          cols = NULL,
                           ...,
                           probs_name = "probs",
                           probs = seq(0, 1, 0.25),
@@ -82,7 +82,11 @@ quantile_node <- function(source,
     stop("rquery::quantile_node.relop probs_name must be disjoint from cols")
   }
   have <- column_names(source)
-  check_have_cols(have, cols, "rquery::quantile_node.relop cols")
+  if(!is.null(cols)) {
+    check_have_cols(have, cols, "rquery::quantile_node.relop cols")
+  } else {
+    cols <- have
+  }
   force(cols)
   force(probs_name)
   force(probs)

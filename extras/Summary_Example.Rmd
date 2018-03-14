@@ -25,7 +25,7 @@ dbi_copy_to(db, "d",
             overwrite = TRUE)
 
 optree <- dbi_table(db, "d") %.>%
-  quantile_node(., c("x", "y", "z"))
+  quantile_node(.)
 
 execute(db, optree) %.>%
   knitr::kable(.)
