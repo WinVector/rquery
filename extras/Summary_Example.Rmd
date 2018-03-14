@@ -1,0 +1,41 @@
+---
+title: "Summary Example"
+author: "John Mount, Win-Vector LLC"
+date: "3/13/2018"
+output: github_document
+---
+
+```{r}
+library("rquery")
+
+# driver <- RPostgreSQL::PostgreSQL()
+driver <- RPostgres::Postgres()
+db <- DBI::dbConnect(driver,
+                     host = 'localhost',
+                     port = 5432,
+                     user = 'johnmount',
+                     password = '')
+
+dbi_copy_to(db, "d",
+            data.frame(x = c(rev(1:10), NA, NA),
+                       y = c(NA, NA, sin(1:10)),
+                       z = rev(letters[1:12]),
+                       stringsAsFactors = FALSE),
+            temporary = TRUE,
+            overwrite = TRUE)
+
+optree <- dbi_table(db, "d") %.>%
+  quantile_node(., c("x", "y", "z"))
+
+execute(db, optree) %.>%
+  knitr::kable(.)
+
+
+optrees <- dbi_table(db, "d") %.>%
+  rsummary_node(., quartiles = TRUE)
+
+execute(db, optrees) %.>%
+  knitr::kable(.)
+
+DBI::dbDisconnect(db)
+```
