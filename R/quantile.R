@@ -16,14 +16,19 @@ quantile_col <- function(db, incoming_table_name, probs, ci) {
   indexes <- round((nrows+0.5)*probs)
   indexes <- pmax(1, indexes)
   indexes <- pmin(nrows, indexes)
-  indexes_str <- paste(indexes, collapse = ", ")
+  # deal with repeated indexes
+  # also make sure index 1 is present so we get something back
+  # if there is only one value
+  uindexes <- sort(unique(c(1, indexes, nrows)))
+  indexes_str <- paste(uindexes, collapse = ", ")
+  unpack <- match(indexes, uindexes)
   q <- paste0("
      SELECT
         *
       FROM (
         SELECT
            ", DBI::dbQuoteIdentifier(db, ci), ",
-           COUNT(1) OVER (ORDER BY ", DBI::dbQuoteIdentifier(db, ci), ")  AS idx_rquery
+           ROW_NUMBER() OVER (ORDER BY ", DBI::dbQuoteIdentifier(db, ci), ")  AS idx_rquery
         FROM
            ", DBI::dbQuoteIdentifier(db, incoming_table_name), "
         WHERE
@@ -34,7 +39,7 @@ quantile_col <- function(db, incoming_table_name, probs, ci) {
      ORDER BY
         idx_rquery")
   r <- DBI::dbGetQuery(db, q)
-  r[[ci]]
+  r[[ci]][unpack]
 }
 
 quantile_cols <- function(db, incoming_table_name, probs, probs_name, cols) {

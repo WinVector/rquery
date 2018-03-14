@@ -17,7 +17,9 @@ db <- DBI::dbConnect(driver,
                      password = '')
 
 dbi_copy_to(db, "d",
-            data.frame(x = c(rev(1:10), NA, NA),
+            data.frame(v = NA_real_,
+                       w = 1,
+                       x = c(rev(1:10), NA, NA),
                        y = c(NA, NA, sin(1:10)),
                        z = rev(letters[1:12]),
                        stringsAsFactors = FALSE),
