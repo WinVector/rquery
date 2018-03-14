@@ -27,9 +27,9 @@ Depends:
   wrapr (>= 1.3.0),
   DBI
 Imports:
-  RSQLite,
   utils
 Suggests:
+    RSQLite,
     knitr,
     rmarkdown,
     testthat

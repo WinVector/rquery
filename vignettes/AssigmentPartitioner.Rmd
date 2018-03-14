@@ -19,7 +19,12 @@ This partitioning method ensures safe and correct results, and can lead to far f
 
 Here is a non-trivial database based example (demonstrating methods that might be used in big data work such as with `Spark`). We are going to assign pairs of items to complimentary treatment ("T") and control ("C") groups based on already populated pseudo-random numbers (pre-populating the pseudo-random numbers is to avoid [known issues in using `rand()` in `RSQlite`](https://winvector.github.io/rquery/reference/if_else_block.html), and would not be necessary with other databases).
 
-```{r ex1, comment=""}
+```{r chpkg} 
+run_vignette <- requireNamespace("RSQLite", quietly = TRUE)
+```
+
+
+```{r ex1, comment="", eval=run_vignette}
 library("rquery")
 
 # example data
@@ -86,12 +91,12 @@ cat(format(plan))
 
 Notice `rquery::extend_se()` split the work into 3 unambiguous groups.  The statements inside each group can now be executed in any order (or even in parallel) with no ambiguity of meaning or risk of error.  The goal was: split into a small number of groups such that the observable execution semantics are very close to executing the original statements in order in completely separate groups (which is likely what a user intends).
 
-```{r sql1, comment=""}
+```{r sql1, comment="", eval=run_vignette}
 sql <- to_sql(plan, my_db)
 cat(sql)
 ```
 
-```{r exec1}
+```{r exec1, eval=run_vignette}
 DBI::dbGetQuery(my_db, sql) %.>%
   knitr::kable(.)
 ```
@@ -100,7 +105,7 @@ A straightforward method (with no statement re-ordering) of splitting into non-d
 
 Note: re-using variable variable names does limit the planner's ability to efficiently partition the the statement.  The planner still emits safe and correct code, but unless it were to be allowed to introduce new variable names it must break sequences in more places.  We show this effect below:
 
-```{r reuse, comment=""}
+```{r reuse, comment="", eval=run_vignette}
 plan2 <- d1 %.>%
   extend_nse(.,
    choice = rand_a>=0.5, 
@@ -148,7 +153,7 @@ plan2 <- d1 %.>%
 cat(format(plan2))
 ```
 
-```{r exec2}
+```{r exec2, eval=run_vignette}
 sql2 <- to_sql(plan2, my_db)
 DBI::dbGetQuery(my_db, sql2) %.>%
   knitr::kable(.)
@@ -157,7 +162,7 @@ DBI::dbGetQuery(my_db, sql2) %.>%
 Notice the returned tables are identical (as they should be, [which
 is not always the case for database backed `dplyr`](https://github.com/WinVector/rquery/blob/master/extras/AssigmentPartitioner.md#dplyr-example)).
 
-```{r cleanup}
+```{r cleanup, eval=run_vignette}
 DBI::dbDisconnect(my_db)
 ```
 

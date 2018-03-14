@@ -153,16 +153,29 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
-<span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dbi_copy_to.html'>dbi_copy_to</a></span>(<span class='no'>my_db</span>, <span class='st'>'d'</span>,
-                <span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>0.6</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>0.2</span>))
-<span class='no'>eqn</span> <span class='kw'>&lt;-</span> <span class='fu'>extend_se</span>(<span class='no'>d</span>, <span class='fu'>c</span>(<span class='st'>"v"</span> <span class='kw'>:=</span> <span class='st'>"AUC + R2"</span>, <span class='st'>"x"</span> <span class='kw'>:=</span> <span class='st'>"pmax(AUC,v)"</span>))
-<span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>eqn</span>))</div><div class='output co'>#&gt; table('d') %.&gt;%
+<span class='kw'>if</span> (<span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
+  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
+  <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dbi_copy_to.html'>dbi_copy_to</a></span>(<span class='no'>my_db</span>, <span class='st'>'d'</span>,
+                   <span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>0.6</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>0.2</span>))
+  <span class='no'>eqn</span> <span class='kw'>&lt;-</span> <span class='fu'>extend_se</span>(<span class='no'>d</span>, <span class='fu'>c</span>(<span class='st'>"v"</span> <span class='kw'>:=</span> <span class='st'>"AUC + R2"</span>, <span class='st'>"x"</span> <span class='kw'>:=</span> <span class='st'>"pmax(AUC,v)"</span>))
+  <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>eqn</span>))
+  <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>eqn</span>, <span class='no'>my_db</span>)
+  <span class='fu'>cat</span>(<span class='no'>sql</span>)
+  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)
+
+  <span class='co'># SQLite can not run the following query</span>
+  <span class='no'>eqn2</span> <span class='kw'>&lt;-</span> <span class='fu'>extend_se</span>(<span class='no'>d</span>, <span class='st'>"v"</span> <span class='kw'>:=</span> <span class='st'>"rank()"</span>,
+                    <span class='kw'>partitionby</span> <span class='kw'>=</span> <span class='st'>"AUC"</span>, <span class='kw'>orderby</span> <span class='kw'>=</span> <span class='st'>"R2"</span>)
+  <span class='no'>sql2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>eqn2</span>, <span class='no'>my_db</span>)
+  <span class='fu'>cat</span>(<span class='no'>sql2</span>)
+
+  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
+}</div><div class='output co'>#&gt; table('d') %.&gt;%
 #&gt;  extend(.,
 #&gt;   v := AUC + R2) %.&gt;%
 #&gt;  extend(.,
-#&gt;   x := pmax(AUC, v))</div><div class='input'><span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>eqn</span>, <span class='no'>my_db</span>)
-<span class='fu'>cat</span>(<span class='no'>sql</span>)</div><div class='output co'>#&gt; SELECT
+#&gt;   x := pmax(AUC, v))
+#&gt; SELECT
 #&gt;  `AUC`,
 #&gt;  `R2`,
 #&gt;  `v`,
@@ -179,13 +192,8 @@
 #&gt;   FROM
 #&gt;    `d`
 #&gt;   ) tsql_60808142619338819739_0000000000
-#&gt;  ) tsql_60808142619338819739_0000000001</div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;   AUC  R2   v   x
-#&gt; 1 0.6 0.2 0.8 0.8</div><div class='input'>
-<span class='co'># SQLite can not run the following query</span>
-<span class='no'>eqn2</span> <span class='kw'>&lt;-</span> <span class='fu'>extend_se</span>(<span class='no'>d</span>, <span class='st'>"v"</span> <span class='kw'>:=</span> <span class='st'>"rank()"</span>,
-              <span class='kw'>partitionby</span> <span class='kw'>=</span> <span class='st'>"AUC"</span>, <span class='kw'>orderby</span> <span class='kw'>=</span> <span class='st'>"R2"</span>)
-<span class='no'>sql2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>eqn2</span>, <span class='no'>my_db</span>)
-<span class='fu'>cat</span>(<span class='no'>sql2</span>)</div><div class='output co'>#&gt; SELECT
+#&gt;  ) tsql_60808142619338819739_0000000001
+#&gt; SELECT
 #&gt;  `AUC`,
 #&gt;  `R2`,
 #&gt;  rank ( ) OVER (  PARTITION BY `AUC` ORDER BY `R2` ) AS `v`
@@ -196,7 +204,7 @@
 #&gt;  FROM
 #&gt;   `d`
 #&gt;  ) tsql_39201822092728295787_0000000000</div><div class='input'>
-<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)</div></pre>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

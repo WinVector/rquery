@@ -5,6 +5,7 @@
  * Pipe database connection.
  * Better quantile calc (assume window functions).
  * Improve dependency decls.
+ * Further limit direct dependencies.
 
 # rquery 0.4.0 2018/03/10
 

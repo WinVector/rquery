@@ -25,48 +25,49 @@
 #'
 #' @examples
 #'
-#' # Example: clear one of a or b in any row where both are set.
-#' # Land random selections early to avoid SQLite bug.
-#' my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#' d <- dbi_copy_to(
-#'   my_db,
-#'   'd',
-#'   data.frame(i = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
-#'              a = c(0, 0, 1, 1, 1, 1, 1, 1, 1, 1),
-#'              b = c(0, 1, 0, 1, 1, 1, 1, 1, 1, 1),
-#'              r = runif(10),
-#'              edited = 0),
-#'   temporary=TRUE, overwrite=TRUE)
+#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#'   # Example: clear one of a or b in any row where both are set.
+#'   # Land random selections early to avoid SQLite bug.
+#'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#'   d <- dbi_copy_to(
+#'     my_db,
+#'     'd',
+#'     data.frame(i = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+#'                a = c(0, 0, 1, 1, 1, 1, 1, 1, 1, 1),
+#'                b = c(0, 1, 0, 1, 1, 1, 1, 1, 1, 1),
+#'                r = runif(10),
+#'                edited = 0),
+#'     temporary=TRUE, overwrite=TRUE)
 #'
-#' program <- if_else_block(
-#'   testexpr = qe((a+b)>1),
-#'   thenexprs = c(
-#'     if_else_block(
-#'       testexpr = qe(r >= 0.5),
-#'       thenexprs = qae(a := 0),
-#'       elseexprs = qae(b := 0)),
-#'     qae(edited := 1)))
-#' print(program)
+#'   program <- if_else_block(
+#'     testexpr = qe((a+b)>1),
+#'     thenexprs = c(
+#'       if_else_block(
+#'         testexpr = qe(r >= 0.5),
+#'         thenexprs = qae(a := 0),
+#'         elseexprs = qae(b := 0)),
+#'       qae(edited := 1)))
+#'   print(program)
 #'
-#' trf <- extend_se(d, program)
-#' cat(format(trf))
+#'   trf <- extend_se(d, program)
+#'   cat(format(trf))
 #'
-#' sql <- to_sql(trf, my_db)
-#' cat(sql)
+#'   sql <- to_sql(trf, my_db)
+#'   cat(sql)
 #'
-#' DBI::dbGetQuery(my_db, sql)
+#'   DBI::dbGetQuery(my_db, sql)
 #'
-#'  # Why we need to land the random selection early
-#'  # for SQLIte:
-#'  q <- "SELECT r AS r1, r AS r2 FROM (
+#'   # Why we need to land the random selection early
+#'   # for SQLIte:
+#'   q <- "SELECT r AS r1, r AS r2 FROM (
 #'           SELECT random() AS r FROM (
 #'              SELECT * from ( VALUES(1),(2) )
 #'           ) a
 #'        ) b"
-#'  DBI::dbGetQuery(my_db, q)
+#'   DBI::dbGetQuery(my_db, q)
 #'
-#' DBI::dbDisconnect(my_db)
-#'
+#'   DBI::dbDisconnect(my_db)
+#' }
 #'
 #' @export
 #'

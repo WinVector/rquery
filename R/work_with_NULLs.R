@@ -28,27 +28,29 @@ flatten_with_sep <- function(list_of_lists, sep_list) {
 #'
 #' @examples
 #'
-#'  my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'  winvector_temp_db_handle <- list(
-#'    db = DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'  )
-#'  RSQLite::initExtension(winvector_temp_db_handle$db)
+#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#'   winvector_temp_db_handle <- list(
+#'     db = my_db
+#'   )
+#'   RSQLite::initExtension(winvector_temp_db_handle$db)
 #'
-#'  d <- dbi_copy_to(my_db, 'd',
-#'                   data.frame(AUC = c(0.6, 0.5, NA),
-#'                              R2 = c(1.0, 0.9, NA)))
-#'  op_tree <- d %.>% count_null_cols(., c("AUC", "R2"), "nnull")
-#'  cat(format(op_tree))
-#'  sql <- to_sql(op_tree, my_db)
-#'  cat(sql)
-#'  DBI::dbGetQuery(my_db, sql)
+#'   d <- dbi_copy_to(my_db, 'd',
+#'                    data.frame(AUC = c(0.6, 0.5, NA),
+#'                               R2 = c(1.0, 0.9, NA)))
+#'   op_tree <- d %.>% count_null_cols(., c("AUC", "R2"), "nnull")
+#'   cat(format(op_tree))
+#'   sql <- to_sql(op_tree, my_db)
+#'   cat(sql)
+#'   DBI::dbGetQuery(my_db, sql)
 #'
-#'  # ad-hoc mode
-#'  data.frame(AUC=c(1,NA,0.5), R2=c(NA,1,0)) %.>% op_tree
+#'   # ad-hoc mode
+#'   data.frame(AUC=c(1,NA,0.5), R2=c(NA,1,0)) %.>% op_tree
 #'
-#'  # cleanup
-#'  rm(list = "winvector_temp_db_handle")
-#'  DBI::dbDisconnect(my_db)
+#'   # cleanup
+#'   rm(list = "winvector_temp_db_handle")
+#'   DBI::dbDisconnect(my_db)
+#' }
 #'
 #' @export
 #'
@@ -90,28 +92,30 @@ count_null_cols <- function(source, cols, count) {
 #'
 #' @examples
 #'
-#'  my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'  winvector_temp_db_handle <- list(
-#'    db = DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'  )
-#'  RSQLite::initExtension(winvector_temp_db_handle$db)
+#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#'   winvector_temp_db_handle <- list(
+#'     db = my_db
+#'   )
+#'   RSQLite::initExtension(winvector_temp_db_handle$db)
 #'
-#'  d <- dbi_copy_to(my_db, 'd',
-#'                   data.frame(AUC = c(0.6, 0.5, NA),
-#'                              R2 = c(1.0, 0.9, NA)))
-#'  op_tree <- d %.>% mark_null_cols(., qc(AUC_NULL, R2_NULL) :=
+#'   d <- dbi_copy_to(my_db, 'd',
+#'                    data.frame(AUC = c(0.6, 0.5, NA),
+#'                               R2 = c(1.0, 0.9, NA)))
+#'   op_tree <- d %.>% mark_null_cols(., qc(AUC_NULL, R2_NULL) :=
 #'                                      qc(AUC, R2))
-#'  cat(format(op_tree))
-#'  sql <- to_sql(op_tree, my_db)
-#'  cat(sql)
-#'  DBI::dbGetQuery(my_db, sql)
+#'   cat(format(op_tree))
+#'   sql <- to_sql(op_tree, my_db)
+#'   cat(sql)
+#'   DBI::dbGetQuery(my_db, sql)
 #'
-#'  # ad-hoc mode
-#'  data.frame(AUC=c(1,NA,0.5), R2=c(NA,1,0)) %.>% op_tree
+#'   # ad-hoc mode
+#'   data.frame(AUC=c(1,NA,0.5), R2=c(NA,1,0)) %.>% op_tree
 #'
-#'  # cleanup
-#'  rm(list = "winvector_temp_db_handle")
-#'  DBI::dbDisconnect(my_db)
+#'   # cleanup
+#'   rm(list = "winvector_temp_db_handle")
+#'   DBI::dbDisconnect(my_db)
+#' }
 #'
 #' @export
 #'
@@ -155,39 +159,41 @@ mark_null_cols <- function(source, cols) {
 #'
 #' @examples
 #'
-#'  my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'  winvector_temp_db_handle <- list(
-#'    db = DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'  )
-#'  RSQLite::initExtension(winvector_temp_db_handle$db)
+#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#'   winvector_temp_db_handle <- list(
+#'     db = my_db
+#'   )
+#'   RSQLite::initExtension(winvector_temp_db_handle$db)
 #'
-#'  d <- dbi_copy_to(my_db, 'd',
-#'                   data.frame(AUC = c(NA, 0.5, NA),
-#'                              R2 = c(1.0, 0.9, NA),
-#'                              cat = c("a", NA, "c"),
-#'                              stringsAsFactors = FALSE))
+#'   d <- dbi_copy_to(my_db, 'd',
+#'                    data.frame(AUC = c(NA, 0.5, NA),
+#'                               R2 = c(1.0, 0.9, NA),
+#'                               cat = c("a", NA, "c"),
+#'                               stringsAsFactors = FALSE))
 #'
-#'  # numeric example
-#'  op_tree <- d %.>% replace_null_cols(., qc(AUC, R2),
-#'                                         0.0)
-#'  cat(format(op_tree))
-#'  sql <- to_sql(op_tree, my_db)
-#'  cat(sql)
-#'  DBI::dbGetQuery(my_db, sql)
+#'   # numeric example
+#'   op_tree <- d %.>% replace_null_cols(., qc(AUC, R2),
+#'                                       0.0)
+#'   cat(format(op_tree))
+#'   sql <- to_sql(op_tree, my_db)
+#'   cat(sql)
+#'   DBI::dbGetQuery(my_db, sql)
 #'
-#'  # ad-hoc mode
-#'  data.frame(AUC=c(1,NA,0.5), R2=c(NA,1,0), cat= NA) %.>% op_tree
+#'   # ad-hoc mode
+#'   data.frame(AUC=c(1,NA,0.5), R2=c(NA,1,0), cat= NA) %.>% op_tree
 #'
-#'  # string example
-#'  op_tree <- d %.>% replace_null_cols(., "cat", "")
-#'  cat(format(op_tree))
-#'  sql <- to_sql(op_tree, my_db)
-#'  cat(sql)
-#'  DBI::dbGetQuery(my_db, sql)
+#'   # string example
+#'   op_tree <- d %.>% replace_null_cols(., "cat", "")
+#'   cat(format(op_tree))
+#'   sql <- to_sql(op_tree, my_db)
+#'   cat(sql)
+#'   DBI::dbGetQuery(my_db, sql)
 #'
-#'  # cleanup
-#'  rm(list = "winvector_temp_db_handle")
-#'  DBI::dbDisconnect(my_db)
+#'   # cleanup
+#'   rm(list = "winvector_temp_db_handle")
+#'   DBI::dbDisconnect(my_db)
+#' }
 #'
 #' @export
 #'

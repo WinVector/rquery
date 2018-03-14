@@ -131,21 +131,33 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
- <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
- <span class='no'>winvector_temp_db_handle</span> <span class='kw'>&lt;-</span> <span class='fu'>list</span>(
-   <span class='kw'>db</span> <span class='kw'>=</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
- )
- <span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/initExtension'>initExtension</a></span>(<span class='no'>winvector_temp_db_handle</span>$<span class='no'>db</span>)
+<span class='kw'>if</span> (<span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
+  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
+  <span class='no'>winvector_temp_db_handle</span> <span class='kw'>&lt;-</span> <span class='fu'>list</span>(
+    <span class='kw'>db</span> <span class='kw'>=</span> <span class='no'>my_db</span>
+  )
+  <span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/initExtension'>initExtension</a></span>(<span class='no'>winvector_temp_db_handle</span>$<span class='no'>db</span>)
 
- <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dbi_copy_to.html'>dbi_copy_to</a></span>(<span class='no'>my_db</span>, <span class='st'>'d'</span>,
-                  <span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>0.6</span>, <span class='fl'>0.5</span>, <span class='fl'>NA</span>),
-                             <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>1.0</span>, <span class='fl'>0.9</span>, <span class='fl'>NA</span>)))
- <span class='no'>op_tree</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span> <span class='fu'>mark_null_cols</span>(<span class='no'>.</span>, <span class='fu'>qc</span>(<span class='no'>AUC_NULL</span>, <span class='no'>R2_NULL</span>) <span class='kw'>:=</span>
+  <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dbi_copy_to.html'>dbi_copy_to</a></span>(<span class='no'>my_db</span>, <span class='st'>'d'</span>,
+                   <span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>0.6</span>, <span class='fl'>0.5</span>, <span class='fl'>NA</span>),
+                              <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>1.0</span>, <span class='fl'>0.9</span>, <span class='fl'>NA</span>)))
+  <span class='no'>op_tree</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span> <span class='fu'>mark_null_cols</span>(<span class='no'>.</span>, <span class='fu'>qc</span>(<span class='no'>AUC_NULL</span>, <span class='no'>R2_NULL</span>) <span class='kw'>:=</span>
                                      <span class='fu'>qc</span>(<span class='no'>AUC</span>, <span class='no'>R2</span>))
- <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>op_tree</span>))</div><div class='output co'>#&gt; table('d') %.&gt;%
+  <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>op_tree</span>))
+  <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>op_tree</span>, <span class='no'>my_db</span>)
+  <span class='fu'>cat</span>(<span class='no'>sql</span>)
+  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)
+
+  <span class='co'># ad-hoc mode</span>
+  <span class='fu'>data.frame</span>(<span class='kw'>AUC</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='fl'>1</span>,<span class='fl'>NA</span>,<span class='fl'>0.5</span>), <span class='kw'>R2</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='fl'>NA</span>,<span class='fl'>1</span>,<span class='fl'>0</span>)) <span class='kw'>%.&gt;%</span> <span class='no'>op_tree</span>
+
+  <span class='co'># cleanup</span>
+  <span class='fu'>rm</span>(<span class='kw'>list</span> <span class='kw'>=</span> <span class='st'>"winvector_temp_db_handle"</span>)
+  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
+}</div><div class='output co'>#&gt; table('d') %.&gt;%
 #&gt;  sql_node(.,
-#&gt;           mark_null_cols(c('AUC_NULL' = 'AUC', 'R2_NULL' = 'R2')))</div><div class='input'> <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>op_tree</span>, <span class='no'>my_db</span>)
- <span class='fu'>cat</span>(<span class='no'>sql</span>)</div><div class='output co'>#&gt; SELECT
+#&gt;           mark_null_cols(c('AUC_NULL' = 'AUC', 'R2_NULL' = 'R2')))
+#&gt; SELECT
 #&gt;  *,
 #&gt;  `AUC` IS NULL AS `AUC_NULL`,
 #&gt;  `R2` IS NULL AS `R2_NULL`
@@ -155,18 +167,8 @@
 #&gt;   `d`.`R2`
 #&gt;  FROM
 #&gt;   `d`
-#&gt; ) tsql_54763920521987550316_0000000000</div><div class='input'> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)</div><div class='output co'>#&gt;   AUC  R2 AUC_NULL R2_NULL
-#&gt; 1 0.6 1.0        0       0
-#&gt; 2 0.5 0.9        0       0
-#&gt; 3  NA  NA        1       1</div><div class='input'>
- <span class='co'># ad-hoc mode</span>
- <span class='fu'>data.frame</span>(<span class='kw'>AUC</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='fl'>1</span>,<span class='fl'>NA</span>,<span class='fl'>0.5</span>), <span class='kw'>R2</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='fl'>NA</span>,<span class='fl'>1</span>,<span class='fl'>0</span>)) <span class='kw'>%.&gt;%</span> <span class='no'>op_tree</span></div><div class='output co'>#&gt;   AUC R2 AUC_NULL R2_NULL
-#&gt; 1 1.0 NA        0       1
-#&gt; 2  NA  1        1       0
-#&gt; 3 0.5  0        0       0</div><div class='input'>
- <span class='co'># cleanup</span>
- <span class='fu'>rm</span>(<span class='kw'>list</span> <span class='kw'>=</span> <span class='st'>"winvector_temp_db_handle"</span>)
- <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)</div></pre>
+#&gt; ) tsql_54763920521987550316_0000000000</div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

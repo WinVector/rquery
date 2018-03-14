@@ -14,11 +14,13 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+run_vignette <- requireNamespace("RSQLite", quietly = TRUE)
 ```
+
 
 The primary purpose of `rquery` is `SQL` query generation.  We demonstrate this below.
 
-```{r ex, warning=FALSE, message=FALSE, include=FALSE}
+```{r ex, warning=FALSE, message=FALSE, include=FALSE, eval=run_vignette}
 library("rquery")
 
 # this db does not have window fns
@@ -47,7 +49,7 @@ d <- dbi_copy_to(my_db, 'd',
                  overwrite = TRUE)
 ```
 
-```{r calc}
+```{r calc, eval=run_vignette}
 scale <- 0.237
 
 dq <- d %.>%
@@ -75,13 +77,13 @@ sql <- to_sql(dq, db = my_db, source_limit = 1000)
 
 `to_sql()` SQL:
 
-```{r res, echo=FALSE, comment = ' '}
+```{r res, echo=FALSE, comment = ' ', eval=run_vignette}
 cat(sql)
 ```
 
 
 
-```{r cleanup, include=FALSE}
+```{r cleanup, include=FALSE, eval=run_vignette}
 DBI::dbDisconnect(my_db)
 ```
 

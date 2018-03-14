@@ -18,17 +18,19 @@
 #'
 #' @examples
 #'
-#' my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#' d <- dbi_copy_to(my_db, 'd',
-#'                 data.frame(AUC = 0.6, R2 = 0.2))
-#' optree <- extend_se(d, c("v" := "AUC + R2", "x" := "pmax(AUC,v)"))
-#' cat(format(optree))
-#' res <- materialize(my_db, optree, "example")
-#' cat(format(res))
-#' sql <- to_sql(res, my_db)
-#' cat(sql)
-#' DBI::dbGetQuery(my_db, sql)
-#' DBI::dbDisconnect(my_db)
+#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#'   d <- dbi_copy_to(my_db, 'd',
+#'                    data.frame(AUC = 0.6, R2 = 0.2))
+#'   optree <- extend_se(d, c("v" := "AUC + R2", "x" := "pmax(AUC,v)"))
+#'   cat(format(optree))
+#'   res <- materialize(my_db, optree, "example")
+#'   cat(format(res))
+#'   sql <- to_sql(res, my_db)
+#'   cat(sql)
+#'   DBI::dbGetQuery(my_db, sql)
+#'   DBI::dbDisconnect(my_db)
+#' }
 #'
 #' @export
 #'
@@ -122,27 +124,29 @@ materialize <- function(db,
 #'
 #' @examples
 #'
-#' my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#' d <- dbi_copy_to(my_db, 'd',
-#'                 data.frame(AUC = 0.6, R2 = 0.2))
-#' optree <- extend_se(d, c("v" := "AUC + R2", "x" := "pmax(AUC,v)"))
+#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#'   d <- dbi_copy_to(my_db, 'd',
+#'                    data.frame(AUC = 0.6, R2 = 0.2))
+#'   optree <- extend_se(d, c("v" := "AUC + R2", "x" := "pmax(AUC,v)"))
 #'
-#' print(optree)
+#'   print(optree)
 #'
-#' cat(format(optree))
+#'   cat(format(optree))
 #'
-#' execute(my_db, optree)
+#'   execute(my_db, optree)
 #'
-#' execute(data.frame(AUC = 1, R2 = 2), optree)
+#'   execute(data.frame(AUC = 1, R2 = 2), optree)
 #'
-#' # land result in database
-#' res_hdl <- execute(my_db, optree, table_name = "res")
-#' print(res_hdl)
-#' DBI::dbGetQuery(my_db, to_sql(res_hdl, my_db))
-#' DBI::dbReadTable(my_db, res_hdl$table_name)
-#' DBI::dbRemoveTable(my_db, res_hdl$table_name)
+#'   # land result in database
+#'   res_hdl <- execute(my_db, optree, table_name = "res")
+#'   print(res_hdl)
+#'   DBI::dbGetQuery(my_db, to_sql(res_hdl, my_db))
+#'   DBI::dbReadTable(my_db, res_hdl$table_name)
+#'   DBI::dbRemoveTable(my_db, res_hdl$table_name)
 #'
-#' DBI::dbDisconnect(my_db)
+#'   DBI::dbDisconnect(my_db)
+#' }
 #'
 #' @export
 #'
@@ -209,33 +213,35 @@ commencify <- execute
 #'
 #' @examples
 #'
-#'  d <- data.frame(p= c(TRUE, FALSE, NA),
-#'                  s= NA,
-#'                  w= 1:3,
-#'                  x= c(NA,2,3),
-#'                  y= factor(c(3,5,NA)),
-#'                  z= c('a',NA,'a'),
-#'                  stringsAsFactors=FALSE)
-#'  db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'  RSQLite::initExtension(db)
-#'  DBI::dbWriteTable(db, "dRemote", d,
-#'                    overwrite = TRUE,
-#'                    temporary = TRUE)
+#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#'   d <- data.frame(p= c(TRUE, FALSE, NA),
+#'                   s= NA,
+#'                   w= 1:3,
+#'                   x= c(NA,2,3),
+#'                   y= factor(c(3,5,NA)),
+#'                   z= c('a',NA,'a'),
+#'                   stringsAsFactors=FALSE)
+#'   db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#'   RSQLite::initExtension(db)
+#'   DBI::dbWriteTable(db, "dRemote", d,
+#'                     overwrite = TRUE,
+#'                     temporary = TRUE)
 #'
-#'  ops <- dbi_table(db, "dRemote") %.>%
-#'    extend_nse(., v := ifelse(x>2, "x", "y")) %.>%
-#'    materialize_node(., outgoing_table_name = "intermediate") %.>%
-#'    extend_nse(., v2 := ifelse(x>2, "x", "y"))
-#'  cat(format(ops))
+#'   ops <- dbi_table(db, "dRemote") %.>%
+#'     extend_nse(., v := ifelse(x>2, "x", "y")) %.>%
+#'     materialize_node(., outgoing_table_name = "intermediate") %.>%
+#'     extend_nse(., v2 := ifelse(x>2, "x", "y"))
+#'   cat(format(ops))
 #'
-#'  to_sql(ops, db)
+#'   to_sql(ops, db)
 #'
-#'  reshdl <- materialize(db, ops)
-#'  DBI::dbGetQuery(db, to_sql(reshdl, db))
+#'   reshdl <- materialize(db, ops)
+#'   DBI::dbGetQuery(db, to_sql(reshdl, db))
 #'
-#'  DBI::dbGetQuery(db, "SELECT * FROM intermediate")
+#'   DBI::dbGetQuery(db, "SELECT * FROM intermediate")
 #'
-#'  DBI::dbDisconnect(db)
+#'   DBI::dbDisconnect(db)
+#' }
 #'
 #' @export
 #'

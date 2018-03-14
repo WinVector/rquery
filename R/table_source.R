@@ -16,19 +16,21 @@
 #'
 #' @examples
 #'
-#' my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#' DBI::dbWriteTable(my_db,
-#'                   'd',
-#'                   data.frame(AUC = 0.6, R2 = 0.2),
-#'                   overwrite = TRUE,
-#'                   temporary = TRUE)
-#' d <- table_source('d',
-#'                   columns = c("AUC", "R2"))
-#' print(d)
-#' sql <- to_sql(d, my_db)
-#' cat(sql)
-#' DBI::dbGetQuery(my_db, sql)
-#' DBI::dbDisconnect(my_db)
+#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#'   DBI::dbWriteTable(my_db,
+#'                     'd',
+#'                     data.frame(AUC = 0.6, R2 = 0.2),
+#'                     overwrite = TRUE,
+#'                     temporary = TRUE)
+#'   d <- table_source('d',
+#'                     columns = c("AUC", "R2"))
+#'   print(d)
+#'   sql <- to_sql(d, my_db)
+#'   cat(sql)
+#'   DBI::dbGetQuery(my_db, sql)
+#'   DBI::dbDisconnect(my_db)
+#' }
 #'
 #' @seealso \code{\link{dbi_table}}
 #'
@@ -87,24 +89,26 @@ listFields <- function(my_db, tableName) {
 #'
 #' @examples
 #'
-#' my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#' DBI::dbWriteTable(my_db,
-#'                   'd',
-#'                   data.frame(AUC = 0.6, R2 = 0.2),
-#'                   overwrite = TRUE,
-#'                   temporary = TRUE)
-#' d <- dbi_table(my_db, 'd')
-#' print(d)
-#' sql <- to_sql(d, my_db)
-#' cat(sql)
-#' DBI::dbGetQuery(my_db, sql)
-#' cols <- columns_used(d)
-#' print(cols)
+#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#'   DBI::dbWriteTable(my_db,
+#'                     'd',
+#'                     data.frame(AUC = 0.6, R2 = 0.2),
+#'                     overwrite = TRUE,
+#'                     temporary = TRUE)
+#'   d <- dbi_table(my_db, 'd')
+#'   print(d)
+#'   sql <- to_sql(d, my_db)
+#'   cat(sql)
+#'   DBI::dbGetQuery(my_db, sql)
+#'   cols <- columns_used(d)
+#'   print(cols)
 #'
-#' sql2 <- to_sql(d, my_db, using = "AUC")
-#' cat(sql2)
-#' DBI::dbGetQuery(my_db, sql2)
-#' DBI::dbDisconnect(my_db)
+#'   sql2 <- to_sql(d, my_db, using = "AUC")
+#'   cat(sql2)
+#'   DBI::dbGetQuery(my_db, sql2)
+#'   DBI::dbDisconnect(my_db)
+#' }
 #'
 #' @export
 #'
@@ -218,12 +222,14 @@ format.relop_table_source <- function(x, ...) {
 #'
 #' @examples
 #'
-#' my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#' d <- dbi_copy_to(my_db, 'd',
-#'                 data.frame(AUC = 0.6, R2 = 0.2))
-#' sql <- to_sql(d, my_db)
-#' cat(sql)
-#' DBI::dbDisconnect(my_db)
+#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#'   d <- dbi_copy_to(my_db, 'd',
+#'                    data.frame(AUC = 0.6, R2 = 0.2))
+#'   sql <- to_sql(d, my_db)
+#'   cat(sql)
+#'   DBI::dbDisconnect(my_db)
+#' }
 #'
 #' @export
 #'

@@ -60,19 +60,21 @@ summarize_columns <- function(db, tableName,
 #'
 #' @examples
 #'
-#' d <- data.frame(p= c(TRUE, FALSE, NA),
-#'                 s= NA,
-#'                 w= 1:3,
-#'                 x= c(NA,2,3),
-#'                 y= factor(c(3,5,NA)),
-#'                 z= c('a',NA,'a'),
-#'                 stringsAsFactors=FALSE)
-#' db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#' RSQLite::initExtension(db)
-#' DBI::dbWriteTable(db, "dRemote", d,
-#'    overwrite = TRUE, temporary = TRUE)
-#' rsummary(db, "dRemote")
-#' DBI::dbDisconnect(db)
+#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#'   d <- data.frame(p= c(TRUE, FALSE, NA),
+#'                   s= NA,
+#'                   w= 1:3,
+#'                   x= c(NA,2,3),
+#'                   y= factor(c(3,5,NA)),
+#'                   z= c('a',NA,'a'),
+#'                   stringsAsFactors=FALSE)
+#'   db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#'   RSQLite::initExtension(db)
+#'   DBI::dbWriteTable(db, "dRemote", d,
+#'                     overwrite = TRUE, temporary = TRUE)
+#'   rsummary(db, "dRemote")
+#'   DBI::dbDisconnect(db)
+#' }
 #'
 #' @export
 #'
@@ -332,30 +334,32 @@ rsummary <- function(db,
 #'
 #' @examples
 #'
-#'  d <- data.frame(p= c(TRUE, FALSE, NA),
-#'                  s= NA,
-#'                  w= 1:3,
-#'                  x= c(NA,2,3),
-#'                  y= factor(c(3,5,NA)),
-#'                  z= c('a',NA,'a'),
-#'                  stringsAsFactors=FALSE)
-#'  db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'  RSQLite::initExtension(db)
-#'  DBI::dbWriteTable(db, "dRemote", d,
-#'                    overwrite = TRUE,
-#'                    temporary = TRUE)
+#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#'   d <- data.frame(p= c(TRUE, FALSE, NA),
+#'                   s= NA,
+#'                   w= 1:3,
+#'                   x= c(NA,2,3),
+#'                   y= factor(c(3,5,NA)),
+#'                   z= c('a',NA,'a'),
+#'                   stringsAsFactors=FALSE)
+#'   db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#'   RSQLite::initExtension(db)
+#'   DBI::dbWriteTable(db, "dRemote", d,
+#'                     overwrite = TRUE,
+#'                     temporary = TRUE)
 #'
-#'  ops <- dbi_table(db, "dRemote") %.>%
-#'    extend_nse(., v := ifelse(x>2, "x", "y")) %.>%
-#'    rsummary_node(.)
-#'  cat(format(ops))
+#'   ops <- dbi_table(db, "dRemote") %.>%
+#'     extend_nse(., v := ifelse(x>2, "x", "y")) %.>%
+#'     rsummary_node(.)
+#'   cat(format(ops))
 #'
-#'  to_sql(ops, db)
+#'   to_sql(ops, db)
 #'
-#'  reshdl <- materialize(db, ops)
-#'  DBI::dbGetQuery(db, to_sql(reshdl, db))
+#'   reshdl <- materialize(db, ops)
+#'   DBI::dbGetQuery(db, to_sql(reshdl, db))
 #'
-#'  DBI::dbDisconnect(db)
+#'   DBI::dbDisconnect(db)
+#' }
 #'
 #' @export
 #'
