@@ -105,7 +105,8 @@
     <p>Create an rsumary relop operator node.</p>
     
 
-    <pre class="usage"><span class='fu'>rsummary_node</span>(<span class='no'>source</span>, <span class='no'>...</span>, <span class='kw'>incoming_table_name</span> <span class='kw'>=</span> <span class='fu'>mk_tmp_name_source</span>(<span class='st'>"rin"</span>)(),
+    <pre class="usage"><span class='fu'>rsummary_node</span>(<span class='no'>source</span>, <span class='no'>...</span>, <span class='kw'>quartiles</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>incoming_table_name</span> <span class='kw'>=</span> <span class='fu'>mk_tmp_name_source</span>(<span class='st'>"rin"</span>)(),
   <span class='kw'>outgoing_table_name</span> <span class='kw'>=</span> <span class='fu'>mk_tmp_name_source</span>(<span class='st'>"rout"</span>)(), <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
@@ -119,6 +120,10 @@
     <tr>
       <th>...</th>
       <td><p>force later arguments to be by name</p></td>
+    </tr>
+    <tr>
+      <th>quartiles</th>
+      <td><p>logical, if TRUE add Q1 (25%), median (50%), Q3 (75%) quartiles.</p></td>
     </tr>
     <tr>
       <th>incoming_table_name</th>
@@ -144,7 +149,7 @@
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <p><code><a href='non_sql_node.html'>non_sql_node</a></code></p>
+    <p><code><a href='quantile_node.html'>quantile_node</a></code>, <code><a href='non_sql_node.html'>non_sql_node</a></code></p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>

@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>All news • rquery</title>
+<title>Compute quantiles over non-NULL values
+(without interpolation, needs a database with window functions). — quantile_node • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -37,7 +38,7 @@
   </head>
 
   <body>
-    <div class="container template-news">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -96,88 +97,83 @@
       </header>
 
       <div class="row">
-
-  <div class="col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Change log <small>All releases</small></h1>
+    <h1>Compute quantiles over non-NULL values
+(without interpolation, needs a database with window functions).</h1>
     </div>
 
-    <div class="contents">
-    <div id="rquery-0-4-1-20180313" class="section level1">
-<h1 class="hasAnchor">
-<a href="#rquery-0-4-1-20180313" class="anchor"></a>rquery 0.4.1 2018/03/13</h1>
-<ul>
-<li>Pipe database connection.</li>
-<li>Better quantile (assume window functions).</li>
-</ul>
-</div>
-    <div id="rquery-0-4-0-20180310" class="section level1">
-<h1 class="hasAnchor">
-<a href="#rquery-0-4-0-20180310" class="anchor"></a>rquery 0.4.0 2018/03/10</h1>
-<ul>
-<li>Move to wrapr 1.2.0</li>
-<li>Add wrapr_function.relop().</li>
-<li>Column checks on extend.</li>
-<li>Default sql_node to copying incoming columns.</li>
-<li>NULL column ops.</li>
-<li>rsummary().</li>
-<li>“Non SQL” nodes.</li>
-<li>New rquery_intro vingette.</li>
-<li>Improved help examples.</li>
-<li>Stricter argument checking.</li>
-</ul>
-</div>
-    <div id="rquery-0-3-1-20180210" class="section level1">
-<h1 class="hasAnchor">
-<a href="#rquery-0-3-1-20180210" class="anchor"></a>rquery 0.3.1 2018/02/10</h1>
-<ul>
-<li>Be compatible with both wrapr 1.1.1 and 1.2.0.</li>
-</ul>
-</div>
-    <div id="rquery-0-3-0-20180131" class="section level1">
-<h1 class="hasAnchor">
-<a href="#rquery-0-3-0-20180131" class="anchor"></a>rquery 0.3.0 2018/01/31</h1>
-<ul>
-<li>Fix “desc”.</li>
-<li>Minor format change in rename (anticipate wrapr 1.2.0).</li>
-<li>Get ready for S3 wrapr_applicable and pipe_step (un-block wrapr 1.2.0 release).</li>
-</ul>
-</div>
-    <div id="rquery-0-2-0-20170122" class="section level1">
-<h1 class="hasAnchor">
-<a href="#rquery-0-2-0-20170122" class="anchor"></a>rquery 0.2.0 2017/01/22</h1>
-<ul>
-<li>Don’t store DB reference.</li>
-<li>Prepare for wrapr 1.1.0 features.</li>
-<li>Ad-hoc query modes.</li>
-<li>Fix statement partitioner.</li>
-<li>More flexibility on assignment notation.</li>
-</ul>
-</div>
-    <div id="rquery-0-1-0-20171203" class="section level1">
-<h1 class="hasAnchor">
-<a href="#rquery-0-1-0-20171203" class="anchor"></a>rquery 0.1.0 2017/12/03</h1>
-<ul>
-<li>Initial experiment</li>
-</ul>
-</div>
-    </div>
+    
+    <p>Please see <a href='https://github.com/WinVector/rquery/blob/master/extras/Summary_Example.md'>https://github.com/WinVector/rquery/blob/master/extras/Summary_Example.md</a> for an example.</p>
+    
+
+    <pre class="usage"><span class='fu'>quantile_node</span>(<span class='no'>source</span>, <span class='no'>cols</span>, <span class='no'>...</span>, <span class='kw'>probs_name</span> <span class='kw'>=</span> <span class='st'>"probs"</span>, <span class='kw'>probs</span> <span class='kw'>=</span> <span class='fu'>seq</span>(<span class='fl'>0</span>, <span class='fl'>1</span>,
+  <span class='fl'>0.25</span>), <span class='kw'>incoming_table_name</span> <span class='kw'>=</span> <span class='fu'>mk_tmp_name_source</span>(<span class='st'>"qin"</span>)(),
+  <span class='kw'>outgoing_table_name</span> <span class='kw'>=</span> <span class='fu'>mk_tmp_name_source</span>(<span class='st'>"qout"</span>)(), <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>source</th>
+      <td><p>source to select from (relop or data.frame).</p></td>
+    </tr>
+    <tr>
+      <th>cols</th>
+      <td><p>character, compute quantiles for these columns</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>force later arguments to be bound by name</p></td>
+    </tr>
+    <tr>
+      <th>probs_name</th>
+      <td><p>character, column name to write probs in.</p></td>
+    </tr>
+    <tr>
+      <th>probs</th>
+      <td><p>numeric quantiles to compute</p></td>
+    </tr>
+    <tr>
+      <th>incoming_table_name</th>
+      <td><p>character, name of incoming table.</p></td>
+    </tr>
+    <tr>
+      <th>outgoing_table_name</th>
+      <td><p>character, name of table to write.</p></td>
+    </tr>
+    <tr>
+      <th>overwrite</th>
+      <td><p>logical, if TRUE overwrite tables</p></td>
+    </tr>
+    <tr>
+      <th>temporary</th>
+      <td><p>logical, if TRUE use temporary tables</p></td>
+    </tr>
+    </table>
+    
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>table of quantiles</p>
+    
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <p><code><a href='rsummary.html'>rsummary</a></code>, <code><a href='non_sql_node.html'>non_sql_node</a></code></p>
+    
+
   </div>
-
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <div id="tocnav">
-      <h2>Contents</h2>
-      <ul class="nav nav-pills nav-stacked">
-        <li><a href="#rquery-0-4-1-20180313">0.4.1</a></li>
-        <li><a href="#rquery-0-4-0-20180310">0.4.0</a></li>
-        <li><a href="#rquery-0-3-1-20180210">0.3.1</a></li>
-        <li><a href="#rquery-0-3-0-20180131">0.3.0</a></li>
-        <li><a href="#rquery-0-2-0-20170122">0.2.0</a></li>
-        <li><a href="#rquery-0-1-0-20171203">0.1.0</a></li>
-      </ul>
-    </div>
-  </div>
+    <h2>Contents</h2>
+    <ul class="nav nav-pills nav-stacked">
+      <li><a href="#arguments">Arguments</a></li>
+      
+      <li><a href="#value">Value</a></li>
 
+      <li><a href="#see-also">See also</a></li>
+          </ul>
+
+  </div>
 </div>
 
       <footer>

@@ -2,13 +2,14 @@
 
 quantile_col <- function(db, incoming_table_name, probs, ci) {
   qcount <- paste0("
-     SELECT\n
-        COUNT(1)\n
-     FROM\n
-        ", DBI::dbQuoteIdentifier(incoming_table_name), "\n
-     WHERE\n
-        ", DBI::dbQuoteIdentifier(incoming_table_name), " IS NOT NULL\n")
-  nrows <- DBI::dbGetQuery(db, qcount)
+     SELECT
+        COUNT(1)
+     FROM
+        ", DBI::dbQuoteIdentifier(db, incoming_table_name), "
+     WHERE
+        ", DBI::dbQuoteIdentifier(db, ci), " IS NOT NULL")
+  nrows <- as.numeric(DBI::dbGetQuery(db, qcount)[[1]][[1]])
+  # was coming back s integer64 and messing up pmax(), pmin()
   if(nrows<1) {
     return(rep(NA, length(probs)))
   }
@@ -17,21 +18,21 @@ quantile_col <- function(db, incoming_table_name, probs, ci) {
   indexes <- pmin(nrows, indexes)
   indexes_str <- paste(indexes, collapse = ", ")
   q <- paste0("
-     SELECT\n
-        *\n
-      FROM (\n
-        SELECT\n
-           ", DBI::dbQuoteIdentifier(ci), ",\n
-           COUNT(1) AS idx_rquery OVER (ORDER BY ", DBI::dbQuoteIdentifier(ci), ")\n
-        FROM\n
-           ", DBI::dbQuoteIdentifier(incoming_table_name), ",\n
+     SELECT
+        *
+      FROM (
+        SELECT
+           ", DBI::dbQuoteIdentifier(db, ci), ",
+           COUNT(1) OVER (ORDER BY ", DBI::dbQuoteIdentifier(db, ci), ")  AS idx_rquery
+        FROM
+           ", DBI::dbQuoteIdentifier(db, incoming_table_name), "
         WHERE
-           ", DBI::dbQuoteIdentifier(ci), " IS NOT NULL\n
-      ) rquery_qtable\n
-     WHERE\n
-        idx_rquery IN (", indexes_str, ")\n
-     ORDER BY\n
-        idx_rquery\n")
+           ", DBI::dbQuoteIdentifier(db, ci), " IS NOT NULL
+      ) rquery_qtable
+     WHERE
+        idx_rquery IN (", indexes_str, ")
+     ORDER BY
+        idx_rquery")
   r <- DBI::dbGetQuery(db, q)
   r[[ci]]
 }
@@ -49,8 +50,7 @@ quantile_cols <- function(db, incoming_table_name, probs, probs_name, cols) {
 #' Compute quantiles over non-NULL values
 #' (without interpolation, needs a database with window functions).
 #'
-#' Note: not finished yet.
-#'
+#' Please see \url{https://github.com/WinVector/rquery/blob/master/extras/Summary_Example.md} for an example.
 #'
 #' @param source source to select from (relop or data.frame).
 #' @param cols character, compute quantiles for these columns
@@ -64,6 +64,7 @@ quantile_cols <- function(db, incoming_table_name, probs, probs_name, cols) {
 #' @return table of quantiles
 #'
 #' @seealso \code{\link{rsummary}}, \code{\link{non_sql_node}}
+#'
 #'
 #' @export
 #'
@@ -99,8 +100,6 @@ quantile_node <- function(source,
                      f,
                      incoming_table_name = incoming_table_name,
                      columns_used = cols,
-                     probs_name = probs_name,
-                     probs = probs,
                      outgoing_table_name = outgoing_table_name,
                      columns_produced = c(probs_name, cols),
                      display_form = paste0("quantile_node(., ",

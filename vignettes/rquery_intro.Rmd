@@ -89,7 +89,8 @@ same query that it is produced.
 The nested method looks like the following, we produce the column 
 `absv` in one query and then wrap that in another query 
 to later use the column.  For expressions longer than `ABS(v)` this
-is the preferred solution.
+is the preferred solution (until one moves to something like commmon
+table expressions).
 
 ```{r nestsql}
 DBI::dbGetQuery(db, "

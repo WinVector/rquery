@@ -105,7 +105,8 @@
     <p>Compute per-column summaries and return as a <code>data.frame</code>.  Warning: can be an expensive operation.</p>
     
 
-    <pre class="usage"><span class='fu'>rsummary</span>(<span class='no'>db</span>, <span class='no'>tableName</span>, <span class='no'>...</span>, <span class='kw'>countUniqueNum</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>cols</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>rsummary</span>(<span class='no'>db</span>, <span class='no'>tableName</span>, <span class='no'>...</span>, <span class='kw'>countUniqueNum</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>quartiles</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>cols</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -124,7 +125,11 @@
     </tr>
     <tr>
       <th>countUniqueNum</th>
-      <td><p>logical, if true include unique non-NA counts for numeric cols.</p></td>
+      <td><p>logical, if TRUE include unique non-NA counts for numeric cols.</p></td>
+    </tr>
+    <tr>
+      <th>quartiles</th>
+      <td><p>logical, if TRUE add Q1 (25%), median (50%), Q3 (75%) quartiles.</p></td>
     </tr>
     <tr>
       <th>cols</th>
