@@ -1,8 +1,9 @@
 
 # rquery 0.4.1 2018/03/14
 
+ * Fix re-run/re-create situations.
  * Pipe database connection.
- * Better quantile (assume window functions).
+ * Better quantile calc (assume window functions).
  * Improve dependency decls.
 
 # rquery 0.4.0 2018/03/10

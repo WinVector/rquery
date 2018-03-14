@@ -161,19 +161,14 @@ to_sql.relop_non_sql <- function (x,
                        quote_identifier(db, x$incoming_table_name),
                        " AS ",
                        subsql[[nsubsql]]))
-  step2 <- NULL
-  step3 <- NULL
-  if(!is.null(x$f)) {
-    # full case isolate before and after non-SQL op
-    nsql_step <- list(display_form = x$display_form,
-                      incoming_table_name = x$incoming_table_name,
-                      outgoing_table_name = x$outgoing_table_name,
-                      overwrite = x$overwrite,
-                      temporary = x$temporary,
-                      f = x$f)
-    class(nsql_step) <- "rquery_non_sql_step"
-    step2 <- list(nsql_step)
-  }
+  nsql_step <- list(display_form = x$display_form,
+                    incoming_table_name = x$incoming_table_name,
+                    outgoing_table_name = x$outgoing_table_name,
+                    overwrite = x$overwrite,
+                    temporary = x$temporary,
+                    f = x$f)
+  class(nsql_step) <- "rquery_non_sql_step"
+  step2 <- list(nsql_step)
   step3 <- list(to_sql(table_source(x$outgoing_table_name, column_names(x)),
                        db = db,
                        source_limit = source_limit,

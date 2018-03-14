@@ -71,14 +71,9 @@ materialize <- function(db,
       if(is.character(sqli)) {
         DBI::dbExecute(db, sqli)
       } else {
-        if(sqli$overwrite) {
-          if(DBI::dbExistsTable(db, sqli$outgoing_table_name)) {
-            DBI::dbExecute(db,
-                           paste0("DROP TABLE ",
-                                  quote_identifier(db, sqli$outgoing_table_name)))
-          }
+        if(!is.null(sqli$f)) {
+          sqli$f(db, sqli$incoming_table_name, sqli$outgoing_table_name)
         }
-        sqli$f(db, sqli$incoming_table_name, sqli$outgoing_table_name)
       }
     }
   }
