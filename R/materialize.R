@@ -46,6 +46,26 @@ materialize <- function(db,
   sql_list <- to_sql(optree, db,
                      source_limit = source_limit)
   if(length(sql_list)>=2) {
+    # clear intermediates first (don't clear first node in case)
+    # it is some durable table
+    for(ii in 2:length(sql_list)) {
+      sqli <- sql_list[[ii]]
+      if(!is.character(sqli)) {
+        if(sqli$overwrite) {
+          if(DBI::dbExistsTable(db, sqli$incoming_table_name)) {
+            DBI::dbExecute(db,
+                           paste0("DROP TABLE ",
+                                  quote_identifier(db, sqli$incoming_table_name)))
+          }
+          if(DBI::dbExistsTable(db, sqli$outgoing_table_name)) {
+            DBI::dbExecute(db,
+                           paste0("DROP TABLE ",
+                                  quote_identifier(db, sqli$outgoing_table_name)))
+          }
+        }
+      }
+    }
+    # do the work
     for(ii in seq_len(length(sql_list)-1)) {
       sqli <- sql_list[[ii]]
       if(is.character(sqli)) {
