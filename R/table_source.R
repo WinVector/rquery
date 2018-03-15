@@ -18,11 +18,11 @@
 #'
 #' if (requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'   DBI::dbWriteTable(my_db,
-#'                     'd',
-#'                     data.frame(AUC = 0.6, R2 = 0.2),
-#'                     overwrite = TRUE,
-#'                     temporary = TRUE)
+#'   dbi_copy_to(my_db,
+#'              'd',
+#'              data.frame(AUC = 0.6, R2 = 0.2),
+#'              overwrite = TRUE,
+#'              temporary = TRUE)
 #'   d <- table_source('d',
 #'                     columns = c("AUC", "R2"))
 #'   print(d)
@@ -48,27 +48,6 @@ table_source <- function(table_name, columns) {
 
 
 
-#' List fields from a dbi connection
-#'
-#' @param my_db DBI connection
-#' @param tableName character table name
-#' @return character list of column names
-#'
-#' @noRd
-#'
-listFields <- function(my_db, tableName) {
-  # fails intermitnently, and sometimes gives wrong results
-  # filed as: https://github.com/tidyverse/dplyr/issues/3204
-  # tryCatch(
-  #   return(DBI::dbListFields(my_db, tableName)),
-  #   error = function(e) { NULL })
-  # below is going to have issues to to R-column name conversion!
-  q <- paste0("SELECT * FROM ",
-              DBI::dbQuoteIdentifier(my_db, tableName),
-              " LIMIT 1")
-  v <- DBI::dbGetQuery(my_db, q)
-  colnames(v)
-}
 
 
 #' DBI data source.
@@ -91,11 +70,11 @@ listFields <- function(my_db, tableName) {
 #'
 #' if (requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'   DBI::dbWriteTable(my_db,
-#'                     'd',
-#'                     data.frame(AUC = 0.6, R2 = 0.2),
-#'                     overwrite = TRUE,
-#'                     temporary = TRUE)
+#'   dbi_copy_to(my_db,
+#'               'd',
+#'               data.frame(AUC = 0.6, R2 = 0.2),
+#'               overwrite = TRUE,
+#'               temporary = TRUE)
 #'   d <- dbi_table(my_db, 'd')
 #'   print(d)
 #'   sql <- to_sql(d, my_db)
@@ -206,71 +185,6 @@ format.relop_table_source <- function(x, ...) {
   }
   paste0("table", sym, "('", x$table_name, "')",
          "\n")
-}
-
-
-#' Local table to DBI data source.
-#'
-#' @param db database connection.
-#' @param table_name name of table to create.
-#' @param d data.frame to copy to database.
-#' @param ... force later argument to be by name
-#' @param overwrite passed to \code{\link[DBI]{dbWriteTable}}.
-#' @param temporary passed to \code{\link[DBI]{dbWriteTable}}.
-#' @param rowidcolumn character, name to land row-ids.
-#' @return a relop representation of the data
-#'
-#' @examples
-#'
-#' if (requireNamespace("RSQLite", quietly = TRUE)) {
-#'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'   d <- dbi_copy_to(my_db, 'd',
-#'                    data.frame(AUC = 0.6, R2 = 0.2))
-#'   sql <- to_sql(d, my_db)
-#'   cat(sql)
-#'   DBI::dbDisconnect(my_db)
-#' }
-#'
-#' @export
-#'
-dbi_copy_to <- function(db, table_name, d,
-                        ...,
-                        overwrite = FALSE,
-                        temporary = TRUE,
-                        rowidcolumn = NULL) {
-  wrapr::stop_if_dot_args(substitute(list(...)),
-                          "rquery::dbi_copy_to")
-  if(!is.null(rowidcolumn)) {
-    d[[rowidcolumn]] <- 1:nrow(d)
-  }
-  if(overwrite) {
-    DBI::dbWriteTable(db,
-                      table_name,
-                      d,
-                      overwrite = overwrite,
-                      temporary = temporary,
-                      append = FALSE)
-  } else {
-    # sparklyr does not take overwrite argument
-    DBI::dbWriteTable(db,
-                      table_name,
-                      d,
-                      temporary = temporary,
-                      append = FALSE)
-  }
-  dbi_table(db, table_name)
-}
-
-
-
-#' @export
-#'
-dim.relop_table_source <- function(x) {
-  rowcount <- NA
-  if(!is.null(x$data)) {
-    rowcount <- nrow(x$data)
-  }
-  c(rowcount, length(column_names(x)))
 }
 
 

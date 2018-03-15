@@ -164,9 +164,9 @@
                   <span class='kw'>stringsAsFactors</span><span class='kw'>=</span><span class='fl'>FALSE</span>)
   <span class='no'>db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
   <span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/initExtension'>initExtension</a></span>(<span class='no'>db</span>)
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbWriteTable'>dbWriteTable</a></span>(<span class='no'>db</span>, <span class='st'>"dRemote"</span>, <span class='no'>d</span>,
-                    <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-                    <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+  <span class='fu'><a href='dbi_copy_to.html'>dbi_copy_to</a></span>(<span class='no'>db</span>, <span class='st'>"dRemote"</span>, <span class='no'>d</span>,
+              <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+              <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 
   <span class='no'>ops</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dbi_table.html'>dbi_table</a></span>(<span class='no'>db</span>, <span class='st'>"dRemote"</span>) <span class='kw'>%.&gt;%</span>
     <span class='fu'><a href='extend_nse.html'>extend_nse</a></span>(<span class='no'>.</span>, <span class='no'>v</span> <span class='kw'>:=</span> <span class='fu'>ifelse</span>(<span class='no'>x</span><span class='kw'>&gt;</span><span class='fl'>2</span>, <span class='st'>"x"</span>, <span class='st'>"y"</span>)) <span class='kw'>%.&gt;%</span>

@@ -187,11 +187,17 @@ to_sql <- function (x,
   UseMethod("to_sql", x)
 }
 
+#' @export
+#'
+dimnames.relop <- function(x) {
+  column_names(x)
+}
 
 
 #' @export
 #'
 dim.relop <- function(x) {
+  # not populating number of rows, as that can be expensive
   c(NA_real_, length(column_names(x)))
 }
 

@@ -54,16 +54,8 @@ materialize <- function(db,
       sqli <- sql_list[[ii]]
       if(!is.character(sqli)) {
         if(sqli$overwrite) {
-          if(DBI::dbExistsTable(db, sqli$incoming_table_name)) {
-            DBI::dbExecute(db,
-                           paste0("DROP TABLE ",
-                                  quote_identifier(db, sqli$incoming_table_name)))
-          }
-          if(DBI::dbExistsTable(db, sqli$outgoing_table_name)) {
-            DBI::dbExecute(db,
-                           paste0("DROP TABLE ",
-                                  quote_identifier(db, sqli$outgoing_table_name)))
-          }
+          dbi_remove_table(db, sqli$incoming_table_name)
+          dbi_remove_table(db, sqli$outgoing_table_name)
         }
       }
     }
@@ -81,11 +73,7 @@ materialize <- function(db,
   }
   sql <- sql_list[[length(sql_list)]]
   if(overwrite) {
-    if(DBI::dbExistsTable(db, table_name)) {
-      DBI::dbExecute(db,
-                     paste0("DROP TABLE ",
-                            quote_identifier(db, table_name)))
-    }
+    dbi_remove_table(db, table_name)
   }
   if(is.character(sql)) {
     sql <- paste0("CREATE ",
@@ -187,7 +175,7 @@ execute <- function(source,
                    format(ceiling(limit), scientific = FALSE))
     }
     res <- DBI::dbGetQuery(db, sql)
-    DBI::dbRemoveTable(db, ref$table_name)
+    dbi_remove_table(db, ref$table_name)
   }
   res
 }
@@ -223,9 +211,9 @@ commencify <- execute
 #'                   stringsAsFactors=FALSE)
 #'   db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   RSQLite::initExtension(db)
-#'   DBI::dbWriteTable(db, "dRemote", d,
-#'                     overwrite = TRUE,
-#'                     temporary = TRUE)
+#'   dbi_copy_to(db, "dRemote", d,
+#'               overwrite = TRUE,
+#'               temporary = TRUE)
 #'
 #'   ops <- dbi_table(db, "dRemote") %.>%
 #'     extend_nse(., v := ifelse(x>2, "x", "y")) %.>%

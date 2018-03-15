@@ -70,8 +70,8 @@ summarize_columns <- function(db, tableName,
 #'                   stringsAsFactors=FALSE)
 #'   db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   RSQLite::initExtension(db)
-#'   DBI::dbWriteTable(db, "dRemote", d,
-#'                     overwrite = TRUE, temporary = TRUE)
+#'   dbi_copy_to(db, "dRemote", d,
+#'               overwrite = TRUE, temporary = TRUE)
 #'   rsummary(db, "dRemote")
 #'   DBI::dbDisconnect(db)
 #' }
@@ -96,12 +96,7 @@ rsummary <- function(db,
   }
   nrows <- 0
   if(nrow(localSample)>0) {
-    nrowst <- DBI::dbGetQuery(db,
-                              paste0("SELECT COUNT(1) FROM ",
-                                    DBI::dbQuoteIdentifier(db,
-                                                           tableName)))
-    # integer64 was coming back
-    nrows <- as.numeric(nrowst[[1]][[1]])
+    nrows <- dbi_nrow(db, tableName)
   }
   cmap <- seq_len(length(cnames))
   names(cmap) <- cnames
@@ -344,9 +339,9 @@ rsummary <- function(db,
 #'                   stringsAsFactors=FALSE)
 #'   db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   RSQLite::initExtension(db)
-#'   DBI::dbWriteTable(db, "dRemote", d,
-#'                     overwrite = TRUE,
-#'                     temporary = TRUE)
+#'   dbi_copy_to(db, "dRemote", d,
+#'               overwrite = TRUE,
+#'               temporary = TRUE)
 #'
 #'   ops <- dbi_table(db, "dRemote") %.>%
 #'     extend_nse(., v := ifelse(x>2, "x", "y")) %.>%

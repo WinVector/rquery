@@ -196,10 +196,3 @@ to_sql.relop_orderby <- function (x,
   c(subsql_list[-length(subsql_list)], q)
 }
 
-#' @export
-#'
-dim.relop_orderby <- function(x) {
-  ncol <- length(column_names(x))
-  nrow <- nrow(x$source[[1]])
-  c(nrow, ncol)
-}

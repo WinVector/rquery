@@ -262,13 +262,13 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
        `d`.`assessmentTotal`
       FROM
        `d` LIMIT 1000
-      ) tsql_45989881484361815116_0000000000
-     ) tsql_45989881484361815116_0000000001
-   ) tsql_45989881484361815116_0000000002
-  ) tsql_45989881484361815116_0000000003
+      ) tsql_15311140421915612344_0000000000
+     ) tsql_15311140421915612344_0000000001
+   ) tsql_15311140421915612344_0000000002
+  ) tsql_15311140421915612344_0000000003
   WHERE `rank` = `count`
- ) tsql_45989881484361815116_0000000004
-) tsql_45989881484361815116_0000000005 ORDER BY `subjectID`</code></pre>
+ ) tsql_15311140421915612344_0000000004
+) tsql_15311140421915612344_0000000005 ORDER BY `subjectID`</code></pre>
 <p>The query is large, but due to its regular structure it should be very amenable to query optimization.</p>
 <p>A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our <a href="https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md">initial experiments</a> show <code>rquery</code> narrowed queries to be twice as fast as un-narrowed <code>dplyr</code> on a synthetic problem simulating large disk-based queries. We think if we connected directly to <code>Spark</code>’s relational operators (avoiding the <code>SQL</code> layer) we may be able to achieve even faster performance.</p>
 <p>The above optimization is possible because the <code>rquery</code> representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query. For example:</p>

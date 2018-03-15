@@ -8,36 +8,58 @@ output: github_document
 ```{r}
 library("rquery")
 
-# driver <- RPostgreSQL::PostgreSQL()
-driver <- RPostgres::Postgres()
-db <- DBI::dbConnect(driver,
+run_example <- function(db) {
+  print("***********")
+  print(db)
+  d <- dbi_copy_to(db, "d",
+                   data.frame(v = NA_real_,
+                              w = 1,
+                              x = c(rev(1:10), NA, NA),
+                              y = c(NA, NA, sin(1:10)),
+                              z = rev(letters[1:12]),
+                              stringsAsFactors = FALSE),
+                   temporary = TRUE,
+                   overwrite = TRUE)
+  
+  optree <- d %.>%
+    quantile_node(.) 
+  print(optree)
+  
+  execute(db, optree) %.>%
+    print(.)
+  
+  optrees <- d %.>%
+    rsummary_node(., quartiles = TRUE) 
+  print(optrees)
+  
+  execute(db, optrees) %.>%
+    print(.)
+  
+  dbi_remove_table(db, "d")
+}
+
+db <- sparklyr::spark_connect(version='2.2.0', 
+                                master = "local")
+run_example(db)
+sparklyr::spark_disconnect(db)
+
+
+
+db <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
                      host = 'localhost',
                      port = 5432,
                      user = 'johnmount',
                      password = '')
-
-dbi_copy_to(db, "d",
-            data.frame(v = NA_real_,
-                       w = 1,
-                       x = c(rev(1:10), NA, NA),
-                       y = c(NA, NA, sin(1:10)),
-                       z = rev(letters[1:12]),
-                       stringsAsFactors = FALSE),
-            temporary = TRUE,
-            overwrite = TRUE)
-
-optree <- dbi_table(db, "d") %.>%
-  quantile_node(.)
-
-execute(db, optree) %.>%
-  knitr::kable(.)
-
-
-optrees <- dbi_table(db, "d") %.>%
-  rsummary_node(., quartiles = TRUE)
-
-execute(db, optrees) %.>%
-  knitr::kable(.)
-
+run_example(db)
 DBI::dbDisconnect(db)
+
+db <- DBI::dbConnect(RPostgres::Postgres(),
+                     host = 'localhost',
+                     port = 5432,
+                     user = 'johnmount',
+                     password = '')
+run_example(db)
+DBI::dbDisconnect(db)
+
+
 ```

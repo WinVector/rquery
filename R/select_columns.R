@@ -143,12 +143,4 @@ to_sql.relop_select_columns <- function (x,
 }
 
 
-#' @export
-#'
-dim.relop_select_columns <- function(x) {
-  ncol <- length(column_names(x))
-  nrow <- nrow(x$source[[1]])
-  c(nrow, ncol)
-}
-
 
