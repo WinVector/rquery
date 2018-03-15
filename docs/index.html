@@ -85,9 +85,12 @@
 <a href="#rquery" class="anchor"></a><code>rquery</code>
 </h1></div>
 <p><a href="https://winvector.github.io/rquery/"><code>rquery</code></a> is a query generator based on <a href="https://en.wikipedia.org/wiki/Relational_algebra">Codd’s relational algebra</a> (updated to reflect lessons learned from working with <a href="https://www.r-project.org"><code>R</code></a>, <a href="https://en.wikipedia.org/wiki/SQL"><code>SQL</code></a>, and <a href="https://CRAN.R-project.org/package=dplyr"><code>dplyr</code></a> at big data scale in production). One goal of this experiment is to see if <code>SQL</code> would be more fun teachable if it had a sequential data-flow or pipe notation.</p>
-<p><code>rquery</code> is currently experimental, and not yet recommended for production use.</p>
+<p><code>rquery</code> is currently currenlty recommended for user with <code>Spark</code> and <code>PostgreSQL</code> (and with non-window functionality with <code>RSQLite</code>).</p>
 <p>To install: <code><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">devtools::install_github("WinVector/rquery")</a></code>.</p>
 <p>A good place to start is the <a href="https://winvector.github.io/rquery/articles/rquery_intro.html"><code>rquery</code> introductory vignette</a>.</p>
+<div class="figure">
+<img src="https://github.com/WinVector/rquery/raw/master/tools/rquery.jpg">
+</div>
 </div>
 <div id="discussion" class="section level1">
 <h1 class="hasAnchor">
@@ -262,13 +265,13 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
        `d`.`assessmentTotal`
       FROM
        `d` LIMIT 1000
-      ) tsql_15311140421915612344_0000000000
-     ) tsql_15311140421915612344_0000000001
-   ) tsql_15311140421915612344_0000000002
-  ) tsql_15311140421915612344_0000000003
+      ) tsql_78993842188827477378_0000000000
+     ) tsql_78993842188827477378_0000000001
+   ) tsql_78993842188827477378_0000000002
+  ) tsql_78993842188827477378_0000000003
   WHERE `rank` = `count`
- ) tsql_15311140421915612344_0000000004
-) tsql_15311140421915612344_0000000005 ORDER BY `subjectID`</code></pre>
+ ) tsql_78993842188827477378_0000000004
+) tsql_78993842188827477378_0000000005 ORDER BY `subjectID`</code></pre>
 <p>The query is large, but due to its regular structure it should be very amenable to query optimization.</p>
 <p>A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our <a href="https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md">initial experiments</a> show <code>rquery</code> narrowed queries to be twice as fast as un-narrowed <code>dplyr</code> on a synthetic problem simulating large disk-based queries. We think if we connected directly to <code>Spark</code>’s relational operators (avoiding the <code>SQL</code> layer) we may be able to achieve even faster performance.</p>
 <p>The above optimization is possible because the <code>rquery</code> representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query. For example:</p>

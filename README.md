@@ -5,11 +5,13 @@
 
 [`rquery`](https://winvector.github.io/rquery/) is a query generator based on [Codd's relational algebra](https://en.wikipedia.org/wiki/Relational_algebra) (updated to reflect lessons learned from working with [`R`](https://www.r-project.org), [`SQL`](https://en.wikipedia.org/wiki/SQL), and [`dplyr`](https://CRAN.R-project.org/package=dplyr) at big data scale in production). One goal of this experiment is to see if `SQL` would be more fun teachable if it had a sequential data-flow or pipe notation.
 
-`rquery` is currently experimental, and not yet recommended for production use.
+`rquery` is currently currenlty recommended for user with `Spark` and `PostgreSQL` (and with non-window functionality with `RSQLite`).
 
 To install: `devtools::install_github("WinVector/rquery")`.
 
 A good place to start is the [`rquery` introductory vignette](https://winvector.github.io/rquery/articles/rquery_intro.html).
+
+![](https://github.com/WinVector/rquery/raw/master/tools/rquery.jpg)
 
 Discussion
 ==========
@@ -165,13 +167,13 @@ cat(to_sql(dq, my_db, source_limit = 1000))
            `d`.`assessmentTotal`
           FROM
            `d` LIMIT 1000
-          ) tsql_88631149118414686733_0000000000
-         ) tsql_88631149118414686733_0000000001
-       ) tsql_88631149118414686733_0000000002
-      ) tsql_88631149118414686733_0000000003
+          ) tsql_35062551693278853150_0000000000
+         ) tsql_35062551693278853150_0000000001
+       ) tsql_35062551693278853150_0000000002
+      ) tsql_35062551693278853150_0000000003
       WHERE `rank` = `count`
-     ) tsql_88631149118414686733_0000000004
-    ) tsql_88631149118414686733_0000000005 ORDER BY `subjectID`
+     ) tsql_35062551693278853150_0000000004
+    ) tsql_35062551693278853150_0000000005 ORDER BY `subjectID`
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
