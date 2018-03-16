@@ -16,7 +16,7 @@
 #'   cat(format(eqn))
 #'   sql <- to_sql(eqn, my_db)
 #'   cat(sql)
-#'   DBI::dbGetQuery(my_db, sql)
+#'   print(DBI::dbGetQuery(my_db, sql))
 #'   DBI::dbDisconnect(my_db)
 #' }
 #' @export
@@ -74,7 +74,7 @@ select_rows_se.data.frame <- function(source, expr,
 #'   cat(format(eqn))
 #'   sql <- to_sql(eqn, my_db)
 #'   cat(sql)
-#'   DBI::dbGetQuery(my_db, sql)
+#'   print(DBI::dbGetQuery(my_db, sql))
 #'   DBI::dbDisconnect(my_db)
 #' }
 #'

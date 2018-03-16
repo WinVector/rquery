@@ -165,12 +165,13 @@
     <span class='fu'><a href='extend_nse.html'>extend_nse</a></span>(<span class='no'>.</span>, <span class='no'>v2</span> <span class='kw'>:=</span> <span class='fu'>ifelse</span>(<span class='no'>x</span><span class='kw'>&gt;</span><span class='fl'>2</span>, <span class='st'>"x"</span>, <span class='st'>"y"</span>))
   <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>ops</span>))
 
-  <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>ops</span>, <span class='no'>db</span>)
+  <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>ops</span>, <span class='no'>db</span>) <span class='kw'>%.&gt;%</span>
+     <span class='fu'>print</span>(<span class='no'>.</span>)
 
   <span class='no'>reshdl</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='materialize.html'>materialize</a></span>(<span class='no'>db</span>, <span class='no'>ops</span>)
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>db</span>, <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>reshdl</span>, <span class='no'>db</span>))
+  <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>db</span>, <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>reshdl</span>, <span class='no'>db</span>)))
 
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>db</span>, <span class='st'>"SELECT * FROM intermediate"</span>)
+  <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>db</span>, <span class='st'>"SELECT * FROM intermediate"</span>))
 
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>db</span>)
 }</div><div class='output co'>#&gt; table('dRemote') %.&gt;%
@@ -178,7 +179,24 @@
 #&gt;   v := ifelse(x &gt; 2, "x", "y")) %.&gt;%
 #&gt;  non_sql_node(., materialize_node(., intermediate)) %.&gt;%
 #&gt;  extend(.,
-#&gt;   v2 := ifelse(x &gt; 2, "x", "y"))</div><div class='input'>
+#&gt;   v2 := ifelse(x &gt; 2, "x", "y"))
+#&gt; [[1]]
+#&gt; [1] "CREATE  TABLE `intermediate` AS   SELECT\n   `p`,\n   `s`,\n   `w`,\n   `x`,\n   `y`,\n   `z`,\n   ( CASE WHEN ( `x` &gt; 2 ) THEN ( 'x' ) ELSE ( 'y' ) END )  AS `v`\n  FROM (\n   SELECT\n    `dRemote`.`p`,\n    `dRemote`.`s`,\n    `dRemote`.`w`,\n    `dRemote`.`x`,\n    `dRemote`.`y`,\n    `dRemote`.`z`\n   FROM\n    `dRemote`\n   ) tsql_77593170710789316807_0000000000"
+#&gt; 
+#&gt; [[2]]
+#&gt; [1] "non SQL step:  materialize_node(., intermediate)"
+#&gt; 
+#&gt; [[3]]
+#&gt; [1] "SELECT\n `p`,\n `s`,\n `v`,\n `w`,\n `x`,\n `y`,\n `z`,\n ( CASE WHEN ( `x` &gt; 2 ) THEN ( 'x' ) ELSE ( 'y' ) END )  AS `v2`\nFROM (\n  SELECT\n   `intermediate`.`p`,\n   `intermediate`.`s`,\n   `intermediate`.`v`,\n   `intermediate`.`w`,\n   `intermediate`.`x`,\n   `intermediate`.`y`,\n   `intermediate`.`z`\n  FROM\n   `intermediate`\n ) tsql_77593170710789316807_0000000001\n"
+#&gt; 
+#&gt;    p  s v w  x    y    z v2
+#&gt; 1  1 NA y 1 NA    3    a  y
+#&gt; 2  0 NA y 2  2    5 &lt;NA&gt;  y
+#&gt; 3 NA NA x 3  3 &lt;NA&gt;    a  x
+#&gt;    p  s w  x    y    z v
+#&gt; 1  1 NA 1 NA    3    a y
+#&gt; 2  0 NA 2  2    5 &lt;NA&gt; y
+#&gt; 3 NA NA 3  3 &lt;NA&gt;    a x</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

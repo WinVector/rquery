@@ -34,9 +34,9 @@ re_write_table_names <- function(op_tree, new_name) {
 #'   	extend_nse(., c := sqrt(R2)) %.>%
 #'     orderby(., rev_cols = "R2")
 #'
-#'
 #'   d <- data.frame(AUC = 0.6, R2 = c(0.1, 0.2), D = NA, z = 2)
-#'   rquery_apply_to_data_frame(d, optree)
+#'   rquery_apply_to_data_frame(d, optree) %.>%
+#'      print(.)
 #'
 #'   winvector_temp_db_handle <- NULL
 #'   DBI::dbDisconnect(db)
@@ -221,7 +221,6 @@ head.relop <- function(x, ...) {
 #'   RSQLite::initExtension(db)
 #'   winvector_temp_db_handle <- list(db = db)
 #'
-#'
 #'   # operations pipeline/tree
 #'   optree <- table_source("d", "x") %.>%
 #'     extend_nse(., y = x*x)
@@ -229,7 +228,7 @@ head.relop <- function(x, ...) {
 #'   # wrapr dot pipe wrapr_function dispatch
 #'   # causes this statment to apply optree
 #'   # to d.
-#'   data.frame(x = 1:3) %.>% optree
+#'   data.frame(x = 1:3) %.>% optree %.>% print(.)
 #'
 #'   # remote example
 #'   dbi_copy_to(db, "d",
@@ -240,7 +239,7 @@ head.relop <- function(x, ...) {
 #'   # wrapr dot pipe wrapr_function dispatch
 #'   # causes this statment to apply optree
 #'   # to db.
-#'   db %.>% optree
+#'   db %.>% optree %.>% print(.)
 #'
 #'   # clean up
 #'   rm(list = "winvector_temp_db_handle")

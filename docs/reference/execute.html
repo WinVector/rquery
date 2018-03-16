@@ -172,15 +172,17 @@ table.</p>
 
   <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>optree</span>))
 
-  <span class='fu'>execute</span>(<span class='no'>my_db</span>, <span class='no'>optree</span>)
+  <span class='fu'>execute</span>(<span class='no'>my_db</span>, <span class='no'>optree</span>) <span class='kw'>%.&gt;%</span>
+     <span class='fu'>print</span>(<span class='no'>.</span>)
 
-  <span class='fu'>execute</span>(<span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>2</span>), <span class='no'>optree</span>)
+  <span class='fu'>execute</span>(<span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>2</span>), <span class='no'>optree</span>) <span class='kw'>%.&gt;%</span>
+     <span class='fu'>print</span>(<span class='no'>.</span>)
 
   <span class='co'># land result in database</span>
   <span class='no'>res_hdl</span> <span class='kw'>&lt;-</span> <span class='fu'>execute</span>(<span class='no'>my_db</span>, <span class='no'>optree</span>, <span class='kw'>table_name</span> <span class='kw'>=</span> <span class='st'>"res"</span>)
   <span class='fu'>print</span>(<span class='no'>res_hdl</span>)
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>res_hdl</span>, <span class='no'>my_db</span>))
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbReadTable'>dbReadTable</a></span>(<span class='no'>my_db</span>, <span class='no'>res_hdl</span>$<span class='no'>table_name</span>)
+  <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>res_hdl</span>, <span class='no'>my_db</span>)))
+  <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbReadTable'>dbReadTable</a></span>(<span class='no'>my_db</span>, <span class='no'>res_hdl</span>$<span class='no'>table_name</span>))
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbRemoveTable'>dbRemoveTable</a></span>(<span class='no'>my_db</span>, <span class='no'>res_hdl</span>$<span class='no'>table_name</span>)
 
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
@@ -190,7 +192,15 @@ table.</p>
 #&gt;   v := AUC + R2) %.&gt;%
 #&gt;  extend(.,
 #&gt;   x := pmax(AUC, v))
-#&gt; [1] "table('res')"</div><div class='input'>
+#&gt;   AUC  R2   v   x
+#&gt; 1 0.6 0.2 0.8 0.8
+#&gt;   AUC R2 v x
+#&gt; 1   1  2 3 3
+#&gt; [1] "table('res')"
+#&gt;   AUC  R2   v   x
+#&gt; 1 0.6 0.2 0.8 0.8
+#&gt;   AUC  R2   v   x
+#&gt; 1 0.6 0.2 0.8 0.8</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

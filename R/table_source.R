@@ -28,7 +28,7 @@
 #'   print(d)
 #'   sql <- to_sql(d, my_db)
 #'   cat(sql)
-#'   DBI::dbGetQuery(my_db, sql)
+#'   print(DBI::dbGetQuery(my_db, sql))
 #'   DBI::dbDisconnect(my_db)
 #' }
 #'
@@ -85,7 +85,7 @@ table_source <- function(table_name, columns) {
 #'
 #'   sql2 <- to_sql(d, my_db, using = "AUC")
 #'   cat(sql2)
-#'   DBI::dbGetQuery(my_db, sql2)
+#'   print(DBI::dbGetQuery(my_db, sql2))
 #'   DBI::dbDisconnect(my_db)
 #' }
 #'

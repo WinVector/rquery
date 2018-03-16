@@ -135,7 +135,7 @@
   <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>eqn</span>))
   <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>eqn</span>, <span class='no'>my_db</span>)
   <span class='fu'>cat</span>(<span class='no'>sql</span>)
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)
+  <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
 }</div><div class='output co'>#&gt; table('d') %.&gt;%
 #&gt;  select_columns(., AUC)
@@ -146,7 +146,9 @@
 #&gt;   `d`.`AUC`
 #&gt;  FROM
 #&gt;   `d`
-#&gt; ) tsql_08513687418830972313_0000000000</div><div class='input'>
+#&gt; ) tsql_08513687418830972313_0000000000
+#&gt;   AUC
+#&gt; 1 0.6</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

@@ -146,10 +146,12 @@
   <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>op_tree</span>))
   <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>op_tree</span>, <span class='no'>my_db</span>)
   <span class='fu'>cat</span>(<span class='no'>sql</span>)
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)
+  <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
 
   <span class='co'># ad-hoc mode</span>
-  <span class='fu'>data.frame</span>(<span class='kw'>AUC</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='fl'>1</span>,<span class='fl'>NA</span>,<span class='fl'>0.5</span>), <span class='kw'>R2</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='fl'>NA</span>,<span class='fl'>1</span>,<span class='fl'>0</span>)) <span class='kw'>%.&gt;%</span> <span class='no'>op_tree</span>
+  <span class='fu'>data.frame</span>(<span class='kw'>AUC</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='fl'>1</span>,<span class='fl'>NA</span>,<span class='fl'>0.5</span>), <span class='kw'>R2</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='fl'>NA</span>,<span class='fl'>1</span>,<span class='fl'>0</span>)) <span class='kw'>%.&gt;%</span>
+     <span class='no'>op_tree</span> <span class='kw'>%.&gt;%</span>
+     <span class='fu'>print</span>(<span class='no'>.</span>)
 
   <span class='co'># cleanup</span>
   <span class='fu'>rm</span>(<span class='kw'>list</span> <span class='kw'>=</span> <span class='st'>"winvector_temp_db_handle"</span>)
@@ -167,7 +169,15 @@
 #&gt;   `d`.`R2`
 #&gt;  FROM
 #&gt;   `d`
-#&gt; ) tsql_54763920521987550316_0000000000</div><div class='input'>
+#&gt; ) tsql_54763920521987550316_0000000000
+#&gt;   AUC  R2 AUC_NULL R2_NULL
+#&gt; 1 0.6 1.0        0       0
+#&gt; 2 0.5 0.9        0       0
+#&gt; 3  NA  NA        1       1
+#&gt;   AUC R2 AUC_NULL R2_NULL
+#&gt; 1 1.0 NA        0       1
+#&gt; 2  NA  1        1       0
+#&gt; 3 0.5  0        0       0</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

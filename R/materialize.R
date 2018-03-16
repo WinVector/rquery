@@ -28,7 +28,7 @@
 #'   cat(format(res))
 #'   sql <- to_sql(res, my_db)
 #'   cat(sql)
-#'   DBI::dbGetQuery(my_db, sql)
+#'   print(DBI::dbGetQuery(my_db, sql))
 #'   DBI::dbDisconnect(my_db)
 #' }
 #'
@@ -122,15 +122,17 @@ materialize <- function(db,
 #'
 #'   cat(format(optree))
 #'
-#'   execute(my_db, optree)
+#'   execute(my_db, optree) %.>%
+#'      print(.)
 #'
-#'   execute(data.frame(AUC = 1, R2 = 2), optree)
+#'   execute(data.frame(AUC = 1, R2 = 2), optree) %.>%
+#'      print(.)
 #'
 #'   # land result in database
 #'   res_hdl <- execute(my_db, optree, table_name = "res")
 #'   print(res_hdl)
-#'   DBI::dbGetQuery(my_db, to_sql(res_hdl, my_db))
-#'   DBI::dbReadTable(my_db, res_hdl$table_name)
+#'   print(DBI::dbGetQuery(my_db, to_sql(res_hdl, my_db)))
+#'   print(DBI::dbReadTable(my_db, res_hdl$table_name))
 #'   DBI::dbRemoveTable(my_db, res_hdl$table_name)
 #'
 #'   DBI::dbDisconnect(my_db)
@@ -221,12 +223,13 @@ commencify <- execute
 #'     extend_nse(., v2 := ifelse(x>2, "x", "y"))
 #'   cat(format(ops))
 #'
-#'   to_sql(ops, db)
+#'   to_sql(ops, db) %.>%
+#'      print(.)
 #'
 #'   reshdl <- materialize(db, ops)
-#'   DBI::dbGetQuery(db, to_sql(reshdl, db))
+#'   print(DBI::dbGetQuery(db, to_sql(reshdl, db)))
 #'
-#'   DBI::dbGetQuery(db, "SELECT * FROM intermediate")
+#'   print(DBI::dbGetQuery(db, "SELECT * FROM intermediate"))
 #'
 #'   DBI::dbDisconnect(db)
 #' }

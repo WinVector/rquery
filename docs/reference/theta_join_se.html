@@ -158,7 +158,7 @@
   <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>eqn</span>))
   <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>eqn</span>, <span class='no'>my_db</span>)
   <span class='fu'>cat</span>(<span class='no'>sql</span>)
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)
+  <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
 }</div><div class='output co'>#&gt; table('d1') %.&gt;%
 #&gt;  theta_join(.,
@@ -182,7 +182,9 @@
 #&gt;   `d2`.`R2`
 #&gt;  FROM
 #&gt;   `d2`
-#&gt; ) `tsql_25503994207945099606_0000000001` ON `AUC` &gt;= `AUC2`</div><div class='input'>
+#&gt; ) `tsql_25503994207945099606_0000000001` ON `AUC` &gt;= `AUC2`
+#&gt;   AUC R2_a AUC2 R2_b
+#&gt; 1 0.6  0.2  0.4  0.3</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

@@ -105,7 +105,7 @@ extend_impl_list <- function(source, parsed,
 #'   cat(format(eqn))
 #'   sql <- to_sql(eqn, my_db)
 #'   cat(sql)
-#'   DBI::dbGetQuery(my_db, sql)
+#'   print(DBI::dbGetQuery(my_db, sql))
 #'
 #'   # SQLite can not run the following query
 #'   eqn2 <- extend_se(d, "v" := "rank()",
@@ -194,7 +194,7 @@ extend_se.data.frame <- function(source, assignments,
 #'   cat(format(eqn))
 #'   sql <- to_sql(eqn, my_db)
 #'   cat(sql)
-#'   DBI::dbGetQuery(my_db, sql)
+#'   print(DBI::dbGetQuery(my_db, sql))
 #'   DBI::dbDisconnect(my_db)
 #' }
 #'

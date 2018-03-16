@@ -54,14 +54,16 @@ project_impl <- function(source, groupby, parsed) {
 #'   cat(format(op_tree))
 #'   sql <- to_sql(op_tree, my_db)
 #'   cat(sql)
-#'   execute(my_db, op_tree)
+#'   execute(my_db, op_tree) %.>%
+#'      print(.)
 #'
 #'   op_tree <- d %.>%
 #'     project_se(., NULL, "vmax" := "max(val)")
 #'   cat(format(op_tree))
 #'   sql <- to_sql(op_tree, my_db)
 #'   cat(sql)
-#'   execute(my_db, op_tree)
+#'   execute(my_db, op_tree) %.>%
+#'      print(.)
 #'
 #'   DBI::dbDisconnect(my_db)
 #' }
@@ -118,14 +120,16 @@ project_se.data.frame <- function(source, groupby, assignments,
 #'   cat(format(op_tree))
 #'   sql <- to_sql(op_tree, my_db)
 #'   cat(sql)
-#'   execute(my_db, op_tree)
+#'   execute(my_db, op_tree) %.>%
+#'      print(.)
 #'
 #'   op_tree <- d %.>%
 #'     project_nse(., NULL, vmax := max(val))
 #'   cat(format(op_tree))
 #'   sql <- to_sql(op_tree, my_db)
 #'   cat(sql)
-#'   execute(my_db, op_tree)
+#'   execute(my_db, op_tree) %.>%
+#'     print(.)
 #'
 #'   DBI::dbDisconnect(my_db)
 #' }

@@ -156,7 +156,7 @@ SQL optimizers likely make this zero-cost anyway.</p>
 
   <span class='no'>sql2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>d</span>, <span class='no'>my_db</span>, <span class='kw'>using</span> <span class='kw'>=</span> <span class='st'>"AUC"</span>)
   <span class='fu'>cat</span>(<span class='no'>sql2</span>)
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql2</span>)
+  <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql2</span>))
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
 }</div><div class='output co'>#&gt; [1] "table('d')"
 #&gt; SELECT
@@ -170,7 +170,9 @@ SQL optimizers likely make this zero-cost anyway.</p>
 #&gt; SELECT
 #&gt;  `d`.`AUC`
 #&gt; FROM
-#&gt;  `d`</div><div class='input'>
+#&gt;  `d`
+#&gt;   AUC
+#&gt; 1 0.6</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

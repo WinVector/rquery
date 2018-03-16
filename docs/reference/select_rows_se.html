@@ -139,7 +139,7 @@
   <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>eqn</span>))
   <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>eqn</span>, <span class='no'>my_db</span>)
   <span class='fu'>cat</span>(<span class='no'>sql</span>)
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)
+  <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
 }</div><div class='output co'>#&gt; table('d') %.&gt;%
 #&gt;  select_rows(., rquery_select_condition_1 := AUC &gt;= 0.5)
@@ -150,7 +150,9 @@
 #&gt;  FROM
 #&gt;   `d`
 #&gt; ) tsql_37214867073274708395_0000000000
-#&gt; WHERE `AUC` &gt;= 0.5</div></pre>
+#&gt; WHERE `AUC` &gt;= 0.5
+#&gt;   AUC  R2
+#&gt; 1 0.6 0.2</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

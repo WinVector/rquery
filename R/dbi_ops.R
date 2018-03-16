@@ -61,7 +61,7 @@ dbi_remove_table <- function(db, table_name) {
 #'
 #'   sql <- to_sql(d, my_db)
 #'   cat(sql)
-#'   DBI::dbGetQuery(my_db, "SELECT * FROM d")
+#'   print(DBI::dbGetQuery(my_db, "SELECT * FROM d"))
 #'   DBI::dbDisconnect(my_db)
 #' }
 #'

@@ -65,7 +65,7 @@ build_col_name_map <- function(colsa, colsb, suffix) {
 #'   cat(format(eqn))
 #'   sql <- to_sql(eqn, my_db)
 #'   cat(sql)
-#'   DBI::dbGetQuery(my_db, sql)
+#'   print(DBI::dbGetQuery(my_db, sql))
 #'   DBI::dbDisconnect(my_db)
 #' }
 #'
@@ -173,7 +173,7 @@ theta_join_se.data.frame <- function(a, b,
 #'   cat(format(eqn))
 #'   sql <- to_sql(eqn, my_db)
 #'   cat(sql)
-#'   DBI::dbGetQuery(my_db, sql)
+#'   print(DBI::dbGetQuery(my_db, sql))
 #'   DBI::dbDisconnect(my_db)
 #' }
 #'

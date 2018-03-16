@@ -72,7 +72,7 @@ summarize_columns <- function(db, tableName,
 #'   RSQLite::initExtension(db)
 #'   dbi_copy_to(db, "dRemote", d,
 #'               overwrite = TRUE, temporary = TRUE)
-#'   rsummary(db, "dRemote")
+#'   print(rsummary(db, "dRemote"))
 #'   DBI::dbDisconnect(db)
 #' }
 #'
@@ -348,10 +348,10 @@ rsummary <- function(db,
 #'     rsummary_node(.)
 #'   cat(format(ops))
 #'
-#'   to_sql(ops, db)
+#'   print(to_sql(ops, db))
 #'
 #'   reshdl <- materialize(db, ops)
-#'   DBI::dbGetQuery(db, to_sql(reshdl, db))
+#'   print(DBI::dbGetQuery(db, to_sql(reshdl, db)))
 #'
 #'   DBI::dbDisconnect(db)
 #' }

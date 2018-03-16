@@ -55,7 +55,7 @@
 #'   sql <- to_sql(trf, my_db)
 #'   cat(sql)
 #'
-#'   DBI::dbGetQuery(my_db, sql)
+#'   print(DBI::dbGetQuery(my_db, sql))
 #'
 #'   # Why we need to land the random selection early
 #'   # for SQLIte:
@@ -64,7 +64,7 @@
 #'              SELECT * from ( VALUES(1),(2) )
 #'           ) a
 #'        ) b"
-#'   DBI::dbGetQuery(my_db, q)
+#'   print(DBI::dbGetQuery(my_db, q))
 #'
 #'   DBI::dbDisconnect(my_db)
 #' }

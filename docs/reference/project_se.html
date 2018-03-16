@@ -149,14 +149,16 @@
   <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>op_tree</span>))
   <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>op_tree</span>, <span class='no'>my_db</span>)
   <span class='fu'>cat</span>(<span class='no'>sql</span>)
-  <span class='fu'><a href='execute.html'>execute</a></span>(<span class='no'>my_db</span>, <span class='no'>op_tree</span>)
+  <span class='fu'><a href='execute.html'>execute</a></span>(<span class='no'>my_db</span>, <span class='no'>op_tree</span>) <span class='kw'>%.&gt;%</span>
+     <span class='fu'>print</span>(<span class='no'>.</span>)
 
   <span class='no'>op_tree</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span>
     <span class='fu'>project_se</span>(<span class='no'>.</span>, <span class='kw'>NULL</span>, <span class='st'>"vmax"</span> <span class='kw'>:=</span> <span class='st'>"max(val)"</span>)
   <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>op_tree</span>))
   <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>op_tree</span>, <span class='no'>my_db</span>)
   <span class='fu'>cat</span>(<span class='no'>sql</span>)
-  <span class='fu'><a href='execute.html'>execute</a></span>(<span class='no'>my_db</span>, <span class='no'>op_tree</span>)
+  <span class='fu'><a href='execute.html'>execute</a></span>(<span class='no'>my_db</span>, <span class='no'>op_tree</span>) <span class='kw'>%.&gt;%</span>
+     <span class='fu'>print</span>(<span class='no'>.</span>)
 
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
 }</div><div class='output co'>#&gt; table('d') %.&gt;%
@@ -171,6 +173,9 @@
 #&gt;  ) tsql_96957576338419706867_0000000000
 #&gt; GROUP BY
 #&gt;  `group`
+#&gt;   group vmax
+#&gt; 1     a    2
+#&gt; 2     b    4
 #&gt; table('d') %.&gt;%
 #&gt;  project(., vmax := max(val),
 #&gt;   g= )
@@ -179,7 +184,9 @@
 #&gt;   `d`.`val`
 #&gt;  FROM
 #&gt;   `d`
-#&gt;  ) tsql_37789196042616760664_0000000000</div><div class='input'>
+#&gt;  ) tsql_37789196042616760664_0000000000
+#&gt;   vmax
+#&gt; 1    4</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

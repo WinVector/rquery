@@ -42,10 +42,12 @@ flatten_with_sep <- function(list_of_lists, sep_list) {
 #'   cat(format(op_tree))
 #'   sql <- to_sql(op_tree, my_db)
 #'   cat(sql)
-#'   DBI::dbGetQuery(my_db, sql)
+#'   print(DBI::dbGetQuery(my_db, sql))
 #'
 #'   # ad-hoc mode
-#'   data.frame(AUC=c(1,NA,0.5), R2=c(NA,1,0)) %.>% op_tree
+#'   data.frame(AUC=c(1,NA,0.5), R2=c(NA,1,0)) %.>%
+#'      op_tree %.>%
+#'      print(.)
 #'
 #'   # cleanup
 #'   rm(list = "winvector_temp_db_handle")
@@ -107,10 +109,12 @@ count_null_cols <- function(source, cols, count) {
 #'   cat(format(op_tree))
 #'   sql <- to_sql(op_tree, my_db)
 #'   cat(sql)
-#'   DBI::dbGetQuery(my_db, sql)
+#'   print(DBI::dbGetQuery(my_db, sql))
 #'
 #'   # ad-hoc mode
-#'   data.frame(AUC=c(1,NA,0.5), R2=c(NA,1,0)) %.>% op_tree
+#'   data.frame(AUC=c(1,NA,0.5), R2=c(NA,1,0)) %.>%
+#'      op_tree %.>%
+#'      print(.)
 #'
 #'   # cleanup
 #'   rm(list = "winvector_temp_db_handle")
@@ -181,14 +185,16 @@ mark_null_cols <- function(source, cols) {
 #'   DBI::dbGetQuery(my_db, sql)
 #'
 #'   # ad-hoc mode
-#'   data.frame(AUC=c(1,NA,0.5), R2=c(NA,1,0), cat= NA) %.>% op_tree
+#'   data.frame(AUC=c(1,NA,0.5), R2=c(NA,1,0), cat= NA) %.>%
+#'      op_tree %.>%
+#'      print(.)
 #'
 #'   # string example
 #'   op_tree <- d %.>% replace_null_cols(., "cat", "")
 #'   cat(format(op_tree))
 #'   sql <- to_sql(op_tree, my_db)
 #'   cat(sql)
-#'   DBI::dbGetQuery(my_db, sql)
+#'   print(DBI::dbGetQuery(my_db, sql))
 #'
 #'   # cleanup
 #'   rm(list = "winvector_temp_db_handle")

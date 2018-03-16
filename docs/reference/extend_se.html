@@ -161,7 +161,7 @@
   <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>eqn</span>))
   <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>eqn</span>, <span class='no'>my_db</span>)
   <span class='fu'>cat</span>(<span class='no'>sql</span>)
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)
+  <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
 
   <span class='co'># SQLite can not run the following query</span>
   <span class='no'>eqn2</span> <span class='kw'>&lt;-</span> <span class='fu'>extend_se</span>(<span class='no'>d</span>, <span class='st'>"v"</span> <span class='kw'>:=</span> <span class='st'>"rank()"</span>,
@@ -193,6 +193,8 @@
 #&gt;    `d`
 #&gt;   ) tsql_60808142619338819739_0000000000
 #&gt;  ) tsql_60808142619338819739_0000000001
+#&gt;   AUC  R2   v   x
+#&gt; 1 0.6 0.2 0.8 0.8
 #&gt; SELECT
 #&gt;  `AUC`,
 #&gt;  `R2`,

@@ -53,12 +53,14 @@
 #'   cat(sql)
 #'
 #'   # execute
-#'   execute(my_db, op_tree)
+#'   execute(my_db, op_tree) %.>%
+#'      print(.)
 #'
 #'   # whole process wrapped in convenience node
 #'   op_tree2 <- d %.>%
 #'     count_null_cols(., vars, "nnull")
-#'   execute(my_db, op_tree2)
+#'   execute(my_db, op_tree2) %.>%
+#'     print(.)
 #'
 #'   DBI::dbDisconnect(my_db)
 #' }
