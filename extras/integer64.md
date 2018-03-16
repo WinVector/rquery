@@ -111,7 +111,7 @@ unclass(ntables)
 
 If you or a package perform any one of the above calculations, your result is now corrupt and wrong. It is quite likely any code written before December 2017 ([`RPostgres`'s first `CRAN` distribution](https://cran.rstudio.com/src/contrib/Archive/RPostgres/)) would not have been written with the `RPostgres` "`integer64` for all of my friends" design decision in mind.
 
-Also note, currently `RPostgres` does not seem to appear write `integer64` back to the database.
+Also note, currently `RPostgres` does not currently appear to write `integer64` back to the database.
 
 ``` r
 DBI::dbWriteTable(db, "d", d, 
