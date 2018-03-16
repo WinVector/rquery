@@ -6,13 +6,13 @@ output: github_document
 ---
 
 Take care when using the new [`RPostgres`](https://CRAN.R-project.org/package=RPostgres) 
-database connection package.  It by default returns some types that code
-developed against other database drivers may not expect and may not be able
+database connection package.  By default it returns some non-standard types that code
+developed against other database drivers may not expect, and may not be ready
 to defend against.
 
 ## Tryint the new package
 
-We can try the newer [`RPostgres`](https://CRAN.R-project.org/package=RPostgres)
+One can try the newer [`RPostgres`](https://CRAN.R-project.org/package=RPostgres)
 as a drop-in replacement for the usual [`RPostgreSQL`](https://CRAN.R-project.org/package=RPostgreSQL).
 
 That starts out okay. We can connect to the database 
@@ -64,10 +64,10 @@ for(ni in ntables) {
 unclass(ntables)
 ```
 
-If you or a package perform any one of the above calculations, 
-your result is now corrupt and wrong.  It is quite likely any code
+If your code, or any package code you are using, perform *any* of the above calculations, 
+your results will be corrupt and wrong.  It is quite likely any code
 written before December 2017 ([`RPostgres`'s first `CRAN` distribution](https://cran.rstudio.com/src/contrib/Archive/RPostgres/))
-would not have been written with the `RPostgres` "`integer64` for all of my friends" design decision in mind.
+would not have been written with the `RPostgres` "**`integer64` for all of my friends**" design decision in mind.
 
 Also note, `RPostgres` does not currently appear to write `integer64` back to the database.
 
@@ -96,7 +96,8 @@ DBI::dbDisconnect(db)
 ## The  work-around
 
 The work-around is: add the argument `bigint = "numeric"` to your `dbConnect()` call.  This is mentioned in the [manual](https://cran.r-project.org/web/packages/RPostgres/RPostgres.pdf), but not the default and not called out in
-the package description or [`README`](https://cran.r-project.org/web/packages/RPostgres/README.html).
+the package description or [`README`](https://cran.r-project.org/web/packages/RPostgres/README.html).  Or, of course,
+you could use [`RPostgreSQL`](https://CRAN.R-project.org/package=RPostgreSQL).
 
 
 
