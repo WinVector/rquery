@@ -5,7 +5,7 @@ Win-Vector LLC
 
 Take care when using the new [`RPostgres`](https://CRAN.R-project.org/package=RPostgres) database connection package. By default it returns some non-standard types that code developed against other database drivers may not expect, and may not be ready to defend against.
 
-Tryint the new package
+Trying the new package
 ----------------------
 
 One can try the newer [`RPostgres`](https://CRAN.R-project.org/package=RPostgres) as a drop-in replacement for the usual [`RPostgreSQL`](https://CRAN.R-project.org/package=RPostgreSQL).
