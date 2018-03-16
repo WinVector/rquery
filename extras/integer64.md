@@ -1,9 +1,9 @@
-Take Care When Using the RPostgres Package
+Take Care If Trying the RPostgres Package
 ================
 Win-Vector LLC
 3/15/2018
 
-Take care when using the new [`RPostgres`](https://CRAN.R-project.org/package=RPostgres) database connection package. By default it returns some non-standard types that code developed against other database drivers may not expect, and may not be ready to defend against.
+Take care if trying the new [`RPostgres`](https://CRAN.R-project.org/package=RPostgres) database connection package. By default it returns some non-standard types that code developed against other database drivers may not expect, and may not be ready to defend against.
 
 Trying the new package
 ----------------------
