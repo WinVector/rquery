@@ -167,13 +167,13 @@ cat(to_sql(dq, my_db, source_limit = 1000))
            `d`.`assessmentTotal`
           FROM
            `d` LIMIT 1000
-          ) tsql_53752002599066247741_0000000000
-         ) tsql_53752002599066247741_0000000001
-       ) tsql_53752002599066247741_0000000002
-      ) tsql_53752002599066247741_0000000003
+          ) tsql_05732326838097947472_0000000000
+         ) tsql_05732326838097947472_0000000001
+       ) tsql_05732326838097947472_0000000002
+      ) tsql_05732326838097947472_0000000003
       WHERE `rank` = `count`
-     ) tsql_53752002599066247741_0000000004
-    ) tsql_53752002599066247741_0000000005 ORDER BY `subjectID`
+     ) tsql_05732326838097947472_0000000004
+    ) tsql_05732326838097947472_0000000005 ORDER BY `subjectID`
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
@@ -200,7 +200,7 @@ columns_used(dq)
     ## $d
     ## [1] "subjectID"       "surveyCategory"  "assessmentTotal"
 
-Part of the plan is: the additional record-keeping in the operator nodes would let a potentially powerful query optimizer work over the flow before it gets translated to `SQL` (perhaps an extension of or successor to [`seplyr`](https://winvector.github.io/seplyr/), which re-plans over `dplyr::mutate()` expressions). At the very least restricting to columns later used and folding selects together would be achievable. One should have a good chance at optimization as the representation is fairly high-level, and many of the operators are relational (meaning there are known legal transforms a query optimizer can use). The flow itself is represented as follows:
+Part of the plan is: the additional record-keeping in the operator nodes allows checking and optimization (such as [query narrowing](http://www.win-vector.com/blog/2017/12/how-to-greatly-speed-up-your-spark-queries/)). The flow itself is represented as follows:
 
 ``` r
 cat(format(dq))
@@ -221,4 +221,4 @@ cat(format(dq))
      select_columns(., subjectID, diagnosis, probability) %.>%
      orderby(., subjectID)
 
-We also can stand `rquery` up on non-`DBI` sources such as [`SparkR`](https://github.com/WinVector/rquery/blob/master/extras/SparkRExample.md) and perhaps even [`data.table`](https://github.com/WinVector/rquery/blob/master/extras/data_table.md).
+We also could stand `rquery` up on non-`DBI` sources such as [`SparkR`](https://github.com/WinVector/rquery/blob/master/extras/SparkRExample.md) and perhaps even [`data.table`](https://github.com/WinVector/rquery/blob/master/extras/data_table.md).
