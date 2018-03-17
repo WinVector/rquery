@@ -107,11 +107,9 @@
     <p>Please see <a href='https://github.com/WinVector/rquery/blob/master/extras/Summary_Example.md'>https://github.com/WinVector/rquery/blob/master/extras/Summary_Example.md</a> for an example.</p>
     
 
-    <pre class="usage"><span class='fu'>quantile_node</span>(<span class='no'>source</span>, <span class='kw'>cols</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>, <span class='kw'>probs_name</span> <span class='kw'>=</span> <span class='st'>"probs"</span>,
+    <pre class="usage"><span class='fu'>quantile_node</span>(<span class='no'>source</span>, <span class='kw'>cols</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>, <span class='kw'>probs_name</span> <span class='kw'>=</span> <span class='st'>"quantile_probability"</span>,
   <span class='kw'>probs</span> <span class='kw'>=</span> <span class='fu'>seq</span>(<span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>0.25</span>),
-  <span class='kw'>incoming_table_name</span> <span class='kw'>=</span> <span class='fu'>mk_tmp_name_source</span>(<span class='st'>"qin"</span>)(),
-  <span class='kw'>outgoing_table_name</span> <span class='kw'>=</span> <span class='fu'>mk_tmp_name_source</span>(<span class='st'>"qout"</span>)(), <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+  <span class='kw'>tmp_name_source</span> <span class='kw'>=</span> <span class='kw pkg'>wrapr</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/wrapr/topics/mk_tmp_name_source'>mk_tmp_name_source</a></span>(<span class='st'>"qn"</span>), <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -137,16 +135,8 @@
       <td><p>numeric quantiles to compute</p></td>
     </tr>
     <tr>
-      <th>incoming_table_name</th>
-      <td><p>character, name of incoming table.</p></td>
-    </tr>
-    <tr>
-      <th>outgoing_table_name</th>
-      <td><p>character, name of table to write.</p></td>
-    </tr>
-    <tr>
-      <th>overwrite</th>
-      <td><p>logical, if TRUE overwrite tables</p></td>
+      <th>tmp_name_source</th>
+      <td><p>wrapr::mk_tmp_name_source(), temporary name generator.</p></td>
     </tr>
     <tr>
       <th>temporary</th>
@@ -160,7 +150,7 @@
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <p><code><a href='rsummary.html'>rsummary</a></code>, <code><a href='non_sql_node.html'>non_sql_node</a></code></p>
+    <p><code><a href='quantile_cols.html'>quantile_cols</a></code>, <code><a href='rsummary.html'>rsummary</a></code>, <code><a href='non_sql_node.html'>non_sql_node</a></code></p>
     
 
   </div>

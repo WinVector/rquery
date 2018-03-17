@@ -7,6 +7,7 @@
  * Improve dependency decls.
  * Further limit direct dependencies.
  * Work with more DB drivers.
+ * SQL node for sets of columns.
 
 # rquery 0.4.0 2018/03/10
 

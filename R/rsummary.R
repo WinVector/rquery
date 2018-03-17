@@ -56,7 +56,7 @@ summarize_columns <- function(db, tableName,
 #' @param countUniqueNum logical, if TRUE include unique non-NA counts for numeric cols.
 #' @param quartiles logical, if TRUE add Q1 (25\%), median (50\%), Q3 (75\%) quartiles.
 #' @param cols if not NULL set of columns to restrict to.
-#' @return summary of columns.
+#' @return data.frame summary of columns.
 #'
 #' @examples
 #'
@@ -319,9 +319,7 @@ rsummary <- function(db,
 #' @param source incoming source (relop node or data.frame).
 #' @param ... force later arguments to be by name
 #' @param quartiles logical, if TRUE add Q1 (25\%), median (50\%), Q3 (75\%) quartiles.
-#' @param incoming_table_name character, name of incoming table.
-#' @param outgoing_table_name character, name of table to write.
-#' @param overwrite logical, if TRUE overwrite tables
+#' @param tmp_name_source wrapr::mk_tmp_name_source(), temporary name generator.
 #' @param temporary logical, if TRUE use temporary tables
 #' @return rsummary node
 #'
@@ -361,9 +359,7 @@ rsummary <- function(db,
 rsummary_node <- function(source,
                           ...,
                           quartiles = FALSE,
-                          incoming_table_name = mk_tmp_name_source("rin")(),
-                          outgoing_table_name = mk_tmp_name_source("rout")(),
-                          overwrite = TRUE,
+                          tmp_name_source = wrapr::mk_tmp_name_source("sn"),
                           temporary = TRUE) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::rsummary_node")
   if(is.data.frame(source)) {
@@ -390,8 +386,9 @@ rsummary_node <- function(source,
                           c("Q1", "median", "Q3"))
   }
   force(temporary)
-  force(overwrite)
   force(quartiles)
+  incoming_table_name = tmp_name_source()
+  outgoing_table_name = tmp_name_source()
   f <- function(db,
                 incoming_table_name,
                 outgoing_table_name) {
@@ -400,7 +397,7 @@ rsummary_node <- function(source,
     dbi_copy_to(db,
                 table_name = outgoing_table_name,
                 d = stable,
-                overwrite = overwrite,
+                overwrite = TRUE,
                 temporary = temporary)
   }
   nd <- non_sql_node(source,
@@ -415,7 +412,6 @@ rsummary_node <- function(source,
                                            outgoing_table_name,
                                            ")"),
                      orig_columns = FALSE,
-                     overwrite = overwrite,
                      temporary = temporary)
   nd
 }

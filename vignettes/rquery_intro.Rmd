@@ -93,7 +93,7 @@ same query that it is produced.
 The nested method looks like the following, we produce the column 
 `absv` in one query and then wrap that in another query 
 to later use the column.  For expressions longer than `ABS(v)` this
-is the preferred solution (until one moves to something like commmon
+is the preferred solution (until one moves to something like common
 table expressions).
 
 ```{r nestsql, eval=run_vignette}
@@ -456,13 +456,8 @@ Not all data transform steps can conveniently be written as a single `SQL`
 statement. To work around this potential limitation `rquery` supplies a special
 type of node called [`non_sql_node()`](https://winvector.github.io/rquery/reference/non_sql_node.html).
 `non_sql_node()` is used to implement arbitrary table to table transforms as
-`rquery` pipeline steps.  Two important examples of `non_sql_node()` are
-[`materialize_node()`](https://winvector.github.io/rquery/reference/materialize_node.html)
-and [`rsummary_node()`](https://winvector.github.io/rquery/reference/rsummary_node.html).
-
-`materialize_node()` can be used to land intermediate results into
-a table.  This can be used both to save intermediate calculation stages
-and to break up the complexity of long data processing pipelines.
+`rquery` pipeline steps.  Two prototypical `non_sql_node()` is
+[`rsummary_node()`](https://winvector.github.io/rquery/reference/rsummary_node.html).
 
 `rsummary_node()` builds a table of summary information about another
 database table.  The format is each column of the original table 

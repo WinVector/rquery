@@ -106,9 +106,7 @@
     
 
     <pre class="usage"><span class='fu'>rsummary_node</span>(<span class='no'>source</span>, <span class='no'>...</span>, <span class='kw'>quartiles</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>incoming_table_name</span> <span class='kw'>=</span> <span class='fu'>mk_tmp_name_source</span>(<span class='st'>"rin"</span>)(),
-  <span class='kw'>outgoing_table_name</span> <span class='kw'>=</span> <span class='fu'>mk_tmp_name_source</span>(<span class='st'>"rout"</span>)(), <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+  <span class='kw'>tmp_name_source</span> <span class='kw'>=</span> <span class='kw pkg'>wrapr</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/wrapr/topics/mk_tmp_name_source'>mk_tmp_name_source</a></span>(<span class='st'>"sn"</span>), <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -126,16 +124,8 @@
       <td><p>logical, if TRUE add Q1 (25%), median (50%), Q3 (75%) quartiles.</p></td>
     </tr>
     <tr>
-      <th>incoming_table_name</th>
-      <td><p>character, name of incoming table.</p></td>
-    </tr>
-    <tr>
-      <th>outgoing_table_name</th>
-      <td><p>character, name of table to write.</p></td>
-    </tr>
-    <tr>
-      <th>overwrite</th>
-      <td><p>logical, if TRUE overwrite tables</p></td>
+      <th>tmp_name_source</th>
+      <td><p>wrapr::mk_tmp_name_source(), temporary name generator.</p></td>
     </tr>
     <tr>
       <th>temporary</th>
@@ -182,15 +172,15 @@
 }</div><div class='output co'>#&gt; table('dRemote') %.&gt;%
 #&gt;  extend(.,
 #&gt;   v := ifelse(x &gt; 2, "x", "y")) %.&gt;%
-#&gt;  non_sql_node(., rsummary_node(., rin_10799424004225263990_0000000000, rout_75670485587942761404_0000000000))
+#&gt;  non_sql_node(., rsummary_node(., sn_82613647816836415161_0000000000, sn_82613647816836415161_0000000001))
 #&gt; [[1]]
-#&gt; [1] "CREATE  TABLE `rin_10799424004225263990_0000000000` AS  SELECT\n  `p`,\n  `s`,\n  `w`,\n  `x`,\n  `y`,\n  `z`,\n  ( CASE WHEN ( `x` &gt; 2 ) THEN ( 'x' ) ELSE ( 'y' ) END )  AS `v`\n FROM (\n  SELECT\n   `dRemote`.`p`,\n   `dRemote`.`s`,\n   `dRemote`.`w`,\n   `dRemote`.`x`,\n   `dRemote`.`y`,\n   `dRemote`.`z`\n  FROM\n   `dRemote`\n  ) tsql_77270454896014758226_0000000000\n"
+#&gt; [1] "CREATE  TABLE `sn_82613647816836415161_0000000000` AS  SELECT\n  `p`,\n  `s`,\n  `w`,\n  `x`,\n  `y`,\n  `z`,\n  ( CASE WHEN ( `x` &gt; 2 ) THEN ( 'x' ) ELSE ( 'y' ) END )  AS `v`\n FROM (\n  SELECT\n   `dRemote`.`p`,\n   `dRemote`.`s`,\n   `dRemote`.`w`,\n   `dRemote`.`x`,\n   `dRemote`.`y`,\n   `dRemote`.`z`\n  FROM\n   `dRemote`\n  ) tsql_50508223693681902652_0000000000\n"
 #&gt; 
 #&gt; [[2]]
-#&gt; [1] "non SQL step:  rsummary_node(., rin_10799424004225263990_0000000000, rout_75670485587942761404_0000000000)"
+#&gt; [1] "non SQL step:  rsummary_node(., sn_82613647816836415161_0000000000, sn_82613647816836415161_0000000001)"
 #&gt; 
 #&gt; [[3]]
-#&gt; [1] " SELECT\n  `rout_75670485587942761404_0000000000`.`column`,\n  `rout_75670485587942761404_0000000000`.`index`,\n  `rout_75670485587942761404_0000000000`.`class`,\n  `rout_75670485587942761404_0000000000`.`nrows`,\n  `rout_75670485587942761404_0000000000`.`nna`,\n  `rout_75670485587942761404_0000000000`.`nunique`,\n  `rout_75670485587942761404_0000000000`.`min`,\n  `rout_75670485587942761404_0000000000`.`max`,\n  `rout_75670485587942761404_0000000000`.`mean`,\n  `rout_75670485587942761404_0000000000`.`sd`,\n  `rout_75670485587942761404_0000000000`.`lexmin`,\n  `rout_75670485587942761404_0000000000`.`lexmax`\n FROM\n  `rout_75670485587942761404_0000000000`\n"
+#&gt; [1] " SELECT\n  `sn_82613647816836415161_0000000001`.`column`,\n  `sn_82613647816836415161_0000000001`.`index`,\n  `sn_82613647816836415161_0000000001`.`class`,\n  `sn_82613647816836415161_0000000001`.`nrows`,\n  `sn_82613647816836415161_0000000001`.`nna`,\n  `sn_82613647816836415161_0000000001`.`nunique`,\n  `sn_82613647816836415161_0000000001`.`min`,\n  `sn_82613647816836415161_0000000001`.`max`,\n  `sn_82613647816836415161_0000000001`.`mean`,\n  `sn_82613647816836415161_0000000001`.`sd`,\n  `sn_82613647816836415161_0000000001`.`lexmin`,\n  `sn_82613647816836415161_0000000001`.`lexmax`\n FROM\n  `sn_82613647816836415161_0000000001`\n"
 #&gt; 
 #&gt;   column index     class nrows nna nunique min max mean        sd lexmin lexmax
 #&gt; 1      p     1   integer     3   1      NA   0   1  0.5 0.7071068   &lt;NA&gt;   &lt;NA&gt;

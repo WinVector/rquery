@@ -183,6 +183,22 @@ The additional record-keeping in the operator nodes allows checking and optimiza
 cat(format(dq))
 ```
 
+`rquery` also includes a number of useful utilities (both as nodes and as functions).
+
+```{r utils}
+quantile_cols(my_db, "d")
+rsummary(my_db, "d")
+
+dq %.>% 
+  quantile_node(.) %.>%
+  execute(my_db, .)
+
+dq %.>% 
+  rsummary_node(.) %.>%
+  execute(my_db, .)
+```
+
+
 We also could stand `rquery` up on non-`DBI` sources such as [`SparkR`](https://github.com/WinVector/rquery/blob/master/extras/SparkRExample.md)
 and perhaps even [`data.table`](https://github.com/WinVector/rquery/blob/master/extras/data_table.md).
 

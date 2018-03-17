@@ -102,12 +102,14 @@
     </div>
 
     
-    <p>Wrap a non-SQL node.</p>
+    <p>Note: non-SQL nodes are allowed to delete/overwrite both
+both the incoming and outgoing tables, so do not point them
+to non-temporary structures.</p>
     
 
     <pre class="usage"><span class='fu'>non_sql_node</span>(<span class='no'>source</span>, <span class='no'>f</span>, <span class='no'>...</span>, <span class='no'>incoming_table_name</span>, <span class='no'>columns_used</span>,
   <span class='no'>outgoing_table_name</span>, <span class='no'>columns_produced</span>, <span class='no'>display_form</span>, <span class='kw'>orig_columns</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+  <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -149,10 +151,6 @@
       <td><p>logical if TRUE select all original columns.</p></td>
     </tr>
     <tr>
-      <th>overwrite</th>
-      <td><p>logical, if TRUE attempt to replace tables.</p></td>
-    </tr>
-    <tr>
       <th>temporary</th>
       <td><p>logical, if TRUE mark tables temporary.</p></td>
     </tr>
@@ -164,7 +162,7 @@
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <p><code><a href='rsummary_node.html'>rsummary_node</a></code>, <code><a href='materialize_node.html'>materialize_node</a></code></p>
+    <p><code><a href='rsummary_node.html'>rsummary_node</a></code></p>
     
 
   </div>

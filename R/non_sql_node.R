@@ -1,7 +1,11 @@
 
-# convert table transforms into nodes (that do not have toSQL() method).
+# Convert table transforms into nodes (that do not have toSQL() method).
 
 #' Wrap a non-SQL node.
+#'
+#' Note: non-SQL nodes are allowed to delete/overwrite both
+#' both the incoming and outgoing tables, so do not point them
+#' to non-temporary structures.
 #'
 #' @param source source to work from (data.frame or relop node)
 #' @param f implementation signature: f(db, incoming_table_name, outgoing_table_name)
@@ -12,11 +16,10 @@
 #' @param columns_produced character, names of columns produced
 #' @param display_form chacter, how to print node
 #' @param orig_columns logical if TRUE select all original columns.
-#' @param overwrite logical, if TRUE attempt to replace tables.
 #' @param temporary logical, if TRUE mark tables temporary.
 #' @return sql node.
 #'
-#' @seealso \code{\link{rsummary_node}}, \code{\link{materialize_node}}
+#' @seealso \code{\link{rsummary_node}}
 #'
 #' @export
 #'
@@ -29,7 +32,6 @@ non_sql_node <- function(source,
                          columns_produced,
                          display_form,
                          orig_columns = TRUE,
-                         overwrite = TRUE,
                          temporary = TRUE) {
   wrapr::stop_if_dot_args(substitute(list(...)), "non_sql_node")
   UseMethod("non_sql_node", source)
@@ -45,7 +47,6 @@ non_sql_node.relop <- function(source,
                                columns_produced,
                                display_form,
                                orig_columns = TRUE,
-                               overwrite = TRUE,
                                temporary = TRUE) {
   wrapr::stop_if_dot_args(substitute(list(...)), "non_sql_node.relop")
   if(is.null(f)) {
@@ -66,7 +67,7 @@ non_sql_node.relop <- function(source,
             columns_produced = columns_produced,
             display_form = display_form,
             orig_columns = orig_columns,
-            overwrite = overwrite,
+            overwrite = TRUE,
             temporary = temporary)
   r <- relop_decorate("relop_non_sql", r)
   r
@@ -82,7 +83,6 @@ non_sql_node.data.frame <- function(source,
                                     columns_produced,
                                     display_form,
                                     orig_columns = TRUE,
-                                    overwrite = TRUE,
                                     temporary = TRUE) {
   wrapr::stop_if_dot_args(substitute(list(...)), "non_sql_node.data.frame")
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
@@ -96,7 +96,6 @@ non_sql_node.data.frame <- function(source,
                         columns_produced = columns_produced,
                         display_form = display_form,
                         orig_columns = orig_columns,
-                        overwrite = overwrite,
                         temporary = temporary)
   return(enode)
 }
@@ -155,6 +154,7 @@ to_sql.relop_non_sql <- function (x,
                     append_cr = append_cr,
                     using = NULL)
   nsubsql <- length(subsql)
+  # non-SQL nodes must always be surrounded by SQL on both sides
   step1 <- list(paste0("CREATE ",
                        ifelse(x$termporary, "TERMPORARY", ""),
                        " TABLE ",
@@ -164,7 +164,6 @@ to_sql.relop_non_sql <- function (x,
   nsql_step <- list(display_form = x$display_form,
                     incoming_table_name = x$incoming_table_name,
                     outgoing_table_name = x$outgoing_table_name,
-                    overwrite = x$overwrite,
                     temporary = x$temporary,
                     f = x$f)
   class(nsql_step) <- "rquery_non_sql_step"
