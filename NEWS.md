@@ -1,5 +1,5 @@
 
-# rquery 0.4.1 2018/03/15
+# rquery 0.4.1 2018/03/17
 
  * Fix re-run/re-create situations.
  * Pipe database connection.
