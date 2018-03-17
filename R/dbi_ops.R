@@ -1,14 +1,16 @@
 
 
+# work around common not fully DBI databases issues
+
 #' List fields from a dbi connection
 #'
 #' @param my_db DBI connection
 #' @param tableName character table name
 #' @return character list of column names
 #'
-#' @noRd
+#' @export
 #'
-listFields <- function(my_db, tableName) {
+dbi_colnames <- function(my_db, tableName) {
   # fails intermitnently, and sometimes gives wrong results
   # filed as: https://github.com/tidyverse/dplyr/issues/3204
   # tryCatch(
@@ -27,6 +29,7 @@ listFields <- function(my_db, tableName) {
 #'
 #' @param db database connection.
 #' @param table_name character, name of table to create.
+#' @return logical TRUE if table existed, else FALSE
 #'
 #' @export
 #'
@@ -37,8 +40,10 @@ dbi_remove_table <- function(db, table_name) {
                      paste0("DROP TABLE ",
                             quote_identifier(db, table_name)))
       # Could also try  DBI::dbRemoveTable(db, table_name)
+      return(TRUE)
     }
   }
+  return(FALSE)
 }
 
 #' Local table to DBI data source.
@@ -110,10 +115,11 @@ dbi_copy_to <- function(db, table_name, d,
 #' @export
 #'
 dbi_nrow <- function(db, table_name) {
-  nrowst <- DBI::dbGetQuery(db,
-                            paste0("SELECT COUNT(1) FROM ",
-                                   DBI::dbQuoteIdentifier(db,
-                                                          table_name)))
+  nrowst <- DBI::dbGetQuery(
+    db,
+    paste0("SELECT COUNT(1) FROM ",
+           DBI::dbQuoteIdentifier(db,
+                                  table_name)))
   # integer64 was coming back from RPostgres
   # and that does not work as numeric in pmin()
   nrows <- as.numeric(nrowst[[1]][[1]])

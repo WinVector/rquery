@@ -265,13 +265,13 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
        `d`.`assessmentTotal`
       FROM
        `d` LIMIT 1000
-      ) tsql_99646772197259311008_0000000000
-     ) tsql_99646772197259311008_0000000001
-   ) tsql_99646772197259311008_0000000002
-  ) tsql_99646772197259311008_0000000003
+      ) tsql_55415641320557889993_0000000000
+     ) tsql_55415641320557889993_0000000001
+   ) tsql_55415641320557889993_0000000002
+  ) tsql_55415641320557889993_0000000003
   WHERE `rank` = `count`
- ) tsql_99646772197259311008_0000000004
-) tsql_99646772197259311008_0000000005 ORDER BY `subjectID`</code></pre>
+ ) tsql_55415641320557889993_0000000004
+) tsql_55415641320557889993_0000000005 ORDER BY `subjectID`</code></pre>
 <p>The query is large, but due to its regular structure it should be very amenable to query optimization.</p>
 <p>A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our <a href="https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md">initial experiments</a> show <code>rquery</code> narrowed queries to be twice as fast as un-narrowed <code>dplyr</code> on a synthetic problem simulating large disk-based queries. We think if we connected directly to <code>Spark</code>’s relational operators (avoiding the <code>SQL</code> layer) we may be able to achieve even faster performance.</p>
 <p>The above optimization is possible because the <code>rquery</code> representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query. For example:</p>
@@ -282,7 +282,7 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/columns_used.html">columns_used</a></span>(dq)</code></pre></div>
 <pre><code>## $d
 ## [1] "subjectID"       "surveyCategory"  "assessmentTotal"</code></pre>
-<p>Part of the plan is: the additional record-keeping in the operator nodes would let a potentially powerful query optimizer work over the flow before it gets translated to <code>SQL</code> (perhaps an extension of or successor to <a href="https://winvector.github.io/seplyr/"><code>seplyr</code></a>, which re-plans over <code><a href="http://dplyr.tidyverse.org/reference/mutate.html">dplyr::mutate()</a></code> expressions). At the very least restricting to columns later used and folding selects together would be achievable. One should have a good chance at optimization as the representation is fairly high-level, and many of the operators are relational (meaning there are known legal transforms a query optimizer can use). The flow itself is represented as follows:</p>
+<p>The additional record-keeping in the operator nodes allows checking and optimization (such as <a href="http://www.win-vector.com/blog/2017/12/how-to-greatly-speed-up-your-spark-queries/">query narrowing</a>). The flow itself is represented as follows:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw">format</span>(dq))</code></pre></div>
 <pre><code>table('d') %.&gt;%
  extend(.,
@@ -298,7 +298,7 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
  select_rows(., rank = count) %.&gt;%
  select_columns(., subjectID, diagnosis, probability) %.&gt;%
  orderby(., subjectID)</code></pre>
-<p>We also can stand <code>rquery</code> up on non-<code>DBI</code> sources such as <a href="https://github.com/WinVector/rquery/blob/master/extras/SparkRExample.md"><code>SparkR</code></a> and perhaps even <a href="https://github.com/WinVector/rquery/blob/master/extras/data_table.md"><code>data.table</code></a>.</p>
+<p>We also could stand <code>rquery</code> up on non-<code>DBI</code> sources such as <a href="https://github.com/WinVector/rquery/blob/master/extras/SparkRExample.md"><code>SparkR</code></a> and perhaps even <a href="https://github.com/WinVector/rquery/blob/master/extras/data_table.md"><code>data.table</code></a>.</p>
 </div>
 </div>
   </div>

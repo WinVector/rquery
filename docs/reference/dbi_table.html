@@ -150,7 +150,7 @@ SQL optimizers likely make this zero-cost anyway.</p>
   <span class='fu'>print</span>(<span class='no'>d</span>)
   <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>d</span>, <span class='no'>my_db</span>)
   <span class='fu'>cat</span>(<span class='no'>sql</span>)
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>)
+  <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
   <span class='no'>cols</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='columns_used.html'>columns_used</a></span>(<span class='no'>d</span>)
   <span class='fu'>print</span>(<span class='no'>cols</span>)
 
@@ -164,6 +164,8 @@ SQL optimizers likely make this zero-cost anyway.</p>
 #&gt;  `d`.`R2`
 #&gt; FROM
 #&gt;  `d`
+#&gt;   AUC  R2
+#&gt; 1 0.6 0.2
 #&gt; $d
 #&gt; [1] "AUC" "R2" 
 #&gt; 

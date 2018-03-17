@@ -182,7 +182,7 @@ mark_null_cols <- function(source, cols) {
 #'   cat(format(op_tree))
 #'   sql <- to_sql(op_tree, my_db)
 #'   cat(sql)
-#'   DBI::dbGetQuery(my_db, sql)
+#'   print(DBI::dbGetQuery(my_db, sql))
 #'
 #'   # ad-hoc mode
 #'   data.frame(AUC=c(1,NA,0.5), R2=c(NA,1,0), cat= NA) %.>%

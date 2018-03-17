@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Remove table — dbi_remove_table • rquery</title>
+<title>List fields from a dbi connection — dbi_colnames • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -98,31 +98,31 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Remove table</h1>
+    <h1>List fields from a dbi connection</h1>
     </div>
 
     
-    <p>Remove table</p>
+    <p>List fields from a dbi connection</p>
     
 
-    <pre class="usage"><span class='fu'>dbi_remove_table</span>(<span class='no'>db</span>, <span class='no'>table_name</span>)</pre>
+    <pre class="usage"><span class='fu'>dbi_colnames</span>(<span class='no'>my_db</span>, <span class='no'>tableName</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>db</th>
-      <td><p>database connection.</p></td>
+      <th>my_db</th>
+      <td><p>DBI connection</p></td>
     </tr>
     <tr>
-      <th>table_name</th>
-      <td><p>character, name of table to create.</p></td>
+      <th>tableName</th>
+      <td><p>character table name</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>logical TRUE if table existed, else FALSE</p>
+    <p>character list of column names</p>
     
 
   </div>

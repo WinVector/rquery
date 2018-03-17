@@ -79,7 +79,7 @@ table_source <- function(table_name, columns) {
 #'   print(d)
 #'   sql <- to_sql(d, my_db)
 #'   cat(sql)
-#'   DBI::dbGetQuery(my_db, sql)
+#'   print(DBI::dbGetQuery(my_db, sql))
 #'   cols <- columns_used(d)
 #'   print(cols)
 #'
@@ -93,7 +93,7 @@ table_source <- function(table_name, columns) {
 #'
 dbi_table <- function(db, table_name) {
   table_source(table_name = table_name,
-               columns = listFields(db, table_name))
+               columns = dbi_colnames(db, table_name))
 }
 
 

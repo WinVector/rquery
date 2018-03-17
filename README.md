@@ -167,13 +167,13 @@ cat(to_sql(dq, my_db, source_limit = 1000))
            `d`.`assessmentTotal`
           FROM
            `d` LIMIT 1000
-          ) tsql_05732326838097947472_0000000000
-         ) tsql_05732326838097947472_0000000001
-       ) tsql_05732326838097947472_0000000002
-      ) tsql_05732326838097947472_0000000003
+          ) tsql_50644619140440709052_0000000000
+         ) tsql_50644619140440709052_0000000001
+       ) tsql_50644619140440709052_0000000002
+      ) tsql_50644619140440709052_0000000003
       WHERE `rank` = `count`
-     ) tsql_05732326838097947472_0000000004
-    ) tsql_05732326838097947472_0000000005 ORDER BY `subjectID`
+     ) tsql_50644619140440709052_0000000004
+    ) tsql_50644619140440709052_0000000005 ORDER BY `subjectID`
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
@@ -200,7 +200,7 @@ columns_used(dq)
     ## $d
     ## [1] "subjectID"       "surveyCategory"  "assessmentTotal"
 
-Part of the plan is: the additional record-keeping in the operator nodes allows checking and optimization (such as [query narrowing](http://www.win-vector.com/blog/2017/12/how-to-greatly-speed-up-your-spark-queries/)). The flow itself is represented as follows:
+The additional record-keeping in the operator nodes allows checking and optimization (such as [query narrowing](http://www.win-vector.com/blog/2017/12/how-to-greatly-speed-up-your-spark-queries/)). The flow itself is represented as follows:
 
 ``` r
 cat(format(dq))
