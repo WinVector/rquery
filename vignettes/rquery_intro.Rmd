@@ -259,6 +259,25 @@ d2 %.>%
   execute(db, .)
 ```
 
+## Working with sets of columns
+
+There is a method to apply a parameterized `SQL` expression to a set
+of columns.
+
+```{r psql, eval=run_vignette}
+# vector of columns we want to work on
+colset <- qc(v1, v2, v3)
+# build new names we want as results
+colterms <- paste0(colset, "_isNA") := colset
+map_to_char(colterms)
+
+# build an apply expression to set of columns query 
+s_tree <- d2 %.>%
+  sql_expr_set(., colterms, 
+               "CASE WHEN . IS NULL THEN 1 ELSE 0 END")
+cat(to_sql(s_tree, db))
+execute(db, s_tree)
+```
 
 # `SQL` first
 
