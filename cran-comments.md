@@ -3,12 +3,13 @@ Minor update.
 
 ## Test environments
 
-  * OSX
-  * using R version 3.4.4 (2018-03-15)
-  * using platform: x86_64-apple-darwin15.6.0 (64-bit)
+    * OSX
+    * using R version 3.4.4 (2018-03-15)
+    * using platform: x86_64-apple-darwin15.6.0 (64-bit)
 
-  * Windows
-
+    * Windows
+    * using R Under development (unstable) (2018-03-16 r74418)
+    * using platform: x86_64-w64-mingw32 (64-bit)
 
 ## R CMD check results
 
