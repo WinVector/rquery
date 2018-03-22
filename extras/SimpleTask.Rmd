@@ -37,6 +37,8 @@ mtcarsdb %.>%
   to_sql(., db) %.>%
   DBI::dbGetQuery(db, paste("EXPLAIN", .))
 
+mtcarst <- dplyr::tbl(db, "mtcarsdb")
+
 timings <- microbenchmark(
   base_stepped = {
     . <- mtcarsb
@@ -53,6 +55,13 @@ timings <- microbenchmark(
       select(mpg, cyl, wt) %>%
       nrow
   },
+  dplyr_database = {
+    res <- mtcarst         %>%
+      filter(cyl == 8)     %>%
+      select(mpg, cyl, wt) %>%
+      tally
+    as.numeric(as.data.frame(res)[[1]][[1]])
+  },
   data.table_nested = {
     nrow(mtcarsd[cyl==8, c("mpg", "cyl", "wt")])
   },
@@ -62,11 +71,11 @@ timings <- microbenchmark(
     .N                    ]
   },
   rquery_database = {
-    res <- mtcarsdb %.>% 
-      select_rows_nse(., cyl == 8) %.>% 
+    res <- mtcarsdb                       %.>% 
+      select_rows_nse(., cyl == 8)        %.>% 
       select_columns(., qc(mpg, cyl, wt)) %.>%
       sql_node(., "n" := "COUNT(1)", 
-               orig_columns = FALSE) %.>%
+               orig_columns = FALSE)      %.>%
       execute(db, .)
     as.numeric(res[[1]][[1]])
   }

@@ -84,6 +84,8 @@ mtcarsdb %.>%
     ## 6                                                    Filter: (cyl = '8'::double precision)
 
 ``` r
+mtcarst <- dplyr::tbl(db, "mtcarsdb")
+
 timings <- microbenchmark(
   base_stepped = {
     . <- mtcarsb
@@ -100,6 +102,13 @@ timings <- microbenchmark(
       select(mpg, cyl, wt) %>%
       nrow
   },
+  dplyr_database = {
+    res <- mtcarst         %>%
+      filter(cyl == 8)     %>%
+      select(mpg, cyl, wt) %>%
+      tally
+    as.numeric(as.data.frame(res)[[1]][[1]])
+  },
   data.table_nested = {
     nrow(mtcarsd[cyl==8, c("mpg", "cyl", "wt")])
   },
@@ -109,11 +118,11 @@ timings <- microbenchmark(
     .N                    ]
   },
   rquery_database = {
-    res <- mtcarsdb %.>% 
-      select_rows_nse(., cyl == 8) %.>% 
+    res <- mtcarsdb                       %.>% 
+      select_rows_nse(., cyl == 8)        %.>% 
       select_columns(., qc(mpg, cyl, wt)) %.>%
       sql_node(., "n" := "COUNT(1)", 
-               orig_columns = FALSE) %.>%
+               orig_columns = FALSE)      %.>%
       execute(db, .)
     as.numeric(res[[1]][[1]])
   }
@@ -123,20 +132,22 @@ print(timings)
 ```
 
     ## Unit: milliseconds
-    ##                expr       min         lq       mean     median         uq
-    ##        base_stepped 954.72239 1097.44422 1242.94071 1179.27912 1300.91262
-    ##         base_nested 748.62681  799.64760  929.75215  916.99677 1004.47287
-    ##               dplyr  70.68412  115.19450  194.54565  132.10756  272.04900
-    ##   data.table_nested  31.53406   39.06388   81.29942   45.09571   57.20796
-    ##  data.table_stepped 103.57988  144.79269  246.15669  264.79787  297.08095
-    ##     rquery_database 463.71270  475.78697  508.33065  480.03343  511.98086
+    ##                expr       min        lq      mean    median        uq
+    ##        base_stepped 447.52068 582.55921 713.38291 654.42452 787.10021
+    ##         base_nested 240.50462 282.67886 409.55758 385.06830 456.02909
+    ##               dplyr  73.50962 110.98097 186.07577 130.17617 238.90878
+    ##      dplyr_database 265.20716 273.19135 304.20024 280.79591 315.92071
+    ##   data.table_nested  31.01306  42.19911  85.27903  49.50752  65.30889
+    ##  data.table_stepped 100.38787 140.55734 248.12110 236.01903 269.56178
+    ##     rquery_database 424.64349 443.63297 511.61300 462.98186 492.11455
     ##        max neval
-    ##  2150.6464   100
-    ##  1363.6790   100
-    ##   607.8737   100
-    ##   675.2933   100
-    ##   646.3215   100
-    ##   920.7828   100
+    ##  1482.5111   100
+    ##  1335.3310   100
+    ##   727.6659   100
+    ##   454.8025   100
+    ##  1649.2550   100
+    ##   816.7377   100
+    ##  1746.4671   100
 
 ``` r
 autoplot(timings)
