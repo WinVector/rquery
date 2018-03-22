@@ -1,0 +1,80 @@
+---
+title: "Simple Task"
+author: "John Mount, Win-Vector LLC"
+date: "3/22/2018"
+output: github_document
+---
+
+Simple tasks related to [R Tip: Break up Function Nesting for Legibility](http://www.win-vector.com/blog/2018/03/r-tip-break-up-function-nesting-for-legibility/).
+
+```{r}
+library("dplyr")
+library("microbenchmark")
+library("ggplot2")
+library("data.table")
+library("rquery")
+
+mtcarsb <- mtcars[rep(seq_len(nrow(mtcars)), 100000), ,]
+print(nrow(mtcarsb))
+
+mtcarsd <- as.data.table(mtcarsb)
+
+db <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
+                     host = 'localhost',
+                     port = 5432,
+                     user = 'johnmount',
+                     password = '')
+
+mtcarsdb <- dbi_copy_to(db, "mtcarsdb", mtcarsb,
+                        overwrite = TRUE,
+                        temporary = TRUE)
+# DBI::dbGetQuery(db, "CREATE INDEX mtcarsdb_cyl ON mtcarsdb (cyl)")
+mtcarsdb %.>% 
+  select_rows_nse(., cyl == 8) %.>% 
+  select_columns(., qc(mpg, cyl, wt)) %.>%
+  sql_node(., "n" := "COUNT(1)", 
+           orig_columns = FALSE) %.>%
+  to_sql(., db) %.>%
+  DBI::dbGetQuery(db, paste("EXPLAIN", .))
+
+timings <- microbenchmark(
+  base_stepped = {
+    . <- mtcarsb
+    . <- subset(., cyl == 8)
+    . <- .[, c("mpg", "cyl", "wt")]
+    nrow(.)
+  },
+  base_nested = {
+    nrow(mtcarsb[mtcarsb$cyl == 8, c("mpg", "cyl", "wt")])
+  },
+  dplyr = {
+    mtcarsb                %>%
+      filter(cyl == 8)     %>%
+      select(mpg, cyl, wt) %>%
+      nrow
+  },
+  data.table_nested = {
+    nrow(mtcarsd[cyl==8, c("mpg", "cyl", "wt")])
+  },
+  data.table_stepped = {
+   mtcarsd[cyl==8,        ][,
+    c("mpg", "cyl", "wt") ][, 
+    .N                    ]
+  },
+  rquery_database = {
+    res <- mtcarsdb %.>% 
+      select_rows_nse(., cyl == 8) %.>% 
+      select_columns(., qc(mpg, cyl, wt)) %.>%
+      sql_node(., "n" := "COUNT(1)", 
+               orig_columns = FALSE) %.>%
+      execute(db, .)
+    as.numeric(res[[1]][[1]])
+  }
+)
+
+print(timings)
+
+autoplot(timings)
+
+DBI::dbDisconnect(db)
+```
