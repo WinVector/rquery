@@ -14,25 +14,38 @@ This issue arises because wide tables (200 to 1000 columns) are quite common in 
 The idea behind the advice is: working with fewer columns makes for quicker queries.
 
 
-```{r ex, warning=FALSE, message=FALSE, echo=FALSE, include=FALSE}
+```{r inc, warning=FALSE, message=FALSE, echo=FALSE, include=FALSE}
 library("microbenchmark")
-suppressPackageStartupMessages(library("dplyr"))
+library("ggplot2")
+library("dplyr")
 library("rquery")
 
-conf <-  sparklyr::spark_config()
-conf$spark.yarn.am.cores <- 4
-conf$spark.executor.cores <- 4
-conf$spark.executor.memory <- "2G"
-conf$spark.yarn.am.memory <- "2G" 
-conf$`sparklyr.shell.driver-memory` <- "2G"
-conf$`sparklyr.shell.executor-memory` <- "2G"
-conf$`spark.yarn.executor.memoryOverhead` <- "2G"
-my_db <- sparklyr::spark_connect(version='2.2.0', 
-                                 master = "local",
-                                 config = conf)
+use_spark <- TRUE
+```
+
+```{r ex, warning=FALSE, message=FALSE, echo=FALSE, include=FALSE, cache=TRUE}
+if(use_spark) {
+  conf <-  sparklyr::spark_config()
+  conf$spark.yarn.am.cores <- 4
+  conf$spark.executor.cores <- 4
+  conf$spark.executor.memory <- "2G"
+  conf$spark.yarn.am.memory <- "2G" 
+  conf$`sparklyr.shell.driver-memory` <- "2G"
+  conf$`sparklyr.shell.executor-memory` <- "2G"
+  conf$`spark.yarn.executor.memoryOverhead` <- "2G"
+  my_db <- sparklyr::spark_connect(version='2.2.0', 
+                                   master = "local",
+                                   config = conf)
+} else {
+  my_db <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
+                          host = 'localhost',
+                          port = 5432,
+                          user = 'johnmount',
+                          password = '')
+}
 
 nSubj <- 500000
-nIrrelCol <- 100
+nIrrelCol <- 50
 dL <- data.frame(subjectID = sort(rep(seq_len(nSubj),2)),
                  surveyCategory = c(
                    'withdrawal behavior',
@@ -44,32 +57,38 @@ for(i in seq_len(nIrrelCol)) {
   dL[[ni]] <- sample(letters, size = nrow(dL), replace = TRUE)
 }
 
-d <- rquery::dbi_copy_to(my_db, 'd',
+dR <- rquery::dbi_copy_to(my_db, 'd',
                  dL,
                  temporary = TRUE, 
-                 overwrite = FALSE)
+                 overwrite = TRUE)
+dT <- dplyr::tbl(my_db, "d")
+
 dL <- NULL
-
-# copy to Parquet to simulate large external data source
-dT <- dplyr::tbl(my_db, d$table_name)
-sparklyr::spark_write_parquet(dT, "perf_tmp", mode = 'overwrite')
-dplyr::db_drop_table(my_db, d$table_name)
-dT <- NULL
-d <- NULL
-
-# build new refs
-dT <- sparklyr::spark_read_parquet(my_db, 'dparq', "perf_tmp", memory = FALSE)
-dR <- dbi_table(my_db, "dparq")
 ```
 
 
 Let's set up our experiment.  The data is a larger version of the problem from ["Let’s Have Some Sympathy For The Part-time R User"](http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/).  We have expanded the number of subjects to `r sprintf("%i",nSubj)` and added `r sprintf("%i",nIrrelCol)` irrelevant columns to the example.  We define a new function that uses `dplyr` and `Sparklyr` to compute the diagnoses.  We vary if the table is first limited to columns of interest and if the results are brought back to `R`.
 
-```{r defexp}
+```{r defexp, cache=TRUE}
 scale <- 0.237
 ```
 
-```{r defdplyr}
+```{r defdplyr, cache=TRUE}
+dT %>%
+  select(subjectID, surveyCategory, assessmentTotal) %>%
+  group_by(subjectID) %>%
+  mutate(probability =
+           exp(assessmentTotal * scale)/
+           sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
+  arrange(probability, surveyCategory) %>%
+  filter(row_number() == n()) %>%
+  ungroup() %>%
+  rename(diagnosis = surveyCategory) %>%
+  select(subjectID, diagnosis, probability) %>%
+  arrange(subjectID) %>%
+  dbplyr::remote_query(.) %>%
+  cat
+
 dT %>%
   group_by(subjectID) %>%
   mutate(probability =
@@ -81,7 +100,6 @@ dT %>%
   rename(diagnosis = surveyCategory) %>%
   select(subjectID, diagnosis, probability) %>%
   arrange(subjectID) %>%
-  tally() %>%
   dbplyr::remote_query(.) %>%
   cat
 
@@ -91,7 +109,7 @@ dplyr_run <- function(narrow) {
     dR <- dR %>%
       select(subjectID, surveyCategory, assessmentTotal)
   }
-  dR <- dR %>%
+  dR %>%
     group_by(subjectID) %>%
     mutate(probability =
              exp(assessmentTotal * scale)/
@@ -101,10 +119,10 @@ dplyr_run <- function(narrow) {
     ungroup() %>%
     rename(diagnosis = surveyCategory) %>%
     select(subjectID, diagnosis, probability) %>%
-    arrange(subjectID) %>%
-    tally()
-  res <- dR %>% collect() %>% as.data.frame()
-  as.numeric(res[[1]][[1]])
+    arrange(subjectID) %>% 
+    head(n=1) %>%
+    collect() %>%
+    as.data.frame()
 }
 
 
@@ -113,7 +131,7 @@ dplyr_run(narrow=FALSE)
 dplyr_run(narrow=TRUE)
 ```
 
-```{r defrquery}
+```{r defrquery, cache=TRUE}
 optree <- dR %.>%
   extend_nse(.,
              probability :=
@@ -122,7 +140,7 @@ optree <- dR %.>%
              count := count(1),
              partitionby = 'subjectID') %.>%
   extend_nse(.,
-             rank := rank(),
+             rank := row_number(),
              partitionby = 'subjectID',
              orderby = c('probability', 'surveyCategory'))  %.>%
   rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
@@ -130,8 +148,7 @@ optree <- dR %.>%
   select_columns(., c('subjectID', 
                       'diagnosis', 
                       'probability')) %.>%
-  orderby(., 'subjectID') %.>%
-  sql_node(., "n" := "COUNT(1)", orig_columns = FALSE)
+  orderby(., 'subjectID')
 
 cat(to_sql(optree, my_db))
 
@@ -145,7 +162,7 @@ rquery_run <- function() {
                count := count(1),
                partitionby = 'subjectID') %.>%
     extend_nse(.,
-               rank := rank(),
+               rank := row_number(),
                partitionby = 'subjectID',
                orderby = c('probability', 'surveyCategory'))  %.>%
     rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
@@ -153,10 +170,8 @@ rquery_run <- function() {
     select_columns(., c('subjectID', 
                         'diagnosis', 
                         'probability')) %.>%
-    orderby(., 'subjectID') %.>%
-    sql_node(., "n" := "COUNT(1)", orig_columns = FALSE)
-  res <- execute(my_db, optree)
-  as.numeric(res[[1]][[1]])
+    orderby(., 'subjectID', limit = 1)
+  execute(my_db, optree)
 }
 
 rquery_run()
@@ -165,18 +180,32 @@ rquery_run()
 
 We can get timings for variations of the function:
 
-```{r time}
+```{r time, cache=TRUE}
 library("microbenchmark")
 
 timings <- microbenchmark(dplyr_run(narrow=FALSE), 
                           dplyr_run(narrow=TRUE),
                           rquery_run())
+
+dT <- NULL
+dR <- NULL
+```
+
+```{r cleanup, include=FALSE, cache=TRUE}
+if(use_spark) {
+  sparklyr::spark_disconnect(my_db)
+} else {
+  DBI::dbDisconnect(my_db)
+}
+my_db <- NULL
 ```
 
 And then present the results:
 
 ```{r present}
 print(timings)
+
+autoplot(timings)
 
 tdf <- as.data.frame(timings)
 
@@ -192,7 +221,7 @@ WVPlots::ScatterBoxPlotH(tdf, "time", "expr",
                          title="Execution times in NS")
 ```
 
-The effect seems to be present, but weaker than last time I measured it.  Though the effect would certainly be there if one inspected an intermediate table.
+The necsissity of the narrowing effect seems to be not present on Spark when we look only at the final result. Though the effect would certainly be there if one inspected an intermediate table.
 
 Of course, narrowing to the exact columns used can be difficult: it can involve inspecting an
 arbitrarily long pipeline for column uses.  That is part of why we are developing
@@ -200,7 +229,4 @@ a new `R` query generator that automates that procedure: [`rquery`](https://winv
 
 
 
-```{r cleanup, include=FALSE}
-sparklyr::spark_disconnect(my_db)
-```
 
