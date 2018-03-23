@@ -170,9 +170,13 @@ to_sql.relop_orderby <- function (x,
     ot <- c(ot, rev_ot)
   }
   subcols <- calc_used_relop_orderby(x, using=using)
+  qlimit = limit
+  if(!getDBOption(db, "use_pass_limit", TRUE)) {
+    qlimit = NULL
+  }
   subsql_list <- to_sql(x$source[[1]],
                         db = db,
-                        limit = limit,
+                        limit = qlimit,
                         source_limit = source_limit,
                         indent_level = indent_level + 1,
                         tnum = tnum,

@@ -25,6 +25,10 @@ my_db <- sparklyr::spark_connect(version='2.2.0',
                                  master = "local",
                                  config = conf)
 
+dbopts <- dbi_connection_preferences(my_db)
+print(dbopts)
+options(dbopts)
+
 nSubj <- 100000
 nIrrelCol <- 1000
 dL <- data.frame(subjectID = sort(rep(seq_len(nSubj),2)),

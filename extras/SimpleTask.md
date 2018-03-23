@@ -47,14 +47,38 @@ library("rquery")
     ##     :=
 
 ``` r
-# PostgreSQL dbExistsTable() does not work
-options(list(rquery.use_DBI_dbExistsTable = FALSE))
-
 db <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
                      host = 'localhost',
                      port = 5432,
                      user = 'johnmount',
                      password = '')
+
+# PostgreSQL dbExistsTable() does not work
+dbopts <- dbi_connection_preferences(db)
+print(dbopts)
+```
+
+    ## $rquery.PostgreSQLConnection.use_pass_limit
+    ## [1] TRUE
+    ## 
+    ## $rquery.PostgreSQLConnection.use_DBI_dbExistsTable
+    ## [1] FALSE
+    ## 
+    ## $rquery.PostgreSQLConnection.use_DBI_dbListFields
+    ## [1] FALSE
+    ## 
+    ## $rquery.PostgreSQLConnection.use_DBI_dbRemoveTable
+    ## [1] FALSE
+    ## 
+    ## $rquery.PostgreSQLConnection.control_temporary
+    ## [1] TRUE
+    ## 
+    ## $rquery.PostgreSQLConnection.rownames_false
+    ## [1] TRUE
+
+``` r
+options(dbopts)
+
 
 nrows <- 100000
 ```
@@ -95,9 +119,9 @@ cat(rquery_sql)
     ##    "mtcarsdb"."wt"
     ##   FROM
     ##    "mtcarsdb"
-    ##  ) tsql_93912208524734195079_0000000000
+    ##  ) tsql_35219670634487415022_0000000000
     ##  WHERE "cyl" = 8
-    ## ) tsql_93912208524734195079_0000000001
+    ## ) tsql_35219670634487415022_0000000001
 
 ``` r
 DBI::dbGetQuery(db, paste("EXPLAIN", rquery_sql))
@@ -182,22 +206,22 @@ print(timings)
 ```
 
     ## Unit: milliseconds
-    ##                expr        min         lq      mean     median         uq
-    ##        base_stepped  390.82470  535.07365  621.2703  573.94872  660.98708
-    ##         base_nested  189.88128  220.92643  308.1530  238.72063  390.38276
-    ##               dplyr   69.98686  118.14594  190.5346  129.23745  249.22599
-    ##      dplyr_database 1494.24581 1563.01820 2030.9475 1727.84260 2067.37017
-    ##   data.table_nested   31.68172   40.63368   74.8987   50.00722   58.15187
-    ##  data.table_stepped   95.33918  145.20882  223.9996  204.64586  286.91458
-    ##     rquery_database 1216.06152 1437.59025 1980.8697 1655.72319 2595.96311
+    ##                expr        min         lq       mean     median         uq
+    ##        base_stepped  614.82463  792.78400  890.51091  852.73570  955.02365
+    ##         base_nested  449.00939  482.27757  591.49230  571.01472  654.18352
+    ##               dplyr   72.09153  116.90713  180.63522  130.30891  249.84177
+    ##      dplyr_database 1474.74979 1578.99341 1733.14745 1680.57031 1797.17749
+    ##   data.table_nested   30.79198   39.86689   81.48777   52.01675   59.95158
+    ##  data.table_stepped  101.62089  139.95166  241.98376  219.29464  292.24174
+    ##     rquery_database 1215.54866 1413.49783 1589.91287 1514.58517 1637.65108
     ##        max neval
-    ##  2060.7125   100
-    ##   742.4877   100
-    ##   651.8981   100
-    ##  4441.4148   100
-    ##   506.7049   100
-    ##   731.2549   100
-    ##  3774.4753   100
+    ##  1388.7660   100
+    ##  1301.2126   100
+    ##   626.5010   100
+    ##  3095.6303   100
+    ##   644.7626   100
+    ##   742.3568   100
+    ##  3152.1191   100
 
 ``` r
 autoplot(timings)

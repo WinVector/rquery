@@ -51,6 +51,10 @@ db <- DBI::dbConnect(RSQLite::SQLite(),
                      ":memory:")
 RSQLite::initExtension(db)
 
+dbopts <- dbi_connection_preferences(db)
+print(dbopts)
+options(dbopts)
+
 # example data
 d <- dbi_copy_to(
   db, 'd',
@@ -581,12 +585,13 @@ wn <- wp %.>%
 cat(to_sql(wn, db))
 ```
 
-A graph of the the effects of this kind of narrowing (in this case done by hand, as `dplyr` currently 
+A graph of the the effects of this kind of narrowing (for `dplyr` by hand as `dplyr` currently 
 does not have the above type of automatic query analysis/optimization) shows the sensitivity
 to this optimization.
 
-> <img src="narrow.png">
-> (Figure from: [here](http://www.win-vector.com/blog/2017/12/how-to-greatly-speed-up-your-spark-queries/).)
+> <img src="present-1.png">
+> (Figure from: [here](https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md), please see also 
+[here](http://www.win-vector.com/blog/2017/12/how-to-greatly-speed-up-your-spark-queries/).)
 
 
 # Conclusion

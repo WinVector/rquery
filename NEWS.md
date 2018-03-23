@@ -4,6 +4,7 @@
  * Work around RPostgreSQL issue (dbTableExists does not work).
  * More controls on dbi_ steps through package options.
  * Push LIMIT deeper into pipelines.
+ * Add connection config tools.
 
 # rquery 0.4.1 2018/03/17
 

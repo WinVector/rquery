@@ -216,9 +216,13 @@ to_sql.relop_sql <- function (x,
   if(x$orig_columns) {
     cols <- c("*", cols)
   }
+  qlimit = limit
+  if(!getDBOption(db, "use_pass_limit", TRUE)) {
+    qlimit = NULL
+  }
   subsql_list <- to_sql(x$source[[1]],
                         db = db,
-                        limit = limit,
+                        limit = qlimit,
                         source_limit = source_limit,
                         indent_level = indent_level + 1,
                         tnum = tnum,

@@ -88,6 +88,9 @@ if(use_spark) {
                           password = '')
 }
 
+dbopts <- dbi_connection_preferences(my_db)
+print(dbopts)
+options(dbopts)
 
 d <- dbi_copy_to(my_db, 'd',
                  data.frame(

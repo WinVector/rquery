@@ -27,6 +27,10 @@ db <- DBI::dbConnect(RPostgres::Postgres(),
                      password = 'pg')
 winvector_temp_db_handle <- list(db = db)
 
+dbopts <- dbi_connection_preferences(db)
+print(dbopts)
+options(dbopts)
+
 packageVersion("rquery")
 packageVersion("dplyr")
 packageVersion("dbplyr")

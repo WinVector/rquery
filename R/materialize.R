@@ -47,8 +47,12 @@ materialize <- function(db,
   if(!("relop" %in% class(optree))) {
     stop("rquery::materialize expect optree to be of class relop")
   }
+  qlimit = limit
+  if(!getDBOption(db, "use_pass_limit", TRUE)) {
+    qlimit = NULL
+  }
   sql_list <- to_sql(optree, db,
-                     limit = limit,
+                     limit = qlimit,
                      source_limit = source_limit)
   # establish some safe invarients
   if(length(sql_list)<1) {
@@ -123,11 +127,17 @@ materialize <- function(db,
   }
   # work on the last node (must be SQL)
   sql <- sql_list[[length(sql_list)]]
-  if(connection_is_spark(db)) {
-    if(temporary && getOption("rquery.verbose")) {
-      warning("setting rquery::materialize setting temporary=FALSE as we are on Spark")
+  if(temporary) {
+    control_temp <- getDBOption(db, "control_temporary", NULL)
+    if(is.null(control_temp)) {
+      control_temp <- !connection_is_spark(db)
     }
-    temporary <- FALSE
+    if(!control_temp) {
+      if(getOption("rquery.verbose")) {
+        warning("setting rquery::materialize setting temporary=FALSE")
+      }
+      temporary <- FALSE
+    }
   }
   sqlc <- paste0("CREATE ",
                  ifelse(temporary, "TEMPORARY ", ""),

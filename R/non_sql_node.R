@@ -169,9 +169,13 @@ to_sql.relop_non_sql <- function (x,
                     f = x$f)
   class(nsql_step) <- "rquery_non_sql_step"
   step2 <- list(nsql_step)
+  qlimit = limit
+  if(!getDBOption(db, "use_pass_limit", TRUE)) {
+    qlimit = NULL
+  }
   step3 <- list(to_sql(table_source(x$outgoing_table_name, column_names(x)),
                        db = db,
-                       limit = limit,
+                       limit = qlimit,
                        source_limit = source_limit,
                        indent_level = indent_level + 1,
                        tnum = tnum,

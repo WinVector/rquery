@@ -14,7 +14,7 @@
 dbi_table_exists <- function(db, table_name) {
   # Would like to just return DBI::dbExistsTable(db, table_name)
   # But RPostgreSQL ‘0.6.2’ does not implement it.
-  if(getOption("rquery.use_DBI_dbExistsTable")) {
+  if(getDBOption(db, "use_DBI_dbExistsTable", TRUE)) {
     return(DBI::dbExistsTable(db, table_name))
   }
   q <- paste0("SELECT * FROM ",
@@ -47,7 +47,7 @@ dbi_table_exists <- function(db, table_name) {
 dbi_colnames <- function(db, table_name) {
   # DBI::dbListFields fails intermitnently, and sometimes gives wrong results
   # filed as: https://github.com/tidyverse/dplyr/issues/3204
-  if(getOption("rquery.use_DBI_dbListFields")) {
+  if(getDBOption(db, "use_DBI_dbListFields", FALSE)) {
     return(DBI::dbListFields(db, table_name))
   }
   # below is going to have issues to to R-column name conversion!
@@ -70,7 +70,7 @@ dbi_colnames <- function(db, table_name) {
 dbi_remove_table <- function(db, table_name) {
   if(!is.null(table_name)) {
     if(dbi_table_exists(db, table_name)) {
-      if(getOption("rquery.use_DBI_dbRemoveTable")) {
+      if(getDBOption(db, "use_DBI_dbRemoveTable", FALSE)) {
         DBI::dbRemoveTable(db, table_name)
       } else {
         DBI::dbExecute(db,
@@ -84,6 +84,7 @@ dbi_remove_table <- function(db, table_name) {
 }
 
 
+# try not to use this too many places, prefer the configs
 connection_is_spark <- function(db) {
   length(intersect(c("spark_connection", "spark_shell_connection"),
                              class(db)))>=1
@@ -129,26 +130,49 @@ dbi_copy_to <- function(db, table_name, d,
   if(overwrite) {
     dbi_remove_table(db, table_name)
   }
-  is_spark <- connection_is_spark(db)
-  if(getOption("rquery.verbose")) {
-    if(temporary) {
-      warning("setting rquery::dbi_copy_to setting temporary=FALSE as we are on Spark")
+  can_set_temp <- getDBOption(db, "control_temporary", NULL)
+  can_set_rownames <- getDBOption(db, "control_rownames", NULL)
+  if(connection_is_spark(db)) {
+    if(is.null(can_set_temp)) {
+      can_set_temp <- FALSE
     }
-    temporary <- FALSE
+    if(is.null(can_set_rownames)) {
+      can_set_rownames <- FALSE
+    }
   }
-  if(is_spark) {
-    DBI::dbWriteTable(db,
-                      table_name,
-                      d,
-                      append = FALSE)
+  if(is.null(can_set_temp)) {
+    can_set_temp <- TRUE
+  }
+  if(is.null(can_set_rownames)) {
+    can_set_rownames <- TRUE
+  }
+  if(can_set_temp) {
+     if(can_set_rownames) {
+      DBI::dbWriteTable(db,
+                        table_name,
+                        d,
+                        temporary = temporary,
+                        row.names = FALSE)
+    } else {
+      DBI::dbWriteTable(db,
+                        table_name,
+                        d,
+                        temporary = temporary)
+    }
   } else {
-    DBI::dbWriteTable(db,
-                      table_name,
-                      d,
-                      temporary = temporary,
-                      append = FALSE,
-                      overwrite = overwrite,
-                      row.names = FALSE)
+    if(temporary && getOption("rquery.verbose")) {
+      warning("setting rquery::dbi_copy_to setting temporary=FALSE")
+    }
+    if(can_set_rownames) {
+      DBI::dbWriteTable(db,
+                        table_name,
+                        d,
+                        row.names = FALSE)
+    } else {
+      DBI::dbWriteTable(db,
+                        table_name,
+                        d)
+    }
   }
   dbi_table(db, table_name)
 }
@@ -172,3 +196,73 @@ dbi_nrow <- function(db, table_name) {
   nrows <- as.numeric(nrowst[[1]][[1]])
   nrows
 }
+
+
+#' Build a cannonical name for a db connection class.
+#'
+#' @param db DBI database connection
+#' @return character
+#'
+#' @examples
+#'
+#' if(requireNamespace("RSQLite", quietly = TRUE)) {
+#'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#'   print(dbi_connection_name(my_db))
+#'   print(dbi_connection_preferences(my_db))
+#'   DBI::dbDisconnect(my_db)
+#' }
+#'
+#' @export
+#'
+dbi_connection_name <- function(db) {
+  cls <- sort(class(db))
+  cls <- paste(cls, collapse = "_")
+  cls <- gsub("[^a-zA-Z]+", "_", cls)
+  cls
+}
+
+#' Get reasonable options for a DB connection.
+#'
+#' @param db DBI database connection
+#' @return named list of options
+#'
+#' @examples
+#'
+#' if(requireNamespace("RSQLite", quietly = TRUE)) {
+#'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#'   print(dbi_connection_name(my_db))
+#'   print(dbi_connection_preferences(my_db))
+#'   DBI::dbDisconnect(my_db)
+#' }
+#'
+#' @export
+#'
+dbi_connection_preferences <- function(db) {
+  cname <- dbi_connection_name(db)
+  opts <- list()
+  opts[[paste(c("rquery", cname, "use_pass_limit"), collapse = ".")]] <- TRUE
+  opts[[paste(c("rquery", cname, "use_DBI_dbExistsTable"), collapse = ".")]] <- TRUE
+  opts[[paste(c("rquery", cname, "use_DBI_dbListFields"), collapse = ".")]] <- FALSE
+  opts[[paste(c("rquery", cname, "use_DBI_dbRemoveTable"), collapse = ".")]] <- FALSE
+  opts[[paste(c("rquery", cname, "control_temporary"), collapse = ".")]] <- TRUE
+  opts[[paste(c("rquery", cname, "rownames_false"), collapse = ".")]] <- TRUE
+  if(connection_is_spark(db)) {
+    opts[[paste(c("rquery", cname, "control_temporary"), collapse = ".")]] <- FALSE
+    opts[[paste(c("rquery", cname, "control_rownames"), collapse = ".")]] <- FALSE
+  }
+  # RPostgres::Postgres() "PqConnection"
+  if(cname == "PostgreSQLConnection") { # RPostgreSQL::PostgreSQL()
+    opts[[paste(c("rquery", cname, "use_DBI_dbExistsTable"), collapse = ".")]] <- FALSE
+    opts[[paste(c("rquery", cname, "use_DBI_dbRemoveTable"), collapse = ".")]] <- FALSE
+  }
+  # Can also run config tests in addition to dealing with known cases
+  opts
+}
+
+getDBOption <- function(db, optname, default) {
+  cname <- dbi_connection_name(db)
+  key <- paste(c("rquery", cname, optname), collapse = ".")
+  val <- getOption(key, default = default)
+  val
+}
+

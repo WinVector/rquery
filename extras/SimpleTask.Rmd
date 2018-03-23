@@ -15,14 +15,18 @@ library("ggplot2")
 library("data.table")
 library("rquery")
 
-# PostgreSQL dbExistsTable() does not work
-options(list(rquery.use_DBI_dbExistsTable = FALSE))
 
 db <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
                      host = 'localhost',
                      port = 5432,
                      user = 'johnmount',
                      password = '')
+
+# PostgreSQL dbExistsTable() does not work
+dbopts <- dbi_connection_preferences(db)
+print(dbopts)
+options(dbopts)
+
 
 nrows <- 100000
 ```

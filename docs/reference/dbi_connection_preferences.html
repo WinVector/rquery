@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>All news • rquery</title>
+<title>Get reasonable options for a DB connection. — dbi_connection_preferences • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -37,7 +37,7 @@
   </head>
 
   <body>
-    <div class="container template-news">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -96,104 +96,70 @@
       </header>
 
       <div class="row">
-
-  <div class="col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Change log <small>All releases</small></h1>
+    <h1>Get reasonable options for a DB connection.</h1>
     </div>
 
-    <div class="contents">
-    <div id="rquery-0-4-2-20180323" class="section level1">
-<h1 class="hasAnchor">
-<a href="#rquery-0-4-2-20180323" class="anchor"></a>rquery 0.4.2 2018/03/23</h1>
-<ul>
-<li>Work around RPostgreSQL issue (dbTableExists does not work).</li>
-<li>More controls on dbi_ steps through package options.</li>
-<li>Push LIMIT deeper into pipelines.</li>
-<li>Add connection config tools.</li>
-</ul>
-</div>
-    <div id="rquery-0-4-1-20180317" class="section level1">
-<h1 class="hasAnchor">
-<a href="#rquery-0-4-1-20180317" class="anchor"></a>rquery 0.4.1 2018/03/17</h1>
-<ul>
-<li>Fix re-run/re-create situations.</li>
-<li>Pipe database connection.</li>
-<li>Better quantile calc (assume window functions).</li>
-<li>Improve dependency decls.</li>
-<li>Further limit direct dependencies.</li>
-<li>Work with more DB drivers.</li>
-<li>SQL node for sets of columns.</li>
-</ul>
-</div>
-    <div id="rquery-0-4-0-20180310" class="section level1">
-<h1 class="hasAnchor">
-<a href="#rquery-0-4-0-20180310" class="anchor"></a>rquery 0.4.0 2018/03/10</h1>
-<ul>
-<li>Move to wrapr 1.2.0</li>
-<li>Add wrapr_function.relop().</li>
-<li>Column checks on extend.</li>
-<li>Default sql_node to copying incoming columns.</li>
-<li>NULL column ops.</li>
-<li>rsummary().</li>
-<li>“Non SQL” nodes.</li>
-<li>New rquery_intro vingette.</li>
-<li>Improved help examples.</li>
-<li>Stricter argument checking.</li>
-</ul>
-</div>
-    <div id="rquery-0-3-1-20180210" class="section level1">
-<h1 class="hasAnchor">
-<a href="#rquery-0-3-1-20180210" class="anchor"></a>rquery 0.3.1 2018/02/10</h1>
-<ul>
-<li>Be compatible with both wrapr 1.1.1 and 1.2.0.</li>
-</ul>
-</div>
-    <div id="rquery-0-3-0-20180131" class="section level1">
-<h1 class="hasAnchor">
-<a href="#rquery-0-3-0-20180131" class="anchor"></a>rquery 0.3.0 2018/01/31</h1>
-<ul>
-<li>Fix “desc”.</li>
-<li>Minor format change in rename (anticipate wrapr 1.2.0).</li>
-<li>Get ready for S3 wrapr_applicable and pipe_step (un-block wrapr 1.2.0 release).</li>
-</ul>
-</div>
-    <div id="rquery-0-2-0-20170122" class="section level1">
-<h1 class="hasAnchor">
-<a href="#rquery-0-2-0-20170122" class="anchor"></a>rquery 0.2.0 2017/01/22</h1>
-<ul>
-<li>Don’t store DB reference.</li>
-<li>Prepare for wrapr 1.1.0 features.</li>
-<li>Ad-hoc query modes.</li>
-<li>Fix statement partitioner.</li>
-<li>More flexibility on assignment notation.</li>
-</ul>
-</div>
-    <div id="rquery-0-1-0-20171203" class="section level1">
-<h1 class="hasAnchor">
-<a href="#rquery-0-1-0-20171203" class="anchor"></a>rquery 0.1.0 2017/12/03</h1>
-<ul>
-<li>Initial experiment</li>
-</ul>
-</div>
-    </div>
+    
+    <p>Get reasonable options for a DB connection.</p>
+    
+
+    <pre class="usage"><span class='fu'>dbi_connection_preferences</span>(<span class='no'>db</span>)</pre>
+    
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>db</th>
+      <td><p>DBI database connection</p></td>
+    </tr>
+    </table>
+    
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>named list of options</p>
+    
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'>
+<span class='kw'>if</span>(<span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
+  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
+  <span class='fu'>print</span>(<span class='fu'><a href='dbi_connection_name.html'>dbi_connection_name</a></span>(<span class='no'>my_db</span>))
+  <span class='fu'>print</span>(<span class='fu'>dbi_connection_preferences</span>(<span class='no'>my_db</span>))
+  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
+}</div><div class='output co'>#&gt; [1] "SQLiteConnection"
+#&gt; $rquery.SQLiteConnection.use_pass_limit
+#&gt; [1] TRUE
+#&gt; 
+#&gt; $rquery.SQLiteConnection.use_DBI_dbExistsTable
+#&gt; [1] TRUE
+#&gt; 
+#&gt; $rquery.SQLiteConnection.use_DBI_dbListFields
+#&gt; [1] FALSE
+#&gt; 
+#&gt; $rquery.SQLiteConnection.use_DBI_dbRemoveTable
+#&gt; [1] FALSE
+#&gt; 
+#&gt; $rquery.SQLiteConnection.control_temporary
+#&gt; [1] TRUE
+#&gt; 
+#&gt; $rquery.SQLiteConnection.rownames_false
+#&gt; [1] TRUE
+#&gt; </div><div class='input'>
+</div></pre>
   </div>
-
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <div id="tocnav">
-      <h2>Contents</h2>
-      <ul class="nav nav-pills nav-stacked">
-        <li><a href="#rquery-0-4-2-20180323">0.4.2</a></li>
-        <li><a href="#rquery-0-4-1-20180317">0.4.1</a></li>
-        <li><a href="#rquery-0-4-0-20180310">0.4.0</a></li>
-        <li><a href="#rquery-0-3-1-20180210">0.3.1</a></li>
-        <li><a href="#rquery-0-3-0-20180131">0.3.0</a></li>
-        <li><a href="#rquery-0-2-0-20170122">0.2.0</a></li>
-        <li><a href="#rquery-0-1-0-20171203">0.1.0</a></li>
-      </ul>
-    </div>
-  </div>
+    <h2>Contents</h2>
+    <ul class="nav nav-pills nav-stacked">
+      <li><a href="#arguments">Arguments</a></li>
+      
+      <li><a href="#value">Value</a></li>
+      
+      <li><a href="#examples">Examples</a></li>
+    </ul>
 
+  </div>
 </div>
 
       <footer>
