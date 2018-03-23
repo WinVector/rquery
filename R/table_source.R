@@ -144,6 +144,7 @@ columns_used.relop_table_source <- function (x, ...,
 to_sql.relop_table_source <- function (x,
                                        db,
                                        ...,
+                                       limit = NULL,
                                        source_limit = NULL,
                                        indent_level = 0,
                                        tnum = mk_tmp_name_source('tsql'),
@@ -165,9 +166,10 @@ to_sql.relop_table_source <- function (x,
               prefix, " ", qt, "\n",
               prefix, "FROM\n",
               prefix, " ", tabnam)
-  if(!is.null(source_limit)) {
+  if((!is.null(limit))||(!is.null(source_limit))) {
+    limit <- min(limit, source_limit)
     q <- paste(q, "LIMIT",
-               format(ceiling(source_limit), scientific = FALSE))
+               format(ceiling(limit), scientific = FALSE))
   }
   if(append_cr) {
     q <- paste0(q, "\n")

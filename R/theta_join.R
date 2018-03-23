@@ -342,6 +342,7 @@ columns_used.relop_theta_join <- function (x, ...,
 to_sql.relop_theta_join <- function (x,
                                      db,
                                      ...,
+                                     limit = NULL,
                                      source_limit = NULL,
                                      indent_level = 0,
                                      tnum = mk_tmp_name_source('tsql'),
@@ -404,6 +405,10 @@ to_sql.relop_theta_join <- function (x,
               quote_identifier(db, tabb),
               " ON ",
               x$parsed[[1]]$parsed)
+  if(!is.null(limit)) {
+    q <- paste(q, "LIMIT",
+               format(ceiling(limit), scientific = FALSE))
+  }
   if(append_cr) {
     q <- paste0(q, "\n")
   }

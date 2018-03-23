@@ -197,6 +197,7 @@ prep_sql_toks <- function(db, ei) {
 to_sql.relop_sql <- function (x,
                               db,
                               ...,
+                              limit = NULL,
                               source_limit = NULL,
                               indent_level = 0,
                               tnum = mk_tmp_name_source('tsql'),
@@ -217,6 +218,7 @@ to_sql.relop_sql <- function (x,
   }
   subsql_list <- to_sql(x$source[[1]],
                         db = db,
+                        limit = limit,
                         source_limit = source_limit,
                         indent_level = indent_level + 1,
                         tnum = tnum,
@@ -234,6 +236,10 @@ to_sql.relop_sql <- function (x,
               tab)
   if(!is.null(x$mods)) {
     q <- paste(q, x$mods)
+  }
+  if(!is.null(limit)) {
+    q <- paste(q, "LIMIT",
+               format(ceiling(limit), scientific = FALSE))
   }
   if(append_cr) {
     q <- paste0(q, "\n")

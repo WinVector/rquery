@@ -142,13 +142,14 @@ columns_used.relop_orderby <- function (x, ...,
 
 #' @export
 to_sql.relop_orderby <- function (x,
-                                   db,
-                                   ...,
-                                   source_limit = NULL,
-                                   indent_level = 0,
-                                   tnum = mk_tmp_name_source('tsql'),
-                                   append_cr = TRUE,
-                                   using = NULL) {
+                                  db,
+                                  ...,
+                                  limit = NULL,
+                                  source_limit = NULL,
+                                  indent_level = 0,
+                                  tnum = mk_tmp_name_source('tsql'),
+                                  append_cr = TRUE,
+                                  using = NULL) {
   if(length(list(...))>0) {
     stop("unexpected arguments")
   }
@@ -171,6 +172,7 @@ to_sql.relop_orderby <- function (x,
   subcols <- calc_used_relop_orderby(x, using=using)
   subsql_list <- to_sql(x$source[[1]],
                         db = db,
+                        limit = limit,
                         source_limit = source_limit,
                         indent_level = indent_level + 1,
                         tnum = tnum,
@@ -185,11 +187,14 @@ to_sql.relop_orderby <- function (x,
          tab,
          ifelse(length(ot)>0,
                 paste0(" ORDER BY ", paste(ot, collapse = ", ")),
-                ""),
-         ifelse(length(x$limit)>0,
-                paste0(" LIMIT ",
-                       format(ceiling(x$limit), scientific = FALSE)),
                 ""))
+  if(!is.null(x$limit)) {
+    limit <- min(limit, x$limit)
+  }
+  if(!is.null(limit)) {
+    q <- paste(q, "LIMIT",
+               format(ceiling(limit), scientific = FALSE))
+  }
   if(append_cr) {
     q <- paste0(q, "\n")
   }

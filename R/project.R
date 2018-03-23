@@ -228,6 +228,7 @@ columns_used.relop_project <- function (x, ...,
 to_sql.relop_project <- function (x,
                                   db,
                                   ...,
+                                  limit = NULL,
                                   source_limit = NULL,
                                   indent_level = 0,
                                   tnum = mk_tmp_name_source('tsql'),
@@ -278,6 +279,10 @@ to_sql.relop_project <- function (x,
                "\n",
                prefix, "GROUP BY\n",
                prefix, " ", paste(cols, collapse = ", "))
+  }
+  if(!is.null(limit)) {
+    q <- paste(q, "LIMIT",
+               format(ceiling(limit), scientific = FALSE))
   }
   if(append_cr) {
     q <- paste0(q, "\n")

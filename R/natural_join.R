@@ -151,6 +151,7 @@ columns_used.relop_natural_join <- function (x, ...,
 to_sql.relop_natural_join <- function (x,
                                        db,
                                        ...,
+                                       limit = NULL,
                                        source_limit = NULL,
                                        indent_level = 0,
                                        tnum = mk_tmp_name_source('tsql'),
@@ -232,6 +233,10 @@ to_sql.relop_natural_join <- function (x,
     q <- paste0(q, "\n",
                 prefix, "ON\n",
                 prefix, " ", mt)
+  }
+  if(!is.null(limit)) {
+    q <- paste(q, "LIMIT",
+               format(ceiling(limit), scientific = FALSE))
   }
   if(append_cr) {
     q <- paste0(q, "\n")

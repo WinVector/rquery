@@ -153,6 +153,7 @@ tables_used.relop <- function(node, ...) {
 #' @param x rquery operation tree.
 #' @param db DBI database handle or rquery_db_info object.
 #' @param ... generic additional arguments (not used).
+#' @param limit numeric if not NULL limit result to this many rows.
 #' @param source_limit numeric if not NULL limit sources to this many rows.
 #' @param indent_level level to indent.
 #' @param tnum temp sub-query name generator.
@@ -179,6 +180,7 @@ tables_used.relop <- function(node, ...) {
 to_sql <- function (x,
                     db,
                     ...,
+                    limit = NULL,
                     source_limit = NULL,
                     indent_level = 0,
                     tnum = mk_tmp_name_source('tsql'),
