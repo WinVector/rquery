@@ -66,7 +66,7 @@ materialize <- function(db,
     }
   }
   # check/clear final result
-  if(DBI::dbExistsTable(db, table_name)) {
+  if(dbi_table_exists(db, table_name)) {
     if(overwrite) {
       dbi_remove_table(db, table_name)
     } else {
@@ -120,6 +120,12 @@ materialize <- function(db,
   }
   # work on the last node (must be SQL)
   sql <- sql_list[[length(sql_list)]]
+  if(connection_is_spark(db)) {
+    if(temporary && getOption("rquery.verbose")) {
+      warning("setting rquery::materialize setting temporary=FALSE as we are on Spark")
+    }
+    temporary <- FALSE
+  }
   sqlc <- paste0("CREATE ",
                  ifelse(temporary, "TEMPORARY ", ""),
                  "TABLE ",

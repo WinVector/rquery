@@ -1,4 +1,9 @@
 
+# rquery 0.4.2 2018/03/22
+
+ * Work around RPostgreSQL issue (dbTableExists does not work).
+ * More controls on dbi_ steps through package options.
+
 # rquery 0.4.1 2018/03/17
 
  * Fix re-run/re-create situations.

@@ -3,7 +3,7 @@ Simple Task
 John Mount, Win-Vector LLC
 3/22/2018
 
-Simple tasks related to [R Tip: Break up Function Nesting for Legibility](http://www.win-vector.com/blog/2018/03/r-tip-break-up-function-nesting-for-legibility/).
+Simple tasks related to [R Tip: Break up Function Nesting for Legibility](http://www.win-vector.com/blog/2018/03/r-tip-break-up-function-nesting-for-legibility/). Most remote data systems start and end with data remote, so we are materializing tables when showing database timings.
 
 ``` r
 library("dplyr")
@@ -47,14 +47,8 @@ library("rquery")
     ##     :=
 
 ``` r
-mtcarsb <- mtcars[rep(seq_len(nrow(mtcars)), 100000), ,]
-print(nrow(mtcarsb))
-```
-
-    ## [1] 3200000
-
-``` r
-mtcarsd <- as.data.table(mtcarsb)
+# PostgreSQL dbExistsTable() does not work
+options(list(rquery.use_DBI_dbExistsTable = FALSE))
 
 db <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
                      host = 'localhost',
@@ -62,30 +56,85 @@ db <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
                      user = 'johnmount',
                      password = '')
 
+nrows <- 100000
+```
+
+Simple problem (subset rows and columns).
+
+``` r
+mtcarsb <- mtcars[rep(seq_len(nrow(mtcars)), nrows), ,]
+print(dim(mtcarsb))
+```
+
+    ## [1] 3200000      11
+
+``` r
+mtcarsd <- as.data.table(mtcarsb)
+
 mtcarsdb <- dbi_copy_to(db, "mtcarsdb", mtcarsb,
                         overwrite = TRUE,
                         temporary = TRUE)
 # DBI::dbGetQuery(db, "CREATE INDEX mtcarsdb_cyl ON mtcarsdb (cyl)")
-mtcarsdb %.>% 
+rquery_sql <- mtcarsdb %.>% 
   select_rows_nse(., cyl == 8) %.>% 
   select_columns(., qc(mpg, cyl, wt)) %.>%
-  sql_node(., "n" := "COUNT(1)", 
-           orig_columns = FALSE) %.>%
-  to_sql(., db) %.>%
-  DBI::dbGetQuery(db, paste("EXPLAIN", .))
+  to_sql(., db)
+
+cat(rquery_sql)
 ```
 
-    ##                                                                                 QUERY PLAN
-    ## 1                             Finalize Aggregate  (cost=56725.58..56725.59 rows=1 width=8)
-    ## 2                                     ->  Gather  (cost=56725.16..56725.57 rows=4 width=8)
-    ## 3                                                                       Workers Planned: 4
-    ## 4                          ->  Partial Aggregate  (cost=55725.16..55725.17 rows=1 width=8)
-    ## 5               ->  Parallel Seq Scan on mtcarsdb  (cost=0.00..55715.16 rows=4000 width=0)
-    ## 6                                                    Filter: (cyl = '8'::double precision)
+    ## SELECT
+    ##  "mpg",
+    ##  "cyl",
+    ##  "wt"
+    ## FROM (
+    ##  SELECT * FROM (
+    ##   SELECT
+    ##    "mtcarsdb"."mpg",
+    ##    "mtcarsdb"."cyl",
+    ##    "mtcarsdb"."wt"
+    ##   FROM
+    ##    "mtcarsdb"
+    ##  ) tsql_93912208524734195079_0000000000
+    ##  WHERE "cyl" = 8
+    ## ) tsql_93912208524734195079_0000000001
+
+``` r
+DBI::dbGetQuery(db, paste("EXPLAIN", rquery_sql))
+```
+
+    ##                                                                      QUERY PLAN
+    ## 1                          Gather  (cost=1000.00..58315.16 rows=16000 width=24)
+    ## 2                                                            Workers Planned: 4
+    ## 3   ->  Parallel Seq Scan on mtcarsdb  (cost=0.00..55715.16 rows=4000 width=24)
+    ## 4                                         Filter: (cyl = '8'::double precision)
 
 ``` r
 mtcarst <- dplyr::tbl(db, "mtcarsdb")
 
+dplyr_sql <- mtcarst %>%
+  filter(cyl == 8) %>%
+  select(mpg, cyl, wt) %>%
+  dbplyr::remote_query(.)
+
+cat(dplyr_sql)
+```
+
+    ## SELECT "mpg", "cyl", "wt"
+    ## FROM "mtcarsdb"
+    ## WHERE ("cyl" = 8.0)
+
+``` r
+DBI::dbGetQuery(db, paste("EXPLAIN", dplyr_sql))
+```
+
+    ##                                                                      QUERY PLAN
+    ## 1                          Gather  (cost=1000.00..58315.16 rows=16000 width=24)
+    ## 2                                                            Workers Planned: 4
+    ## 3   ->  Parallel Seq Scan on mtcarsdb  (cost=0.00..55715.16 rows=4000 width=24)
+    ## 4                                         Filter: (cyl = '8'::double precision)
+
+``` r
 timings <- microbenchmark(
   base_stepped = {
     . <- mtcarsb
@@ -106,8 +155,8 @@ timings <- microbenchmark(
     res <- mtcarst         %>%
       filter(cyl == 8)     %>%
       select(mpg, cyl, wt) %>%
-      tally
-    as.numeric(as.data.frame(res)[[1]][[1]])
+      compute()
+    as.numeric(as.data.frame(tally(res))[[1]][[1]])
   },
   data.table_nested = {
     nrow(mtcarsd[cyl==8, c("mpg", "cyl", "wt")])
@@ -121,10 +170,11 @@ timings <- microbenchmark(
     res <- mtcarsdb                       %.>% 
       select_rows_nse(., cyl == 8)        %.>% 
       select_columns(., qc(mpg, cyl, wt)) %.>%
-      sql_node(., "n" := "COUNT(1)", 
-               orig_columns = FALSE)      %.>%
-      execute(db, .)
-    as.numeric(res[[1]][[1]])
+      materialize(db, ., 
+                  table_name = "restab",
+                  overwrite = TRUE,
+                  temporary = TRUE)
+     dbi_nrow(db, res$table_name)
   }
 )
 
@@ -132,28 +182,30 @@ print(timings)
 ```
 
     ## Unit: milliseconds
-    ##                expr       min        lq      mean    median        uq
-    ##        base_stepped 447.52068 582.55921 713.38291 654.42452 787.10021
-    ##         base_nested 240.50462 282.67886 409.55758 385.06830 456.02909
-    ##               dplyr  73.50962 110.98097 186.07577 130.17617 238.90878
-    ##      dplyr_database 265.20716 273.19135 304.20024 280.79591 315.92071
-    ##   data.table_nested  31.01306  42.19911  85.27903  49.50752  65.30889
-    ##  data.table_stepped 100.38787 140.55734 248.12110 236.01903 269.56178
-    ##     rquery_database 424.64349 443.63297 511.61300 462.98186 492.11455
+    ##                expr        min         lq      mean     median         uq
+    ##        base_stepped  390.82470  535.07365  621.2703  573.94872  660.98708
+    ##         base_nested  189.88128  220.92643  308.1530  238.72063  390.38276
+    ##               dplyr   69.98686  118.14594  190.5346  129.23745  249.22599
+    ##      dplyr_database 1494.24581 1563.01820 2030.9475 1727.84260 2067.37017
+    ##   data.table_nested   31.68172   40.63368   74.8987   50.00722   58.15187
+    ##  data.table_stepped   95.33918  145.20882  223.9996  204.64586  286.91458
+    ##     rquery_database 1216.06152 1437.59025 1980.8697 1655.72319 2595.96311
     ##        max neval
-    ##  1482.5111   100
-    ##  1335.3310   100
-    ##   727.6659   100
-    ##   454.8025   100
-    ##  1649.2550   100
-    ##   816.7377   100
-    ##  1746.4671   100
+    ##  2060.7125   100
+    ##   742.4877   100
+    ##   651.8981   100
+    ##  4441.4148   100
+    ##   506.7049   100
+    ##   731.2549   100
+    ##  3774.4753   100
 
 ``` r
 autoplot(timings)
 ```
 
-![](SimpleTask_files/figure-markdown_github/unnamed-chunk-1-1.png)
+![](SimpleTask_files/figure-markdown_github/unnamed-chunk-2-1.png)
+
+Want to add the query to query folding feature that `dbplyr`'s optimizer has.
 
 ``` r
 DBI::dbDisconnect(db)

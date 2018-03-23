@@ -6,6 +6,7 @@ output: github_document
 ---
 
 Simple tasks related to [R Tip: Break up Function Nesting for Legibility](http://www.win-vector.com/blog/2018/03/r-tip-break-up-function-nesting-for-legibility/).
+Most remote data systems start and end with data remote, so we are materializing tables when showing database timings.
 
 ```{r}
 library("dplyr")
@@ -14,10 +15,8 @@ library("ggplot2")
 library("data.table")
 library("rquery")
 
-mtcarsb <- mtcars[rep(seq_len(nrow(mtcars)), 100000), ,]
-print(nrow(mtcarsb))
-
-mtcarsd <- as.data.table(mtcarsb)
+# PostgreSQL dbExistsTable() does not work
+options(list(rquery.use_DBI_dbExistsTable = FALSE))
 
 db <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
                      host = 'localhost',
@@ -25,19 +24,41 @@ db <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
                      user = 'johnmount',
                      password = '')
 
+nrows <- 100000
+```
+
+Simple problem (subset rows and columns).
+
+```{r}
+mtcarsb <- mtcars[rep(seq_len(nrow(mtcars)), nrows), ,]
+print(dim(mtcarsb))
+
+mtcarsd <- as.data.table(mtcarsb)
+
 mtcarsdb <- dbi_copy_to(db, "mtcarsdb", mtcarsb,
                         overwrite = TRUE,
                         temporary = TRUE)
 # DBI::dbGetQuery(db, "CREATE INDEX mtcarsdb_cyl ON mtcarsdb (cyl)")
-mtcarsdb %.>% 
+rquery_sql <- mtcarsdb %.>% 
   select_rows_nse(., cyl == 8) %.>% 
   select_columns(., qc(mpg, cyl, wt)) %.>%
-  sql_node(., "n" := "COUNT(1)", 
-           orig_columns = FALSE) %.>%
-  to_sql(., db) %.>%
-  DBI::dbGetQuery(db, paste("EXPLAIN", .))
+  to_sql(., db)
+
+cat(rquery_sql)
+
+DBI::dbGetQuery(db, paste("EXPLAIN", rquery_sql))
 
 mtcarst <- dplyr::tbl(db, "mtcarsdb")
+
+dplyr_sql <- mtcarst %>%
+  filter(cyl == 8) %>%
+  select(mpg, cyl, wt) %>%
+  dbplyr::remote_query(.)
+
+cat(dplyr_sql)
+
+DBI::dbGetQuery(db, paste("EXPLAIN", dplyr_sql))
+
 
 timings <- microbenchmark(
   base_stepped = {
@@ -59,8 +80,8 @@ timings <- microbenchmark(
     res <- mtcarst         %>%
       filter(cyl == 8)     %>%
       select(mpg, cyl, wt) %>%
-      tally
-    as.numeric(as.data.frame(res)[[1]][[1]])
+      compute()
+    as.numeric(as.data.frame(tally(res))[[1]][[1]])
   },
   data.table_nested = {
     nrow(mtcarsd[cyl==8, c("mpg", "cyl", "wt")])
@@ -74,16 +95,21 @@ timings <- microbenchmark(
     res <- mtcarsdb                       %.>% 
       select_rows_nse(., cyl == 8)        %.>% 
       select_columns(., qc(mpg, cyl, wt)) %.>%
-      sql_node(., "n" := "COUNT(1)", 
-               orig_columns = FALSE)      %.>%
-      execute(db, .)
-    as.numeric(res[[1]][[1]])
+      materialize(db, ., 
+                  table_name = "restab",
+                  overwrite = TRUE,
+                  temporary = TRUE)
+     dbi_nrow(db, res$table_name)
   }
 )
 
 print(timings)
 
 autoplot(timings)
+```
 
+Want to add the query to query folding feature that `dbplyr`'s optimizer has.
+
+```{r}
 DBI::dbDisconnect(db)
 ```

@@ -13,18 +13,26 @@ This issue arises because wide tables (200 to 1000 columns) are quite common in 
 
 The idea behind the advice is: working with fewer columns makes for quicker queries.
 
-Some wonder is this really an issue or is it something one can ignore in the hope the downstream query optimizer fixes the problem.  In this note we will show the effect is real.
 
 ```{r ex, warning=FALSE, message=FALSE, echo=FALSE, include=FALSE}
 library("microbenchmark")
 suppressPackageStartupMessages(library("dplyr"))
 library("rquery")
 
+conf <-  sparklyr::spark_config()
+conf$spark.yarn.am.cores <- 4
+conf$spark.executor.cores <- 4
+conf$spark.executor.memory <- "2G"
+conf$spark.yarn.am.memory <- "2G" 
+conf$`sparklyr.shell.driver-memory` <- "2G"
+conf$`sparklyr.shell.executor-memory` <- "2G"
+conf$`spark.yarn.executor.memoryOverhead` <- "2G"
 my_db <- sparklyr::spark_connect(version='2.2.0', 
-                                 master = "local")
+                                 master = "local",
+                                 config = conf)
 
-nSubj <- 100000
-nIrrelCol <- 1000
+nSubj <- 500000
+nIrrelCol <- 100
 dL <- data.frame(subjectID = sort(rep(seq_len(nSubj),2)),
                  surveyCategory = c(
                    'withdrawal behavior',
@@ -49,8 +57,9 @@ dplyr::db_drop_table(my_db, d$table_name)
 dT <- NULL
 d <- NULL
 
-# build new ref
+# build new refs
 dT <- sparklyr::spark_read_parquet(my_db, 'dparq', "perf_tmp", memory = FALSE)
+dR <- dbi_table(my_db, "dparq")
 ```
 
 
@@ -58,9 +67,25 @@ Let's set up our experiment.  The data is a larger version of the problem from [
 
 ```{r defexp}
 scale <- 0.237
+```
 
+```{r defdplyr}
+dT %>%
+  group_by(subjectID) %>%
+  mutate(probability =
+           exp(assessmentTotal * scale)/
+           sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
+  arrange(probability, surveyCategory) %>%
+  filter(row_number() == n()) %>%
+  ungroup() %>%
+  rename(diagnosis = surveyCategory) %>%
+  select(subjectID, diagnosis, probability) %>%
+  arrange(subjectID) %>%
+  tally() %>%
+  dbplyr::remote_query(.) %>%
+  cat
 
-dplyr_run <- function(narrow, collect = FALSE) {
+dplyr_run <- function(narrow) {
   dR <- dT
   if(narrow) {
     dR <- dR %>%
@@ -70,25 +95,72 @@ dplyr_run <- function(narrow, collect = FALSE) {
     group_by(subjectID) %>%
     mutate(probability =
              exp(assessmentTotal * scale)/
-             sum(exp(assessmentTotal * scale))) %>%
+             sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
     arrange(probability, surveyCategory) %>%
     filter(row_number() == n()) %>%
     ungroup() %>%
     rename(diagnosis = surveyCategory) %>%
     select(subjectID, diagnosis, probability) %>%
-    arrange(subjectID)
-  if(collect) {
-    dR <- collect(dR)
-  } else {
-    dR <- compute(dR)
-  }
-  dR
+    arrange(subjectID) %>%
+    tally()
+  res <- dR %>% collect() %>% as.data.frame()
+  as.numeric(res[[1]][[1]])
 }
 
 
-head(dplyr_run(narrow=FALSE))
+dplyr_run(narrow=FALSE)
 
-head(dplyr_run(narrow=TRUE))
+dplyr_run(narrow=TRUE)
+```
+
+```{r defrquery}
+optree <- dR %.>%
+  extend_nse(.,
+             probability :=
+               exp(assessmentTotal * scale)/
+               sum(exp(assessmentTotal * scale)),
+             count := count(1),
+             partitionby = 'subjectID') %.>%
+  extend_nse(.,
+             rank := rank(),
+             partitionby = 'subjectID',
+             orderby = c('probability', 'surveyCategory'))  %.>%
+  rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
+  select_rows_nse(., rank == count) %.>%
+  select_columns(., c('subjectID', 
+                      'diagnosis', 
+                      'probability')) %.>%
+  orderby(., 'subjectID') %.>%
+  sql_node(., "n" := "COUNT(1)", orig_columns = FALSE)
+
+cat(to_sql(optree, my_db))
+
+  
+rquery_run <- function() {
+  optree <- dR %.>%
+    extend_nse(.,
+               probability :=
+                 exp(assessmentTotal * scale)/
+                 sum(exp(assessmentTotal * scale)),
+               count := count(1),
+               partitionby = 'subjectID') %.>%
+    extend_nse(.,
+               rank := rank(),
+               partitionby = 'subjectID',
+               orderby = c('probability', 'surveyCategory'))  %.>%
+    rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
+    select_rows_nse(., rank == count) %.>%
+    select_columns(., c('subjectID', 
+                        'diagnosis', 
+                        'probability')) %.>%
+    orderby(., 'subjectID') %.>%
+    sql_node(., "n" := "COUNT(1)", orig_columns = FALSE)
+  res <- execute(my_db, optree)
+  as.numeric(res[[1]][[1]])
+}
+
+rquery_run()
+
 ```
 
 We can get timings for variations of the function:
@@ -98,6 +170,7 @@ library("microbenchmark")
 
 timings <- microbenchmark(dplyr_run(narrow=FALSE), 
                           dplyr_run(narrow=TRUE),
+                          rquery_run(),
                           times = 20)
 ```
 
@@ -120,9 +193,7 @@ WVPlots::ScatterBoxPlotH(tdf, "time", "expr",
                          title="Execution times in NS")
 ```
 
-Notice the times where we have not per-narrowed the table are indeed much slower.
-
-The advice is confirmed: narrow to the columns of interest early in your analysis.
+The effect seems to be present, but weaker than last time I measured it.  Though the effect would certainly be there if one inspected an intermediate table.
 
 Of course, narrowing to the exact columns used can be difficult: it can involve inspecting an
 arbitrarily long pipeline for column uses.  That is part of why we are developing
