@@ -40,8 +40,7 @@ for(i in seq_len(nIrrelCol)) {
 
 d <- rquery::dbi_copy_to(my_db, 'd',
                  dL,
-                 temporary = TRUE, 
-                 overwrite = FALSE)
+                 overwrite = TRUE)
 dL <- NULL
 
 # copy to Parquet to simulate large external data source
@@ -66,7 +65,7 @@ sparklyr::sdf_nrow(dT)
 sparklyr::sdf_ncol(dT)
 
 scale <- 0.237
-tng <- cdata::makeTempNameGenerator("tmptab")
+tng <- wrapr::mk_tmp_name_source("tmptab")
 
 rquery_run <- function(collect) {
   dq <- d %.>%
@@ -148,8 +147,8 @@ timings <- microbenchmark(rquery_run(collect=TRUE),
                           dplyr_run(narrow=TRUE, collect=TRUE),
                           rquery_run(collect=FALSE), 
                           dplyr_run(narrow=FALSE, collect=FALSE), 
-                          dplyr_run(narrow=TRUE, collect=FALSE),
-                          times = 10)
+                          dplyr_run(narrow=TRUE, collect=FALSE))
+saveRDS(timings, "PerfTest_timings.RDS")
 ```
 
 Present results:
