@@ -9,6 +9,7 @@
 #' @param optree relop operation tree.
 #' @param table_name character, name of table to create.
 #' @param ... force later arguments to bind by name.
+#' @param limit numeric if not NULL result limit (to use this, last statment must not have a limit).
 #' @param source_limit numeric if not NULL limit sources to this many rows.
 #' @param overwrite logical if TRUE drop an previous table.
 #' @param temporary logical if TRUE try to create a temporary table.
@@ -38,6 +39,7 @@ materialize <- function(db,
                         optree,
                         table_name = mk_tmp_name_source('rquery_mat')(),
                         ...,
+                        limit = NULL,
                         source_limit = NULL,
                         overwrite = TRUE,
                         temporary = FALSE) {
@@ -132,6 +134,10 @@ materialize <- function(db,
                  quote_identifier(db, table_name),
                  " AS ",
                  sql)
+  if(!is.null(limit)) {
+    sqlc <- paste(sqlc, "LIMIT",
+                  format(ceiling(limit), scientific = FALSE))
+  }
   DBI::dbExecute(db, sqlc)
   if(!is.null(to_clear)) {
     dbi_remove_table(db, to_clear)
@@ -195,7 +201,7 @@ execute <- function(source,
                     optree,
                     ...,
                     table_name = NULL,
-                    limit = 1000000,
+                    limit = NULL,
                     source_limit = NULL,
                     overwrite = TRUE,
                     temporary = FALSE) {
@@ -217,6 +223,7 @@ execute <- function(source,
   }
   ref <- materialize(db, optree,
                      table_name = table_name,
+                     limit = limit,
                      source_limit = source_limit,
                      overwrite = overwrite,
                      temporary = temporary)
