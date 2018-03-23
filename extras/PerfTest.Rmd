@@ -172,10 +172,7 @@ WVPlots::ScatterBoxPlotH(tdf, "time", "expr",
                          title="Execution times in NS")
 ```
 
-My guess is the timings are seeing some trends and two irregularities:
 
- * `rquery` is landing its results on disk in `collect=FALSE` mode, and `dplyr` is (rightly) avoiding this cost.
- * `dplyr` seems to have some extra overhead on `collect=TRUE` (which may not be that bad a thing, as truly large workloads try to avoid this step).
 
 ```{r cleanup}
 sparklyr::spark_disconnect(my_db)
