@@ -33,17 +33,17 @@ dT %>%
   cat
 ```
 
-    ## SELECT `subjectID`, `diagnosis`, `probability`
-    ## FROM (SELECT `subjectID`, `surveyCategory` AS `diagnosis`, `assessmentTotal`, `probability`
-    ## FROM (SELECT `subjectID`, `surveyCategory`, `assessmentTotal`, `probability`
-    ## FROM (SELECT `subjectID`, `surveyCategory`, `assessmentTotal`, `probability`, row_number() OVER (PARTITION BY `subjectID` ORDER BY `probability`, `surveyCategory`) AS `zzz3`, COUNT(*) OVER (PARTITION BY `subjectID`) AS `zzz4`
+    ## SELECT "subjectID", "diagnosis", "probability"
+    ## FROM (SELECT "subjectID", "surveyCategory" AS "diagnosis", "assessmentTotal", "probability"
+    ## FROM (SELECT "subjectID", "surveyCategory", "assessmentTotal", "probability"
+    ## FROM (SELECT "subjectID", "surveyCategory", "assessmentTotal", "probability", row_number() OVER (PARTITION BY "subjectID" ORDER BY "probability", "surveyCategory") AS "zzz2", COUNT(*) OVER (PARTITION BY "subjectID") AS "zzz3"
     ## FROM (SELECT *
-    ## FROM (SELECT `subjectID`, `surveyCategory`, `assessmentTotal`, EXP(`assessmentTotal` * 0.237) / sum(EXP(`assessmentTotal` * 0.237)) OVER (PARTITION BY `subjectID`) AS `probability`
-    ## FROM (SELECT `subjectID`, `surveyCategory`, `assessmentTotal`
-    ## FROM `d`) `wzcfitgjwv`) `gmwnudvnns`
-    ## ORDER BY `probability`, `surveyCategory`) `rawrcjblpm`) `dwbokbbfuf`
-    ## WHERE (`zzz3` = `zzz4`)) `zutrlthjas`) `fvqsevfvyh`
-    ## ORDER BY `subjectID`
+    ## FROM (SELECT "subjectID", "surveyCategory", "assessmentTotal", EXP("assessmentTotal" * 0.237) / sum(EXP("assessmentTotal" * 0.237)) OVER (PARTITION BY "subjectID") AS "probability"
+    ## FROM (SELECT "subjectID", "surveyCategory", "assessmentTotal"
+    ## FROM "d") "bdamorcmnk") "abnlhhuzet"
+    ## ORDER BY "probability", "surveyCategory") "pegypbktco") "zahebzxpci"
+    ## WHERE ("zzz2" = "zzz3")) "qdckgpnshg") "esklbdwwkn"
+    ## ORDER BY "subjectID"
 
 ``` r
 dT %>%
@@ -61,16 +61,16 @@ dT %>%
   cat
 ```
 
-    ## SELECT `subjectID`, `diagnosis`, `probability`
-    ## FROM (SELECT `subjectID`, `surveyCategory` AS `diagnosis`, `assessmentTotal`, `irrelevantCol_0000001`, `irrelevantCol_0000002`, `irrelevantCol_0000003`, `irrelevantCol_0000004`, `irrelevantCol_0000005`, `irrelevantCol_0000006`, `irrelevantCol_0000007`, `irrelevantCol_0000008`, `irrelevantCol_0000009`, `irrelevantCol_0000010`, `irrelevantCol_0000011`, `irrelevantCol_0000012`, `irrelevantCol_0000013`, `irrelevantCol_0000014`, `irrelevantCol_0000015`, `irrelevantCol_0000016`, `irrelevantCol_0000017`, `irrelevantCol_0000018`, `irrelevantCol_0000019`, `irrelevantCol_0000020`, `irrelevantCol_0000021`, `irrelevantCol_0000022`, `irrelevantCol_0000023`, `irrelevantCol_0000024`, `irrelevantCol_0000025`, `irrelevantCol_0000026`, `irrelevantCol_0000027`, `irrelevantCol_0000028`, `irrelevantCol_0000029`, `irrelevantCol_0000030`, `irrelevantCol_0000031`, `irrelevantCol_0000032`, `irrelevantCol_0000033`, `irrelevantCol_0000034`, `irrelevantCol_0000035`, `irrelevantCol_0000036`, `irrelevantCol_0000037`, `irrelevantCol_0000038`, `irrelevantCol_0000039`, `irrelevantCol_0000040`, `irrelevantCol_0000041`, `irrelevantCol_0000042`, `irrelevantCol_0000043`, `irrelevantCol_0000044`, `irrelevantCol_0000045`, `irrelevantCol_0000046`, `irrelevantCol_0000047`, `irrelevantCol_0000048`, `irrelevantCol_0000049`, `irrelevantCol_0000050`, `probability`
-    ## FROM (SELECT `subjectID`, `surveyCategory`, `assessmentTotal`, `irrelevantCol_0000001`, `irrelevantCol_0000002`, `irrelevantCol_0000003`, `irrelevantCol_0000004`, `irrelevantCol_0000005`, `irrelevantCol_0000006`, `irrelevantCol_0000007`, `irrelevantCol_0000008`, `irrelevantCol_0000009`, `irrelevantCol_0000010`, `irrelevantCol_0000011`, `irrelevantCol_0000012`, `irrelevantCol_0000013`, `irrelevantCol_0000014`, `irrelevantCol_0000015`, `irrelevantCol_0000016`, `irrelevantCol_0000017`, `irrelevantCol_0000018`, `irrelevantCol_0000019`, `irrelevantCol_0000020`, `irrelevantCol_0000021`, `irrelevantCol_0000022`, `irrelevantCol_0000023`, `irrelevantCol_0000024`, `irrelevantCol_0000025`, `irrelevantCol_0000026`, `irrelevantCol_0000027`, `irrelevantCol_0000028`, `irrelevantCol_0000029`, `irrelevantCol_0000030`, `irrelevantCol_0000031`, `irrelevantCol_0000032`, `irrelevantCol_0000033`, `irrelevantCol_0000034`, `irrelevantCol_0000035`, `irrelevantCol_0000036`, `irrelevantCol_0000037`, `irrelevantCol_0000038`, `irrelevantCol_0000039`, `irrelevantCol_0000040`, `irrelevantCol_0000041`, `irrelevantCol_0000042`, `irrelevantCol_0000043`, `irrelevantCol_0000044`, `irrelevantCol_0000045`, `irrelevantCol_0000046`, `irrelevantCol_0000047`, `irrelevantCol_0000048`, `irrelevantCol_0000049`, `irrelevantCol_0000050`, `probability`
-    ## FROM (SELECT `subjectID`, `surveyCategory`, `assessmentTotal`, `irrelevantCol_0000001`, `irrelevantCol_0000002`, `irrelevantCol_0000003`, `irrelevantCol_0000004`, `irrelevantCol_0000005`, `irrelevantCol_0000006`, `irrelevantCol_0000007`, `irrelevantCol_0000008`, `irrelevantCol_0000009`, `irrelevantCol_0000010`, `irrelevantCol_0000011`, `irrelevantCol_0000012`, `irrelevantCol_0000013`, `irrelevantCol_0000014`, `irrelevantCol_0000015`, `irrelevantCol_0000016`, `irrelevantCol_0000017`, `irrelevantCol_0000018`, `irrelevantCol_0000019`, `irrelevantCol_0000020`, `irrelevantCol_0000021`, `irrelevantCol_0000022`, `irrelevantCol_0000023`, `irrelevantCol_0000024`, `irrelevantCol_0000025`, `irrelevantCol_0000026`, `irrelevantCol_0000027`, `irrelevantCol_0000028`, `irrelevantCol_0000029`, `irrelevantCol_0000030`, `irrelevantCol_0000031`, `irrelevantCol_0000032`, `irrelevantCol_0000033`, `irrelevantCol_0000034`, `irrelevantCol_0000035`, `irrelevantCol_0000036`, `irrelevantCol_0000037`, `irrelevantCol_0000038`, `irrelevantCol_0000039`, `irrelevantCol_0000040`, `irrelevantCol_0000041`, `irrelevantCol_0000042`, `irrelevantCol_0000043`, `irrelevantCol_0000044`, `irrelevantCol_0000045`, `irrelevantCol_0000046`, `irrelevantCol_0000047`, `irrelevantCol_0000048`, `irrelevantCol_0000049`, `irrelevantCol_0000050`, `probability`, row_number() OVER (PARTITION BY `subjectID` ORDER BY `probability`, `surveyCategory`) AS `zzz5`, COUNT(*) OVER (PARTITION BY `subjectID`) AS `zzz6`
+    ## SELECT "subjectID", "diagnosis", "probability"
+    ## FROM (SELECT "subjectID", "surveyCategory" AS "diagnosis", "assessmentTotal", "irrelevantCol_0000001", "irrelevantCol_0000002", "irrelevantCol_0000003", "irrelevantCol_0000004", "irrelevantCol_0000005", "irrelevantCol_0000006", "irrelevantCol_0000007", "irrelevantCol_0000008", "irrelevantCol_0000009", "irrelevantCol_0000010", "irrelevantCol_0000011", "irrelevantCol_0000012", "irrelevantCol_0000013", "irrelevantCol_0000014", "irrelevantCol_0000015", "irrelevantCol_0000016", "irrelevantCol_0000017", "irrelevantCol_0000018", "irrelevantCol_0000019", "irrelevantCol_0000020", "irrelevantCol_0000021", "irrelevantCol_0000022", "irrelevantCol_0000023", "irrelevantCol_0000024", "irrelevantCol_0000025", "irrelevantCol_0000026", "irrelevantCol_0000027", "irrelevantCol_0000028", "irrelevantCol_0000029", "irrelevantCol_0000030", "irrelevantCol_0000031", "irrelevantCol_0000032", "irrelevantCol_0000033", "irrelevantCol_0000034", "irrelevantCol_0000035", "irrelevantCol_0000036", "irrelevantCol_0000037", "irrelevantCol_0000038", "irrelevantCol_0000039", "irrelevantCol_0000040", "irrelevantCol_0000041", "irrelevantCol_0000042", "irrelevantCol_0000043", "irrelevantCol_0000044", "irrelevantCol_0000045", "irrelevantCol_0000046", "irrelevantCol_0000047", "irrelevantCol_0000048", "irrelevantCol_0000049", "irrelevantCol_0000050", "probability"
+    ## FROM (SELECT "subjectID", "surveyCategory", "assessmentTotal", "irrelevantCol_0000001", "irrelevantCol_0000002", "irrelevantCol_0000003", "irrelevantCol_0000004", "irrelevantCol_0000005", "irrelevantCol_0000006", "irrelevantCol_0000007", "irrelevantCol_0000008", "irrelevantCol_0000009", "irrelevantCol_0000010", "irrelevantCol_0000011", "irrelevantCol_0000012", "irrelevantCol_0000013", "irrelevantCol_0000014", "irrelevantCol_0000015", "irrelevantCol_0000016", "irrelevantCol_0000017", "irrelevantCol_0000018", "irrelevantCol_0000019", "irrelevantCol_0000020", "irrelevantCol_0000021", "irrelevantCol_0000022", "irrelevantCol_0000023", "irrelevantCol_0000024", "irrelevantCol_0000025", "irrelevantCol_0000026", "irrelevantCol_0000027", "irrelevantCol_0000028", "irrelevantCol_0000029", "irrelevantCol_0000030", "irrelevantCol_0000031", "irrelevantCol_0000032", "irrelevantCol_0000033", "irrelevantCol_0000034", "irrelevantCol_0000035", "irrelevantCol_0000036", "irrelevantCol_0000037", "irrelevantCol_0000038", "irrelevantCol_0000039", "irrelevantCol_0000040", "irrelevantCol_0000041", "irrelevantCol_0000042", "irrelevantCol_0000043", "irrelevantCol_0000044", "irrelevantCol_0000045", "irrelevantCol_0000046", "irrelevantCol_0000047", "irrelevantCol_0000048", "irrelevantCol_0000049", "irrelevantCol_0000050", "probability"
+    ## FROM (SELECT "subjectID", "surveyCategory", "assessmentTotal", "irrelevantCol_0000001", "irrelevantCol_0000002", "irrelevantCol_0000003", "irrelevantCol_0000004", "irrelevantCol_0000005", "irrelevantCol_0000006", "irrelevantCol_0000007", "irrelevantCol_0000008", "irrelevantCol_0000009", "irrelevantCol_0000010", "irrelevantCol_0000011", "irrelevantCol_0000012", "irrelevantCol_0000013", "irrelevantCol_0000014", "irrelevantCol_0000015", "irrelevantCol_0000016", "irrelevantCol_0000017", "irrelevantCol_0000018", "irrelevantCol_0000019", "irrelevantCol_0000020", "irrelevantCol_0000021", "irrelevantCol_0000022", "irrelevantCol_0000023", "irrelevantCol_0000024", "irrelevantCol_0000025", "irrelevantCol_0000026", "irrelevantCol_0000027", "irrelevantCol_0000028", "irrelevantCol_0000029", "irrelevantCol_0000030", "irrelevantCol_0000031", "irrelevantCol_0000032", "irrelevantCol_0000033", "irrelevantCol_0000034", "irrelevantCol_0000035", "irrelevantCol_0000036", "irrelevantCol_0000037", "irrelevantCol_0000038", "irrelevantCol_0000039", "irrelevantCol_0000040", "irrelevantCol_0000041", "irrelevantCol_0000042", "irrelevantCol_0000043", "irrelevantCol_0000044", "irrelevantCol_0000045", "irrelevantCol_0000046", "irrelevantCol_0000047", "irrelevantCol_0000048", "irrelevantCol_0000049", "irrelevantCol_0000050", "probability", row_number() OVER (PARTITION BY "subjectID" ORDER BY "probability", "surveyCategory") AS "zzz4", COUNT(*) OVER (PARTITION BY "subjectID") AS "zzz5"
     ## FROM (SELECT *
-    ## FROM (SELECT `subjectID`, `surveyCategory`, `assessmentTotal`, `irrelevantCol_0000001`, `irrelevantCol_0000002`, `irrelevantCol_0000003`, `irrelevantCol_0000004`, `irrelevantCol_0000005`, `irrelevantCol_0000006`, `irrelevantCol_0000007`, `irrelevantCol_0000008`, `irrelevantCol_0000009`, `irrelevantCol_0000010`, `irrelevantCol_0000011`, `irrelevantCol_0000012`, `irrelevantCol_0000013`, `irrelevantCol_0000014`, `irrelevantCol_0000015`, `irrelevantCol_0000016`, `irrelevantCol_0000017`, `irrelevantCol_0000018`, `irrelevantCol_0000019`, `irrelevantCol_0000020`, `irrelevantCol_0000021`, `irrelevantCol_0000022`, `irrelevantCol_0000023`, `irrelevantCol_0000024`, `irrelevantCol_0000025`, `irrelevantCol_0000026`, `irrelevantCol_0000027`, `irrelevantCol_0000028`, `irrelevantCol_0000029`, `irrelevantCol_0000030`, `irrelevantCol_0000031`, `irrelevantCol_0000032`, `irrelevantCol_0000033`, `irrelevantCol_0000034`, `irrelevantCol_0000035`, `irrelevantCol_0000036`, `irrelevantCol_0000037`, `irrelevantCol_0000038`, `irrelevantCol_0000039`, `irrelevantCol_0000040`, `irrelevantCol_0000041`, `irrelevantCol_0000042`, `irrelevantCol_0000043`, `irrelevantCol_0000044`, `irrelevantCol_0000045`, `irrelevantCol_0000046`, `irrelevantCol_0000047`, `irrelevantCol_0000048`, `irrelevantCol_0000049`, `irrelevantCol_0000050`, EXP(`assessmentTotal` * 0.237) / sum(EXP(`assessmentTotal` * 0.237)) OVER (PARTITION BY `subjectID`) AS `probability`
-    ## FROM `d`) `emjbjxffvh`
-    ## ORDER BY `probability`, `surveyCategory`) `rxazangiow`) `prfvmkhdke`
-    ## WHERE (`zzz5` = `zzz6`)) `xogcinsccq`) `wgzaeqxhst`
-    ## ORDER BY `subjectID`
+    ## FROM (SELECT "subjectID", "surveyCategory", "assessmentTotal", "irrelevantCol_0000001", "irrelevantCol_0000002", "irrelevantCol_0000003", "irrelevantCol_0000004", "irrelevantCol_0000005", "irrelevantCol_0000006", "irrelevantCol_0000007", "irrelevantCol_0000008", "irrelevantCol_0000009", "irrelevantCol_0000010", "irrelevantCol_0000011", "irrelevantCol_0000012", "irrelevantCol_0000013", "irrelevantCol_0000014", "irrelevantCol_0000015", "irrelevantCol_0000016", "irrelevantCol_0000017", "irrelevantCol_0000018", "irrelevantCol_0000019", "irrelevantCol_0000020", "irrelevantCol_0000021", "irrelevantCol_0000022", "irrelevantCol_0000023", "irrelevantCol_0000024", "irrelevantCol_0000025", "irrelevantCol_0000026", "irrelevantCol_0000027", "irrelevantCol_0000028", "irrelevantCol_0000029", "irrelevantCol_0000030", "irrelevantCol_0000031", "irrelevantCol_0000032", "irrelevantCol_0000033", "irrelevantCol_0000034", "irrelevantCol_0000035", "irrelevantCol_0000036", "irrelevantCol_0000037", "irrelevantCol_0000038", "irrelevantCol_0000039", "irrelevantCol_0000040", "irrelevantCol_0000041", "irrelevantCol_0000042", "irrelevantCol_0000043", "irrelevantCol_0000044", "irrelevantCol_0000045", "irrelevantCol_0000046", "irrelevantCol_0000047", "irrelevantCol_0000048", "irrelevantCol_0000049", "irrelevantCol_0000050", EXP("assessmentTotal" * 0.237) / sum(EXP("assessmentTotal" * 0.237)) OVER (PARTITION BY "subjectID") AS "probability"
+    ## FROM "d") "zfxnspclew"
+    ## ORDER BY "probability", "surveyCategory") "bxhbojqgdf") "txucgqntjb"
+    ## WHERE ("zzz4" = "zzz5")) "zutywpwiju") "nzphimghkq"
+    ## ORDER BY "subjectID"
 
 ``` r
 dplyr_run <- function(narrow) {
@@ -100,14 +100,14 @@ dplyr_run(narrow=FALSE)
 ```
 
     ##   subjectID           diagnosis probability
-    ## 1         1 withdrawal behavior         0.5
+    ## 1         1 withdrawal behavior   0.7207128
 
 ``` r
 dplyr_run(narrow=TRUE)
 ```
 
     ##   subjectID           diagnosis probability
-    ## 1         1 withdrawal behavior         0.5
+    ## 1         1 withdrawal behavior   0.7207128
 
 ``` r
 optree <- dR %.>%
@@ -133,45 +133,45 @@ cat(to_sql(optree, my_db))
 
     ## SELECT * FROM (
     ##  SELECT
-    ##   `subjectID`,
-    ##   `diagnosis`,
-    ##   `probability`
+    ##   "subjectID",
+    ##   "diagnosis",
+    ##   "probability"
     ##  FROM (
     ##   SELECT * FROM (
     ##    SELECT
-    ##     `count` AS `count`,
-    ##     `probability` AS `probability`,
-    ##     `rank` AS `rank`,
-    ##     `subjectID` AS `subjectID`,
-    ##     `surveyCategory` AS `diagnosis`
+    ##     "count" AS "count",
+    ##     "probability" AS "probability",
+    ##     "rank" AS "rank",
+    ##     "subjectID" AS "subjectID",
+    ##     "surveyCategory" AS "diagnosis"
     ##    FROM (
     ##     SELECT
-    ##      `count`,
-    ##      `probability`,
-    ##      `subjectID`,
-    ##      `surveyCategory`,
-    ##      row_number ( ) OVER (  PARTITION BY `subjectID` ORDER BY `probability`, `surveyCategory` ) AS `rank`
+    ##      "count",
+    ##      "probability",
+    ##      "subjectID",
+    ##      "surveyCategory",
+    ##      row_number ( ) OVER (  PARTITION BY "subjectID" ORDER BY "probability", "surveyCategory" ) AS "rank"
     ##     FROM (
     ##      SELECT
-    ##       `subjectID`,
-    ##       `surveyCategory`,
-    ##       `assessmentTotal`,
-    ##       exp ( `assessmentTotal` * 0.237 ) / sum ( exp ( `assessmentTotal` * 0.237 ) ) OVER (  PARTITION BY `subjectID` ) AS `probability`,
-    ##       count ( 1 ) OVER (  PARTITION BY `subjectID` ) AS `count`
+    ##       "subjectID",
+    ##       "surveyCategory",
+    ##       "assessmentTotal",
+    ##       exp ( "assessmentTotal" * 0.237 ) / sum ( exp ( "assessmentTotal" * 0.237 ) ) OVER (  PARTITION BY "subjectID" ) AS "probability",
+    ##       count ( 1 ) OVER (  PARTITION BY "subjectID" ) AS "count"
     ##      FROM (
     ##       SELECT
-    ##        `d`.`subjectID`,
-    ##        `d`.`surveyCategory`,
-    ##        `d`.`assessmentTotal`
+    ##        "d"."subjectID",
+    ##        "d"."surveyCategory",
+    ##        "d"."assessmentTotal"
     ##       FROM
-    ##        `d`
-    ##       ) tsql_00588100151453872693_0000000000
-    ##      ) tsql_00588100151453872693_0000000001
-    ##    ) tsql_00588100151453872693_0000000002
-    ##   ) tsql_00588100151453872693_0000000003
-    ##   WHERE `rank` = `count`
-    ##  ) tsql_00588100151453872693_0000000004
-    ## ) tsql_00588100151453872693_0000000005 ORDER BY `subjectID`
+    ##        "d"
+    ##       ) tsql_29702956646449230498_0000000000
+    ##      ) tsql_29702956646449230498_0000000001
+    ##    ) tsql_29702956646449230498_0000000002
+    ##   ) tsql_29702956646449230498_0000000003
+    ##   WHERE "rank" = "count"
+    ##  ) tsql_29702956646449230498_0000000004
+    ## ) tsql_29702956646449230498_0000000005 ORDER BY "subjectID"
 
 ``` r
 rquery_run <- function() {
@@ -199,7 +199,7 @@ rquery_run()
 ```
 
     ##   subjectID           diagnosis probability
-    ## 1         1 withdrawal behavior         0.5
+    ## 1         1 withdrawal behavior   0.7207128
 
 We can get timings for variations of the function:
 
@@ -222,13 +222,13 @@ print(timings)
 
     ## Unit: seconds
     ##                       expr      min       lq     mean   median       uq
-    ##  dplyr_run(narrow = FALSE) 2.206267 2.264689 2.374878 2.314031 2.422645
-    ##   dplyr_run(narrow = TRUE) 2.176811 2.249123 2.378091 2.314926 2.437780
-    ##               rquery_run() 1.464025 1.522264 1.630283 1.563187 1.662646
+    ##  dplyr_run(narrow = FALSE) 12.56603 13.01541 13.32985 13.07756 13.13051
+    ##   dplyr_run(narrow = TRUE) 12.07455 12.45144 12.84304 12.56274 12.61701
+    ##               rquery_run() 10.78873 11.00856 11.25917 11.17210 11.23985
     ##       max neval
-    ##  3.102350   100
-    ##  2.885108   100
-    ##  2.475768   100
+    ##  31.40479   100
+    ##  27.69234   100
+    ##  18.54649   100
 
 ``` r
 autoplot(timings)

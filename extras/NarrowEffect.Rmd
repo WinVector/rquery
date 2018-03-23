@@ -20,7 +20,7 @@ library("ggplot2")
 library("dplyr")
 library("rquery")
 
-use_spark <- TRUE
+use_spark <- FALSE
 ```
 
 ```{r ex, warning=FALSE, message=FALSE, echo=FALSE, include=FALSE, cache=TRUE}
