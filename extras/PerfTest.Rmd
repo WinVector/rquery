@@ -6,6 +6,7 @@ date: "2017-12-16"
 
 <!-- PerfTest.md is generated from PerfTest.Rmd. Please edit that file -->
 
+Running on a C4.4.xlarge EC2 intance.
 
 ```{r ex, warning=FALSE, message=FALSE, echo=FALSE, include=FALSE}
 library("microbenchmark")
