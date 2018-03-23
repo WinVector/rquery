@@ -12,8 +12,17 @@ library("microbenchmark")
 suppressPackageStartupMessages(library("dplyr"))
 library("rquery")
 
+conf <-  sparklyr::spark_config()
+conf$spark.yarn.am.cores <- 8
+conf$spark.executor.cores <- 8
+conf$spark.executor.memory <- "8G"
+conf$spark.yarn.am.memory <- "8G" 
+conf$`sparklyr.shell.driver-memory` <- "8G"
+conf$`sparklyr.shell.executor-memory` <- "8G"
+conf$`spark.yarn.executor.memoryOverhead` <- "8G"
 my_db <- sparklyr::spark_connect(version='2.2.0', 
-                                 master = "local")
+                                 master = "local",
+                                 config = conf)
 
 nSubj <- 100000
 nIrrelCol <- 1000

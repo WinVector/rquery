@@ -48,6 +48,7 @@ materialize <- function(db,
     stop("rquery::materialize expect optree to be of class relop")
   }
   sql_list <- to_sql(optree, db,
+                     limit = limit,
                      source_limit = source_limit)
   # establish some safe invarients
   if(length(sql_list)<1) {
@@ -135,8 +136,14 @@ materialize <- function(db,
                  " AS ",
                  sql)
   if(!is.null(limit)) {
-    sqlc <- paste(sqlc, "LIMIT",
-                  format(ceiling(limit), scientific = FALSE))
+    # look for limit
+    haslimit <- grep("^.*[[:space:]]LIMIT[[:space:]]+[0-9]+[[:space:]]*$",
+                     sqlc,
+                     ignore.case = TRUE)
+    if(length(haslimit)<1) {
+      sqlc <- paste(sqlc, "LIMIT",
+                    format(ceiling(limit), scientific = FALSE))
+    }
   }
   DBI::dbExecute(db, sqlc)
   if(!is.null(to_clear)) {
@@ -229,11 +236,7 @@ execute <- function(source,
                      temporary = temporary)
   res <- ref
   if(!table_name_set) {
-    sql <- to_sql(ref, db)
-    if((!is.null(limit)) && (!is.na(limit))) {
-      sql <- paste(sql, "LIMIT",
-                   format(ceiling(limit), scientific = FALSE))
-    }
+    sql <- to_sql(ref, db, limit = limit)
     res <- DBI::dbGetQuery(db, sql)
     dbi_remove_table(db, ref$table_name)
   }
