@@ -170,8 +170,7 @@ library("microbenchmark")
 
 timings <- microbenchmark(dplyr_run(narrow=FALSE), 
                           dplyr_run(narrow=TRUE),
-                          rquery_run(),
-                          times = 20)
+                          rquery_run())
 ```
 
 And then present the results:

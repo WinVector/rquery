@@ -41,10 +41,10 @@ dT %>%
     ## FROM (SELECT `subjectID`, `surveyCategory`, `assessmentTotal`, `irrelevantCol_0000001`, `irrelevantCol_0000002`, `irrelevantCol_0000003`, `irrelevantCol_0000004`, `irrelevantCol_0000005`, `irrelevantCol_0000006`, `irrelevantCol_0000007`, `irrelevantCol_0000008`, `irrelevantCol_0000009`, `irrelevantCol_0000010`, `irrelevantCol_0000011`, `irrelevantCol_0000012`, `irrelevantCol_0000013`, `irrelevantCol_0000014`, `irrelevantCol_0000015`, `irrelevantCol_0000016`, `irrelevantCol_0000017`, `irrelevantCol_0000018`, `irrelevantCol_0000019`, `irrelevantCol_0000020`, `irrelevantCol_0000021`, `irrelevantCol_0000022`, `irrelevantCol_0000023`, `irrelevantCol_0000024`, `irrelevantCol_0000025`, `irrelevantCol_0000026`, `irrelevantCol_0000027`, `irrelevantCol_0000028`, `irrelevantCol_0000029`, `irrelevantCol_0000030`, `irrelevantCol_0000031`, `irrelevantCol_0000032`, `irrelevantCol_0000033`, `irrelevantCol_0000034`, `irrelevantCol_0000035`, `irrelevantCol_0000036`, `irrelevantCol_0000037`, `irrelevantCol_0000038`, `irrelevantCol_0000039`, `irrelevantCol_0000040`, `irrelevantCol_0000041`, `irrelevantCol_0000042`, `irrelevantCol_0000043`, `irrelevantCol_0000044`, `irrelevantCol_0000045`, `irrelevantCol_0000046`, `irrelevantCol_0000047`, `irrelevantCol_0000048`, `irrelevantCol_0000049`, `irrelevantCol_0000050`, `irrelevantCol_0000051`, `irrelevantCol_0000052`, `irrelevantCol_0000053`, `irrelevantCol_0000054`, `irrelevantCol_0000055`, `irrelevantCol_0000056`, `irrelevantCol_0000057`, `irrelevantCol_0000058`, `irrelevantCol_0000059`, `irrelevantCol_0000060`, `irrelevantCol_0000061`, `irrelevantCol_0000062`, `irrelevantCol_0000063`, `irrelevantCol_0000064`, `irrelevantCol_0000065`, `irrelevantCol_0000066`, `irrelevantCol_0000067`, `irrelevantCol_0000068`, `irrelevantCol_0000069`, `irrelevantCol_0000070`, `irrelevantCol_0000071`, `irrelevantCol_0000072`, `irrelevantCol_0000073`, `irrelevantCol_0000074`, `irrelevantCol_0000075`, `irrelevantCol_0000076`, `irrelevantCol_0000077`, `irrelevantCol_0000078`, `irrelevantCol_0000079`, `irrelevantCol_0000080`, `irrelevantCol_0000081`, `irrelevantCol_0000082`, `irrelevantCol_0000083`, `irrelevantCol_0000084`, `irrelevantCol_0000085`, `irrelevantCol_0000086`, `irrelevantCol_0000087`, `irrelevantCol_0000088`, `irrelevantCol_0000089`, `irrelevantCol_0000090`, `irrelevantCol_0000091`, `irrelevantCol_0000092`, `irrelevantCol_0000093`, `irrelevantCol_0000094`, `irrelevantCol_0000095`, `irrelevantCol_0000096`, `irrelevantCol_0000097`, `irrelevantCol_0000098`, `irrelevantCol_0000099`, `irrelevantCol_0000100`, `probability`, row_number() OVER (PARTITION BY `subjectID` ORDER BY `probability`, `surveyCategory`) AS `zzz4`, COUNT(*) OVER (PARTITION BY `subjectID`) AS `zzz5`
     ## FROM (SELECT *
     ## FROM (SELECT `subjectID`, `surveyCategory`, `assessmentTotal`, `irrelevantCol_0000001`, `irrelevantCol_0000002`, `irrelevantCol_0000003`, `irrelevantCol_0000004`, `irrelevantCol_0000005`, `irrelevantCol_0000006`, `irrelevantCol_0000007`, `irrelevantCol_0000008`, `irrelevantCol_0000009`, `irrelevantCol_0000010`, `irrelevantCol_0000011`, `irrelevantCol_0000012`, `irrelevantCol_0000013`, `irrelevantCol_0000014`, `irrelevantCol_0000015`, `irrelevantCol_0000016`, `irrelevantCol_0000017`, `irrelevantCol_0000018`, `irrelevantCol_0000019`, `irrelevantCol_0000020`, `irrelevantCol_0000021`, `irrelevantCol_0000022`, `irrelevantCol_0000023`, `irrelevantCol_0000024`, `irrelevantCol_0000025`, `irrelevantCol_0000026`, `irrelevantCol_0000027`, `irrelevantCol_0000028`, `irrelevantCol_0000029`, `irrelevantCol_0000030`, `irrelevantCol_0000031`, `irrelevantCol_0000032`, `irrelevantCol_0000033`, `irrelevantCol_0000034`, `irrelevantCol_0000035`, `irrelevantCol_0000036`, `irrelevantCol_0000037`, `irrelevantCol_0000038`, `irrelevantCol_0000039`, `irrelevantCol_0000040`, `irrelevantCol_0000041`, `irrelevantCol_0000042`, `irrelevantCol_0000043`, `irrelevantCol_0000044`, `irrelevantCol_0000045`, `irrelevantCol_0000046`, `irrelevantCol_0000047`, `irrelevantCol_0000048`, `irrelevantCol_0000049`, `irrelevantCol_0000050`, `irrelevantCol_0000051`, `irrelevantCol_0000052`, `irrelevantCol_0000053`, `irrelevantCol_0000054`, `irrelevantCol_0000055`, `irrelevantCol_0000056`, `irrelevantCol_0000057`, `irrelevantCol_0000058`, `irrelevantCol_0000059`, `irrelevantCol_0000060`, `irrelevantCol_0000061`, `irrelevantCol_0000062`, `irrelevantCol_0000063`, `irrelevantCol_0000064`, `irrelevantCol_0000065`, `irrelevantCol_0000066`, `irrelevantCol_0000067`, `irrelevantCol_0000068`, `irrelevantCol_0000069`, `irrelevantCol_0000070`, `irrelevantCol_0000071`, `irrelevantCol_0000072`, `irrelevantCol_0000073`, `irrelevantCol_0000074`, `irrelevantCol_0000075`, `irrelevantCol_0000076`, `irrelevantCol_0000077`, `irrelevantCol_0000078`, `irrelevantCol_0000079`, `irrelevantCol_0000080`, `irrelevantCol_0000081`, `irrelevantCol_0000082`, `irrelevantCol_0000083`, `irrelevantCol_0000084`, `irrelevantCol_0000085`, `irrelevantCol_0000086`, `irrelevantCol_0000087`, `irrelevantCol_0000088`, `irrelevantCol_0000089`, `irrelevantCol_0000090`, `irrelevantCol_0000091`, `irrelevantCol_0000092`, `irrelevantCol_0000093`, `irrelevantCol_0000094`, `irrelevantCol_0000095`, `irrelevantCol_0000096`, `irrelevantCol_0000097`, `irrelevantCol_0000098`, `irrelevantCol_0000099`, `irrelevantCol_0000100`, EXP(`assessmentTotal` * 0.237) / sum(EXP(`assessmentTotal` * 0.237)) OVER (PARTITION BY `subjectID`) AS `probability`
-    ## FROM `dparq`) `ezoytataey`
-    ## ORDER BY `probability`, `surveyCategory`) `blprncmeyf`) `gdczvxolag`
-    ## WHERE (`zzz4` = `zzz5`)) `hrxwetkmrw`) `leetwerned`) `xlalvgpatl`
-    ## ORDER BY `subjectID`) `irknbybkkk`
+    ## FROM `dparq`) `sdcwhmmote`
+    ## ORDER BY `probability`, `surveyCategory`) `ljfoadixpf`) `fjqttensha`
+    ## WHERE (`zzz4` = `zzz5`)) `krasbxjogx`) `xlhihpntua`) `njolaognpk`
+    ## ORDER BY `subjectID`) `hyjlvvnbhv`
 
 ``` r
 dplyr_run <- function(narrow) {
@@ -141,14 +141,14 @@ cat(to_sql(optree, my_db))
     ##         `dparq`.`assessmentTotal`
     ##        FROM
     ##         `dparq`
-    ##        ) tsql_80769245101744464578_0000000000
-    ##       ) tsql_80769245101744464578_0000000001
-    ##     ) tsql_80769245101744464578_0000000002
-    ##    ) tsql_80769245101744464578_0000000003
+    ##        ) tsql_05224545050949749558_0000000000
+    ##       ) tsql_05224545050949749558_0000000001
+    ##     ) tsql_05224545050949749558_0000000002
+    ##    ) tsql_05224545050949749558_0000000003
     ##    WHERE `rank` = `count`
-    ##   ) tsql_80769245101744464578_0000000004
-    ##  ) tsql_80769245101744464578_0000000005 ORDER BY `subjectID`
-    ## ) tsql_80769245101744464578_0000000006
+    ##   ) tsql_05224545050949749558_0000000004
+    ##  ) tsql_05224545050949749558_0000000005 ORDER BY `subjectID`
+    ## ) tsql_05224545050949749558_0000000006
 
 ``` r
 rquery_run <- function() {
@@ -186,8 +186,7 @@ library("microbenchmark")
 
 timings <- microbenchmark(dplyr_run(narrow=FALSE), 
                           dplyr_run(narrow=TRUE),
-                          rquery_run(),
-                          times = 20)
+                          rquery_run())
 ```
 
 And then present the results:
@@ -198,13 +197,13 @@ print(timings)
 
     ## Unit: seconds
     ##                       expr      min       lq     mean   median       uq
-    ##  dplyr_run(narrow = FALSE) 2.712947 2.762358 2.887901 2.879607 2.965803
-    ##   dplyr_run(narrow = TRUE) 2.632515 2.707642 2.913471 2.871682 3.065905
-    ##               rquery_run() 2.196372 2.274019 2.457174 2.401239 2.588241
-    ##       max neval
-    ##  3.194005    20
-    ##  3.423903    20
-    ##  2.898329    20
+    ##  dplyr_run(narrow = FALSE) 2.713269 2.773465 2.895340 2.866608 2.936297
+    ##   dplyr_run(narrow = TRUE) 2.676427 2.762654 2.857118 2.808139 2.921058
+    ##               rquery_run() 2.142652 2.213441 2.474786 2.266182 2.404125
+    ##        max neval
+    ##   3.699130   100
+    ##   3.678058   100
+    ##  14.443518   100
 
 ``` r
 tdf <- as.data.frame(timings)
