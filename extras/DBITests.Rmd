@@ -1,0 +1,64 @@
+---
+title: "DBI Tests"
+author: "John Mount, Win-Vector LLC"
+date: "3/24/2018"
+output: html_document
+---
+
+[`rquery`](https://github.com/WinVector/rquery) `0.4.2` now includes
+tests that report which [`DBI`](https://CRAN.R-project.org/package=DBI ) methods appear to be correclty implemented
+for a given database connection.  `rquery` also supplies a number of work-around
+methods that use these determinations.
+
+Here are the tests on a few popular database connections.
+
+## [`RSQLite`](https://CRAN.R-project.org/package=RSQLite)
+
+```{r RSQLite}
+db <- DBI::dbConnect(RSQLite::SQLite(), 
+                     ":memory:")
+
+rquery::dbi_connection_tests(db)
+
+DBI::dbDisconnect(db)
+```
+
+## [`RPostgreSQL`]( https://CRAN.R-project.org/package=RPostgreSQL )
+
+```{r RPostgreSQL}
+db <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
+                     host = 'localhost',
+                     port = 5432,
+                     user = 'johnmount',
+                     password = '')
+
+rquery::dbi_connection_tests(db)
+
+DBI::dbDisconnect(db)
+```
+
+## [`RPostgres`](https://CRAN.R-project.org/package=RPostgres)
+
+```{r RPostgres}
+db <- DBI::dbConnect(RPostgres::Postgres(),
+                     host = 'localhost',
+                     port = 5432,
+                     user = 'johnmount',
+                     password = '')
+
+rquery::dbi_connection_tests(db)
+
+DBI::dbDisconnect(db)
+```
+
+## [`sparklyr`](https://CRAN.R-project.org/package=sparklyr)
+
+
+```{r sparklyr}
+db <- sparklyr::spark_connect(version='2.2.0', 
+                              master = "local")
+
+rquery::dbi_connection_tests(db)
+
+sparklyr::spark_disconnect(db)
+```

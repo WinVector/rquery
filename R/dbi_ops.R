@@ -13,7 +13,6 @@
 #'
 dbi_table_exists <- function(db, table_name) {
   # Would like to just return DBI::dbExistsTable(db, table_name)
-  # But RPostgreSQL ‘0.6.2’ does not implement it.
   if(getDBOption(db, "use_DBI_dbExistsTable", TRUE)) {
     return(DBI::dbExistsTable(db, table_name))
   }
@@ -273,10 +272,11 @@ dbi_connection_preferences <- function(db) {
   if(connection_is_spark(db)) {
     opts[[paste(c("rquery", cname, "create_temporary"), collapse = ".")]] <- FALSE
     opts[[paste(c("rquery", cname, "control_rownames"), collapse = ".")]] <- FALSE
+    opts[[paste(c("rquery", cname, "use_DBI_dbListFields"), collapse = ".")]] <- FALSE
+    opts[[paste(c("rquery", cname, "use_DBI_dbRemoveTable"), collapse = ".")]] <- FALSE
   }
-  # RPostgres::Postgres() "PqConnection"
   if(cname == "PostgreSQLConnection") { # RPostgreSQL::PostgreSQL()
-    opts[[paste(c("rquery", cname, "use_DBI_dbExistsTable"), collapse = ".")]] <- FALSE
+    opts[[paste(c("rquery", cname, "use_DBI_dbListFields"), collapse = ".")]] <- FALSE
     opts[[paste(c("rquery", cname, "use_DBI_dbRemoveTable"), collapse = ".")]] <- FALSE
   }
   opts
