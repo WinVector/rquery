@@ -99,7 +99,7 @@ materialize <- function(db,
     for(ii in seq_len(length(sql_list)-1)) {
       sqli <- sql_list[[ii]]
       if(is.character(sqli)) {
-        DBI::dbExecute(db, sqli)
+        dbi_execute(db, sqli)
         if(!is.null(to_clear)) {
           dbi_remove_table(db, to_clear)
           to_clear <- NULL
@@ -128,11 +128,11 @@ materialize <- function(db,
   # work on the last node (must be SQL)
   sql <- sql_list[[length(sql_list)]]
   if(temporary) {
-    control_temp <- getDBOption(db, "control_temporary", NULL)
-    if(is.null(control_temp)) {
-      control_temp <- !connection_is_spark(db)
+    create_temp <- getDBOption(db, "create_temporary", NULL)
+    if(is.null(create_temp)) {
+      create_temp <- !connection_is_spark(db)
     }
-    if(!control_temp) {
+    if(!create_temp) {
       if(getOption("rquery.verbose")) {
         warning("setting rquery::materialize setting temporary=FALSE")
       }
@@ -155,7 +155,7 @@ materialize <- function(db,
                     format(ceiling(limit), scientific = FALSE))
     }
   }
-  DBI::dbExecute(db, sqlc)
+  dbi_execute(db, sqlc)
   if(!is.null(to_clear)) {
     dbi_remove_table(db, to_clear)
     to_clear <- NULL

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get reasonable stored options for a DB connection. — dbi_connection_preferences • rquery</title>
+<title>Try and test database for some option settings. — dbi_connection_tests • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -98,16 +98,15 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Get reasonable stored options for a DB connection.</h1>
+    <h1>Try and test database for some option settings.</h1>
     </div>
 
     
-    <p>These settings are from what was known in March 2018 about
-RSQLite, Sparklyr, RPostgreSQL, and RPostgres.  This is the
-full set of dbi options for rquery.</p>
+    <p>These settings are estimated by experiments.  This is not
+the full set of options- but just the ones tested here.</p>
     
 
-    <pre class="usage"><span class='fu'>dbi_connection_preferences</span>(<span class='no'>db</span>)</pre>
+    <pre class="usage"><span class='fu'>dbi_connection_tests</span>(<span class='no'>db</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -124,7 +123,7 @@ full set of dbi options for rquery.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <p><code><a href='dbi_connection_tests.html'>dbi_connection_tests</a></code></p>
+    <p><code><a href='dbi_connection_preferences.html'>dbi_connection_preferences</a></code></p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -132,20 +131,14 @@ full set of dbi options for rquery.</p>
 <span class='kw'>if</span>(<span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
   <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
   <span class='fu'>print</span>(<span class='fu'><a href='dbi_connection_name.html'>dbi_connection_name</a></span>(<span class='no'>my_db</span>))
-  <span class='fu'>print</span>(<span class='fu'>dbi_connection_preferences</span>(<span class='no'>my_db</span>))
+  <span class='fu'>print</span>(<span class='fu'>dbi_connection_tests</span>(<span class='no'>my_db</span>))
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
 }</div><div class='output co'>#&gt; [1] "SQLiteConnection"
-#&gt; $rquery.SQLiteConnection.use_pass_limit
-#&gt; [1] TRUE
-#&gt; 
-#&gt; $rquery.SQLiteConnection.use_DBI_dbExistsTable
-#&gt; [1] TRUE
-#&gt; 
 #&gt; $rquery.SQLiteConnection.use_DBI_dbListFields
-#&gt; [1] FALSE
+#&gt; [1] TRUE
 #&gt; 
 #&gt; $rquery.SQLiteConnection.use_DBI_dbRemoveTable
-#&gt; [1] FALSE
+#&gt; [1] TRUE
 #&gt; 
 #&gt; $rquery.SQLiteConnection.use_DBI_dbExecute
 #&gt; [1] TRUE
@@ -157,6 +150,9 @@ full set of dbi options for rquery.</p>
 #&gt; [1] TRUE
 #&gt; 
 #&gt; $rquery.SQLiteConnection.control_rownames
+#&gt; [1] TRUE
+#&gt; 
+#&gt; $rquery.SQLiteConnection.use_DBI_dbExistsTable
 #&gt; [1] TRUE
 #&gt; </div><div class='input'>
 </div></pre>

@@ -97,8 +97,8 @@ rquery_apply_to_data_frame <- function(d,
                  format(ceiling(limit), scientific = FALSE))
   }
   res <- DBI::dbGetQuery(my_db, sql)
-  x <- DBI::dbExecute(my_db, paste("DROP TABLE", inp_name))
-  x <- DBI::dbExecute(my_db, paste("DROP TABLE", res_name))
+  dbi_remove_table(my_db, inp_name)
+  dbi_remove_table(my_db, res_name)
   if(need_close) {
     DBI::dbDisconnect(my_db)
   }
