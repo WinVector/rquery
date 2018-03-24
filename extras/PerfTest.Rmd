@@ -6,18 +6,21 @@ date: "2017-12-16"
 
 <!-- PerfTest.md is generated from PerfTest.Rmd. Please edit that file -->
 
-Running on a C4.4.xlarge EC2 intance.
+Running on a C4.8xlarge EC2 intance.
 
 ```{r ex, warning=FALSE, message=FALSE, echo=FALSE, include=FALSE}
 library("microbenchmark")
-suppressPackageStartupMessages(library("dplyr"))
+library("dplyr")
 library("rquery")
+library("WVPlots")
+library("ggplot2")
+library("seplyr")
 
 conf <-  sparklyr::spark_config()
-conf$spark.yarn.am.cores <- 8
-conf$spark.executor.cores <- 8
+conf$spark.yarn.am.cores <- 16
+conf$spark.executor.cores <- 16
 conf$spark.executor.memory <- "8G"
-conf$spark.yarn.am.memory <- "8G" 
+conf$spark.yarn.am.memory <- "8G"
 conf$`sparklyr.shell.driver-memory` <- "8G"
 conf$`sparklyr.shell.executor-memory` <- "8G"
 conf$`spark.yarn.executor.memoryOverhead` <- "8G"
@@ -29,8 +32,8 @@ dbopts <- dbi_connection_preferences(my_db)
 print(dbopts)
 options(dbopts)
 
-nSubj <- 100000
-nIrrelCol <- 1000
+nSubj <- 10
+nIrrelCol <- 10
 dL <- data.frame(subjectID = sort(rep(seq_len(nSubj),2)),
                  surveyCategory = c(
                    'withdrawal behavior',
@@ -113,7 +116,7 @@ dplyr_run <- function(narrow, collect) {
     group_by(subjectID) %>%
     mutate(probability =
              exp(assessmentTotal * scale)/
-             sum(exp(assessmentTotal * scale))) %>%
+             sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
     arrange(probability, surveyCategory) %>%
     filter(row_number() == n()) %>%
     ungroup() %>%
@@ -147,18 +150,22 @@ Get timings:
 
 ```{r time}
 timings <- microbenchmark(rquery_run(collect=TRUE), 
-                          dplyr_run(narrow=FALSE, collect=TRUE), 
-                          dplyr_run(narrow=TRUE, collect=TRUE),
+                          nrow(rquery_run(collect=TRUE)), 
                           rquery_run(collect=FALSE), 
+                          nrow(rquery_run(collect=FALSE)), 
+                          dplyr_run(narrow=FALSE, collect=TRUE), 
                           dplyr_run(narrow=FALSE, collect=FALSE), 
-                          dplyr_run(narrow=TRUE, collect=FALSE))
+                          dplyr_run(narrow=TRUE, collect=TRUE),
+                          nrow(dplyr_run(narrow=TRUE, collect=TRUE)),
+                          dplyr_run(narrow=TRUE, collect=FALSE),
+                          nrow(dplyr_run(narrow=TRUE, collect=FALSE)))
 saveRDS(timings, "PerfTest_timings.RDS")
 ```
 
 Present results:
 
 ```{r present}
-library("seplyr")
+
 print(timings)
 
 tdf <- as.data.frame(timings)
