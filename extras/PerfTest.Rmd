@@ -32,8 +32,8 @@ dbopts <- dbi_connection_preferences(my_db)
 print(dbopts)
 options(dbopts)
 
-nSubj <- 10
-nIrrelCol <- 10
+nSubj <- 200000
+nIrrelCol <- 1000
 dL <- data.frame(subjectID = sort(rep(seq_len(nSubj),2)),
                  surveyCategory = c(
                    'withdrawal behavior',
@@ -99,7 +99,7 @@ rquery_run <- function(collect) {
     tnam <- tng()
     sql <- paste("CREATE TABLE", tnam, "USING PARQUET OPTIONS ('compression'='snappy') AS", 
                  sql)
-    DBI::dbGetQuery(my_db, sql)
+    DBI::dbExecute(my_db, sql)
     dR <- rquery::dbi_table(my_db, tnam)
   }
   dR
@@ -150,15 +150,11 @@ Get timings:
 
 ```{r time}
 timings <- microbenchmark(rquery_run(collect=TRUE), 
-                          nrow(rquery_run(collect=TRUE)), 
                           rquery_run(collect=FALSE), 
-                          nrow(rquery_run(collect=FALSE)), 
                           dplyr_run(narrow=FALSE, collect=TRUE), 
                           dplyr_run(narrow=FALSE, collect=FALSE), 
                           dplyr_run(narrow=TRUE, collect=TRUE),
-                          nrow(dplyr_run(narrow=TRUE, collect=TRUE)),
-                          dplyr_run(narrow=TRUE, collect=FALSE),
-                          nrow(dplyr_run(narrow=TRUE, collect=FALSE)))
+                          dplyr_run(narrow=TRUE, collect=FALSE))
 saveRDS(timings, "PerfTest_timings.RDS")
 ```
 
@@ -167,6 +163,8 @@ Present results:
 ```{r present}
 
 print(timings)
+
+autoplot(timings)
 
 tdf <- as.data.frame(timings)
 

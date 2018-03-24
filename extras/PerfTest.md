@@ -3,7 +3,7 @@ PerfTest
 2017-12-16
 
 <!-- PerfTest.md is generated from PerfTest.Rmd. Please edit that file -->
-Running on a C4.4.xlarge EC2 intance.
+Running on a C4.8xlarge EC2 intance.
 
 Define and demonstrate pipelines:
 
@@ -12,7 +12,7 @@ DBI::dbGetQuery(my_db, paste("SELECT COUNT(1) FROM", d$table_name))
 ```
 
     ##   count(1)
-    ## 1    2e+05
+    ## 1    4e+05
 
 ``` r
 length(column_names(d))
@@ -24,7 +24,7 @@ length(column_names(d))
 sparklyr::sdf_nrow(dT)
 ```
 
-    ## [1] 2e+05
+    ## [1] 4e+05
 
 ``` r
 sparklyr::sdf_ncol(dT)
@@ -61,7 +61,7 @@ rquery_run <- function(collect) {
     tnam <- tng()
     sql <- paste("CREATE TABLE", tnam, "USING PARQUET OPTIONS ('compression'='snappy') AS", 
                  sql)
-    DBI::dbGetQuery(my_db, sql)
+    DBI::dbExecute(my_db, sql)
     dR <- rquery::dbi_table(my_db, tnam)
   }
   dR
@@ -78,7 +78,7 @@ dplyr_run <- function(narrow, collect) {
     group_by(subjectID) %>%
     mutate(probability =
              exp(assessmentTotal * scale)/
-             sum(exp(assessmentTotal * scale))) %>%
+             sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
     arrange(probability, surveyCategory) %>%
     filter(row_number() == n()) %>%
     ungroup() %>%
@@ -97,12 +97,12 @@ head(rquery_run(collect=TRUE))
 ```
 
     ##   subjectID           diagnosis probability
-    ## 1         1 positive re-framing   0.7207128
-    ## 2         2 withdrawal behavior   0.7207128
-    ## 3         3 positive re-framing   0.8056518
-    ## 4         4 withdrawal behavior   0.8056518
-    ## 5         5 withdrawal behavior   0.8056518
-    ## 6         6 withdrawal behavior   0.5589742
+    ## 1         1 positive re-framing   0.8056518
+    ## 2         2 positive re-framing   0.5589742
+    ## 3         3 withdrawal behavior   0.5000000
+    ## 4         4 positive re-framing   0.5589742
+    ## 5         5 withdrawal behavior   0.8401037
+    ## 6         6 withdrawal behavior   0.6706221
 
 ``` r
 dR <- rquery_run(collect=FALSE) 
@@ -111,1322 +111,112 @@ DBI::dbGetQuery(my_db,
 ```
 
     ##   subjectID           diagnosis probability
-    ## 1     35319 withdrawal behavior   0.5000000
-    ## 2     35320 positive re-framing   0.6163301
-    ## 3     35321 positive re-framing   0.6163301
-    ## 4     35322 withdrawal behavior   0.8940695
-    ## 5     35323 positive re-framing   0.8401037
-    ## 6     35324 withdrawal behavior   0.5000000
+    ## 1     49827 positive re-framing   0.7207128
+    ## 2     49828 withdrawal behavior   0.5000000
+    ## 3     49829 withdrawal behavior   0.7207128
+    ## 4     49830 positive re-framing   0.7207128
+    ## 5     49831 positive re-framing   0.8056518
+    ## 6     49832 positive re-framing   0.6706221
 
 ``` r
 head(dplyr_run(narrow=FALSE, collect=TRUE))
 ```
 
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
     ## # A tibble: 6 x 3
     ##   subjectID diagnosis           probability
     ##       <int> <chr>                     <dbl>
-    ## 1         1 positive re-framing       0.721
-    ## 2         2 withdrawal behavior       0.721
-    ## 3         3 positive re-framing       0.806
-    ## 4         4 withdrawal behavior       0.806
-    ## 5         5 withdrawal behavior       0.806
-    ## 6         6 withdrawal behavior       0.559
+    ## 1         1 positive re-framing       0.806
+    ## 2         2 positive re-framing       0.559
+    ## 3         3 withdrawal behavior       0.500
+    ## 4         4 positive re-framing       0.559
+    ## 5         5 withdrawal behavior       0.840
+    ## 6         6 withdrawal behavior       0.671
 
 ``` r
 head(dplyr_run(narrow=FALSE, collect=FALSE))
 ```
 
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
     ## # Source:     lazy query [?? x 3]
     ## # Database:   spark_connection
     ## # Ordered by: probability, surveyCategory, subjectID
     ##   subjectID diagnosis           probability
     ##       <int> <chr>                     <dbl>
-    ## 1         1 positive re-framing       0.721
-    ## 2         2 withdrawal behavior       0.721
-    ## 3         3 positive re-framing       0.806
-    ## 4         4 withdrawal behavior       0.806
-    ## 5         5 withdrawal behavior       0.806
-    ## 6         6 withdrawal behavior       0.559
+    ## 1         1 positive re-framing       0.806
+    ## 2         2 positive re-framing       0.559
+    ## 3         3 withdrawal behavior       0.500
+    ## 4         4 positive re-framing       0.559
+    ## 5         5 withdrawal behavior       0.840
+    ## 6         6 withdrawal behavior       0.671
 
 ``` r
 head(dplyr_run(narrow=TRUE, collect=TRUE))
 ```
 
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
     ## # A tibble: 6 x 3
     ##   subjectID diagnosis           probability
     ##       <int> <chr>                     <dbl>
-    ## 1         1 positive re-framing       0.721
-    ## 2         2 withdrawal behavior       0.721
-    ## 3         3 positive re-framing       0.806
-    ## 4         4 withdrawal behavior       0.806
-    ## 5         5 withdrawal behavior       0.806
-    ## 6         6 withdrawal behavior       0.559
+    ## 1         1 positive re-framing       0.806
+    ## 2         2 positive re-framing       0.559
+    ## 3         3 withdrawal behavior       0.500
+    ## 4         4 positive re-framing       0.559
+    ## 5         5 withdrawal behavior       0.840
+    ## 6         6 withdrawal behavior       0.671
 
 ``` r
 head(dplyr_run(narrow=TRUE, collect=FALSE))
 ```
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
 
     ## # Source:     lazy query [?? x 3]
     ## # Database:   spark_connection
     ## # Ordered by: probability, surveyCategory, subjectID
     ##   subjectID diagnosis           probability
     ##       <int> <chr>                     <dbl>
-    ## 1         1 positive re-framing       0.721
-    ## 2         2 withdrawal behavior       0.721
-    ## 3         3 positive re-framing       0.806
-    ## 4         4 withdrawal behavior       0.806
-    ## 5         5 withdrawal behavior       0.806
-    ## 6         6 withdrawal behavior       0.559
+    ## 1         1 positive re-framing       0.806
+    ## 2         2 positive re-framing       0.559
+    ## 3         3 withdrawal behavior       0.500
+    ## 4         4 positive re-framing       0.559
+    ## 5         5 withdrawal behavior       0.840
+    ## 6         6 withdrawal behavior       0.671
 
 Get timings:
 
 ``` r
 timings <- microbenchmark(rquery_run(collect=TRUE), 
-                          dplyr_run(narrow=FALSE, collect=TRUE), 
-                          dplyr_run(narrow=TRUE, collect=TRUE),
                           rquery_run(collect=FALSE), 
+                          dplyr_run(narrow=FALSE, collect=TRUE), 
                           dplyr_run(narrow=FALSE, collect=FALSE), 
+                          dplyr_run(narrow=TRUE, collect=TRUE),
                           dplyr_run(narrow=TRUE, collect=FALSE))
-```
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-    ## Warning: Missing values are always removed in SQL.
-    ## Use `sum(x, na.rm = TRUE)` to silence this warning
-
-``` r
 saveRDS(timings, "PerfTest_timings.RDS")
 ```
 
 Present results:
 
 ``` r
-library("seplyr")
 print(timings)
 ```
 
     ## Unit: milliseconds
     ##                                        expr       min        lq      mean
-    ##                  rquery_run(collect = TRUE)  553.4621  573.7106  590.6125
-    ##   dplyr_run(narrow = FALSE, collect = TRUE) 2042.5455 2086.4523 2116.6131
-    ##    dplyr_run(narrow = TRUE, collect = TRUE)  789.1036  827.2714  847.7579
-    ##                 rquery_run(collect = FALSE)  576.8226  599.3821  626.8544
-    ##  dplyr_run(narrow = FALSE, collect = FALSE) 1936.5126 1968.8637 1992.6408
-    ##   dplyr_run(narrow = TRUE, collect = FALSE)  414.7635  428.4425  439.4420
-    ##     median        uq       max neval
-    ##   586.6143  600.7505  690.5199   100
-    ##  2101.4047 2121.5305 3299.8512   100
-    ##   837.1935  856.0371 1152.1883   100
-    ##   611.7843  624.9990 1123.9633   100
-    ##  1983.4570 1996.2398 2732.1955   100
-    ##   432.4183  439.8715  952.7164   100
+    ##                  rquery_run(collect = TRUE)  849.7094  946.3083  999.2847
+    ##                 rquery_run(collect = FALSE)  918.5603 1009.7279 1068.6389
+    ##   dplyr_run(narrow = FALSE, collect = TRUE) 2456.4549 2577.8453 2658.2569
+    ##  dplyr_run(narrow = FALSE, collect = FALSE) 1992.5760 2140.7727 2210.9916
+    ##    dplyr_run(narrow = TRUE, collect = TRUE) 1238.3389 1320.8496 1374.9367
+    ##   dplyr_run(narrow = TRUE, collect = FALSE)  446.8712  506.8260  557.4533
+    ##     median        uq      max neval
+    ##   978.5470 1044.6912 1623.464   100
+    ##  1050.2751 1098.0227 1713.482   100
+    ##  2641.4408 2722.1666 3395.182   100
+    ##  2186.0921 2262.4457 3386.330   100
+    ##  1370.6747 1422.3974 1524.730   100
+    ##   556.1155  582.4891 1348.001   100
+
+``` r
+autoplot(timings)
+```
+
+![](PerfTest_files/figure-markdown_github/present-1.png)
 
 ``` r
 tdf <- as.data.frame(timings)
@@ -1443,7 +233,7 @@ WVPlots::ScatterBoxPlotH(tdf, "time", "expr",
                          title="Execution times in NS")
 ```
 
-![](PerfTest_files/figure-markdown_github/present-1.png)
+![](PerfTest_files/figure-markdown_github/present-2.png)
 
 ``` r
 sparklyr::spark_disconnect(my_db)
