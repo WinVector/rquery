@@ -1,4 +1,42 @@
 
+#' Create materialize statement.
+#'
+#' @param db DBI connecton.
+#' @param sql character single SQL statement.
+#' @param table_name character, name of table to create.
+#' @param ... force later arguments to bind by name.
+#' @param temporary logical if TRUE try to create a temporary table.
+#' @return modified SQL
+#'
+#' @noRd
+#'
+materialize_sql_statement <- function(db, sql, table_name,
+                                      ...,
+                                      temporary = FALSE) {
+  # TODO: put in per-connection options here
+  if(isTRUE(temporary)) {
+    create_temp <- getDBOption(db, "create_temporary", NULL)
+    if(is.null(create_temp)) {
+      create_temp <- !connection_is_spark(db)
+    }
+    if(!create_temp) {
+      if(getOption("rquery.verbose")) {
+        warning("setting rquery:::materialize_sql_statement setting temporary=FALSE")
+      }
+      temporary <- FALSE
+    }
+  } else {
+    temporary <- FALSE
+  }
+  sqlc <- paste0("CREATE ",
+                 ifelse(temporary, "TEMPORARY ", ""),
+                 "TABLE ",
+                 quote_identifier(db, table_name),
+                 " AS ",
+                 sql)
+  sqlc
+}
+
 #' Materialize an optree as a table.
 #'
 #' Run the data query as a CREATE TABLE AS . Think of as a function
@@ -127,36 +165,18 @@ materialize <- function(db,
   }
   # work on the last node (must be SQL)
   sql <- sql_list[[length(sql_list)]]
-  if(isTRUE(temporary)) {
-    create_temp <- getDBOption(db, "create_temporary", NULL)
-    if(is.null(create_temp)) {
-      create_temp <- !connection_is_spark(db)
-    }
-    if(!create_temp) {
-      if(getOption("rquery.verbose")) {
-        warning("setting rquery::materialize setting temporary=FALSE")
-      }
-      temporary <- FALSE
-    }
-  } else {
-    temporary <- FALSE
-  }
-  sqlc <- paste0("CREATE ",
-                 ifelse(temporary, "TEMPORARY ", ""),
-                 "TABLE ",
-                 quote_identifier(db, table_name),
-                 " AS ",
-                 sql)
   if(!is.null(limit)) {
     # look for limit
     haslimit <- grep("^.*[[:space:]]LIMIT[[:space:]]+[0-9]+[[:space:]]*$",
-                     sqlc,
+                     sql,
                      ignore.case = TRUE)
     if(length(haslimit)<1) {
-      sqlc <- paste(sqlc, "LIMIT",
+      sql <- paste(sql, "LIMIT",
                     format(ceiling(limit), scientific = FALSE))
     }
   }
+  sqlc <- materialize_sql_statement(db, sql, table_name,
+                                    temporary = temporary)
   dbi_execute(db, sqlc)
   if(!is.null(to_clear)) {
     dbi_remove_table(db, to_clear)
