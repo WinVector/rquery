@@ -590,7 +590,7 @@ A graph of the the effects of this kind of narrowing (for `dplyr` by hand as `dp
 does not have the above type of automatic query analysis/optimization) shows the sensitivity
 to this optimization.
 
-> <img src="present-1.png">
+> <img src="present-2.png">
 >
 > (Figure from: [here](https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md), please see also 
 [here](http://www.win-vector.com/blog/2017/12/how-to-greatly-speed-up-your-spark-queries/).)
