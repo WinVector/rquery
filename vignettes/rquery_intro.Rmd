@@ -558,6 +558,7 @@ We have seen database based `rquery` outperform both in-memory `dplyr`
 and database based `dplyr` 
 
 > <img src="runtimes_1.png">
+>
 > (Figure from: [here](http://www.win-vector.com/blog/2018/01/rquery-fast-data-manipulation-in-r/).)
 
 In addition `rquery` includes automatic column narrowing: where only columns
@@ -590,6 +591,7 @@ does not have the above type of automatic query analysis/optimization) shows the
 to this optimization.
 
 > <img src="present-1.png">
+>
 > (Figure from: [here](https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md), please see also 
 [here](http://www.win-vector.com/blog/2017/12/how-to-greatly-speed-up-your-spark-queries/).)
 
