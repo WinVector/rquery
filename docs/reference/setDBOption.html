@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Try and test database for some option settings. — dbi_connection_tests • rquery</title>
+<title>Set a database connection option. — setDBOption • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -98,65 +98,37 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Try and test database for some option settings.</h1>
+    <h1>Set a database connection option.</h1>
     </div>
 
     
-    <p>These settings are estimated by experiments.  This is not
-the full set of options- but just the ones tested here.</p>
+    <p>Set a database connection option.</p>
     
 
-    <pre class="usage"><span class='fu'>dbi_connection_tests</span>(<span class='no'>db</span>)</pre>
+    <pre class="usage"><span class='fu'>setDBOption</span>(<span class='no'>db</span>, <span class='no'>optname</span>, <span class='no'>val</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>db</th>
-      <td><p>DBI database connection</p></td>
+      <td><p>DBI database connection handle.</p></td>
+    </tr>
+    <tr>
+      <th>optname</th>
+      <td><p>character, single option name.</p></td>
+    </tr>
+    <tr>
+      <th>val</th>
+      <td><p>value to set</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>named list of options</p>
-    
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <p><code><a href='dbi_connection_preferences.html'>dbi_connection_preferences</a></code></p>
+    <p>named list containing old value if any (invisible).</p>
     
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-<span class='kw'>if</span>(<span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
-  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
-  <span class='fu'>print</span>(<span class='fu'><a href='dbi_connection_name.html'>dbi_connection_name</a></span>(<span class='no'>my_db</span>))
-  <span class='fu'>print</span>(<span class='fu'>dbi_connection_tests</span>(<span class='no'>my_db</span>))
-  <span class='co'># print(options(dbi_connection_tests(my_db)))</span>
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; [1] "SQLiteConnection"
-#&gt; $rquery.SQLiteConnection.use_DBI_dbListFields
-#&gt; [1] TRUE
-#&gt; 
-#&gt; $rquery.SQLiteConnection.use_DBI_dbRemoveTable
-#&gt; [1] TRUE
-#&gt; 
-#&gt; $rquery.SQLiteConnection.use_DBI_dbExecute
-#&gt; [1] TRUE
-#&gt; 
-#&gt; $rquery.SQLiteConnection.create_temporary
-#&gt; [1] TRUE
-#&gt; 
-#&gt; $rquery.SQLiteConnection.control_temporary
-#&gt; [1] TRUE
-#&gt; 
-#&gt; $rquery.SQLiteConnection.control_rownames
-#&gt; [1] TRUE
-#&gt; 
-#&gt; $rquery.SQLiteConnection.use_DBI_dbExistsTable
-#&gt; [1] TRUE
-#&gt; </div><div class='input'>
-</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -164,11 +136,7 @@ the full set of options- but just the ones tested here.</p>
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-
-      <li><a href="#see-also">See also</a></li>
-      
-      <li><a href="#examples">Examples</a></li>
-    </ul>
+          </ul>
 
   </div>
 </div>

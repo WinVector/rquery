@@ -71,13 +71,17 @@ from [Let’s Have Some Sympathy For The Part-time R User](http://www.win-vector
 
 
 
-```{r ex, warning=FALSE, message=FALSE, include=FALSE}
+```{r ex, warning=FALSE, message=FALSE}
 library("rquery")
 use_spark <- TRUE
 
 if(use_spark) {
   my_db <- sparklyr::spark_connect(version='2.2.0', 
                                    master = "local")
+  cname <- dbi_connection_name(my_db)
+  rquery::setDBOption(my_db, 
+                      "create_options",
+                      "USING PARQUET OPTIONS ('compression'='snappy')")
 } else {
   # driver <- RPostgreSQL::PostgreSQL()
   driver <- RPostgres::Postgres()
@@ -91,6 +95,7 @@ if(use_spark) {
 dbopts <- dbi_connection_preferences(my_db)
 print(dbopts)
 options(dbopts)
+print(getDBOption(my_db, "create_options"))
 
 d <- dbi_copy_to(my_db, 'd',
                  data.frame(

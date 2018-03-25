@@ -13,7 +13,7 @@
 materialize_sql_statement <- function(db, sql, table_name,
                                       ...,
                                       temporary = FALSE) {
-  # TODO: put in per-connection options here
+  # TODO: put in more per-connection options here (including partion controls)
   if(isTRUE(temporary)) {
     create_temp <- getDBOption(db, "create_temporary", NULL)
     if(is.null(create_temp)) {
@@ -28,12 +28,14 @@ materialize_sql_statement <- function(db, sql, table_name,
   } else {
     temporary <- FALSE
   }
-  sqlc <- paste0("CREATE ",
-                 ifelse(temporary, "TEMPORARY ", ""),
-                 "TABLE ",
-                 quote_identifier(db, table_name),
-                 " AS ",
-                 sql)
+  storage_control <- getDBOption(db, "create_options", "")
+  sqlc <- paste("CREATE",
+                ifelse(temporary, "TEMPORARY ", ""),
+                "TABLE",
+                quote_identifier(db, table_name),
+                storage_control,
+                "AS",
+                sql)
   sqlc
 }
 

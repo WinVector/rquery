@@ -62,6 +62,86 @@ A lot of the grace of the Codd theory can be recovered through the usual trick c
 
 Let's work a non-trivial example: the `dplyr` pipeline from [Let’s Have Some Sympathy For The Part-time R User](http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/).
 
+``` r
+library("rquery")
+use_spark <- TRUE
+
+if(use_spark) {
+  my_db <- sparklyr::spark_connect(version='2.2.0', 
+                                   master = "local")
+  cname <- dbi_connection_name(my_db)
+  rquery::setDBOption(my_db, 
+                      "create_options",
+                      "USING PARQUET OPTIONS ('compression'='snappy')")
+} else {
+  # driver <- RPostgreSQL::PostgreSQL()
+  driver <- RPostgres::Postgres()
+  my_db <- DBI::dbConnect(driver,
+                          host = 'localhost',
+                          port = 5432,
+                          user = 'johnmount',
+                          password = '')
+}
+
+dbopts <- dbi_connection_preferences(my_db)
+print(dbopts)
+```
+
+    ## $rquery.DBIConnection_spark_connection_spark_shell_connection.use_pass_limit
+    ## [1] TRUE
+    ## 
+    ## $rquery.DBIConnection_spark_connection_spark_shell_connection.use_DBI_dbExistsTable
+    ## [1] TRUE
+    ## 
+    ## $rquery.DBIConnection_spark_connection_spark_shell_connection.use_DBI_dbListFields
+    ## [1] FALSE
+    ## 
+    ## $rquery.DBIConnection_spark_connection_spark_shell_connection.use_DBI_dbRemoveTable
+    ## [1] FALSE
+    ## 
+    ## $rquery.DBIConnection_spark_connection_spark_shell_connection.use_DBI_dbExecute
+    ## [1] TRUE
+    ## 
+    ## $rquery.DBIConnection_spark_connection_spark_shell_connection.create_temporary
+    ## [1] FALSE
+    ## 
+    ## $rquery.DBIConnection_spark_connection_spark_shell_connection.control_temporary
+    ## [1] TRUE
+    ## 
+    ## $rquery.DBIConnection_spark_connection_spark_shell_connection.control_rownames
+    ## [1] FALSE
+
+``` r
+options(dbopts)
+print(getDBOption(my_db, "create_options"))
+```
+
+    ## [1] "USING PARQUET OPTIONS ('compression'='snappy')"
+
+``` r
+d <- dbi_copy_to(my_db, 'd',
+                 data.frame(
+                   subjectID = c(1,                   
+                                 1,
+                                 2,                   
+                                 2),
+                   surveyCategory = c(
+                     'withdrawal behavior',
+                     'positive re-framing',
+                     'withdrawal behavior',
+                     'positive re-framing'
+                   ),
+                   assessmentTotal = c(5,                 
+                                       2,
+                                       3,                  
+                                       4),
+                   irrelevantCol1 = "irrel1",
+                   irrelevantCol2 = "irrel2",
+                   stringsAsFactors = FALSE),
+                 temporary = TRUE, 
+                 overwrite = !use_spark)
+```
+
 First we show the Spark/database version of the original example data:
 
 ``` r
@@ -167,13 +247,13 @@ cat(to_sql(dq, my_db, source_limit = 1000))
            `d`.`assessmentTotal`
           FROM
            `d` LIMIT 1000
-          ) tsql_73053562185355211055_0000000000
-         ) tsql_73053562185355211055_0000000001
-       ) tsql_73053562185355211055_0000000002
-      ) tsql_73053562185355211055_0000000003
+          ) tsql_72842315083126566706_0000000000
+         ) tsql_72842315083126566706_0000000001
+       ) tsql_72842315083126566706_0000000002
+      ) tsql_72842315083126566706_0000000003
       WHERE `rank` = `count`
-     ) tsql_73053562185355211055_0000000004
-    ) tsql_73053562185355211055_0000000005 ORDER BY `subjectID`
+     ) tsql_72842315083126566706_0000000004
+    ) tsql_72842315083126566706_0000000005 ORDER BY `subjectID`
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 

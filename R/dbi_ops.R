@@ -308,6 +308,7 @@ brute_rm_table <- function(db, table_name) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   print(dbi_connection_name(my_db))
 #'   print(dbi_connection_tests(my_db))
+#'   # print(options(dbi_connection_tests(my_db)))
 #'   DBI::dbDisconnect(my_db)
 #' }
 #'
@@ -410,7 +411,23 @@ dbi_connection_tests <- function(db) {
   opts
 }
 
-
+#' Set a database connection option.
+#'
+#' @param db DBI database connection handle.
+#' @param optname character, single option name.
+#' @param default what to return if not set.
+#' @return option value
+#'
+#' @examples
+#'
+#' if(requireNamespace("RSQLite", quietly = TRUE)) {
+#'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#'   print(getDBOption(my_db, "use_DBI_dbExecute"))
+#'   DBI::dbDisconnect(my_db)
+#' }
+#'
+#' @export
+#'
 getDBOption <- function(db, optname, default) {
   cname <- dbi_connection_name(db)
   key <- paste(c("rquery", cname, optname), collapse = ".")
@@ -418,3 +435,20 @@ getDBOption <- function(db, optname, default) {
   val
 }
 
+#' Set a database connection option.
+#'
+#' @param db DBI database connection handle.
+#' @param optname character, single option name.
+#' @param val value to set
+#' @return named list containing old value if any (invisible).
+#'
+#' @export
+#'
+setDBOption <- function(db, optname, val) {
+  cname <- dbi_connection_name(db)
+  key <- paste(c("rquery", cname, optname), collapse = ".")
+  wrapr::let(
+    c(KEY = key),
+    options(KEY = val)
+  )
+}
