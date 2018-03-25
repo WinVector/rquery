@@ -34,6 +34,7 @@ options(dbopts)
 
 nSubj <- 200000
 nIrrelCol <- 1000
+
 dL <- data.frame(subjectID = sort(rep(seq_len(nSubj),2)),
                  surveyCategory = c(
                    'withdrawal behavior',
@@ -96,11 +97,9 @@ rquery_run <- function(collect) {
   if(collect) {
     dR <- DBI::dbGetQuery(my_db, sql)
   } else {
-    tnam <- tng()
-    sql <- paste("CREATE TABLE", tnam, "USING PARQUET OPTIONS ('compression'='snappy') AS", 
-                 sql)
-    DBI::dbExecute(my_db, sql)
-    dR <- rquery::dbi_table(my_db, tnam)
+    # count and throw away the data
+    sql <- paste("SELECT COUNT(1) FROM (", sql, ") ctab")
+    dR <- DBI::dbGetQuery(my_db, sql)
   }
   dR
 }
@@ -126,24 +125,24 @@ dplyr_run <- function(narrow, collect) {
   if(collect) {
     dR <- collect(dR)
   } else {
-    dR <- compute(dR)
+    # count and throw away the data (force calculation)
+    dR <- as.data.frame(tally(dR))
   }
   dR
 }
 
 head(rquery_run(collect=TRUE))
 
-dR <- rquery_run(collect=FALSE) 
-DBI::dbGetQuery(my_db, 
-                paste("SELECT * FROM", dR$table_name, "LIMIT 6"))
+rquery_run(collect=FALSE) 
+
 
 head(dplyr_run(narrow=FALSE, collect=TRUE))
 
-head(dplyr_run(narrow=FALSE, collect=FALSE))
+dplyr_run(narrow=FALSE, collect=FALSE)
 
 head(dplyr_run(narrow=TRUE, collect=TRUE))
 
-head(dplyr_run(narrow=TRUE, collect=FALSE))
+dplyr_run(narrow=TRUE, collect=FALSE)
 ```
 
 Get timings:
