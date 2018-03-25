@@ -8,7 +8,17 @@
 #' @param temporary logical if TRUE try to create a temporary table.
 #' @return modified SQL
 #'
-#' @noRd
+#' @examples
+#'
+#' if(requireNamespace("RSQLite", quietly = TRUE)) {
+#'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#'   print(materialize_sql_statement(my_db,
+#'                                   "SELECT x+1 FROM z",
+#'                                   "restable"))
+#'   DBI::dbDisconnect(my_db)
+#' }
+#'
+#' @export
 #'
 materialize_sql_statement <- function(db, sql, table_name,
                                       ...,
