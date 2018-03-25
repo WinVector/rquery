@@ -127,7 +127,7 @@ materialize <- function(db,
   }
   # work on the last node (must be SQL)
   sql <- sql_list[[length(sql_list)]]
-  if(temporary) {
+  if(isTRUE(temporary)) {
     create_temp <- getDBOption(db, "create_temporary", NULL)
     if(is.null(create_temp)) {
       create_temp <- !connection_is_spark(db)
@@ -138,6 +138,8 @@ materialize <- function(db,
       }
       temporary <- FALSE
     }
+  } else {
+    temporary <- FALSE
   }
   sqlc <- paste0("CREATE ",
                  ifelse(temporary, "TEMPORARY ", ""),

@@ -156,8 +156,8 @@ to_sql.relop_non_sql <- function (x,
                     using = NULL)
   nsubsql <- length(subsql)
   # non-SQL nodes must always be surrounded by SQL on both sides
-  temporary <- x$termporary
-  if(temporary) {
+  temporary <- x$temporary
+  if(isTRUE(temporary)) {
     create_temp <- getDBOption(db, "create_temporary", NULL)
     if(is.null(create_temp)) {
       create_temp <- !connection_is_spark(db)
@@ -168,9 +168,11 @@ to_sql.relop_non_sql <- function (x,
       }
       temporary <- FALSE
     }
+  } else {
+    temporary <- FALSE
   }
   step1 <- list(paste0("CREATE ",
-                       ifelse(termporary, "TERMPORARY", ""),
+                       ifelse(temporary, "TEMPORARY", ""),
                        " TABLE ",
                        quote_identifier(db, x$incoming_table_name),
                        " AS ",
