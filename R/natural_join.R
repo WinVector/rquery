@@ -4,7 +4,7 @@
 #' Natural join is a join by identity on all common columns
 #' (or only common columns specified in a non-\code{NULL} \code{by} argument).
 #' Any common columns not specified in a non-\code{NULL} \code{by} argument
-#' are coalesced.
+#' are coalesced into a single column prefering the first or "a" table.
 #'
 #' @param a source to select from.
 #' @param b source to select from.
@@ -51,8 +51,17 @@ natural_join.relop <- function(a, b,
   }
   usesa <- column_names(a)
   usesb <- column_names(b)
+  common <- intersect(usesa, usesb)
   if(is.null(by)) {
-    by = intersect(usesa, usesb)
+    by <- common
+    print(paste("rquery::natural_join.relop joining by ",
+                paste(by, collapse = ", ")))
+  } else {
+    bads <- setdiff(by, common)
+    if(length(bads)>0) {
+      stop(paste("rquery::natural_join.relop can not join by",
+                 paste(bads, collapse = ", ")))
+    }
   }
   r <- list(source = list(a, b),
             table_name = NULL,

@@ -27,7 +27,15 @@ r_optree_diagram <- function(optree, nextid) {
                     label = label))
   edge = NULL
   if(length(immed_nodes)>0) {
-    edge <- paste(immed_nodes, "->", name)
+    labels = "."
+    if(length(immed_nodes)>1) {
+      labels = as.character(seq_len(length(immed_nodes)))
+    }
+    edge <- paste0(immed_nodes, " -> ",
+                  name,
+                  " [ label = '",
+                  labels,
+                  "']")
   }
   list(nextid = nextid,
        nodes = c(prev_nodes, node),
@@ -41,9 +49,12 @@ r_optree_diagram <- function(optree, nextid) {
 #'
 #' @examples
 #'
-#' optree <- table_source('d',
-#'                        columns = qc(AUC, R2)) %.>%
-#'   extend_nse(., v := ifelse(AUC>0.5, R2, 1.0))
+#' d <- table_source('d',
+#'              columns = qc(AUC, R2))
+#' optree <- d %.>%
+#'   extend_nse(., v := ifelse(AUC>0.5, R2, 1.0)) %.>%
+#'   natural_join(., d, jointype = "LEFT", by = "AUC") %.>%
+#'   orderby(., "AUC")
 #'
 #' cat(format(optree))
 #'
