@@ -36,7 +36,8 @@ r_optree_diagram <- function(optree, nextid, use_table_names) {
   if(length(immed_nodes)>0) {
     labels = "."
     if(length(immed_nodes)>1) {
-      labels = as.character(seq_len(length(immed_nodes)))
+      labels = paste0(".",
+                      as.character(seq_len(length(immed_nodes))))
     }
     edge <- paste0(immed_nodes, " -> ",
                   name,
