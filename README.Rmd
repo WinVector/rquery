@@ -197,7 +197,7 @@ dq %.>%
   DiagrammeR::grViz(.)
 ```
 
-![](tools/pipe_diagram.png)
+![](https://github.com/WinVector/rquery/raw/master/tools/pipe_diagram.png)
 
 `rquery` also includes a number of useful utilities (both as nodes and as functions).
 
