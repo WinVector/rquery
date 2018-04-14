@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Make a select rows node. — select_rows_se • rquery</title>
+<title>Build a diagram of a optree pipeline. — op_diagram • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -25,9 +25,9 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-<meta property="og:title" content="Make a select rows node. — select_rows_se" />
+<meta property="og:title" content="Build a diagram of a optree pipeline. — op_diagram" />
 
-<meta property="og:description" content="Make a select rows node." />
+<meta property="og:description" content="Build a diagram of a optree pipeline." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -111,63 +111,83 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Make a select rows node.</h1>
-    <small>Source: <a href='https://github.com/WinVector/rquery//blob/master/R/select_rows.R'><code>R/select_rows.R</code></a></small>
-    <div class="hidden name"><code>select_rows_se.Rd</code></div>
+    <h1>Build a diagram of a optree pipeline.</h1>
+    <small>Source: <a href='https://github.com/WinVector/rquery//blob/master/R/op_diagram.R'><code>R/op_diagram.R</code></a></small>
+    <div class="hidden name"><code>op_diagram.Rd</code></div>
     </div>
 
     
-    <p>Make a select rows node.</p>
+    <p>Build a diagram of a optree pipeline.</p>
     
 
-    <pre class="usage"><span class='fu'>select_rows_se</span>(<span class='no'>source</span>, <span class='no'>expr</span>, <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
+    <pre class="usage"><span class='fu'>op_diagram</span>(<span class='no'>optree</span>, <span class='no'>...</span>, <span class='kw'>merge_tables</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>source</th>
-      <td><p>source to select from.</p></td>
+      <th>optree</th>
+      <td><p>operation tree pipeline.</p></td>
     </tr>
     <tr>
-      <th>expr</th>
-      <td><p>expression to select rows.</p></td>
+      <th>...</th>
+      <td><p>force other argument to be by name.</p></td>
     </tr>
     <tr>
-      <th>env</th>
-      <td><p>environment to look for values in.</p></td>
+      <th>merge_tables</th>
+      <td><p>logical if TRUE merge all same table references into one node.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>select columns node.</p>
+    <p>character DiagrammeR::grViz() ready text.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='kw'>if</span> (<span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
-  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
-  <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dbi_copy_to.html'>dbi_copy_to</a></span>(<span class='no'>my_db</span>, <span class='st'>'d'</span>,
-                   <span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>0.6</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>0.2</span>))
-  <span class='no'>eqn</span> <span class='kw'>&lt;-</span> <span class='fu'>select_rows_se</span>(<span class='no'>d</span>, <span class='st'>"AUC &gt;= 0.5"</span>)
-  <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>eqn</span>))
-  <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>eqn</span>, <span class='no'>my_db</span>)
-  <span class='fu'>cat</span>(<span class='no'>sql</span>)
-  <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; table('d') %.&gt;%
-#&gt;  select_rows(., rquery_select_condition_1 := AUC &gt;= 0.5)
-#&gt; SELECT * FROM (
-#&gt;  SELECT
-#&gt;   `d`.`AUC`,
-#&gt;   `d`.`R2`
-#&gt;  FROM
-#&gt;   `d`
-#&gt; ) tsql_26261709003721486707_0000000000
-#&gt; WHERE `AUC` &gt;= 0.5
-#&gt;   AUC  R2
-#&gt; 1 0.6 0.2</div></pre>
+<span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='table_source.html'>table_source</a></span>(<span class='st'>'d'</span>,
+             <span class='kw'>columns</span> <span class='kw'>=</span> <span class='fu'>qc</span>(<span class='no'>AUC</span>, <span class='no'>R2</span>))
+<span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span>
+  <span class='fu'><a href='extend_nse.html'>extend_nse</a></span>(<span class='no'>.</span>, <span class='no'>v</span> <span class='kw'>:=</span> <span class='fu'>ifelse</span>(<span class='no'>AUC</span><span class='kw'>&gt;</span><span class='fl'>0.5</span>, <span class='no'>R2</span>, <span class='fl'>1.0</span>)) <span class='kw'>%.&gt;%</span>
+  <span class='fu'><a href='quantile_node.html'>quantile_node</a></span>(<span class='no'>.</span>) <span class='kw'>%.&gt;%</span>
+  <span class='fu'><a href='natural_join.html'>natural_join</a></span>(<span class='no'>.</span>, <span class='no'>d</span>, <span class='kw'>jointype</span> <span class='kw'>=</span> <span class='st'>"LEFT"</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='st'>"AUC"</span>) <span class='kw'>%.&gt;%</span>
+  <span class='fu'><a href='orderby.html'>orderby</a></span>(<span class='no'>.</span>, <span class='st'>"AUC"</span>)
+
+<span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>optree</span>))</div><div class='output co'>#&gt; table('d') %.&gt;%
+#&gt;  extend(.,
+#&gt;   v := ifelse(AUC &gt; 0.5, R2, 1)) %.&gt;%
+#&gt;  non_sql_node(., quantile_node(.)) %.&gt;%
+#&gt;  natural_join(.,
+#&gt;   table('d'),
+#&gt;   j= LEFT, by= AUC) %.&gt;%
+#&gt;  orderby(., AUC)</div><div class='input'>
+<span class='fu'>cat</span>(<span class='fu'>op_diagram</span>(<span class='no'>optree</span>))</div><div class='output co'>#&gt; 
+#&gt; digraph rquery_optree {
+#&gt;   graph [ layout = dot, rankdir = TB, overlap = prism, compound = true, nodesep = .5, ranksep = .25]
+#&gt;   edge [decorate = true, arrowhead = normal]
+#&gt;   node [style=filled, fillcolor=lightgrey]
+#&gt; 
+#&gt; table_d [ shape = 'folder' , label = 'table(d)\l']
+#&gt; 
+#&gt; node_2 [ shape = 'tab' , label = 'extend(.,\l  v := ifelse(AUC &gt; 0.5, R2, 1))\l']
+#&gt; 
+#&gt; node_3 [ shape = 'tab' , label = 'non_sql_node(., quantile_node(.))\l']
+#&gt; 
+#&gt; node_5 [ shape = 'tab' , label = 'natural_join(.1, .2,  j= LEFT, by= AUC)\l']
+#&gt; 
+#&gt; node_6 [ shape = 'tab' , label = 'orderby(., AUC)\l']
+#&gt; table_d -&gt; node_2 [ label = '.']
+#&gt; node_2 -&gt; node_3 [ label = '.']
+#&gt; node_3 -&gt; node_5 [ label = '1']
+#&gt; table_d -&gt; node_5 [ label = '2']
+#&gt; node_5 -&gt; node_6 [ label = '.']
+#&gt; }</div><div class='input'>
+# optree %.>%
+#   op_diagram(., merge_tables = TRUE) %.>%
+#   DiagrammeR::grViz(.)
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

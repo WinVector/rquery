@@ -133,11 +133,7 @@ quantile_node <- function(source,
                      columns_used = cols,
                      outgoing_table_name = outgoing_table_name,
                      columns_produced = c(probs_name, cols),
-                     display_form = paste0("quantile_node(., ",
-                                           incoming_table_name,
-                                           ", ",
-                                           outgoing_table_name,
-                                           ")"),
+                     display_form = paste0("quantile_node(.)"),
                      orig_columns = FALSE,
                      temporary = temporary)
   nd

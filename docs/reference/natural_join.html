@@ -30,7 +30,7 @@
 <meta property="og:description" content="Natural join is a join by identity on all common columns
 (or only common columns specified in a non-NULL by argument).
 Any common columns not specified in a non-NULL by argument
-are coalesced." />
+are coalesced into a single column prefering the first or "a" table." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -123,7 +123,7 @@ are coalesced." />
     <p>Natural join is a join by identity on all common columns
 (or only common columns specified in a non-<code>NULL</code> <code>by</code> argument).
 Any common columns not specified in a non-<code>NULL</code> <code>by</code> argument
-are coalesced.</p>
+are coalesced into a single column prefering the first or "a" table.</p>
     
 
     <pre class="usage"><span class='fu'>natural_join</span>(<span class='no'>a</span>, <span class='no'>b</span>, <span class='no'>...</span>, <span class='kw'>jointype</span> <span class='kw'>=</span> <span class='st'>"INNER"</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>

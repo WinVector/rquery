@@ -1,12 +1,12 @@
 
-r_optree_diagram <- function(optree, nextid) {
+r_optree_diagram <- function(optree, nextid, use_table_names) {
   immed_nodes <- NULL
   prev_nodes <- NULL
   prev_edges <- NULL
   ninputs <- length(optree$source)
   if(ninputs>0) {
     for(i in seq_len(ninputs)) {
-      ndi <- r_optree_diagram(optree$source[[i]], nextid)
+      ndi <- r_optree_diagram(optree$source[[i]], nextid, use_table_names)
       nextid <- ndi$nextid
       immed_nodes <- c(immed_nodes,
                        ndi$nodes[[length(ndi$nodes)]]$name)
@@ -16,14 +16,21 @@ r_optree_diagram <- function(optree, nextid) {
   }
   nodeid <- nextid
   nextid <- nextid + 1
-  name = paste0("node", nodeid)
+  table_name_in <- NULL
+  table_name_out <- NULL # TODO: set this
+  name = paste0("node_", nodeid)
+  if("relop_table_source" %in% class(optree)) {
+    name <- paste("table", optree$table_name, sep = "_")
+    table_name_in <- optree$table_name
+  }
   label = format_node(optree)
   label = gsub("\n", "\\l", label, fixed = TRUE)
   label = gsub("'", "", label)
   label = gsub("", "", label)
   node <- list(list(nodeid = nodeid,
                     name = name,
-                    is_table = "relop_table_source" %in% class(optree),
+                    table_name_in = table_name_in,
+                    table_name_out = table_name_out,
                     label = label))
   edge = NULL
   if(length(immed_nodes)>0) {
@@ -44,8 +51,10 @@ r_optree_diagram <- function(optree, nextid) {
 
 #' Build a diagram of a optree pipeline.
 #'
-#' @param optree operation tree pipeline
-#' @return character DiagrammeR::grViz() ready text
+#' @param optree operation tree pipeline.
+#' @param ... force other argument to be by name.
+#' @param merge_tables logical if TRUE merge all same table references into one node.
+#' @return character DiagrammeR::grViz() ready text.
 #'
 #' @examples
 #'
@@ -53,30 +62,61 @@ r_optree_diagram <- function(optree, nextid) {
 #'              columns = qc(AUC, R2))
 #' optree <- d %.>%
 #'   extend_nse(., v := ifelse(AUC>0.5, R2, 1.0)) %.>%
+#'   quantile_node(.) %.>%
 #'   natural_join(., d, jointype = "LEFT", by = "AUC") %.>%
 #'   orderby(., "AUC")
 #'
 #' cat(format(optree))
 #'
 #' cat(op_diagram(optree))
-#' # optree %.>% op_diagram(.) %.>% DiagrammeR::grViz(.)
+#'
+#' # optree %.>%
+#' #   op_diagram(., merge_tables = TRUE) %.>%
+#' #   DiagrammeR::grViz(.)
 #'
 #' @export
 #'
-op_diagram <- function(optree) {
+op_diagram <- function(optree,
+                       ...,
+                       merge_tables = FALSE) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::op_diagram")
   diagram <- "
 digraph rquery_optree {
-  graph [ layout = dot, rankdir = LR, overlap = prism, compound = true, nodesep = .5, ranksep = .25]
+  graph [ layout = dot, rankdir = TB, overlap = prism, compound = true, nodesep = .5, ranksep = .25]
   edge [decorate = true, arrowhead = normal]
   node [style=filled, fillcolor=lightgrey]
 
 "
-  graph <- r_optree_diagram(optree, 1)
+  graph <- r_optree_diagram(optree, 1, merge_tables)
+  # de-dup any nodes
+  node_names <- vapply(graph$nodes, function(ni) { ni$name }, character(1))
+  graph$nodes <- graph$nodes[sort(unique(match(node_names, node_names)))]
+  node_names <- vapply(graph$nodes, function(ni) { ni$name }, character(1))
+  # add any table to table edges
+  incoming_names <- lapply(graph$nodes, function(ni) { ni$table_name_in })
+  outgoing_names <- lapply(graph$nodes, function(ni) { ni$table_name_out })
+  matches <- match(incoming_names, outgoing_names)
+  for(i in seq_len(length(matches))) {
+    if((!is.null(incoming_names[[i]])) &&
+       (!is.na(incoming_names[[i]])) &&
+       (!is.null(outgoing_names[[i]])) &&
+       (!is.na(outgoing_names[[i]]))) {
+      li <- matches[[i]]
+      if((!is.null(li))&&(!is.na(li))) {
+        edge <- paste0(node_names[[li]], " -> ",
+                       node_names[[i]])
+        graph$edges <- c(graph$edges, edge)
+      }
+    }
+  }
   ntxts <- lapply(graph$nodes,
                   function(ni) {
                     paste0(ni$name,
                            " [ shape = '",
-                           ifelse(ni$is_table, "folder", "tab"),
+                           ifelse(is.null(ni$table_name_in),
+                                  "tab",
+                                  "folder"),
                            "' , label = '",
                            ni$label,
                            "']\n")
