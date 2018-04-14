@@ -18,13 +18,19 @@
 <!-- Font Awesome icons -->
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 
+<!-- clipboard.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-  
-  
+<meta property="og:title" content="Create an rsumary relop operator node. — rsummary_node" />
+
+<meta property="og:description" content="Create an rsumary relop operator node." />
+<meta name="twitter:card" content="summary" />
+
+
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -32,6 +38,8 @@
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
+
+
 
 
   </head>
@@ -47,8 +55,12 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">rquery</a>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="../index.html">rquery</a>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.4.3</span>
+      </span>
     </div>
+
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
@@ -79,7 +91,7 @@
   </ul>
 </li>
 <li>
-  <a href="../news/index.html">News</a>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       
@@ -88,6 +100,7 @@
   <a href="http://www.win-vector.com/">Sponsor: Win-Vector LLC</a>
 </li>
       </ul>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -95,10 +108,12 @@
       
       </header>
 
-      <div class="row">
+<div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Create an rsumary relop operator node.</h1>
+    <small>Source: <a href='https://github.com/WinVector/rquery//blob/master/R/rsummary.R'><code>R/rsummary.R</code></a></small>
+    <div class="hidden name"><code>rsummary_node.Rd</code></div>
     </div>
 
     
@@ -108,7 +123,7 @@
     <pre class="usage"><span class='fu'>rsummary_node</span>(<span class='no'>source</span>, <span class='no'>...</span>, <span class='kw'>quartiles</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>tmp_name_source</span> <span class='kw'>=</span> <span class='kw pkg'>wrapr</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/wrapr/topics/mk_tmp_name_source'>mk_tmp_name_source</a></span>(<span class='st'>"sn"</span>), <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
@@ -139,7 +154,7 @@
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <p><code><a href='quantile_node.html'>quantile_node</a></code>, <code><a href='non_sql_node.html'>non_sql_node</a></code></p>
+    <div class='dont-index'><p><code><a href='quantile_node.html'>quantile_node</a></code>, <code><a href='non_sql_node.html'>non_sql_node</a></code></p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -172,15 +187,15 @@
 }</div><div class='output co'>#&gt; table('dRemote') %.&gt;%
 #&gt;  extend(.,
 #&gt;   v := ifelse(x &gt; 2, "x", "y")) %.&gt;%
-#&gt;  non_sql_node(., rsummary_node(., sn_50508223693681902652_0000000000, sn_50508223693681902652_0000000001))
+#&gt;  non_sql_node(., rsummary_node(., sn_93171283001079942400_0000000000, sn_93171283001079942400_0000000001))
 #&gt; [[1]]
-#&gt; [1] "CREATE TEMPORARY  TABLE `sn_50508223693681902652_0000000000`  AS  SELECT\n  `p`,\n  `s`,\n  `w`,\n  `x`,\n  `y`,\n  `z`,\n  ( CASE WHEN ( `x` &gt; 2 ) THEN ( 'x' ) ELSE ( 'y' ) END )  AS `v`\n FROM (\n  SELECT\n   `dRemote`.`p`,\n   `dRemote`.`s`,\n   `dRemote`.`w`,\n   `dRemote`.`x`,\n   `dRemote`.`y`,\n   `dRemote`.`z`\n  FROM\n   `dRemote`\n  ) tsql_96068944329317128300_0000000000\n"
+#&gt; [1] "CREATE TEMPORARY  TABLE `sn_93171283001079942400_0000000000`  AS  SELECT\n  `p`,\n  `s`,\n  `w`,\n  `x`,\n  `y`,\n  `z`,\n  ( CASE WHEN ( `x` &gt; 2 ) THEN ( 'x' ) ELSE ( 'y' ) END )  AS `v`\n FROM (\n  SELECT\n   `dRemote`.`p`,\n   `dRemote`.`s`,\n   `dRemote`.`w`,\n   `dRemote`.`x`,\n   `dRemote`.`y`,\n   `dRemote`.`z`\n  FROM\n   `dRemote`\n  ) tsql_42252639907567048558_0000000000\n"
 #&gt; 
 #&gt; [[2]]
-#&gt; [1] "non SQL step:  rsummary_node(., sn_50508223693681902652_0000000000, sn_50508223693681902652_0000000001)"
+#&gt; [1] "non SQL step:  rsummary_node(., sn_93171283001079942400_0000000000, sn_93171283001079942400_0000000001)"
 #&gt; 
 #&gt; [[3]]
-#&gt; [1] " SELECT\n  `sn_50508223693681902652_0000000001`.`column`,\n  `sn_50508223693681902652_0000000001`.`index`,\n  `sn_50508223693681902652_0000000001`.`class`,\n  `sn_50508223693681902652_0000000001`.`nrows`,\n  `sn_50508223693681902652_0000000001`.`nna`,\n  `sn_50508223693681902652_0000000001`.`nunique`,\n  `sn_50508223693681902652_0000000001`.`min`,\n  `sn_50508223693681902652_0000000001`.`max`,\n  `sn_50508223693681902652_0000000001`.`mean`,\n  `sn_50508223693681902652_0000000001`.`sd`,\n  `sn_50508223693681902652_0000000001`.`lexmin`,\n  `sn_50508223693681902652_0000000001`.`lexmax`\n FROM\n  `sn_50508223693681902652_0000000001`\n"
+#&gt; [1] " SELECT\n  `sn_93171283001079942400_0000000001`.`column`,\n  `sn_93171283001079942400_0000000001`.`index`,\n  `sn_93171283001079942400_0000000001`.`class`,\n  `sn_93171283001079942400_0000000001`.`nrows`,\n  `sn_93171283001079942400_0000000001`.`nna`,\n  `sn_93171283001079942400_0000000001`.`nunique`,\n  `sn_93171283001079942400_0000000001`.`min`,\n  `sn_93171283001079942400_0000000001`.`max`,\n  `sn_93171283001079942400_0000000001`.`mean`,\n  `sn_93171283001079942400_0000000001`.`sd`,\n  `sn_93171283001079942400_0000000001`.`lexmin`,\n  `sn_93171283001079942400_0000000001`.`lexmax`\n FROM\n  `sn_93171283001079942400_0000000001`\n"
 #&gt; 
 #&gt;   column index     class nrows nna nunique min max mean        sd lexmin lexmax
 #&gt; 1      p     1   integer     3   1      NA   0   1  0.5 0.7071068   &lt;NA&gt;   &lt;NA&gt;
@@ -213,11 +228,14 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="http://hadley.github.io/pkgdown/">pkgdown</a>.</p>
+  <p>Site built with <a href="http://pkgdown.r-lib.org/">pkgdown</a>.</p>
 </div>
 
       </footer>
    </div>
 
+  
+
   </body>
 </html>
+

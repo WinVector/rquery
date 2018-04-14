@@ -8,7 +8,7 @@ output: github_document
 
 [`rquery`](https://winvector.github.io/rquery/) is a query generator based on [Codd's relational algebra](https://en.wikipedia.org/wiki/Relational_algebra) (updated to reflect lessons learned from working with [`R`](https://www.r-project.org), [`SQL`](https://en.wikipedia.org/wiki/SQL), and [`dplyr`]( https://CRAN.R-project.org/package=dplyr) at big data scale in production).  One goal of this experiment is to see if `SQL` would be more fun teachable if it had a sequential data-flow or pipe notation.
 
-`rquery` is currently currenlty recommended for user with `Spark` and `PostgreSQL` (and with non-window functionality with `RSQLite`).
+`rquery` is currently recommended for user with `Spark` and `PostgreSQL` (and with non-window functionality with `RSQLite`).
 
 To install: `devtools::install_github("WinVector/rquery")`.  
 
@@ -36,7 +36,7 @@ There are many prior relational algebra inspired specialized query languages.  J
 
 The primary relational operators include:
 
-  * [`extend()`](https://winvector.github.io/rquery/reference/extend_nse.html).  Extend adds derived columns to a relation table.  With a sufficiently powerful `SQL` provider this includes ordered and partitioned window functions.  This operator also includes built-in [`seplyr`](https://winvector.github.io/seplyr/)-style [assignment partitioning](https://winvector.github.io/seplyr/articles/MutatePartitioner.html).
+  * [`extend()`](https://winvector.github.io/rquery/reference/extend_nse.html).  Extend adds derived columns to a relation table.  With a sufficiently powerful `SQL` provider this includes ordered and partitioned window functions.  This operator also includes built-in [`seplyr`](https://winvector.github.io/seplyr/)-style [assignment partitioning](https://winvector.github.io/seplyr/articles/MutatePartitioner.html).  `extend()` can also alter existing columns, though we note this is not always a relational operation (it can lose row uniqueness).
   * [`project()`](https://winvector.github.io/rquery/reference/project_nse.html).  Project is usually *portrayed* as the equivalent to column selection, though the original definition includes aggregation.  In our opinion the original relational nature of the operator is best captured by moving `SQL`'s "`GROUP BY`" aggregation functionality.
   * [`natural_join()`](https://winvector.github.io/rquery/reference/natural_join.html).  This a specialized relational join operator, using all common columns as an equi-join condition.
   * [`theta_join()`](https://winvector.github.io/rquery/reference/theta_join_nse.html).  This is the relational join operator allowing an arbitrary matching predicate.

@@ -1,4 +1,8 @@
 
+# rquery 0.4.3 2018/04/14
+
+ * Add assignment.
+
 # rquery 0.4.2 2018/04/05
 
  * Work around RPostgreSQL issue (dbTableExists does not work).

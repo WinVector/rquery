@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Simulate a per-row block-<code>if(){}else{}</code>. — if_else_block • rquery</title>
+<title>Assign a value to a slice of data (set of rows meeting a condition, and specified set of columns). — assign_slice • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -25,20 +25,9 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-<meta property="og:title" content="Simulate a per-row block-<code>if(){}else{}</code>. — if_else_block" />
+<meta property="og:title" content="Assign a value to a slice of data (set of rows meeting a condition, and specified set of columns). — assign_slice" />
 
-<meta property="og:description" content="This device uses expression-ifelse(,,) to simulate the
-more powerful per-row block-if(){}else{}.  The difference is
-expression-ifelse(,,) can choose per-row what value to express,
-whereas block-if(){}else{} can choose per-row where to assign multiple
-values. By simulation we mean: a sequence of quoted mutate expressions
-are emitted that implement the transform.  These expressions can then
-be optimized into a minimal number of no-dependency
-blocks by extend_se for efficient execution.
-The idea is the user can write legible code in this notation, and
-the translation turns it into safe and efficient code suitable for
-execution either on data.frames or at a big data scale using
-RPostgreSQL or sparklyr." />
+<meta property="og:description" content="Uses if_else_block." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -122,27 +111,16 @@ RPostgreSQL or sparklyr." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Simulate a per-row block-<code>if(){}else{}</code>.</h1>
+    <h1>Assign a value to a slice of data (set of rows meeting a condition, and specified set of columns).</h1>
     <small>Source: <a href='https://github.com/WinVector/rquery//blob/master/R/if_else_block.R'><code>R/if_else_block.R</code></a></small>
-    <div class="hidden name"><code>if_else_block.Rd</code></div>
+    <div class="hidden name"><code>assign_slice.Rd</code></div>
     </div>
 
     
-    <p>This device uses expression-<code>ifelse(,,)</code> to simulate the
-more powerful per-row block-<code>if(){}else{}</code>.  The difference is
-expression-<code>ifelse(,,)</code> can choose per-row what value to express,
-whereas block-<code>if(){}else{}</code> can choose per-row where to assign multiple
-values. By simulation we mean: a sequence of quoted mutate expressions
-are emitted that implement the transform.  These expressions can then
-be optimized into a minimal number of no-dependency
-blocks by <code><a href='extend_se.html'>extend_se</a></code> for efficient execution.
-The idea is the user can write legible code in this notation, and
-the translation turns it into safe and efficient code suitable for
-execution either on <code>data.frame</code>s or at a big data scale using
-<code>RPostgreSQL</code> or <code>sparklyr</code>.</p>
+    <p>Uses <code>if_else_block</code>.</p>
     
 
-    <pre class="usage"><span class='fu'>if_else_block</span>(<span class='no'>testexpr</span>, <span class='kw'>thenexprs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>elseexprs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>assign_slice</span>(<span class='no'>testexpr</span>, <span class='no'>columns</span>, <span class='no'>value</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -152,12 +130,12 @@ execution either on <code>data.frame</code>s or at a big data scale using
       <td><p>character containing the test expression.</p></td>
     </tr>
     <tr>
-      <th>thenexprs</th>
-      <td><p>named character then assignments (altering columns, not creating).</p></td>
+      <th>columns</th>
+      <td><p>charactor vector of column names to alter.</p></td>
     </tr>
     <tr>
-      <th>elseexprs</th>
-      <td><p>named character else assignments (altering columns, not creating).</p></td>
+      <th>value</th>
+      <td><p>value to set in matching rows and columns (scalar).</p></td>
     </tr>
     </table>
     
@@ -179,18 +157,13 @@ is a reserved column name for this procedure.</p>
     <span class='fu'>data.frame</span>(<span class='kw'>i</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>3</span>, <span class='fl'>4</span>, <span class='fl'>5</span>, <span class='fl'>6</span>, <span class='fl'>7</span>, <span class='fl'>8</span>, <span class='fl'>9</span>, <span class='fl'>10</span>),
                <span class='kw'>a</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>0</span>, <span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>),
                <span class='kw'>b</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>),
-               <span class='kw'>r</span> <span class='kw'>=</span> <span class='fu'>runif</span>(<span class='fl'>10</span>),
-               <span class='kw'>edited</span> <span class='kw'>=</span> <span class='fl'>0</span>),
+               <span class='kw'>r</span> <span class='kw'>=</span> <span class='fu'>runif</span>(<span class='fl'>10</span>)),
     <span class='kw'>temporary</span><span class='kw'>=</span><span class='fl'>TRUE</span>, <span class='kw'>overwrite</span><span class='kw'>=</span><span class='fl'>TRUE</span>)
 
-  <span class='no'>program</span> <span class='kw'>&lt;-</span> <span class='fu'>if_else_block</span>(
-    <span class='kw'>testexpr</span> <span class='kw'>=</span> <span class='fu'>qe</span>((<span class='no'>a</span>+<span class='no'>b</span>)<span class='kw'>&gt;</span><span class='fl'>1</span>),
-    <span class='kw'>thenexprs</span> <span class='kw'>=</span> <span class='fu'>c</span>(
-      <span class='fu'>if_else_block</span>(
-        <span class='kw'>testexpr</span> <span class='kw'>=</span> <span class='fu'>qe</span>(<span class='no'>r</span> <span class='kw'>&gt;=</span> <span class='fl'>0.5</span>),
-        <span class='kw'>thenexprs</span> <span class='kw'>=</span> <span class='fu'>qae</span>(<span class='no'>a</span> <span class='kw'>:=</span> <span class='fl'>0</span>),
-        <span class='kw'>elseexprs</span> <span class='kw'>=</span> <span class='fu'>qae</span>(<span class='no'>b</span> <span class='kw'>:=</span> <span class='fl'>0</span>)),
-      <span class='fu'>qae</span>(<span class='no'>edited</span> <span class='kw'>:=</span> <span class='fl'>1</span>)))
+  <span class='no'>program</span> <span class='kw'>&lt;-</span> <span class='fu'>assign_slice</span>(
+    <span class='kw'>testexpr</span> <span class='kw'>=</span> <span class='fu'>qe</span>(<span class='no'>r</span><span class='kw'>&lt;</span><span class='fl'>0.5</span>),
+    <span class='kw'>columns</span> <span class='kw'>=</span> <span class='fu'>qc</span>(<span class='no'>a</span>, <span class='no'>b</span>),
+    <span class='kw'>value</span> <span class='kw'>=</span> <span class='fl'>2</span>)
   <span class='fu'>print</span>(<span class='no'>program</span>)
 
   <span class='no'>trf</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='extend_se.html'>extend_se</a></span>(<span class='no'>d</span>, <span class='no'>program</span>)
@@ -211,71 +184,58 @@ is a reserved column name for this procedure.</p>
   <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>q</span>))
 
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; $ifebtest_2
-#&gt; [1] "(a + b) &gt; 1"
-#&gt; 
-#&gt; $ifebtest_1
-#&gt; [1] "r &gt;= 0.5"
+}</div><div class='output co'>#&gt; $ifebtest_1
+#&gt; [1] "r &lt; 0.5"
 #&gt; 
 #&gt; $a
-#&gt; [1] "ifelse( ifebtest_2, ifelse( ifebtest_1, 0, a), a)"
+#&gt; [1] "ifelse( ifebtest_1, 2, a)"
 #&gt; 
 #&gt; $b
-#&gt; [1] "ifelse( ifebtest_2, ifelse( !  ifebtest_1, 0, b), b)"
-#&gt; 
-#&gt; $edited
-#&gt; [1] "ifelse( ifebtest_2, 1, edited)"
+#&gt; [1] "ifelse( ifebtest_1, 2, b)"
 #&gt; 
 #&gt; table('d') %.&gt;%
 #&gt;  extend(.,
-#&gt;   ifebtest_2 := ( a + b ) &gt; 1,
-#&gt;   ifebtest_1 := r &gt;= 0.5) %.&gt;%
+#&gt;   ifebtest_1 := r &lt; 0.5) %.&gt;%
 #&gt;  extend(.,
-#&gt;   a := ifelse(ifebtest_2, ifelse(ifebtest_1, 0, a), a),
-#&gt;   b := ifelse(ifebtest_2, ifelse(!( ifebtest_1 ), 0, b), b),
-#&gt;   edited := ifelse(ifebtest_2, 1, edited))
+#&gt;   a := ifelse(ifebtest_1, 2, a),
+#&gt;   b := ifelse(ifebtest_1, 2, b))
 #&gt; SELECT
 #&gt;  `i`,
 #&gt;  `ifebtest_1`,
-#&gt;  `ifebtest_2`,
 #&gt;  `r`,
-#&gt;  ( CASE WHEN ( `ifebtest_2` ) THEN ( ( CASE WHEN ( `ifebtest_1` ) THEN ( 0 ) ELSE ( `a` ) END ) ) ELSE ( `a` ) END )  AS `a`,
-#&gt;  ( CASE WHEN ( `ifebtest_2` ) THEN ( ( CASE WHEN ( ( NOT ( `ifebtest_1` ) ) ) THEN ( 0 ) ELSE ( `b` ) END ) ) ELSE ( `b` ) END )  AS `b`,
-#&gt;  ( CASE WHEN ( `ifebtest_2` ) THEN ( 1 ) ELSE ( `edited` ) END )  AS `edited`
+#&gt;  ( CASE WHEN ( `ifebtest_1` ) THEN ( 2 ) ELSE ( `a` ) END )  AS `a`,
+#&gt;  ( CASE WHEN ( `ifebtest_1` ) THEN ( 2 ) ELSE ( `b` ) END )  AS `b`
 #&gt; FROM (
 #&gt;  SELECT
 #&gt;   `i`,
 #&gt;   `a`,
 #&gt;   `b`,
 #&gt;   `r`,
-#&gt;   `edited`,
-#&gt;   ( `a` + `b` ) &gt; 1  AS `ifebtest_2`,
-#&gt;   `r` &gt;= 0.5  AS `ifebtest_1`
+#&gt;   `r` &lt; 0.5  AS `ifebtest_1`
 #&gt;  FROM (
 #&gt;   SELECT
 #&gt;    `d`.`i`,
 #&gt;    `d`.`a`,
 #&gt;    `d`.`b`,
-#&gt;    `d`.`r`,
-#&gt;    `d`.`edited`
+#&gt;    `d`.`r`
 #&gt;   FROM
 #&gt;    `d`
-#&gt;   ) tsql_45209178869010640192_0000000000
-#&gt;  ) tsql_45209178869010640192_0000000001
-#&gt;     i ifebtest_1 ifebtest_2          r a b edited
-#&gt; 1   1          1          0 0.67520850 0 0      0
-#&gt; 2   2          1          0 0.94629485 0 1      0
-#&gt; 3   3          0          0 0.19621952 1 0      0
-#&gt; 4   4          1          1 0.96863750 0 1      1
-#&gt; 5   5          0          1 0.38709628 1 0      1
-#&gt; 6   6          1          1 0.65034390 0 1      1
-#&gt; 7   7          1          1 0.81459620 0 1      1
-#&gt; 8   8          0          1 0.07096477 1 0      1
-#&gt; 9   9          1          1 0.52683032 0 1      1
-#&gt; 10 10          1          1 0.76347483 0 1      1
-#&gt;                     r1                   r2
-#&gt; 1 -2391265015559459094 -4145315750557211383
-#&gt; 2 -5803525482497935733  6431799670051010685</div><div class='input'>
+#&gt;   ) tsql_81034140392671970566_0000000000
+#&gt;  ) tsql_81034140392671970566_0000000001
+#&gt;     i ifebtest_1           r a b
+#&gt; 1   1          1 0.080750138 2 2
+#&gt; 2   2          0 0.834333037 0 1
+#&gt; 3   3          0 0.600760886 1 0
+#&gt; 4   4          1 0.157208442 2 2
+#&gt; 5   5          1 0.007399441 2 2
+#&gt; 6   6          1 0.466393497 2 2
+#&gt; 7   7          1 0.497777389 2 2
+#&gt; 8   8          1 0.289767245 2 2
+#&gt; 9   9          0 0.732881987 1 1
+#&gt; 10 10          0 0.772521511 1 1
+#&gt;                     r1                  r2
+#&gt; 1  2041050652101577355 2917149548889673642
+#&gt; 2 -2064768363609608232 7171261281734656870</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

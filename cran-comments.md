@@ -8,6 +8,8 @@
     * using platform: x86_64-apple-darwin15.6.0 (64-bit)
 
     * Windows
+    * using R version 3.5.0 alpha (2018-04-04 r74529)
+    * using platform: x86_64-w64-mingw32 (64-bit)
    
 ## R CMD check results
 
