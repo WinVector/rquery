@@ -119,13 +119,8 @@ select_rows_nse.data.frame <- function(source, expr,
 
 
 #' @export
-format.relop_select_rows <- function(x, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguments")
-  }
-  paste0(trimws(format(x$source[[1]]), which="right"),
-         " %.>%\n ",
-         "select_rows(., ", x$parsed[[1]]$presentation, ")",
+format_node.relop_select_rows <- function(node) {
+  paste0("select_rows(., ", node$parsed[[1]]$presentation, ")",
          "\n")
 }
 

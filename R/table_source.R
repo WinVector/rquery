@@ -178,14 +178,12 @@ to_sql.relop_table_source <- function (x,
 }
 
 #' @export
-format.relop_table_source <- function(x, ...) {
-  wrapr::stop_if_dot_args(substitute(list(...)),
-                          "rquery::format.relop_table_source")
+format_node.relop_table_source <- function(node) {
   sym <- ""
-  if(!is.null(x$data)) {
+  if(!is.null(node$data)) {
     sym <- "+"
   }
-  paste0("table", sym, "('", x$table_name, "')",
+  paste0("table", sym, "('", node$table_name, "')",
          "\n")
 }
 

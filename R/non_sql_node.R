@@ -116,11 +116,8 @@ column_names.relop_non_sql <- function (x, ...) {
 
 
 #' @export
-format.relop_non_sql <- function(x, ...) {
-  wrapr::stop_if_dot_args(substitute(list(...)), "format.relop_non_sql")
-  paste0(trimws(format(x$source[[1]]), which = "right"),
-         " %.>%\n ",
-         "non_sql_node(., ", x$display_form, ")\n")
+format_node.relop_non_sql <- function(node) {
+  paste0("non_sql_node(., ", node$display_form, ")\n")
 }
 
 

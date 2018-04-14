@@ -88,12 +88,22 @@ natural_join.data.frame <- function(a, b,
 }
 
 
+#' @export
+format_node.relop_natural_join <- function(node) {
+  paste0("natural_join(.1, .2,",
+         "  j= ",
+         node$jointype,
+         ", by= ",
+         paste(node$by, collapse = ", "),
+         ")",
+         "\n")
+}
+
 
 #' @export
 format.relop_natural_join <- function(x, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "format.relop_natural_join")
   a <- trimws(format(x$source[[1]]), which = "right")
   b <- trimws(format(x$source[[2]]), which = "right")
   b <- gsub("\n", "\n  ", b, fixed = TRUE)

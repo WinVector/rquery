@@ -171,21 +171,16 @@ column_names.relop_project <- function (x, ...) {
 
 
 #' @export
-format.relop_project <- function(x, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguments")
-  }
-  origTerms <- vapply(x$parsed,
+format_node.relop_project <- function(node) {
+  origTerms <- vapply(node$parsed,
                       function(pi) {
                         paste(as.character(pi$presentation), collapse = ' ')
                       }, character(1))
   aterms <- paste(origTerms, collapse = ", ")
-  paste0(trimws(format(x$source[[1]]), which="right"),
-         " %.>%\n ",
-         "project(., ",
+  paste0("project(., ",
          aterms,
          ",\n  g= ",
-         paste(x$groupby, collapse = ", "),
+         paste(node$groupby, collapse = ", "),
          ")",
          "\n")
 }

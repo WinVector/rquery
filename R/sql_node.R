@@ -131,32 +131,29 @@ column_names.relop_sql <- function (x, ...) {
 
 
 #' @export
-format.relop_sql <- function(x, ...) {
-  wrapr::stop_if_dot_args(substitute(list(...)), "format.relop_sql")
-  if(!is.null(x$display_form)) {
-    str <- paste0(trimws(format(x$source[[1]]), which = "right"),
+format_node.relop_sql <- function(node) {
+  if(!is.null(node$display_form)) {
+    str <- paste0(trimws(format(node$source[[1]]), which = "right"),
            " %.>%\n ",
            "sql_node(.,\n",
-           "          ", x$display_form,
+           "          ", node$display_form,
            ")\n")
     return(str)
   }
-  exprtxt <- vapply(x$exprs,
+  exprtxt <- vapply(node$exprs,
                     function(ei) {
                       paste(as.character(ei), collapse = " ")
                     }, character(1))
-  assignments <- paste(names(x$exprs), ":=", exprtxt)
+  assignments <- paste(names(node$exprs), ":=", exprtxt)
   modsstr <- ""
   indent_sep <- "\n             "
-  if(!is.null(x$mods)) {
-    modsstr <- paste(";\n          ", x$mods)
+  if(!is.null(node$mods)) {
+    modsstr <- paste(";\n          ", node$mods)
   }
-  paste0(trimws(format(x$source[[1]]), which = "right"),
-         " %.>%\n ",
-         "sql_node(.,\n",
+  paste0("sql_node(.,\n",
          "          ", paste(assignments, collapse = indent_sep),
          modsstr,
-         ",", indent_sep, "*=", x$orig_columns,
+         ",", indent_sep, "*=", node$orig_columns,
          ")\n")
 }
 

@@ -1,6 +1,5 @@
 
 # define relational op, basis for this package.
-# in addition to methods below, our nodes implement: format() and print().
 #
 # Each node should be a list with named entries:
 #   source: list of nodes supplying values to this node.
@@ -201,5 +200,46 @@ dimnames.relop <- function(x) {
 dim.relop <- function(x) {
   # not populating number of rows, as that can be expensive
   c(NA_real_, length(column_names(x)))
+}
+
+#' Format a single node for printing.
+#'
+#' @param node node of operator tree to be formatted
+#' @return character disply form of the node
+#'
+#' @export
+format_node <- function(node) {
+  UseMethod("format_node", node)
+}
+
+#' @export
+as.character.relop <- function(x, ...) {
+  wrapr::stop_if_dot_args(substitute(list(...)), "as.character.relop")
+  format_node(x)
+}
+
+#' @export
+format.relop <- function(x, ...) {
+  wrapr::stop_if_dot_args(substitute(list(...)), "format.relop")
+  ndstr <- format_node(x)
+  if(length(x$source)<1) {
+    return(ndstr)
+  }
+  if(length(x$source)==1) {
+    return(paste0(trimws(format(x$source[[1]]), which = "right"),
+                  " %.>%\n ",
+                  trimws(ndstr, which = "both"),
+                  "\n"))
+  }
+  inputs <- vapply(x$source,
+                   function(vi) {
+                     trimws(format(vi), which = "both")
+                   }, character(1))
+
+  return(paste0("(\n ",
+                paste(inputs, collapse = ",\n "),
+                ") %.>%\n ",
+                trimws(ndstr, which = "both"),
+                "\n"))
 }
 

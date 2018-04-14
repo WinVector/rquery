@@ -85,15 +85,10 @@ column_names.relop_rename_columns <- function (x, ...) {
 
 
 #' @export
-format.relop_rename_columns <- function(x, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguments")
-  }
-  paste0(trimws(format(x$source[[1]]), which = "right"),
-         " %.>%\n ",
-         "rename(.,\n",
+format_node.relop_rename_columns <- function(node) {
+  paste0("rename(.,\n",
          "  ", gsub("\n", "\n  ",
-                    wrapr::map_to_char(x$cmap, sep = "\n  "),
+                    wrapr::map_to_char(node$cmap, sep = "\n  "),
                     fixed = TRUE), ")",
          "\n")
 }

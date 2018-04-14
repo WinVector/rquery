@@ -257,25 +257,22 @@ column_names.relop_extend <- function (x, ...) {
 
 
 #' @export
-format.relop_extend <- function(x, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguments")
-  }
+format_node.relop_extend <- function(node) {
   pterms <- ""
-  if(length(x$partitionby)>0) {
+  if(length(node$partitionby)>0) {
     pterms <- paste0(",\n  p= ",
-                     paste(x$partitionb, collapse = ", "))
+                     paste(node$partitionb, collapse = ", "))
   }
   oterms <- ""
   ocols <- NULL
-  if(length(x$orderby)>0) {
-    ocols <- vapply(x$orderby,
+  if(length(node$orderby)>0) {
+    ocols <- vapply(node$orderby,
                     function(ci) {
                       paste0("\"", ci, "\"")
                     }, character(1))
   }
-  if(length(x$rev_orderby)>0) {
-    rcols <- vapply(x$rev_orderby,
+  if(length(node$rev_orderby)>0) {
+    rcols <- vapply(node$rev_orderby,
                     function(ci) {
                       paste0("\"", ci, "\" DESC")
                     }, character(1))
@@ -283,16 +280,14 @@ format.relop_extend <- function(x, ...) {
   }
   if(length(ocols)>0) {
     oterms <- paste0(",\n  o= ",
-      paste(x$orderby, collapse = ", "))
+      paste(node$orderby, collapse = ", "))
   }
-  origTerms <- vapply(x$parsed,
+  origTerms <- vapply(node$parsed,
                       function(pi) {
                         paste(as.character(pi$presentation), collapse = ' ')
                       }, character(1))
   aterms <- paste(origTerms, collapse = ",\n  ")
-  paste0(trimws(format(x$source[[1]]), which="right"),
-         " %.>%\n ",
-         "extend(.,\n  ",
+  paste0("extend(.,\n  ",
          aterms,
          pterms,
          oterms,

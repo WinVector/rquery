@@ -263,10 +263,20 @@ column_names.relop_theta_join <- function (x, ...) {
 
 
 #' @export
+format_node.relop_theta_join <- function(node) {
+  paste0("theta_join(.1, .2,\n",
+         "  j= ",
+         node$jointype,
+         "; on= ",
+         paste(node$parsed[[1]]$presentation, collapse = ", "),
+         ")",
+         "\n")
+}
+
+#' @export
 format.relop_theta_join <- function(x, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "format.relop_theta_join")
   a <- trimws(format(x$source[[1]]), which = "right")
   b <- trimws(format(x$source[[2]]), which = "right")
   b <- gsub("\n", "\n  ", b, fixed = TRUE)

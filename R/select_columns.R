@@ -64,13 +64,10 @@ column_names.relop_select_columns <- function (x, ...) {
 }
 
 #' @export
-format.relop_select_columns <- function(x, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguments")
-  }
-  paste0(trimws(format(x$source[[1]]), which = "right"),
-         " %.>%\n ",
-         "select_columns(., ", paste(x$columns, collapse = ", "), ")",
+format_node.relop_select_columns <- function(node) {
+  paste0("select_columns(., ",
+         paste(node$columns, collapse = ", "),
+         ")",
          "\n")
 }
 

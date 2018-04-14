@@ -87,23 +87,18 @@ orderby.data.frame <- function(source,
 
 
 #' @export
-format.relop_orderby <- function(x, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguments")
+format_node.relop_orderby <- function(node) {
+  ot <- c(node$orderby)
+  if(length(node$rev_orderby)>0) {
+    ot <- c(ot, paste0("desc(", node$rev_orderby, ")"))
   }
-  ot <- c(x$orderby)
-  if(length(x$rev_orderby)>0) {
-    ot <- c(ot, paste0("desc(", x$rev_orderby, ")"))
-  }
-  paste0(trimws(format(x$source[[1]]), which="right"),
-         " %.>%\n ",
-         "orderby(., ",
+  paste0("orderby(., ",
          ifelse(ot>0,
                 paste(ot, collapse = ", "),
                 ""),
-         ifelse((length(x$limit)>0) && (length(x$orderby)>0),
+         ifelse((length(node$limit)>0) && (length(node$orderby)>0),
                 paste0(", LIMIT ",
-                       format(ceiling(x$limit), scientific = FALSE)),
+                       format(ceiling(node$limit), scientific = FALSE)),
                 ""),
          ")",
          "\n")
