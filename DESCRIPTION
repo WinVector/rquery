@@ -30,6 +30,7 @@ Imports:
   utils
 Suggests:
     RSQLite,
+    igraph,
     knitr,
     rmarkdown,
     testthat
