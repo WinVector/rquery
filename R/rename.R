@@ -1,5 +1,5 @@
 
-#' Make a rename columns node (not a relational operation).
+#' Make a rename columns node (copies columns not renamed).
 #'
 #' @param source source to rename from.
 #' @param cmap map written as new column names as keys and old column names as values.
