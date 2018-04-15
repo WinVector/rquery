@@ -73,15 +73,9 @@ example_employeeAndDate <- function(con) {
     names(keys) <- keys
     keys
   }
-  tDesc <- tableNames %.>%
-    lapply(.,
-           function(ni) {
-             tableDescription(con,
-                              ni,
-                              keyInspector = key_inspector_by_name)
-           })
-  tDesc <- do.call(rbind, tDesc)
-  tDesc
+  tableDescription(con,
+                   tableNames,
+                   keyInspector = key_inspector_by_name)
 }
 
 uniqueInOrder <- function(names) {
@@ -194,9 +188,9 @@ key_inspector_postgresql <- function(db, tablename) {
 #' @seealso \code{\link{buildJoinPlan}}, \code{\link{makeJoinDiagramSpec}}, \code{\link{executeLeftJoinPlan}}
 #'
 #' @param db database handle
-#' @param tablename character, name of table to add to join plan (can already be in the plan).
+#' @param tablenames character, names of tables to describe.
 #' @param ... force later arguments to bind by name.
-#' @param keyInspector function that determines prefered primary key set for table.
+#' @param keyInspector function that determines prefered primary key set for tables.
 #' @return table describing the data.
 #'
 #' @examples
@@ -208,37 +202,46 @@ key_inspector_postgresql <- function(db, tablename) {
 #' @export
 #'
 tableDescription <- function(db,
-                             tablename,
+                             tablenames,
                              ...,
                              keyInspector = key_inspector_all_cols) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::tableDescription")
-  sample <- DBI::dbGetQuery(db,
-                            paste("SELECT * FROM",
-                                  DBI::dbQuoteIdentifier(db, tablename),
-                                  "LIMIT 1"))
-  cols <- colnames(sample)
-  # may not get classes on empty tables
-  # https://github.com/tidyverse/dplyr/issues/2913
-  classes <- vapply(cols,
-                    function(si) {
-                      paste(class(sample[[si]]),
-                            collapse=', ')
-                    }, character(1))
-  keys <- keyInspector(db, tablename)
-  tableIndColNames <- makeTableIndMap(tablename)
-  if(length(intersect(tableIndColNames, cols))>0) {
-    warning("rquery::tableDescription table_CLEANEDTABNAME_present column may cause problems (please consider renaming before these steps)")
+  reslist <- vector(mode = "list", length = length(tablenames))
+  for(ii in seq_len(length(tablenames))) {
+    tablename = tablenames[[ii]]
+    sample <- DBI::dbGetQuery(db,
+                              paste("SELECT * FROM",
+                                    DBI::dbQuoteIdentifier(db, tablename),
+                                    "LIMIT 1"))
+    cols <- colnames(sample)
+    # may not get classes on empty tables
+    # https://github.com/tidyverse/dplyr/issues/2913
+    classes <- vapply(cols,
+                      function(si) {
+                        paste(class(sample[[si]]),
+                              collapse=', ')
+                      }, character(1))
+    keys <- keyInspector(db, tablename)
+    tableIndColNames <- makeTableIndMap(tablename)
+    if(length(intersect(tableIndColNames, cols))>0) {
+      warning("rquery::tableDescription table_CLEANEDTABNAME_present column may cause problems (please consider renaming before these steps)")
+    }
+    res <-
+      data.frame(tableName= tablename,
+                 isEmpty= nrow(sample)<=0,
+                 indicatorColumn= tableIndColNames[[1]],
+                 stringsAsFactors = FALSE)
+    res$columns <- list(cols)
+    res$keys <- list(keys)
+    res$colClass <- list(classes)
+    reslist[[ii]] <- res
   }
-  res <-
-    data.frame(tableName= tablename,
-               isEmpty= nrow(sample)<=0,
-               indicatorColumn= tableIndColNames[[1]],
-               stringsAsFactors = FALSE)
-  res$columns <- list(cols)
-  res$keys <- list(keys)
-  res$colClass <- list(classes)
-  res
+  if(length(reslist)<=1) {
+    reslist[[1]]
+  } else {
+    do.call(rbind, reslist)
+  }
 }
 
 
