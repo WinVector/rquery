@@ -11,9 +11,9 @@
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   d <- dbi_copy_to(my_db, 'd',
 #'                    data.frame(AUC = 0.6, R2 = 0.2, z = 3))
-#'   eqn <- rename_columns(d, c('AUC2' := 'AUC', 'R' := 'R2'))
-#'   cat(format(eqn))
-#'   sql <- to_sql(eqn, my_db)
+#'   op_tree <- rename_columns(d, c('R2' := 'AUC', 'AUC' := 'R2'))
+#'   cat(format(op_tree))
+#'   sql <- to_sql(op_tree, my_db)
 #'   cat(sql)
 #'   print(DBI::dbGetQuery(my_db, sql))
 #'   DBI::dbDisconnect(my_db)
@@ -37,8 +37,10 @@ rename_columns.relop <- function(source, cmap) {
     stop("rquery::rename_columns map keys must be unique")
   }
   have <- column_names(source)
-  check_have_cols(have, as.character(cmap), "rquery::rename_columns cmap")
-  collisions <- intersect(names(cmap), have)
+  check_have_cols(have, as.character(cmap),
+                  "rquery::rename_columns cmap")
+  collisions <- intersect(names(cmap),
+                          setdiff(have, as.character(cmap)))
   if(length(collisions)>0) {
     stop(paste("rquery::rename_columns rename collisions",
                paste(collisions, collapse = ", ")))
@@ -72,9 +74,8 @@ rename_columns.data.frame <- function(source, cmap) {
 
 #' @export
 column_names.relop_rename_columns <- function (x, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::column_names.relop_rename_columns")
   sc <- column_names(x$source[[1]])
   rmap <- names(x$cmap)
   names(rmap) <- as.character(x$cmap)
@@ -94,9 +95,12 @@ format_node.relop_rename_columns <- function(node) {
 }
 
 
-calc_used_relop_rename_columns <- function (x, ...,
+calc_used_relop_rename_columns <- function (x,
+                                            ...,
                                             using = NULL,
                                             contract = FALSE) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery:::calc_used_relop_rename_columns")
   cols <- column_names(x)
   if(length(using)>0) {
     missing <- setdiff(using, cols)
@@ -115,9 +119,12 @@ calc_used_relop_rename_columns <- function (x, ...,
 }
 
 #' @export
-columns_used.relop_rename_columns <- function (x, ...,
+columns_used.relop_rename_columns <- function (x,
+                                               ...,
                                                using = NULL,
                                                contract = FALSE) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::columns_used.relop_rename_columns")
   qmap <- calc_used_relop_rename_columns(x, using=using, contract=contract)
   return(columns_used(x$source[[1]],
                       using = as.character(qmap),
@@ -135,9 +142,8 @@ to_sql.relop_rename_columns <- function (x,
                                          tnum = mk_tmp_name_source('tsql'),
                                          append_cr = TRUE,
                                          using = NULL) {
-  if(length(list(...))>0) {
-    stop("unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::to_sql.relop_rename_columns")
   qmap <- calc_used_relop_rename_columns(x, using=using)
   colsV <- vapply(as.character(qmap),
                   function(ci) {
