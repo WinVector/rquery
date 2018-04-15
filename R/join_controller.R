@@ -70,6 +70,9 @@ example_employeeAndDate <- function(con) {
                   'orgtable')
   key_inspector_by_name <- function(db, tablename) {
     keys <- keymap[[tablename]]
+    if(length(keys)<=0) {
+      return(character(0))
+    }
     names(keys) <- keys
     keys
   }
