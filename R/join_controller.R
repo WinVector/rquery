@@ -195,8 +195,13 @@ key_inspector_postgresql <- function(db, tablename) {
 #'
 #' @examples
 #'
-#' d <- data.frame(x=1:3, y=NA)
-#' tableDescription('d', d)
+#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#'   ex <- rquery:::example_employeeAndDate(my_db)
+#'   print(tableDescription(my_db, ex$tableName,
+#'                          keyInspector = key_inspector_sqlite))
+#'   DBI::dbDisconnect(my_db)
+#' }
 #'
 #'
 #' @export
