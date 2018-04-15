@@ -1,8 +1,11 @@
 
 # build some example tables
 #
-# my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-# rquery:::example_employee_date(my_db)
+# if (requireNamespace("RSQLite", quietly = TRUE)) {
+#   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#   rquery:::example_employee_date(my_db)
+#   DBI::dbDisconnect(my_db)
+# }
 #
 example_employee_date <- function(con) {
   . <- NULL # Declare not an unbound varaible
@@ -105,15 +108,21 @@ makeTableIndMap <- function(tableNameSeq) {
 #'
 #' @examples
 #'
-#' d <- data.frame(x=1:3, y=NA)
-#' key_inspector_all_cols(NULL, d)
+#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#'   DBI::dbWriteTable(my_db,
+#'                     "d",
+#'                     data.frame(x=1:3, y=NA))
+#'   print(key_inspector_all_cols(my_db, "d"))
+#'   DBI::dbDisconnect(my_db)
+#' }
 #'
 #' @export
 #'
 key_inspector_all_cols <- function(db, tablename) {
   sample <- DBI::dbGetQuery(db,
                             paste("SELECT * FROM",
-                                  DBI::dbQuoteIdentifier(table_name),
+                                  DBI::dbQuoteIdentifier(db, tablename),
                                   "LIMIT 1"))
   cols <- colnames(sample)
   keys <- cols
@@ -130,13 +139,29 @@ key_inspector_all_cols <- function(db, tablename) {
 #' @param tablename character, name of table
 #' @return map of keys to keys
 #'
+#' @examples
+#'
+#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#'   DBI::dbExecute(my_db, "
+#'     CREATE TABLE orgtable (
+#'       eid TEXT,
+#'       date INTEGER,
+#'       dept TEXT,
+#'       location TEXT,
+#'     PRIMARY KEY (eid, date)
+#'     )
+#'     ")
+#'   print(key_inspector_sqlite(my_db, "orgtable"))
+#'   DBI::dbDisconnect(my_db)
+#' }
 #'
 #' @export
 #'
 key_inspector_sqlite <- function(db, tablename) {
   tabInfo <- DBI::dbGetQuery(db,
                              paste0("pragma table_info(",
-                                    DBI::dbQuoteIdentifier(db,tablename),
+                                    DBI::dbQuoteIdentifier(db, tablename),
                                     ")"))
   keys <- NULL
   if((!is.null(tabInfo))&&(nrow(tabInfo)>0)) {
@@ -166,7 +191,7 @@ key_inspector_postgresql <- function(db, tablename) {
     FROM   pg_index i
     JOIN   pg_attribute a ON a.attrelid = i.indrelid
     AND a.attnum = ANY(i.indkey)
-    WHERE  i.indrelid = ", DBI::dbQuoteIdentifier(db,tablename), "::regclass
+    WHERE  i.indrelid = ", DBI::dbQuoteIdentifier(db, tablename), "::regclass
     AND    i.indisprimary;
     "
   )
@@ -686,12 +711,17 @@ inspect_join_plan <- function(tDesc, columnJoinPlan,
 #'
 #' @examples
 #'
-#' d <- data.frame(id=1:3, weight= c(200, 140, 98))
-#' tDesc <- rbind(describe_tables('d1', d),
-#'                describe_tables('d2', d))
-#' tDesc$keys[[1]] <- list(PrimaryKey= 'id')
-#' tDesc$keys[[2]] <- list(PrimaryKey= 'id')
-#' build_join_plan(tDesc)
+#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#'   d <- data.frame(id=1:3, weight= c(200, 140, 98))
+#'   DBI::dbWriteTable(my_db,"d1", d)
+#'   DBI::dbWriteTable(my_db,"d2", d)
+#'   tDesc <- describe_tables(my_db, c("d1", "d2"))
+#'   tDesc$keys[[1]] <- list(PrimaryKey= 'id')
+#'   tDesc$keys[[2]] <- list(PrimaryKey= 'id')
+#'   print(build_join_plan(tDesc))
+#'   DBI::dbDisconnect(my_db)
+#' }
 #'
 #' @export
 #'
@@ -700,7 +730,6 @@ build_join_plan <- function(tDesc,
                           check= TRUE) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::build_join_plan")
-  n <- dplyr::n # declare not an unbound ref
   count <- NULL # declare not an unbound ref
   ntab <- nrow(tDesc)
   if(length(unique(tDesc$tableName))!=ntab) {
@@ -748,15 +777,16 @@ build_join_plan <- function(tDesc,
     isKey[keyIndexes] <- TRUE
     resultColumn= cols
     resultColumn[keyIndexes] <- names(keys)
-    pi <- dplyr::data_frame(tableName= tnam,
-                            sourceColumn= cols,
-                            sourceClass= classes,
-                            resultColumn= resultColumn,
-                            isKey= isKey,
-                            want= TRUE)
+    pi <- data.frame(tableName= tnam,
+                     sourceColumn= cols,
+                     sourceClass= classes,
+                     resultColumn= resultColumn,
+                     isKey= isKey,
+                     want= TRUE,
+                     stringsAsFactors = FALSE)
     plans[[i]] <- pi
   }
-  plans <- dplyr::bind_rows(plans)
+  plans <- do.call(rbind, plans)
   # disambiguate non-key result columns
   dups <- plans %.>%
     dplyr::filter(., !isKey) %.>%
