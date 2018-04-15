@@ -848,6 +848,7 @@ strMapToString <- function(m) {
 #'
 #' @param columnJoinPlan columns to join, from \code{\link{build_join_plan}} (and likely altered by user).  Note: no column names must intersect with names of the form \code{table_CLEANEDTABNAME_present}.
 #' @param ... force later arguments to bind by name.
+#' @param add_ind_cols logical, if TRUE add indicators showing which tables supplied rows.
 #' @param jointype character, type of join to perform ("LEFT", "INNER", "RIGHT", ...).
 #' @param checkColClasses logical if true check for exact class name matches
 #' @return join optree
@@ -896,6 +897,7 @@ strMapToString <- function(m) {
 actualize_join_plan <- function(columnJoinPlan,
                                 ...,
                                 jointype = "LEFT",
+                                add_ind_cols = FALSE,
                                 checkColClasses= FALSE) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::actualize_join_plan")
@@ -920,6 +922,11 @@ actualize_join_plan <- function(columnJoinPlan,
     if(!isTRUE(all.equal(rows$sourceColumn, rows$resultColumn))) {
       si <- rename_columns(si,  rows$resultColumn := rows$sourceColumn)
     }
+    indcol <- NULL
+    if(add_ind_cols) {
+      indcol <-  paste0(tabnam, "_present")
+      si <- extend_se(si, indcol := 1)
+    }
     if(is.null(res)) {
       res <- si
     } else {
@@ -927,7 +934,18 @@ actualize_join_plan <- function(columnJoinPlan,
       res <- natural_join(res, si,
                           jointype = jointype,
                           by = joinby)
+      if(add_ind_cols) {
+        steps <- assign_slice(
+          testexpr = paste0("is.na(", indcol, ")"),
+          columns = indcol,
+          value = 0)
+        res <- extend_se(res, steps)
+      }
     }
+  }
+  if("ifebtest_1" %in% column_names(res)) {
+    res <- select_columns(res, setdiff(column_names(res),
+                                       "ifebtest_1"))
   }
   res
 }

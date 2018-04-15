@@ -217,7 +217,8 @@ columnJoinPlan %.>%
 Once you have a good join plan executing it easy.
 
 ``` r
-optree <- actualize_join_plan(columnJoinPlan)
+optree <- actualize_join_plan(columnJoinPlan,
+                              add_ind_cols = TRUE)
 
 cat(format(optree))
 ```
@@ -228,19 +229,34 @@ cat(format(optree))
     ##     'MeasurementDate' = 'date',
     ##     'meas1_train_weight' = 'weight',
     ##     'height' = 'height')) %.>%
+    ##  extend(.,
+    ##   meas1_train_present := 1) %.>%
     ##  natural_join(.,
     ##   table('names_facts') %.>%
     ##    rename(.,
     ##     c('PatientID' = 'id',
-    ##       'name' = 'name')),
+    ##       'name' = 'name')) %.>%
+    ##    extend(.,
+    ##     names_facts_present := 1),
     ##   j= LEFT, by= PatientID) %.>%
+    ##  extend(.,
+    ##   ifebtest_1 := is.na(names_facts_present)) %.>%
+    ##  extend(.,
+    ##   names_facts_present := ifelse(ifebtest_1, 0, names_facts_present)) %.>%
     ##  natural_join(.,
     ##   table('meas2_train') %.>%
     ##    rename(.,
     ##     c('PatientID' = 'pid',
     ##       'MeasurementDate' = 'date',
-    ##       'meas2_train_weight' = 'weight')),
-    ##   j= LEFT, by= PatientID, MeasurementDate)
+    ##       'meas2_train_weight' = 'weight')) %.>%
+    ##    extend(.,
+    ##     meas2_train_present := 1),
+    ##   j= LEFT, by= PatientID, MeasurementDate) %.>%
+    ##  extend(.,
+    ##   ifebtest_1 := is.na(meas2_train_present)) %.>%
+    ##  extend(.,
+    ##   meas2_train_present := ifelse(ifebtest_1, 0, meas2_train_present)) %.>%
+    ##  select_columns(., height, meas1_train_present, meas1_train_weight, meas2_train_present, meas2_train_weight, MeasurementDate, name, names_facts_present, PatientID)
 
 ``` r
 optree %.>%
@@ -251,16 +267,20 @@ optree %.>%
 ![](JoinController_files/figure-markdown_github/run-1.png)
 
 ``` r
-execute(my_db, optree) %.>%
-  knitr::kable(.)
+res <- execute(my_db, optree)
+str(res)
 ```
 
-|  PatientID|  MeasurementDate|  height|  meas1\_train\_weight| name |  meas2\_train\_weight|
-|----------:|----------------:|-------:|---------------------:|:-----|---------------------:|
-|          1|                1|      60|                   200| a    |                    NA|
-|          1|                2|      54|                   180| a    |                    NA|
-|          2|                1|      12|                    98| b    |                    NA|
-|          2|                2|      14|                   120| b    |                   105|
+    ## 'data.frame':    4 obs. of  9 variables:
+    ##  $ height             : num  60 54 12 14
+    ##  $ meas1_train_present: int  1 1 1 1
+    ##  $ meas1_train_weight : num  200 180 98 120
+    ##  $ meas2_train_present: int  0 0 0 1
+    ##  $ meas2_train_weight : num  NA NA NA 105
+    ##  $ MeasurementDate    : num  1 2 1 2
+    ##  $ name               : chr  "a" "a" "b" "b"
+    ##  $ names_facts_present: int  1 1 1 1
+    ##  $ PatientID          : num  1 1 2 2
 
 A good workflow is:
 

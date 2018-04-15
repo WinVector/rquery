@@ -169,7 +169,8 @@ columnJoinPlan %.>%
 Once you have a good join plan executing it easy.
 
 ```{r run}
-optree <- actualize_join_plan(columnJoinPlan)
+optree <- actualize_join_plan(columnJoinPlan,
+                              add_ind_cols = TRUE)
 
 cat(format(optree))
 
@@ -177,8 +178,8 @@ optree %.>%
   op_diagram(., merge_tables = TRUE) %.>%
   DiagrammeR::grViz(.)
 
-execute(my_db, optree) %.>%
-  knitr::kable(.)
+res <- execute(my_db, optree)
+str(res)
 ```
 
 

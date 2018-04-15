@@ -121,7 +121,7 @@
     
 
     <pre class="usage"><span class='fu'>actualize_join_plan</span>(<span class='no'>columnJoinPlan</span>, <span class='no'>...</span>, <span class='kw'>jointype</span> <span class='kw'>=</span> <span class='st'>"LEFT"</span>,
-  <span class='kw'>checkColClasses</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+  <span class='kw'>add_ind_cols</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>checkColClasses</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -135,6 +135,14 @@
       <td><p>force later arguments to bind by name.</p></td>
     </tr>
     <tr>
+      <th>jointype</th>
+      <td><p>character, type of join to perform ("LEFT", "INNER", "RIGHT", ...).</p></td>
+    </tr>
+    <tr>
+      <th>add_ind_cols</th>
+      <td><p>logical, if TRUE add indicators showing which tables supplied rows.</p></td>
+    </tr>
+    <tr>
       <th>checkColClasses</th>
       <td><p>logical if true check for exact class name matches</p></td>
     </tr>
@@ -142,7 +150,7 @@
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>left join optree</p>
+    <p>join optree</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
@@ -181,13 +189,25 @@
   }
   <span class='co'># actualize as left join op_tree</span>
   <span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='fu'>actualize_join_plan</span>(<span class='no'>columnJoinPlan</span>,
-                                <span class='kw'>checkColClasses</span><span class='kw'>=</span> <span class='fl'>TRUE</span>,
-                                <span class='kw'>verbose</span><span class='kw'>=</span> <span class='fl'>TRUE</span>)
+                                <span class='kw'>checkColClasses</span><span class='kw'>=</span> <span class='fl'>TRUE</span>)
   <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>optree</span>))
   <span class='fu'>print</span>(<span class='fu'><a href='execute.html'>execute</a></span>(<span class='no'>my_db</span>, <span class='no'>optree</span>))
   <span class='co'># DiagrammeR::grViz(op_diagram(optree))</span>
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; <span class='error'>Error: rquery::actualize_join_plan unexpected arguments: verbose = TRUE</span></div><div class='input'>
+}</div><div class='output co'>#&gt; table('meas1') %.&gt;%
+#&gt;  rename(.,
+#&gt;   c('PatientID' = 'id',
+#&gt;     'meas1_weight' = 'weight',
+#&gt;     'height' = 'height')) %.&gt;%
+#&gt;  natural_join(.,
+#&gt;   table('meas2') %.&gt;%
+#&gt;    rename(.,
+#&gt;     c('PatientID' = 'pid',
+#&gt;       'meas2_weight' = 'weight')),
+#&gt;   j= LEFT, by= PatientID)
+#&gt;   PatientID meas1_weight height meas2_weight
+#&gt; 1         1          200     60           NA
+#&gt; 2         2          120     14          105</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

@@ -154,23 +154,37 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='co'># example data</span>
-<span class='no'>d1</span> <span class='kw'>&lt;-</span> <span class='fu'>data.frame</span>(<span class='kw'>id</span><span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>3</span>,
-                 <span class='kw'>weight</span><span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>200</span>, <span class='fl'>140</span>, <span class='fl'>98</span>),
-                 <span class='kw'>height</span><span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>60</span>, <span class='fl'>24</span>, <span class='fl'>12</span>))
-<span class='no'>d2</span> <span class='kw'>&lt;-</span> <span class='fu'>data.frame</span>(<span class='kw'>pid</span><span class='kw'>=</span> <span class='fl'>2</span>:<span class='fl'>3</span>,
-                 <span class='kw'>weight</span><span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>130</span>, <span class='fl'>110</span>),
-                 <span class='kw'>width</span><span class='kw'>=</span> <span class='fl'>1</span>)
-<span class='co'># get the initial description of table defs</span>
-<span class='no'>tDesc</span> <span class='kw'>&lt;-</span> <span class='fu'>rbind</span>(<span class='fu'><a href='describe_tables.html'>describe_tables</a></span>(<span class='st'>'d1'</span>, <span class='no'>d1</span>),
-               <span class='fu'><a href='describe_tables.html'>describe_tables</a></span>(<span class='st'>'d2'</span>, <span class='no'>d2</span>))</div><div class='output co'>#&gt; <span class='error'>Error in (function (classes, fdef, mtable) {    methods &lt;- .findInheritedMethods(classes, fdef, mtable)    if (length(methods) == 1L)         return(methods[[1L]])    else if (length(methods) == 0L) {        cnames &lt;- paste0("\"", vapply(classes, as.character,             ""), "\"", collapse = ", ")        stop(gettextf("unable to find an inherited method for function %s for signature %s",             sQuote(fdef@generic), sQuote(cnames)), domain = NA)    }    else stop("Internal error in finding inherited methods; didn't return a unique method",         domain = NA)})(list("character", "integer"), structure(function (conn, x,     ...) standardGeneric("dbQuoteIdentifier"), generic = structure("dbQuoteIdentifier", package = "DBI"), package = "DBI", group = list(), valueClass = character(0), signature = c("conn", "x"), default = `\001NULL\001`, skeleton = (function (conn, x,     ...) stop("invalid call in method dispatch to 'dbQuoteIdentifier' (no default method)",     domain = NA))(conn, x, ...), class = structure("standardGeneric", package = "methods")),     &lt;environment&gt;): unable to find an inherited method for function ‘dbQuoteIdentifier’ for signature ‘"character", "integer"’</span></div><div class='input'><span class='co'># declare keys (and give them consistent names)</span>
-<span class='no'>tDesc</span>$<span class='no'>keys</span><span class='kw'>[[</span><span class='fl'>1</span>]] <span class='kw'>&lt;-</span> <span class='fu'>list</span>(<span class='kw'>PrimaryKey</span><span class='kw'>=</span> <span class='st'>'id'</span>)</div><div class='output co'>#&gt; <span class='error'>Error in tDesc$keys[[1]] &lt;- list(PrimaryKey = "id"): object 'tDesc' not found</span></div><div class='input'><span class='no'>tDesc</span>$<span class='no'>keys</span><span class='kw'>[[</span><span class='fl'>2</span>]] <span class='kw'>&lt;-</span> <span class='fu'>list</span>(<span class='kw'>PrimaryKey</span><span class='kw'>=</span> <span class='st'>'pid'</span>)</div><div class='output co'>#&gt; <span class='error'>Error in tDesc$keys[[2]] &lt;- list(PrimaryKey = "pid"): object 'tDesc' not found</span></div><div class='input'><span class='co'># build the join plan</span>
-<span class='no'>columnJoinPlan</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='build_join_plan.html'>build_join_plan</a></span>(<span class='no'>tDesc</span>)</div><div class='output co'>#&gt; <span class='error'>Error in nrow(tDesc): object 'tDesc' not found</span></div><div class='input'><span class='co'># confirm the plan</span>
-<span class='fu'>inspect_join_plan</span>(<span class='no'>tDesc</span>, <span class='no'>columnJoinPlan</span>,
-                        <span class='kw'>checkColClasses</span><span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; <span class='error'>Error in inspect_and_limit_join_plan(columnJoinPlan, checkColClasses = checkColClasses): object 'columnJoinPlan' not found</span></div><div class='input'><span class='co'># damage the plan</span>
-<span class='no'>columnJoinPlan</span>$<span class='no'>sourceColumn</span>[<span class='no'>columnJoinPlan</span>$<span class='no'>sourceColumn</span><span class='kw'>==</span><span class='st'>'width'</span>] <span class='kw'>&lt;-</span> <span class='st'>'wd'</span></div><div class='output co'>#&gt; <span class='error'>Error in columnJoinPlan$sourceColumn[columnJoinPlan$sourceColumn == "width"] &lt;- "wd": object 'columnJoinPlan' not found</span></div><div class='input'><span class='co'># find a problem</span>
-<span class='fu'>inspect_join_plan</span>(<span class='no'>tDesc</span>, <span class='no'>columnJoinPlan</span>,
-                        <span class='kw'>checkColClasses</span><span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; <span class='error'>Error in inspect_and_limit_join_plan(columnJoinPlan, checkColClasses = checkColClasses): object 'columnJoinPlan' not found</span></div><div class='input'>
+<span class='kw'>if</span> (<span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
+  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
+  <span class='co'># example data</span>
+  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbWriteTable'>dbWriteTable</a></span>(<span class='no'>my_db</span>,
+                    <span class='st'>"d1"</span>,
+                    <span class='fu'>data.frame</span>(<span class='kw'>id</span><span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>3</span>,
+                               <span class='kw'>weight</span><span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>200</span>, <span class='fl'>140</span>, <span class='fl'>98</span>),
+                               <span class='kw'>height</span><span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>60</span>, <span class='fl'>24</span>, <span class='fl'>12</span>)))
+  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbWriteTable'>dbWriteTable</a></span>(<span class='no'>my_db</span>,
+                    <span class='st'>"d2"</span>,
+                    <span class='fu'>data.frame</span>(<span class='kw'>pid</span><span class='kw'>=</span> <span class='fl'>2</span>:<span class='fl'>3</span>,
+                               <span class='kw'>weight</span><span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>130</span>, <span class='fl'>110</span>),
+                               <span class='kw'>width</span><span class='kw'>=</span> <span class='fl'>1</span>))
+  <span class='co'># get the initial description of table defs</span>
+  <span class='no'>tDesc</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='describe_tables.html'>describe_tables</a></span>(<span class='no'>my_db</span>, <span class='fu'>qc</span>(<span class='no'>d1</span>, <span class='no'>d2</span>))
+  <span class='co'># declare keys (and give them consistent names)</span>
+  <span class='no'>tDesc</span>$<span class='no'>keys</span><span class='kw'>[[</span><span class='fl'>1</span>]] <span class='kw'>&lt;-</span> <span class='fu'>list</span>(<span class='kw'>PrimaryKey</span><span class='kw'>=</span> <span class='st'>'id'</span>)
+  <span class='no'>tDesc</span>$<span class='no'>keys</span><span class='kw'>[[</span><span class='fl'>2</span>]] <span class='kw'>&lt;-</span> <span class='fu'>list</span>(<span class='kw'>PrimaryKey</span><span class='kw'>=</span> <span class='st'>'pid'</span>)
+  <span class='co'># build the join plan</span>
+  <span class='no'>columnJoinPlan</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='build_join_plan.html'>build_join_plan</a></span>(<span class='no'>tDesc</span>)
+  <span class='co'># confirm the plan</span>
+  <span class='fu'>print</span>(<span class='fu'>inspect_join_plan</span>(<span class='no'>tDesc</span>, <span class='no'>columnJoinPlan</span>,
+                          <span class='kw'>checkColClasses</span><span class='kw'>=</span> <span class='fl'>TRUE</span>))
+  <span class='co'># damage the plan</span>
+  <span class='no'>columnJoinPlan</span>$<span class='no'>sourceColumn</span>[<span class='no'>columnJoinPlan</span>$<span class='no'>sourceColumn</span><span class='kw'>==</span><span class='st'>'width'</span>] <span class='kw'>&lt;-</span> <span class='st'>'wd'</span>
+  <span class='co'># find a problem</span>
+  <span class='fu'>print</span>(<span class='fu'>inspect_join_plan</span>(<span class='no'>tDesc</span>, <span class='no'>columnJoinPlan</span>,
+                          <span class='kw'>checkColClasses</span><span class='kw'>=</span> <span class='fl'>TRUE</span>))
+  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
+}</div><div class='output co'>#&gt; NULL
+#&gt; [1] "table description d2 refers to non-column(s): wd"</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
