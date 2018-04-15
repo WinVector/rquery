@@ -2,9 +2,9 @@
 # build some example tables
 #
 # my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-# rquery:::example_employeeAndDate(my_db)
+# rquery:::example_employee_date(my_db)
 #
-example_employeeAndDate <- function(con) {
+example_employee_date <- function(con) {
   . <- NULL # Declare not an unbound varaible
   # note: employeeanddate is likely built as a cross-product
   #       join of an employee table and set of dates of interest
@@ -76,7 +76,7 @@ example_employeeAndDate <- function(con) {
     names(keys) <- keys
     keys
   }
-  tableDescription(con,
+  describe_tables(con,
                    tableNames,
                    keyInspector = key_inspector_by_name)
 }
@@ -97,7 +97,7 @@ makeTableIndMap <- function(tableNameSeq) {
 
 #' Return all columns as guess at preferred primary keys.
 #'
-#' @seealso \code{tableDescription}
+#' @seealso \code{describe_tables}
 #'
 #' @param db database handle
 #' @param tablename character, name of table
@@ -124,7 +124,7 @@ key_inspector_all_cols <- function(db, tablename) {
 
 #' Return all primary key columns as guess at preferred primary keys for a SQLite handle.
 #'
-#' @seealso \code{tableDescription}
+#' @seealso \code{describe_tables}
 #'
 #' @param db database handle
 #' @param tablename character, name of table
@@ -149,7 +149,7 @@ key_inspector_sqlite <- function(db, tablename) {
 
 #' Return all primary key columns as guess at preferred primary keys for a PostgreSQL handle.
 #'
-#' @seealso \code{tableDescription}
+#' @seealso \code{describe_tables}
 #'
 #' @param db database handle
 #' @param tablename character, name of table
@@ -188,7 +188,7 @@ key_inspector_postgresql <- function(db, tablename) {
 #'
 #' Please see \code{vignette('DependencySorting', package = 'rquery')} and \code{vignette('joinController', package= 'rquery')} for more details.
 #'
-#' @seealso \code{\link{buildJoinPlan}}, \code{\link{makeJoinDiagramSpec}}, \code{\link{executeLeftJoinPlan}}
+#' @seealso \code{\link{build_join_plan}}, \code{\link{graph_join_plan}}, \code{\link{actualize_join_plan}}
 #'
 #' @param db database handle
 #' @param tablenames character, names of tables to describe.
@@ -200,8 +200,8 @@ key_inspector_postgresql <- function(db, tablename) {
 #'
 #' if (requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'   ex <- rquery:::example_employeeAndDate(my_db)
-#'   print(tableDescription(my_db, ex$tableName,
+#'   ex <- rquery:::example_employee_date(my_db)
+#'   print(describe_tables(my_db, ex$tableName,
 #'                          keyInspector = key_inspector_sqlite))
 #'   DBI::dbDisconnect(my_db)
 #' }
@@ -209,12 +209,12 @@ key_inspector_postgresql <- function(db, tablename) {
 #'
 #' @export
 #'
-tableDescription <- function(db,
+describe_tables <- function(db,
                              tablenames,
                              ...,
                              keyInspector = key_inspector_all_cols) {
   wrapr::stop_if_dot_args(substitute(list(...)),
-                          "rquery::tableDescription")
+                          "rquery::describe_tables")
   reslist <- vector(mode = "list", length = length(tablenames))
   for(ii in seq_len(length(tablenames))) {
     tablename = tablenames[[ii]]
@@ -233,7 +233,7 @@ tableDescription <- function(db,
     keys <- keyInspector(db, tablename)
     tableIndColNames <- makeTableIndMap(tablename)
     if(length(intersect(tableIndColNames, cols))>0) {
-      warning("rquery::tableDescription table_CLEANEDTABNAME_present column may cause problems (please consider renaming before these steps)")
+      warning("rquery::describe_tables table_CLEANEDTABNAME_present column may cause problems (please consider renaming before these steps)")
     }
     res <-
       data.frame(tableName= tablename,
@@ -259,7 +259,7 @@ tableDescription <- function(db,
 
 
 # type unstable: return data.frame if okay, character if problem
-inspectAndLimitJoinPlan <- function(columnJoinPlan, checkColClasses) {
+inspect_and_limit_join_plan <- function(columnJoinPlan, checkColClasses) {
   # sanity check
   for(ci in c('tableName', 'sourceColumn', 'sourceClass', 'resultColumn')) {
     if(is.null(columnJoinPlan[[ci]])) {
@@ -381,18 +381,18 @@ inspectAndLimitJoinPlan <- function(columnJoinPlan, checkColClasses) {
 #'   #       such a table "row control" or "experimental design."
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   RSQLite::initExtension(my_db)
-#'   tDesc <- rquery:::example_employeeAndDate(my_db)
-#'   columnJoinPlan <- buildJoinPlan(tDesc, check= FALSE)
+#'   tDesc <- rquery:::example_employee_date(my_db)
+#'   columnJoinPlan <- build_join_plan(tDesc, check= FALSE)
 #'   # unify keys
 #'   columnJoinPlan$resultColumn[columnJoinPlan$resultColumn=='id'] <- 'eid'
 #'   # look at plan defects
 #'   print(paste('problems:',
-#'               inspectDescrAndJoinPlan(tDesc, columnJoinPlan)))
+#'               inspect_join_plan(tDesc, columnJoinPlan)))
 #'   # fix plan
 #'   if(requireNamespace('igraph', quietly = TRUE)) {
-#'     sorted <- topoSortTables(columnJoinPlan, 'employeeanddate')
+#'     sorted <- topo_sort_tables(columnJoinPlan, 'employeeanddate')
 #'     print(paste('problems:',
-#'                 inspectDescrAndJoinPlan(tDesc, sorted$columnJoinPlan)))
+#'                 inspect_join_plan(tDesc, sorted$columnJoinPlan)))
 #'     # plot(sorted$dependencyGraph)
 #'   }
 #'   DBI::dbDisconnect(my_db)
@@ -401,12 +401,12 @@ inspectAndLimitJoinPlan <- function(columnJoinPlan, checkColClasses) {
 #'
 #' @export
 #'
-topoSortTables <- function(columnJoinPlan, leftTableName,
+topo_sort_tables <- function(columnJoinPlan, leftTableName,
                            ...) {
   wrapr::stop_if_dot_args(substitute(list(...)),
-                          "rquery::topoSortTables")
+                          "rquery::topo_sort_tables")
   if(!requireNamespace('igraph', quietly = TRUE)) {
-    warning("topoSortTables: requres igraph to sort tables")
+    warning("topo_sort_tables: requres igraph to sort tables")
     return(list(columnJoinPlan= columnJoinPlan,
                 dependencyGraph= NULL,
                 tableOrder= NULL))
@@ -452,7 +452,7 @@ topoSortTables <- function(columnJoinPlan, leftTableName,
 #'
 #' Please see \code{vignette('DependencySorting', package = 'rquery')} and \code{vignette('joinController', package= 'rquery')} for more details.
 #'
-#' @seealso \code{\link{tableDescription}}, \code{\link{buildJoinPlan}}, \code{\link{renderJoinDiagram}}, \code{\link{executeLeftJoinPlan}}
+#' @seealso \code{\link{describe_tables}}, \code{\link{build_join_plan}}, \code{\link{renderJoinDiagram}}, \code{\link{actualize_join_plan}}
 #'
 #' @param columnJoinPlan join plan
 #' @param ... force later arguments to bind by name
@@ -470,19 +470,19 @@ topoSortTables <- function(columnJoinPlan, leftTableName,
 #'   #       such a table "row control" or "experimental design."
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   RSQLite::initExtension(my_db)
-#'   tDesc <- rquery:::example_employeeAndDate(my_db)
-#'   # fix order by hand, please see rquery::topoSortTables for
+#'   tDesc <- rquery:::example_employee_date(my_db)
+#'   # fix order by hand, please see rquery::topo_sort_tables for
 #'   # how to automate this.
 #'   ord <- match(c('employeeanddate', 'orgtable', 'activity', 'revenue'),
 #'                tDesc$tableName)
 #'   tDesc <- tDesc[ord, , drop=FALSE]
-#'   columnJoinPlan <- buildJoinPlan(tDesc, check= FALSE)
+#'   columnJoinPlan <- build_join_plan(tDesc, check= FALSE)
 #'   # unify keys
 #'   columnJoinPlan$resultColumn[columnJoinPlan$resultColumn=='id'] <- 'eid'
 #'   # look at plan defects
 #'   print(paste('problems:',
-#'               inspectDescrAndJoinPlan(tDesc, columnJoinPlan)))
-#'   diagramSpec <- makeJoinDiagramSpec(columnJoinPlan)
+#'               inspect_join_plan(tDesc, columnJoinPlan)))
+#'   diagramSpec <- graph_join_plan(columnJoinPlan)
 #'   # to render as JavaScript:
 #'   #   DiagrammeR::grViz(diagramSpec)
 #'   # or as a PNG:
@@ -495,12 +495,12 @@ topoSortTables <- function(columnJoinPlan, leftTableName,
 #' @export
 #'
 #'
-makeJoinDiagramSpec <- function(columnJoinPlan, ...,
+graph_join_plan <- function(columnJoinPlan, ...,
                                 groupByKeys= TRUE,
                                 graphOpts= NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)),
-                          "rquery::makeJoinDiagramSpec")
-  columnJoinPlan <- inspectAndLimitJoinPlan(columnJoinPlan, FALSE)
+                          "rquery::graph_join_plan")
+  columnJoinPlan <- inspect_and_limit_join_plan(columnJoinPlan, FALSE)
   if(is.character(columnJoinPlan)) {
     stop(columnJoinPlan)
   }
@@ -595,10 +595,10 @@ makeJoinDiagramSpec <- function(columnJoinPlan, ...,
 #' check that a join plan is consistent with table descriptions
 #'
 #' Please see \code{vignette('DependencySorting', package = 'rquery')} and \code{vignette('joinController', package= 'rquery')} for more details.
-#' @seealso \code{\link{tableDescription}}, \code{\link{buildJoinPlan}}, \code{\link{makeJoinDiagramSpec}}, \code{\link{executeLeftJoinPlan}}
+#' @seealso \code{\link{describe_tables}}, \code{\link{build_join_plan}}, \code{\link{graph_join_plan}}, \code{\link{actualize_join_plan}}
 #'
-#' @param tDesc description of tables, from \code{\link{tableDescription}} (and likely altered by user).
-#' @param columnJoinPlan columns to join, from \code{\link{buildJoinPlan}} (and likely altered by user). Note: no column names must intersect with names of the form \code{table_CLEANEDTABNAME_present}.
+#' @param tDesc description of tables, from \code{\link{describe_tables}} (and likely altered by user).
+#' @param columnJoinPlan columns to join, from \code{\link{build_join_plan}} (and likely altered by user). Note: no column names must intersect with names of the form \code{table_CLEANEDTABNAME_present}.
 #' @param ... force later arguments to bind by name.
 #' @param checkColClasses logical if true check for exact class name matches
 #' @return NULL if okay, else a string
@@ -613,30 +613,30 @@ makeJoinDiagramSpec <- function(columnJoinPlan, ...,
 #'                  weight= c(130, 110),
 #'                  width= 1)
 #' # get the initial description of table defs
-#' tDesc <- rbind(tableDescription('d1', d1),
-#'                tableDescription('d2', d2))
+#' tDesc <- rbind(describe_tables('d1', d1),
+#'                describe_tables('d2', d2))
 #' # declare keys (and give them consistent names)
 #' tDesc$keys[[1]] <- list(PrimaryKey= 'id')
 #' tDesc$keys[[2]] <- list(PrimaryKey= 'pid')
 #' # build the join plan
-#' columnJoinPlan <- buildJoinPlan(tDesc)
+#' columnJoinPlan <- build_join_plan(tDesc)
 #' # confirm the plan
-#' inspectDescrAndJoinPlan(tDesc, columnJoinPlan,
+#' inspect_join_plan(tDesc, columnJoinPlan,
 #'                         checkColClasses= TRUE)
 #' # damage the plan
 #' columnJoinPlan$sourceColumn[columnJoinPlan$sourceColumn=='width'] <- 'wd'
 #' # find a problem
-#' inspectDescrAndJoinPlan(tDesc, columnJoinPlan,
+#' inspect_join_plan(tDesc, columnJoinPlan,
 #'                         checkColClasses= TRUE)
 #'
 #' @export
 #'
-inspectDescrAndJoinPlan <- function(tDesc, columnJoinPlan,
+inspect_join_plan <- function(tDesc, columnJoinPlan,
                                     ...,
                                     checkColClasses= FALSE) {
   wrapr::stop_if_dot_args(substitute(list(...)),
-                          "rquery::inspectDescrAndJoinPlan")
-  columnJoinPlan <- inspectAndLimitJoinPlan(columnJoinPlan,
+                          "rquery::inspect_join_plan")
+  columnJoinPlan <- inspect_and_limit_join_plan(columnJoinPlan,
                                             checkColClasses=checkColClasses)
   if(is.character(columnJoinPlan)) {
     return(columnJoinPlan)
@@ -677,9 +677,9 @@ inspectDescrAndJoinPlan <- function(tDesc, columnJoinPlan,
 #' Build a join plan
 #'
 #' Please see \code{vignette('DependencySorting', package = 'rquery')} and \code{vignette('joinController', package= 'rquery')} for more details.
-#' @seealso \code{\link{tableDescription}}, \code{\link{inspectDescrAndJoinPlan}}, \code{\link{makeJoinDiagramSpec}}, \code{\link{executeLeftJoinPlan}}
+#' @seealso \code{\link{describe_tables}}, \code{\link{inspect_join_plan}}, \code{\link{graph_join_plan}}, \code{\link{actualize_join_plan}}
 #'
-#' @param tDesc description of tables from \code{\link{tableDescription}} (and likely altered by user). Note: no column names must intersect with names of the form \code{table_CLEANEDTABNAME_present}.
+#' @param tDesc description of tables from \code{\link{describe_tables}} (and likely altered by user). Note: no column names must intersect with names of the form \code{table_CLEANEDTABNAME_present}.
 #' @param ... force later arguments to bind by name.
 #' @param check logical, if TRUE check the join plan for consistnecy.
 #' @return detailed column join plan (appropriate for editing)
@@ -687,27 +687,27 @@ inspectDescrAndJoinPlan <- function(tDesc, columnJoinPlan,
 #' @examples
 #'
 #' d <- data.frame(id=1:3, weight= c(200, 140, 98))
-#' tDesc <- rbind(tableDescription('d1', d),
-#'                tableDescription('d2', d))
+#' tDesc <- rbind(describe_tables('d1', d),
+#'                describe_tables('d2', d))
 #' tDesc$keys[[1]] <- list(PrimaryKey= 'id')
 #' tDesc$keys[[2]] <- list(PrimaryKey= 'id')
-#' buildJoinPlan(tDesc)
+#' build_join_plan(tDesc)
 #'
 #' @export
 #'
-buildJoinPlan <- function(tDesc,
+build_join_plan <- function(tDesc,
                           ...,
                           check= TRUE) {
   wrapr::stop_if_dot_args(substitute(list(...)),
-                          "rquery::buildJoinPlan")
+                          "rquery::build_join_plan")
   n <- dplyr::n # declare not an unbound ref
   count <- NULL # declare not an unbound ref
   ntab <- nrow(tDesc)
   if(length(unique(tDesc$tableName))!=ntab) {
-    stop("rquery::buildJoinPlan must have unique table name(s)")
+    stop("rquery::build_join_plan must have unique table name(s)")
   }
   if(any(nchar(tDesc$tableName)<=0)) {
-    stop("rquery::buildJoinPlan empty table name(s)")
+    stop("rquery::build_join_plan empty table name(s)")
   }
   plans <- vector(ntab, mode='list')
   for(i in seq_len(ntab)) {
@@ -716,31 +716,31 @@ buildJoinPlan <- function(tDesc,
     tnam <- tDesc$tableName[[i]]
     classes <- tDesc$colClass[[i]]
     if(length(cols)<=0) {
-      stop(paste("rquery::buildJoinPlan table",
+      stop(paste("rquery::build_join_plan table",
                  tnam, "no columns"))
     }
     if((length(keys)<=0)&&(i>1)) {
-      stop(paste("rquery::buildJoinPlan table",
+      stop(paste("rquery::build_join_plan table",
                  tnam, "no keys"))
     }
     if(any(nchar(keys)<=0)) {
-      stop(paste("rquery::buildJoinPlan table",
+      stop(paste("rquery::build_join_plan table",
                  tnam, "empty key columns"))
     }
     if(length(unique(keys))!=length(keys)) {
-      stop(paste("rquery::buildJoinPlan table",
+      stop(paste("rquery::build_join_plan table",
                  tnam, "declares duplicate key columns"))
     }
     if(any(nchar(names(keys))<=0)) {
-      stop(paste("rquery::buildJoinPlan table",
+      stop(paste("rquery::build_join_plan table",
                  tnam, "empty key mappings"))
     }
     if(length(unique(names(keys)))!=length(names(keys))) {
-      stop(paste("rquery::buildJoinPlan table",
+      stop(paste("rquery::build_join_plan table",
                  tnam, "declares duplicate key mappings"))
     }
     if(!all(keys %in% cols)) {
-      stop(paste("rquery::buildJoinPlan table",
+      stop(paste("rquery::build_join_plan table",
                  tnam, "declares a key that is not a column"))
     }
     isKey <- rep(FALSE, length(cols))
@@ -780,9 +780,9 @@ buildJoinPlan <- function(tDesc,
                                                     sep= '_')
   if(check) {
     # just in case
-    problem <- inspectDescrAndJoinPlan(tDesc, plans)
+    problem <- inspect_join_plan(tDesc, plans)
     if(!is.null(problem)) {
-      stop(paste("rquery::buildJoinPlan produced plan issue:",
+      stop(paste("rquery::build_join_plan produced plan issue:",
                  problem))
     }
   }
@@ -814,12 +814,12 @@ strMapToString <- function(m) {
 #' Execute an ordered sequence of left joins.
 #'
 #' Please see \code{vignette('DependencySorting', package = 'rquery')} and \code{vignette('joinController', package= 'rquery')} for more details.
-#' @seealso \code{\link{tableDescription}}, \code{\link{buildJoinPlan}}, \code{\link{inspectDescrAndJoinPlan}}, \code{\link{makeJoinDiagramSpec}}
+#' @seealso \code{\link{describe_tables}}, \code{\link{build_join_plan}}, \code{\link{inspect_join_plan}}, \code{\link{graph_join_plan}}
 #'
 #' TODO: parameterize the implementation provider (right now hard-coded for \code{dplr}, but at least also direct \code{SQL} is a good extension).
 #'
-#' @param tDesc description of tables, either a \code{data.frame} from \code{\link{tableDescription}}, or a list mapping from names to handles/frames.  Only used to map table names to data.
-#' @param columnJoinPlan columns to join, from \code{\link{buildJoinPlan}} (and likely altered by user).  Note: no column names must intersect with names of the form \code{table_CLEANEDTABNAME_present}.
+#' @param tDesc description of tables, either a \code{data.frame} from \code{\link{describe_tables}}, or a list mapping from names to handles/frames.  Only used to map table names to data.
+#' @param columnJoinPlan columns to join, from \code{\link{build_join_plan}} (and likely altered by user).  Note: no column names must intersect with names of the form \code{table_CLEANEDTABNAME_present}.
 #' @param ... force later arguments to bind by name.
 #' @param checkColumns logical if TRUE confirm column names before starting joins.
 #' @param computeFn function to call to try and materialize intermediate results.
@@ -841,26 +841,26 @@ strMapToString <- function(m) {
 #'                     weight= c(105, 110),
 #'                     width= 1)
 #' # get the initial description of table defs
-#' tDesc <- rbind(tableDescription('meas1', meas1),
-#'                tableDescription('meas2', meas2))
+#' tDesc <- rbind(describe_tables('meas1', meas1),
+#'                describe_tables('meas2', meas2))
 #' # declare keys (and give them consitent names)
 #' tDesc$keys[[1]] <- list(PatientID= 'id')
 #' tDesc$keys[[2]] <- list(PatientID= 'pid')
 #' # build the column join plan
-#' columnJoinPlan <- buildJoinPlan(tDesc)
+#' columnJoinPlan <- build_join_plan(tDesc)
 #' # decide we don't want the width column
 #' columnJoinPlan$want[columnJoinPlan$resultColumn=='width'] <- FALSE
 #' # double check our plan
-#' if(!is.null(inspectDescrAndJoinPlan(tDesc, columnJoinPlan,
+#' if(!is.null(inspect_join_plan(tDesc, columnJoinPlan,
 #'             checkColClasses= TRUE))) {
 #'   stop("bad join plan")
 #' }
 #' # execute the left joins
-#' executeLeftJoinPlan(tDesc, columnJoinPlan,
+#' actualize_join_plan(tDesc, columnJoinPlan,
 #'                     checkColClasses= TRUE,
 #'                     verbose= TRUE)
 #' # also good
-#' executeLeftJoinPlan(list('meas1'=meas1, 'meas2'=meas2),
+#' actualize_join_plan(list('meas1'=meas1, 'meas2'=meas2),
 #'                     columnJoinPlan,
 #'                     checkColClasses= TRUE,
 #'                     verbose= TRUE)
@@ -868,7 +868,7 @@ strMapToString <- function(m) {
 #' @export
 #'
 #'
-executeLeftJoinPlan <- function(tDesc, columnJoinPlan,
+actualize_join_plan <- function(tDesc, columnJoinPlan,
                                 ...,
                                 checkColumns= FALSE,
                                 computeFn= function(x, name) {
@@ -878,14 +878,14 @@ executeLeftJoinPlan <- function(tDesc, columnJoinPlan,
                                 checkColClasses= FALSE,
                                 verbose= FALSE,
                                 dryRun= FALSE,
-                                tempNameGenerator= mk_tmp_name_source("executeLeftJoinPlan")) {
+                                tempNameGenerator= mk_tmp_name_source("actualize_join_plan")) {
   wrapr::stop_if_dot_args(substitute(list(...)),
-                          "rquery::executeLeftJoinPlan")
+                          "rquery::actualize_join_plan")
   # sanity check (if there is an obvious config problem fail before doing potentially expensive work)
-  columnJoinPlan <- inspectAndLimitJoinPlan(columnJoinPlan,
+  columnJoinPlan <- inspect_and_limit_join_plan(columnJoinPlan,
                                             checkColClasses=checkColClasses)
   if(is.character(columnJoinPlan)) {
-    stop(paste("rquery::executeLeftJoinPlan", columnJoinPlan))
+    stop(paste("rquery::actualize_join_plan", columnJoinPlan))
   }
   if(dryRun) {
     verbose = TRUE
@@ -893,7 +893,7 @@ executeLeftJoinPlan <- function(tDesc, columnJoinPlan,
   tMap <- NULL
   if('data.frame' %in% class(tDesc)) {
     if(length(unique(tDesc$tableName))!=length(tDesc$tableName)) {
-      stop("rquery::executeLeftJoinPlan duplicate table names in tDesc")
+      stop("rquery::actualize_join_plan duplicate table names in tDesc")
     }
     tMap <- tDesc$handle
     names(tMap) <- tDesc$tableName
@@ -901,31 +901,31 @@ executeLeftJoinPlan <- function(tDesc, columnJoinPlan,
     # named list
     tMap <- tDesc
     if(length(unique(names(tMap)))!=length(names(tMap))) {
-      stop("rquery::executeLeftJoinPlan duplicate table names in tDesc")
+      stop("rquery::actualize_join_plan duplicate table names in tDesc")
     }
   }
   if(!all(columnJoinPlan$tableName %in% names(tMap))) {
-    stop("rquery::executeLeftJoinPlan some needed columnJoinPlan table(s) not in tDesc")
+    stop("rquery::actualize_join_plan some needed columnJoinPlan table(s) not in tDesc")
   }
   # get the names of tables in columnJoinPlan order
   tableNameSeq <- uniqueInOrder(columnJoinPlan$tableName)
   tableIndColNames <- makeTableIndMap(tableNameSeq)
   if(length(intersect(tableIndColNames,
                       c(columnJoinPlan$resultColumn, columnJoinPlan$sourceColumn)))>0) {
-    stop("executeLeftJoinPlan: column mappings intersect intended table label columns")
+    stop("actualize_join_plan: column mappings intersect intended table label columns")
   }
   if(checkColumns && (!dryRun)) {
     for(tabnam in tableNameSeq) {
       handlei <- tMap[[tabnam]]
-      newdesc <- tableDescription(tabnam, handlei)
+      newdesc <- describe_tables(tabnam, handlei)
       if(newdesc$isEmpty[[1]]) {
-        warning(paste("rquery::executeLeftJoinPlan table is empty:",
+        warning(paste("rquery::actualize_join_plan table is empty:",
                       tabnam))
       }
       tabcols <- newdesc$columns[[1]]
       tableIndCol <- tableIndColNames[[tabnam]]
       if(tableIndCol %in% tabcols) {
-        stop(paste("rquery::executeLeftJoinPlan column",
+        stop(paste("rquery::actualize_join_plan column",
                    tableIndCol, "already in table",
                    tabnam))
       }
@@ -938,7 +938,7 @@ executeLeftJoinPlan <- function(tDesc, columnJoinPlan,
                  columnJoinPlan$sourceColumn[valRows])
       missing <- setdiff(needs, tabcols)
       if(length(missing)>0) {
-        stop(paste("rquery::executeLeftJoinPlan table",
+        stop(paste("rquery::actualize_join_plan table",
                    tabnam, "missing needed columns",
                    paste(missing, collapse = ', ')))
       }
