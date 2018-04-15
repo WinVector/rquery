@@ -279,8 +279,6 @@ describe_tables <- function(db,
 
 
 
-# TODO: move this forward (corrected up to here)
-
 
 
 # type unstable: return data.frame if okay, character if problem
