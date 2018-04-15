@@ -788,14 +788,10 @@ build_join_plan <- function(tDesc,
   }
   plans <- do.call(rbind, plans)
   # disambiguate non-key result columns
-  dups <- plans %.>%
-    dplyr::filter(., !isKey) %.>%
-    dplyr::select(., resultColumn) %.>%
-    dplyr::group_by(., resultColumn) %.>%
-    dplyr::summarize(., count=n()) %.>%
-    dplyr::filter(., count>1)
-  if(nrow(dups)>0) {
-    for(ci in dups$resultColumn) {
+  dups <- plans$resultColumn[!plans$isKey]
+  dups <- sort(unique(dups[duplicated(dups)]))
+  if(length(dups)>0) {
+    for(ci in dups) {
       indices <- which(plans$resultColumn==ci)
       for(i in indices) {
         ti <- gsub("[^a-zA-Z0-9]+", '_', plans$tableName[[i]])
