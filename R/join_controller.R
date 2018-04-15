@@ -850,7 +850,7 @@ strMapToString <- function(m) {
 #' @param ... force later arguments to bind by name.
 #' @param jointype character, type of join to perform ("LEFT", "INNER", "RIGHT", ...).
 #' @param checkColClasses logical if true check for exact class name matches
-#' @return left join optree
+#' @return join optree
 #'
 #' @examples
 #'
