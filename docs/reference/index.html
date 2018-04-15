@@ -128,9 +128,21 @@
       <tr>
         <!--  -->
         <td>
+          <p><code><a href="actualize_join_plan.html">actualize_join_plan()</a></code> </p>
+        </td>
+        <td><p>Execute an ordered sequence of left joins.</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
           <p><code><a href="assign_slice.html">assign_slice()</a></code> </p>
         </td>
         <td><p>Assign a value to a slice of data (set of rows meeting a condition, and specified set of columns).</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="build_join_plan.html">build_join_plan()</a></code> </p>
+        </td>
+        <td><p>Build a join plan</p></td>
       </tr><tr>
         <!--  -->
         <td>
@@ -212,6 +224,12 @@
       </tr><tr>
         <!--  -->
         <td>
+          <p><code><a href="describe_tables.html">describe_tables()</a></code> </p>
+        </td>
+        <td><p>Build a nice description of a table.</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
           <p><code><a href="execute.html">execute()</a></code> <code><a href="execute.html">commencify()</a></code> </p>
         </td>
         <td><p>Execute a operator tree, either bringing back the result or landing it as a table.</p></td>
@@ -242,9 +260,39 @@
       </tr><tr>
         <!--  -->
         <td>
+          <p><code><a href="graph_join_plan.html">graph_join_plan()</a></code> </p>
+        </td>
+        <td><p>Build a drawable specification of the join diagram</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
           <p><code><a href="if_else_block.html">if_else_block()</a></code> </p>
         </td>
         <td><p>Simulate a per-row block-<code>if(){}else{}</code>.</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="inspect_join_plan.html">inspect_join_plan()</a></code> </p>
+        </td>
+        <td><p>check that a join plan is consistent with table descriptions</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="key_inspector_all_cols.html">key_inspector_all_cols()</a></code> </p>
+        </td>
+        <td><p>Return all columns as guess at preferred primary keys.</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="key_inspector_postgresql.html">key_inspector_postgresql()</a></code> </p>
+        </td>
+        <td><p>Return all primary key columns as guess at preferred primary keys for a PostgreSQL handle.</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="key_inspector_sqlite.html">key_inspector_sqlite()</a></code> </p>
+        </td>
+        <td><p>Return all primary key columns as guess at preferred primary keys for a SQLite handle.</p></td>
       </tr><tr>
         <!--  -->
         <td>
@@ -318,7 +366,7 @@
         <td>
           <p><code><a href="rename_columns.html">rename_columns()</a></code> </p>
         </td>
-        <td><p>Make a rename columns node (not a relational operation).</p></td>
+        <td><p>Make a rename columns node (copies columns not renamed).</p></td>
       </tr><tr>
         <!--  -->
         <td>
@@ -427,6 +475,12 @@
           <p><code><a href="tokenize_for_SQL.html">tokenize_for_SQL()</a></code> </p>
         </td>
         <td><p>Cross-parse from an R parse tree into SQL.</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="topo_sort_tables.html">topo_sort_tables()</a></code> </p>
+        </td>
+        <td><p>Topologically sort join plan so values are available before uses.</p></td>
       </tr><tr>
         <!--  -->
         <td>

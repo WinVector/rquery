@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Make a rename columns node (copies columns not renamed). — rename_columns • rquery</title>
+<title>Build a join plan — build_join_plan • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -25,9 +25,9 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-<meta property="og:title" content="Make a rename columns node (copies columns not renamed). — rename_columns" />
+<meta property="og:title" content="Build a join plan — build_join_plan" />
 
-<meta property="og:description" content="Make a rename columns node (copies columns not renamed)." />
+<meta property="og:description" content="Please see vignette('DependencySorting', package = 'rquery') and vignette('joinController', package= 'rquery') for more details." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -111,65 +111,60 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Make a rename columns node (copies columns not renamed).</h1>
-    <small>Source: <a href='https://github.com/WinVector/rquery//blob/master/R/rename.R'><code>R/rename.R</code></a></small>
-    <div class="hidden name"><code>rename_columns.Rd</code></div>
+    <h1>Build a join plan</h1>
+    <small>Source: <a href='https://github.com/WinVector/rquery//blob/master/R/join_controller.R'><code>R/join_controller.R</code></a></small>
+    <div class="hidden name"><code>build_join_plan.Rd</code></div>
     </div>
 
     
-    <p>Make a rename columns node (copies columns not renamed).</p>
+    <p>Please see <code>vignette('DependencySorting', package = 'rquery')</code> and <code>vignette('joinController', package= 'rquery')</code> for more details.</p>
     
 
-    <pre class="usage"><span class='fu'>rename_columns</span>(<span class='no'>source</span>, <span class='no'>cmap</span>)</pre>
+    <pre class="usage"><span class='fu'>build_join_plan</span>(<span class='no'>tDesc</span>, <span class='no'>...</span>, <span class='kw'>check</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>source</th>
-      <td><p>source to rename from.</p></td>
+      <th>tDesc</th>
+      <td><p>description of tables from <code><a href='describe_tables.html'>describe_tables</a></code> (and likely altered by user). Note: no column names must intersect with names of the form <code>table_CLEANEDTABNAME_present</code>.</p></td>
     </tr>
     <tr>
-      <th>cmap</th>
-      <td><p>map written as new column names as keys and old column names as values.</p></td>
+      <th>...</th>
+      <td><p>force later arguments to bind by name.</p></td>
+    </tr>
+    <tr>
+      <th>check</th>
+      <td><p>logical, if TRUE check the join plan for consistnecy.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>rename columns node.</p>
+    <p>detailed column join plan (appropriate for editing)</p>
+    
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><code><a href='describe_tables.html'>describe_tables</a></code>, <code><a href='inspect_join_plan.html'>inspect_join_plan</a></code>, <code><a href='graph_join_plan.html'>graph_join_plan</a></code>, <code><a href='actualize_join_plan.html'>actualize_join_plan</a></code></p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
 <span class='kw'>if</span> (<span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
   <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
-  <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dbi_copy_to.html'>dbi_copy_to</a></span>(<span class='no'>my_db</span>, <span class='st'>'d'</span>,
-                   <span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>0.6</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>0.2</span>, <span class='kw'>z</span> <span class='kw'>=</span> <span class='fl'>3</span>))
-  <span class='no'>op_tree</span> <span class='kw'>&lt;-</span> <span class='fu'>rename_columns</span>(<span class='no'>d</span>, <span class='fu'>c</span>(<span class='st'>'R2'</span> <span class='kw'>:=</span> <span class='st'>'AUC'</span>, <span class='st'>'AUC'</span> <span class='kw'>:=</span> <span class='st'>'R2'</span>))
-  <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>op_tree</span>))
-  <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>op_tree</span>, <span class='no'>my_db</span>)
-  <span class='fu'>cat</span>(<span class='no'>sql</span>)
-  <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
+  <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'>data.frame</span>(<span class='kw'>id</span><span class='kw'>=</span><span class='fl'>1</span>:<span class='fl'>3</span>, <span class='kw'>weight</span><span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>200</span>, <span class='fl'>140</span>, <span class='fl'>98</span>))
+  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbWriteTable'>dbWriteTable</a></span>(<span class='no'>my_db</span>,<span class='st'>"d1"</span>, <span class='no'>d</span>)
+  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbWriteTable'>dbWriteTable</a></span>(<span class='no'>my_db</span>,<span class='st'>"d2"</span>, <span class='no'>d</span>)
+  <span class='no'>tDesc</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='describe_tables.html'>describe_tables</a></span>(<span class='no'>my_db</span>, <span class='fu'>c</span>(<span class='st'>"d1"</span>, <span class='st'>"d2"</span>))
+  <span class='no'>tDesc</span>$<span class='no'>keys</span><span class='kw'>[[</span><span class='fl'>1</span>]] <span class='kw'>&lt;-</span> <span class='fu'>list</span>(<span class='kw'>PrimaryKey</span><span class='kw'>=</span> <span class='st'>'id'</span>)
+  <span class='no'>tDesc</span>$<span class='no'>keys</span><span class='kw'>[[</span><span class='fl'>2</span>]] <span class='kw'>&lt;-</span> <span class='fu'>list</span>(<span class='kw'>PrimaryKey</span><span class='kw'>=</span> <span class='st'>'id'</span>)
+  <span class='fu'>print</span>(<span class='fu'>build_join_plan</span>(<span class='no'>tDesc</span>))
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; table('d') %.&gt;%
-#&gt;  rename(.,
-#&gt;   c('R2' = 'AUC',
-#&gt;     'AUC' = 'R2'))
-#&gt; SELECT
-#&gt;  `AUC` AS `R2`,
-#&gt;  `R2` AS `AUC`,
-#&gt;  `z` AS `z`
-#&gt; FROM (
-#&gt;  SELECT
-#&gt;   `d`.`AUC`,
-#&gt;   `d`.`R2`,
-#&gt;   `d`.`z`
-#&gt;  FROM
-#&gt;   `d`
-#&gt; ) tsql_45934203179645364871_0000000000
-#&gt;    R2 AUC z
-#&gt; 1 0.6 0.2 3</div><div class='input'>
+}</div><div class='output co'>#&gt;         tableName sourceColumn sourceClass resultColumn isKey want
+#&gt; id             d1           id     integer   PrimaryKey  TRUE TRUE
+#&gt; weight         d1       weight     numeric    d1_weight FALSE TRUE
+#&gt; id1            d2           id     integer   PrimaryKey  TRUE TRUE
+#&gt; weight1        d2       weight     numeric    d2_weight FALSE TRUE</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -178,6 +173,8 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
+
+      <li><a href="#see-also">See also</a></li>
       
       <li><a href="#examples">Examples</a></li>
     </ul>

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Build a diagram of a optree pipeline. — op_diagram • rquery</title>
+<title>Build a nice description of a table. — describe_tables • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -25,9 +25,10 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-<meta property="og:title" content="Build a diagram of a optree pipeline. — op_diagram" />
+<meta property="og:title" content="Build a nice description of a table. — describe_tables" />
 
-<meta property="og:description" content="Build a diagram of a optree pipeline." />
+<meta property="og:description" content="Please see http://www.win-vector.com/blog/2017/05/managing-spark-data-handles-in-r/ for details.
+Note: one usually needs to alter the keys column which is just populated with all columns." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -111,81 +112,75 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Build a diagram of a optree pipeline.</h1>
-    <small>Source: <a href='https://github.com/WinVector/rquery//blob/master/R/op_diagram.R'><code>R/op_diagram.R</code></a></small>
-    <div class="hidden name"><code>op_diagram.Rd</code></div>
+    <h1>Build a nice description of a table.</h1>
+    <small>Source: <a href='https://github.com/WinVector/rquery//blob/master/R/join_controller.R'><code>R/join_controller.R</code></a></small>
+    <div class="hidden name"><code>describe_tables.Rd</code></div>
     </div>
 
     
-    <p>Build a diagram of a optree pipeline.</p>
+    <p>Please see <a href='http://www.win-vector.com/blog/2017/05/managing-spark-data-handles-in-r/'>http://www.win-vector.com/blog/2017/05/managing-spark-data-handles-in-r/</a> for details.
+Note: one usually needs to alter the keys column which is just populated with all columns.</p>
     
 
-    <pre class="usage"><span class='fu'>op_diagram</span>(<span class='no'>optree</span>, <span class='no'>...</span>, <span class='kw'>merge_tables</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>describe_tables</span>(<span class='no'>db</span>, <span class='no'>tablenames</span>, <span class='no'>...</span>, <span class='kw'>keyInspector</span> <span class='kw'>=</span> <span class='no'>key_inspector_all_cols</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>optree</th>
-      <td><p>operation tree pipeline.</p></td>
+      <th>db</th>
+      <td><p>database handle</p></td>
+    </tr>
+    <tr>
+      <th>tablenames</th>
+      <td><p>character, names of tables to describe.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>force other argument to be by name.</p></td>
+      <td><p>force later arguments to bind by name.</p></td>
     </tr>
     <tr>
-      <th>merge_tables</th>
-      <td><p>logical if TRUE merge all same table references into one node.</p></td>
+      <th>keyInspector</th>
+      <td><p>function that determines prefered primary key set for tables.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>character DiagrammeR::grViz() ready text.</p>
+    <p>table describing the data.</p>
+    
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>Please see <code>vignette('DependencySorting', package = 'rquery')</code> and <code>vignette('joinController', package= 'rquery')</code> for more details.</p>
+    
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><code><a href='build_join_plan.html'>build_join_plan</a></code>, <code><a href='graph_join_plan.html'>graph_join_plan</a></code>, <code><a href='actualize_join_plan.html'>actualize_join_plan</a></code></p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='table_source.html'>table_source</a></span>(<span class='st'>'d'</span>,
-             <span class='kw'>columns</span> <span class='kw'>=</span> <span class='fu'>qc</span>(<span class='no'>AUC</span>, <span class='no'>R2</span>))
-<span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span>
-  <span class='fu'><a href='extend_nse.html'>extend_nse</a></span>(<span class='no'>.</span>, <span class='no'>v</span> <span class='kw'>:=</span> <span class='fu'>ifelse</span>(<span class='no'>AUC</span><span class='kw'>&gt;</span><span class='fl'>0.5</span>, <span class='no'>R2</span>, <span class='fl'>1.0</span>)) <span class='kw'>%.&gt;%</span>
-  <span class='fu'><a href='quantile_node.html'>quantile_node</a></span>(<span class='no'>.</span>) <span class='kw'>%.&gt;%</span>
-  <span class='fu'><a href='natural_join.html'>natural_join</a></span>(<span class='no'>.</span>, <span class='no'>d</span>, <span class='kw'>jointype</span> <span class='kw'>=</span> <span class='st'>"LEFT"</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='st'>"AUC"</span>) <span class='kw'>%.&gt;%</span>
-  <span class='fu'><a href='orderby.html'>orderby</a></span>(<span class='no'>.</span>, <span class='st'>"AUC"</span>)
-
-<span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>optree</span>))</div><div class='output co'>#&gt; table('d') %.&gt;%
-#&gt;  extend(.,
-#&gt;   v := ifelse(AUC &gt; 0.5, R2, 1)) %.&gt;%
-#&gt;  non_sql_node(., quantile_node(.)) %.&gt;%
-#&gt;  natural_join(.,
-#&gt;   table('d'),
-#&gt;   j= LEFT, by= AUC) %.&gt;%
-#&gt;  orderby(., AUC)</div><div class='input'>
-<span class='fu'>cat</span>(<span class='fu'>op_diagram</span>(<span class='no'>optree</span>))</div><div class='output co'>#&gt; 
-#&gt; digraph rquery_optree {
-#&gt;   graph [ layout = dot, rankdir = TB, overlap = prism, compound = true, nodesep = .5, ranksep = .25]
-#&gt;   edge [decorate = true, arrowhead = normal]
-#&gt;   node [style=filled, fillcolor=lightgrey]
-#&gt; 
-#&gt; table_d [ shape = 'folder' , label = 'table(d)\l']
-#&gt; 
-#&gt; node_2 [ shape = 'tab' , label = 'extend(.,\l  v := ifelse(AUC &gt; 0.5, R2, 1))\l']
-#&gt; 
-#&gt; node_3 [ shape = 'tab' , label = 'non_sql_node(., quantile_node(.))\l']
-#&gt; 
-#&gt; node_5 [ shape = 'tab' , label = 'natural_join(.1, .2,  j= LEFT, by= AUC)\l']
-#&gt; 
-#&gt; node_6 [ shape = 'tab' , label = 'orderby(., AUC)\l']
-#&gt; table_d -&gt; node_2 [ label = '.']
-#&gt; node_2 -&gt; node_3 [ label = '.']
-#&gt; node_3 -&gt; node_5 [ label = '.1']
-#&gt; table_d -&gt; node_5 [ label = '.2']
-#&gt; node_5 -&gt; node_6 [ label = '.']
-#&gt; }</div><div class='input'>
-# optree %.>%
-#   op_diagram(., merge_tables = TRUE) %.>%
-#   DiagrammeR::grViz(.)
+<span class='kw'>if</span> (<span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
+  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
+  <span class='no'>ex</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>rquery</span><span class='kw ns'>:::</span><span class='fu'>example_employee_date</span>(<span class='no'>my_db</span>)
+  <span class='fu'>print</span>(<span class='fu'>describe_tables</span>(<span class='no'>my_db</span>, <span class='no'>ex</span>$<span class='no'>tableName</span>,
+                         <span class='kw'>keyInspector</span> <span class='kw'>=</span> <span class='no'>key_inspector_sqlite</span>))
+  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
+}</div><div class='output co'>#&gt;         tableName isEmpty               indicatorColumn
+#&gt; 1 employeeanddate   FALSE table_employeeanddate_present
+#&gt; 2         revenue   FALSE         table_revenue_present
+#&gt; 3        activity   FALSE        table_activity_present
+#&gt; 4        orgtable   FALSE        table_orgtable_present
+#&gt;                      columns       keys
+#&gt; 1                   id, date           
+#&gt; 2            date, dept, rev date, dept
+#&gt; 3 eid, date, hours, location  eid, date
+#&gt; 4  eid, date, dept, location  eid, date
+#&gt;                                   colClass
+#&gt; 1                       character, integer
+#&gt; 2              integer, character, integer
+#&gt; 3   character, integer, integer, character
+#&gt; 4 character, integer, character, character</div><div class='input'>
 
 </div></pre>
   </div>
@@ -195,6 +190,10 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
+
+      <li><a href="#details">Details</a></li>
+
+      <li><a href="#see-also">See also</a></li>
       
       <li><a href="#examples">Examples</a></li>
     </ul>

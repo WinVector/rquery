@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Make a rename columns node (copies columns not renamed). — rename_columns • rquery</title>
+<title>Build a drawable specification of the join diagram — graph_join_plan • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -25,9 +25,9 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-<meta property="og:title" content="Make a rename columns node (copies columns not renamed). — rename_columns" />
+<meta property="og:title" content="Build a drawable specification of the join diagram — graph_join_plan" />
 
-<meta property="og:description" content="Make a rename columns node (copies columns not renamed)." />
+<meta property="og:description" content="Please see vignette('DependencySorting', package = 'rquery') and vignette('joinController', package= 'rquery') for more details." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -111,65 +111,78 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Make a rename columns node (copies columns not renamed).</h1>
-    <small>Source: <a href='https://github.com/WinVector/rquery//blob/master/R/rename.R'><code>R/rename.R</code></a></small>
-    <div class="hidden name"><code>rename_columns.Rd</code></div>
+    <h1>Build a drawable specification of the join diagram</h1>
+    <small>Source: <a href='https://github.com/WinVector/rquery//blob/master/R/join_controller.R'><code>R/join_controller.R</code></a></small>
+    <div class="hidden name"><code>graph_join_plan.Rd</code></div>
     </div>
 
     
-    <p>Make a rename columns node (copies columns not renamed).</p>
+    <p>Please see <code>vignette('DependencySorting', package = 'rquery')</code> and <code>vignette('joinController', package= 'rquery')</code> for more details.</p>
     
 
-    <pre class="usage"><span class='fu'>rename_columns</span>(<span class='no'>source</span>, <span class='no'>cmap</span>)</pre>
+    <pre class="usage"><span class='fu'>graph_join_plan</span>(<span class='no'>columnJoinPlan</span>, <span class='no'>...</span>, <span class='kw'>groupByKeys</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>graphOpts</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>source</th>
-      <td><p>source to rename from.</p></td>
+      <th>columnJoinPlan</th>
+      <td><p>join plan</p></td>
     </tr>
     <tr>
-      <th>cmap</th>
-      <td><p>map written as new column names as keys and old column names as values.</p></td>
+      <th>...</th>
+      <td><p>force later arguments to bind by name</p></td>
+    </tr>
+    <tr>
+      <th>groupByKeys</th>
+      <td><p>logical if true build key-equivalent sub-graphs</p></td>
+    </tr>
+    <tr>
+      <th>graphOpts</th>
+      <td><p>options for graphViz</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>rename columns node.</p>
+    <p>grViz diagram spec</p>
+    
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><code><a href='describe_tables.html'>describe_tables</a></code>, <code><a href='build_join_plan.html'>build_join_plan</a></code>, <code>renderJoinDiagram</code>, <code><a href='actualize_join_plan.html'>actualize_join_plan</a></code></p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
+
 <span class='kw'>if</span> (<span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
+  <span class='co'># note: employeeanddate is likely built as a cross-product</span>
+  <span class='co'>#       join of an employee table and set of dates of interest</span>
+  <span class='co'>#       before getting to the join controller step.  We call</span>
+  <span class='co'>#       such a table "row control" or "experimental design."</span>
   <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
-  <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dbi_copy_to.html'>dbi_copy_to</a></span>(<span class='no'>my_db</span>, <span class='st'>'d'</span>,
-                   <span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>0.6</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>0.2</span>, <span class='kw'>z</span> <span class='kw'>=</span> <span class='fl'>3</span>))
-  <span class='no'>op_tree</span> <span class='kw'>&lt;-</span> <span class='fu'>rename_columns</span>(<span class='no'>d</span>, <span class='fu'>c</span>(<span class='st'>'R2'</span> <span class='kw'>:=</span> <span class='st'>'AUC'</span>, <span class='st'>'AUC'</span> <span class='kw'>:=</span> <span class='st'>'R2'</span>))
-  <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>op_tree</span>))
-  <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>op_tree</span>, <span class='no'>my_db</span>)
-  <span class='fu'>cat</span>(<span class='no'>sql</span>)
-  <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
+  <span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/initExtension'>initExtension</a></span>(<span class='no'>my_db</span>)
+  <span class='no'>tDesc</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>rquery</span><span class='kw ns'>:::</span><span class='fu'>example_employee_date</span>(<span class='no'>my_db</span>)
+  <span class='co'># fix order by hand, please see rquery::topo_sort_tables for</span>
+  <span class='co'># how to automate this.</span>
+  <span class='no'>ord</span> <span class='kw'>&lt;-</span> <span class='fu'>match</span>(<span class='fu'>c</span>(<span class='st'>'employeeanddate'</span>, <span class='st'>'orgtable'</span>, <span class='st'>'activity'</span>, <span class='st'>'revenue'</span>),
+               <span class='no'>tDesc</span>$<span class='no'>tableName</span>)
+  <span class='no'>tDesc</span> <span class='kw'>&lt;-</span> <span class='no'>tDesc</span>[<span class='no'>ord</span>, , <span class='kw'>drop</span><span class='kw'>=</span><span class='fl'>FALSE</span>]
+  <span class='no'>columnJoinPlan</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='build_join_plan.html'>build_join_plan</a></span>(<span class='no'>tDesc</span>, <span class='kw'>check</span><span class='kw'>=</span> <span class='fl'>FALSE</span>)
+  <span class='co'># unify keys</span>
+  <span class='no'>columnJoinPlan</span>$<span class='no'>resultColumn</span>[<span class='no'>columnJoinPlan</span>$<span class='no'>resultColumn</span><span class='kw'>==</span><span class='st'>'id'</span>] <span class='kw'>&lt;-</span> <span class='st'>'eid'</span>
+  <span class='co'># look at plan defects</span>
+  <span class='fu'>print</span>(<span class='fu'>paste</span>(<span class='st'>'problems:'</span>,
+              <span class='fu'><a href='inspect_join_plan.html'>inspect_join_plan</a></span>(<span class='no'>tDesc</span>, <span class='no'>columnJoinPlan</span>)))
+  <span class='no'>diagramSpec</span> <span class='kw'>&lt;-</span> <span class='fu'>graph_join_plan</span>(<span class='no'>columnJoinPlan</span>)
+  <span class='co'># to render as JavaScript:</span>
+  <span class='co'>#   DiagrammeR::grViz(diagramSpec)</span>
+  <span class='co'># or as a PNG:</span>
+  <span class='co'>#   renderJoinDiagram(diagramSpec)</span>
+  <span class='co'>#</span>
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; table('d') %.&gt;%
-#&gt;  rename(.,
-#&gt;   c('R2' = 'AUC',
-#&gt;     'AUC' = 'R2'))
-#&gt; SELECT
-#&gt;  `AUC` AS `R2`,
-#&gt;  `R2` AS `AUC`,
-#&gt;  `z` AS `z`
-#&gt; FROM (
-#&gt;  SELECT
-#&gt;   `d`.`AUC`,
-#&gt;   `d`.`R2`,
-#&gt;   `d`.`z`
-#&gt;  FROM
-#&gt;   `d`
-#&gt; ) tsql_45934203179645364871_0000000000
-#&gt;    R2 AUC z
-#&gt; 1 0.6 0.2 3</div><div class='input'>
+  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw'>NULL</span>
+}</div><div class='output co'>#&gt; [1] "problems: "</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -178,6 +191,8 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
+
+      <li><a href="#see-also">See also</a></li>
       
       <li><a href="#examples">Examples</a></li>
     </ul>

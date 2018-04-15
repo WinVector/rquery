@@ -477,7 +477,7 @@ topo_sort_tables <- function(columnJoinPlan, leftTableName,
 #'
 #' Please see \code{vignette('DependencySorting', package = 'rquery')} and \code{vignette('joinController', package= 'rquery')} for more details.
 #'
-#' @seealso \code{\link{describe_tables}}, \code{\link{build_join_plan}}, \code{\link{renderJoinDiagram}}, \code{\link{actualize_join_plan}}
+#' @seealso \code{\link{describe_tables}}, \code{\link{build_join_plan}}, \code{\link{actualize_join_plan}}
 #'
 #' @param columnJoinPlan join plan
 #' @param ... force later arguments to bind by name
@@ -510,9 +510,6 @@ topo_sort_tables <- function(columnJoinPlan, leftTableName,
 #'   diagramSpec <- graph_join_plan(columnJoinPlan)
 #'   # to render as JavaScript:
 #'   #   DiagrammeR::grViz(diagramSpec)
-#'   # or as a PNG:
-#'   #   renderJoinDiagram(diagramSpec)
-#'   #
 #'   DBI::dbDisconnect(my_db)
 #'   my_db <- NULL
 #' }
@@ -630,29 +627,36 @@ graph_join_plan <- function(columnJoinPlan, ...,
 #'
 #' @examples
 #'
-#' # example data
-#' d1 <- data.frame(id= 1:3,
-#'                  weight= c(200, 140, 98),
-#'                  height= c(60, 24, 12))
-#' d2 <- data.frame(pid= 2:3,
-#'                  weight= c(130, 110),
-#'                  width= 1)
-#' # get the initial description of table defs
-#' tDesc <- rbind(describe_tables('d1', d1),
-#'                describe_tables('d2', d2))
-#' # declare keys (and give them consistent names)
-#' tDesc$keys[[1]] <- list(PrimaryKey= 'id')
-#' tDesc$keys[[2]] <- list(PrimaryKey= 'pid')
-#' # build the join plan
-#' columnJoinPlan <- build_join_plan(tDesc)
-#' # confirm the plan
-#' inspect_join_plan(tDesc, columnJoinPlan,
-#'                         checkColClasses= TRUE)
-#' # damage the plan
-#' columnJoinPlan$sourceColumn[columnJoinPlan$sourceColumn=='width'] <- 'wd'
-#' # find a problem
-#' inspect_join_plan(tDesc, columnJoinPlan,
-#'                         checkColClasses= TRUE)
+#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#'   # example data
+#'   DBI::dbWriteTable(my_db,
+#'                     "d1",
+#'                     data.frame(id= 1:3,
+#'                                weight= c(200, 140, 98),
+#'                                height= c(60, 24, 12)))
+#'   DBI::dbWriteTable(my_db,
+#'                     "d2",
+#'                     data.frame(pid= 2:3,
+#'                                weight= c(130, 110),
+#'                                width= 1))
+#'   # get the initial description of table defs
+#'   tDesc <- describe_tables(my_db, qc(d1, d2))
+#'   # declare keys (and give them consistent names)
+#'   tDesc$keys[[1]] <- list(PrimaryKey= 'id')
+#'   tDesc$keys[[2]] <- list(PrimaryKey= 'pid')
+#'   # build the join plan
+#'   columnJoinPlan <- build_join_plan(tDesc)
+#'   # confirm the plan
+#'   print(inspect_join_plan(tDesc, columnJoinPlan,
+#'                           checkColClasses= TRUE))
+#'   # damage the plan
+#'   columnJoinPlan$sourceColumn[columnJoinPlan$sourceColumn=='width'] <- 'wd'
+#'   # find a problem
+#'   print(inspect_join_plan(tDesc, columnJoinPlan,
+#'                           checkColClasses= TRUE))
+#'   DBI::dbDisconnect(my_db)
+#' }
 #'
 #' @export
 #'
@@ -844,94 +848,64 @@ strMapToString <- function(m) {
 #'
 #' TODO: parameterize the implementation provider (right now hard-coded for \code{dplr}, but at least also direct \code{SQL} is a good extension).
 #'
-#' @param tDesc description of tables, either a \code{data.frame} from \code{\link{describe_tables}}, or a list mapping from names to handles/frames.  Only used to map table names to data.
 #' @param columnJoinPlan columns to join, from \code{\link{build_join_plan}} (and likely altered by user).  Note: no column names must intersect with names of the form \code{table_CLEANEDTABNAME_present}.
 #' @param ... force later arguments to bind by name.
-#' @param checkColumns logical if TRUE confirm column names before starting joins.
-#' @param computeFn function to call to try and materialize intermediate results.
-#' @param eagerCompute logical if TRUE materialize intermediate results with computeFn.
+#' @param jointype character, type of join to perform ("LEFT", "INNER", "RIGHT", ...).
 #' @param checkColClasses logical if true check for exact class name matches
-#' @param verbose logical if TRUE print more.
-#' @param dryRun logical if TRUE do not perform joins, only print steps.
-#' @param tempNameGenerator temp name generator produced by wrapr::mk_tmp_name_source, used to record dplyr::compute() effects.
-#' @return joined table
+#' @return left join optree
 #'
 #' @examples
 #'
-#'
-#' # example data
-#' meas1 <- data.frame(id= c(1,2),
-#'                     weight= c(200, 120),
-#'                     height= c(60, 14))
-#' meas2 <- data.frame(pid= c(2,3),
-#'                     weight= c(105, 110),
-#'                     width= 1)
-#' # get the initial description of table defs
-#' tDesc <- rbind(describe_tables('meas1', meas1),
-#'                describe_tables('meas2', meas2))
-#' # declare keys (and give them consitent names)
-#' tDesc$keys[[1]] <- list(PatientID= 'id')
-#' tDesc$keys[[2]] <- list(PatientID= 'pid')
-#' # build the column join plan
-#' columnJoinPlan <- build_join_plan(tDesc)
-#' # decide we don't want the width column
-#' columnJoinPlan$want[columnJoinPlan$resultColumn=='width'] <- FALSE
-#' # double check our plan
-#' if(!is.null(inspect_join_plan(tDesc, columnJoinPlan,
-#'             checkColClasses= TRUE))) {
-#'   stop("bad join plan")
+#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#'   # example data
+#'   DBI::dbWriteTable(my_db,
+#'                     "meas1",
+#'                     data.frame(id= c(1,2),
+#'                                weight= c(200, 120),
+#'                                height= c(60, 14)))
+#'   DBI::dbWriteTable(my_db,
+#'                     "meas2",
+#'                     data.frame(pid= c(2,3),
+#'                                weight= c(105, 110),
+#'                                width= 1))
+#'   # get the initial description of table defs
+#'   tDesc <- describe_tables(my_db, qc(meas1, meas2))
+#'   # declare keys (and give them consitent names)
+#'   tDesc$keys[[1]] <- list(PatientID= 'id')
+#'   tDesc$keys[[2]] <- list(PatientID= 'pid')
+#'   # build the column join plan
+#'   columnJoinPlan <- build_join_plan(tDesc)
+#'   # decide we don't want the width column
+#'   columnJoinPlan$want[columnJoinPlan$resultColumn=='width'] <- FALSE
+#'   # double check our plan
+#'   if(!is.null(inspect_join_plan(tDesc, columnJoinPlan,
+#'                                 checkColClasses= TRUE))) {
+#'     stop("bad join plan")
+#'   }
+#'   # actualize as left join op_tree
+#'   optree <- actualize_join_plan(columnJoinPlan,
+#'                                 checkColClasses= TRUE)
+#'   cat(format(optree))
+#'   print(execute(my_db, optree))
+#'   # DiagrammeR::grViz(op_diagram(optree))
+#'   DBI::dbDisconnect(my_db)
 #' }
-#' # execute the left joins
-#' actualize_join_plan(tDesc, columnJoinPlan,
-#'                     checkColClasses= TRUE,
-#'                     verbose= TRUE)
-#' # also good
-#' actualize_join_plan(list('meas1'=meas1, 'meas2'=meas2),
-#'                     columnJoinPlan,
-#'                     checkColClasses= TRUE,
-#'                     verbose= TRUE)
 #'
 #' @export
 #'
 #'
-actualize_join_plan <- function(tDesc, columnJoinPlan,
+actualize_join_plan <- function(columnJoinPlan,
                                 ...,
-                                checkColumns= FALSE,
-                                computeFn= function(x, name) {
-                                  dplyr::compute(x, name=name)
-                                },
-                                eagerCompute= TRUE,
-                                checkColClasses= FALSE,
-                                verbose= FALSE,
-                                dryRun= FALSE,
-                                tempNameGenerator= mk_tmp_name_source("actualize_join_plan")) {
+                                jointype = "LEFT",
+                                checkColClasses= FALSE) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::actualize_join_plan")
   # sanity check (if there is an obvious config problem fail before doing potentially expensive work)
   columnJoinPlan <- inspect_and_limit_join_plan(columnJoinPlan,
-                                            checkColClasses=checkColClasses)
+                                                checkColClasses=checkColClasses)
   if(is.character(columnJoinPlan)) {
     stop(paste("rquery::actualize_join_plan", columnJoinPlan))
-  }
-  if(dryRun) {
-    verbose = TRUE
-  }
-  tMap <- NULL
-  if('data.frame' %in% class(tDesc)) {
-    if(length(unique(tDesc$tableName))!=length(tDesc$tableName)) {
-      stop("rquery::actualize_join_plan duplicate table names in tDesc")
-    }
-    tMap <- tDesc$handle
-    names(tMap) <- tDesc$tableName
-  } else {
-    # named list
-    tMap <- tDesc
-    if(length(unique(names(tMap)))!=length(names(tMap))) {
-      stop("rquery::actualize_join_plan duplicate table names in tDesc")
-    }
-  }
-  if(!all(columnJoinPlan$tableName %in% names(tMap))) {
-    stop("rquery::actualize_join_plan some needed columnJoinPlan table(s) not in tDesc")
   }
   # get the names of tables in columnJoinPlan order
   tableNameSeq <- uniqueInOrder(columnJoinPlan$tableName)
@@ -940,118 +914,22 @@ actualize_join_plan <- function(tDesc, columnJoinPlan,
                       c(columnJoinPlan$resultColumn, columnJoinPlan$sourceColumn)))>0) {
     stop("actualize_join_plan: column mappings intersect intended table label columns")
   }
-  if(checkColumns && (!dryRun)) {
-    for(tabnam in tableNameSeq) {
-      handlei <- tMap[[tabnam]]
-      newdesc <- describe_tables(tabnam, handlei)
-      if(newdesc$isEmpty[[1]]) {
-        warning(paste("rquery::actualize_join_plan table is empty:",
-                      tabnam))
-      }
-      tabcols <- newdesc$columns[[1]]
-      tableIndCol <- tableIndColNames[[tabnam]]
-      if(tableIndCol %in% tabcols) {
-        stop(paste("rquery::actualize_join_plan column",
-                   tableIndCol, "already in table",
-                   tabnam))
-      }
-      keyRows <- which((columnJoinPlan$tableName==tabnam) &
-                         (columnJoinPlan$isKey))
-      valRows <- which((columnJoinPlan$tableName==tabnam) &
-                         (!columnJoinPlan$isKey) &
-                         (columnJoinPlan$want))
-      needs <- c(columnJoinPlan$sourceColumn[keyRows],
-                 columnJoinPlan$sourceColumn[valRows])
-      missing <- setdiff(needs, tabcols)
-      if(length(missing)>0) {
-        stop(paste("rquery::actualize_join_plan table",
-                   tabnam, "missing needed columns",
-                   paste(missing, collapse = ', ')))
-      }
-    }
-  }
-  # start joining
-  dataSource <- NULL
+  # build pipeline
   res <- NULL
-  first <- TRUE
   for(tabnam in tableNameSeq) {
-    if(verbose) {
-      print(paste('start',tabnam, base::date()))
+    rows <- columnJoinPlan[columnJoinPlan$tableName==tabnam, , drop= FALSE]
+    si <- table_source(tabnam, rows$sourceColumn)
+    if(!isTRUE(all.equal(rows$sourceColumn, rows$resultColumn))) {
+      si <- rename_columns(si,  rows$resultColumn := rows$sourceColumn)
     }
-    handlei <- NULL
-    if(!dryRun) {
-      handlei <- tMap[[tabnam]]
-      if(is.null(dataSource)) {
-        dataSource <- replyr_get_src(handlei)
-      }
-    }
-    keyRows <- which((columnJoinPlan$tableName==tabnam) &
-                       (columnJoinPlan$isKey))
-    valRows <- which((columnJoinPlan$tableName==tabnam) &
-                       (columnJoinPlan$want) &
-                       (!columnJoinPlan$isKey))
-    tableIndCol <- tableIndColNames[[tabnam]]
-    if(first) {
-      nmap <- c(columnJoinPlan$sourceColumn[keyRows],
-                columnJoinPlan$sourceColumn[valRows])
-      names(nmap) <- c(columnJoinPlan$resultColumn[keyRows],
-                       columnJoinPlan$resultColumn[valRows])
+    if(is.null(res)) {
+      res <- si
     } else {
-      nmap <- c(tableIndCol,
-                columnJoinPlan$sourceColumn[keyRows],
-                columnJoinPlan$sourceColumn[valRows])
-      names(nmap) <- c(tableIndCol,
-                       columnJoinPlan$resultColumn[keyRows],
-                       columnJoinPlan$resultColumn[valRows])
+      joinby = rows$resultColumn[rows$isKey]
+      res <- natural_join(res, si,
+                          jointype = jointype,
+                          by = joinby)
     }
-    # adding an indicator column lets us handle cases where we are taking
-    # no values.
-    if(verbose) {
-      print(paste(" rename/restrict", tabnam))
-      #print(paste(" ",strMapToString(nmap)))
-      for(ni in names(nmap)) {
-        print(paste0("   '",ni,"' = '",nmap[[ni]],"'"))
-      }
-    }
-    ti <- NULL
-    if(!is.null(handlei)) {
-      ti <- handlei %.>%
-        addConstantColumn(., tableIndCol, 1) %.>%
-        replyr_mapRestrictCols(., nmap, restrict=TRUE)
-      if(eagerCompute) {
-        ti <- computeFn(ti, name=tempNameGenerator())
-      }
-    }
-    if(first) {
-      res <- ti
-      if(verbose) {
-        print(paste0(" res <- ", tabnam))
-      }
-    } else {
-      rightKeys <- columnJoinPlan$resultColumn[keyRows]
-      if(verbose) {
-        print(paste0(" res <- left_join(res, ", tabnam, ","))
-        print(paste0("                  by = ",
-                     charArrayToString(rightKeys),
-                     ")"))
-      }
-      if(!dryRun) {
-        res <- dplyr::left_join(res, ti, by= rightKeys)
-        REPLYR_TABLE_PRESENT_COL <- NULL # signal not an unbound variable
-        wrapr::let(
-          c(REPLYR_TABLE_PRESENT_COL= tableIndCol),
-          res <- dplyr::mutate(res, REPLYR_TABLE_PRESENT_COL =
-                                 ifelse(is.na(REPLYR_TABLE_PRESENT_COL), 0, 1))
-        )
-        if(eagerCompute) {
-          res <- computeFn(res, name=tempNameGenerator())
-        }
-      }
-    }
-    if(verbose) {
-      print(paste('done',tabnam, base::date()))
-    }
-    first <- FALSE
   }
   res
 }
