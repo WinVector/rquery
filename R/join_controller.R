@@ -79,8 +79,8 @@ example_employeeAndDate <- function(con) {
              tableDescription(con,
                               ni,
                               keyInspector = key_inspector_by_name)
-           }) %.>%
-    dplyr::bind_rows(.)
+           })
+  tDesc <- do.call(rbind, tDesc)
   tDesc
 }
 
@@ -139,7 +139,7 @@ key_inspector_all_cols <- function(db, tablename) {
 key_inspector_sqlite <- function(db, tablename) {
   tabInfo <- DBI::dbGetQuery(db,
                              paste0("pragma table_info(",
-                                    tablename,
+                                    DBI::dbQuoteIdentifier(db,tablename),
                                     ")"))
   keys <- NULL
   if((!is.null(tabInfo))&&(nrow(tabInfo)>0)) {
@@ -169,7 +169,7 @@ key_inspector_postgresql <- function(db, tablename) {
     FROM   pg_index i
     JOIN   pg_attribute a ON a.attrelid = i.indrelid
     AND a.attnum = ANY(i.indkey)
-    WHERE  i.indrelid = '", tablename, "'::regclass
+    WHERE  i.indrelid = ", DBI::dbQuoteIdentifier(db,tablename), "::regclass
     AND    i.indisprimary;
     "
   )
@@ -232,7 +232,6 @@ tableDescription <- function(db,
   }
   res <-
     data.frame(tableName= tablename,
-               sourceClass= paste(class(source), collapse = " "),
                isEmpty= nrow(sample)<=0,
                indicatorColumn= tableIndColNames[[1]],
                stringsAsFactors = FALSE)
@@ -432,7 +431,8 @@ topoSortTables <- function(columnJoinPlan, leftTableName,
   tableOrder <- vnams[as.numeric(igraph::topo_sort(g))]
   tabs <- split(columnJoinPlan, columnJoinPlan$tableName)
   tabs <- tabs[tableOrder]
-  list(columnJoinPlan= dplyr::bind_rows(tabs),
+  tabs <- do.call(rbind, tabs)
+  list(columnJoinPlan= tabs,
        dependencyGraph= g,
        tableOrder= tableOrder)
 }
@@ -708,14 +708,14 @@ inspectDescrAndJoinPlan <- function(tDesc, columnJoinPlan,
     return("tDesc does not have all the needed tables to join")
   }
   tDesc <- tDesc[tDesc$tableName %in% tabsC, , drop=FALSE]
-  if( replyr_nrow(tDesc)<=0) {
+  if(nrow(tDesc)<=0) {
     return("no tables selected")
   }
   tabsD <- unique(tDesc$tableName)
   columnJoinPlan <- columnJoinPlan[columnJoinPlan$tableName %in% tabsD, ,
                                    drop=FALSE]
   # check a few desired invariants of the plan
-  for(i in seq_len(replyr_nrow(tDesc))) {
+  for(i in seq_len(nrow(tDesc))) {
     tnam <- tDesc$tableName[[i]]
     ci <- columnJoinPlan[columnJoinPlan$tableName==tnam, , drop=FALSE]
     # don't check tDesc$keys here, as it isn't used after join plan is constructed.
@@ -759,7 +759,7 @@ buildJoinPlan <- function(tDesc,
                           "rquery::buildJoinPlan")
   n <- dplyr::n # declare not an unbound ref
   count <- NULL # declare not an unbound ref
-  ntab <- replyr_nrow(tDesc)
+  ntab <- nrow(tDesc)
   if(length(unique(tDesc$tableName))!=ntab) {
     stop("rquery::buildJoinPlan must have unique table name(s)")
   }
@@ -821,7 +821,7 @@ buildJoinPlan <- function(tDesc,
     dplyr::group_by(., resultColumn) %.>%
     dplyr::summarize(., count=n()) %.>%
     dplyr::filter(., count>1)
-  if(replyr_nrow(dups)>0) {
+  if(nrow(dups)>0) {
     for(ci in dups$resultColumn) {
       indices <- which(plans$resultColumn==ci)
       for(i in indices) {
