@@ -167,11 +167,11 @@ Please see <code>vignette('DependencySorting', package = 'rquery')</code> and <c
   <span class='no'>sorted</span> <span class='kw'>&lt;-</span> <span class='fu'>topo_sort_tables</span>(<span class='no'>columnJoinPlan</span>, <span class='st'>'employeeanddate'</span>)
   <span class='fu'>print</span>(<span class='fu'>paste</span>(<span class='st'>'problems:'</span>,
               <span class='fu'><a href='inspect_join_plan.html'>inspect_join_plan</a></span>(<span class='no'>tDesc</span>, <span class='no'>sorted</span>$<span class='no'>columnJoinPlan</span>)))
-  <span class='co'># plot(sorted$dependencyGraph)</span>
+  <span class='fu'>print</span>(<span class='fu'>plot</span>(<span class='no'>sorted</span>$<span class='no'>dependencyGraph</span>))
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
   <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw'>NULL</span>
 }</div><div class='output co'>#&gt; [1] "problems: key col(s) ( dept ) not contained in result cols of previous table(s) for table: revenue"
-#&gt; [1] "problems: "</div><div class='input'>
+#&gt; [1] "problems: "</div><div class='img'><img src='topo_sort_tables-1.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; NULL</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

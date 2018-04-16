@@ -183,11 +183,12 @@
 #&gt; table_d -&gt; node_5 [ label = '.2']
 #&gt; node_5 -&gt; node_6 [ label = '.']
 #&gt; }</div><div class='input'>
-# optree %.>%
-#   op_diagram(., merge_tables = TRUE) %.>%
-#   DiagrammeR::grViz(.)
-
-</div></pre>
+<span class='kw'>if</span>(<span class='fu'>requireNamespace</span>(<span class='st'>"DiagrammeR"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
+  <span class='no'>optree</span> <span class='kw'>%.&gt;%</span>
+    <span class='fu'>op_diagram</span>(<span class='no'>.</span>, <span class='kw'>merge_tables</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>%.&gt;%</span>
+    <span class='kw pkg'>DiagrammeR</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DiagrammeR/topics/grViz'>grViz</a></span>(<span class='no'>.</span>) <span class='kw'>%.&gt;%</span>
+    <span class='fu'>print</span>(<span class='no'>.</span>)
+}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

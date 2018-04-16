@@ -166,7 +166,8 @@
   <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
 }</div><div class='output co'>#&gt; table('d1') %.&gt;%
-#&gt;  null_replace(.; A, B : 0;  alterations)
+#&gt;  null_replace(.; A,
+#&gt;   B: 0;  alterations)
 #&gt; SELECT
 #&gt;  CASE WHEN `tsql_35405456128562337002_0000000000`.`A` IS NULL THEN 0 ELSE `tsql_35405456128562337002_0000000000`.`A` END AS `A`,
 #&gt;  CASE WHEN `tsql_35405456128562337002_0000000000`.`B` IS NULL THEN 0 ELSE `tsql_35405456128562337002_0000000000`.`B` END AS `B`,

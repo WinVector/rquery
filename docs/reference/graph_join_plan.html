@@ -176,7 +176,9 @@
               <span class='fu'><a href='inspect_join_plan.html'>inspect_join_plan</a></span>(<span class='no'>tDesc</span>, <span class='no'>columnJoinPlan</span>)))
   <span class='no'>diagramSpec</span> <span class='kw'>&lt;-</span> <span class='fu'>graph_join_plan</span>(<span class='no'>columnJoinPlan</span>)
   <span class='co'># to render as JavaScript:</span>
-  <span class='co'>#   DiagrammeR::grViz(diagramSpec)</span>
+  <span class='kw'>if</span>(<span class='fu'>requireNamespace</span>(<span class='st'>"DiagrammeR"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
+    <span class='fu'>print</span>(<span class='kw pkg'>DiagrammeR</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DiagrammeR/topics/grViz'>grViz</a></span>(<span class='no'>diagramSpec</span>))
+  }
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
   <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw'>NULL</span>
 }</div><div class='output co'>#&gt; [1] "problems: "</div><div class='input'>

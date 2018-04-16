@@ -71,9 +71,12 @@ r_optree_diagram <- function(optree, nextid, use_table_names) {
 #'
 #' cat(op_diagram(optree))
 #'
-#' # optree %.>%
-#' #   op_diagram(., merge_tables = TRUE) %.>%
-#' #   DiagrammeR::grViz(.)
+#' if(requireNamespace("DiagrammeR", quietly = TRUE)) {
+#'   optree %.>%
+#'     op_diagram(., merge_tables = TRUE) %.>%
+#'     DiagrammeR::grViz(.) %.>%
+#'     print(.)
+#' }
 #'
 #' @export
 #'
