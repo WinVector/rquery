@@ -1,7 +1,7 @@
 Join Controller
 ================
 John Mount
-2018-04-15
+2018-04-16
 
 #### [`rquery`](https://github.com/WinVector/rquery) Join Controller
 
@@ -239,10 +239,9 @@ cat(format(optree))
     ##    extend(.,
     ##     names_facts_present := 1),
     ##   j= LEFT, by= PatientID) %.>%
-    ##  extend(.,
-    ##   ifebtest_1 := is.na(names_facts_present)) %.>%
-    ##  extend(.,
-    ##   names_facts_present := ifelse(ifebtest_1, 0, names_facts_present)) %.>%
+    ##  sql_node(.,
+    ##           names_facts_present := CASE WHEN ( names_facts_present IS NULL ) THEN 0.0 ELSE 1.0 END,
+    ##              *=TRUE) %.>%
     ##  natural_join(.,
     ##   table('meas2_train') %.>%
     ##    rename(.,
@@ -252,11 +251,9 @@ cat(format(optree))
     ##    extend(.,
     ##     meas2_train_present := 1),
     ##   j= LEFT, by= PatientID, MeasurementDate) %.>%
-    ##  extend(.,
-    ##   ifebtest_1 := is.na(meas2_train_present)) %.>%
-    ##  extend(.,
-    ##   meas2_train_present := ifelse(ifebtest_1, 0, meas2_train_present)) %.>%
-    ##  select_columns(., height, meas1_train_present, meas1_train_weight, meas2_train_present, meas2_train_weight, MeasurementDate, name, names_facts_present, PatientID)
+    ##  sql_node(.,
+    ##           meas2_train_present := CASE WHEN ( meas2_train_present IS NULL ) THEN 0.0 ELSE 1.0 END,
+    ##              *=TRUE)
 
 ``` r
 optree %.>%
@@ -275,12 +272,12 @@ str(res)
     ##  $ height             : num  60 54 12 14
     ##  $ meas1_train_present: int  1 1 1 1
     ##  $ meas1_train_weight : num  200 180 98 120
-    ##  $ meas2_train_present: int  0 0 0 1
     ##  $ meas2_train_weight : num  NA NA NA 105
     ##  $ MeasurementDate    : num  1 2 1 2
     ##  $ name               : chr  "a" "a" "b" "b"
-    ##  $ names_facts_present: int  1 1 1 1
+    ##  $ names_facts_present: num  1 1 1 1
     ##  $ PatientID          : num  1 1 2 2
+    ##  $ meas2_train_present: num  0 0 0 1
 
 A good workflow is:
 

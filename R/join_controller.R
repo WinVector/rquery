@@ -935,17 +935,12 @@ actualize_join_plan <- function(columnJoinPlan,
                           jointype = jointype,
                           by = joinby)
       if(add_ind_cols) {
-        steps <- assign_slice(
-          testexpr = paste0("is.na(", indcol, ")"),
-          columns = indcol,
-          value = 0)
-        res <- extend_se(res, steps)
+        res <- sql_node(res,
+                        indcol := list(list("CASE WHEN (",
+                                       as.name(indcol),
+                                       "IS NULL ) THEN 0.0 ELSE 1.0 END")))
       }
     }
-  }
-  if("ifebtest_1" %in% column_names(res)) {
-    res <- select_columns(res, setdiff(column_names(res),
-                                       "ifebtest_1"))
   }
   res
 }

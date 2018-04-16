@@ -123,7 +123,8 @@ column_names.relop_sql <- function (x, ...) {
   wrapr::stop_if_dot_args(substitute(list(...)), "column_names.relop_sql")
   nms <- names(x$exprs)
   if(x$orig_columns) {
-    nms <- c(nms, column_names(x$source[[1]]))
+    nms <- c(nms,
+             setdiff(column_names(x$source[[1]]), nms))
   }
   nms
 }
@@ -211,7 +212,16 @@ to_sql.relop_sql <- function (x,
                      }, character(1))
   cols <- paste(sqlexprs, "AS", colsA)
   if(x$orig_columns) {
-    cols <- c("*", cols)
+    extras <- setdiff(column_names(x$source[[1]]),
+                      names(x$exprs))
+    if(length(extras)>0) {
+      qcols <- vapply(extras,
+                      function(ci) {
+                        quote_identifier(db, ci)
+                      }, character(1))
+      qcols <- paste(qcols, "AS", qcols)
+      cols <- c(qcols, cols)
+    }
   }
   qlimit = limit
   if(!getDBOption(db, "use_pass_limit", TRUE)) {
