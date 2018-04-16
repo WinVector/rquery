@@ -97,8 +97,8 @@ format_node.relop_null_replace <- function(node) {
                          "",
                          paste("; ", node$note_col))
   paste0("null_replace(.; ",
-         paste(node$cols, collapse = ", "),
-         " : ",
+         paste(node$cols, collapse = ",\n  "),
+         ": ",
          node$value,
          cstr,
          ")",

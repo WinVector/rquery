@@ -248,7 +248,9 @@ cat(format(optree))
     ##    extend(.,
     ##     meas2_train_present := 1),
     ##   j= LEFT, by= PatientID, MeasurementDate) %.>%
-    ##  null_replace(.; meas1_train_present, names_facts_present, meas2_train_present : 0)
+    ##  null_replace(.; meas1_train_present,
+    ##   names_facts_present,
+    ##   meas2_train_present: 0)
 
 ``` r
 optree %.>%
