@@ -90,6 +90,9 @@ sql_node.relop <- function(source, exprs,
     stop(paste("rquery::sql_node.relop undefined columns:",
                paste(undef, collapse = ", ")))
   }
+  if(length(unique(names(exprs)))!=length(exprs)) {
+    stop("rquery::sql_node bad assignment name")
+  }
   r <- list(source = list(source),
             table_name = NULL,
             parsed = NULL,
