@@ -7,7 +7,7 @@
 #' @param expr character or list of character and names, expression to apply to columns "." stands for column value to use.
 #' @return rel_op node or data.frame (depending on input).
 #'
-#' @seealso \code{\link{count_null_cols}}, \code{\link{mark_null_cols}}
+#' @seealso \code{\link{null_replace}}, \code{\link{count_null_cols}}, \code{\link{mark_null_cols}}
 #'
 #' @examples
 #'
@@ -52,12 +52,12 @@
 sql_expr_set <- function(source, cols, expr) {
   nc <- length(cols)
   if(nc<1) {
-    stop("rquery::replace_null_cols need at least one column name")
+    stop("rquery::sql_expr_set need at least one column name")
   }
   source_cols <- column_names(source)
   bad_cols <- setdiff(as.character(cols), source_cols)
   if(length(bad_cols)>0) {
-    stop(paste("rquery::replace_null_cols unknown columns:",
+    stop(paste("rquery::sql_expr_set unknown columns:",
                paste(bad_cols, collapse = ", ")))
   }
   if(is.null(names(cols))) {
