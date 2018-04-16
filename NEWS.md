@@ -1,5 +1,5 @@
 
-# rquery 0.4.3 2018/04/14
+# rquery 0.4.3 2018/04/16
 
  * Add assign_slice().
  * Work on printing/formatting.

@@ -397,7 +397,8 @@ inspect_and_limit_join_plan <- function(columnJoinPlan, checkColClasses) {
 #'
 #' @examples
 #'
-#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#' if (requireNamespace("RSQLite", quietly = TRUE) &&
+#'     requireNamespace('igraph', quietly = TRUE)) {
 #'   # note: employeeanddate is likely built as a cross-product
 #'   #       join of an employee table and set of dates of interest
 #'   #       before getting to the join controller step.  We call
@@ -412,12 +413,10 @@ inspect_and_limit_join_plan <- function(columnJoinPlan, checkColClasses) {
 #'   print(paste('problems:',
 #'               inspect_join_plan(tDesc, columnJoinPlan)))
 #'   # fix plan
-#'   if(requireNamespace('igraph', quietly = TRUE)) {
-#'     sorted <- topo_sort_tables(columnJoinPlan, 'employeeanddate')
-#'     print(paste('problems:',
-#'                 inspect_join_plan(tDesc, sorted$columnJoinPlan)))
-#'     # plot(sorted$dependencyGraph)
-#'   }
+#'   sorted <- topo_sort_tables(columnJoinPlan, 'employeeanddate')
+#'   print(paste('problems:',
+#'               inspect_join_plan(tDesc, sorted$columnJoinPlan)))
+#'   # plot(sorted$dependencyGraph)
 #'   DBI::dbDisconnect(my_db)
 #'   my_db <- NULL
 #' }
@@ -429,10 +428,7 @@ topo_sort_tables <- function(columnJoinPlan, leftTableName,
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::topo_sort_tables")
   if(!requireNamespace('igraph', quietly = TRUE)) {
-    warning("topo_sort_tables: requres igraph to sort tables")
-    return(list(columnJoinPlan= columnJoinPlan,
-                dependencyGraph= NULL,
-                tableOrder= NULL))
+    stop("rquery::topo_sort_tables: requres igraph to sort tables")
   }
   g <- igraph::make_empty_graph()
   vnams <- sort(unique(columnJoinPlan$tableName))
