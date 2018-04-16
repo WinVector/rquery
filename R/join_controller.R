@@ -933,13 +933,7 @@ actualize_join_plan <- function(columnJoinPlan,
   }
   if(add_ind_cols) {
     indcols <-  paste0(tableNameSeq, "_present")
-    exprs <- indcols := lapply(indcols,
-                     function(ti) {
-                       list("CASE WHEN (",
-                            as.name(ti),
-                            "IS NULL ) THEN 0.0 ELSE 1.0 END")
-                     })
-    res <- sql_node(res, exprs)
+    res <- null_replace(res, indcols, 0)
   }
   res
 }

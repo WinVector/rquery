@@ -176,7 +176,8 @@
 #&gt;  sql_node(.,
 #&gt;           mark_null_cols(c('AUC_NULL' = 'AUC', 'R2_NULL' = 'R2')))
 #&gt; SELECT
-#&gt;  *,
+#&gt;  `AUC` AS `AUC`,
+#&gt;  `R2` AS `R2`,
 #&gt;  `AUC` IS NULL AS `AUC_NULL`,
 #&gt;  `R2` IS NULL AS `R2_NULL`
 #&gt; FROM (

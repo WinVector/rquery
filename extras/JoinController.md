@@ -248,11 +248,7 @@ cat(format(optree))
     ##    extend(.,
     ##     meas2_train_present := 1),
     ##   j= LEFT, by= PatientID, MeasurementDate) %.>%
-    ##  sql_node(.,
-    ##           meas1_train_present := CASE WHEN ( meas1_train_present IS NULL ) THEN 0.0 ELSE 1.0 END
-    ##              names_facts_present := CASE WHEN ( names_facts_present IS NULL ) THEN 0.0 ELSE 1.0 END
-    ##              meas2_train_present := CASE WHEN ( meas2_train_present IS NULL ) THEN 0.0 ELSE 1.0 END,
-    ##              *=TRUE)
+    ##  null_replace(.; meas1_train_present, names_facts_present, meas2_train_present : 0)
 
 ``` r
 optree %.>%
@@ -269,14 +265,14 @@ str(res)
 
     ## 'data.frame':    4 obs. of  9 variables:
     ##  $ height             : num  60 54 12 14
+    ##  $ meas1_train_present: int  1 1 1 1
     ##  $ meas1_train_weight : num  200 180 98 120
+    ##  $ meas2_train_present: int  0 0 0 1
     ##  $ meas2_train_weight : num  NA NA NA 105
     ##  $ MeasurementDate    : num  1 2 1 2
     ##  $ name               : chr  "a" "a" "b" "b"
+    ##  $ names_facts_present: int  1 1 1 1
     ##  $ PatientID          : num  1 1 2 2
-    ##  $ meas1_train_present: num  1 1 1 1
-    ##  $ names_facts_present: num  1 1 1 1
-    ##  $ meas2_train_present: num  0 0 0 1
 
 A good workflow is:
 

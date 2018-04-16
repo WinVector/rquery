@@ -212,7 +212,9 @@
 #&gt;           num_missing := 0 + (CASE WHEN ( v1 IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( v2 IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( v3 IS NULL ) THEN 1.0 ELSE 0.0 END),
 #&gt;              *=TRUE)
 #&gt; SELECT
-#&gt;  *,
+#&gt;  `v1` AS `v1`,
+#&gt;  `v2` AS `v2`,
+#&gt;  `v3` AS `v3`,
 #&gt;  0 + (CASE WHEN ( `v1` IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( `v2` IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( `v3` IS NULL ) THEN 1.0 ELSE 0.0 END) AS `num_missing`
 #&gt; FROM (
 #&gt;  SELECT
@@ -221,7 +223,7 @@
 #&gt;   `d`.`v3`
 #&gt;  FROM
 #&gt;   `d`
-#&gt; ) tsql_94419121412537757922_0000000000
+#&gt; ) tsql_21159863672550399420_0000000000
 #&gt;   v1   v2 v3 num_missing
 #&gt; 1  1 &lt;NA&gt; NA           2
 #&gt; 2  2    b NA           1

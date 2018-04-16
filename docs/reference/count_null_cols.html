@@ -179,7 +179,8 @@
 #&gt;  sql_node(.,
 #&gt;           count_null_cols(AUC, R2))
 #&gt; SELECT
-#&gt;  *,
+#&gt;  `AUC` AS `AUC`,
+#&gt;  `R2` AS `R2`,
 #&gt;  ( CASE WHEN ( `AUC` IS NULL ) THEN 1 ELSE 0 END ) + ( CASE WHEN ( `R2` IS NULL ) THEN 1 ELSE 0 END ) AS `nnull`
 #&gt; FROM (
 #&gt;  SELECT

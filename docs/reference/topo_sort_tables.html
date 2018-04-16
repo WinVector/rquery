@@ -148,7 +148,8 @@ Please see <code>vignette('DependencySorting', package = 'rquery')</code> and <c
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='kw'>if</span> (<span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
+<span class='kw'>if</span> (<span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>&amp;&amp;</span>
+    <span class='fu'>requireNamespace</span>(<span class='st'>'igraph'</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
   <span class='co'># note: employeeanddate is likely built as a cross-product</span>
   <span class='co'>#       join of an employee table and set of dates of interest</span>
   <span class='co'>#       before getting to the join controller step.  We call</span>
@@ -163,12 +164,10 @@ Please see <code>vignette('DependencySorting', package = 'rquery')</code> and <c
   <span class='fu'>print</span>(<span class='fu'>paste</span>(<span class='st'>'problems:'</span>,
               <span class='fu'><a href='inspect_join_plan.html'>inspect_join_plan</a></span>(<span class='no'>tDesc</span>, <span class='no'>columnJoinPlan</span>)))
   <span class='co'># fix plan</span>
-  <span class='kw'>if</span>(<span class='fu'>requireNamespace</span>(<span class='st'>'igraph'</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
-    <span class='no'>sorted</span> <span class='kw'>&lt;-</span> <span class='fu'>topo_sort_tables</span>(<span class='no'>columnJoinPlan</span>, <span class='st'>'employeeanddate'</span>)
-    <span class='fu'>print</span>(<span class='fu'>paste</span>(<span class='st'>'problems:'</span>,
-                <span class='fu'><a href='inspect_join_plan.html'>inspect_join_plan</a></span>(<span class='no'>tDesc</span>, <span class='no'>sorted</span>$<span class='no'>columnJoinPlan</span>)))
-    <span class='co'># plot(sorted$dependencyGraph)</span>
-  }
+  <span class='no'>sorted</span> <span class='kw'>&lt;-</span> <span class='fu'>topo_sort_tables</span>(<span class='no'>columnJoinPlan</span>, <span class='st'>'employeeanddate'</span>)
+  <span class='fu'>print</span>(<span class='fu'>paste</span>(<span class='st'>'problems:'</span>,
+              <span class='fu'><a href='inspect_join_plan.html'>inspect_join_plan</a></span>(<span class='no'>tDesc</span>, <span class='no'>sorted</span>$<span class='no'>columnJoinPlan</span>)))
+  <span class='co'># plot(sorted$dependencyGraph)</span>
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
   <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw'>NULL</span>
 }</div><div class='output co'>#&gt; [1] "problems: key col(s) ( dept ) not contained in result cols of previous table(s) for table: revenue"

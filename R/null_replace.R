@@ -4,10 +4,11 @@
 #'
 #' Replace NA/NULL is specified columns with the given replacement value.
 #'
-#' @param src relop or data.frame data source
-#' @param cols character, columns to work on
-#' @param value scalar, value to write
-#' @param ... force later arguments to bind by name
+#' @param src relop or data.frame data source.
+#' @param cols character, columns to work on.
+#' @param value scalar, value to write.
+#' @param ... force later arguments to bind by name.
+#' @param note_col character, if not NULL record number of columns altered per-row in this column.
 #' @return null_replace node.
 #'
 #' @examples
@@ -15,8 +16,9 @@
 #' if (requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   d1 <- dbi_copy_to(my_db, 'd1',
-#'                     data.frame(A = c(NA, 2), B = c(3, NA)))
-#'   optree <- null_replace(d1, qc(A, B), 0.0)
+#'                     data.frame(A = c(NA, 2, 3, NA), B = c(3, NA, 4, NA)))
+#'   optree <- null_replace(d1, qc(A, B),
+#'                          0.0, note_col = "alterations")
 #'   cat(format(optree))
 #'   sql <- to_sql(optree, my_db)
 #'   cat(sql)
@@ -29,7 +31,8 @@
 null_replace <- function(src,
                          cols,
                          value,
-                         ...) {
+                         ...,
+                         note_col = NULL) {
   UseMethod("null_replace", src)
 }
 
@@ -37,7 +40,8 @@ null_replace <- function(src,
 null_replace.relop <- function(src,
                                cols,
                                value,
-                               ...) {
+                               ...,
+                               note_col = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::null_replace.relop")
   if(length(sort(unique(cols)))!=length(cols)) {
     stop("rquery::null_replace.relop bad cols argument")
@@ -50,10 +54,19 @@ null_replace.relop <- function(src,
     stop(paste("rquery::null_replace.relop unknown columns",
                paste(bads, collapse = ", ")))
   }
+  if(length(note_col)>0) {
+    if(length(note_col)!=1) {
+      stop("rquery::null_replace.relop note_col must be length 1 character")
+    }
+    if(length(intersect(note_col, column_names(src)>0))) {
+      stop("rquery::null_replace.relop note_col must not intersect with existing columns")
+    }
+  }
   r <- list(source = list(src),
             table_name = NULL,
             cols = cols,
             value = value,
+            note_col = note_col,
             parsed = NULL)
   r <- relop_decorate("relop_null_replace", r)
   r
@@ -63,33 +76,46 @@ null_replace.relop <- function(src,
 null_replace.data.frame <- function(src,
                                     cols,
                                     value,
-                                    ...) {
+                                    ...,
+                                    note_col = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::null_replace.data.frame")
   nmgen <- mk_tmp_name_source("rquery_tmp")
   tmp_namea <- nmgen()
-  dnodea <- table_source(tmp_namea, colnames(a))
-  dnodea$data <- a
+  dnodea <- table_source(tmp_namea, colnames(src))
+  dnodea$data <- src
   enode <- null_replace(dnodea,
                         cols = cols,
-                        value = value)
+                        value = value,
+                        note_col = note_col)
   return(enode)
 }
 
 
 #' @export
 format_node.relop_null_replace <- function(node) {
+  cstr <- ifelse(is.null(node$note_col),
+                         "",
+                         paste("; ", node$note_col))
   paste0("null_replace(.; ",
          paste(node$cols, collapse = ", "),
          " : ",
          node$value,
+         cstr,
          ")",
          "\n")
+}
+
+#' @export
+column_names.relop_null_replace <- function (x, ...) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::column_names.relop_null_replace")
+  c(column_names(x$src[[1]], x$note_col))
 }
 
 calc_used_relop_null_replace <- function (x, ...,
                                           using = NULL,
                                           contract = FALSE) {
-  column_names(x$src)
+  column_names(x$src[[1]])
 }
 
 #' @export
@@ -149,6 +175,17 @@ to_sql.relop_null_replace <- function (x,
   }
   qexpr <- paste(qexpr, "AS", qnames)
   texpr <- paste(qnames = qexpr)
+  if(length(x$note_col)==1) {
+    sumexprs <- c("0",
+                  paste0("( CASE WHEN ",
+                         tqnames[alter],
+                         " IS NULL THEN 1 ELSE 0 END )"))
+    sexpr <- paste0(
+      paste(sumexprs, collapse = paste0(" + \n ", prefix)),
+      " AS ", DBI::dbQuoteIdentifier(db, x$note_col),
+      "\n")
+    texpr <- c(texpr, sexpr)
+  }
   texpr <- paste(texpr, collapse = paste0(",\n ", prefix))
   q <- paste0(prefix, "SELECT\n",
               " ", prefix, texpr, "\n",
