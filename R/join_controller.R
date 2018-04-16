@@ -922,7 +922,6 @@ actualize_join_plan <- function(columnJoinPlan,
     if(!isTRUE(all.equal(rows$sourceColumn, rows$resultColumn))) {
       si <- rename_columns(si,  rows$resultColumn := rows$sourceColumn)
     }
-    indcol <- NULL
     if(add_ind_cols) {
       indcol <-  paste0(tabnam, "_present")
       si <- extend_se(si, indcol := 1)
@@ -934,13 +933,17 @@ actualize_join_plan <- function(columnJoinPlan,
       res <- natural_join(res, si,
                           jointype = jointype,
                           by = joinby)
-      if(add_ind_cols) {
-        res <- sql_node(res,
-                        indcol := list(list("CASE WHEN (",
-                                       as.name(indcol),
-                                       "IS NULL ) THEN 0.0 ELSE 1.0 END")))
-      }
     }
+  }
+  if(add_ind_cols) {
+    indcols <-  paste0(tableNameSeq, "_present")
+    exprs <- indcols := lapply(indcols,
+                     function(ti) {
+                       list("CASE WHEN (",
+                            as.name(ti),
+                            "IS NULL ) THEN 0.0 ELSE 1.0 END")
+                     })
+    res <- sql_node(res, exprs)
   }
   res
 }
