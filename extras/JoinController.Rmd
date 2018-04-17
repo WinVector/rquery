@@ -29,8 +29,12 @@ This is easiest to explain through a concrete example, which is what we will do 
 
 First let's load the needed packages.
 
+```{r checpkgs}
+execute_vignette <- requireNamespace("RSQLite", quietly = TRUE) &&
+  requireNamespace("DiagrammeR", quietly = TRUE) 
+```
 
-```{r init}
+```{r init, eval=execute_vignette}
 # load packages
 library("rquery")
 packageVersion("rquery")
@@ -44,7 +48,7 @@ Now let's load some notional example data.  For our example we have:
 
 The data is given below:
 
-```{r data}
+```{r data, eval=execute_vignette}
 # load notional example data
 my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 RSQLite::initExtension(my_db)
@@ -72,7 +76,7 @@ DBI::dbWriteTable(my_db,
 
 An important (and very neglected) step in data science tasks is documenting roles of tables, especially their key-structure (which we also call "stride" in the sense it describes how you move from row to row).  `rquery::describe_tables()` is a function that builds an initial description of the tables.
 
-```{r defs}
+```{r defs, eval=execute_vignette}
 # map from abstract names to realized names
 trainTables <- c('meas1_train', 
                  'names_facts', 
@@ -85,7 +89,7 @@ tDesc <- describe_tables(my_db, trainTables,
 `tDesc` is essentially a slightly enriched version of the data handle concordance described in "[Managing Spark data handles in R](http://www.win-vector.com/blog/2017/05/managing-spark-data-handles-in-r/)."  We can take a quick look at the stored simplified [summaries](http://www.win-vector.com/blog/2017/05/summarizing-big-data-in-r/):
 
 
-```{r lookdesc}
+```{r lookdesc, eval=execute_vignette}
 knitr::kable(tDesc)
 ```
 
@@ -101,7 +105,7 @@ knitr::kable(tDesc)
  
 The intent is to build a detailed join plan (describing order, column selection, and column re-naming) from the `tDesc` table.  We can try this with the supplied function `buildJoinPlan()`, which in this case tells us our table descriptions are not quite ready to specify a join plan:
 
-```{r badjoinplan}
+```{r badjoinplan, eval=execute_vignette}
 tryCatch(
   build_join_plan(tDesc),
   error = function(e) {e}
@@ -112,7 +116,7 @@ In the above the `keys` column is wrong in that it claims every column of each t
 
 The intent is: the user should edit the "`tDesc`" keys column and share it with partners for criticism.  In our case we declare the primary of the measurement tables to be `PatientID` and `MeasurementDate`, and the primary key of the names table to be `PatientID`.  Notice we do this by specifying named lists or vectors mapping desired key names to names actually used in the tables.
 
-```{r keys}
+```{r keys, eval=execute_vignette}
 # declare keys (and give them consistent names)
 tDesc$keys[[1]] <- c(PatientID= 'id', MeasurementDate= 'date')
 tDesc$keys[[2]] <- c(PatientID= 'id')
@@ -129,7 +133,7 @@ In practice, when preparing data for predictive analytics or machine learning th
 
 A join plan can now be built from our table descriptions:
 
-```{r plan}
+```{r plan, eval=execute_vignette}
 # build the column join plan
 columnJoinPlan <- build_join_plan(tDesc)
 knitr::kable(columnJoinPlan)
@@ -145,7 +149,7 @@ For example we could decide to exclude the `width` column by either dropping the
 
 Since we have edited the join plan it is a good idea to both look at it and also run it through the `inspectDescrAndJoinPlan()` to look for potential inconsistencies.
 
-```{r plan2}
+```{r plan2, eval=execute_vignette}
 # decide we don't want the width column
 columnJoinPlan$want[columnJoinPlan$resultColumn=='width'] <- FALSE
 # double check our plan
@@ -159,7 +163,7 @@ The join plan is the neglected (and often missing) piece of documentation key to
 
 As a diagram the key structure of the join plan looks like the following:
 
-```{r render1, fig.width=8, fig.height=8}
+```{r render1, fig.width=8, fig.height=8, eval=execute_vignette}
 columnJoinPlan %.>%
   graph_join_plan(.) %.>%
   DiagrammeR::grViz(.)
@@ -168,7 +172,7 @@ columnJoinPlan %.>%
 
 Once you have a good join plan executing it easy.
 
-```{r run}
+```{r run, fig.width=8, fig.height=8, eval=execute_vignette}
 optree <- actualize_join_plan(columnJoinPlan,
                               add_ind_cols = TRUE)
 
@@ -193,7 +197,7 @@ A good workflow is:
 
 Having to "join a bunch of tables to get the data into simple rows" is a common step in data science.  Therefore you do not want this to be a difficult and undocumented task.  By using a join controller you essentially make the documentation the executable specification for the task.
 
-```{r cleanup}
+```{r cleanup, eval=execute_vignette}
 # cleanup
 DBI::dbDisconnect(my_db)
 ```

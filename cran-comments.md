@@ -8,17 +8,16 @@
     * using platform: x86_64-apple-darwin15.6.0 (64-bit)
 
     * Windows
-    * using R version 3.5.0 alpha (2018-04-04 r74529)
-    * using platform: x86_64-w64-mingw32 (64-bit)
+ 
    
 ## R CMD check results
 
-    R CMD check --as-cran rquery_0.4.2.tar.gz 
+    R CMD check --as-cran rquery_0.4.3.tar.gz 
 
     * using option ‘--as-cran’
     * checking for file ‘rquery/DESCRIPTION’ ... OK
     * checking extension type ... Package
-    * this is package ‘rquery’ version ‘0.4.2’
+    * this is package ‘rquery’ version ‘0.4.3’
     * package encoding: UTF-8
     * checking CRAN incoming feasibility ... Note_to_CRAN_maintainers
     Maintainer: ‘John Mount <jmount@win-vector.com>’
@@ -31,5 +30,6 @@ New package, now reverse dependencies.
 
      devtools::revdep()
      character(0)
+     
      
 Note: "Edgar F. Codd", "SQL", and "observable" are all spelled correctly.

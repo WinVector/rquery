@@ -11,7 +11,13 @@ One of the great advantages to specifying complicated sequences of operations in
 
 For example suppose we have a `DBI` `RSQLite` database handle in the variable `my_db` and we are using the following names for our tables in this database.
 
-```{r tableNames}
+```{r checpkgs}
+execute_vignette <- requireNamespace("RSQLite", quietly = TRUE) &&
+  requireNamespace("igraph", quietly = TRUE) &&
+  requireNamespace("DiagrammeR", quietly = TRUE) 
+```
+
+```{r tableNames, eval=execute_vignette}
 my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 RSQLite::initExtension(my_db)
 exDesc <- rquery:::example_employee_date(my_db)
@@ -23,8 +29,9 @@ tableNames <- c('employeeanddate',
 
 We can now use `rquery::describe_tables()` to get descriptions of these tables *including* any declared primary key structure.
 
-```{r builddesc}
+```{r builddesc, eval=execute_vignette}
 library("rquery")
+packageVersion("rquery")
 
 tDesc <- describe_tables(my_db, tableNames,
                          keyInspector = key_inspector_sqlite)
@@ -36,7 +43,7 @@ tDesc[, qc(tableName, columns, keys, colClass)] %.>%
 
 This is more legible if we turn it into a column join plan.
 
-```{r plan1}
+```{r plan1, eval=execute_vignette}
 columnJoinPlan <- build_join_plan(tDesc, check= FALSE)
 columnJoinPlan[,  qc(tableName, sourceColumn, resultColumn, isKey)] %.>%
   knitr::kable(.)
@@ -50,7 +57,7 @@ At this point we are *almost* ready to execute a left join plan on these four ta
 
 First let's patch up the key structure.  This could be done by exporting the `columnJoinPlan` as a spreadsheet and editing it, but for our example we will just alter it in place.
 
-```{r rekey}
+```{r rekey, eval=execute_vignette}
 columnJoinPlan$resultColumn[columnJoinPlan$sourceColumn=='id'] <- 'eid'
 columnJoinPlan[,  qc(tableName, sourceColumn, resultColumn, isKey)] %.>%
   knitr::kable(.)
@@ -63,7 +70,7 @@ The most important choice in a left join plan is which table is left-most.  If a
 What prevents a proposed left join order from being executable is trying to join in a table that has a key that we do not yet have values for.  Let's show this as part of our example.  Suppose we know that we want the table "`employeeanddate`" to be the left-most table in our left join sequence (and again, this is the one important choice).  We can see our current left join plan (`columnJoinPlan`) is not executable in the order it is currently specifying:
 
 
-```{r check1}
+```{r check1, eval=execute_vignette}
 print(paste("issues:", inspect_join_plan(tDesc, columnJoinPlan)))
 ```
 
@@ -77,7 +84,7 @@ The table to table conditions are well-defined if a few invariants and conventio
 
 Since not all orders are valid left join plans the task is to find a re-ordering (if there is one) that is a valid left join plan.  The requirement that each table's keys have known values before we join gives us order relations on the tables (we know which tables must be joined before others).  Finding an ordering that obeys all the relations is called "topological sorting" We can compute the join path dependencies *and* re-order the join plan to be realizable as follows (assuming the `igraph` package is available do perform the topological sorting and plot the directed relations).
 
-```{r sort}
+```{r sort, fig.width=8, fig.height=8}
 sorted <- topo_sort_tables(columnJoinPlan, 'employeeanddate')
 plot(sorted$dependencyGraph)
 print(sorted$tableOrder)
@@ -94,7 +101,7 @@ paste("issues:", inspect_join_plan(tDesc,
 
 The new `sorted$columnJoinPlan` can be re-plotted (needs the suggested packages:  `DiagrammeR`, `htmlwidgets`, `webshot`, and `magick`): 
 
-```{r render1}
+```{r render1, fig.width=8, fig.height=8, eval=execute_vignette}
 sorted$columnJoinPlan %.>%
   graph_join_plan(.) %.>%
   DiagrammeR::grViz(.)
@@ -104,7 +111,7 @@ sorted$columnJoinPlan %.>%
 
 And the new `sorted$columnJoinPlan` is ready to be executed:
 
-```{r steps}
+```{r steps, fig.width=8, fig.height=8, eval=execute_vignette}
 optree <- actualize_join_plan(sorted$columnJoinPlan)
 
 cat(format(optree))
@@ -126,7 +133,7 @@ And this is how we use tools to do the heavy lifting in building a left join pla
   * `rquery::op_diagram() %.>% DiagrammeR::grViz(.)` can then produce and capture a detailed diagram of the final join plan.
   * Finally `rquery::actualize_join_plan()` realizes the join plan as an `rquery` operation tree.
 
-```{r cleanup}
+```{r cleanup, eval=execute_vignette}
 DBI::dbDisconnect(my_db)
 ```
 

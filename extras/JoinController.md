@@ -28,6 +28,11 @@ This is easiest to explain through a concrete example, which is what we will do 
 First let's load the needed packages.
 
 ``` r
+execute_vignette <- requireNamespace("RSQLite", quietly = TRUE) &&
+  requireNamespace("DiagrammeR", quietly = TRUE) 
+```
+
+``` r
 # load packages
 library("rquery")
 ```

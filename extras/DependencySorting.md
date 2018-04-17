@@ -10,6 +10,12 @@ One of the great advantages to specifying complicated sequences of operations in
 For example suppose we have a `DBI` `RSQLite` database handle in the variable `my_db` and we are using the following names for our tables in this database.
 
 ``` r
+execute_vignette <- requireNamespace("RSQLite", quietly = TRUE) &&
+  requireNamespace("igraph", quietly = TRUE) &&
+  requireNamespace("DiagrammeR", quietly = TRUE) 
+```
+
+``` r
 my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 RSQLite::initExtension(my_db)
 exDesc <- rquery:::example_employee_date(my_db)
@@ -26,6 +32,12 @@ library("rquery")
 ```
 
     ## Loading required package: wrapr
+
+``` r
+packageVersion("rquery")
+```
+
+    ## [1] '0.4.3'
 
 ``` r
 tDesc <- describe_tables(my_db, tableNames,

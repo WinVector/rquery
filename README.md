@@ -7,7 +7,7 @@
 
 `rquery` is currently recommended for user with `Spark` and `PostgreSQL` (and with non-window functionality with `RSQLite`).
 
-To install: `devtools::install_github("WinVector/rquery")`.
+To install: `devtools::install_github("WinVector/rquery")` or `install.packages("rquery")`.
 
 A good place to start is the [`rquery` introductory vignette](https://winvector.github.io/rquery/articles/rquery_intro.html).
 
@@ -247,13 +247,13 @@ cat(to_sql(dq, my_db, source_limit = 1000))
            `d`.`assessmentTotal`
           FROM
            `d` LIMIT 1000
-          ) tsql_30788942795888019685_0000000000
-         ) tsql_30788942795888019685_0000000001
-       ) tsql_30788942795888019685_0000000002
-      ) tsql_30788942795888019685_0000000003
+          ) tsql_44665203012895997165_0000000000
+         ) tsql_44665203012895997165_0000000001
+       ) tsql_44665203012895997165_0000000002
+      ) tsql_44665203012895997165_0000000003
       WHERE `rank` = `count`
-     ) tsql_30788942795888019685_0000000004
-    ) tsql_30788942795888019685_0000000005 ORDER BY `subjectID`
+     ) tsql_44665203012895997165_0000000004
+    ) tsql_44665203012895997165_0000000005 ORDER BY `subjectID`
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
@@ -372,5 +372,7 @@ dq %.>%
     ## 1 1.5000000 0.70710678                  NA                  NA
     ## 2       NaN        NaN positive re-framing withdrawal behavior
     ## 3 0.6147982 0.07894697                  NA                  NA
+
+We have found most big-data projects either require joining very many tables (something `rquery` join planners help with, please see [here](https://github.com/WinVector/rquery/blob/master/extras/JoinController.md) and [here](https://github.com/WinVector/rquery/blob/master/extras/JoinController.md)) or they require working with wide data-marts (where `rquery` query narrowing helps, please see [here](https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md)).
 
 We also could stand `rquery` up on non-`DBI` sources such as [`SparkR`](https://github.com/WinVector/rquery/blob/master/extras/SparkRExample.md) and perhaps even [`data.table`](https://github.com/WinVector/rquery/blob/master/extras/data_table.md).

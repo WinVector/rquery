@@ -10,7 +10,7 @@ output: github_document
 
 `rquery` is currently recommended for user with `Spark` and `PostgreSQL` (and with non-window functionality with `RSQLite`).
 
-To install: `devtools::install_github("WinVector/rquery")`.  
+To install: `devtools::install_github("WinVector/rquery")` or `install.packages("rquery")`.
 
 A good place to start is the [`rquery` introductory vignette](https://winvector.github.io/rquery/articles/rquery_intro.html).
 
@@ -213,6 +213,8 @@ dq %.>%
   rsummary_node(.) %.>%
   execute(my_db, .)
 ```
+
+We have found most big-data projects either require joining very many tables (something `rquery` join planners help with, please see [here](https://github.com/WinVector/rquery/blob/master/extras/JoinController.md) and [here](https://github.com/WinVector/rquery/blob/master/extras/JoinController.md)) or they require working with wide data-marts (where `rquery` query narrowing helps, please see [here](https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md)).
 
 
 We also could stand `rquery` up on non-`DBI` sources such as [`SparkR`](https://github.com/WinVector/rquery/blob/master/extras/SparkRExample.md)
