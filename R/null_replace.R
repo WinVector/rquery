@@ -9,7 +9,7 @@
 #' @param value scalar, value to write.
 #' @param ... force later arguments to bind by name.
 #' @param note_col character, if not NULL record number of columns altered per-row in this column.
-#' @return null_replace node.
+#' @return null_replace node or data.frame.
 #'
 #' @examples
 #'

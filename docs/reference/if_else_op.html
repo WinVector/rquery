@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Assign a value to a slice of data (set of rows meeting a condition, and specified set of columns). — assign_slice • rquery</title>
+<title>Simulate a per-row block-<code>if(){}else{}</code>. — if_else_op • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -25,9 +25,20 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-<meta property="og:title" content="Assign a value to a slice of data (set of rows meeting a condition, and specified set of columns). — assign_slice" />
+<meta property="og:title" content="Simulate a per-row block-<code>if(){}else{}</code>. — if_else_op" />
 
-<meta property="og:description" content="Uses if_else_block." />
+<meta property="og:description" content="This device uses expression-ifelse(,,) to simulate the
+more powerful per-row block-if(){}else{}.  The difference is
+expression-ifelse(,,) can choose per-row what value to express,
+whereas block-if(){}else{} can choose per-row where to assign multiple
+values. By simulation we mean: a sequence of quoted mutate expressions
+are emitted that implement the transform.  These expressions can then
+be optimized into a minimal number of no-dependency
+blocks by extend_se for efficient execution.
+The idea is the user can write legible code in this notation, and
+the translation turns it into safe and efficient code suitable for
+execution either on data.frames or at a big data scale using
+RPostgreSQL or sparklyr." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -111,16 +122,27 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Assign a value to a slice of data (set of rows meeting a condition, and specified set of columns).</h1>
-    <small>Source: <a href='https://github.com/WinVector/rquery//blob/master/R/assign_slice.R'><code>R/assign_slice.R</code></a></small>
-    <div class="hidden name"><code>assign_slice.Rd</code></div>
+    <h1>Simulate a per-row block-<code>if(){}else{}</code>.</h1>
+    <small>Source: <a href='https://github.com/WinVector/rquery//blob/master/R/if_else_block.R'><code>R/if_else_block.R</code></a></small>
+    <div class="hidden name"><code>if_else_op.Rd</code></div>
     </div>
 
     
-    <p>Uses <code>if_else_block</code>.</p>
+    <p>This device uses expression-<code>ifelse(,,)</code> to simulate the
+more powerful per-row block-<code>if(){}else{}</code>.  The difference is
+expression-<code>ifelse(,,)</code> can choose per-row what value to express,
+whereas block-<code>if(){}else{}</code> can choose per-row where to assign multiple
+values. By simulation we mean: a sequence of quoted mutate expressions
+are emitted that implement the transform.  These expressions can then
+be optimized into a minimal number of no-dependency
+blocks by <code><a href='extend_se.html'>extend_se</a></code> for efficient execution.
+The idea is the user can write legible code in this notation, and
+the translation turns it into safe and efficient code suitable for
+execution either on <code>data.frame</code>s or at a big data scale using
+<code>RPostgreSQL</code> or <code>sparklyr</code>.</p>
     
 
-    <pre class="usage"><span class='fu'>assign_slice</span>(<span class='no'>source</span>, <span class='no'>testexpr</span>, <span class='no'>columns</span>, <span class='no'>value</span>)</pre>
+    <pre class="usage"><span class='fu'>if_else_op</span>(<span class='no'>source</span>, <span class='no'>testexpr</span>, <span class='no'>...</span>, <span class='kw'>thenexprs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>elseexprs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -134,29 +156,37 @@
       <td><p>character containing the test expression.</p></td>
     </tr>
     <tr>
-      <th>columns</th>
-      <td><p>charactor vector of column names to alter.</p></td>
+      <th>...</th>
+      <td><p>force later arguments to bind by name.</p></td>
     </tr>
     <tr>
-      <th>value</th>
-      <td><p>value to set in matching rows and columns (scalar).</p></td>
+      <th>thenexprs</th>
+      <td><p>named character then assignments (altering columns, not creating).</p></td>
+    </tr>
+    <tr>
+      <th>elseexprs</th>
+      <td><p>named character else assignments (altering columns, not creating).</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>optree or data.frame.</p>
+    <p>operator tree or data.frame.</p>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>Note: <code>ifebtest_*</code>
 is a reserved column name for this procedure.</p>
     
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><code><a href='if_else_block.html'>if_else_block</a></code></p></div>
+    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
 <span class='kw'>if</span> (<span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
-  <span class='co'># Land random selections early to avoid SQLite bug.</span>
+  <span class='co'># Example: clear one of a or b in any row where both are set.</span>
   <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
   <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dbi_copy_to.html'>dbi_copy_to</a></span>(
     <span class='no'>my_db</span>,
@@ -164,14 +194,16 @@ is a reserved column name for this procedure.</p>
     <span class='fu'>data.frame</span>(<span class='kw'>i</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>3</span>, <span class='fl'>4</span>, <span class='fl'>5</span>, <span class='fl'>6</span>, <span class='fl'>7</span>, <span class='fl'>8</span>, <span class='fl'>9</span>, <span class='fl'>10</span>),
                <span class='kw'>a</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>0</span>, <span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>),
                <span class='kw'>b</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>),
-               <span class='kw'>r</span> <span class='kw'>=</span> <span class='fu'>runif</span>(<span class='fl'>10</span>)),
+               <span class='kw'>edited</span> <span class='kw'>=</span> <span class='fl'>NA</span>),
     <span class='kw'>temporary</span><span class='kw'>=</span><span class='fl'>TRUE</span>, <span class='kw'>overwrite</span><span class='kw'>=</span><span class='fl'>TRUE</span>)
 
   <span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span>
-    <span class='fu'>assign_slice</span>(<span class='no'>.</span>,
-                 <span class='kw'>testexpr</span> <span class='kw'>=</span> <span class='fu'>qe</span>(<span class='no'>r</span><span class='kw'>&lt;</span><span class='fl'>0.5</span>),
-                 <span class='kw'>columns</span> <span class='kw'>=</span> <span class='fu'>qc</span>(<span class='no'>a</span>, <span class='no'>b</span>),
-                 <span class='kw'>value</span> <span class='kw'>=</span> <span class='fl'>2</span>)
+    <span class='fu'>if_else_op</span>(<span class='no'>.</span>,
+               <span class='kw'>testexpr</span> <span class='kw'>=</span> <span class='fu'>qe</span>((<span class='no'>a</span>+<span class='no'>b</span>)<span class='kw'>&gt;</span><span class='fl'>1</span>),
+               <span class='kw'>thenexprs</span> <span class='kw'>=</span> <span class='fu'>qae</span>(<span class='no'>a</span> <span class='kw'>:=</span> <span class='fl'>0</span>,
+                               <span class='no'>b</span> <span class='kw'>:=</span> <span class='fl'>0</span>,
+                               <span class='no'>edited</span> <span class='kw'>:=</span> <span class='fl'>1</span>),
+               <span class='kw'>elseexprs</span> <span class='kw'>=</span> <span class='fu'>qae</span>(<span class='no'>edited</span> <span class='kw'>:=</span> <span class='fl'>0</span>))
   <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>optree</span>))
 
   <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>optree</span>, <span class='no'>my_db</span>)
@@ -179,67 +211,67 @@ is a reserved column name for this procedure.</p>
 
   <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
 
-  <span class='co'># Why we need to land the random selection early</span>
-  <span class='co'># for SQLIte:</span>
-  <span class='no'>q</span> <span class='kw'>&lt;-</span> <span class='st'>"SELECT r AS r1, r AS r2 FROM (
-          SELECT random() AS r FROM (
-             SELECT * from ( VALUES(1),(2) )
-          ) a
-       ) b"</span>
-  <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>q</span>))
-
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
 }</div><div class='output co'>#&gt; table('d') %.&gt;%
 #&gt;  extend(.,
-#&gt;   ifebtest_1 := r &lt; 0.5) %.&gt;%
+#&gt;   ifebtest_1 := ( a + b ) &gt; 1) %.&gt;%
 #&gt;  extend(.,
-#&gt;   a := ifelse(ifebtest_1, 2, a),
-#&gt;   b := ifelse(ifebtest_1, 2, b)) %.&gt;%
+#&gt;   a := ifelse(ifebtest_1, 0, a),
+#&gt;   b := ifelse(ifebtest_1, 0, b),
+#&gt;   edited := ifelse(ifebtest_1, 1, edited)) %.&gt;%
+#&gt;  extend(.,
+#&gt;   edited := ifelse(!( ifebtest_1 ), 0, edited)) %.&gt;%
 #&gt;  drop_columns(., ifebtest_1)
 #&gt; SELECT
 #&gt;  `a`,
 #&gt;  `b`,
-#&gt;  `i`,
-#&gt;  `r`
+#&gt;  `edited`,
+#&gt;  `i`
 #&gt; FROM (
 #&gt;  SELECT
+#&gt;   `a`,
+#&gt;   `b`,
 #&gt;   `i`,
 #&gt;   `ifebtest_1`,
-#&gt;   `r`,
-#&gt;   ( CASE WHEN ( `ifebtest_1` ) THEN ( 2 ) ELSE ( `a` ) END )  AS `a`,
-#&gt;   ( CASE WHEN ( `ifebtest_1` ) THEN ( 2 ) ELSE ( `b` ) END )  AS `b`
+#&gt;   ( CASE WHEN ( ( NOT ( `ifebtest_1` ) ) ) THEN ( 0 ) ELSE ( `edited` ) END )  AS `edited`
 #&gt;  FROM (
 #&gt;   SELECT
 #&gt;    `i`,
-#&gt;    `a`,
-#&gt;    `b`,
-#&gt;    `r`,
-#&gt;    `r` &lt; 0.5  AS `ifebtest_1`
+#&gt;    `ifebtest_1`,
+#&gt;    ( CASE WHEN ( `ifebtest_1` ) THEN ( 0 ) ELSE ( `a` ) END )  AS `a`,
+#&gt;    ( CASE WHEN ( `ifebtest_1` ) THEN ( 0 ) ELSE ( `b` ) END )  AS `b`,
+#&gt;    ( CASE WHEN ( `ifebtest_1` ) THEN ( 1 ) ELSE ( `edited` ) END )  AS `edited`
 #&gt;   FROM (
 #&gt;    SELECT
-#&gt;     `d`.`i`,
-#&gt;     `d`.`a`,
-#&gt;     `d`.`b`,
-#&gt;     `d`.`r`
-#&gt;    FROM
-#&gt;     `d`
-#&gt;    ) tsql_43154727038253519552_0000000000
-#&gt;   ) tsql_43154727038253519552_0000000001
-#&gt; ) tsql_43154727038253519552_0000000002
-#&gt;    a b  i          r
-#&gt; 1  0 0  1 0.68016292
-#&gt; 2  2 2  2 0.49884561
-#&gt; 3  1 0  3 0.64167935
-#&gt; 4  1 1  4 0.66028435
-#&gt; 5  2 2  5 0.09602416
-#&gt; 6  1 1  6 0.76560016
-#&gt; 7  1 1  7 0.76967480
-#&gt; 8  1 1  8 0.99071231
-#&gt; 9  1 1  9 0.97052090
-#&gt; 10 2 2 10 0.38918276
-#&gt;                     r1                   r2
-#&gt; 1 -7735445211836356489  7981888303690141034
-#&gt; 2  2496088497558679906 -5856302929938879455</div><div class='input'>
+#&gt;     `i`,
+#&gt;     `a`,
+#&gt;     `b`,
+#&gt;     `edited`,
+#&gt;     ( `a` + `b` ) &gt; 1  AS `ifebtest_1`
+#&gt;    FROM (
+#&gt;     SELECT
+#&gt;      `d`.`i`,
+#&gt;      `d`.`a`,
+#&gt;      `d`.`b`,
+#&gt;      `d`.`edited`
+#&gt;     FROM
+#&gt;      `d`
+#&gt;     ) tsql_15190199789046938585_0000000000
+#&gt;    ) tsql_15190199789046938585_0000000001
+#&gt;   ) tsql_15190199789046938585_0000000002
+#&gt; ) tsql_15190199789046938585_0000000003
+#&gt;    a b edited  i
+#&gt; 1  0 0      0  1
+#&gt; 2  0 1      0  2
+#&gt; 3  1 0      0  3
+#&gt; 4  0 0      1  4
+#&gt; 5  0 0      1  5
+#&gt; 6  0 0      1  6
+#&gt; 7  0 0      1  7
+#&gt; 8  0 0      1  8
+#&gt; 9  0 0      1  9
+#&gt; 10 0 0      1 10</div><div class='input'>
+
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -250,6 +282,8 @@ is a reserved column name for this procedure.</p>
       <li><a href="#value">Value</a></li>
 
       <li><a href="#details">Details</a></li>
+
+      <li><a href="#see-also">See also</a></li>
       
       <li><a href="#examples">Examples</a></li>
     </ul>

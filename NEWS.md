@@ -1,7 +1,8 @@
 
-# rquery 0.4.3 2018/04/16
+# rquery 0.4.3 2018/04/18
 
  * Add assign_slice().
+ * Add if_else_op().
  * Work on printing/formatting.
 
 # rquery 0.4.2 2018/04/05

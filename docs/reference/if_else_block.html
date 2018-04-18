@@ -142,7 +142,7 @@ execution either on <code>data.frame</code>s or at a big data scale using
 <code>RPostgreSQL</code> or <code>sparklyr</code>.</p>
     
 
-    <pre class="usage"><span class='fu'>if_else_block</span>(<span class='no'>testexpr</span>, <span class='kw'>thenexprs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>elseexprs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>if_else_block</span>(<span class='no'>testexpr</span>, <span class='no'>...</span>, <span class='kw'>thenexprs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>elseexprs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -150,6 +150,10 @@ execution either on <code>data.frame</code>s or at a big data scale using
     <tr>
       <th>testexpr</th>
       <td><p>character containing the test expression.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>force later arguments to bind by name.</p></td>
     </tr>
     <tr>
       <th>thenexprs</th>
@@ -161,10 +165,18 @@ execution either on <code>data.frame</code>s or at a big data scale using
     </tr>
     </table>
     
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>sequence of statemens for extend_se().</p>
+    
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>Note: <code>ifebtest_*</code>
 is a reserved column name for this procedure.</p>
+    
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><code><a href='if_else_op.html'>if_else_op</a></code></p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -193,10 +205,10 @@ is a reserved column name for this procedure.</p>
       <span class='fu'>qae</span>(<span class='no'>edited</span> <span class='kw'>:=</span> <span class='fl'>1</span>)))
   <span class='fu'>print</span>(<span class='no'>program</span>)
 
-  <span class='no'>trf</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='extend_se.html'>extend_se</a></span>(<span class='no'>d</span>, <span class='no'>program</span>)
-  <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>trf</span>))
+  <span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='extend_se.html'>extend_se</a></span>(<span class='no'>d</span>, <span class='no'>program</span>)
+  <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>optree</span>))
 
-  <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>trf</span>, <span class='no'>my_db</span>)
+  <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>optree</span>, <span class='no'>my_db</span>)
   <span class='fu'>cat</span>(<span class='no'>sql</span>)
 
   <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
@@ -260,22 +272,22 @@ is a reserved column name for this procedure.</p>
 #&gt;    `d`.`edited`
 #&gt;   FROM
 #&gt;    `d`
-#&gt;   ) tsql_07893168072016633769_0000000000
-#&gt;  ) tsql_07893168072016633769_0000000001
-#&gt;     i ifebtest_1 ifebtest_2         r a b edited
-#&gt; 1   1          1          0 0.7510138 0 0      0
-#&gt; 2   2          1          0 0.7190140 0 1      0
-#&gt; 3   3          1          0 0.5153553 1 0      0
-#&gt; 4   4          1          1 0.9748363 0 1      1
-#&gt; 5   5          0          1 0.3607776 1 0      1
-#&gt; 6   6          0          1 0.1703955 1 0      1
-#&gt; 7   7          1          1 0.7831407 0 1      1
-#&gt; 8   8          0          1 0.0309239 1 0      1
-#&gt; 9   9          1          1 0.7894204 0 1      1
-#&gt; 10 10          0          1 0.1666037 1 0      1
-#&gt;                     r1                   r2
-#&gt; 1 -7230768765673224612  7060513109735005491
-#&gt; 2  -374852372358074554 -1608482706890256653</div><div class='input'>
+#&gt;   ) tsql_45158585738731183096_0000000000
+#&gt;  ) tsql_45158585738731183096_0000000001
+#&gt;     i ifebtest_1 ifebtest_2          r a b edited
+#&gt; 1   1          0          0 0.21527266 0 0      0
+#&gt; 2   2          0          0 0.01600314 0 1      0
+#&gt; 3   3          0          0 0.12860258 1 0      0
+#&gt; 4   4          1          1 0.68606310 0 1      1
+#&gt; 5   5          1          1 0.64194126 0 1      1
+#&gt; 6   6          0          1 0.32733852 1 0      1
+#&gt; 7   7          0          1 0.38748198 1 0      1
+#&gt; 8   8          1          1 0.70750040 0 1      1
+#&gt; 9   9          1          1 0.69765543 0 1      1
+#&gt; 10 10          1          1 0.92565677 0 1      1
+#&gt;                    r1                   r2
+#&gt; 1 7532716326712473838  2477179779894950953
+#&gt; 2  659355228432853911 -5251306173975658922</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -283,7 +295,11 @@ is a reserved column name for this procedure.</p>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       
+      <li><a href="#value">Value</a></li>
+
       <li><a href="#details">Details</a></li>
+
+      <li><a href="#see-also">See also</a></li>
       
       <li><a href="#examples">Examples</a></li>
     </ul>
