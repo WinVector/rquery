@@ -1,7 +1,7 @@
 Join Dependency Sorting
 ================
 John Mount
-2018-04-16
+2018-04-18
 
 Let's discuss the task of left joining many tables from a data warehouse using [`R`](https://www.r-project.org) and a system called "a join controller" (last discussed [here](http://www.win-vector.com/blog/2017/06/use-a-join-controller-to-document-your-work/)).
 

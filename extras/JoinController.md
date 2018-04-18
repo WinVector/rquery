@@ -1,7 +1,7 @@
 Join Controller
 ================
 John Mount
-2018-04-16
+2018-04-18
 
 #### [`rquery`](https://github.com/WinVector/rquery) Join Controller
 
