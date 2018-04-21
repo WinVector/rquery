@@ -88,13 +88,16 @@ dbi_remove_table <- function(db, table_name) {
 #' @param q character query
 #' @return nothing
 #'
+#' @export
+#'
 dbi_execute <- function(db, q) {
+  res <- NULL
   if(getDBOption(db, "use_DBI_dbExecute", TRUE)) {
-    DBI::dbExecute(db, q)
+    res <- DBI::dbExecute(db, q)
   } else {
     DBI::dbGetQuery(db, q)
   }
-  NULL
+  res
 }
 
 # try not to use this too many places, prefer the configs

@@ -1,5 +1,5 @@
 
-# rquery 0.4.3 2018/04/18
+# rquery 0.4.3 2018/04/21
 
  * Add assign_slice().
  * Add if_else_op().
