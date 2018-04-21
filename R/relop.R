@@ -50,6 +50,13 @@ column_names.relop <- function (x, ...) {
   return(sort(unique(unlist(subs))))
 }
 
+#' @export
+column_names.data.frame <- function (x, ...) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::column_names.data.frame")
+  colnames(x)
+}
+
 
 
 #' Return columns used

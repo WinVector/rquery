@@ -96,11 +96,13 @@ sql_expr_set <- function(source, cols, expr) {
   names(terms) <- names(cols)
   nd <- sql_node(source, c(terms, others),
                  orig_columns = FALSE)
-  exprstr <- paste(as.character(unlist(expr)), collapse = " ")
-  nd$display_form <- paste0("sql_expr_set(",
-                            paste(cols, collapse = ", "),
-                            "; ",
-                            exprstr,
-                            ")")
+  if("relop" %in% class(nd)) {
+    exprstr <- paste(as.character(unlist(expr)), collapse = " ")
+    nd$display_form <- paste0("sql_expr_set(",
+                              paste(cols, collapse = ", "),
+                              "; ",
+                              exprstr,
+                              ")")
+  }
   nd
 }

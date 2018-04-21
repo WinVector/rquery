@@ -167,6 +167,7 @@ format_node.relop_sql <- function(node) {
 columns_used.relop_sql <- function (x, ...,
                                     using = NULL,
                                     contract = FALSE) {
+  wrapr::stop_if_dot_args(substitute(list(...)), "columns_used.relop_sql")
   # assume using all columns
   return(columns_used(x$source[[1]],
                       using = NULL,

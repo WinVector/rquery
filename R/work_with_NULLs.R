@@ -75,9 +75,11 @@ count_null_cols <- function(source, cols, count) {
   expr <- flatten_with_sep(terms, list("+"))
   nd <- sql_node(source, count := list(expr),
                  orig_columns = TRUE)
-  nd$display_form <- paste0("count_null_cols(",
-                            paste(cols, collapse = ", "),
-                            ")")
+  if("relop" %in% class(nd)) {
+    nd$display_form <- paste0("count_null_cols(",
+                              paste(cols, collapse = ", "),
+                              ")")
+  }
   nd
 }
 
@@ -144,9 +146,11 @@ mark_null_cols <- function(source, cols) {
   names(terms) <- names(cols)
   nd <- sql_node(source, terms,
            orig_columns = TRUE)
-  nd$display_form <- paste0("mark_null_cols(",
-                            wrapr::map_to_char(cols),
-                            ")")
+  if("relop" %in% class(nd)) {
+    nd$display_form <- paste0("mark_null_cols(",
+                              wrapr::map_to_char(cols),
+                              ")")
+  }
   nd
 }
 
