@@ -83,8 +83,7 @@ if(use_spark) {
                       "create_options",
                       "USING PARQUET OPTIONS ('compression'='snappy')")
 } else {
-  # driver <- RPostgreSQL::PostgreSQL()
-  driver <- RPostgres::Postgres()
+  driver <- RPostgreSQL::PostgreSQL()
   my_db <- DBI::dbConnect(driver,
                           host = 'localhost',
                           port = 5432,
