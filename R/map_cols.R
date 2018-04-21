@@ -14,15 +14,18 @@
 #'                           ":memory:")
 #'
 #'   d <- dbi_copy_to(my_db, 'd',
-#'                    data.frame(a = c(1, 2, 1, 3),
-#'                               b = c(1, 1, 3, 2),
-#'                               c = c(1, 2, 3, 4)))
+#'                    data.frame(a = c("1", "2", "1", "3"),
+#'                               b = c("1", "1", "3", "2"),
+#'                               c = c("1", "2", "3", "4"),
+#'                               stringsAsFactors = FALSE),
+#'                    temporary = TRUE,
+#'                    overwrite = TRUE)
 #'   mp <- build_frame(
 #'       "column_name", "old_value", "new_value" |
-#'       "a"          , 1          , 10          |
-#'       "a"          , 2          , 20          |
-#'       "b"          , 1          , 100         |
-#'       "b"          , 3          , 300         )
+#'       "a"          , "1"        , "10"        |
+#'       "a"          , "2"        , "20"        |
+#'       "b"          , "1"        , "100"       |
+#'       "b"          , "3"        , "300"       )
 #'
 #'   # example
 #'   op_tree <- d %.>%
@@ -43,6 +46,7 @@ map_column_values <- function(source, colmap,
                               null_default = FALSE) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::map_column_values")
+  colmap_name <- as.character(substitute(colmap))[[1]]
   cols <- column_names(source)
   targets <- intersect(cols,
                        sort(unique(colmap$column_name)))
@@ -74,8 +78,8 @@ map_column_values <- function(source, colmap,
   nd <- sql_node(source, terms,
                  orig_columns = TRUE)
   if("relop" %in% class(nd)) {
-    nd$display_form <- paste0("mark_null_cols(",
-                              wrapr::map_to_char(cols),
+    nd$display_form <- paste0("map_column_values(., ",
+                              colmap_name,
                               ")")
   }
   nd

@@ -137,9 +137,7 @@ column_names.relop_sql <- function (x, ...) {
 #' @export
 format_node.relop_sql <- function(node) {
   if(!is.null(node$display_form)) {
-    str <- paste0(trimws(format(node$source[[1]]), which = "right"),
-           " %.>%\n ",
-           "sql_node(.,\n",
+    str <- paste0("sql_node(.,\n",
            "          ", node$display_form,
            ")\n")
     return(str)
