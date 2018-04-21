@@ -181,9 +181,10 @@ prep_sql_toks <- function(db, ei) {
                 function(eij) {
                   if(is.list(eij)) {
                     eij <- eij[[1]]
-                    if(is.character(eij)) {
-                      return(quote_string(db, eij))
+                    if(is.character(eij) || is.factor(eij) ) {
+                      return(quote_string(db, as.character(eij)))
                     }
+                    return(quote_literal(db, eij))
                   }
                   if(is.name(eij)) {
                     return(quote_identifier(db, as.character(eij)))

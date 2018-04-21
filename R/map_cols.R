@@ -47,6 +47,17 @@ map_column_values <- function(source, colmap,
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::map_column_values")
   colmap_name <- as.character(substitute(colmap))[[1]]
+  control_cols <- c("column_name", "old_value", "new_value")
+  missing <- setdiff(control_cols, colnames(colmap))
+  if(length(missing)>0) {
+    stop(paste("rquery::map_column_value colmap missing column(s):",
+               paste(missing, collapse = ", ")))
+  }
+  for(ci in control_cols) {
+    if(is.factor(colmap[[ci]])) {
+      colmap[[ci]] <- as.character(ci)
+    }
+  }
   cols <- column_names(source)
   targets <- intersect(cols,
                        sort(unique(colmap$column_name)))
