@@ -20,7 +20,9 @@ r_optree_diagram <- function(optree, nextid, use_table_names) {
   table_name_out <- NULL # TODO: set this
   name = paste0("node_", nodeid)
   if("relop_table_source" %in% class(optree)) {
-    name <- paste("table", optree$table_name, sep = "_")
+    if(use_table_names) {
+      name <- paste("table", optree$table_name, sep = "_")
+    }
     table_name_in <- optree$table_name
   }
   label = format_node(optree)
