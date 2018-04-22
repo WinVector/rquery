@@ -168,19 +168,21 @@
 #&gt;   edge [decorate = true, arrowhead = normal]
 #&gt;   node [style=filled, fillcolor=lightgrey]
 #&gt; 
-#&gt; table_d [ shape = 'folder' , label = 'table(d)\l']
+#&gt; node_1 [ shape = 'folder' , label = 'table(d)\l']
 #&gt; 
 #&gt; node_2 [ shape = 'tab' , label = 'extend(.,\l  v := ifelse(AUC &gt; 0.5, R2, 1))\l']
 #&gt; 
 #&gt; node_3 [ shape = 'tab' , label = 'non_sql_node(., quantile_node(.))\l']
 #&gt; 
+#&gt; node_4 [ shape = 'folder' , label = 'table(d)\l']
+#&gt; 
 #&gt; node_5 [ shape = 'tab' , label = 'natural_join(.1, .2,  j= LEFT, by= AUC)\l']
 #&gt; 
 #&gt; node_6 [ shape = 'tab' , label = 'orderby(., AUC)\l']
-#&gt; table_d -&gt; node_2 [ label = '.']
+#&gt; node_1 -&gt; node_2 [ label = '.']
 #&gt; node_2 -&gt; node_3 [ label = '.']
 #&gt; node_3 -&gt; node_5 [ label = '.1']
-#&gt; table_d -&gt; node_5 [ label = '.2']
+#&gt; node_4 -&gt; node_5 [ label = '.2']
 #&gt; node_5 -&gt; node_6 [ label = '.']
 #&gt; }</div><div class='input'>
 <span class='kw'>if</span>(<span class='fu'>requireNamespace</span>(<span class='st'>"DiagrammeR"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {

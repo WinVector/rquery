@@ -153,6 +153,10 @@
 <a href="https://winvector.github.io/rquery/reference/select_columns.html"><code><a href="reference/select_columns.html">select_columns()</a></code></a>. This allows choice of columns (central to <code>SQL</code>), but is not a relational operator as it can damage row-uniqueness.</li>
 <li>
 <a href="https://winvector.github.io/rquery/reference/orderby.html"><code><a href="reference/orderby.html">orderby()</a></code></a>. Row order is not a concept in the relational algebra (and also not maintained in most <code>SQL</code> implementations). This operator is only useful when used with its <code>limit=</code> option, or as the last step as data comes out of the relation store and is moved to <code>R</code> (where row-order is usually maintained).</li>
+<li>
+<a href="https://winvector.github.io/rquery/reference/map_column_values.html"><code><a href="reference/map_column_values.html">map_column_values()</a></code></a> re-map values in columns (very useful for re-coding data).</li>
+<li>
+<a href="https://winvector.github.io/rquery/reference/union_all.html"><code><a href="reference/union_all.html">union_all()</a></code></a> concatenate tables.</li>
 </ul>
 <p>The primary missing relational operators are:</p>
 <ul>
@@ -349,13 +353,13 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
        `d`.`assessmentTotal`
       FROM
        `d` LIMIT 1000
-      ) tsql_14277560698131879320_0000000000
-     ) tsql_14277560698131879320_0000000001
-   ) tsql_14277560698131879320_0000000002
-  ) tsql_14277560698131879320_0000000003
+      ) tsql_68075052090926165648_0000000000
+     ) tsql_68075052090926165648_0000000001
+   ) tsql_68075052090926165648_0000000002
+  ) tsql_68075052090926165648_0000000003
   WHERE `rank` = `count`
- ) tsql_14277560698131879320_0000000004
-) tsql_14277560698131879320_0000000005 ORDER BY `subjectID`</code></pre>
+ ) tsql_68075052090926165648_0000000004
+) tsql_68075052090926165648_0000000005 ORDER BY `subjectID`</code></pre>
 <p>The query is large, but due to its regular structure it should be very amenable to query optimization.</p>
 <p>A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our <a href="https://github.com/WinVector/rquery/blob/master/extras/PerfTest.html">initial experiments</a> show <code>rquery</code> narrowed queries to be twice as fast as un-narrowed <code>dplyr</code> on a synthetic problem simulating large disk-based queries. We think if we connected directly to <code>Spark</code>’s relational operators (avoiding the <code>SQL</code> layer) we may be able to achieve even faster performance.</p>
 <p>The above optimization is possible because the <code>rquery</code> representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query. For example:</p>

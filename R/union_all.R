@@ -2,7 +2,7 @@
 #' Make an union_all node (not a relational operation).
 #'
 #'
-#' Concantinate tables.
+#' Concatenate tables.
 #'
 #'
 #' @param sources list of relop trees or list of data.frames
