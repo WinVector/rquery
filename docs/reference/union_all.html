@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Set a database connection option. — getDBOption • rquery</title>
+<title>Make an union_all node (not a relational operation). — union_all • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -25,9 +25,9 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-<meta property="og:title" content="Set a database connection option. — getDBOption" />
+<meta property="og:title" content="Make an union_all node (not a relational operation). — union_all" />
 
-<meta property="og:description" content="Set a database connection option." />
+<meta property="og:description" content="Concantinate many tables." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -111,46 +111,63 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Set a database connection option.</h1>
-    <small>Source: <a href='https://github.com/WinVector/rquery//blob/master/R/dbi_ops.R'><code>R/dbi_ops.R</code></a></small>
-    <div class="hidden name"><code>getDBOption.Rd</code></div>
+    <h1>Make an union_all node (not a relational operation).</h1>
+    <small>Source: <a href='https://github.com/WinVector/rquery//blob/master/R/union_all.R'><code>R/union_all.R</code></a></small>
+    <div class="hidden name"><code>union_all.Rd</code></div>
     </div>
 
     
-    <p>Set a database connection option.</p>
+    <p>Concantinate many tables.</p>
     
 
-    <pre class="usage"><span class='fu'>getDBOption</span>(<span class='no'>db</span>, <span class='no'>optname</span>, <span class='no'>default</span>)</pre>
+    <pre class="usage"><span class='fu'>union_all</span>(<span class='no'>sources</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>db</th>
-      <td><p>DBI database connection handle.</p></td>
-    </tr>
-    <tr>
-      <th>optname</th>
-      <td><p>character, single option name.</p></td>
-    </tr>
-    <tr>
-      <th>default</th>
-      <td><p>what to return if not set.</p></td>
+      <th>sources</th>
+      <td><p>list of relop trees or list of data.frames</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>option value</p>
+    <p>order_by node or altered data.frame.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='kw'>if</span>(<span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
+<span class='kw'>if</span> (<span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
   <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
-  <span class='fu'>print</span>(<span class='fu'>getDBOption</span>(<span class='no'>my_db</span>, <span class='st'>"use_DBI_dbExecute"</span>))
+  <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dbi_copy_to.html'>dbi_copy_to</a></span>(<span class='no'>my_db</span>, <span class='st'>'d'</span>,
+                   <span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>0.6</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>0.2</span>))
+  <span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='fu'>union_all</span>(<span class='fu'>list</span>(<span class='no'>d</span>, <span class='no'>d</span>, <span class='no'>d</span>))
+  <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>optree</span>))
+  <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>optree</span>, <span class='no'>my_db</span>, <span class='kw'>limit</span> <span class='kw'>=</span> <span class='fl'>2</span>)
+  <span class='fu'>cat</span>(<span class='no'>sql</span>)
+  <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; NULL</div><div class='input'>
+}</div><div class='output co'>#&gt; union_all(.,
+#&gt;   table('d'),
+#&gt;  table('d'),
+#&gt;  table('d'))
+#&gt; SELECT  `AUC`, `R2`  FROM (   SELECT
+#&gt;   `d`.`AUC`,
+#&gt;   `d`.`R2`
+#&gt;  FROM
+#&gt;   `d` LIMIT 2 ) tsql_75894647292052804890_0000000000 UNION ALL SELECT  `AUC`, `R2`  FROM (   SELECT
+#&gt;   `d`.`AUC`,
+#&gt;   `d`.`R2`
+#&gt;  FROM
+#&gt;   `d` LIMIT 2 ) tsql_75894647292052804890_0000000001 UNION ALL SELECT  `AUC`, `R2`  FROM (   SELECT
+#&gt;   `d`.`AUC`,
+#&gt;   `d`.`R2`
+#&gt;  FROM
+#&gt;   `d` LIMIT 2 ) tsql_75894647292052804890_0000000002 LIMIT 2
+#&gt;   AUC  R2
+#&gt; 1 0.6 0.2
+#&gt; 2 0.6 0.2</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

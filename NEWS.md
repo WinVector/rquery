@@ -4,7 +4,7 @@
  * Add assign_slice().
  * Add if_else_op().
  * Work on printing/formatting.
- * Bug fixes.
+ * Bug fixes (esp on data.frame path).
  * Improve column ordering.
 
 # rquery 0.4.2 2018/04/05
