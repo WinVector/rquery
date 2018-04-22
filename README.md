@@ -74,8 +74,7 @@ if(use_spark) {
                       "create_options",
                       "USING PARQUET OPTIONS ('compression'='snappy')")
 } else {
-  # driver <- RPostgreSQL::PostgreSQL()
-  driver <- RPostgres::Postgres()
+  driver <- RPostgreSQL::PostgreSQL()
   my_db <- DBI::dbConnect(driver,
                           host = 'localhost',
                           port = 5432,
@@ -247,13 +246,13 @@ cat(to_sql(dq, my_db, source_limit = 1000))
            `d`.`assessmentTotal`
           FROM
            `d` LIMIT 1000
-          ) tsql_54107093499209463242_0000000000
-         ) tsql_54107093499209463242_0000000001
-       ) tsql_54107093499209463242_0000000002
-      ) tsql_54107093499209463242_0000000003
+          ) tsql_08099745089188270382_0000000000
+         ) tsql_08099745089188270382_0000000001
+       ) tsql_08099745089188270382_0000000002
+      ) tsql_08099745089188270382_0000000003
       WHERE `rank` = `count`
-     ) tsql_54107093499209463242_0000000004
-    ) tsql_54107093499209463242_0000000005 ORDER BY `subjectID`
+     ) tsql_08099745089188270382_0000000004
+    ) tsql_08099745089188270382_0000000005 ORDER BY `subjectID`
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
@@ -265,7 +264,7 @@ The above optimization is possible because the `rquery` representation is an int
 column_names(dq)
 ```
 
-    ## [1] "diagnosis"   "probability" "subjectID"
+    ## [1] "subjectID"   "diagnosis"   "probability"
 
 ``` r
 tables_used(dq)
@@ -351,12 +350,12 @@ dq %.>%
   execute(my_db, .)
 ```
 
-    ##   quantile_probability           diagnosis probability subjectID
-    ## 1                 0.00 positive re-framing   0.5589742         1
-    ## 2                 0.25 positive re-framing   0.5589742         1
-    ## 3                 0.50 positive re-framing   0.5589742         1
-    ## 4                 0.75 withdrawal behavior   0.6706221         2
-    ## 5                 1.00 withdrawal behavior   0.6706221         2
+    ##   quantile_probability subjectID           diagnosis probability
+    ## 1                 0.00         1 positive re-framing   0.5589742
+    ## 2                 0.25         1 positive re-framing   0.5589742
+    ## 3                 0.50         1 positive re-framing   0.5589742
+    ## 4                 0.75         2 withdrawal behavior   0.6706221
+    ## 5                 1.00         2 withdrawal behavior   0.6706221
 
 ``` r
 dq %.>% 

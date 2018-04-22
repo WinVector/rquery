@@ -85,7 +85,7 @@
       <h1>rquery Introduction</h1>
                         <h4 class="author">John Mount, Win-Vector LLC</h4>
             
-            <h4 class="date">2018-04-18</h4>
+            <h4 class="date">2018-04-22</h4>
       
       <small>Source: <a href="https://github.com/WinVector/rquery//blob/master/vignettes/rquery_intro.Rmd"><code>vignettes/rquery_intro.Rmd</code></a></small>
       <div class="hidden name"><code>rquery_intro.Rmd</code></div>
@@ -190,17 +190,17 @@ d &lt;-<span class="st"> </span><span class="kw"><a href="../reference/dbi_copy_
 <span class="st">  </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(., <span class="st">"absv"</span> <span class="op">:</span><span class="er">=</span><span class="st"> "ABS(v)"</span>) <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(., <span class="st">"delta"</span> <span class="op">:</span><span class="er">=</span><span class="st"> "absv - v"</span>)
 <span class="kw"><a href="../reference/execute.html">execute</a></span>(db, op_tree)</code></pre></div>
-<pre><code>##   absv  v delta
-## 1    1  1     0
-## 2    5 -5    10
-## 3    3  3     0</code></pre>
+<pre><code>##   absv delta  v
+## 1    1     0  1
+## 2    5    10 -5
+## 3    3     0  3</code></pre>
 <p>The above is what we call “piped <code>SQL</code>” and represents a major convenience for users as the details of how to compose the statements are left to the package. The <code><a href="../reference/sql_node.html">sql_node()</a></code> is a very powerful node. We will use it in our first few examples and move onto more convenient higher level relational nodes.</p>
 <p>We can view the <code>SQL</code> translation of the operations tree as follows:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(op_tree, db))</code></pre></div>
 <pre><code>SELECT
  `absv` AS `absv`,
- `v` AS `v`,
- absv - v AS `delta`
+ absv - v AS `delta`,
+ `v` AS `v`
 FROM (
  SELECT
   `v` AS `v`,
@@ -210,8 +210,8 @@ FROM (
    `d`.`v`
   FROM
    `d`
- ) tsql_10261969479269462199_0000000000
-) tsql_10261969479269462199_0000000001</code></pre>
+ ) tsql_43624071333984768186_0000000000
+) tsql_43624071333984768186_0000000001</code></pre>
 <p>Notice the above translations did not add identifier quotes to our use of “<code>v</code>” in “<code>ABS(v)</code>”. This is because the <code>SQL</code> expression is not parsed in <code>R</code>. If we want to identify terms as variables we can wrap them with <code>as.name()</code> or <code>quote()</code> to get the quoting (and other variable oriented features). The extra <code>SELECT</code> step to pull data from the inner table is used by <code>rquery</code> for important column narrowing steps, and can actually improve query performance.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">op_tree &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(., <span class="st">"absv"</span> <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">list</span>(<span class="kw">list</span>(<span class="st">"ABS("</span>, <span class="kw">quote</span>(v), <span class="st">")"</span>))) <span class="op">%.&gt;%</span>
@@ -219,8 +219,8 @@ FROM (
 <span class="kw">cat</span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(op_tree, db))</code></pre></div>
 <pre><code>SELECT
  `absv` AS `absv`,
- `v` AS `v`,
- `absv` - `v` AS `delta`
+ `absv` - `v` AS `delta`,
+ `v` AS `v`
 FROM (
  SELECT
   `v` AS `v`,
@@ -230,8 +230,8 @@ FROM (
    `d`.`v`
   FROM
    `d`
- ) tsql_14608459496423321893_0000000000
-) tsql_14608459496423321893_0000000001</code></pre>
+ ) tsql_84876686519218527200_0000000000
+) tsql_84876686519218527200_0000000001</code></pre>
 <p>The <code>list(list())</code> notation is how we say in <code>R</code> that we have a single element list (i.e. one expression) that is built up as a list of terms. The marking notation is cumbersome, but is not needed when we move on to relation nodes, which are parsed in <code>R</code> and can spot identifiers without additional help.</p>
 <p><code>op_tree</code> itself is a an object with its own presentation format:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw">format</span>(op_tree))</code></pre></div>
@@ -244,7 +244,7 @@ FROM (
 ##              *=TRUE)</code></pre>
 <p><code>op_tree</code> stores an number of important summaries about the proposed query:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/column_names.html">column_names</a></span>(op_tree)</code></pre></div>
-<pre><code>## [1] "delta" "absv"  "v"</code></pre>
+<pre><code>## [1] "absv"  "delta" "v"</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/tables_used.html">tables_used</a></span>(op_tree)</code></pre></div>
 <pre><code>## [1] "d"</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/columns_used.html">columns_used</a></span>(op_tree)</code></pre></div>
@@ -321,10 +321,10 @@ op_tree_count_null &lt;-<span class="st"> </span>d2 <span class="op">%.&gt;%</sp
 sql &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(op_tree_count_null, db)
 <span class="kw">cat</span>(sql)</code></pre></div>
 <pre><code>## SELECT
-##  `v1` AS `v1`,
-##  `v2` AS `v2`,
 ##  `v3` AS `v3`,
-##  0 + (CASE WHEN ( `v1` IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( `v2` IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( `v3` IS NULL ) THEN 1.0 ELSE 0.0 END) AS `num_missing`
+##  0 + (CASE WHEN ( `v1` IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( `v2` IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( `v3` IS NULL ) THEN 1.0 ELSE 0.0 END) AS `num_missing`,
+##  `v1` AS `v1`,
+##  `v2` AS `v2`
 ## FROM (
 ##  SELECT
 ##   `d2`.`v1`,
@@ -332,24 +332,24 @@ sql &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.
 ##   `d2`.`v3`
 ##  FROM
 ##   `d2`
-## ) tsql_56156364623583653063_0000000000</code></pre>
+## ) tsql_79987427926473263315_0000000000</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># execute</span>
 <span class="kw"><a href="../reference/execute.html">execute</a></span>(db, op_tree_count_null)</code></pre></div>
-<pre><code>##   v1   v2 v3 num_missing
-## 1  1 &lt;NA&gt; NA           2
-## 2  2    b NA           1
-## 3 NA &lt;NA&gt;  7           2
-## 4  3    c  8           0</code></pre>
+<pre><code>##   v3 num_missing v1   v2
+## 1 NA           2  1 &lt;NA&gt;
+## 2 NA           1  2    b
+## 3  7           2 NA &lt;NA&gt;
+## 4  8           0  3    c</code></pre>
 <p>And, as this is an important capability, this exact functionality is wrapped in <a href="https://winvector.github.io/rquery/reference/count_null_cols.html"><code><a href="../reference/count_null_cols.html">count_null_cols()</a></code></a>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># whole process wrapped in convenience node</span>
 d2 <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/count_null_cols.html">count_null_cols</a></span>(., vars, <span class="st">"nnull"</span>) <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/execute.html">execute</a></span>(db, .)</code></pre></div>
-<pre><code>##   v1   v2 v3 nnull
-## 1  1 &lt;NA&gt; NA     2
-## 2  2    b NA     1
-## 3 NA &lt;NA&gt;  7     2
-## 4  3    c  8     0</code></pre>
+<pre><code>##   v3 nnull v1   v2
+## 1 NA     2  1 &lt;NA&gt;
+## 2 NA     1  2    b
+## 3  7     2 NA &lt;NA&gt;
+## 4  8     0  3    c</code></pre>
 </div>
 </div>
 <div id="working-with-sets-of-columns" class="section level2">
@@ -368,12 +368,12 @@ s_tree &lt;-<span class="st"> </span>d2 <span class="op">%.&gt;%</span>
                <span class="st">"CASE WHEN . IS NULL THEN 1 ELSE 0 END"</span>)
 <span class="kw">cat</span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(s_tree, db))</code></pre></div>
 <pre><code>## SELECT
-##  CASE WHEN `v1` IS NULL THEN 1 ELSE 0 END AS `v1_isNA`,
-##  CASE WHEN `v2` IS NULL THEN 1 ELSE 0 END AS `v2_isNA`,
-##  CASE WHEN `v3` IS NULL THEN 1 ELSE 0 END AS `v3_isNA`,
 ##  v1 AS `v1`,
 ##  v2 AS `v2`,
-##  v3 AS `v3`
+##  v3 AS `v3`,
+##  CASE WHEN `v1` IS NULL THEN 1 ELSE 0 END AS `v1_isNA`,
+##  CASE WHEN `v2` IS NULL THEN 1 ELSE 0 END AS `v2_isNA`,
+##  CASE WHEN `v3` IS NULL THEN 1 ELSE 0 END AS `v3_isNA`
 ## FROM (
 ##  SELECT
 ##   `d2`.`v1`,
@@ -381,13 +381,13 @@ s_tree &lt;-<span class="st"> </span>d2 <span class="op">%.&gt;%</span>
 ##   `d2`.`v3`
 ##  FROM
 ##   `d2`
-## ) tsql_13539715136699559823_0000000000</code></pre>
+## ) tsql_14678635416292546319_0000000000</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/execute.html">execute</a></span>(db, s_tree)</code></pre></div>
-<pre><code>##   v1_isNA v2_isNA v3_isNA v1   v2 v3
-## 1       0       1       1  1 &lt;NA&gt; NA
-## 2       0       0       1  2    b NA
-## 3       1       1       0 NA &lt;NA&gt;  7
-## 4       0       0       0  3    c  8</code></pre>
+<pre><code>##   v1   v2 v3 v1_isNA v2_isNA v3_isNA
+## 1  1 &lt;NA&gt; NA       0       1       1
+## 2  2    b NA       0       0       1
+## 3 NA &lt;NA&gt;  7       1       1       0
+## 4  3    c  8       0       0       0</code></pre>
 </div>
 </div>
 <div id="sql-first" class="section level1">
@@ -405,20 +405,20 @@ s_tree &lt;-<span class="st"> </span>d2 <span class="op">%.&gt;%</span>
 
 <span class="kw">data.frame</span>(<span class="dt">v =</span> <span class="op">-</span><span class="dv">2</span><span class="op">:</span><span class="dv">2</span>) <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/execute.html">execute</a></span>(., op_tree)</code></pre></div>
-<pre><code>##   delta absv  v prod
-## 1     4    2 -2    8
-## 2     2    1 -1    2
-## 3     0    0  0    0
-## 4     0    1  1    0
-## 5     0    2  2    0</code></pre>
+<pre><code>##    v prod absv delta
+## 1 -2    8    2     4
+## 2 -1    2    1     2
+## 3  0    0    0     0
+## 4  1    0    1     0
+## 5  2    0    2     0</code></pre>
 <p>When using the <code>wrapr</code> dot pipe the above can be abbreviated as:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data.frame</span>(<span class="dt">v =</span> <span class="op">-</span><span class="dv">2</span><span class="op">:</span><span class="dv">2</span>) <span class="op">%.&gt;%</span><span class="st"> </span>op_tree</code></pre></div>
-<pre><code>##   delta absv  v prod
-## 1     4    2 -2    8
-## 2     2    1 -1    2
-## 3     0    0  0    0
-## 4     0    1  1    0
-## 5     0    2  2    0</code></pre>
+<pre><code>##    v prod absv delta
+## 1 -2    8    2     4
+## 2 -1    2    1     2
+## 3  0    0    0     0
+## 4  1    0    1     0
+## 5  2    0    2     0</code></pre>
 <p>The above calculation is managed by <a href="https://github.com/WinVector/wrapr/blob/master/extras/wrapr_pipe.pdf"><code>wrapr</code> dot pipe <code>S3</code> <code>wrapr_function</code></a> extensions.</p>
 <p><code>rquery</code> operators can be used directly (without any table description nodes) when working with in-memory <code>data.frame</code>s.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data.frame</span>(<span class="dt">x =</span> <span class="dv">5</span>) <span class="op">%.&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(., <span class="st">"z"</span> <span class="op">:</span><span class="er">=</span><span class="st"> "sqrt(x)"</span>)</code></pre></div>
@@ -473,7 +473,7 @@ s_tree &lt;-<span class="st"> </span>d2 <span class="op">%.&gt;%</span>
 ##   `d`.`v`
 ##  FROM
 ##   `d`
-##  ) tsql_04008858937080904322_0000000000</code></pre>
+##  ) tsql_84559367978246666531_0000000000</code></pre>
 <pre><code>## NULL</code></pre>
 <p>The exact translation depends on the database (which is why <code><a href="../reference/to_sql.html">to_sql()</a></code> takes a database argument). Some care has to be taken as <code>SQL</code> types are different than <code>R</code> types (in particular for some databases logical types are not numeric).</p>
 <p>With a database that supplies window functions one can quickly work the “logistic scoring by hand” example from<br>
@@ -510,7 +510,7 @@ dq &lt;-<span class="st"> </span><span class="kw"><a href="../reference/table_so
 <pre><code>## $d3
 ## [1] "subjectID"       "surveyCategory"  "assessmentTotal"</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/column_names.html">column_names</a></span>(dq)</code></pre></div>
-<pre><code>## [1] "diagnosis"   "probability" "subjectID"</code></pre>
+<pre><code>## [1] "subjectID"   "diagnosis"   "probability"</code></pre>
 <p>To see the query executed, please see <a href="https://github.com/WinVector/rquery/blob/master/README.html">here</a>.</p>
 </div>
 <div id="non-sql-nodes" class="section level1">
@@ -522,10 +522,10 @@ dq &lt;-<span class="st"> </span><span class="kw"><a href="../reference/table_so
 <span class="st">  </span><span class="kw"><a href="../reference/rsummary_node.html">rsummary_node</a></span>(.) <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/execute.html">execute</a></span>(db, .)</code></pre></div>
 <pre><code>##   column index   class nrows nna nunique min max       mean        sd
-## 1  delta     1 numeric     3   0      NA   0  10  3.3333333  5.773503
-## 2   absv     2 numeric     3   0      NA   1   5  3.0000000  2.000000
-## 3      v     3 numeric     3   0      NA  -5   3 -0.3333333  4.163332
-## 4   prod     4 numeric     3   0      NA   0  50 16.6666667 28.867513
+## 1      v     1 numeric     3   0      NA  -5   3 -0.3333333  4.163332
+## 2   prod     2 numeric     3   0      NA   0  50 16.6666667 28.867513
+## 3   absv     3 numeric     3   0      NA   1   5  3.0000000  2.000000
+## 4  delta     4 numeric     3   0      NA   0  10  3.3333333  5.773503
 ##   lexmin lexmax
 ## 1     NA     NA
 ## 2     NA     NA
@@ -622,7 +622,7 @@ dq &lt;-<span class="st"> </span><span class="kw"><a href="../reference/table_so
 ##   `d6`.`e`
 ##  FROM
 ##   `d6`
-##  ) tsql_17377693175408434909_0000000000</code></pre>
+##  ) tsql_09803076754143588444_0000000000</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># longer pipeline</span>
 wn &lt;-<span class="st"> </span>wp <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/select_columns.html">select_columns</a></span>(., <span class="st">"res"</span>)
@@ -644,8 +644,8 @@ wn &lt;-<span class="st"> </span>wp <span class="op">%.&gt;%</span>
 ##    `d6`.`b`
 ##   FROM
 ##    `d6`
-##   ) tsql_31868598641219554033_0000000000
-## ) tsql_31868598641219554033_0000000001</code></pre>
+##   ) tsql_75608174953418132668_0000000000
+## ) tsql_75608174953418132668_0000000001</code></pre>
 <p>A graph of the the effects of this kind of narrowing (for <code>dplyr</code> by hand as <code>dplyr</code> currently does not have the above type of automatic query analysis/optimization) shows the sensitivity to this optimization.</p>
 <blockquote>
 <p><img src="present-2.png"></p>

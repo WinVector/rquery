@@ -41,13 +41,15 @@ column_names <- function (x, ...) {
   UseMethod("column_names", x)
 }
 
+
+
 #' @export
 column_names.relop <- function (x, ...) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::column_names.relop")
-  subs <- lapply(x$source,
-                 column_names)
-  return(sort(unique(unlist(subs))))
+  inputs <- unlist(lapply(x$source,
+                          column_names))
+  inputs[!duplicated(inputs)]
 }
 
 #' @export

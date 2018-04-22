@@ -181,8 +181,7 @@ use_spark &lt;-<span class="st"> </span><span class="ot">TRUE</span>
                       <span class="st">"create_options"</span>,
                       <span class="st">"USING PARQUET OPTIONS ('compression'='snappy')"</span>)
 } <span class="cf">else</span> {
-  <span class="co"># driver &lt;- RPostgreSQL::PostgreSQL()</span>
-  driver &lt;-<span class="st"> </span>RPostgres<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/RPostgres/topics/Postgres">Postgres</a></span>()
+  driver &lt;-<span class="st"> </span>RPostgreSQL<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/RPostgreSQL/topics/PostgreSQL">PostgreSQL</a></span>()
   my_db &lt;-<span class="st"> </span>DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbConnect">dbConnect</a></span>(driver,
                           <span class="dt">host =</span> <span class="st">'localhost'</span>,
                           <span class="dt">port =</span> <span class="dv">5432</span>,
@@ -350,18 +349,18 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
        `d`.`assessmentTotal`
       FROM
        `d` LIMIT 1000
-      ) tsql_93657384756971485077_0000000000
-     ) tsql_93657384756971485077_0000000001
-   ) tsql_93657384756971485077_0000000002
-  ) tsql_93657384756971485077_0000000003
+      ) tsql_15742809131865705802_0000000000
+     ) tsql_15742809131865705802_0000000001
+   ) tsql_15742809131865705802_0000000002
+  ) tsql_15742809131865705802_0000000003
   WHERE `rank` = `count`
- ) tsql_93657384756971485077_0000000004
-) tsql_93657384756971485077_0000000005 ORDER BY `subjectID`</code></pre>
+ ) tsql_15742809131865705802_0000000004
+) tsql_15742809131865705802_0000000005 ORDER BY `subjectID`</code></pre>
 <p>The query is large, but due to its regular structure it should be very amenable to query optimization.</p>
 <p>A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our <a href="https://github.com/WinVector/rquery/blob/master/extras/PerfTest.html">initial experiments</a> show <code>rquery</code> narrowed queries to be twice as fast as un-narrowed <code>dplyr</code> on a synthetic problem simulating large disk-based queries. We think if we connected directly to <code>Spark</code>’s relational operators (avoiding the <code>SQL</code> layer) we may be able to achieve even faster performance.</p>
 <p>The above optimization is possible because the <code>rquery</code> representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query. For example:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/column_names.html">column_names</a></span>(dq)</code></pre></div>
-<pre><code>## [1] "diagnosis"   "probability" "subjectID"</code></pre>
+<pre><code>## [1] "subjectID"   "diagnosis"   "probability"</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/tables_used.html">tables_used</a></span>(dq)</code></pre></div>
 <pre><code>## [1] "d"</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/columns_used.html">columns_used</a></span>(dq)</code></pre></div>
@@ -419,12 +418,12 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dq <span class="op">%.&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw"><a href="reference/quantile_node.html">quantile_node</a></span>(.) <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="reference/execute.html">execute</a></span>(my_db, .)</code></pre></div>
-<pre><code>##   quantile_probability           diagnosis probability subjectID
-## 1                 0.00 positive re-framing   0.5589742         1
-## 2                 0.25 positive re-framing   0.5589742         1
-## 3                 0.50 positive re-framing   0.5589742         1
-## 4                 0.75 withdrawal behavior   0.6706221         2
-## 5                 1.00 withdrawal behavior   0.6706221         2</code></pre>
+<pre><code>##   quantile_probability subjectID           diagnosis probability
+## 1                 0.00         1 positive re-framing   0.5589742
+## 2                 0.25         1 positive re-framing   0.5589742
+## 3                 0.50         1 positive re-framing   0.5589742
+## 4                 0.75         2 withdrawal behavior   0.6706221
+## 5                 1.00         2 withdrawal behavior   0.6706221</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dq <span class="op">%.&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw"><a href="reference/rsummary_node.html">rsummary_node</a></span>(.) <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="reference/execute.html">execute</a></span>(my_db, .)</code></pre></div>

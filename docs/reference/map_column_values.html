@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Make a general SQL node. — sql_node • rquery</title>
+<title>Remap values in a set of columns. — map_column_values • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -25,9 +25,9 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-<meta property="og:title" content="Make a general SQL node. — sql_node" />
+<meta property="og:title" content="Remap values in a set of columns. — map_column_values" />
 
-<meta property="og:description" content="Make a general SQL node." />
+<meta property="og:description" content="Remap values in a set of columns." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -111,129 +111,93 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Make a general SQL node.</h1>
-    <small>Source: <a href='https://github.com/WinVector/rquery//blob/master/R/sql_node.R'><code>R/sql_node.R</code></a></small>
-    <div class="hidden name"><code>sql_node.Rd</code></div>
+    <h1>Remap values in a set of columns.</h1>
+    <small>Source: <a href='https://github.com/WinVector/rquery//blob/master/R/map_cols.R'><code>R/map_cols.R</code></a></small>
+    <div class="hidden name"><code>map_column_values.Rd</code></div>
     </div>
 
     
-    <p>Make a general SQL node.</p>
+    <p>Remap values in a set of columns.</p>
     
 
-    <pre class="usage"><span class='fu'>sql_node</span>(<span class='no'>source</span>, <span class='no'>exprs</span>, <span class='no'>...</span>, <span class='kw'>mods</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>orig_columns</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>map_column_values</span>(<span class='no'>source</span>, <span class='no'>colmap</span>, <span class='no'>...</span>, <span class='kw'>null_default</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>source</th>
-      <td><p>source to work from.</p></td>
+      <td><p>optree relnode or data.frame.</p></td>
     </tr>
     <tr>
-      <th>exprs</th>
-      <td><p>SQL expressions</p></td>
+      <th>colmap</th>
+      <td><p>data.frame with columns column_name, old_value, new_value.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>force later arguments to bind by name</p></td>
+      <td><p>force later arguments to bind by name.</p></td>
     </tr>
     <tr>
-      <th>mods</th>
-      <td><p>SQL modifiers (GROUP BY, ORDER BY, and so on)</p></td>
-    </tr>
-    <tr>
-      <th>orig_columns</th>
-      <td><p>logical if TRUE select all original columns.</p></td>
+      <th>null_default</th>
+      <td><p>logical, if TRUE map non-matching values to NULL (else they map to self).</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>sql node.</p>
+    <p>implementing optree or altered data.frame</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
 <span class='kw'>if</span> (<span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
-  <span class='co'># example database connection</span>
   <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(),
                           <span class='st'>":memory:"</span>)
-  <span class='co'># load up example data</span>
-  <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dbi_copy_to.html'>dbi_copy_to</a></span>(
-    <span class='no'>my_db</span>, <span class='st'>'d'</span>,
-    <span class='fu'>data.frame</span>(<span class='kw'>v1</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>NA</span>, <span class='fl'>3</span>),
-               <span class='kw'>v2</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>NA</span>, <span class='st'>"b"</span>, <span class='fl'>NA</span>, <span class='st'>"c"</span>),
-               <span class='kw'>v3</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>NA</span>, <span class='fl'>NA</span>, <span class='fl'>7</span>, <span class='fl'>8</span>),
-               <span class='kw'>stringsAsFactors</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>))
 
-  <span class='co'># look at table</span>
-  <span class='fu'><a href='execute.html'>execute</a></span>(<span class='no'>my_db</span>, <span class='no'>d</span>)
+  <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dbi_copy_to.html'>dbi_copy_to</a></span>(<span class='no'>my_db</span>, <span class='st'>'d'</span>,
+                   <span class='fu'>data.frame</span>(<span class='kw'>a</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"1"</span>, <span class='st'>"2"</span>, <span class='st'>"1"</span>, <span class='st'>"3"</span>),
+                              <span class='kw'>b</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"1"</span>, <span class='st'>"1"</span>, <span class='st'>"3"</span>, <span class='st'>"2"</span>),
+                              <span class='kw'>c</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"1"</span>, <span class='st'>"2"</span>, <span class='st'>"3"</span>, <span class='st'>"4"</span>),
+                              <span class='kw'>stringsAsFactors</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>),
+                   <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+                   <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+  <span class='no'>mp</span> <span class='kw'>&lt;-</span> <span class='fu'>build_frame</span>(
+      <span class='st'>"column_name"</span>, <span class='st'>"old_value"</span>, <span class='st'>"new_value"</span> <span class='kw'>|</span>
+      <span class='st'>"a"</span>          , <span class='st'>"1"</span>        , <span class='st'>"10"</span>        <span class='kw'>|</span>
+      <span class='st'>"a"</span>          , <span class='st'>"2"</span>        , <span class='st'>"20"</span>        <span class='kw'>|</span>
+      <span class='st'>"b"</span>          , <span class='st'>"1"</span>        , <span class='st'>"100"</span>       <span class='kw'>|</span>
+      <span class='st'>"b"</span>          , <span class='st'>"3"</span>        , <span class='st'>"300"</span>       )
 
-  <span class='co'># get list of columns</span>
-  <span class='no'>vars</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='column_names.html'>column_names</a></span>(<span class='no'>d</span>)
-  <span class='fu'>print</span>(<span class='no'>vars</span>)
-
-  <span class='co'># build a NA/NULLs per-row counting expression.</span>
-  <span class='co'># names are "quoted" by wrapping them with as.name().</span>
-  <span class='co'># constants can be quoted by an additional list wrapping.</span>
-  <span class='no'>expr</span> <span class='kw'>&lt;-</span> <span class='fu'>lapply</span>(<span class='no'>vars</span>,
-                 <span class='kw'>function</span>(<span class='no'>vi</span>) {
-                   <span class='fu'>list</span>(<span class='st'>"+ (CASE WHEN ("</span>,
-                        <span class='fu'>as.name</span>(<span class='no'>vi</span>),
-                        <span class='st'>"IS NULL ) THEN 1.0 ELSE 0.0 END)"</span>)
-                 })
-  <span class='no'>expr</span> <span class='kw'>&lt;-</span> <span class='fu'>unlist</span>(<span class='no'>expr</span>, <span class='kw'>recursive</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
-  <span class='no'>expr</span> <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='fu'>list</span>(<span class='fl'>0.0</span>), <span class='no'>expr</span>)
-  <span class='fu'>cat</span>(<span class='fu'>paste</span>(<span class='fu'>unlist</span>(<span class='no'>expr</span>), <span class='kw'>collapse</span> <span class='kw'>=</span> <span class='st'>" "</span>))
-
-  <span class='co'># instantiate the operator node</span>
+  <span class='co'># example</span>
   <span class='no'>op_tree</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span>
-    <span class='fu'>sql_node</span>(<span class='no'>.</span>, <span class='st'>"num_missing"</span> <span class='kw'>:=</span> <span class='fu'>list</span>(<span class='no'>expr</span>))
+    <span class='fu'>map_column_values</span>(<span class='no'>.</span>, <span class='no'>mp</span>)
   <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>op_tree</span>))
-
-  <span class='co'># examine produced SQL</span>
   <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>op_tree</span>, <span class='no'>my_db</span>)
   <span class='fu'>cat</span>(<span class='no'>sql</span>)
+  <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
 
-  <span class='co'># execute</span>
-  <span class='fu'><a href='execute.html'>execute</a></span>(<span class='no'>my_db</span>, <span class='no'>op_tree</span>) <span class='kw'>%.&gt;%</span>
-     <span class='fu'>print</span>(<span class='no'>.</span>)
-
-  <span class='co'># whole process wrapped in convenience node</span>
-  <span class='no'>op_tree2</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span>
-    <span class='fu'><a href='count_null_cols.html'>count_null_cols</a></span>(<span class='no'>.</span>, <span class='no'>vars</span>, <span class='st'>"nnull"</span>)
-  <span class='fu'><a href='execute.html'>execute</a></span>(<span class='no'>my_db</span>, <span class='no'>op_tree2</span>) <span class='kw'>%.&gt;%</span>
-    <span class='fu'>print</span>(<span class='no'>.</span>)
-
+  <span class='co'># cleanup</span>
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; [1] "v1" "v2" "v3"
-#&gt; 0 + (CASE WHEN ( v1 IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( v2 IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( v3 IS NULL ) THEN 1.0 ELSE 0.0 END)table('d') %.&gt;%
+}</div><div class='output co'>#&gt; table('d') %.&gt;%
 #&gt;  sql_node(.,
-#&gt;           num_missing := 0 + (CASE WHEN ( v1 IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( v2 IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( v3 IS NULL ) THEN 1.0 ELSE 0.0 END),
-#&gt;              *=TRUE)
+#&gt;           map_column_values(., mp))
 #&gt; SELECT
-#&gt;  `v3` AS `v3`,
-#&gt;  0 + (CASE WHEN ( `v1` IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( `v2` IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( `v3` IS NULL ) THEN 1.0 ELSE 0.0 END) AS `num_missing`,
-#&gt;  `v1` AS `v1`,
-#&gt;  `v2` AS `v2`
+#&gt;  CASE  WHEN  `a`  =  '1'  THEN  '10' WHEN  `a`  =  '2'  THEN  '20'  ELSE  `a`  END AS `a`,
+#&gt;  CASE  WHEN  `b`  =  '1'  THEN  '100' WHEN  `b`  =  '3'  THEN  '300'  ELSE  `b`  END AS `b`,
+#&gt;  `c` AS `c`
 #&gt; FROM (
 #&gt;  SELECT
-#&gt;   `d`.`v1`,
-#&gt;   `d`.`v2`,
-#&gt;   `d`.`v3`
+#&gt;   `d`.`a`,
+#&gt;   `d`.`b`,
+#&gt;   `d`.`c`
 #&gt;  FROM
 #&gt;   `d`
-#&gt; ) tsql_94419121412537757922_0000000000
-#&gt;   v3 num_missing v1   v2
-#&gt; 1 NA           2  1 &lt;NA&gt;
-#&gt; 2 NA           1  2    b
-#&gt; 3  7           2 NA &lt;NA&gt;
-#&gt; 4  8           0  3    c
-#&gt;   v3 nnull v1   v2
-#&gt; 1 NA     2  1 &lt;NA&gt;
-#&gt; 2 NA     1  2    b
-#&gt; 3  7     2 NA &lt;NA&gt;
-#&gt; 4  8     0  3    c</div><div class='input'>
+#&gt; ) tsql_88302928905267838870_0000000000
+#&gt;    a   b c
+#&gt; 1 10 100 1
+#&gt; 2 20 100 2
+#&gt; 3 10 300 3
+#&gt; 4  3   2 4</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

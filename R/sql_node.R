@@ -1,4 +1,17 @@
 
+# order new_names to try and capture as much
+# of old_names order as possible (old_names can have duplicates
+# and overalp with new_names)
+#
+# ex: order(names(c("a", "b", "c"), c("d", "b", "a")))
+# # c("a", "b", "d")
+order_names <- function(old_names, new_names) {
+  old_names <- c(old_names, new_names)
+  idxs <- match(new_names, old_names)
+  idxs <- rank(idxs)
+  new_names[idxs]
+}
+
 
 #' Make a general SQL node.
 #'
@@ -93,11 +106,18 @@ sql_node.relop <- function(source, exprs,
   if(length(unique(names(exprs)))!=length(exprs)) {
     stop("rquery::sql_node bad assignment name")
   }
+  srcnames <- column_names(source)
+  newnames <- names(exprs)
+  if(orig_columns) {
+    newnames <- c(newnames, setdiff(srcnames, newnames))
+  }
+  cols <- order_names(srcnames, newnames)
   r <- list(source = list(source),
             table_name = NULL,
             parsed = NULL,
             exprs = exprs,
             mods = mods,
+            cols = cols,
             orig_columns = orig_columns)
   r <- relop_decorate("relop_sql", r)
   r
@@ -124,12 +144,7 @@ sql_node.data.frame <- function(source, exprs,
 #' @export
 column_names.relop_sql <- function (x, ...) {
   wrapr::stop_if_dot_args(substitute(list(...)), "column_names.relop_sql")
-  nms <- names(x$exprs)
-  if(x$orig_columns) {
-    nms <- c(nms,
-             setdiff(column_names(x$source[[1]]), nms))
-  }
-  nms
+  x$cols
 }
 
 
@@ -214,6 +229,7 @@ to_sql.relop_sql <- function (x,
                        prep_sql_toks(db, ei)
                      }, character(1))
   cols <- paste(sqlexprs, "AS", colsA)
+  names(cols) <- names(x$exprs)
   if(x$orig_columns) {
     extras <- setdiff(column_names(x$source[[1]]),
                       names(x$exprs))
@@ -223,9 +239,12 @@ to_sql.relop_sql <- function (x,
                         quote_identifier(db, ci)
                       }, character(1))
       qcols <- paste(qcols, "AS", qcols)
+      names(qcols) <- extras
       cols <- c(qcols, cols)
     }
   }
+  cols <- cols[x$cols]
+  names(cols) <- NULL
   qlimit = limit
   if(!getDBOption(db, "use_pass_limit", TRUE)) {
     qlimit = NULL
