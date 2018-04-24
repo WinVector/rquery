@@ -1,5 +1,5 @@
 
-#' Make an union_all node (not a relational operation).
+#' Make an unionall node (not a relational operation).
 #'
 #'
 #' Concatenate tables.
@@ -14,7 +14,7 @@
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   d <- dbi_copy_to(my_db, 'd',
 #'                    data.frame(AUC = 0.6, R2 = 0.2))
-#'   optree <- union_all(list(d, d, d))
+#'   optree <- unionall(list(d, d, d))
 #'   cat(format(optree))
 #'   sql <- to_sql(optree, my_db, limit = 2)
 #'   cat(sql)
@@ -24,26 +24,26 @@
 #'
 #' @export
 #'
-union_all <- function(sources) {
+unionall <- function(sources) {
   if((!is.list(sources))||(length(sources)<2)) {
-    stop("rquery::union_all sources must be a list of length at least 2")
+    stop("rquery::unionall sources must be a list of length at least 2")
   }
   ns <- length(sources)
   if((!is.data.frame(sources[[1]])) &&
      (!("relop" %in% class(sources[[1]])))) {
-    stop("rquery::union_all sources[[1]] must be a data.frame of of class relop.")
+    stop("rquery::unionall sources[[1]] must be a data.frame of of class relop.")
   }
   cols <- column_names(sources[[1]])
   for(i in 2:ns) {
     ci <- column_names(sources[[i]])
     if(!isTRUE(all.equal(cols, ci))) {
-      stop("rquery::union_all all sources must have identical column structure")
+      stop("rquery::unionall all sources must have identical column structure")
     }
   }
   if(is.data.frame(sources[[1]])) {
     for(i in 2:ns) {
       if(!is.data.frame(sources[[i]])) {
-        stop("rquery::union_all when sources[[1]]] is a data.frame, all other sources must also be data.frames.")
+        stop("rquery::unionall when sources[[1]]] is a data.frame, all other sources must also be data.frames.")
       }
     }
     tmp_name_source <- mk_tmp_name_source("rquery_tmp")
@@ -54,45 +54,45 @@ union_all <- function(sources) {
                             dnode$data <- sources[[i]]
                             dnode
                           })
-    return(union_all(sources_tmp))
+    return(unionall(sources_tmp))
   }
   # leave in redundant check to document intent and make invariants obvious
   if(!("relop" %in% class(sources[[1]]))) {
-    stop("rquery::union_all when sources[[1]]] is not a data.frame it must have class relop.")
+    stop("rquery::unionall when sources[[1]]] is not a data.frame it must have class relop.")
   }
   for(i in 2:ns) {
     if(!("relop" %in% class(sources[[i]]))) {
-      stop("rquery::union_all when sources[[1]]] is of class relop, all other sources must also be of class relop.")
+      stop("rquery::unionall when sources[[1]]] is of class relop, all other sources must also be of class relop.")
     }
   }
   r <- list(source = sources,
             table_name = NULL,
             parsed = NULL,
             cols = cols)
-  r <- relop_decorate("relop_union_all", r)
+  r <- relop_decorate("relop_unionall", r)
   r
 }
 
 
 
 #' @export
-format_node.relop_union_all <- function(node) {
+format_node.relop_unionall <- function(node) {
   inps <- paste0(".", seq_len(length(node$source)))
-  paste0("union_all(",
+  paste0("unionall(",
          paste(inps, collapse = ", "),
          ")")
 }
 
 #' @export
-format.relop_union_all  <- function(x, ...) {
+format.relop_unionall  <- function(x, ...) {
   wrapr::stop_if_dot_args(substitute(list(...)),
-                          "format.relop_union_all")
+                          "format.relop_unionall")
   inputs <- vapply(x$source,
                    function(si) {
                      trimws(format(si), which = "right")
                    }, character(1))
   inputs <- trimws(inputs, which = "right")
-  paste0("union_all(.,\n",
+  paste0("unionall(.,\n",
          "  ", paste(inputs, collapse = ",\n "),
          ")",
          "\n")
@@ -100,14 +100,14 @@ format.relop_union_all  <- function(x, ...) {
 
 
 #' @export
-column_names.relop_union_all <- function (x, ...) {
+column_names.relop_unionall <- function (x, ...) {
   wrapr::stop_if_dot_args(substitute(list(...)),
-                          "rquery::column_names.relop_union_all")
+                          "rquery::column_names.relop_unionall")
   x$cols
 }
 
 #' @export
-columns_used.relop_union_all <- function (x, ...,
+columns_used.relop_unionall <- function (x, ...,
                                           using = NULL,
                                           contract = FALSE) {
   columns_used(x$source[[1]], using = using, contract = contract)
@@ -115,7 +115,7 @@ columns_used.relop_union_all <- function (x, ...,
 
 
 #' @export
-to_sql.relop_union_all <- function (x,
+to_sql.relop_unionall <- function (x,
                                     db,
                                     ...,
                                     limit = NULL,
@@ -125,7 +125,7 @@ to_sql.relop_union_all <- function (x,
                                     append_cr = TRUE,
                                     using = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)),
-                          "rquery::to_sql.relop_union_all")
+                          "rquery::to_sql.relop_unionall")
   qlimit = limit
   if(!getDBOption(db, "use_pass_limit", TRUE)) {
     qlimit = NULL

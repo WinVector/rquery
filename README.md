@@ -45,7 +45,7 @@ The primary non-relational (traditional `SQL`) operators are:
 -   [`select_columns()`](https://winvector.github.io/rquery/reference/select_columns.html). This allows choice of columns (central to `SQL`), but is not a relational operator as it can damage row-uniqueness.
 -   [`orderby()`](https://winvector.github.io/rquery/reference/orderby.html). Row order is not a concept in the relational algebra (and also not maintained in most `SQL` implementations). This operator is only useful when used with its `limit=` option, or as the last step as data comes out of the relation store and is moved to `R` (where row-order is usually maintained).
 -   [`map_column_values()`](https://winvector.github.io/rquery/reference/map_column_values.html) re-map values in columns (very useful for re-coding data).
--   [`union_all()`](https://winvector.github.io/rquery/reference/union_all.html) concatenate tables.
+-   [`unionall()`](https://winvector.github.io/rquery/reference/unionall.html) concatenate tables.
 
 The primary missing relational operators are:
 
@@ -248,13 +248,13 @@ cat(to_sql(dq, my_db, source_limit = 1000))
            `d`.`assessmentTotal`
           FROM
            `d` LIMIT 1000
-          ) tsql_83225507872906100957_0000000000
-         ) tsql_83225507872906100957_0000000001
-       ) tsql_83225507872906100957_0000000002
-      ) tsql_83225507872906100957_0000000003
+          ) tsql_77968893484998917084_0000000000
+         ) tsql_77968893484998917084_0000000001
+       ) tsql_77968893484998917084_0000000002
+      ) tsql_77968893484998917084_0000000003
       WHERE `rank` = `count`
-     ) tsql_83225507872906100957_0000000004
-    ) tsql_83225507872906100957_0000000005 ORDER BY `subjectID`
+     ) tsql_77968893484998917084_0000000004
+    ) tsql_77968893484998917084_0000000005 ORDER BY `subjectID`
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
