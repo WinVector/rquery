@@ -127,7 +127,9 @@ tokenize_call_for_SQL <- function(lexpr,
     }
     replacements <- list("==" = "=",
                          "&&" = "AND",
-                         "||" = "OR")
+                         "&" = "AND",
+                         "||" = "OR",
+                         "|" = "OR")
     replacement <- replacements[[callName]]
     if(!is.null(replacement)) {
       callName <- replacement

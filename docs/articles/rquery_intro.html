@@ -210,8 +210,8 @@ FROM (
    `d`.`v`
   FROM
    `d`
- ) tsql_81593308948973554777_0000000000
-) tsql_81593308948973554777_0000000001</code></pre>
+ ) tsql_32434430702326758902_0000000000
+) tsql_32434430702326758902_0000000001</code></pre>
 <p>Notice the above translations did not add identifier quotes to our use of “<code>v</code>” in “<code>ABS(v)</code>”. This is because the <code>SQL</code> expression is not parsed in <code>R</code>. If we want to identify terms as variables we can wrap them with <code>as.name()</code> or <code>quote()</code> to get the quoting (and other variable oriented features). The extra <code>SELECT</code> step to pull data from the inner table is used by <code>rquery</code> for important column narrowing steps, and can actually improve query performance.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">op_tree &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(., <span class="st">"absv"</span> <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">list</span>(<span class="kw">list</span>(<span class="st">"ABS("</span>, <span class="kw">quote</span>(v), <span class="st">")"</span>))) <span class="op">%.&gt;%</span>
@@ -230,8 +230,8 @@ FROM (
    `d`.`v`
   FROM
    `d`
- ) tsql_31825078809170104926_0000000000
-) tsql_31825078809170104926_0000000001</code></pre>
+ ) tsql_10094613497541162489_0000000000
+) tsql_10094613497541162489_0000000001</code></pre>
 <p>The <code>list(list())</code> notation is how we say in <code>R</code> that we have a single element list (i.e. one expression) that is built up as a list of terms. The marking notation is cumbersome, but is not needed when we move on to relation nodes, which are parsed in <code>R</code> and can spot identifiers without additional help.</p>
 <p><code>op_tree</code> itself is a an object with its own presentation format:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw">format</span>(op_tree))</code></pre></div>
@@ -332,7 +332,7 @@ sql &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.
 ##   `d2`.`v3`
 ##  FROM
 ##   `d2`
-## ) tsql_18535201877588715946_0000000000</code></pre>
+## ) tsql_26458818745344102027_0000000000</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># execute</span>
 <span class="kw"><a href="../reference/execute.html">execute</a></span>(db, op_tree_count_null)</code></pre></div>
 <pre><code>##   v3 num_missing v1   v2
@@ -381,7 +381,7 @@ s_tree &lt;-<span class="st"> </span>d2 <span class="op">%.&gt;%</span>
 ##   `d2`.`v3`
 ##  FROM
 ##   `d2`
-## ) tsql_98089668975722250645_0000000000</code></pre>
+## ) tsql_72016187010623285020_0000000000</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/execute.html">execute</a></span>(db, s_tree)</code></pre></div>
 <pre><code>##   v1   v2 v3 v1_isNA v2_isNA v3_isNA
 ## 1  1 &lt;NA&gt; NA       0       1       1
@@ -473,7 +473,7 @@ s_tree &lt;-<span class="st"> </span>d2 <span class="op">%.&gt;%</span>
 ##   `d`.`v`
 ##  FROM
 ##   `d`
-##  ) tsql_57621229257593014508_0000000000</code></pre>
+##  ) tsql_45344179540624862143_0000000000</code></pre>
 <pre><code>## NULL</code></pre>
 <p>The exact translation depends on the database (which is why <code><a href="../reference/to_sql.html">to_sql()</a></code> takes a database argument). Some care has to be taken as <code>SQL</code> types are different than <code>R</code> types (in particular for some databases logical types are not numeric).</p>
 <p>With a database that supplies window functions one can quickly work the “logistic scoring by hand” example from<br>
@@ -622,7 +622,7 @@ dq &lt;-<span class="st"> </span><span class="kw"><a href="../reference/table_so
 ##   `d6`.`e`
 ##  FROM
 ##   `d6`
-##  ) tsql_09857024615825776326_0000000000</code></pre>
+##  ) tsql_79234301403441978109_0000000000</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># longer pipeline</span>
 wn &lt;-<span class="st"> </span>wp <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/select_columns.html">select_columns</a></span>(., <span class="st">"res"</span>)
@@ -644,8 +644,8 @@ wn &lt;-<span class="st"> </span>wp <span class="op">%.&gt;%</span>
 ##    `d6`.`b`
 ##   FROM
 ##    `d6`
-##   ) tsql_20422959989292846522_0000000000
-## ) tsql_20422959989292846522_0000000001</code></pre>
+##   ) tsql_52405834663075902174_0000000000
+## ) tsql_52405834663075902174_0000000001</code></pre>
 <p>A graph of the the effects of this kind of narrowing (for <code>dplyr</code> by hand as <code>dplyr</code> currently does not have the above type of automatic query analysis/optimization) shows the sensitivity to this optimization.</p>
 <blockquote>
 <p><img src="present-2.png"></p>
