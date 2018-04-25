@@ -128,7 +128,7 @@ d <- dbi_table(my_db, "d")
 Note: in examples we use `dbi_copy_to()` to create data.  This is only for the purpose of having
 easy portable examples.  With big data the data is usually already in the remote database or
 Spark system. The task is almost always to connect and work with this pre-existing remote data
-and the method to do this is [`db_table()`](https://winvector.github.io/rquery/reference/dbi_table.html),
+and the method to do this is [`dbi_table()`](https://winvector.github.io/rquery/reference/dbi_table.html),
 which builds a reference to a remote table given the table name.
 
 First we show the Spark/database version of the original example data:

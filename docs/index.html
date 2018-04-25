@@ -246,7 +246,7 @@ dbopts &lt;-<span class="st"> </span><span class="kw"><a href="reference/dbi_con
 <pre><code>## [1] "table('d')"</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># produce a hande to existing table</span>
 d &lt;-<span class="st"> </span><span class="kw"><a href="reference/dbi_table.html">dbi_table</a></span>(my_db, <span class="st">"d"</span>)</code></pre></div>
-<p>Note: in examples we use <code><a href="reference/dbi_copy_to.html">dbi_copy_to()</a></code> to create data. This is only for the purpose of having easy portable examples. With big data the data is usually already in the remote database or Spark system. The task is almost always to connect and work with this pre-existing remote data and the method to do this is <a href="https://winvector.github.io/rquery/reference/dbi_table.html"><code>db_table()</code></a>, which builds a reference to a remote table given the table name.</p>
+<p>Note: in examples we use <code><a href="reference/dbi_copy_to.html">dbi_copy_to()</a></code> to create data. This is only for the purpose of having easy portable examples. With big data the data is usually already in the remote database or Spark system. The task is almost always to connect and work with this pre-existing remote data and the method to do this is <a href="https://winvector.github.io/rquery/reference/dbi_table.html"><code><a href="reference/dbi_table.html">dbi_table()</a></code></a>, which builds a reference to a remote table given the table name.</p>
 <p>First we show the Spark/database version of the original example data:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">class</span>(my_db)</code></pre></div>
 <pre><code>## [1] "spark_connection"       "spark_shell_connection"
@@ -358,13 +358,13 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
        `d`.`assessmentTotal`
       FROM
        `d` LIMIT 1000
-      ) tsql_11824031176948592432_0000000000
-     ) tsql_11824031176948592432_0000000001
-   ) tsql_11824031176948592432_0000000002
-  ) tsql_11824031176948592432_0000000003
+      ) tsql_24341363817702856013_0000000000
+     ) tsql_24341363817702856013_0000000001
+   ) tsql_24341363817702856013_0000000002
+  ) tsql_24341363817702856013_0000000003
   WHERE `rank` = `count`
- ) tsql_11824031176948592432_0000000004
-) tsql_11824031176948592432_0000000005 ORDER BY `subjectID`</code></pre>
+ ) tsql_24341363817702856013_0000000004
+) tsql_24341363817702856013_0000000005 ORDER BY `subjectID`</code></pre>
 <p>The query is large, but due to its regular structure it should be very amenable to query optimization.</p>
 <p>A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our <a href="https://github.com/WinVector/rquery/blob/master/extras/PerfTest.html">initial experiments</a> show <code>rquery</code> narrowed queries to be twice as fast as un-narrowed <code>dplyr</code> on a synthetic problem simulating large disk-based queries. We think if we connected directly to <code>Spark</code>’s relational operators (avoiding the <code>SQL</code> layer) we may be able to achieve even faster performance.</p>
 <p>The above optimization is possible because the <code>rquery</code> representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query. For example:</p>
