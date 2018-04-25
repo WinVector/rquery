@@ -169,6 +169,8 @@ tables_used.relop <- function(node, ...) {
 #' @param using character, if not NULL set of columns used from above.
 #' @return SQL command
 #'
+#' @seealso \code{\link{dbi_table}}, \code{\link{materialize}}, \code{\link{execute}}, \code{\link{dbi_copy_to}}, \code{\link{table_source}}
+#'
 #' @examples
 #'
 #' if (requireNamespace("RSQLite", quietly = TRUE)) {

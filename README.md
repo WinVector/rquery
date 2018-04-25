@@ -151,7 +151,7 @@ dbi_copy_to(my_db, 'd',
 d <- dbi_table(my_db, "d")
 ```
 
-Note: in examples we use `dbi_copy_to()` to create data. This is only for the purpose of having easy portable examples. With big data the data is usually already in the remote database or Spark system. The task is almost always to connect and work with this pre-existing remote data and the method to do this is [`dbi_table()`](https://winvector.github.io/rquery/reference/dbi_table.html), which builds a reference to a remote table given the table name.
+Note: in examples we use `dbi_copy_to()` to create data. This is only for the purpose of having easy portable examples. With big data the data is usually already in the remote database or Spark system. The task is almost always to connect and work with this pre-existing remote data and the method to do this is [`dbi_table()`](https://winvector.github.io/rquery/reference/dbi_table.html), which builds a reference to a remote table given the table name. The suggested pattern for working with remote tables is to get inputs via [`dbi_table()`](https://winvector.github.io/rquery/reference/dbi_table.html) and land remote results with [`materialze()`](https://winvector.github.io/rquery/reference/materialize.html). To work with local data one can copy data from memory to the database with [`dbi_copy_to()`](https://winvector.github.io/rquery/reference/dbi_copy_to.html) and bring back results with [`execute()`](https://winvector.github.io/rquery/reference/execute.html) (though be aware operation on remote non-memory data is `rquery`'s primary intent).
 
 First we show the Spark/database version of the original example data:
 
@@ -170,8 +170,7 @@ print(d)
 
 ``` r
 d %.>%
-  rquery::to_sql(., my_db) %.>%
-  DBI::dbGetQuery(my_db, .) %.>%
+  execute(my_db, .) %.>%
   knitr::kable(.)
 ```
 
@@ -258,13 +257,13 @@ cat(to_sql(dq, my_db, source_limit = 1000))
            `d`.`assessmentTotal`
           FROM
            `d` LIMIT 1000
-          ) tsql_85185637225538557087_0000000000
-         ) tsql_85185637225538557087_0000000001
-       ) tsql_85185637225538557087_0000000002
-      ) tsql_85185637225538557087_0000000003
+          ) tsql_13173500258931675108_0000000000
+         ) tsql_13173500258931675108_0000000001
+       ) tsql_13173500258931675108_0000000002
+      ) tsql_13173500258931675108_0000000003
       WHERE `rank` = `count`
-     ) tsql_85185637225538557087_0000000004
-    ) tsql_85185637225538557087_0000000005 ORDER BY `subjectID`
+     ) tsql_13173500258931675108_0000000004
+    ) tsql_13173500258931675108_0000000005 ORDER BY `subjectID`
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 

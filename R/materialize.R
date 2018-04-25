@@ -8,6 +8,8 @@
 #' @param temporary logical if TRUE try to create a temporary table.
 #' @return modified SQL
 #'
+#' @seealso \code{\link{materialize}}, \code{\link{dbi_table}}, \code{\link{execute}}, \code{\link{to_sql}}, \code{\link{dbi_copy_to}}, \code{\link{table_source}}
+#'
 #' @examples
 #'
 #' if(requireNamespace("RSQLite", quietly = TRUE)) {
@@ -65,7 +67,7 @@ materialize_sql_statement <- function(db, sql, table_name,
 #' @param temporary logical if TRUE try to create a temporary table.
 #' @return table handle
 #'
-#' @seealso \code{\link{execute}}
+#' @seealso \code{\link{dbi_table}}, \code{\link{execute}}, \code{\link{to_sql}}, \code{\link{dbi_copy_to}}, \code{\link{table_source}}
 #'
 #' @examples
 #'
@@ -216,7 +218,7 @@ materialize <- function(db,
 #' @param temporary logical if TRUE try to create a temporary table.
 #' @return data.frame or table handle.
 #'
-#' @seealso \code{\link{materialize}}, \code{\link{to_sql}}
+#' @seealso \code{\link{materialize}}, \code{\link{dbi_table}}, \code{\link{to_sql}}, \code{\link{dbi_copy_to}}, \code{\link{table_source}}
 #'
 #' @examples
 #'

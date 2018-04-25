@@ -123,7 +123,7 @@ connection_is_spark <- function(db) {
 #' @param rowidcolumn character, name to land row-ids.
 #' @return a relop representation of the data
 #'
-#' @seealso \code{\link{dbi_table}}
+#' @seealso \code{\link{dbi_table}}, \code{\link{table_source}}, \code{\link{materialize}}, \code{\link{execute}}, \code{\link{to_sql}}
 #'
 #' @examples
 #'

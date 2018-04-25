@@ -32,7 +32,7 @@
 #'   DBI::dbDisconnect(my_db)
 #' }
 #'
-#' @seealso \code{\link{dbi_table}}
+#' @seealso \code{\link{dbi_table}}, \code{\link{dbi_copy_to}}, \code{\link{materialize}}, \code{\link{execute}}, code{\link{to_sql}}
 #'
 #' @export
 #'
@@ -66,7 +66,7 @@ table_source <- function(table_name, columns) {
 #' @param table_name name of table
 #' @return a relop representation of the data
 #'
-#' @seealso \code{\link{table_source}}
+#' @seealso \code{\link{table_source}}, \code{\link{dbi_copy_to}}, \code{\link{materialize}}, \code{\link{execute}}, code{\link{to_sql}}
 #'
 #' @examples
 #'
