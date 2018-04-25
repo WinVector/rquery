@@ -24,36 +24,47 @@ The primary purpose of `rquery` is `SQL` query generation.  We demonstrate this 
 library("rquery")
 
 # this db does not have window fns
-my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-
-d <- dbi_copy_to(my_db, 'd',
-                 data.frame(
-                   subjectID = c(1,                   
-                                 1,
-                                 2,                   
-                                 2),
-                   surveyCategory = c(
-                     'withdrawal behavior',
-                     'positive re-framing',
-                     'withdrawal behavior',
-                     'positive re-framing'
-                   ),
-                   assessmentTotal = c(5,                 
-                                       2,
-                                       3,                  
-                                       4),
-                   irrelevantCol1 = "irrel1",
-                   irrelevantCol2 = "irrel2",
-                   stringsAsFactors = FALSE),
-                 temporary = TRUE, 
-                 overwrite = TRUE)
+my_db <- DBI::dbConnect(RSQLite::SQLite(), 
+                        ":memory:")
 
 dbopts <- dbi_connection_preferences(my_db)
 print(dbopts)
 options(dbopts)
+
+# copy in example data
+dbi_copy_to(my_db, 'd',
+            data.frame(
+              subjectID = c(1,                   
+                            1,
+                            2,                   
+                            2),
+              surveyCategory = c(
+                'withdrawal behavior',
+                'positive re-framing',
+                'withdrawal behavior',
+                'positive re-framing'
+              ),
+              assessmentTotal = c(5,                 
+                                  2,
+                                  3,                  
+                                  4),
+              irrelevantCol1 = "irrel1",
+              irrelevantCol2 = "irrel2",
+              stringsAsFactors = FALSE),
+            temporary = TRUE, 
+            overwrite = TRUE)
 ```
 
+Note: in examples we use `dbi_copy_to()` to create data.  This is only for the purpose of having
+easy portable examples.  With big data the data is usually already in the remote database or
+Spark system. The task is almost always to connect and work with this pre-existing remote data
+and the method to do this is [`db_table()`](https://winvector.github.io/rquery/reference/dbi_table.html),
+which builds a reference to a remote table given the table name.
+
 ```{r calc, eval=run_vignette}
+# produce a hande to existing table
+d <- dbi_table(my_db, "d")
+
 scale <- 0.237
 
 dq <- d %.>%

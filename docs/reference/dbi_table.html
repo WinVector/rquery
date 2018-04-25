@@ -143,10 +143,11 @@ strategy) needed to represent data from a remote table.</p>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Generate a query that returns contents of a table, we
-could try to eliminate this (replace the query with the table name),
-but there are features one can work with with the query in place and
-SQL optimizers likely make this zero-cost anyway.</p>
+    <p>Note: in examples we use <code><a href='dbi_copy_to.html'>dbi_copy_to()</a></code> to create data.  This is only for the purpose of having
+easy portable examples.  With big data the data is usually already in the remote database or
+Spark system. The task is almost always to connect and work with this pre-existing remote data
+and the method to do this is <code>dbi_table</code>
+which builds a reference to a remote table given the table name.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 

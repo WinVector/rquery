@@ -120,28 +120,38 @@ print(getDBOption(my_db, "create_options"))
     ## [1] "USING PARQUET OPTIONS ('compression'='snappy')"
 
 ``` r
-d <- dbi_copy_to(my_db, 'd',
-                 data.frame(
-                   subjectID = c(1,                   
-                                 1,
-                                 2,                   
-                                 2),
-                   surveyCategory = c(
-                     'withdrawal behavior',
-                     'positive re-framing',
-                     'withdrawal behavior',
-                     'positive re-framing'
-                   ),
-                   assessmentTotal = c(5,                 
-                                       2,
-                                       3,                  
-                                       4),
-                   irrelevantCol1 = "irrel1",
-                   irrelevantCol2 = "irrel2",
-                   stringsAsFactors = FALSE),
-                 temporary = TRUE, 
-                 overwrite = !use_spark)
+# copy data in so we have an example
+dbi_copy_to(my_db, 'd',
+            data.frame(
+              subjectID = c(1,                   
+                            1,
+                            2,                   
+                            2),
+              surveyCategory = c(
+                'withdrawal behavior',
+                'positive re-framing',
+                'withdrawal behavior',
+                'positive re-framing'
+              ),
+              assessmentTotal = c(5,                 
+                                  2,
+                                  3,                  
+                                  4),
+              irrelevantCol1 = "irrel1",
+              irrelevantCol2 = "irrel2",
+              stringsAsFactors = FALSE),
+            temporary = TRUE, 
+            overwrite = !use_spark)
 ```
+
+    ## [1] "table('d')"
+
+``` r
+# produce a hande to existing table
+d <- dbi_table(my_db, "d")
+```
+
+Note: in examples we use `dbi_copy_to()` to create data. This is only for the purpose of having easy portable examples. With big data the data is usually already in the remote database or Spark system. The task is almost always to connect and work with this pre-existing remote data and the method to do this is [`db_table()`](https://winvector.github.io/rquery/reference/dbi_table.html), which builds a reference to a remote table given the table name.
 
 First we show the Spark/database version of the original example data:
 
@@ -248,13 +258,13 @@ cat(to_sql(dq, my_db, source_limit = 1000))
            `d`.`assessmentTotal`
           FROM
            `d` LIMIT 1000
-          ) tsql_78809677123191859012_0000000000
-         ) tsql_78809677123191859012_0000000001
-       ) tsql_78809677123191859012_0000000002
-      ) tsql_78809677123191859012_0000000003
+          ) tsql_14531875663428663490_0000000000
+         ) tsql_14531875663428663490_0000000001
+       ) tsql_14531875663428663490_0000000002
+      ) tsql_14531875663428663490_0000000003
       WHERE `rank` = `count`
-     ) tsql_78809677123191859012_0000000004
-    ) tsql_78809677123191859012_0000000005 ORDER BY `subjectID`
+     ) tsql_14531875663428663490_0000000004
+    ) tsql_14531875663428663490_0000000005 ORDER BY `subjectID`
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 

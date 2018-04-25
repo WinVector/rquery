@@ -55,12 +55,15 @@ dbopts <- dbi_connection_preferences(db)
 print(dbopts)
 options(dbopts)
 
-# example data
-d <- dbi_copy_to(
+# copy in example data
+dbi_copy_to(
   db, 'd',
   data.frame(v = c(1, -5, 3)),
   temporary = FALSE,
   overwrite = TRUE)
+
+# produce a hande to existing table
+d <- dbi_table(db, "d")
 ```
 
 `d` is a "table description" which is just
@@ -70,6 +73,12 @@ safe to serialize/de-serialize).  All `rquery` operation trees or
 pipelines must start either with a table description or a `data.frame`.
 We will discuss table 
 descriptions later.
+
+Note: in examples we use `dbi_copy_to()` to create data.  This is only for the purpose of having
+easy portable examples.  With big data the data is usually already in the remote database or
+Spark system. The task is almost always to connect and work with this pre-existing remote data
+and the method to do this is [`db_table()`](https://winvector.github.io/rquery/reference/dbi_table.html),
+which builds a reference to a remote table given the table name.
 
 For our first example we will introduce a new column and perform
 a calculation using this column.  This is achieved

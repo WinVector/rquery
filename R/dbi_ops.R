@@ -9,6 +9,8 @@
 #' @param table_name character table name
 #' @return logical TRUE if table exists.
 #'
+#' @seealso \code{\link{dbi_table}}
+#'
 #' @export
 #'
 dbi_table_exists <- function(db, table_name) {
@@ -64,6 +66,8 @@ dbi_colnames <- function(db, table_name) {
 #' @param table_name character, name of table to create.
 #' @return logical TRUE if table existed, else FALSE
 #'
+#' @seealso \code{\link{dbi_table}}
+#'
 #' @export
 #'
 dbi_remove_table <- function(db, table_name) {
@@ -87,6 +91,8 @@ dbi_remove_table <- function(db, table_name) {
 #' @param db DBI database connection
 #' @param q character query
 #' @return nothing
+#'
+#' @seealso \code{\link{dbi_table}}
 #'
 #' @export
 #'
@@ -116,6 +122,8 @@ connection_is_spark <- function(db) {
 #' @param temporary passed to \code{\link[DBI]{dbWriteTable}}.
 #' @param rowidcolumn character, name to land row-ids.
 #' @return a relop representation of the data
+#'
+#' @seealso \code{\link{dbi_table}}
 #'
 #' @examples
 #'
@@ -198,6 +206,8 @@ dbi_copy_to <- function(db, table_name, d,
 #' @param db database connetion
 #' @param table_name character, name of table
 #' @return numeric row count
+#'
+#' @seealso \code{\link{dbi_table}}
 #'
 #' @export
 #'

@@ -1,11 +1,12 @@
 
-# rquery 0.4.3 2018/04/24
+# rquery 0.4.3 2018/04/25
 
  * Add assign_slice().
  * Add if_else_op().
  * Work on printing/formatting.
  * Bug fixes (esp on data.frame path).
  * Improve column ordering.
+ * Make db_table() more prominant.
 
 # rquery 0.4.2 2018/04/05
 
