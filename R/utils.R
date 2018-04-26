@@ -24,9 +24,8 @@ unpack_assignments <- function(source, parsed,
                                ...,
                                have = column_names(source),
                                check_is_assignment = TRUE) {
-  if(length(list(...))>0) {
-    stop("rquery::unpack_assignments unexpected argument")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery:::unpack_assignments")
   n <- length(parsed)
   if(n<=0) {
     stop("must generate at least 1 column")

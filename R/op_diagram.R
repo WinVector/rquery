@@ -30,11 +30,19 @@ r_optree_diagram <- function(optree, nextid, use_table_names) {
   label = gsub("'", "", label)
   label = gsub('"', "", label)
   label = gsub("", "", label)
-  label_parts <- strsplit(label, "\\l", fixed = TRUE)
+  label_parts <- strsplit(label, "\\l", fixed = TRUE)[[1]]
   max_len <- max(nchar(label_parts))
-  width_limit = 120
+  width_limit = 80
   if(max_len>width_limit) {
-    label <- paste(substr(label, 1, width_limit), "...)")
+    label_parts <- vapply(label_parts,
+                    function(li) {
+                      if(nchar(li)>width_limit) {
+                        paste(substr(li, 1, width_limit), "[...]")
+                      } else {
+                        li
+                      }
+                    }, character(1))
+    label <- paste(label_parts, collapse = "\\l")
   }
   node <- list(list(nodeid = nodeid,
                     name = name,
