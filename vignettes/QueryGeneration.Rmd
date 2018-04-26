@@ -17,6 +17,8 @@ knitr::opts_chunk$set(
 run_vignette <- requireNamespace("RSQLite", quietly = TRUE)
 ```
 
+This is a very brief place-holder example (not executed, as `SQLite` does not have the needed window functions).
+For more details please see the fuller note: [`rquery README`](https://winvector.github.io/rquery/index.html).
 
 The primary purpose of `rquery` is `SQL` query generation.  We demonstrate this below.
 
@@ -86,13 +88,19 @@ dq <- d %.>%
   orderby(., 'subjectID')
 
 class(my_db)
-
-sql <- to_sql(dq, db = my_db, source_limit = 1000)
 ```
 
-`to_sql()` SQL:
+Presentation format (see also [`op_diagram()`](https://winvector.github.io/rquery/reference/op_diagram.html)):
+
+```{r pf, echo=FALSE, comment = ' ', eval=run_vignette}
+cat(format(dq))
+```
+
+`to_sql()` SQL (see also [`materialize()`](https://winvector.github.io/rquery/reference/materialize.html)):
 
 ```{r res, echo=FALSE, comment = ' ', eval=run_vignette}
+sql <- to_sql(dq, db = my_db, source_limit = 1000)
+
 cat(sql)
 ```
 

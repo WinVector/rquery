@@ -79,7 +79,7 @@ column_names.relop_drop_columns <- function (x, ...) {
 
 #' @export
 format_node.relop_drop_columns <- function(node) {
-  paste0("drop_columns(., ",
+  paste0("drop_columns(.,\n   ",
          paste(node$drops, collapse = ", "),
          ")",
          "\n")

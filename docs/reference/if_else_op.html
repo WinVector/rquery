@@ -91,7 +91,7 @@ RPostgreSQL or sparklyr." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/AssigmentPartitioner.html">Assignment Paritioner</a>
+      <a href="../articles/AssigmentPartitioner.html">Assignment Partitioner</a>
     </li>
     <li>
       <a href="../articles/QueryGeneration.html">Query Generation</a>
@@ -221,7 +221,8 @@ is a reserved column name for this procedure.</p>
 #&gt;   edited := ifelse(ifebtest_1, 1, edited)) %.&gt;%
 #&gt;  extend(.,
 #&gt;   edited := ifelse(!( ifebtest_1 ), 0, edited)) %.&gt;%
-#&gt;  drop_columns(., ifebtest_1)
+#&gt;  drop_columns(.,
+#&gt;    ifebtest_1)
 #&gt; SELECT
 #&gt;  `a`,
 #&gt;  `b`,

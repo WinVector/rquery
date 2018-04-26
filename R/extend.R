@@ -101,9 +101,9 @@ extend_impl_list <- function(source, parsed,
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   d <- dbi_copy_to(my_db, 'd',
 #'                    data.frame(AUC = 0.6, R2 = 0.2))
-#'   eqn <- extend_se(d, c("v" := "AUC + R2", "x" := "pmax(AUC,v)"))
-#'   cat(format(eqn))
-#'   sql <- to_sql(eqn, my_db)
+#'   optree <- extend_se(d, c("v" := "AUC + R2", "x" := "pmax(AUC,v)"))
+#'   cat(format(optree))
+#'   sql <- to_sql(optree, my_db)
 #'   cat(sql)
 #'   print(DBI::dbGetQuery(my_db, sql))
 #'
@@ -190,9 +190,9 @@ extend_se.data.frame <- function(source, assignments,
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   d <- dbi_copy_to(my_db, 'd',
 #'                    data.frame(AUC = 0.6, R2 = 0.2))
-#'   eqn <- extend_nse(d, v := ifelse(AUC>0.5, R2, 1.0))
-#'   cat(format(eqn))
-#'   sql <- to_sql(eqn, my_db)
+#'   optree <- extend_nse(d, v := ifelse(AUC>0.5, R2, 1.0))
+#'   cat(format(optree))
+#'   sql <- to_sql(optree, my_db)
 #'   cat(sql)
 #'   print(DBI::dbGetQuery(my_db, sql))
 #'   DBI::dbDisconnect(my_db)

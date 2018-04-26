@@ -5,11 +5,11 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Assignment Paritioner • rquery</title>
+<title>Assignment Partitioner • rquery</title>
 <!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../jquery.sticky-kit.min.js"></script><script src="../pkgdown.js"></script><meta property="og:title" content="Assignment Paritioner">
+<script src="../jquery.sticky-kit.min.js"></script><script src="../pkgdown.js"></script><meta property="og:title" content="Assignment Partitioner">
 <meta property="og:description" content="">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!--[if lt IE 9]>
@@ -52,7 +52,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/AssigmentPartitioner.html">Assignment Paritioner</a>
+      <a href="../articles/AssigmentPartitioner.html">Assignment Partitioner</a>
     </li>
     <li>
       <a href="../articles/QueryGeneration.html">Query Generation</a>
@@ -82,7 +82,7 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1>Assignment Paritioner</h1>
+      <h1>Assignment Partitioner</h1>
                         <h4 class="author">John Mount, Win-Vector LLC</h4>
             
             <h4 class="date">2018-04-26</h4>
@@ -223,7 +223,8 @@ plan &lt;-<span class="st"> </span>d1 <span class="op">%.&gt;%</span>
   d_2 := ifelse(choice_d, "C", "T"),
   e_1 := ifelse(choice_e, "T", "C"),
   e_2 := ifelse(choice_e, "C", "T")) %.&gt;%
- select_columns(., id, a_1, a_2, b_1, b_2, c_1, c_2, d_1, d_2, e_1, e_2)</code></pre>
+ select_columns(.,
+   id, a_1, a_2, b_1, b_2, c_1, c_2, d_1, d_2, e_1, e_2)</code></pre>
 <p>Notice <code><a href="../reference/extend_se.html">rquery::extend_se()</a></code> split the work into 3 unambiguous groups. The statements inside each group can now be executed in any order (or even in parallel) with no ambiguity of meaning or risk of error. The goal was: split into a small number of groups such that the observable execution semantics are very close to executing the original statements in order in completely separate groups (which is likely what a user intends).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sql &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(plan, my_db)
 <span class="kw">cat</span>(sql)</code></pre></div>
@@ -427,7 +428,8 @@ FROM (
  extend(.,
   e_1 := ifelse(choice, "T", "C"),
   e_2 := ifelse(choice, "C", "T")) %.&gt;%
- select_columns(., id, a_1, a_2, b_1, b_2, c_1, c_2, d_1, d_2, e_1, e_2)</code></pre>
+ select_columns(.,
+   id, a_1, a_2, b_1, b_2, c_1, c_2, d_1, d_2, e_1, e_2)</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sql2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(plan2, my_db)
 DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery">dbGetQuery</a></span>(my_db, sql2) <span class="op">%.&gt;%</span>
 <span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</code></pre></div>

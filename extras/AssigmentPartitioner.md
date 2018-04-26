@@ -1,7 +1,7 @@
-Assignment Paritioner
+Assignment Partitioner
 ================
 John Mount, Win-Vector LLC
-2018-01-07
+2018-04-26
 
 rquery example
 --------------
@@ -21,8 +21,6 @@ library("rquery")
 ```
 
     Loading required package: wrapr
-
-    Loading required package: cdata
 
 ``` r
 # example data
@@ -114,7 +112,8 @@ cat(format(plan))
       d_2 := ifelse(choice_d, "C", "T"),
       e_1 := ifelse(choice_e, "T", "C"),
       e_2 := ifelse(choice_e, "C", "T")) %.>%
-     select_columns(., id, a_1, a_2, b_1, b_2, c_1, c_2, d_1, d_2, e_1, e_2)
+     select_columns(.,
+       id, a_1, a_2, b_1, b_2, c_1, c_2, d_1, d_2, e_1, e_2)
 
 Notice `rquery::extend_se()` split the work into 3 unambiguous groups. The statements inside each group can now be executed in any order (or even in parallel) with no ambiguity of meaning or risk of error. The goal was: split into a small number of groups such that the observable execution semantics are very close to executing the original statements in order in completely separate groups (which is likely what a user intends).
 
@@ -176,9 +175,9 @@ cat(sql)
         `example_table`.`rand_e`
        FROM
         `example_table`
-       ) tsql_0000
-      ) tsql_0001
-    ) tsql_0002
+       ) tsql_53272849086359897594_0000000000
+      ) tsql_53272849086359897594_0000000001
+    ) tsql_53272849086359897594_0000000002
 
 ``` r
 DBI::dbGetQuery(my_db, sql) %.>%
@@ -270,7 +269,8 @@ cat(format(plan2))
      extend(.,
       e_1 := ifelse(choice, "T", "C"),
       e_2 := ifelse(choice, "C", "T")) %.>%
-     select_columns(., id, a_1, a_2, b_1, b_2, c_1, c_2, d_1, d_2, e_1, e_2)
+     select_columns(.,
+       id, a_1, a_2, b_1, b_2, c_1, c_2, d_1, d_2, e_1, e_2)
 
 ``` r
 sql2 <- to_sql(plan2, my_db)
@@ -317,7 +317,7 @@ packageVersion("dplyr")
 packageVersion("dbplyr")
 ```
 
-    ## [1] '1.2.0'
+    ## [1] '1.2.1'
 
 ``` r
 dplyr::tbl(my_db, "example_table") %>%

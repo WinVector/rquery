@@ -80,7 +80,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/AssigmentPartitioner.html">Assignment Paritioner</a>
+      <a href="../articles/AssigmentPartitioner.html">Assignment Partitioner</a>
     </li>
     <li>
       <a href="../articles/QueryGeneration.html">Query Generation</a>
@@ -158,8 +158,10 @@
   <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
 }</div><div class='output co'>#&gt; table('d') %.&gt;%
-#&gt;  select_rows(., AUC &gt;= 0.5) %.&gt;%
-#&gt;  select_columns(., R2)
+#&gt;  select_rows(.,
+#&gt;    AUC &gt;= 0.5) %.&gt;%
+#&gt;  select_columns(.,
+#&gt;    R2)
 #&gt; SELECT
 #&gt;  `R2`
 #&gt; FROM (

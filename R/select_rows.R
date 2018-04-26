@@ -37,7 +37,8 @@ select_rows_se.relop <- function(source, expr,
   r <- list(source = list(source),
             table_name = NULL,
             parsed = parsed,
-            expr = assignments)
+            expr = assignments,
+            presentation = expr)
   r <- relop_decorate("relop_select_rows", r)
   r
 }
@@ -94,8 +95,10 @@ select_rows_nse.relop <- function(source, expr,
                                     check_is_assignment = FALSE)
   parsed[[1]]$symbols_produced <- character(0)
   r <- list(source = list(source),
+            table_name = NULL,
             parsed = parsed,
-            expr = assignments)
+            expr = assignments,
+            presentation = parsed[[1]]$presentation)
   r <- relop_decorate("relop_select_rows", r)
   r
 }
@@ -117,7 +120,7 @@ select_rows_nse.data.frame <- function(source, expr,
 
 #' @export
 format_node.relop_select_rows <- function(node) {
-  paste0("select_rows(., ", node$parsed[[1]]$presentation, ")",
+  paste0("select_rows(.,\n   ", node$presentation, ")",
          "\n")
 }
 

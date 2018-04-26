@@ -1,10 +1,10 @@
 ---
-title: "Assignment Paritioner"
+title: "Assignment Partitioner"
 author: "John Mount, Win-Vector LLC"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Assignment Paritioner}
+  %\VignetteIndexEntry{Assignment Partitioner}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

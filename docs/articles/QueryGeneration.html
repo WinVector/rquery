@@ -52,7 +52,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/AssigmentPartitioner.html">Assignment Paritioner</a>
+      <a href="../articles/AssigmentPartitioner.html">Assignment Partitioner</a>
     </li>
     <li>
       <a href="../articles/QueryGeneration.html">Query Generation</a>
@@ -94,6 +94,7 @@
 
     
     
+<p>This is a very brief place-holder example (not executed, as <code>SQLite</code> does not have the needed window functions). For more details please see the fuller note: <a href="https://winvector.github.io/rquery/index.html"><code>rquery README</code></a>.</p>
 <p>The primary purpose of <code>rquery</code> is <code>SQL</code> query generation. We demonstrate this below.</p>
 <p>Note: in examples we use <code><a href="../reference/dbi_copy_to.html">dbi_copy_to()</a></code> to create data. This is only for the purpose of having easy portable examples. With big data the data is usually already in the remote database or Spark system. The task is almost always to connect and work with this pre-existing remote data and the method to do this is <a href="https://winvector.github.io/rquery/reference/dbi_table.html"><code><a href="../reference/dbi_table.html">dbi_table()</a></code></a>, which builds a reference to a remote table given the table name.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># produce a hande to existing table</span>
@@ -122,10 +123,25 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <span class="kw">class</span>(my_db)
 <span class="co">#&gt; [1] "SQLiteConnection"</span>
 <span class="co">#&gt; attr(,"package")</span>
-<span class="co">#&gt; [1] "RSQLite"</span>
-
-sql &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(dq, <span class="dt">db =</span> my_db, <span class="dt">source_limit =</span> <span class="dv">1000</span>)</code></pre></div>
-<p><code><a href="../reference/to_sql.html">to_sql()</a></code> SQL:</p>
+<span class="co">#&gt; [1] "RSQLite"</span></code></pre></div>
+<p>Presentation format (see also <a href="https://winvector.github.io/rquery/reference/op_diagram.html"><code><a href="../reference/op_diagram.html">op_diagram()</a></code></a>):</p>
+<pre><code>  table('d') %.&gt;%
+   extend(.,
+    probability := exp(assessmentTotal * scale) / sum(exp(assessmentTotal * scale)),
+    count := count(1),
+    p= subjectID) %.&gt;%
+   extend(.,
+    rank := rank(),
+    p= subjectID,
+    o= probability, surveyCategory) %.&gt;%
+   rename(.,
+    c('diagnosis' = 'surveyCategory')) %.&gt;%
+   select_rows(.,
+     rank = count) %.&gt;%
+   select_columns(.,
+     subjectID, diagnosis, probability) %.&gt;%
+   orderby(., subjectID)</code></pre>
+<p><code><a href="../reference/to_sql.html">to_sql()</a></code> SQL (see also <a href="https://winvector.github.io/rquery/reference/materialize.html"><code><a href="../reference/materialize.html">materialize()</a></code></a>):</p>
 <pre><code>  SELECT * FROM (
    SELECT
     `subjectID`,
@@ -160,13 +176,13 @@ sql &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.
          `d`.`assessmentTotal`
         FROM
          `d` LIMIT 1000
-        ) tsql_43252023434990845580_0000000000
-       ) tsql_43252023434990845580_0000000001
-     ) tsql_43252023434990845580_0000000002
-    ) tsql_43252023434990845580_0000000003
+        ) tsql_18688266060921308890_0000000000
+       ) tsql_18688266060921308890_0000000001
+     ) tsql_18688266060921308890_0000000002
+    ) tsql_18688266060921308890_0000000003
     WHERE `rank` = `count`
-   ) tsql_43252023434990845580_0000000004
-  ) tsql_43252023434990845580_0000000005 ORDER BY `subjectID`</code></pre>
+   ) tsql_18688266060921308890_0000000004
+  ) tsql_18688266060921308890_0000000005 ORDER BY `subjectID`</code></pre>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

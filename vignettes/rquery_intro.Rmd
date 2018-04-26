@@ -347,7 +347,7 @@ data.frame(x = 5) %.>% sql_node(., "z" := "sqrt(x)")
 
 The above calculation is triggered by `S3` override
 of any of `print()`, `as.data.frame()` and `head()`.  Remote tables need
-an `execuite()` or `materialize()` step to specify the database connection.
+an `execute()` or `materialize()` step to specify the database connection.
 
 
 # Table descriptions
@@ -616,6 +616,17 @@ to this optimization.
 `rquery` is new package, but it is already proving to be correct (avoiding [known data processing issues](http://www.win-vector.com/blog/2018/01/advisory-on-multiple-assignment-dplyrmutate-on-databases/)) and [performant](http://www.win-vector.com/blog/2018/01/advisory-on-multiple-assignment-dplyrmutate-on-databases/).
 For working with `R` at a big data scale (say using `PostgreSQL` or `Spark`)
 `rquery` is the right specialized tool for specifying data manipulation.
+
+# See also
+
+For deeper dives into specific topics, please see also:
+
+  * [`rquery README`](https://winvector.github.io/rquery/index.html)
+  * [Join Controller](https://github.com/WinVector/rquery/blob/master/extras/JoinController.md)
+  * [Join Dependency Sorting](https://github.com/WinVector/rquery/blob/master/extras/DependencySorting.md)
+  * [PerfTest](https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md)
+  * [Assignment Partitioner](https://github.com/WinVector/rquery/blob/master/extras/AssigmentPartitioner.md)
+  * [DifferentDBs](https://github.com/WinVector/rquery/blob/master/extras/ExtraDBs.md)
 
 ------------
 

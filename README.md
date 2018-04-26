@@ -257,13 +257,13 @@ cat(to_sql(dq, my_db, source_limit = 1000))
            `d`.`assessmentTotal`
           FROM
            `d` LIMIT 1000
-          ) tsql_33135291893627257846_0000000000
-         ) tsql_33135291893627257846_0000000001
-       ) tsql_33135291893627257846_0000000002
-      ) tsql_33135291893627257846_0000000003
+          ) tsql_96767120161671340527_0000000000
+         ) tsql_96767120161671340527_0000000001
+       ) tsql_96767120161671340527_0000000002
+      ) tsql_96767120161671340527_0000000003
       WHERE `rank` = `count`
-     ) tsql_33135291893627257846_0000000004
-    ) tsql_33135291893627257846_0000000005 ORDER BY `subjectID`
+     ) tsql_96767120161671340527_0000000004
+    ) tsql_96767120161671340527_0000000005 ORDER BY `subjectID`
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
@@ -307,8 +307,10 @@ cat(format(dq))
       o= probability, surveyCategory) %.>%
      rename(.,
       c('diagnosis' = 'surveyCategory')) %.>%
-     select_rows(., rank = count) %.>%
-     select_columns(., subjectID, diagnosis, probability) %.>%
+     select_rows(.,
+       rank = count) %.>%
+     select_columns(.,
+       subjectID, diagnosis, probability) %.>%
      orderby(., subjectID)
 
 ``` r
@@ -386,3 +388,14 @@ dq %.>%
 We have found most big-data projects either require joining very many tables (something `rquery` join planners help with, please see [here](https://github.com/WinVector/rquery/blob/master/extras/JoinController.md) and [here](https://github.com/WinVector/rquery/blob/master/extras/JoinController.md)) or they require working with wide data-marts (where `rquery` query narrowing helps, please see [here](https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md)).
 
 We also could stand `rquery` up on non-`DBI` sources such as [`SparkR`](https://github.com/WinVector/rquery/blob/master/extras/SparkRExample.md) and perhaps even [`data.table`](https://github.com/WinVector/rquery/blob/master/extras/data_table.md).
+
+See also
+========
+
+For deeper dives into specific topics, please see also:
+
+-   [Join Controller](https://github.com/WinVector/rquery/blob/master/extras/JoinController.md)
+-   [Join Dependency Sorting](https://github.com/WinVector/rquery/blob/master/extras/DependencySorting.md)
+-   [PerfTest](https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md)
+-   [Assignment Partitioner](https://github.com/WinVector/rquery/blob/master/extras/AssigmentPartitioner.md)
+-   [DifferentDBs](https://github.com/WinVector/rquery/blob/master/extras/ExtraDBs.md)

@@ -235,6 +235,15 @@ We have found most big-data projects either require joining very many tables (so
 We also could stand `rquery` up on non-`DBI` sources such as [`SparkR`](https://github.com/WinVector/rquery/blob/master/extras/SparkRExample.md)
 and perhaps even [`data.table`](https://github.com/WinVector/rquery/blob/master/extras/data_table.md).
 
+# See also
+
+For deeper dives into specific topics, please see also:
+
+  * [Join Controller](https://github.com/WinVector/rquery/blob/master/extras/JoinController.md)
+  * [Join Dependency Sorting](https://github.com/WinVector/rquery/blob/master/extras/DependencySorting.md)
+  * [PerfTest](https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md)
+  * [Assignment Partitioner](https://github.com/WinVector/rquery/blob/master/extras/AssigmentPartitioner.md)
+  * [DifferentDBs](https://github.com/WinVector/rquery/blob/master/extras/ExtraDBs.md)
 
 
 ```{r cleanup, include=FALSE}

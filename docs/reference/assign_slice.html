@@ -80,7 +80,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/AssigmentPartitioner.html">Assignment Paritioner</a>
+      <a href="../articles/AssigmentPartitioner.html">Assignment Partitioner</a>
     </li>
     <li>
       <a href="../articles/QueryGeneration.html">Query Generation</a>
@@ -195,7 +195,8 @@ is a reserved column name for this procedure.</p>
 #&gt;  extend(.,
 #&gt;   a := ifelse(ifebtest_1, 2, a),
 #&gt;   b := ifelse(ifebtest_1, 2, b)) %.&gt;%
-#&gt;  drop_columns(., ifebtest_1)
+#&gt;  drop_columns(.,
+#&gt;    ifebtest_1)
 #&gt; SELECT
 #&gt;  `a`,
 #&gt;  `b`,
@@ -238,8 +239,8 @@ is a reserved column name for this procedure.</p>
 #&gt; 9  1 1  9 0.97052090
 #&gt; 10 2 2 10 0.38918276
 #&gt;                     r1                   r2
-#&gt; 1 -7335336003195030946 -3361290330464356232
-#&gt; 2  3081410163316338234 -2529230860604234139</div><div class='input'>
+#&gt; 1  1286398428605135524 -5597052938760532084
+#&gt; 2 -4545099361612863734 -3568870309135322846</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
