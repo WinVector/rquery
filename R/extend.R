@@ -108,9 +108,9 @@ extend_impl_list <- function(source, parsed,
 #'   print(DBI::dbGetQuery(my_db, sql))
 #'
 #'   # SQLite can not run the following query
-#'   eqn2 <- extend_se(d, "v" := "rank()",
+#'   optree2 <- extend_se(d, "v" := "rank()",
 #'                     partitionby = "AUC", orderby = "R2")
-#'   sql2 <- to_sql(eqn2, my_db)
+#'   sql2 <- to_sql(optree2, my_db)
 #'   cat(sql2)
 #'
 #'   DBI::dbDisconnect(my_db)

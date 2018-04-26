@@ -179,9 +179,9 @@
   <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
 
   <span class='co'># SQLite can not run the following query</span>
-  <span class='no'>eqn2</span> <span class='kw'>&lt;-</span> <span class='fu'>extend_se</span>(<span class='no'>d</span>, <span class='st'>"v"</span> <span class='kw'>:=</span> <span class='st'>"rank()"</span>,
+  <span class='no'>optree2</span> <span class='kw'>&lt;-</span> <span class='fu'>extend_se</span>(<span class='no'>d</span>, <span class='st'>"v"</span> <span class='kw'>:=</span> <span class='st'>"rank()"</span>,
                     <span class='kw'>partitionby</span> <span class='kw'>=</span> <span class='st'>"AUC"</span>, <span class='kw'>orderby</span> <span class='kw'>=</span> <span class='st'>"R2"</span>)
-  <span class='no'>sql2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>eqn2</span>, <span class='no'>my_db</span>)
+  <span class='no'>sql2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>optree2</span>, <span class='no'>my_db</span>)
   <span class='fu'>cat</span>(<span class='no'>sql2</span>)
 
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
