@@ -28,7 +28,14 @@ r_optree_diagram <- function(optree, nextid, use_table_names) {
   label = format_node(optree)
   label = gsub("\n", "\\l", label, fixed = TRUE)
   label = gsub("'", "", label)
+  label = gsub('"', "", label)
   label = gsub("", "", label)
+  label_parts <- strsplit(label, "\\l", fixed = TRUE)
+  max_len <- max(nchar(label_parts))
+  width_limit = 120
+  if(max_len>width_limit) {
+    label <- paste(substr(label, 1, width_limit), "...)")
+  }
   node <- list(list(nodeid = nodeid,
                     name = name,
                     table_name_in = table_name_in,
