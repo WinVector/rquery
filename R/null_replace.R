@@ -11,6 +11,8 @@
 #' @param note_col character, if not NULL record number of columns altered per-row in this column.
 #' @return null_replace node or data.frame.
 #'
+#' @seealso \code{\link{count_null_cols}}, \code{\link{mark_null_cols}}
+#'
 #' @examples
 #'
 #' if (requireNamespace("RSQLite", quietly = TRUE)) {
