@@ -1,0 +1,74 @@
+---
+title: "Grouped Example"
+output: github_document
+---
+
+Based on this [https://community.rstudio.com/t/dplyr-version-of-sql-partition-by-with-sort-order-for-use-with-sql-backend/7822/16](https://community.rstudio.com/t/dplyr-version-of-sql-partition-by-with-sort-order-for-use-with-sql-backend/7822/16.
+
+```{r}
+library("dplyr")
+library("rquery")
+
+my_table <- build_frame(
+   "groupA", "groupB", "my_amount" |
+   "A"     , "C"     , 4           |
+   "A"     , "D"     , 2           |
+   "A"     , "D"     , 1           |
+   "B"     , "C"     , 3           |
+   "B"     , "D"     , 4           |
+   "B"     , "D"     , 1           )
+
+db <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
+                     host = 'localhost',
+                     port = 5432,
+                     user = 'johnmount',
+                     password = '')
+
+my_table <- copy_to(db, my_table)
+
+dpipe <- . %>%
+  group_by(groupA, groupB) %>%
+  summarise(my_total = sum(my_amount, na.rm = TRUE)) %>%
+  arrange(my_total) %>%
+  mutate(rank = row_number()) %>%
+  ungroup() %>%
+  arrange(groupA, groupB)
+
+my_table %>% 
+  dpipe %>% 
+  dbplyr::remote_query()
+
+my_table %>% 
+  dpipe 
+
+
+
+
+table_handle <- rquery::dbi_table(db, "my_table")
+
+optree <- table_handle %.>%
+  project_nse(., 
+             my_total = sum(my_amount),
+             groupby = qc(groupA, groupB)) %.>%
+  extend_nse(.,
+             rank = rank(),
+             partitionby = "groupA",
+             orderby = "my_total") %.>%
+  orderby(., qc(groupA, groupB))
+
+class(optree)
+
+cat(format(optree))
+
+optree %.>% 
+  op_diagram(.) %.>% 
+  DiagrammeR::grViz(.)
+
+cat(to_sql(optree, db))
+
+
+execute(db, optree)
+
+
+DBI::dbDisconnect(db)
+```

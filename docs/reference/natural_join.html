@@ -25,6 +25,9 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
+
+
+
 <meta property="og:title" content="Make a natural_join node. — natural_join" />
 
 <meta property="og:description" content="Natural join is a join by identity on all common columns
@@ -41,8 +44,6 @@ are coalesced into a single column prefering the first or "a" table." />
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
-
-
 
 
   </head>
@@ -115,16 +116,18 @@ are coalesced into a single column prefering the first or "a" table." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Make a natural_join node.</h1>
-    <small>Source: <a href='https://github.com/WinVector/rquery//blob/master/R/natural_join.R'><code>R/natural_join.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/natural_join.R'><code>R/natural_join.R</code></a></small>
     <div class="hidden name"><code>natural_join.Rd</code></div>
     </div>
 
+    <div class="ref-description">
     
     <p>Natural join is a join by identity on all common columns
 (or only common columns specified in a non-<code>NULL</code> <code>by</code> argument).
 Any common columns not specified in a non-<code>NULL</code> <code>by</code> argument
 are coalesced into a single column prefering the first or "a" table.</p>
     
+    </div>
 
     <pre class="usage"><span class='fu'>natural_join</span>(<span class='no'>a</span>, <span class='no'>b</span>, <span class='no'>...</span>, <span class='kw'>jointype</span> <span class='kw'>=</span> <span class='st'>"INNER"</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     

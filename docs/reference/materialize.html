@@ -25,6 +25,9 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
+
+
+
 <meta property="og:title" content="Materialize an optree as a table. — materialize" />
 
 <meta property="og:description" content="Run the data query as a CREATE TABLE AS . Think of as a function
@@ -40,8 +43,6 @@ in pipelines." />
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
-
-
 
 
   </head>
@@ -114,15 +115,17 @@ in pipelines." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Materialize an optree as a table.</h1>
-    <small>Source: <a href='https://github.com/WinVector/rquery//blob/master/R/materialize.R'><code>R/materialize.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/materialize.R'><code>R/materialize.R</code></a></small>
     <div class="hidden name"><code>materialize.Rd</code></div>
     </div>
 
+    <div class="ref-description">
     
     <p>Run the data query as a CREATE TABLE AS . Think of as a function
 that can be applied to relop trees, not as a component to place
 in pipelines.</p>
     
+    </div>
 
     <pre class="usage"><span class='fu'>materialize</span>(<span class='no'>db</span>, <span class='no'>optree</span>, <span class='kw'>table_name</span> <span class='kw'>=</span> <span class='fu'>mk_tmp_name_source</span>(<span class='st'>"rquery_mat"</span>)(), <span class='no'>...</span>,
   <span class='kw'>limit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>source_limit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,

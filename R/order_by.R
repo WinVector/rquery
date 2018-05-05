@@ -91,7 +91,7 @@ format_node.relop_orderby <- function(node) {
     ot <- c(ot, paste0("desc(", node$rev_orderby, ")"))
   }
   paste0("orderby(., ",
-         ifelse(ot>0,
+         ifelse(length(ot)>0,
                 paste(ot, collapse = ", "),
                 ""),
          ifelse((length(node$limit)>0) && (length(node$orderby)>0),

@@ -25,6 +25,9 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
+
+
+
 <meta property="og:title" content="Wrap a non-SQL node. — non_sql_node" />
 
 <meta property="og:description" content="Note: non-SQL nodes are allowed to delete/overwrite both
@@ -40,8 +43,6 @@ to non-temporary structures." />
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
-
-
 
 
   </head>
@@ -114,15 +115,17 @@ to non-temporary structures." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Wrap a non-SQL node.</h1>
-    <small>Source: <a href='https://github.com/WinVector/rquery//blob/master/R/non_sql_node.R'><code>R/non_sql_node.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/non_sql_node.R'><code>R/non_sql_node.R</code></a></small>
     <div class="hidden name"><code>non_sql_node.Rd</code></div>
     </div>
 
+    <div class="ref-description">
     
     <p>Note: non-SQL nodes are allowed to delete/overwrite both
 both the incoming and outgoing tables, so do not point them
 to non-temporary structures.</p>
     
+    </div>
 
     <pre class="usage"><span class='fu'>non_sql_node</span>(<span class='no'>source</span>, <span class='no'>f</span>, <span class='no'>...</span>, <span class='no'>incoming_table_name</span>, <span class='no'>columns_used</span>,
   <span class='no'>outgoing_table_name</span>, <span class='no'>columns_produced</span>, <span class='no'>display_form</span>, <span class='kw'>orig_columns</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,

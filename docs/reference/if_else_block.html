@@ -25,6 +25,9 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
+
+
+
 <meta property="og:title" content="Simulate a per-row block-<code>if(){}else{}</code>. — if_else_block" />
 
 <meta property="og:description" content="This device uses expression-ifelse(,,) to simulate the
@@ -49,8 +52,6 @@ RPostgreSQL or sparklyr." />
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
-
-
 
 
   </head>
@@ -123,10 +124,11 @@ RPostgreSQL or sparklyr." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Simulate a per-row block-<code>if(){}else{}</code>.</h1>
-    <small>Source: <a href='https://github.com/WinVector/rquery//blob/master/R/if_else_block.R'><code>R/if_else_block.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/if_else_block.R'><code>R/if_else_block.R</code></a></small>
     <div class="hidden name"><code>if_else_block.Rd</code></div>
     </div>
 
+    <div class="ref-description">
     
     <p>This device uses expression-<code>ifelse(,,)</code> to simulate the
 more powerful per-row block-<code>if(){}else{}</code>.  The difference is
@@ -141,6 +143,7 @@ the translation turns it into safe and efficient code suitable for
 execution either on <code>data.frame</code>s or at a big data scale using
 <code>RPostgreSQL</code> or <code>sparklyr</code>.</p>
     
+    </div>
 
     <pre class="usage"><span class='fu'>if_else_block</span>(<span class='no'>testexpr</span>, <span class='no'>...</span>, <span class='kw'>thenexprs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>elseexprs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
@@ -285,9 +288,9 @@ is a reserved column name for this procedure.</p>
 #&gt; 8   8          1          1 0.70750040 0 1      1
 #&gt; 9   9          1          1 0.69765543 0 1      1
 #&gt; 10 10          1          1 0.92565677 0 1      1
-#&gt;                    r1                   r2
-#&gt; 1 5083760709505100113 -5267862108573737622
-#&gt; 2 4694802113190993493 -5767935972596651137</div><div class='input'>
+#&gt;                     r1                  r2
+#&gt; 1 -5830176669047235065 3543819288003876339
+#&gt; 2 -3212068799633206095 2828944657439163785</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
