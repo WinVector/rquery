@@ -194,7 +194,7 @@ dq <- d %.>%
              count := count(1),
              partitionby = 'subjectID') %.>%
   extend_nse(.,
-             rank := rank(),
+             rank := row_number(),
              partitionby = 'subjectID',
              orderby = c('probability', 'surveyCategory'))  %.>%
   select_rows_nse(., rank == count) %.>%
@@ -240,7 +240,7 @@ cat(to_sql(dq, my_db, source_limit = 1000))
          `probability`,
          `subjectID`,
          `surveyCategory`,
-         rank ( ) OVER (  PARTITION BY `subjectID` ORDER BY `probability`, `surveyCategory` ) AS `rank`
+         row_number ( ) OVER (  PARTITION BY `subjectID` ORDER BY `probability`, `surveyCategory` ) AS `rank`
         FROM (
          SELECT
           `subjectID`,
@@ -255,13 +255,13 @@ cat(to_sql(dq, my_db, source_limit = 1000))
            `d`.`assessmentTotal`
           FROM
            `d` LIMIT 1000
-          ) tsql_49609956172109089068_0000000000
-         ) tsql_49609956172109089068_0000000001
-       ) tsql_49609956172109089068_0000000002
+          ) tsql_67402821597360715136_0000000000
+         ) tsql_67402821597360715136_0000000001
+       ) tsql_67402821597360715136_0000000002
        WHERE `rank` = `count`
-      ) tsql_49609956172109089068_0000000003
-     ) tsql_49609956172109089068_0000000004
-    ) tsql_49609956172109089068_0000000005 ORDER BY `subjectID`
+      ) tsql_67402821597360715136_0000000003
+     ) tsql_67402821597360715136_0000000004
+    ) tsql_67402821597360715136_0000000005 ORDER BY `subjectID`
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
@@ -300,7 +300,7 @@ cat(format(dq))
       count := count(1),
       p= subjectID) %.>%
      extend(.,
-      rank := rank(),
+      rank := row_number(),
       p= subjectID,
       o= probability, surveyCategory) %.>%
      select_rows(.,

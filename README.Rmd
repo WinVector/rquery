@@ -160,7 +160,7 @@ dq <- d %.>%
              count := count(1),
              partitionby = 'subjectID') %.>%
   extend_nse(.,
-             rank := rank(),
+             rank := row_number(),
              partitionby = 'subjectID',
              orderby = c('probability', 'surveyCategory'))  %.>%
   select_rows_nse(., rank == count) %.>%
