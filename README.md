@@ -141,7 +141,7 @@ dbi_copy_to(my_db, 'd',
               irrelevantCol2 = "irrel2",
               stringsAsFactors = FALSE),
             temporary = TRUE, 
-            overwrite = !use_spark)
+            overwrite = TRUE)
 ```
 
     ## [1] "table('d')"
@@ -197,8 +197,8 @@ dq <- d %.>%
              rank := rank(),
              partitionby = 'subjectID',
              orderby = c('probability', 'surveyCategory'))  %.>%
-  rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
   select_rows_nse(., rank == count) %.>%
+  rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
   select_columns(., c('subjectID', 
                       'diagnosis', 
                       'probability')) %.>%
@@ -229,14 +229,12 @@ cat(to_sql(dq, my_db, source_limit = 1000))
       `diagnosis`,
       `probability`
      FROM (
-      SELECT * FROM (
-       SELECT
-        `count` AS `count`,
-        `probability` AS `probability`,
-        `rank` AS `rank`,
-        `subjectID` AS `subjectID`,
-        `surveyCategory` AS `diagnosis`
-       FROM (
+      SELECT
+       `probability` AS `probability`,
+       `subjectID` AS `subjectID`,
+       `surveyCategory` AS `diagnosis`
+      FROM (
+       SELECT * FROM (
         SELECT
          `count`,
          `probability`,
@@ -257,13 +255,13 @@ cat(to_sql(dq, my_db, source_limit = 1000))
            `d`.`assessmentTotal`
           FROM
            `d` LIMIT 1000
-          ) tsql_40761437571437635244_0000000000
-         ) tsql_40761437571437635244_0000000001
-       ) tsql_40761437571437635244_0000000002
-      ) tsql_40761437571437635244_0000000003
-      WHERE `rank` = `count`
-     ) tsql_40761437571437635244_0000000004
-    ) tsql_40761437571437635244_0000000005 ORDER BY `subjectID`
+          ) tsql_49609956172109089068_0000000000
+         ) tsql_49609956172109089068_0000000001
+       ) tsql_49609956172109089068_0000000002
+       WHERE `rank` = `count`
+      ) tsql_49609956172109089068_0000000003
+     ) tsql_49609956172109089068_0000000004
+    ) tsql_49609956172109089068_0000000005 ORDER BY `subjectID`
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
@@ -305,10 +303,10 @@ cat(format(dq))
       rank := rank(),
       p= subjectID,
       o= probability, surveyCategory) %.>%
-     rename(.,
-      c('diagnosis' = 'surveyCategory')) %.>%
      select_rows(.,
        rank = count) %.>%
+     rename(.,
+      c('diagnosis' = 'surveyCategory')) %.>%
      select_columns(.,
        subjectID, diagnosis, probability) %.>%
      orderby(., subjectID)

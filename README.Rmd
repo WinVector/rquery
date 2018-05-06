@@ -119,7 +119,7 @@ dbi_copy_to(my_db, 'd',
               irrelevantCol2 = "irrel2",
               stringsAsFactors = FALSE),
             temporary = TRUE, 
-            overwrite = !use_spark)
+            overwrite = TRUE)
 
 # produce a hande to existing table
 d <- dbi_table(my_db, "d")
@@ -163,8 +163,8 @@ dq <- d %.>%
              rank := rank(),
              partitionby = 'subjectID',
              orderby = c('probability', 'surveyCategory'))  %.>%
-  rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
   select_rows_nse(., rank == count) %.>%
+  rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
   select_columns(., c('subjectID', 
                       'diagnosis', 
                       'probability')) %.>%
