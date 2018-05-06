@@ -26,11 +26,14 @@ extend_impl <- function(source, parsed,
     stop("unexpected arguments")
   }
   have <- column_names(source)
-  check_have_cols(have, partitionby, "rquery::extend partitionby")
-  check_have_cols(have, orderby, "rquery::extend orderby")
-  # these checks are easy by the no same block use rule
-  check_have_cols(have, merge_fld(parsed, "symbols_used"), "rquery::extend terms")
-  check_have_cols(have, merge_fld(parsed, "free_symbols"), "rquery::extend terms")
+  required_cols <- sort(unique(c(
+    merge_fld(parsed, "symbols_used"),
+    merge_fld(parsed, "free_symbols"),
+    partitionby,
+    orderby,
+    rev_orderby
+  )))
+  check_have_cols(have, required_cols, "rquery::extend")
   assignments <- unpack_assignments(source, parsed)
   r <- list(source = list(source),
             table_name = NULL,
@@ -39,6 +42,7 @@ extend_impl <- function(source, parsed,
             orderby = orderby,
             rev_orderby = rev_orderby,
             assignments = assignments,
+            required_cols = required_cols,
             columns = names(assignments))
   r <- relop_decorate("relop_extend", r)
   r

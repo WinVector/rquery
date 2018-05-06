@@ -12,7 +12,12 @@
 #'
 project_impl <- function(source, groupby, parsed) {
   have <- column_names(source)
-  check_have_cols(have, groupby, "rquery::project groupby")
+  required_cols <- sort(unique(c(
+    merge_fld(parsed, "symbols_used"),
+    merge_fld(parsed, "free_symbols"),
+    groupby
+  )))
+  check_have_cols(have, required_cols, "rquery::project")
   assignments <- unpack_assignments(source, parsed)
   producing <- names(assignments)
   overlap <- intersect(have, producing)
@@ -25,6 +30,7 @@ project_impl <- function(source, groupby, parsed) {
             parsed = parsed,
             groupby = groupby,
             columns = c(groupby, names(assignments)),
+            required_cols = required_cols,
             assignments = assignments)
   r <- relop_decorate("relop_project", r)
   r
