@@ -52,7 +52,7 @@ orderby.relop <- function(source,
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::orderby.relop")
   have <- column_names(source)
-  check_have_cols(have, c(cols, rev_cols), "rquery::orderby orderterms")
+  check_have_cols(have, unique(c(cols, rev_cols)), "rquery::orderby")
   r <- list(source = list(source),
             table_name = NULL,
             parsed = NULL,

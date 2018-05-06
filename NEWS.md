@@ -1,9 +1,10 @@
 
-# rquery 0.4.3 2018/05/05
+# rquery 0.4.3 2018/05/06
 
  * Add assign_slice(), if_else_op(), map_column_values(), and set_indicator().
  * Bug fixes (esp on data.frame path).
  * Work on printing/formatting.
+ * Improve column requirement checking.
  * Improve column ordering.
  * Make db_table() more prominent.
  * Documentation improvements.
