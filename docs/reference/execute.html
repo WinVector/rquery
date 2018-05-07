@@ -193,11 +193,11 @@ table.</p>
 
   <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>optree</span>))
 
-  <span class='fu'>execute</span>(<span class='no'>my_db</span>, <span class='no'>optree</span>) <span class='kw'>%.&gt;%</span>
-     <span class='fu'>print</span>(<span class='no'>.</span>)
+  <span class='no'>v</span> <span class='kw'>&lt;-</span> <span class='fu'>execute</span>(<span class='no'>my_db</span>, <span class='no'>optree</span>)
+  <span class='fu'>print</span>(<span class='no'>v</span>)
 
-  <span class='fu'>execute</span>(<span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>2</span>), <span class='no'>optree</span>) <span class='kw'>%.&gt;%</span>
-     <span class='fu'>print</span>(<span class='no'>.</span>)
+  <span class='no'>v2</span> <span class='kw'>&lt;-</span> <span class='fu'>execute</span>(<span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>2</span>), <span class='no'>optree</span>)
+  <span class='fu'>print</span>(<span class='no'>v2</span>)
 
   <span class='co'># land result in database</span>
   <span class='no'>res_hdl</span> <span class='kw'>&lt;-</span> <span class='fu'>execute</span>(<span class='no'>my_db</span>, <span class='no'>optree</span>, <span class='kw'>table_name</span> <span class='kw'>=</span> <span class='st'>"res"</span>)

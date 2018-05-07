@@ -18,7 +18,7 @@ re_write_table_names <- function(op_tree, new_name) {
 #' @param d data.frame
 #' @param optree rquery rel_op operation tree.
 #' @param env environment to look for "winvector_temp_db_handle" in.
-#' @param limit numeric if not null limit result to this many rows.
+#' @param limit integer, if not NULL limit result to no more than this many rows.
 #' @return data.frame result
 #'
 #' @examples
@@ -35,8 +35,8 @@ re_write_table_names <- function(op_tree, new_name) {
 #'     orderby(., rev_cols = "R2")
 #'
 #'   d <- data.frame(AUC = 0.6, R2 = c(0.1, 0.2), D = NA, z = 2)
-#'   rquery_apply_to_data_frame(d, optree) %.>%
-#'      print(.)
+#'   v <- rquery_apply_to_data_frame(d, optree)
+#'   print(v)
 #'
 #'   winvector_temp_db_handle <- NULL
 #'   DBI::dbDisconnect(db)
@@ -85,17 +85,21 @@ rquery_apply_to_data_frame <- function(d,
                     d,
                     temporary = TRUE,
                     overwrite = FALSE)
-  materialize(my_db,
-              optree,
-              table_name = res_name,
-              overwrite = TRUE,
-              temporary = TRUE)
-  sql <- paste("SELECT * FROM",
-               DBI::dbQuoteIdentifier(my_db, res_name))
-  if(!is.null(limit)) {
-    sql <- paste(sql, "LIMIT",
-                 format(ceiling(limit), scientific = FALSE))
+  ref <- materialize(my_db,
+                     optree,
+                     limit = limit,
+                     table_name = res_name,
+                     overwrite = TRUE,
+                     temporary = TRUE)
+  # if last step is order we have to re-do that
+  # as order is not well define in materialized tables
+  if("relop_orderby" %in% class(optree)) {
+    ref <- ref  %.>%
+      orderby(.,
+              cols = optree$orderby,
+              rev_cols = optree$rev_orderby)
   }
+  sql <- sql <- to_sql(ref, my_db, limit = limit)
   res <- DBI::dbGetQuery(my_db, sql)
   dbi_remove_table(my_db, inp_name)
   dbi_remove_table(my_db, res_name)

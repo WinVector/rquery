@@ -302,20 +302,18 @@ d &lt;-<span class="st"> </span><span class="kw"><a href="reference/dbi_table.ht
 dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="reference/extend_nse.html">extend_nse</a></span>(.,
              probability <span class="op">:</span><span class="er">=</span>
-<span class="st">               </span><span class="kw">exp</span>(assessmentTotal <span class="op">*</span><span class="st"> </span>scale)<span class="op">/</span>
-<span class="st">               </span><span class="kw">sum</span>(<span class="kw">exp</span>(assessmentTotal <span class="op">*</span><span class="st"> </span>scale)),
-             count <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">count</span>(<span class="dv">1</span>),
-             <span class="dt">partitionby =</span> <span class="st">'subjectID'</span>) <span class="op">%.&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="reference/extend_nse.html">extend_nse</a></span>(.,
-             rank <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">row_number</span>(),
+<span class="st">               </span><span class="kw">exp</span>(assessmentTotal <span class="op">*</span><span class="st"> </span>scale))  <span class="op">%.&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="reference/normalize_cols.html">normalize_cols</a></span>(.,
+                 <span class="st">"probability"</span>,
+                 <span class="dt">partitionby =</span> <span class="st">'subjectID'</span>) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="reference/pick_top_k.html">pick_top_k</a></span>(.,
              <span class="dt">partitionby =</span> <span class="st">'subjectID'</span>,
-             <span class="dt">orderby =</span> <span class="kw">c</span>(<span class="st">'probability'</span>, <span class="st">'surveyCategory'</span>))  <span class="op">%.&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="reference/select_rows_nse.html">select_rows_nse</a></span>(., rank <span class="op">==</span><span class="st"> </span>count) <span class="op">%.&gt;%</span>
+             <span class="dt">rev_orderby =</span> <span class="kw">c</span>(<span class="st">'probability'</span>, <span class="st">'surveyCategory'</span>)) <span class="op">%.&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw"><a href="reference/rename_columns.html">rename_columns</a></span>(., <span class="st">'diagnosis'</span> <span class="op">:</span><span class="er">=</span><span class="st"> 'surveyCategory'</span>) <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="reference/select_columns.html">select_columns</a></span>(., <span class="kw">c</span>(<span class="st">'subjectID'</span>, 
                       <span class="st">'diagnosis'</span>, 
                       <span class="st">'probability'</span>)) <span class="op">%.&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="reference/orderby.html">orderby</a></span>(., <span class="st">'subjectID'</span>)</code></pre></div>
+<span class="st">  </span><span class="kw"><a href="reference/orderby.html">orderby</a></span>(., <span class="dt">cols =</span> <span class="st">'subjectID'</span>)</code></pre></div>
 <p>We then generate our result:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dq <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="reference/execute.html">execute</a></span>(my_db, .) <span class="op">%.&gt;%</span>
@@ -355,32 +353,36 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
   FROM (
    SELECT * FROM (
     SELECT
-     "count",
      "probability",
      "subjectID",
      "surveyCategory",
-     row_number ( ) OVER (  PARTITION BY "subjectID" ORDER BY "probability", "surveyCategory" ) AS "rank"
+     row_number ( ) OVER (  PARTITION BY "subjectID" ORDER BY "probability" DESC, "surveyCategory" DESC ) AS "row_number"
     FROM (
      SELECT
       "subjectID",
       "surveyCategory",
-      "assessmentTotal",
-      exp ( "assessmentTotal" * 0.237 ) / sum ( exp ( "assessmentTotal" * 0.237 ) ) OVER (  PARTITION BY "subjectID" ) AS "probability",
-      count ( 1 ) OVER (  PARTITION BY "subjectID" ) AS "count"
+      "probability" / sum ( "probability" ) OVER (  PARTITION BY "subjectID" ) AS "probability"
      FROM (
       SELECT
-       "d"."subjectID",
-       "d"."surveyCategory",
-       "d"."assessmentTotal"
-      FROM
-       "d" LIMIT 1000
-      ) tsql_59087655321153381333_0000000000
-     ) tsql_59087655321153381333_0000000001
-   ) tsql_59087655321153381333_0000000002
-   WHERE "rank" = "count"
-  ) tsql_59087655321153381333_0000000003
- ) tsql_59087655321153381333_0000000004
-) tsql_59087655321153381333_0000000005 ORDER BY "subjectID"</code></pre>
+       "subjectID",
+       "surveyCategory",
+       "assessmentTotal",
+       exp ( "assessmentTotal" * 0.237 )  AS "probability"
+      FROM (
+       SELECT
+        "d"."subjectID",
+        "d"."surveyCategory",
+        "d"."assessmentTotal"
+       FROM
+        "d" LIMIT 1000
+       ) tsql_87223715048141817228_0000000000
+      ) tsql_87223715048141817228_0000000001
+     ) tsql_87223715048141817228_0000000002
+   ) tsql_87223715048141817228_0000000003
+   WHERE "row_number" &lt;= 1
+  ) tsql_87223715048141817228_0000000004
+ ) tsql_87223715048141817228_0000000005
+) tsql_87223715048141817228_0000000006 ORDER BY "subjectID"</code></pre>
 <p>The query is large, but due to its regular structure it should be very amenable to query optimization.</p>
 <p>A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our <a href="https://github.com/WinVector/rquery/blob/master/extras/PerfTest.html">initial experiments</a> show <code>rquery</code> narrowed queries to be twice as fast as un-narrowed <code>dplyr</code> on a synthetic problem simulating large disk-based queries. We think if we connected directly to <code>Spark</code>’s relational operators (avoiding the <code>SQL</code> layer) we may be able to achieve even faster performance.</p>
 <p>The above optimization is possible because the <code>rquery</code> representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query. For example:</p>
@@ -395,15 +397,16 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw">format</span>(dq))</code></pre></div>
 <pre><code>table('d') %.&gt;%
  extend(.,
-  probability := exp(assessmentTotal * scale) / sum(exp(assessmentTotal * scale)),
-  count := count(1),
+  probability := exp(assessmentTotal * scale)) %.&gt;%
+ extend(.,
+  probability := probability / sum(probability),
   p= subjectID) %.&gt;%
  extend(.,
-  rank := row_number(),
+  row_number := row_number(),
   p= subjectID,
-  o= probability, surveyCategory) %.&gt;%
+  o= "probability" DESC, "surveyCategory" DESC) %.&gt;%
  select_rows(.,
-   rank = count) %.&gt;%
+   row_number &lt;= 1) %.&gt;%
  rename(.,
   c('diagnosis' = 'surveyCategory')) %.&gt;%
  select_columns(.,

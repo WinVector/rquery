@@ -133,7 +133,7 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
    extend(.,
     rank := rank(),
     p= subjectID,
-    o= probability, surveyCategory) %.&gt;%
+    o= "probability", "surveyCategory") %.&gt;%
    rename(.,
     c('diagnosis' = 'surveyCategory')) %.&gt;%
    select_rows(.,
@@ -176,13 +176,13 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
          `d`.`assessmentTotal`
         FROM
          `d` LIMIT 1000
-        ) tsql_10693426327175982259_0000000000
-       ) tsql_10693426327175982259_0000000001
-     ) tsql_10693426327175982259_0000000002
-    ) tsql_10693426327175982259_0000000003
+        ) tsql_72449310872642597292_0000000000
+       ) tsql_72449310872642597292_0000000001
+     ) tsql_72449310872642597292_0000000002
+    ) tsql_72449310872642597292_0000000003
     WHERE `rank` = `count`
-   ) tsql_10693426327175982259_0000000004
-  ) tsql_10693426327175982259_0000000005 ORDER BY `subjectID`</code></pre>
+   ) tsql_72449310872642597292_0000000004
+  ) tsql_72449310872642597292_0000000005 ORDER BY `subjectID`</code></pre>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Make a theta_join node. — theta_join_nse • rquery</title>
+<title>Build a optree pipeline that normalizes a set of columns so each column sums to one in each partition. — normalize_cols • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -28,9 +28,9 @@
 
 
 
-<meta property="og:title" content="Make a theta_join node. — theta_join_nse" />
+<meta property="og:title" content="Build a optree pipeline that normalizes a set of columns so each column sums to one in each partition. — normalize_cols" />
 
-<meta property="og:description" content="Theta join is a join on an arbitrary predicate." />
+<meta property="og:description" content="This is an example of building up a desired pre-prepared pipleline fragment from relop nodes." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -112,46 +112,38 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Make a theta_join node.</h1>
-    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/theta_join.R'><code>R/theta_join.R</code></a></small>
-    <div class="hidden name"><code>theta_join_nse.Rd</code></div>
+    <h1>Build a optree pipeline that normalizes a set of columns so each column sums to one in each partition.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/normalize.R'><code>R/normalize.R</code></a></small>
+    <div class="hidden name"><code>normalize_cols.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Theta join is a join on an arbitrary predicate.</p>
+    <p>This is an example of building up a desired pre-prepared pipleline fragment from relop nodes.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>theta_join_nse</span>(<span class='no'>a</span>, <span class='no'>b</span>, <span class='no'>expr</span>, <span class='no'>...</span>, <span class='kw'>jointype</span> <span class='kw'>=</span> <span class='st'>"INNER"</span>, <span class='kw'>suffix</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"_a"</span>, <span class='st'>"_b"</span>),
+    <pre class="usage"><span class='fu'>normalize_cols</span>(<span class='no'>source</span>, <span class='no'>columns</span>, <span class='no'>...</span>, <span class='kw'>partitionby</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>a</th>
-      <td><p>source to select from.</p></td>
+      <th>source</th>
+      <td><p>relop tree or data.frame source.</p></td>
     </tr>
     <tr>
-      <th>b</th>
-      <td><p>source to select from.</p></td>
-    </tr>
-    <tr>
-      <th>expr</th>
-      <td><p>unquoated join condition</p></td>
+      <th>columns</th>
+      <td><p>character, columns to normalize.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>force later arguments to be by name</p></td>
+      <td><p>force later arguments to bind by name.</p></td>
     </tr>
     <tr>
-      <th>jointype</th>
-      <td><p>type of join ('INNER', 'LEFT', 'RIGHT', 'FULL').</p></td>
-    </tr>
-    <tr>
-      <th>suffix</th>
-      <td><p>character length 2, suffices to disambiguate columns.</p></td>
+      <th>partitionby</th>
+      <td><p>partitioning (window function) column names to define partitions.</p></td>
     </tr>
     <tr>
       <th>env</th>
@@ -159,59 +151,52 @@
     </tr>
     </table>
     
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>theta_join node.</p>
-    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='kw'>if</span> (<span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
-  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
-  <span class='no'>d1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dbi_copy_to.html'>dbi_copy_to</a></span>(<span class='no'>my_db</span>, <span class='st'>'d1'</span>,
-                    <span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>0.6</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>0.2</span>))
-  <span class='no'>d2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dbi_copy_to.html'>dbi_copy_to</a></span>(<span class='no'>my_db</span>, <span class='st'>'d2'</span>,
-                    <span class='fu'>data.frame</span>(<span class='kw'>AUC2</span> <span class='kw'>=</span> <span class='fl'>0.4</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>0.3</span>))
-  <span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='fu'>theta_join_nse</span>(<span class='no'>d1</span>, <span class='no'>d2</span>, <span class='no'>AUC</span> <span class='kw'>&gt;=</span> <span class='no'>AUC2</span>)
-  <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>optree</span>))
-  <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>optree</span>, <span class='no'>my_db</span>)
-  <span class='fu'>cat</span>(<span class='no'>sql</span>)
-  <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; table('d1') %.&gt;%
-#&gt;  theta_join(.,
-#&gt;   table('d2'),
-#&gt;   j= INNER; on= AUC &gt;= AUC2)
-#&gt; SELECT
-#&gt;  `tsql_11090134104390167605_0000000000`.`AUC` AS `AUC`,
-#&gt;  `tsql_11090134104390167605_0000000000`.`R2` AS `R2_a`,
-#&gt;  `tsql_11090134104390167605_0000000001`.`AUC2` AS `AUC2`,
-#&gt;  `tsql_11090134104390167605_0000000001`.`R2` AS `R2_b`
-#&gt; FROM (
-#&gt;  SELECT
-#&gt;   `d1`.`AUC`,
-#&gt;   `d1`.`R2`
-#&gt;  FROM
-#&gt;   `d1`
-#&gt; ) `tsql_11090134104390167605_0000000000`
-#&gt; INNER JOIN (
-#&gt;  SELECT
-#&gt;   `d2`.`AUC2`,
-#&gt;   `d2`.`R2`
-#&gt;  FROM
-#&gt;   `d2`
-#&gt; ) `tsql_11090134104390167605_0000000001` ON `AUC` &gt;= `AUC2`
-#&gt;   AUC R2_a AUC2 R2_b
-#&gt; 1 0.6  0.2  0.4  0.3</div><div class='input'>
+<span class='co'># by hand logistic regression example</span>
+<span class='no'>scale</span> <span class='kw'>&lt;-</span> <span class='fl'>0.237</span>
+<span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='table_source.html'>table_source</a></span>(<span class='st'>"survey_table"</span>,
+                  <span class='fu'>c</span>(<span class='st'>"subjectID"</span>, <span class='st'>"surveyCategory"</span>, <span class='st'>"assessmentTotal"</span>))
+<span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span>
+  <span class='fu'><a href='extend_nse.html'>extend_nse</a></span>(<span class='no'>.</span>,
+             <span class='no'>probability</span> <span class='kw'>:=</span>
+               <span class='fu'>exp</span>(<span class='no'>assessmentTotal</span> * <span class='no'>scale</span>))  <span class='kw'>%.&gt;%</span>
+  <span class='fu'>normalize_cols</span>(<span class='no'>.</span>,
+                 <span class='st'>"probability"</span>,
+                 <span class='kw'>partitionby</span> <span class='kw'>=</span> <span class='st'>'subjectID'</span>) <span class='kw'>%.&gt;%</span>
+  <span class='fu'><a href='pick_top_k.html'>pick_top_k</a></span>(<span class='no'>.</span>,
+             <span class='kw'>partitionby</span> <span class='kw'>=</span> <span class='st'>'subjectID'</span>,
+             <span class='kw'>rev_orderby</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>'probability'</span>, <span class='st'>'surveyCategory'</span>)) <span class='kw'>%.&gt;%</span>
+  <span class='fu'><a href='rename_columns.html'>rename_columns</a></span>(<span class='no'>.</span>, <span class='st'>'diagnosis'</span> <span class='kw'>:=</span> <span class='st'>'surveyCategory'</span>) <span class='kw'>%.&gt;%</span>
+  <span class='fu'><a href='select_columns.html'>select_columns</a></span>(<span class='no'>.</span>, <span class='fu'>c</span>(<span class='st'>'subjectID'</span>,
+                      <span class='st'>'diagnosis'</span>,
+                      <span class='st'>'probability'</span>)) <span class='kw'>%.&gt;%</span>
+  <span class='fu'><a href='orderby.html'>orderby</a></span>(<span class='no'>.</span>, <span class='st'>'subjectID'</span>)
+<span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>optree</span>))</div><div class='output co'>#&gt; table('survey_table') %.&gt;%
+#&gt;  extend(.,
+#&gt;   probability := exp(assessmentTotal * scale)) %.&gt;%
+#&gt;  extend(.,
+#&gt;   probability := probability / sum(probability),
+#&gt;   p= subjectID) %.&gt;%
+#&gt;  extend(.,
+#&gt;   row_number := row_number(),
+#&gt;   p= subjectID,
+#&gt;   o= "probability" DESC, "surveyCategory" DESC) %.&gt;%
+#&gt;  select_rows(.,
+#&gt;    row_number &lt;= 1) %.&gt;%
+#&gt;  rename(.,
+#&gt;   c('diagnosis' = 'surveyCategory')) %.&gt;%
+#&gt;  select_columns(.,
+#&gt;    subjectID, diagnosis, probability) %.&gt;%
+#&gt;  orderby(., subjectID)</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#value">Value</a></li>
-      
+            
       <li><a href="#examples">Examples</a></li>
     </ul>
 

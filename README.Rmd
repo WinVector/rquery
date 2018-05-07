@@ -166,7 +166,7 @@ dq <- d %.>%
   select_columns(., c('subjectID', 
                       'diagnosis', 
                       'probability')) %.>%
-  orderby(., 'subjectID')
+  orderby(., cols = 'subjectID')
 ```
 
 We then generate our result:

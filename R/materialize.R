@@ -232,11 +232,11 @@ materialize <- function(db,
 #'
 #'   cat(format(optree))
 #'
-#'   execute(my_db, optree) %.>%
-#'      print(.)
+#'   v <- execute(my_db, optree)
+#'   print(v)
 #'
-#'   execute(data.frame(AUC = 1, R2 = 2), optree) %.>%
-#'      print(.)
+#'   v2 <- execute(data.frame(AUC = 1, R2 = 2), optree)
+#'   print(v2)
 #'
 #'   # land result in database
 #'   res_hdl <- execute(my_db, optree, table_name = "res")
@@ -282,6 +282,14 @@ execute <- function(source,
                      temporary = temporary)
   res <- ref
   if(!table_name_set) {
+    # if last step is order we have to re-do that
+    # as order is not well define in materialized tables
+    if("relop_orderby" %in% class(optree)) {
+      ref <- ref  %.>%
+        orderby(.,
+                cols = optree$orderby,
+                rev_cols = optree$rev_orderby)
+    }
     sql <- to_sql(ref, db, limit = limit)
     res <- DBI::dbGetQuery(db, sql)
     dbi_remove_table(db, ref$table_name)
