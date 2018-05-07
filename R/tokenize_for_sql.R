@@ -122,7 +122,7 @@ tokenize_call_for_SQL <- function(lexpr,
       res$symbols_produced <- unique(c(as.character(lexpr[[2]]),
                                        rhs$symbols_produced))
       res$free_symbols <- rhs$free_symbols
-      res$presentation <- paste0(lhs$presentation, " := ", rhs$presentation)
+      res$presentation <- paste0(as.character(lexpr[[2]]), " := ", rhs$presentation)
       return(res)
     }
     replacements <- list("==" = "=",
@@ -266,16 +266,18 @@ tokenize_for_SQL_r <- function(lexpr,
                     envir = env,
                     ifnotfound = list(NULL),
                     inherits = TRUE)[[1]]
-    if(length(v)>0) {
+    if(length(v)==1) {
       if(is.character(v)) {
         res$parsed_toks <- list(pre_sql_string(v))
         res$presentation <- paste0('"', v, '"')
         return(res)
       }
       if(is.numeric(v)) {
+        # TODO: see if we can keep things numeric
         res$parsed_toks <- list(pre_sql_token(paste(as.character(v), collapse = " ")))
         return(res)
       }
+      # TODO: think about logical?
       # finding functions in the env is a problem here
     }
     res$free_symbols <- lexpr

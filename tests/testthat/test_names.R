@@ -35,6 +35,13 @@ test_that("test_names: Works As Expected", {
                   groupby = "mpg")
   )
 
+  # detect failure to assign
+  expect_error(
+    badtree <- hdl %.>%
+      extend_nse(.,
+                 mpg + 1)
+  )
+
   # detect non-scalar constant
   v <- c(1, 2)
   expect_error(
@@ -43,4 +50,12 @@ test_that("test_names: Works As Expected", {
                   d2 = mpg + v)
   )
 
+  # make sure LHS do not drift and columns come first
+  d2 <- "zz"
+  mpg <- "zz"
+  p <- hdl %.>%
+    extend_nse(.,
+               d2 = mpg)
+  expect_equal(qc(am, carb, cyl, d2, disp, drat, gear, hp, mpg, qsec, vs, wt),
+               column_names(p))
 })
