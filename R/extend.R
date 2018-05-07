@@ -22,9 +22,8 @@ extend_impl <- function(source, parsed,
                         partitionby = NULL,
                         orderby = NULL,
                         rev_orderby = NULL) {
-  if(length(list(...))>0) {
-    stop("unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery:::extend_impl")
   have <- column_names(source)
   required_cols <- sort(unique(c(
     merge_fld(parsed, "symbols_used"),
@@ -138,9 +137,8 @@ extend_se.relop <- function(source, assignments,
                             orderby = NULL,
                             rev_orderby = NULL,
                             env = parent.frame()) {
-  if(length(list(...))>0) {
-    stop("unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::extend_se.relop")
   parsed <- parse_se(source, assignments, env = env)
   extend_impl_list(source = source,
                    parsed = parsed,
@@ -156,9 +154,8 @@ extend_se.data.frame <- function(source, assignments,
                                  orderby = NULL,
                                  rev_orderby = NULL,
                                  env = parent.frame()) {
-  if(length(list(...))>0) {
-    stop("unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::extend_se.data.frame")
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- table_source(tmp_name, colnames(source))
   dnode$data <- source
@@ -253,9 +250,8 @@ extend_nse.data.frame <- function(source,
 
 #' @export
 column_names.relop_extend <- function (x, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::column_names.relop_extend")
   sort(unique(c(column_names(x$source[[1]]), x$columns)))
 }
 
@@ -323,9 +319,8 @@ calc_used_relop_extend <- function (x,
 columns_used.relop_extend <- function (x, ...,
                                        using = NULL,
                                        contract = FALSE) {
-  if(length(list(...))>0) {
-    stop("rquery:columns_used: unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::columns_used.relop_extend")
   cols <- calc_used_relop_extend(x,
                                  using = using,
                                  contract = contract)
@@ -345,9 +340,8 @@ to_sql.relop_extend <- function (x,
                                  tnum = mk_tmp_name_source('tsql'),
                                  append_cr = TRUE,
                                  using = NULL) {
-  if(length(list(...))>0) {
-    stop("unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::to_sql.relop_extend")
   # re-quote expr
   re_quoted <- redo_parse_quoting(x$parsed, db)
   re_assignments <- unpack_assignments(x$source[[1]], re_quoted)

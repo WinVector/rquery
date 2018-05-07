@@ -30,7 +30,8 @@ select_rows_se <- function(source, expr,
 select_rows_se.relop <- function(source, expr,
                                  env = parent.frame()) {
   have <- column_names(source)
-  parsed <- parse_se(source, expr, env = env)
+  parsed <- parse_se(source, expr, env = env,
+                     check_names = FALSE)
   assignments <- unpack_assignments(source, parsed,
                                     check_is_assignment = FALSE)
   parsed[[1]]$symbols_produced <- character(0)
@@ -90,7 +91,8 @@ select_rows_nse.relop <- function(source, expr,
                             env = parent.frame()) {
   exprq <- substitute(expr)
   have <- column_names(source)
-  parsed <- parse_nse(source, list(exprq), env = env)
+  parsed <- parse_nse(source, list(exprq), env = env,
+                      check_names = FALSE)
   assignments <- unpack_assignments(source, parsed,
                                     check_is_assignment = FALSE)
   parsed[[1]]$symbols_produced <- character(0)

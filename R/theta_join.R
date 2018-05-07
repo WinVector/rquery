@@ -101,7 +101,8 @@ theta_join_se.relop <- function(a, b,
                   have)[[1]]
   parsed <- parse_se(a, vnam := expr,
                      env = env,
-                     have = have)
+                     have = have,
+                     check_names = FALSE)
   assignments <- unpack_assignments(a, parsed,
                                     have = have)
   parsed[[1]]$symbols_produced <- character(0)
@@ -208,7 +209,8 @@ theta_join_nse.relop <- function(a, b,
                   have)[[1]]
   parsed <- parse_nse(a, list(exprq),
                       env = env,
-                      have = have)
+                      have = have,
+                      check_names = FALSE)
   parsed[[1]]$symbols_produced <- vnam
   assignments <- unpack_assignments(a, parsed,
                                     have = have)

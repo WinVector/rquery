@@ -58,17 +58,22 @@ unpack_assignments <- function(source, parsed,
 }
 
 parse_se <- function(source, assignments, env,
-                     have = column_names(source)) {
+                     ...,
+                     have = column_names(source),
+                     check_names = TRUE) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery:::parse_se")
   n <- length(assignments)
   if(n<=0) {
     stop("must generate at least 1 expression")
   }
+  nms <- names(assignments)
   # R-like db-info for presentation
   db_inf <- rquery_db_info(indentifier_quote_char = '`',
                            string_quote_char = '"')
   parsed <- vector(n, mode = 'list')
   for(i in seq_len(n)) {
-    ni <- names(assignments)[[i]]
+    ni <- nms[[i]]
     ai <- assignments[[i]]
     ei <- parse(text = ai)[[1]]
     pi <- tokenize_for_SQL(ei,
@@ -83,22 +88,35 @@ parse_se <- function(source, assignments, env,
     have <- unique(c(have, pi$symbols_produced))
     parsed[[i]] <- pi
   }
+  if(check_names) {
+    for(i in seq_len(n)) {
+      spi <- parsed[[i]]$symbols_produced
+      if((!is.character(spi)) || (length(spi)!=1) || (nchar(spi)<=0)) {
+        stop("all expressions must have left-hand sides")
+      }
+    }
+  }
   parsed
 }
 
 
 parse_nse <- function(source, exprs, env,
-                      have = column_names(source)) {
+                      ...,
+                      have = column_names(source),
+                      check_names = TRUE) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery:::parse_nse")
   n <- length(exprs)
   if(n<=0) {
     stop("must have at least 1 assigment")
   }
+  nms <- names(exprs)
   # R-like db-info for presentation
   db_inf <- rquery_db_info(indentifier_quote_char = '`',
                            string_quote_char = '"')
   parsed <- vector(n, mode = 'list')
   for(i in seq_len(n)) {
-    ni <- names(exprs)[[i]]
+    ni <- nms[[i]]
     ei <- exprs[[i]]
     pi <- tokenize_for_SQL(ei,
                         colnames = have,
@@ -111,6 +129,14 @@ parse_nse <- function(source, exprs, env,
                           db_info = db_inf)
     have <- unique(c(have, pi$symbols_produced))
     parsed[[i]] <- pi
+  }
+  if(check_names) {
+    for(i in seq_len(n)) {
+      spi <- parsed[[i]]$symbols_produced
+      if((!is.character(spi)) || (length(spi)!=1) || (nchar(spi)<=0)) {
+        stop("all expressions must have left-hand sides")
+      }
+    }
   }
   parsed
 }

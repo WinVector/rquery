@@ -35,4 +35,12 @@ test_that("test_names: Works As Expected", {
                   groupby = "mpg")
   )
 
+  # detect non-scalar constant
+  v <- c(1, 2)
+  expect_error(
+    badtree <- hdl %.>%
+      extend_nse(.,
+                  d2 = mpg + v)
+  )
+
 })
