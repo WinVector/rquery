@@ -58,6 +58,12 @@ rquery_apply_to_data_frame <- function(d,
   if(length(tabNames)!=1) {
     stop("rquery::rquery_apply_to_data_frame optree must reference exactly one table")
   }
+  cols_used <- columns_used(optree)[[tabNames]]
+  missing <- setdiff(cols_used, colnames(d))
+  if(length(missing)>0) {
+    stop(paste("rquery::rquery_apply_to_data_frame d missing required columns:",
+         paste(missing, collapse = ", ")))
+  }
   tmp_name_source <- mk_tmp_name_source('rqatmp')
   inp_name <- tmp_name_source()
   res_name <- tmp_name_source()
