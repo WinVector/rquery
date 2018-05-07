@@ -123,7 +123,8 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>rquery_apply_to_data_frame</span>(<span class='no'>d</span>, <span class='no'>optree</span>, <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>(), <span class='kw'>limit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>rquery_apply_to_data_frame</span>(<span class='no'>d</span>, <span class='no'>optree</span>, <span class='no'>...</span>, <span class='kw'>limit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -137,12 +138,16 @@
       <td><p>rquery rel_op operation tree.</p></td>
     </tr>
     <tr>
-      <th>env</th>
-      <td><p>environment to look for "winvector_temp_db_handle" in.</p></td>
+      <th>...</th>
+      <td><p>force later arguments to bind by name.</p></td>
     </tr>
     <tr>
       <th>limit</th>
       <td><p>integer, if not NULL limit result to no more than this many rows.</p></td>
+    </tr>
+    <tr>
+      <th>env</th>
+      <td><p>environment to look for "winvector_temp_db_handle" in.</p></td>
     </tr>
     </table>
     
@@ -168,11 +173,21 @@
   <span class='no'>v</span> <span class='kw'>&lt;-</span> <span class='fu'>rquery_apply_to_data_frame</span>(<span class='no'>d</span>, <span class='no'>optree</span>)
   <span class='fu'>print</span>(<span class='no'>v</span>)
 
+  <span class='co'># now load up a table without an R2 column,</span>
+  <span class='co'># want to show this is caught</span>
+  <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'>data.frame</span>(<span class='kw'>z</span> <span class='kw'>=</span> <span class='fl'>1</span>)
+  <span class='fu'>tryCatch</span>(
+     <span class='fu'>rquery_apply_to_data_frame</span>(<span class='no'>d</span>, <span class='no'>optree</span>),
+     <span class='kw'>error</span> <span class='kw'>=</span> <span class='kw'>function</span>(<span class='no'>e</span>) { <span class='fu'>as.character</span>(<span class='no'>e</span>) }
+    ) <span class='kw'>%.&gt;%</span>
+    <span class='fu'>print</span>(<span class='no'>.</span>)
+
   <span class='no'>winvector_temp_db_handle</span> <span class='kw'>&lt;-</span> <span class='kw'>NULL</span>
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>db</span>)
 }</div><div class='output co'>#&gt;   AUC  R2  D         c
 #&gt; 1 0.6 0.2 NA 0.4472136
-#&gt; 2 0.6 0.1 NA 0.3162278</div><div class='input'>
+#&gt; 2 0.6 0.1 NA 0.3162278
+#&gt; [1] "Error in rquery_apply_to_data_frame(d, optree): rquery::rquery_apply_to_data_frame d missing required columns: AUC, R2, D\n"</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

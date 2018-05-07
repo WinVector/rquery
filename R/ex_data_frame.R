@@ -17,8 +17,9 @@ re_write_table_names <- function(op_tree, new_name) {
 #'
 #' @param d data.frame
 #' @param optree rquery rel_op operation tree.
-#' @param env environment to look for "winvector_temp_db_handle" in.
+#' @param ... force later arguments to bind by name.
 #' @param limit integer, if not NULL limit result to no more than this many rows.
+#' @param env environment to look for "winvector_temp_db_handle" in.
 #' @return data.frame result
 #'
 #' @examples
@@ -38,6 +39,15 @@ re_write_table_names <- function(op_tree, new_name) {
 #'   v <- rquery_apply_to_data_frame(d, optree)
 #'   print(v)
 #'
+#'   # now load up a table without an R2 column,
+#'   # want to show this is caught
+#'   d <- data.frame(z = 1)
+#'   tryCatch(
+#'      rquery_apply_to_data_frame(d, optree),
+#'      error = function(e) { as.character(e) }
+#'     ) %.>%
+#'     print(.)
+#'
 #'   winvector_temp_db_handle <- NULL
 #'   DBI::dbDisconnect(db)
 #' }
@@ -46,8 +56,10 @@ re_write_table_names <- function(op_tree, new_name) {
 #'
 rquery_apply_to_data_frame <- function(d,
                                        optree,
-                                       env = parent.frame(),
-                                       limit = NULL) {
+                                       ...,
+                                       limit = NULL,
+                                       env = parent.frame()) {
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::rquery_apply_to_data_frame")
   if(!is.data.frame(d)) {
     stop("rquery::rquery_apply_to_data_frame d must be a data.frame")
   }
@@ -96,7 +108,8 @@ rquery_apply_to_data_frame <- function(d,
                      limit = limit,
                      table_name = res_name,
                      overwrite = TRUE,
-                     temporary = TRUE)
+                     temporary = TRUE,
+                     precheck = FALSE)
   # if last step is order we have to re-do that
   # as order is not well define in materialized tables
   if("relop_orderby" %in% class(optree)) {
@@ -282,7 +295,7 @@ wrapr_function.relop <- function(pipe_left_arg,
   if(is.data.frame(pipe_left_arg)) {
     return(rquery_apply_to_data_frame(pipe_left_arg,
                                       pipe_right_arg,
-                                      pipe_environment))
+                                      env = pipe_environment))
   }
   # assume pipe_left_arg is a DB connection, execute and bring back result
   execute(pipe_left_arg, pipe_right_arg)
