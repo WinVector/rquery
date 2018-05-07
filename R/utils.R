@@ -168,12 +168,14 @@ merge_fld <- function(reslist, field) {
 }
 
 
-# mege named maps of column vectors
+# merge named maps of column vectors
+# rquery:::merge_columns_used(list(x = c("a", "b"), y = "c"), list(x = c("d")))
+# should match list(x = c("a", "b", "d"), y = c("c"))
 merge_columns_used <- function(cu1, cu2) {
-  nms <- sort(unique(names(cu1), names(cu2)))
+  nms <- sort(unique(c(names(cu1), names(cu2))))
   cu <- lapply(nms,
                function(ni) {
-                 sort(unique(cu1[[ni]], cu2[[ni]]))
+                 sort(unique(c(cu1[[ni]], cu2[[ni]])))
                })
   names(cu) <- nms
   cu

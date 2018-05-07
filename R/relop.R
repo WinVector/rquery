@@ -146,9 +146,9 @@ tables_used.relop <- function(node, ...) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::tables_used.relop")
   tabs <- lapply(node$source,
-         function(si) {
-           tables_used(si)
-         })
+                 function(si) {
+                   tables_used(si)
+                 })
   tabs <- sort(unique(unlist(tabs)))
   tabs
 }
