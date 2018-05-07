@@ -280,7 +280,7 @@ format_node.relop_extend <- function(node) {
   }
   if(length(ocols)>0) {
     oterms <- paste0(",\n  o= ",
-      paste(node$orderby, collapse = ", "))
+      paste(ocols, collapse = ", "))
   }
   origTerms <- vapply(node$parsed,
                       function(pi) {

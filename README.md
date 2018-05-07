@@ -192,13 +192,10 @@ dq <- d %.>%
              probability :=
                exp(assessmentTotal * scale)/
                sum(exp(assessmentTotal * scale)),
-             count := count(1),
              partitionby = 'subjectID') %.>%
-  extend_nse(.,
-             rank := row_number(),
+  pick_top_k(.,
              partitionby = 'subjectID',
-             orderby = c('probability', 'surveyCategory'))  %.>%
-  select_rows_nse(., rank == count) %.>%
+             rev_orderby = c('probability', 'surveyCategory')) %.>% 
   rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
   select_columns(., c('subjectID', 
                       'diagnosis', 
@@ -240,18 +237,16 @@ cat(to_sql(dq, my_db, source_limit = 1000))
       FROM (
        SELECT * FROM (
         SELECT
-         "count",
          "probability",
          "subjectID",
          "surveyCategory",
-         row_number ( ) OVER (  PARTITION BY "subjectID" ORDER BY "probability", "surveyCategory" ) AS "rank"
+         row_number ( ) OVER (  PARTITION BY "subjectID" ORDER BY "probability" DESC, "surveyCategory" DESC ) AS "row_number"
         FROM (
          SELECT
           "subjectID",
           "surveyCategory",
           "assessmentTotal",
-          exp ( "assessmentTotal" * 0.237 ) / sum ( exp ( "assessmentTotal" * 0.237 ) ) OVER (  PARTITION BY "subjectID" ) AS "probability",
-          count ( 1 ) OVER (  PARTITION BY "subjectID" ) AS "count"
+          exp ( "assessmentTotal" * 0.237 ) / sum ( exp ( "assessmentTotal" * 0.237 ) ) OVER (  PARTITION BY "subjectID" ) AS "probability"
          FROM (
           SELECT
            "d"."subjectID",
@@ -259,13 +254,13 @@ cat(to_sql(dq, my_db, source_limit = 1000))
            "d"."assessmentTotal"
           FROM
            "d" LIMIT 1000
-          ) tsql_78958308242931081494_0000000000
-         ) tsql_78958308242931081494_0000000001
-       ) tsql_78958308242931081494_0000000002
-       WHERE "rank" = "count"
-      ) tsql_78958308242931081494_0000000003
-     ) tsql_78958308242931081494_0000000004
-    ) tsql_78958308242931081494_0000000005 ORDER BY "subjectID"
+          ) tsql_09787217296434903508_0000000000
+         ) tsql_09787217296434903508_0000000001
+       ) tsql_09787217296434903508_0000000002
+       WHERE "row_number" <= 1
+      ) tsql_09787217296434903508_0000000003
+     ) tsql_09787217296434903508_0000000004
+    ) tsql_09787217296434903508_0000000005 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
@@ -301,14 +296,13 @@ cat(format(dq))
     table('d') %.>%
      extend(.,
       probability := exp(assessmentTotal * scale) / sum(exp(assessmentTotal * scale)),
-      count := count(1),
       p= subjectID) %.>%
      extend(.,
-      rank := row_number(),
+      row_number := row_number(),
       p= subjectID,
-      o= probability, surveyCategory) %.>%
+      o= "probability" DESC, "surveyCategory" DESC) %.>%
      select_rows(.,
-       rank = count) %.>%
+       row_number <= 1) %.>%
      rename(.,
       c('diagnosis' = 'surveyCategory')) %.>%
      select_columns(.,
