@@ -66,7 +66,7 @@ Let's work a non-trivial example: the `dplyr` pipeline from [Let’s Have Some S
 
 ``` r
 library("rquery")
-use_spark <- TRUE
+use_spark <- FALSE
 
 if(use_spark) {
   my_db <- sparklyr::spark_connect(version='2.2.0', 
@@ -88,36 +88,36 @@ dbopts <- dbi_connection_preferences(my_db)
 print(dbopts)
 ```
 
-    ## $rquery.DBIConnection_spark_connection_spark_shell_connection.use_pass_limit
+    ## $rquery.PostgreSQLConnection.use_pass_limit
     ## [1] TRUE
     ## 
-    ## $rquery.DBIConnection_spark_connection_spark_shell_connection.use_DBI_dbExistsTable
+    ## $rquery.PostgreSQLConnection.use_DBI_dbExistsTable
     ## [1] TRUE
     ## 
-    ## $rquery.DBIConnection_spark_connection_spark_shell_connection.use_DBI_dbListFields
+    ## $rquery.PostgreSQLConnection.use_DBI_dbListFields
     ## [1] FALSE
     ## 
-    ## $rquery.DBIConnection_spark_connection_spark_shell_connection.use_DBI_dbRemoveTable
+    ## $rquery.PostgreSQLConnection.use_DBI_dbRemoveTable
     ## [1] FALSE
     ## 
-    ## $rquery.DBIConnection_spark_connection_spark_shell_connection.use_DBI_dbExecute
+    ## $rquery.PostgreSQLConnection.use_DBI_dbExecute
     ## [1] TRUE
     ## 
-    ## $rquery.DBIConnection_spark_connection_spark_shell_connection.create_temporary
-    ## [1] FALSE
-    ## 
-    ## $rquery.DBIConnection_spark_connection_spark_shell_connection.control_temporary
+    ## $rquery.PostgreSQLConnection.create_temporary
     ## [1] TRUE
     ## 
-    ## $rquery.DBIConnection_spark_connection_spark_shell_connection.control_rownames
-    ## [1] FALSE
+    ## $rquery.PostgreSQLConnection.control_temporary
+    ## [1] TRUE
+    ## 
+    ## $rquery.PostgreSQLConnection.control_rownames
+    ## [1] TRUE
 
 ``` r
 options(dbopts)
 print(getDBOption(my_db, "create_options"))
 ```
 
-    ## [1] "USING PARQUET OPTIONS ('compression'='snappy')"
+    ## NULL
 
 ``` r
 # copy data in so we have an example
@@ -159,8 +159,9 @@ First we show the Spark/database version of the original example data:
 class(my_db)
 ```
 
-    ## [1] "spark_connection"       "spark_shell_connection"
-    ## [3] "DBIConnection"
+    ## [1] "PostgreSQLConnection"
+    ## attr(,"package")
+    ## [1] "RPostgreSQL"
 
 ``` r
 print(d)
@@ -208,12 +209,15 @@ dq <- d %.>%
 We then generate our result:
 
 ``` r
-execute(my_db, dq, source_limit = 1000)
+dq %.>%
+  execute(my_db, .) %.>%
+  knitr::kable(.)
 ```
 
-    ##   subjectID           diagnosis probability
-    ## 1         1 withdrawal behavior   0.6706221
-    ## 2         2 positive re-framing   0.5589742
+|  subjectID| diagnosis           |  probability|
+|----------:|:--------------------|------------:|
+|          1| withdrawal behavior |    0.6706221|
+|          2| positive re-framing |    0.5589742|
 
 We see we have quickly reproduced the original result using the new database operators. This means such a calculation could easily be performed at a "big data" scale (using a database or `Spark`; in this case we would not take the results back, but instead use `CREATE TABLE tname AS` to build a remote materialized view of the results).
 
@@ -225,43 +229,43 @@ cat(to_sql(dq, my_db, source_limit = 1000))
 
     SELECT * FROM (
      SELECT
-      `subjectID`,
-      `diagnosis`,
-      `probability`
+      "subjectID",
+      "diagnosis",
+      "probability"
      FROM (
       SELECT
-       `probability` AS `probability`,
-       `subjectID` AS `subjectID`,
-       `surveyCategory` AS `diagnosis`
+       "probability" AS "probability",
+       "subjectID" AS "subjectID",
+       "surveyCategory" AS "diagnosis"
       FROM (
        SELECT * FROM (
         SELECT
-         `count`,
-         `probability`,
-         `subjectID`,
-         `surveyCategory`,
-         row_number ( ) OVER (  PARTITION BY `subjectID` ORDER BY `probability`, `surveyCategory` ) AS `rank`
+         "count",
+         "probability",
+         "subjectID",
+         "surveyCategory",
+         row_number ( ) OVER (  PARTITION BY "subjectID" ORDER BY "probability", "surveyCategory" ) AS "rank"
         FROM (
          SELECT
-          `subjectID`,
-          `surveyCategory`,
-          `assessmentTotal`,
-          exp ( `assessmentTotal` * 0.237 ) / sum ( exp ( `assessmentTotal` * 0.237 ) ) OVER (  PARTITION BY `subjectID` ) AS `probability`,
-          count ( 1 ) OVER (  PARTITION BY `subjectID` ) AS `count`
+          "subjectID",
+          "surveyCategory",
+          "assessmentTotal",
+          exp ( "assessmentTotal" * 0.237 ) / sum ( exp ( "assessmentTotal" * 0.237 ) ) OVER (  PARTITION BY "subjectID" ) AS "probability",
+          count ( 1 ) OVER (  PARTITION BY "subjectID" ) AS "count"
          FROM (
           SELECT
-           `d`.`subjectID`,
-           `d`.`surveyCategory`,
-           `d`.`assessmentTotal`
+           "d"."subjectID",
+           "d"."surveyCategory",
+           "d"."assessmentTotal"
           FROM
-           `d` LIMIT 1000
-          ) tsql_67402821597360715136_0000000000
-         ) tsql_67402821597360715136_0000000001
-       ) tsql_67402821597360715136_0000000002
-       WHERE `rank` = `count`
-      ) tsql_67402821597360715136_0000000003
-     ) tsql_67402821597360715136_0000000004
-    ) tsql_67402821597360715136_0000000005 ORDER BY `subjectID`
+           "d" LIMIT 1000
+          ) tsql_73933789152819593847_0000000000
+         ) tsql_73933789152819593847_0000000001
+       ) tsql_73933789152819593847_0000000002
+       WHERE "rank" = "count"
+      ) tsql_73933789152819593847_0000000003
+     ) tsql_73933789152819593847_0000000004
+    ) tsql_73933789152819593847_0000000005 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
@@ -375,13 +379,13 @@ dq %.>%
 ```
 
     ##        column index     class nrows nna nunique       min       max
-    ## 1   subjectID     1   numeric     2   0     NaN 1.0000000 2.0000000
-    ## 2   diagnosis     2 character     2   0       2       NaN       NaN
-    ## 3 probability     3   numeric     2   0     NaN 0.5589742 0.6706221
+    ## 1   subjectID     1   numeric     2   0      NA 1.0000000 2.0000000
+    ## 2   diagnosis     2 character     2   0       2        NA        NA
+    ## 3 probability     3   numeric     2   0      NA 0.5589742 0.6706221
     ##        mean         sd              lexmin              lexmax
-    ## 1 1.5000000 0.70710678                  NA                  NA
-    ## 2       NaN        NaN positive re-framing withdrawal behavior
-    ## 3 0.6147982 0.07894697                  NA                  NA
+    ## 1 1.5000000 0.70710678                <NA>                <NA>
+    ## 2        NA         NA positive re-framing withdrawal behavior
+    ## 3 0.6147982 0.07894697                <NA>                <NA>
 
 We have found most big-data projects either require joining very many tables (something `rquery` join planners help with, please see [here](https://github.com/WinVector/rquery/blob/master/extras/JoinController.md) and [here](https://github.com/WinVector/rquery/blob/master/extras/JoinController.md)) or they require working with wide data-marts (where `rquery` query narrowing helps, please see [here](https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md)).
 

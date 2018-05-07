@@ -75,7 +75,7 @@ from [Let’s Have Some Sympathy For The Part-time R User](http://www.win-vector
 
 ```{r ex, warning=FALSE, message=FALSE}
 library("rquery")
-use_spark <- TRUE
+use_spark <- FALSE
 
 if(use_spark) {
   my_db <- sparklyr::spark_connect(version='2.2.0', 
@@ -174,7 +174,9 @@ dq <- d %.>%
 We then generate our result:
 
 ```{r res}
-execute(my_db, dq, source_limit = 1000)
+dq %.>%
+  execute(my_db, .) %.>%
+  knitr::kable(.)
 ```
 
 We see we have quickly reproduced the original result using the new database operators.  This means such a calculation could easily be performed at a "big data" scale (using a database or `Spark`; in this case we would not take the results back, but instead use `CREATE TABLE tname AS` to build a remote materialized view of the results).

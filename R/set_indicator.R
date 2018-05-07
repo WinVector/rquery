@@ -19,8 +19,9 @@
 #'                    temporary = TRUE,
 #'                    overwrite = TRUE)
 #'   # example
+#'   set <- c("1", "2")
 #'   op_tree <- d %.>%
-#'     set_indicator(., "one_two", "a", c("1", "2"))
+#'     set_indicator(., "one_two", "a", set)
 #'   cat(format(op_tree))
 #'   sql <- to_sql(op_tree, my_db)
 #'   cat(sql)
