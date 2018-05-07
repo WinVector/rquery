@@ -155,9 +155,10 @@ scale <- 0.237
 dq <- d %.>%
   extend_nse(.,
              probability :=
-               exp(assessmentTotal * scale)/
-               sum(exp(assessmentTotal * scale)),
-             partitionby = 'subjectID') %.>%
+               exp(assessmentTotal * scale))  %.>% 
+  normalize_cols(.,
+                 "probability",
+                 partitionby = 'subjectID') %.>%
   pick_top_k(.,
              partitionby = 'subjectID',
              rev_orderby = c('probability', 'surveyCategory')) %.>% 

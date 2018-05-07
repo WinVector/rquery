@@ -200,6 +200,20 @@ head.relop <- function(x, ...) {
   }
 }
 
+#' @export
+summary.relop <- function(object, ...) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::summary.relop")
+  res <- execute_embeded_data_frame(object,
+                                    env = parent.frame())
+  if(!is.null(res)) {
+    summary(res)
+  } else {
+    format(object)
+  }
+}
+
+
 #' Execute pipeline treating pipe_left_arg as local data to
 #' be copied into database.
 #'

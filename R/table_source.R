@@ -2,8 +2,7 @@
 
 #' Table data source.
 #'
-#' Build structures (table name, column names, and quoting
-#' strategy) needed to represent data from a remote table.
+#' Build minimal structures (table name and column names) needed to represent data from a remote table.
 #'
 #' Generate a query that returns contents of a table, we
 #' could try to eliminate this (replace the query with the table name),
