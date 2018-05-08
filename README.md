@@ -114,10 +114,10 @@ print(dbopts)
 
 ``` r
 options(dbopts)
-print(getDBOption(my_db, "create_options"))
+print(getDBOption(my_db, "control_rownames"))
 ```
 
-    ## NULL
+    ## [1] TRUE
 
 ``` r
 # copy data in so we have an example
@@ -260,14 +260,14 @@ cat(to_sql(dq, my_db, source_limit = 1000))
             "d"."assessmentTotal"
            FROM
             "d" LIMIT 1000
-           ) tsql_67969601266551974931_0000000000
-          ) tsql_67969601266551974931_0000000001
-         ) tsql_67969601266551974931_0000000002
-       ) tsql_67969601266551974931_0000000003
+           ) tsql_90992457593944107189_0000000000
+          ) tsql_90992457593944107189_0000000001
+         ) tsql_90992457593944107189_0000000002
+       ) tsql_90992457593944107189_0000000003
        WHERE "row_number" <= 1
-      ) tsql_67969601266551974931_0000000004
-     ) tsql_67969601266551974931_0000000005
-    ) tsql_67969601266551974931_0000000006 ORDER BY "subjectID"
+      ) tsql_90992457593944107189_0000000004
+     ) tsql_90992457593944107189_0000000005
+    ) tsql_90992457593944107189_0000000006 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 

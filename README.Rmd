@@ -96,7 +96,7 @@ if(use_spark) {
 dbopts <- dbi_connection_preferences(my_db)
 print(dbopts)
 options(dbopts)
-print(getDBOption(my_db, "create_options"))
+print(getDBOption(my_db, "control_rownames"))
 
 # copy data in so we have an example
 dbi_copy_to(my_db, 'd',
