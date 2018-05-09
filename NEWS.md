@@ -1,4 +1,9 @@
 
+
+# rquery 0.4.4 2018/05/09
+
+ * Minor documentation fixes.
+
 # rquery 0.4.3 2018/05/07
 
  * Add assign_slice(), if_else_op(), map_column_values(), and set_indicator().
