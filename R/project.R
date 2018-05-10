@@ -4,13 +4,17 @@
 #' project data by grouping, and adding aggregate columns.
 #'
 #' @param source source to select from.
+#' @param ... force later arugments to bind by name.
 #' @param groupby grouping columns.
 #' @param parsed new column assignment expressions.
 #' @return project node.
 #'
 #' @noRd
 #'
-project_impl <- function(source, groupby, parsed) {
+project_impl <- function(source, ...,
+                         groupby, parsed) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery:::project_impl")
   have <- column_names(source)
   required_cols <- sort(unique(c(
     merge_fld(parsed, "symbols_used"),
@@ -56,7 +60,7 @@ project_impl <- function(source, groupby, parsed) {
 #'                stringsAsFactors = FALSE))
 #'
 #'   op_tree <- d %.>%
-#'     project_se(., "group", "vmax" := "max(val)")
+#'     project_se(., groupby = "group", "vmax" := "max(val)")
 #'   cat(format(op_tree))
 #'   sql <- to_sql(op_tree, my_db)
 #'   cat(sql)
@@ -64,7 +68,7 @@ project_impl <- function(source, groupby, parsed) {
 #'      print(.)
 #'
 #'   op_tree <- d %.>%
-#'     project_se(., NULL, "vmax" := "max(val)")
+#'     project_se(., groupby = NULL, "vmax" := "max(val)")
 #'   cat(format(op_tree))
 #'   sql <- to_sql(op_tree, my_db)
 #'   cat(sql)
@@ -85,7 +89,7 @@ project_se <- function(source, groupby, assignments,
 project_se.relop <- function(source, groupby, assignments,
                              env = parent.frame()) {
   parsed <- parse_se(source, assignments, env = env)
-  project_impl(source, groupby, parsed)
+  project_impl(source, groupby = groupby, parsed = parsed)
 }
 
 #' @export
@@ -122,7 +126,7 @@ project_se.data.frame <- function(source, groupby, assignments,
 #'                stringsAsFactors = FALSE))
 #'
 #'   op_tree <- d %.>%
-#'     project_nse(., "group", vmax := max(val))
+#'     project_nse(., groupby = "group", vmax := max(val))
 #'   cat(format(op_tree))
 #'   sql <- to_sql(op_tree, my_db)
 #'   cat(sql)
@@ -130,7 +134,7 @@ project_se.data.frame <- function(source, groupby, assignments,
 #'      print(.)
 #'
 #'   op_tree <- d %.>%
-#'     project_nse(., NULL, vmax := max(val))
+#'     project_nse(., groupby = NULL, vmax := max(val))
 #'   cat(format(op_tree))
 #'   sql <- to_sql(op_tree, my_db)
 #'   cat(sql)
@@ -152,7 +156,7 @@ project_nse.relop <- function(source, groupby, ...,
                         env = parent.frame()) {
   exprs <-  eval(substitute(alist(...)))
   parsed <- parse_nse(source, exprs, env = env)
-  project_impl(source, groupby, parsed)
+  project_impl(source, groupby = groupby, parsed = parsed)
 }
 
 #' @export
