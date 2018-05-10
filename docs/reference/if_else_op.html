@@ -237,14 +237,14 @@ is a reserved column name for this procedure.</p>
 #&gt;   `b`,
 #&gt;   `i`,
 #&gt;   `ifebtest_1`,
-#&gt;   ( CASE WHEN ( ( NOT ( `ifebtest_1` ) ) ) THEN ( 0 ) ELSE ( `edited` ) END )  AS `edited`
+#&gt;   ( CASE WHEN ( ( NOT ( `ifebtest_1` ) ) ) THEN ( 0 ) WHEN NOT ( ( NOT ( `ifebtest_1` ) ) ) THEN ( `edited` ) ELSE NULL END )  AS `edited`
 #&gt;  FROM (
 #&gt;   SELECT
 #&gt;    `i`,
 #&gt;    `ifebtest_1`,
-#&gt;    ( CASE WHEN ( `ifebtest_1` ) THEN ( 0 ) ELSE ( `a` ) END )  AS `a`,
-#&gt;    ( CASE WHEN ( `ifebtest_1` ) THEN ( 0 ) ELSE ( `b` ) END )  AS `b`,
-#&gt;    ( CASE WHEN ( `ifebtest_1` ) THEN ( 1 ) ELSE ( `edited` ) END )  AS `edited`
+#&gt;    ( CASE WHEN ( `ifebtest_1` ) THEN ( 0 ) WHEN NOT ( `ifebtest_1` ) THEN ( `a` ) ELSE NULL END )  AS `a`,
+#&gt;    ( CASE WHEN ( `ifebtest_1` ) THEN ( 0 ) WHEN NOT ( `ifebtest_1` ) THEN ( `b` ) ELSE NULL END )  AS `b`,
+#&gt;    ( CASE WHEN ( `ifebtest_1` ) THEN ( 1 ) WHEN NOT ( `ifebtest_1` ) THEN ( `edited` ) ELSE NULL END )  AS `edited`
 #&gt;   FROM (
 #&gt;    SELECT
 #&gt;     `i`,

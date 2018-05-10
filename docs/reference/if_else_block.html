@@ -254,9 +254,9 @@ is a reserved column name for this procedure.</p>
 #&gt;  `ifebtest_1`,
 #&gt;  `ifebtest_2`,
 #&gt;  `r`,
-#&gt;  ( CASE WHEN ( `ifebtest_2` ) THEN ( ( CASE WHEN ( `ifebtest_1` ) THEN ( 0 ) ELSE ( `a` ) END ) ) ELSE ( `a` ) END )  AS `a`,
-#&gt;  ( CASE WHEN ( `ifebtest_2` ) THEN ( ( CASE WHEN ( ( NOT ( `ifebtest_1` ) ) ) THEN ( 0 ) ELSE ( `b` ) END ) ) ELSE ( `b` ) END )  AS `b`,
-#&gt;  ( CASE WHEN ( `ifebtest_2` ) THEN ( 1 ) ELSE ( `edited` ) END )  AS `edited`
+#&gt;  ( CASE WHEN ( `ifebtest_2` ) THEN ( ( CASE WHEN ( `ifebtest_1` ) THEN ( 0 ) WHEN NOT ( `ifebtest_1` ) THEN ( `a` ) ELSE NULL END ) ) WHEN NOT ( `ifebtest_2` ) THEN ( `a` ) ELSE NULL END )  AS `a`,
+#&gt;  ( CASE WHEN ( `ifebtest_2` ) THEN ( ( CASE WHEN ( ( NOT ( `ifebtest_1` ) ) ) THEN ( 0 ) WHEN NOT ( ( NOT ( `ifebtest_1` ) ) ) THEN ( `b` ) ELSE NULL END ) ) WHEN NOT ( `ifebtest_2` ) THEN ( `b` ) ELSE NULL END )  AS `b`,
+#&gt;  ( CASE WHEN ( `ifebtest_2` ) THEN ( 1 ) WHEN NOT ( `ifebtest_2` ) THEN ( `edited` ) ELSE NULL END )  AS `edited`
 #&gt; FROM (
 #&gt;  SELECT
 #&gt;   `i`,
@@ -288,9 +288,9 @@ is a reserved column name for this procedure.</p>
 #&gt; 8   8          1          1 0.70750040 0 1      1
 #&gt; 9   9          1          1 0.69765543 0 1      1
 #&gt; 10 10          1          1 0.92565677 0 1      1
-#&gt;                    r1                   r2
-#&gt; 1 1761836190035246983  2249562373735784409
-#&gt; 2 -705974677852561942 -6080927982646046909</div><div class='input'>
+#&gt;                     r1                  r2
+#&gt; 1 -2392143271331427894 5171640572924018279
+#&gt; 2  -489172622719643718 5090230476941206083</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

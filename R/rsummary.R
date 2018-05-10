@@ -85,10 +85,7 @@ rsummary <- function(db,
                      quartiles = FALSE,
                      cols = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::rsummary")
-  localSample <- DBI::dbGetQuery(db, paste0("SELECT * FROM ",
-                                        DBI::dbQuoteIdentifier(db,
-                                                               tableName),
-                                        " LIMIT 1"))
+  localSample <- dbi_coltypes(db, tableName)
   cnames <- colnames(localSample)
   if(!is.null(cols)) {
     cnames <- intersect(cnames, cols)
@@ -213,19 +210,19 @@ rsummary <- function(db,
   }
   if(length(logicalCols)>=1) {
     res <- summarize_columns(db, tableName,
-                             "MIN(CASE",
+                             "MIN(CASE WHEN",
                              logicalCols,
                              "THEN 1.0 ELSE 0.0 END)",
                              skipNulls = TRUE) %.>%
       populate_column(res, "min", .)
     res <- summarize_columns(db, tableName,
-                            "MAX(CASE",
+                            "MAX(CASE WHEN",
                             logicalCols,
                             "THEN 1.0 ELSE 0.0 END)",
                             skipNulls = TRUE) %.>%
       populate_column(res, "max", .)
     res <- summarize_columns(db, tableName,
-                             "AVG(CASE",
+                             "AVG(CASE WHEN",
                              logicalCols,
                              "THEN 1.0 ELSE 0.0 END)",
                              skipNulls = TRUE) %.>%

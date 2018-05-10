@@ -54,7 +54,7 @@ test_that("test_parse: Works As Expected", {
   expect_equal("1 = 2", ex10$check)
 
   ex11 <- do_parse("ifelse(TRUE,1,2)")
-  expect_equal("( CASE WHEN ( TRUE ) THEN ( 1 ) ELSE ( 2 ) END )", ex11$check)
+  expect_equal("( CASE WHEN ( TRUE ) THEN ( 1 ) WHEN NOT ( TRUE ) THEN ( 2 ) ELSE NULL END )", ex11$check)
 
   ex12 <- do_parse("sin(x)")
   expect_equal("sin ( x )", ex12$check)

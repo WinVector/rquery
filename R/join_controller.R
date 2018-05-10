@@ -243,10 +243,7 @@ describe_tables <- function(db,
   reslist <- vector(mode = "list", length = length(tablenames))
   for(ii in seq_len(length(tablenames))) {
     tablename = tablenames[[ii]]
-    sample <- DBI::dbGetQuery(db,
-                              paste("SELECT * FROM",
-                                    DBI::dbQuoteIdentifier(db, tablename),
-                                    "LIMIT 1"))
+    sample <- dbi_coltypes(db, tablename)
     cols <- colnames(sample)
     # may not get classes on empty tables
     # https://github.com/tidyverse/dplyr/issues/2913

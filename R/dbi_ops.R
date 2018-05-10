@@ -21,6 +21,7 @@ dbi_table_exists <- function(db, table_name) {
   q <- paste0("SELECT * FROM ",
               DBI::dbQuoteIdentifier(db, table_name),
               " LIMIT 1")
+  # others do a 0=1 thing, may be faster but let's try this.
   tryCatch(
     {
       v <- DBI::dbGetQuery(db, q)
@@ -57,6 +58,49 @@ dbi_colnames <- function(db, table_name) {
               " LIMIT 1")
   v <- DBI::dbGetQuery(db, q)
   colnames(v)
+}
+
+
+#' Get column types by example values as a data.frame.
+#'
+#' Example values not necissarily all from same row.  Taking values from different rows is
+#' to try to work around NA not carrying type/class info in many cases.
+#'
+#' @param db DBI connection.
+#' @param table_name character table name refering to a non-empty table.
+#' @param ... force later arguments to bind by name.
+#' @param prefer_not_NA logical, if true try to find an non-NA example for all columns (FALSE just for logical columns).
+#' @return single row data.frame with example values, not all values necissarrily form same database row.
+#'
+#' @export
+#'
+dbi_coltypes <- function(db, table_name,
+                         ...,
+                         prefer_not_NA = FALSE) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::dbi_coltypes")
+  # RSQLite returns logical type for any returned column
+  # that is entirely NA, regardless of storage type.
+  # below is going to have issues to to R-column name conversion!
+  tn <- DBI::dbQuoteIdentifier(db, table_name)
+  q <- paste("SELECT * FROM", tn, "LIMIT 1")
+  v <- DBI::dbGetQuery(db, q)
+  if(nrow(v)>0) {
+    for(ci in colnames(v)) {
+      cv <- v[[ci]]
+      if(is.na(cv)) {
+        if(prefer_not_NA || is.logical(cv)) {
+          cn <- DBI::dbQuoteIdentifier(db, ci)
+          qi <- paste("SELECT", cn, "FROM ", tn, "WHERE", cn, "IS NOT NULL LIMIT 1")
+          vi <- DBI::dbGetQuery(db, qi)
+          if(nrow(vi)>0) {
+            v[[ci]] <- vi[[1]]
+          }
+        }
+      }
+    }
+  }
+  v
 }
 
 
