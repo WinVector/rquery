@@ -121,25 +121,14 @@ print(getDBOption(my_db, "control_rownames"))
 
 ``` r
 # copy data in so we have an example
+d_local <- build_frame(
+   "subjectID", "surveyCategory"     , "assessmentTotal", "irrelevantCol1", "irrelevantCol2" |
+   1          , "withdrawal behavior", 5                , "irrel1"        , "irrel2"         |
+   1          , "positive re-framing", 2                , "irrel1"        , "irrel2"         |
+   2          , "withdrawal behavior", 3                , "irrel1"        , "irrel2"         |
+   2          , "positive re-framing", 4                , "irrel1"        , "irrel2"         )
 dbi_copy_to(my_db, 'd',
-            data.frame(
-              subjectID = c(1,                   
-                            1,
-                            2,                   
-                            2),
-              surveyCategory = c(
-                'withdrawal behavior',
-                'positive re-framing',
-                'withdrawal behavior',
-                'positive re-framing'
-              ),
-              assessmentTotal = c(5,                 
-                                  2,
-                                  3,                  
-                                  4),
-              irrelevantCol1 = "irrel1",
-              irrelevantCol2 = "irrel2",
-              stringsAsFactors = FALSE),
+            d_local,
             temporary = TRUE, 
             overwrite = TRUE)
 ```
@@ -260,14 +249,14 @@ cat(to_sql(dq, my_db, source_limit = 1000))
             "d"."assessmentTotal"
            FROM
             "d" LIMIT 1000
-           ) tsql_91819355585802176357_0000000000
-          ) tsql_91819355585802176357_0000000001
-         ) tsql_91819355585802176357_0000000002
-       ) tsql_91819355585802176357_0000000003
+           ) tsql_00257982596349507766_0000000000
+          ) tsql_00257982596349507766_0000000001
+         ) tsql_00257982596349507766_0000000002
+       ) tsql_00257982596349507766_0000000003
        WHERE "row_number" <= 1
-      ) tsql_91819355585802176357_0000000004
-     ) tsql_91819355585802176357_0000000005
-    ) tsql_91819355585802176357_0000000006 ORDER BY "subjectID"
+      ) tsql_00257982596349507766_0000000004
+     ) tsql_00257982596349507766_0000000005
+    ) tsql_00257982596349507766_0000000006 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 

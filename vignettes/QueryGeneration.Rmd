@@ -34,25 +34,14 @@ print(dbopts)
 options(dbopts)
 
 # copy in example data
+d_local <- build_frame(
+   "subjectID", "surveyCategory"     , "assessmentTotal", "irrelevantCol1", "irrelevantCol2" |
+   1          , "withdrawal behavior", 5                , "irrel1"        , "irrel2"         |
+   1          , "positive re-framing", 2                , "irrel1"        , "irrel2"         |
+   2          , "withdrawal behavior", 3                , "irrel1"        , "irrel2"         |
+   2          , "positive re-framing", 4                , "irrel1"        , "irrel2"         )
 dbi_copy_to(my_db, 'd',
-            data.frame(
-              subjectID = c(1,                   
-                            1,
-                            2,                   
-                            2),
-              surveyCategory = c(
-                'withdrawal behavior',
-                'positive re-framing',
-                'withdrawal behavior',
-                'positive re-framing'
-              ),
-              assessmentTotal = c(5,                 
-                                  2,
-                                  3,                  
-                                  4),
-              irrelevantCol1 = "irrel1",
-              irrelevantCol2 = "irrel2",
-              stringsAsFactors = FALSE),
+            d_local,
             temporary = TRUE, 
             overwrite = TRUE)
 ```
