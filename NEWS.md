@@ -1,6 +1,6 @@
 
 
-# rquery 0.4.4 2018/05/09
+# rquery 0.4.4 2018/05/10
 
  * Minor documentation fixes.
 
