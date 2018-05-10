@@ -94,7 +94,7 @@ dbi_coltypes <- function(db, table_name,
           qi <- paste("SELECT", cn, "FROM ", tn, "WHERE", cn, "IS NOT NULL LIMIT 1")
           vi <- DBI::dbGetQuery(db, qi)
           if(nrow(vi)>0) {
-            v[[ci]] <- vi[[1]]
+            v[[ci]] <- vi[[ci]]
           }
         }
       }
