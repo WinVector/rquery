@@ -151,6 +151,7 @@ the full set of options- but just the ones tested here.</p>
   <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
   <span class='fu'>print</span>(<span class='fu'><a href='dbi_connection_name.html'>dbi_connection_name</a></span>(<span class='no'>my_db</span>))
   <span class='fu'>print</span>(<span class='fu'>dbi_connection_tests</span>(<span class='no'>my_db</span>))
+  <span class='co'># the following would set options</span>
   <span class='co'># print(options(dbi_connection_tests(my_db)))</span>
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
 }</div><div class='output co'>#&gt; [1] "SQLiteConnection"
@@ -173,6 +174,9 @@ the full set of options- but just the ones tested here.</p>
 #&gt; [1] TRUE
 #&gt; 
 #&gt; $rquery.SQLiteConnection.use_DBI_dbExistsTable
+#&gt; [1] TRUE
+#&gt; 
+#&gt; $rquery.SQLiteConnection.check_logical_column_types
 #&gt; [1] TRUE
 #&gt; </div><div class='input'>
 </div></pre>

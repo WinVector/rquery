@@ -69,14 +69,53 @@ dbi_colnames <- function(db, table_name) {
 #' @param db DBI connection.
 #' @param table_name character table name refering to a non-empty table.
 #' @param ... force later arguments to bind by name.
-#' @param prefer_not_NA logical, if true try to find an non-NA example for all columns (FALSE just for logical columns).
-#' @return single row data.frame with example values, not all values necissarrily form same database row.
+#' @param prefer_not_NA logical, if TRUE try to find an non-NA example for all columns (FALSE just for logical columns).
+#' @param force_check logical, if TRUE perform checks regardless of check_logical_column_types option setting.
+#' @return single row data.frame with example values, not all values necessarily from same database row.
+#'
+#' @examples
+#'
+#' if(requireNamespace("RSQLite", quietly = TRUE)) {
+#'   db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#'
+#'   # getDBOption(db, "check_logical_column_types", FALSE)
+#'   # options(dbi_connection_tests(db))
+#'   # getDBOption(db, "check_logical_column_types", FALSE)
+#'
+#'   d <- data.frame(w= c(NA, 1L),
+#'                   x= c(NA, 2.0),
+#'                   y= factor(c(NA, "x")),
+#'                   z= c(NA, "y"),
+#'                   want = c(1, 0),
+#'                   stringsAsFactors=FALSE)
+#'   d <- dbi_copy_to(db, "d", d,
+#'                    overwrite = TRUE,
+#'                    temporary = TRUE)
+#'   res <- d %.>%
+#'     extend_nse(.,
+#'                wc := ifelse(w>1, "x", "y"),
+#'                wn := ifelse(w>1, 1, 2),
+#'                xc := ifelse(x>1, "x", "y"),
+#'                xn := ifelse(x>1, 1, 2),
+#'                yc := ifelse(y=="a", "x", "y"),
+#'                yn := ifelse(y=="a", "x", "y")) %.>%
+#'     materialize(db, .)
+#'   resn <- DBI::dbQuoteIdentifier(db, res$table_name)
+#'   print("full table types")
+#'   print(str(DBI::dbGetQuery(db, paste("SELECT * FROM", resn))))
+#'   print("single row mis-reported types")
+#'   print(str(DBI::dbGetQuery(db, paste("SELECT * FROM", resn, "WHERE want=1"))))
+#'   print("dbi_coltypes correct synthetic example row types")
+#'   print(str(dbi_coltypes(db, res$table_name, force_check = TRUE)))
+#'   DBI::dbDisconnect(db)
+#' }
 #'
 #' @export
 #'
 dbi_coltypes <- function(db, table_name,
                          ...,
-                         prefer_not_NA = FALSE) {
+                         prefer_not_NA = FALSE,
+                         force_check = FALSE) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::dbi_coltypes")
   # RSQLite returns logical type for any returned column
@@ -85,7 +124,8 @@ dbi_coltypes <- function(db, table_name,
   tn <- DBI::dbQuoteIdentifier(db, table_name)
   q <- paste("SELECT * FROM", tn, "LIMIT 1")
   v <- DBI::dbGetQuery(db, q)
-  if(nrow(v)>0) {
+  if((nrow(v)>0) &&
+     (force_check || getDBOption(db, "check_logical_column_types", FALSE))) {
     for(ci in colnames(v)) {
       cv <- v[[ci]]
       if(is.na(cv)) {
@@ -326,6 +366,7 @@ dbi_connection_preferences <- function(db) {
   opts[[paste(c("rquery", cname, "create_temporary"), collapse = ".")]] <- TRUE
   opts[[paste(c("rquery", cname, "control_temporary"), collapse = ".")]] <- TRUE
   opts[[paste(c("rquery", cname, "control_rownames"), collapse = ".")]] <- TRUE
+  opts[[paste(c("rquery", cname, "check_logical_column_types"), collapse = ".")]] <- TRUE
   if(connection_is_spark(db)) {
     opts[[paste(c("rquery", cname, "create_temporary"), collapse = ".")]] <- FALSE
     opts[[paste(c("rquery", cname, "control_rownames"), collapse = ".")]] <- FALSE
@@ -365,6 +406,7 @@ brute_rm_table <- function(db, table_name) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   print(dbi_connection_name(my_db))
 #'   print(dbi_connection_tests(my_db))
+#'   # the following would set options
 #'   # print(options(dbi_connection_tests(my_db)))
 #'   DBI::dbDisconnect(my_db)
 #' }
@@ -382,6 +424,7 @@ dbi_connection_tests <- function(db) {
   opts[[paste(c("rquery", cname, "control_rownames"), collapse = ".")]] <- FALSE
   # Run config tests in addition to dealing with known cases
   obscure_name <- wrapr::mk_tmp_name_source("dbi_test")()
+  obscure_name_q <- DBI::dbQuoteIdentifier(db, obscure_name)
   brute_rm_table(db, obscure_name)
   # see if we can turn off rownames
   tryCatch(
@@ -448,7 +491,7 @@ dbi_connection_tests <- function(db) {
   tryCatch(
     {
       DBI::dbExecute(db, paste("DROP TABLE",
-                               DBI::dbQuoteIdentifier(db, obscure_name)))
+                               obscure_name_q))
       opts[[paste(c("rquery", cname, "use_DBI_dbExecute"), collapse = ".")]] <- TRUE
     },
     error = function(e) { e },
@@ -457,13 +500,50 @@ dbi_connection_tests <- function(db) {
   tryCatch(
     {
       DBI::dbExecute(db, paste("CREATE TEMPORARY TABLE",
-                               DBI::dbQuoteIdentifier(db, obscure_name),
+                               obscure_name_q,
                                "( x INT )"))
       opts[[paste(c("rquery", cname, "create_temporary"), collapse = ".")]] <- TRUE
     },
     error = function(e) { e },
     warning = function(w) { w })
-  # make sure we are clean
+  brute_rm_table(db, obscure_name)
+  # see if NA columns masquerade as logical
+  # (RSQLite has this property for some derived columns)
+  d <- data.frame(w= c(NA, 1L),
+                  x= c(NA, 2.0),
+                  y= factor(c(NA, "x")),
+                  z= c(NA, "y"),
+                  want = c(1, 0),
+                  stringsAsFactors=FALSE)
+  d <- dbi_copy_to(db, obscure_name, d,
+              overwrite = TRUE,
+              temporary = TRUE)
+  # make column refs not look like unbound references
+  w <- NULL # don't appear unbound
+  want <- NULL # don't appear unbound
+  wc  <- NULL # don't appear unbound
+  wn  <- NULL # don't appear unbound
+  x  <- NULL # don't appear unbound
+  xc  <- NULL # don't appear unbound
+  xn  <- NULL # don't appear unbound
+  y  <- NULL # don't appear unbound
+  yc  <- NULL # don't appear unbound
+  yn <- NULL # don't appear unbound
+  local_sample <- d %.>%
+    extend_nse(.,
+               wc := ifelse(w>1, "x", "y"),
+               wn := ifelse(w>1, 1, 2),
+               xc := ifelse(x>1, "x", "y"),
+               xn := ifelse(x>1, 1, 2),
+               yc := ifelse(y=="a", "x", "y"),
+               yn := ifelse(y=="a", "x", "y")) %.>%
+    select_rows_nse(.,
+                    want == 1) %.>%
+    execute(db, .)
+  logical_col <- vapply(colnames(local_sample),
+                        function(ci) is.logical(local_sample[[ci]]), logical(1))
+  bad_types <- any(logical_col)
+  opts[[paste(c("rquery", cname, "check_logical_column_types"), collapse = ".")]] <- bad_types
   brute_rm_table(db, obscure_name)
   opts
 }
