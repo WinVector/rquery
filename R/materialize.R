@@ -242,6 +242,64 @@ materialize <- function(db,
 
 
 
+#' Materialize a user supplied SQL statement as a table.
+#'
+#' Run the data query with a CREATE TABLE AS .
+#'
+#' @param db DBI connecton.
+#' @param sql character, user supplied SQL statement.
+#' @param table_name character, name of table to create.
+#' @param ... force later arguments to bind by name.
+#' @param overwrite logical if TRUE drop an previous table.
+#' @param temporary logical if TRUE try to create a temporary table.
+#' @return table handle
+#'
+#' @seealso \code{\link{dbi_table}}, \code{\link{materialize}}, \code{\link{to_sql}}, \code{\link{dbi_copy_to}}, \code{\link{table_source}}
+#'
+#' @examples
+#'
+#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#'
+#'   d <- dbi_copy_to(my_db, 'd',
+#'                    data.frame(AUC = 0.6, R2 = 0.2),
+#'                    temporary = TRUE, overwrite = TRUE)
+#'   t <- materialize_sql(my_db, "SELECT AUC, R2, AUC - R2 AS d FROM d")
+#'   print(t)
+#'   print(execute(my_db, t))
+#'
+#'   DBI::dbDisconnect(my_db)
+#' }
+#'
+#' @export
+#'
+materialize_sql <- function(db,
+                        sql,
+                        table_name = mk_tmp_name_source('rqms')(),
+                        ...,
+                        overwrite = TRUE,
+                        temporary = FALSE) {
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::materialize_sql")
+  # check/clear final result
+  if(dbi_table_exists(db, table_name)) {
+    if(overwrite) {
+      dbi_remove_table(db, table_name)
+    } else {
+      stop(paste("rquery::materialize_sql result table",
+                 table_name,
+                 "exists, but do not have overwrite=TRUE"))
+    }
+  }
+  stmt <- materialize_sql_statement(db, sql,
+                                    table_name = table_name,
+                                    temporary = temporary)
+  dbi_execute(db, stmt)
+  dbi_table(db, table_name)
+}
+
+
+
+
 #' Execute a operator tree, either bringing back the result or landing it as a table.
 #'
 #' Run the data query.  If table_name is not set results
