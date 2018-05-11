@@ -6,6 +6,7 @@
  * Fix if_else NA treatment.
  * Better detection of column types: dbi_coltypes().
  * Fix orderby() limit bug.
+ * Improve execute() performance in simple case.
 
 # rquery 0.4.3 2018/05/07
 
