@@ -47,7 +47,7 @@ base::date()
 base::date()
 
 # build up example data
-nSubj <- 200000
+nSubj <- 1000000
 nIrrelCol <- 1000
 
 d_local <- data.frame(subjectID = sort(rep(seq_len(nSubj),2)),
