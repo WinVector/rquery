@@ -66,6 +66,7 @@ materialize_sql_statement <- function(db, sql, table_name,
 #' @param overwrite logical if TRUE drop an previous table.
 #' @param temporary logical if TRUE try to create a temporary table.
 #' @param precheck logical if TRUE precheck existance of table and columns.
+#' @param sql character, pre-rendered SQL matching optree and options- should not be set by user code.
 #' @return table handle
 #'
 #' @seealso \code{\link{dbi_table}}, \code{\link{execute}}, \code{\link{to_sql}}, \code{\link{dbi_copy_to}}, \code{\link{table_source}}
@@ -98,17 +99,18 @@ materialize_sql_statement <- function(db, sql, table_name,
 #'   DBI::dbDisconnect(my_db)
 #' }
 #'
-#' @export
+#' @noRd
 #'
-materialize <- function(db,
-                        optree,
-                        table_name = mk_tmp_name_source('rquery_mat')(),
-                        ...,
-                        limit = NULL,
-                        source_limit = NULL,
-                        overwrite = TRUE,
-                        temporary = FALSE,
-                        precheck = FALSE) {
+materialize_impl <- function(db,
+                             optree,
+                             table_name = mk_tmp_name_source('rquery_mat')(),
+                             ...,
+                             limit = NULL,
+                             source_limit = NULL,
+                             overwrite = TRUE,
+                             temporary = FALSE,
+                             precheck = FALSE,
+                             sql = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::materialize")
   if(!("relop" %in% class(optree))) {
     stop("rquery::materialize expect optree to be of class relop")
@@ -117,9 +119,13 @@ materialize <- function(db,
   if(!getDBOption(db, "use_pass_limit", TRUE)) {
     qlimit = NULL
   }
-  sql_list <- to_sql(optree, db,
-                     limit = qlimit,
-                     source_limit = source_limit)
+  if(!is.null(sql)) {
+    sql_list <- sql
+  } else {
+    sql_list <- to_sql(optree, db,
+                       limit = qlimit,
+                       source_limit = source_limit)
+  }
   # establish some safe invarients
   n_steps <- length(sql_list)
   if(n_steps<1) {
@@ -209,7 +215,7 @@ materialize <- function(db,
           to_clear <- sqli$outgoing_table_name
         } else {
           if((!is.null(to_clear)) &&
-              (to_clear!=sqli$outgoing_table_name)) {
+             (to_clear!=sqli$outgoing_table_name)) {
             dbi_remove_table(db, to_clear)
           }
           to_clear <- sqli$outgoing_table_name
@@ -227,7 +233,7 @@ materialize <- function(db,
                      ignore.case = TRUE)
     if(length(haslimit)<1) {
       sql <- paste(sql, "LIMIT",
-                    format(ceiling(limit), scientific = FALSE))
+                   format(ceiling(limit), scientific = FALSE))
     }
   }
   sqlc <- materialize_sql_statement(db, sql, table_name,
@@ -237,7 +243,75 @@ materialize <- function(db,
     dbi_remove_table(db, to_clear)
     to_clear <- NULL
   }
-  dbi_table(db, table_name)
+  dbi_table(db, table_name)}
+
+#' Materialize an optree as a table.
+#'
+#' Run the data query as a CREATE TABLE AS . Think of as a function
+#' that can be applied to relop trees, not as a component to place
+#' in pipelines.
+#'
+#' @param db DBI connecton.
+#' @param optree relop operation tree.
+#' @param table_name character, name of table to create.
+#' @param ... force later arguments to bind by name.
+#' @param limit numeric if not NULL result limit (to use this, last statment must not have a limit).
+#' @param source_limit numeric if not NULL limit sources to this many rows.
+#' @param overwrite logical if TRUE drop an previous table.
+#' @param temporary logical if TRUE try to create a temporary table.
+#' @param precheck logical if TRUE precheck existance of table and columns.
+#' @return table handle
+#'
+#' @seealso \code{\link{dbi_table}}, \code{\link{execute}}, \code{\link{to_sql}}, \code{\link{dbi_copy_to}}, \code{\link{table_source}}
+#'
+#' @examples
+#'
+#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#'
+#'   d <- dbi_copy_to(my_db, 'd',
+#'                    data.frame(AUC = 0.6, R2 = 0.2),
+#'                    temporary = TRUE, overwrite = TRUE)
+#'   optree <- extend_se(d, c("v" := "AUC + R2", "x" := "pmax(AUC,v)"))
+#'   cat(format(optree))
+#'   res <- materialize(my_db, optree, "example", precheck = TRUE)
+#'   cat(format(res))
+#'   sql <- to_sql(res, my_db)
+#'   cat(sql)
+#'   print(DBI::dbGetQuery(my_db, sql))
+#'
+#'   # extra example, table that doesn't match declared structure
+#'   dbi_copy_to(my_db, 'd',
+#'               data.frame(z = 1:5),
+#'               temporary = TRUE, overwrite = TRUE)
+#'   tryCatch(
+#'      materialize(my_db, optree, "example", precheck = TRUE),
+#'      error = function(e) { as.character(e) }) %.>%
+#'      print(.)
+#'
+#'   DBI::dbDisconnect(my_db)
+#' }
+#'
+#' @export
+#'
+materialize <- function(db,
+                        optree,
+                        table_name = mk_tmp_name_source('rquery_mat')(),
+                        ...,
+                        limit = NULL,
+                        source_limit = NULL,
+                        overwrite = TRUE,
+                        temporary = FALSE,
+                        precheck = FALSE) {
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::materialize")
+  materialize_impl(db = db,
+                   optree = optree,
+                   table_name = table_name,
+                   limit = limit,
+                   source_limit = source_limit,
+                   overwrite = overwrite,
+                   temporary = temporary,
+                   precheck = precheck)
 }
 
 
@@ -376,27 +450,31 @@ execute <- function(source,
     return(res)
   }
   db <- source # assume it is a DBI connection (as data.frame and DBI connections should not share a base class, and do not as of 5-11-2018)
+  sql <- NULL
   # fast SQL only path
-  if((!table_name_set) && (length(optree)==1)) {
-    if(precheck) {
-      warning("rquery::execute ingoring precheck=TRUE on direct SQL commmand")
+  if(!table_name_set) {
+    sql <- to_sql(optree, db,
+                  limit = limit,
+                  source_limit = source_limit)
+    if(length(sql)==1) {
+      if(precheck) {
+        warning("rquery::execute ingoring precheck=TRUE on direct SQL commmand")
+      }
+      res <- DBI::dbGetQuery(db, sql)
+      return(res)
     }
-    res <- DBI::dbExecute(db,
-                          to_sql(optree, db,
-                                 limit = limit,
-                                 source_limit = source_limit))
-    return(res)
   }
   if(!table_name_set) {
     table_name <-  mk_tmp_name_source('rquery_ex')()
   }
-  ref <- materialize(db, optree,
-                     table_name = table_name,
-                     limit = limit,
-                     source_limit = source_limit,
-                     overwrite = overwrite,
-                     temporary = temporary,
-                     precheck = precheck)
+  ref <- materialize_impl(db, optree,
+                          table_name = table_name,
+                          limit = limit,
+                          source_limit = source_limit,
+                          overwrite = overwrite,
+                          temporary = temporary,
+                          precheck = precheck,
+                          sql = sql)
   res <- ref
   if(!table_name_set) {
     # if last step is order we have to re-do that
