@@ -1,10 +1,11 @@
 
 
-# rquery 0.4.4 2018/05/10
+# rquery 0.4.4 2018/05/11
 
  * Minor documentation fixes.
  * Fix if_else NA treatment.
  * Better detection of column types: dbi_coltypes().
+ * Fix orderby() limit bug.
 
 # rquery 0.4.3 2018/05/07
 
