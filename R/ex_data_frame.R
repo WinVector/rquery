@@ -19,6 +19,7 @@ re_write_table_names <- function(op_tree, new_name) {
 #' @param optree rquery rel_op operation tree.
 #' @param ... force later arguments to bind by name.
 #' @param limit integer, if not NULL limit result to no more than this many rows.
+#' @param source_limit numeric if not NULL limit sources to this many rows.
 #' @param env environment to look for "winvector_temp_db_handle" in.
 #' @return data.frame result
 #'
@@ -58,6 +59,7 @@ rquery_apply_to_data_frame <- function(d,
                                        optree,
                                        ...,
                                        limit = NULL,
+                                       source_limit = NULL,
                                        env = parent.frame()) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::rquery_apply_to_data_frame")
   if(!is.data.frame(d)) {
@@ -75,6 +77,9 @@ rquery_apply_to_data_frame <- function(d,
   if(length(missing)>0) {
     stop(paste("rquery::rquery_apply_to_data_frame d missing required columns:",
          paste(missing, collapse = ", ")))
+  }
+  if((!is.null(source_limit)) && (source_limit<nrow(d))) {
+    d <- d[seq_len(source_limit), , drop = FALSE]
   }
   tmp_name_source <- mk_tmp_name_source('rqatmp')
   inp_name <- tmp_name_source()

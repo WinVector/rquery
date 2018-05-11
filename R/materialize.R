@@ -363,15 +363,30 @@ execute <- function(source,
   if(!("relop" %in% class(optree))) {
     stop("rquery::execute expect optree to be of class relop")
   }
+  table_name_set <- !is.null(table_name)
   if(is.data.frame(source)) {
+    if(table_name_set) {
+      stop("rquery::execute table_name set when applying to data.frame argument")
+    }
     res <- rquery_apply_to_data_frame(source,
                                       optree,
                                       env = parent.frame(),
-                                      limit = limit)
+                                      limit = limit,
+                                      source_limit = source_limit)
     return(res)
   }
-  db <- source # assume it is a DBI connection (they do not share a base class)
-  table_name_set <- !is.null(table_name)
+  db <- source # assume it is a DBI connection (as data.frame and DBI connections should not share a base class, and do not as of 5-11-2018)
+  # fast SQL only path
+  if((!table_name_set) && (length(optree)==1)) {
+    if(precheck) {
+      warning("rquery::execute ingoring precheck=TRUE on direct SQL commmand")
+    }
+    res <- DBI::dbExecute(db,
+                          to_sql(optree, db,
+                                 limit = limit,
+                                 source_limit = source_limit))
+    return(res)
+  }
   if(!table_name_set) {
     table_name <-  mk_tmp_name_source('rquery_ex')()
   }

@@ -100,7 +100,7 @@ base::date()
 
 Define and demonstrate pipelines:
 
-```{r defexp}
+```{r rqueryexp}
 base::date()
 
 scale <- 0.237
@@ -127,6 +127,13 @@ system.time(nrow(as.data.frame(execute(my_db, rquery_pipeline, source_limit = 1L
 # full run
 system.time(nrow(as.data.frame(execute(my_db, rquery_pipeline))))
 
+base::date()
+```
+
+```{r dplyrexp}
+base::date()
+
+scale <- 0.237
 
 dplyr_pipeline <- d_large_tbl %>%
   group_by(subjectID) %>%
@@ -140,15 +147,16 @@ dplyr_pipeline <- d_large_tbl %>%
   select(subjectID, diagnosis, probability) %>%
   arrange(subjectID)
 
+
 # full run
 system.time(nrow(as.data.frame(dplyr_pipeline)))
 
 base::date()
 ```
 
-Now, let's show how/where erronious pipelines are debugged in each system.
+Now, let's show how/where erroneous pipelines are debugged in each system.
 
-In `rquery` many errors are caught during pipeline construction, 
+In `rquery` many user errors are caught during pipeline construction, 
 independent of database.
 
 ```{r late_error_rquery, error=TRUE}
@@ -173,8 +181,8 @@ rquery_pipeline_late_error <- d_large %.>%
 base::date()
 ```
 
-`dplyr` errors are mostly caught when the command is 
-converted to sql
+With `dplyr` user errors are mostly caught when the command is 
+analyzed on the remote data system.
 
 ```{r late_error_dplyr, error=TRUE}
 base::date()
