@@ -1,0 +1,262 @@
+---
+title: "Debug Tools for Big Data"
+output: github_document
+date: "2018-05-11"
+---
+
+<!-- file.md is generated from file.Rmd. Please edit that file -->
+
+
+```{r confconnect}
+base::date()
+
+library("dplyr")
+library("rquery")
+library("WVPlots")
+library("ggplot2")
+library("seplyr")
+
+conf <-  sparklyr::spark_config()
+conf$spark.yarn.am.cores <- 2
+conf$spark.executor.cores <- 2
+conf$spark.executor.memory <- "4G"
+conf$spark.yarn.am.memory <- "4G"
+conf$`sparklyr.shell.driver-memory` <- "4G"
+conf$`sparklyr.shell.executor-memory` <- "4G"
+conf$`spark.yarn.executor.memoryOverhead` <- "4G"
+# conf$spark.yarn.am.cores <- 16
+# conf$spark.executor.cores <- 16
+# conf$spark.executor.memory <- "8G"
+# conf$spark.yarn.am.memory <- "8G"
+# conf$`sparklyr.shell.driver-memory` <- "8G"
+# conf$`sparklyr.shell.executor-memory` <- "8G"
+# conf$`spark.yarn.executor.memoryOverhead` <- "8G"
+my_db <- sparklyr::spark_connect(version='2.2.0', 
+                                 master = "local",
+                                 config = conf)
+
+# configure rquery options
+dbopts <- dbi_connection_tests(my_db)
+print(dbopts)
+options(dbopts)
+
+base::date()
+```
+
+```{r startexample}
+base::date()
+
+# build up example data
+nSubj <- 200000
+nIrrelCol <- 1000
+
+d_local <- data.frame(subjectID = sort(rep(seq_len(nSubj),2)),
+                 surveyCategory = c(
+                   'withdrawal behavior',
+                   'positive re-framing'),
+                 stringsAsFactors = FALSE)
+d_local$assessmentTotal <- sample.int(10, nrow(d_local), replace = TRUE)
+d_small <- rquery::dbi_copy_to(my_db, 'd_small',
+                 d_local,
+                 overwrite = TRUE, 
+                 temporary = TRUE)
+rm(list = "d_local")
+# cdata::qlook(my_db, d_small$table_name)
+
+base::date()
+```
+
+```{r growexample}
+base::date()
+
+# add in irrelevant columns
+# simulates performing a calculation against a larger data mart
+assignments <- 
+  vapply(seq_len(nIrrelCol), 
+         function(i) {
+           paste("irrelevantCol", sprintf("%07g", i), sep = "_")
+         }, character(1)) := rep("1.5", nIrrelCol)
+d_large <- d_small %.>%
+  extend_se(., assignments) %.>%
+  materialize(my_db, ., 
+              overwrite = TRUE,
+              temporary = TRUE)
+rm(list = "d_small")
+# cdata::qlook(my_db, d_large$table_name)
+
+# build dplyr reference
+d_large_tbl <- tbl(my_db, d_large$table_name)
+
+# rquery view of table
+rquery::dbi_nrow(my_db, d_large$table_name)
+length(column_names(d_large))
+
+# dplyr/tbl view of table
+sparklyr::sdf_nrow(d_large_tbl)
+sparklyr::sdf_ncol(d_large_tbl)
+
+base::date()
+```
+
+Define and demonstrate pipelines:
+
+```{r defexp}
+base::date()
+
+scale <- 0.237
+
+rquery_pipeline <- d_large %.>%
+  extend_nse(.,
+             probability :=
+               exp(assessmentTotal * scale))  %.>% 
+  normalize_cols(.,
+                 "probability",
+                 partitionby = 'subjectID') %.>%
+  pick_top_k(.,
+             partitionby = 'subjectID',
+             rev_orderby = c('probability', 'surveyCategory')) %.>%
+  rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
+  select_columns(., qc(subjectID, diagnosis, probability)) %.>%
+  orderby(., 'subjectID') 
+
+# special debug-mode limits all sources to 1 row.
+# not correct for windowed calculations or joins- 
+# but lets us at least see something execute quickly.
+system.time(nrow(as.data.frame(execute(my_db, rquery_pipeline, source_limit = 1L))))
+
+# full run
+system.time(nrow(as.data.frame(execute(my_db, rquery_pipeline))))
+
+
+dplyr_pipeline <- d_large_tbl %>%
+  group_by(subjectID) %>%
+  mutate(probability =
+           exp(assessmentTotal * scale)/
+           sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
+  arrange(probability, surveyCategory) %>%
+  filter(row_number() == n()) %>%
+  ungroup() %>%
+  rename(diagnosis = surveyCategory) %>%
+  select(subjectID, diagnosis, probability) %>%
+  arrange(subjectID)
+
+# full run
+system.time(nrow(as.data.frame(dplyr_pipeline)))
+
+base::date()
+```
+
+Now, let's show how/where erronious pipelines are debugged in each system.
+
+In `rquery` many errors are caught during pipeline construction, 
+independent of database.
+
+```{r late_error_rquery, error=TRUE}
+base::date()
+
+# rquery catches the error during pipeline definition,
+# prior to sending it to the database or Spark data system.
+rquery_pipeline_late_error <- d_large %.>%
+  extend_nse(.,
+             probability :=
+               exp(assessmentTotal * scale))  %.>% 
+  normalize_cols(.,
+                 "probability",
+                 partitionby = 'subjectID') %.>%
+  pick_top_k(.,
+             partitionby = 'subjectID',
+             rev_orderby = c('probability', 'surveyCategory')) %.>%
+  rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
+  select_columns(., qc(subjectID, diagnosis, probability)) %.>%
+  orderby(., 'ZubjectIDZZZ') # <- error non-existent column
+
+base::date()
+```
+
+`dplyr` errors are mostly caught when the command is 
+converted to sql
+
+```{r late_error_dplyr, error=TRUE}
+base::date()
+
+# dplyr accepts an incorrect pipeline
+dplyr_pipeline_late_error <- d_large_tbl %>%
+  group_by(subjectID) %>%
+  mutate(probability =
+           exp(assessmentTotal * scale)/
+           sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
+  arrange(probability, surveyCategory) %>%
+  filter(row_number() == n()) %>%
+  ungroup() %>%
+  rename(diagnosis = surveyCategory) %>%
+  select(subjectID, diagnosis, probability) %>%
+  arrange(ZubjectIDZZZ)  # <- error non-existent column
+
+# dplyr will generate (incorrect) SQL from the incorrect pipeline
+cat(dbplyr::remote_query(dplyr_pipeline_late_error))
+
+# Fortunately, Spark's query analyzer does catch the error quickly
+# in this case.
+system.time(nrow(as.data.frame(dplyr_pipeline_late_error)))
+
+base::date()
+```
+
+
+```{r early_error_dplyr, error=TRUE}
+base::date()
+
+# rquery rejects pipeline during specification
+rquery_pipeline_early_error <- d_large %.>%
+  extend_nse(.,
+             probability :=
+               exp(assessmentTotal * scalez))  %.>% # <- error non-existent value
+  normalize_cols(.,
+                 "probability",
+                 partitionby = 'subjectID') %.>%
+  pick_top_k(.,
+             partitionby = 'subjectID',
+             rev_orderby = c('probability', 'surveyCategory')) %.>%
+  rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
+  select_columns(., qc(subjectID, diagnosis, probability)) %.>%
+  orderby(., 'subjectID') 
+
+base::date()
+```
+
+
+```{r early_error_rquery, error=TRUE}
+base::date()
+
+# dplyr accepts an incorrect pipeline
+dplyr_pipeline_early_error <- d_large_tbl %>%
+  group_by(subjectID) %>%
+  mutate(probability =
+           exp(assessmentTotal * scalez)/ # <- error non-existent value
+           sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
+  arrange(probability, surveyCategory) %>%
+  filter(row_number() == n()) %>%
+  ungroup() %>%
+  rename(diagnosis = surveyCategory) %>%
+  select(subjectID, diagnosis, probability) %>%
+  arrange(subjectID)  
+
+# dplyr will generate (incorrect) SQL from the incorrect pipeline
+cat(dbplyr::remote_query(dplyr_pipeline_early_error))
+
+# However, Spark's query analyzer does catch the error quickly
+# in this case.
+system.time(nrow(as.data.frame(dplyr_pipeline_early_error)))
+
+base::date()
+```
+
+
+
+
+```{r cleanup}
+base::date()
+sparklyr::spark_disconnect(my_db)
+base::date()
+```
+
