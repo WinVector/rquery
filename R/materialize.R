@@ -115,15 +115,11 @@ materialize_impl <- function(db,
   if(!("relop" %in% class(optree))) {
     stop("rquery::materialize expect optree to be of class relop")
   }
-  qlimit = limit
-  if(!getDBOption(db, "use_pass_limit", TRUE)) {
-    qlimit = NULL
-  }
   if(!is.null(sql)) {
     sql_list <- sql
   } else {
     sql_list <- to_sql(optree, db,
-                       limit = qlimit,
+                       limit = limit,
                        source_limit = source_limit)
   }
   # establish some safe invarients
@@ -243,7 +239,8 @@ materialize_impl <- function(db,
     dbi_remove_table(db, to_clear)
     to_clear <- NULL
   }
-  dbi_table(db, table_name)}
+  dbi_table(db, table_name)
+}
 
 #' Materialize an optree as a table.
 #'
