@@ -5,7 +5,9 @@
 #'
 #' Note: non-SQL nodes are allowed to delete/overwrite both
 #' both the incoming and outgoing tables, so do not point them
-#' to non-temporary structures.
+#' to non-temporary structures.  Also they tend to land all columns
+#' (losing narrowing optimization),
+#' so can be expensive and should be used sparingly.
 #'
 #' @param source source to work from (data.frame or relop node)
 #' @param f implementation signature: f(db, incoming_table_name, outgoing_table_name)

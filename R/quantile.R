@@ -77,6 +77,9 @@ quantile_cols <- function(db, incoming_table_name,
 #'
 #' Please see \url{https://github.com/WinVector/rquery/blob/master/extras/Summary_Example.md} for an example.
 #'
+#' This is a non_sql_node, so forces the materialization of
+#' the calculation prior to it losing narrowing optimizations.
+#'
 #' @param source source to select from (relop or data.frame).
 #' @param cols character, compute quantiles for these columns (NULL indicates all columns).
 #' @param ... force later arguments to be bound by name

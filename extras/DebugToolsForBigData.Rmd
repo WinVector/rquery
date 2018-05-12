@@ -152,6 +152,39 @@ system.time(nrow(as.data.frame(dplyr_pipeline)))
 base::date()
 ```
 
+And the introduction of a `dplyr::compute()` node (with the intent of speeding things up through caching)
+can be expensive.
+
+```{r dplyrexp_c, error = TRUE, eval=FALSE}
+base::date()
+
+scale <- 0.237
+
+dplyr_pipeline_c <- d_large_tbl %>%
+  group_by(subjectID) %>%
+  mutate(probability =
+           exp(assessmentTotal * scale)/
+           sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
+  arrange(probability, surveyCategory) %>%
+  filter(row_number() == n()) %>%
+  compute() %>%     # <- inopportune place to try to cache
+  ungroup() %>%
+  rename(diagnosis = surveyCategory) %>%
+  select(subjectID, diagnosis, probability) %>%
+  arrange(subjectID)
+
+
+# full run
+system.time(nrow(as.data.frame(dplyr_pipeline)))
+
+base::date()
+
+# Logs the following to the console and seems to never come back.
+# *** caught segfault ***
+# address 0x7fd368200000, cause 'memory not mapped'
+```
+
+
 Now, let's show how/where erroneous pipelines are debugged in each system.
 
 In `rquery` many user errors are caught during pipeline construction, 

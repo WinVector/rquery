@@ -213,6 +213,7 @@ materialize_impl <- function(db,
           if((!is.null(to_clear)) &&
              (to_clear!=sqli$outgoing_table_name)) {
             dbi_remove_table(db, to_clear)
+            to_clean <- NULL
           }
           to_clear <- sqli$outgoing_table_name
         }

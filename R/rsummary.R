@@ -313,6 +313,9 @@ rsummary <- function(db,
 
 #' Create an rsumary relop operator node.
 #'
+#' This is a non_sql_node, so forces the materialization of
+#' the calculation prior to it losing narrowing optimizations.
+#'
 #' @param source incoming source (relop node or data.frame).
 #' @param ... force later arguments to be by name
 #' @param quartiles logical, if TRUE add Q1 (25\%), median (50\%), Q3 (75\%) quartiles.
