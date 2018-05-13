@@ -29,7 +29,7 @@ library("rquery")
 my_db <- DBI::dbConnect(RSQLite::SQLite(), 
                         ":memory:")
 
-dbopts <- dbi_connection_preferences(my_db)
+dbopts <- dbi_connection_tests(my_db)
 print(dbopts)
 options(dbopts)
 

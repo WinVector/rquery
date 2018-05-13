@@ -20,7 +20,7 @@
 #'   DBI::dbDisconnect(my_db)
 #' }
 #'
-#' @export
+#' @noRd
 #'
 materialize_sql_statement <- function(db, sql, table_name,
                                       ...,

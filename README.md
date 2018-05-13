@@ -84,16 +84,10 @@ if(use_spark) {
                           password = '')
 }
 
-dbopts <- dbi_connection_preferences(my_db)
+dbopts <- dbi_connection_tests(my_db)
 print(dbopts)
 ```
 
-    ## $rquery.PostgreSQLConnection.use_pass_limit
-    ## [1] TRUE
-    ## 
-    ## $rquery.PostgreSQLConnection.use_DBI_dbExistsTable
-    ## [1] TRUE
-    ## 
     ## $rquery.PostgreSQLConnection.use_DBI_dbListFields
     ## [1] FALSE
     ## 
@@ -112,8 +106,11 @@ print(dbopts)
     ## $rquery.PostgreSQLConnection.control_rownames
     ## [1] TRUE
     ## 
+    ## $rquery.PostgreSQLConnection.use_DBI_dbExistsTable
+    ## [1] FALSE
+    ## 
     ## $rquery.PostgreSQLConnection.check_logical_column_types
-    ## [1] TRUE
+    ## [1] FALSE
 
 ``` r
 options(dbopts)
@@ -252,14 +249,14 @@ cat(to_sql(dq, my_db, source_limit = 1000))
             "d"."assessmentTotal"
            FROM
             "d" LIMIT 1000
-           ) tsql_27534480805245406602_0000000000
-          ) tsql_27534480805245406602_0000000001
-         ) tsql_27534480805245406602_0000000002
-       ) tsql_27534480805245406602_0000000003
+           ) tsql_51332583632274709983_0000000000
+          ) tsql_51332583632274709983_0000000001
+         ) tsql_51332583632274709983_0000000002
+       ) tsql_51332583632274709983_0000000003
        WHERE "row_number" <= 1
-      ) tsql_27534480805245406602_0000000004
-     ) tsql_27534480805245406602_0000000005
-    ) tsql_27534480805245406602_0000000006 ORDER BY "subjectID"
+      ) tsql_51332583632274709983_0000000004
+     ) tsql_51332583632274709983_0000000005
+    ) tsql_51332583632274709983_0000000006 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 

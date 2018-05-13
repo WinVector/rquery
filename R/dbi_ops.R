@@ -318,7 +318,6 @@ dbi_nrow <- function(db, table_name) {
 #' if(requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   print(dbi_connection_name(my_db))
-#'   print(dbi_connection_preferences(my_db))
 #'   DBI::dbDisconnect(my_db)
 #' }
 #'
@@ -333,7 +332,7 @@ dbi_connection_name <- function(db) {
 
 
 
-#' Get reasonable stored options for a DB connection.
+#' Get advice for a DB connection (beyond tests).
 #'
 #' These settings are from what was known in March 2018 about
 #' RSQLite, Sparklyr, RPostgreSQL, and RPostgres.  This is the
@@ -349,24 +348,15 @@ dbi_connection_name <- function(db) {
 #' if(requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   print(dbi_connection_name(my_db))
-#'   print(dbi_connection_preferences(my_db))
+#'   print(dbi_connection_advice(my_db))
 #'   DBI::dbDisconnect(my_db)
 #' }
 #'
 #' @export
 #'
-dbi_connection_preferences <- function(db) {
+dbi_connection_advice <- function(db) {
   cname <- dbi_connection_name(db)
   opts <- list()
-  opts[[paste(c("rquery", cname, "use_pass_limit"), collapse = ".")]] <- TRUE
-  opts[[paste(c("rquery", cname, "use_DBI_dbExistsTable"), collapse = ".")]] <- TRUE
-  opts[[paste(c("rquery", cname, "use_DBI_dbListFields"), collapse = ".")]] <- FALSE
-  opts[[paste(c("rquery", cname, "use_DBI_dbRemoveTable"), collapse = ".")]] <- FALSE
-  opts[[paste(c("rquery", cname, "use_DBI_dbExecute"), collapse = ".")]] <- TRUE
-  opts[[paste(c("rquery", cname, "create_temporary"), collapse = ".")]] <- TRUE
-  opts[[paste(c("rquery", cname, "control_temporary"), collapse = ".")]] <- TRUE
-  opts[[paste(c("rquery", cname, "control_rownames"), collapse = ".")]] <- TRUE
-  opts[[paste(c("rquery", cname, "check_logical_column_types"), collapse = ".")]] <- TRUE
   if(connection_is_spark(db)) {
     opts[[paste(c("rquery", cname, "create_temporary"), collapse = ".")]] <- FALSE
     opts[[paste(c("rquery", cname, "control_rownames"), collapse = ".")]] <- FALSE
@@ -376,6 +366,7 @@ dbi_connection_preferences <- function(db) {
   if(cname == "PostgreSQLConnection") { # RPostgreSQL::PostgreSQL()
     opts[[paste(c("rquery", cname, "use_DBI_dbListFields"), collapse = ".")]] <- FALSE
     opts[[paste(c("rquery", cname, "use_DBI_dbRemoveTable"), collapse = ".")]] <- FALSE
+    opts[[paste(c("rquery", cname, "use_DBI_dbExistsTable"), collapse = ".")]] <- FALSE # fails on some CREATE AS tables
   }
   opts
 }
@@ -396,16 +387,20 @@ brute_rm_table <- function(db, table_name) {
 #' the full set of options- but just the ones tested here.
 #'
 #' @param db DBI database connection
+#' @param ... force later arguments to bind by name.
+#' @param overrides named character vector or list, options (just name, not DB qualification) to force
+#' @param use_advice logical if TRUE incorpeate hard-coded advice.
 #' @return named list of options
 #'
-#' @seealso \code{\link{dbi_connection_preferences}}
+#' @seealso \code{\link{dbi_connection_advice}}
 #'
 #' @examples
 #'
 #' if(requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   print(dbi_connection_name(my_db))
-#'   print(dbi_connection_tests(my_db))
+#'   print(dbi_connection_tests(my_db,
+#'      overrides = c("use_DBI_dbExistsTable" = FALSE)))
 #'   # the following would set options
 #'   # print(options(dbi_connection_tests(my_db)))
 #'   DBI::dbDisconnect(my_db)
@@ -413,7 +408,12 @@ brute_rm_table <- function(db, table_name) {
 #'
 #' @export
 #'
-dbi_connection_tests <- function(db) {
+dbi_connection_tests <- function(db,
+                                 ...,
+                                 overrides = NULL,
+                                 use_advice = TRUE) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::dbi_connection_tests")
   cname <- dbi_connection_name(db)
   opts <- list()
   opts[[paste(c("rquery", cname, "use_DBI_dbListFields"), collapse = ".")]] <- FALSE
@@ -545,6 +545,21 @@ dbi_connection_tests <- function(db) {
   bad_types <- any(logical_col)
   opts[[paste(c("rquery", cname, "check_logical_column_types"), collapse = ".")]] <- bad_types
   brute_rm_table(db, obscure_name)
+  if(use_advice) {
+    advice <- dbi_connection_advice(db)
+    for(ki in names(advice)) {
+      vi <- advice[[ki]]
+      opts[[ki]] <- vi
+    }
+  }
+  for(ni in names(overrides)) {
+    vi <- overrides[[ni]]
+    keyi <- paste(c("rquery", cname, ni), collapse = ".")
+    if(!(keyi %in% names(opts))) {
+      stop(paste("rquery::dbi_connection_tests unknown option", ni))
+    }
+    opts[[keyi]] <- vi
+  }
   opts
 }
 

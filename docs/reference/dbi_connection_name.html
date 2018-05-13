@@ -144,36 +144,8 @@
 <span class='kw'>if</span>(<span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
   <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
   <span class='fu'>print</span>(<span class='fu'>dbi_connection_name</span>(<span class='no'>my_db</span>))
-  <span class='fu'>print</span>(<span class='fu'><a href='dbi_connection_preferences.html'>dbi_connection_preferences</a></span>(<span class='no'>my_db</span>))
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; [1] "SQLiteConnection"
-#&gt; $rquery.SQLiteConnection.use_pass_limit
-#&gt; [1] TRUE
-#&gt; 
-#&gt; $rquery.SQLiteConnection.use_DBI_dbExistsTable
-#&gt; [1] TRUE
-#&gt; 
-#&gt; $rquery.SQLiteConnection.use_DBI_dbListFields
-#&gt; [1] FALSE
-#&gt; 
-#&gt; $rquery.SQLiteConnection.use_DBI_dbRemoveTable
-#&gt; [1] FALSE
-#&gt; 
-#&gt; $rquery.SQLiteConnection.use_DBI_dbExecute
-#&gt; [1] TRUE
-#&gt; 
-#&gt; $rquery.SQLiteConnection.create_temporary
-#&gt; [1] TRUE
-#&gt; 
-#&gt; $rquery.SQLiteConnection.control_temporary
-#&gt; [1] TRUE
-#&gt; 
-#&gt; $rquery.SQLiteConnection.control_rownames
-#&gt; [1] TRUE
-#&gt; 
-#&gt; $rquery.SQLiteConnection.check_logical_column_types
-#&gt; [1] TRUE
-#&gt; </div><div class='input'>
+}</div><div class='output co'>#&gt; [1] "SQLiteConnection"</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

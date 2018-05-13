@@ -6,6 +6,7 @@
  * Fix orderby() limit bug.
  * Better detection of column types: dbi_coltypes().
  * Improve execute() performance in simple case.
+ * materialize_node().
  * Minor documentation fixes.
 
 # rquery 0.4.3 2018/05/07

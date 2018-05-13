@@ -125,7 +125,7 @@ the full set of options- but just the ones tested here.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>dbi_connection_tests</span>(<span class='no'>db</span>)</pre>
+    <pre class="usage"><span class='fu'>dbi_connection_tests</span>(<span class='no'>db</span>, <span class='no'>...</span>, <span class='kw'>overrides</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>use_advice</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -133,6 +133,18 @@ the full set of options- but just the ones tested here.</p>
     <tr>
       <th>db</th>
       <td><p>DBI database connection</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>force later arguments to bind by name.</p></td>
+    </tr>
+    <tr>
+      <th>overrides</th>
+      <td><p>named character vector or list, options (just name, not DB qualification) to force</p></td>
+    </tr>
+    <tr>
+      <th>use_advice</th>
+      <td><p>logical if TRUE incorpeate hard-coded advice.</p></td>
     </tr>
     </table>
     
@@ -142,7 +154,7 @@ the full set of options- but just the ones tested here.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='dbi_connection_preferences.html'>dbi_connection_preferences</a></code></p></div>
+    <div class='dont-index'><p><code><a href='dbi_connection_advice.html'>dbi_connection_advice</a></code></p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -150,7 +162,8 @@ the full set of options- but just the ones tested here.</p>
 <span class='kw'>if</span>(<span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
   <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
   <span class='fu'>print</span>(<span class='fu'><a href='dbi_connection_name.html'>dbi_connection_name</a></span>(<span class='no'>my_db</span>))
-  <span class='fu'>print</span>(<span class='fu'>dbi_connection_tests</span>(<span class='no'>my_db</span>))
+  <span class='fu'>print</span>(<span class='fu'>dbi_connection_tests</span>(<span class='no'>my_db</span>,
+     <span class='kw'>overrides</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"use_DBI_dbExistsTable"</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)))
   <span class='co'># the following would set options</span>
   <span class='co'># print(options(dbi_connection_tests(my_db)))</span>
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
@@ -174,7 +187,7 @@ the full set of options- but just the ones tested here.</p>
 #&gt; [1] TRUE
 #&gt; 
 #&gt; $rquery.SQLiteConnection.use_DBI_dbExistsTable
-#&gt; [1] TRUE
+#&gt; [1] FALSE
 #&gt; 
 #&gt; $rquery.SQLiteConnection.check_logical_column_types
 #&gt; [1] TRUE

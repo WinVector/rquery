@@ -152,6 +152,48 @@ system.time(nrow(as.data.frame(dplyr_pipeline)))
 base::date()
 ```
 
+`rquery` `materialize_node()` (`rquery`'s caching node)
+works with `rquery`'s column narrowing calculations.
+
+```{r rqueryexp_cache}
+base::date()
+
+scale <- 0.237
+
+rquery_pipeline_cached <- d_large %.>%
+  extend_nse(.,
+             probability :=
+               exp(assessmentTotal * scale))  %.>% 
+  normalize_cols(.,
+                 "probability",
+                 partitionby = 'subjectID') %.>%
+  pick_top_k(.,
+             partitionby = 'subjectID',
+             rev_orderby = c('probability', 'surveyCategory')) %.>%
+  materialize_node(., "tmp_res") %.>%  # <- insert caching node into pipeline prior to narrowing
+  rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
+  select_columns(., qc(subjectID, diagnosis, probability)) %.>%
+  orderby(., 'subjectID') 
+
+sql_list <- to_sql(rquery_pipeline_cached, my_db)
+for(i in seq_len(length(sql_list))) {
+  print(paste("step", i))
+  cat(format(sql_list[[i]]))
+  cat("\n")
+}
+
+# special debug-mode limits all sources to 1 row.
+# not correct for windowed calculations or joins- 
+# but lets us at least see something execute quickly.
+system.time(nrow(as.data.frame(execute(my_db, rquery_pipeline_cached, source_limit = 1L))))
+
+# full run
+system.time(nrow(as.data.frame(execute(my_db, rquery_pipeline_cached))))
+
+base::date()
+```
+
+
 And the introduction of a `dplyr::compute()` node (with the intent of speeding things up through caching)
 can be expensive.
 
@@ -175,7 +217,7 @@ dplyr_pipeline_c <- d_large_tbl %>%
 
 
 # full run
-system.time(nrow(as.data.frame(dplyr_pipeline)))
+system.time(nrow(as.data.frame(dplyr_pipeline_c)))
 
 base::date()
 

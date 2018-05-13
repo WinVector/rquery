@@ -51,7 +51,7 @@ db <- DBI::dbConnect(RSQLite::SQLite(),
                      ":memory:")
 RSQLite::initExtension(db)
 
-dbopts <- dbi_connection_preferences(db)
+dbopts <- dbi_connection_tests(db)
 print(dbopts)
 options(dbopts)
 

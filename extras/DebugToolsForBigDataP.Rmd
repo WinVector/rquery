@@ -20,7 +20,11 @@ my_db <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
                         password = '')
 
 # configure rquery options
-dbopts <- dbi_connection_tests(my_db)
+dbopts <- dbi_connection_tests(
+  my_db,
+  # seeing a bug here in RPostgreSQL, possibly on CREATE queries
+  overrides = c(use_DBI_dbExistsTable = FALSE, use_DBI_dbRemoveTable = FALSE) 
+)
 print(dbopts)
 options(dbopts)
 
@@ -32,7 +36,7 @@ base::date()
 
 # build up example data
 nSubj <- 1000000
-nIrrelCol <- 200
+nIrrelCol <- 500
 
 d_local <- data.frame(subjectID = sort(rep(seq_len(nSubj),2)),
                  surveyCategory = c(
@@ -134,7 +138,49 @@ system.time(nrow(as.data.frame(dplyr_pipeline)))
 base::date()
 ```
 
-And the introduction of a `dplyr::compute()` node (with the intent of speeding things up through caching)
+`rquery` `materialize_node()` (`rquery`'s caching node)
+works with `rquery`'s column narrowing calculations.
+
+```{r rqueryexp_cache}
+base::date()
+
+scale <- 0.237
+
+rquery_pipeline_cached <- d_large %.>%
+  extend_nse(.,
+             probability :=
+               exp(assessmentTotal * scale))  %.>% 
+  normalize_cols(.,
+                 "probability",
+                 partitionby = 'subjectID') %.>%
+  pick_top_k(.,
+             partitionby = 'subjectID',
+             rev_orderby = c('probability', 'surveyCategory')) %.>%
+  materialize_node(., "tmp_res") %.>%  # <- insert caching node into pipeline prior to narrowing
+  rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
+  select_columns(., qc(subjectID, diagnosis, probability)) %.>%
+  orderby(., 'subjectID') 
+
+sql_list <- to_sql(rquery_pipeline_cached, my_db)
+for(i in seq_len(length(sql_list))) {
+  print(paste("step", i))
+  cat(format(sql_list[[i]]))
+  cat("\n")
+}
+
+# special debug-mode limits all sources to 1 row.
+# not correct for windowed calculations or joins- 
+# but lets us at least see something execute quickly.
+system.time(nrow(as.data.frame(execute(my_db, rquery_pipeline_cached, source_limit = 1L))))
+
+# full run
+system.time(nrow(as.data.frame(execute(my_db, rquery_pipeline_cached))))
+
+base::date()
+```
+
+
+The introduction of a `dplyr::compute()` node (with the intent of speeding things up through caching)
 can be expensive.
 
 ```{r dplyrexp_c, error=TRUE}
@@ -155,12 +201,16 @@ dplyr_pipeline_c <- d_large_tbl %>%
   select(subjectID, diagnosis, probability) %>%
   arrange(subjectID)
 
+# print query
+cat(dbplyr::remote_query(dplyr_pipeline_c))
 
 # full run
-system.time(nrow(as.data.frame(dplyr_pipeline)))
+system.time(nrow(as.data.frame(dplyr_pipeline_c)))
 
 base::date()
 ```
+
+
 
 Now, let's show how/where erroneous pipelines are debugged in each system.
 

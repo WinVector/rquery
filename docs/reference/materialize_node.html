@@ -6,8 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Compute quantiles over non-NULL values
-(without interpolation, needs a database with window functions). — quantile_node • rquery</title>
+<title>Cache results to a named table inside a pipeline. — materialize_node • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -29,10 +28,9 @@
 
 
 
-<meta property="og:title" content="Compute quantiles over non-NULL values
-(without interpolation, needs a database with window functions). — quantile_node" />
+<meta property="og:title" content="Cache results to a named table inside a pipeline. — materialize_node" />
 
-<meta property="og:description" content="Please see https://github.com/WinVector/rquery/blob/master/extras/Summary_Example.md for an example." />
+<meta property="og:description" content="Cache results to a named table inside a pipeline." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -114,67 +112,47 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Compute quantiles over non-NULL values
-(without interpolation, needs a database with window functions).</h1>
-    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/quantile.R'><code>R/quantile.R</code></a></small>
-    <div class="hidden name"><code>quantile_node.Rd</code></div>
+    <h1>Cache results to a named table inside a pipeline.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/non_sql_node.R'><code>R/non_sql_node.R</code></a></small>
+    <div class="hidden name"><code>materialize_node.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Please see <a href='https://github.com/WinVector/rquery/blob/master/extras/Summary_Example.md'>https://github.com/WinVector/rquery/blob/master/extras/Summary_Example.md</a> for an example.</p>
+    <p>Cache results to a named table inside a pipeline.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>quantile_node</span>(<span class='no'>source</span>, <span class='kw'>cols</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>, <span class='kw'>probs_name</span> <span class='kw'>=</span> <span class='st'>"quantile_probability"</span>,
-  <span class='kw'>probs</span> <span class='kw'>=</span> <span class='fu'>seq</span>(<span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>0.25</span>),
-  <span class='kw'>tmp_name_source</span> <span class='kw'>=</span> <span class='kw pkg'>wrapr</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/wrapr/topics/mk_tmp_name_source'>mk_tmp_name_source</a></span>(<span class='st'>"qn"</span>), <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>materialize_node</span>(<span class='no'>source</span>, <span class='no'>table_name</span>, <span class='no'>...</span>, <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>source</th>
-      <td><p>source to select from (relop or data.frame).</p></td>
+      <td><p>source to work from (data.frame or relop node)</p></td>
     </tr>
     <tr>
-      <th>cols</th>
-      <td><p>character, compute quantiles for these columns (NULL indicates all columns).</p></td>
+      <th>table_name</th>
+      <td><p>character, name of caching table</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>force later arguments to be bound by name</p></td>
-    </tr>
-    <tr>
-      <th>probs_name</th>
-      <td><p>character, column name to write probs in.</p></td>
-    </tr>
-    <tr>
-      <th>probs</th>
-      <td><p>numeric quantiles to compute</p></td>
-    </tr>
-    <tr>
-      <th>tmp_name_source</th>
-      <td><p>wrapr::mk_tmp_name_source(), temporary name generator.</p></td>
+      <td><p>force later arguments to bind by name</p></td>
     </tr>
     <tr>
       <th>temporary</th>
-      <td><p>logical, if TRUE use temporary tables</p></td>
+      <td><p>logical, if TRUE mark tables temporary.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>table of quantiles</p>
-    
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>This is a non_sql_node, so forces the materialization of
-the calculation prior to it losing narrowing optimizations.</p>
+    <p>sql node.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='quantile_cols.html'>quantile_cols</a></code>, <code><a href='rsummary.html'>rsummary</a></code>, <code><a href='non_sql_node.html'>non_sql_node</a></code></p></div>
+    <div class='dont-index'><p><code><a href='rsummary_node.html'>rsummary_node</a></code></p></div>
     
 
   </div>
@@ -184,8 +162,6 @@ the calculation prior to it losing narrowing optimizations.</p>
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-
-      <li><a href="#details">Details</a></li>
 
       <li><a href="#see-also">See also</a></li>
           </ul>

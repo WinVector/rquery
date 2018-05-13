@@ -368,7 +368,6 @@ rsummary_node <- function(source,
     dnode$data <- source
     source <- dnode
   }
-  columns_used <- column_names(source)
   columns_produced <- c("column",
                         "index",
                         "class",
@@ -403,7 +402,6 @@ rsummary_node <- function(source,
   nd <- non_sql_node(source,
                      f,
                      incoming_table_name = incoming_table_name,
-                     columns_used = columns_used,
                      outgoing_table_name = outgoing_table_name,
                      columns_produced = columns_produced,
                      display_form = paste0("rsummary_node(.)"),
