@@ -1,13 +1,13 @@
 Debug Tools for Big Data
 ================
-2018-05-11
+2018-05-14
 
 <!-- file.md is generated from file.Rmd. Please edit that file -->
 ``` r
 base::date()
 ```
 
-    ## [1] "Sat May 12 15:53:34 2018"
+    ## [1] "Mon May 14 09:19:40 2018"
 
 ``` r
 library("dplyr")
@@ -85,13 +85,13 @@ options(dbopts)
 base::date()
 ```
 
-    ## [1] "Sat May 12 15:53:59 2018"
+    ## [1] "Mon May 14 09:20:04 2018"
 
 ``` r
 base::date()
 ```
 
-    ## [1] "Sat May 12 15:54:00 2018"
+    ## [1] "Mon May 14 09:20:04 2018"
 
 ``` r
 # build up example data
@@ -104,6 +104,8 @@ d_local <- data.frame(subjectID = sort(rep(seq_len(nSubj),2)),
                    'positive re-framing'),
                  stringsAsFactors = FALSE)
 d_local$assessmentTotal <- sample.int(10, nrow(d_local), replace = TRUE)
+irrel_col_1 <- paste("irrelevantCol", sprintf("%07g", 1), sep = "_")
+d_local[[irrel_col_1]] <- runif(nrow(d_local))
 d_small <- rquery::dbi_copy_to(my_db, 'd_small',
                  d_local,
                  overwrite = TRUE, 
@@ -114,22 +116,26 @@ rm(list = "d_local")
 base::date()
 ```
 
-    ## [1] "Sat May 12 15:54:10 2018"
+    ## [1] "Mon May 14 09:20:15 2018"
 
 ``` r
 base::date()
 ```
 
-    ## [1] "Sat May 12 15:54:10 2018"
+    ## [1] "Mon May 14 09:20:15 2018"
 
 ``` r
 # add in irrelevant columns
 # simulates performing a calculation against a larger data mart
 assignments <- 
-  vapply(seq_len(nIrrelCol), 
+  vapply(2:nIrrelCol, 
          function(i) {
            paste("irrelevantCol", sprintf("%07g", i), sep = "_")
-         }, character(1)) := rep("1.5", nIrrelCol)
+         }, character(1)) := 
+  vapply(2:nIrrelCol, 
+         function(i) {
+           paste(irrel_col_1, "+", i)
+         }, character(1))
 d_large <- d_small %.>%
   extend_se(., assignments) %.>%
   materialize(my_db, ., 
@@ -170,7 +176,7 @@ sparklyr::sdf_ncol(d_large_tbl)
 base::date()
 ```
 
-    ## [1] "Sat May 12 16:19:35 2018"
+    ## [1] "Mon May 14 10:48:05 2018"
 
 Define and demonstrate pipelines:
 
@@ -178,25 +184,32 @@ Define and demonstrate pipelines:
 base::date()
 ```
 
-    ## [1] "Sat May 12 16:19:35 2018"
+    ## [1] "Mon May 14 10:48:05 2018"
 
 ``` r
-scale <- 0.237
+system.time({
+  scale <- 0.237
+  
+  rquery_pipeline <- d_large %.>%
+    extend_nse(.,
+               probability :=
+                 exp(assessmentTotal * scale))  %.>% 
+    normalize_cols(.,
+                   "probability",
+                   partitionby = 'subjectID') %.>%
+    pick_top_k(.,
+               partitionby = 'subjectID',
+               rev_orderby = c('probability', 'surveyCategory')) %.>%
+    rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
+    select_columns(., qc(subjectID, diagnosis, probability)) %.>%
+    orderby(., 'subjectID') 
+})
+```
 
-rquery_pipeline <- d_large %.>%
-  extend_nse(.,
-             probability :=
-               exp(assessmentTotal * scale))  %.>% 
-  normalize_cols(.,
-                 "probability",
-                 partitionby = 'subjectID') %.>%
-  pick_top_k(.,
-             partitionby = 'subjectID',
-             rev_orderby = c('probability', 'surveyCategory')) %.>%
-  rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
-  select_columns(., qc(subjectID, diagnosis, probability)) %.>%
-  orderby(., 'subjectID') 
+    ##    user  system elapsed 
+    ##   0.051   0.003   0.055
 
+``` r
 # special debug-mode limits all sources to 1 row.
 # not correct for windowed calculations or joins- 
 # but lets us at least see something execute quickly.
@@ -204,56 +217,62 @@ system.time(nrow(as.data.frame(execute(my_db, rquery_pipeline, source_limit = 1L
 ```
 
     ##    user  system elapsed 
-    ##   0.058   0.001   3.623
+    ##   0.066   0.002  26.498
 
 ``` r
 # full run
 system.time(nrow(as.data.frame(execute(my_db, rquery_pipeline))))
 ```
 
+    ##     user   system  elapsed 
+    ##    0.601    0.245 2263.373
+
+``` r
+base::date()
+```
+
+    ## [1] "Mon May 14 11:26:15 2018"
+
+``` r
+base::date()
+```
+
+    ## [1] "Mon May 14 11:26:15 2018"
+
+``` r
+system.time({
+  scale <- 0.237
+  
+  dplyr_pipeline <- d_large_tbl %>%
+    group_by(subjectID) %>%
+    mutate(probability =
+             exp(assessmentTotal * scale)/
+             sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
+    arrange(probability, surveyCategory) %>%
+    filter(row_number() == n()) %>%
+    ungroup() %>%
+    rename(diagnosis = surveyCategory) %>%
+    select(subjectID, diagnosis, probability) %>%
+    arrange(subjectID)
+})
+```
+
     ##    user  system elapsed 
-    ##   0.510   0.086 493.981
+    ##   0.047   0.009   0.093
 
 ``` r
-base::date()
-```
-
-    ## [1] "Sat May 12 16:27:53 2018"
-
-``` r
-base::date()
-```
-
-    ## [1] "Sat May 12 16:27:53 2018"
-
-``` r
-scale <- 0.237
-
-dplyr_pipeline <- d_large_tbl %>%
-  group_by(subjectID) %>%
-  mutate(probability =
-           exp(assessmentTotal * scale)/
-           sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
-  arrange(probability, surveyCategory) %>%
-  filter(row_number() == n()) %>%
-  ungroup() %>%
-  rename(diagnosis = surveyCategory) %>%
-  select(subjectID, diagnosis, probability) %>%
-  arrange(subjectID)
-
-
 # full run
 system.time(nrow(as.data.frame(dplyr_pipeline)))
 ```
 
-    ##    user  system elapsed 
-    ##   0.622   0.236 537.276
+    ##     user   system  elapsed 
+    ##    0.760    0.287 2315.116
 
 ``` r
 base::date()
 ```
 
-    ## [1] "Sat May 12 16:36:50 2018"
+    ## [1] "Mon May 14 12:04:51 2018"
 
 `rquery` `materialize_node()` (`rquery`'s caching node) works with `rquery`'s column narrowing calculations.
 
@@ -261,27 +280,35 @@ base::date()
 base::date()
 ```
 
-    ## [1] "Sat May 12 16:36:50 2018"
+    ## [1] "Mon May 14 12:04:51 2018"
 
 ``` r
-scale <- 0.237
+system.time({
+  scale <- 0.237
+  
+  rquery_pipeline_cached <- d_large %.>%
+    extend_nse(.,
+               probability :=
+                 exp(assessmentTotal * scale))  %.>% 
+    normalize_cols(.,
+                   "probability",
+                   partitionby = 'subjectID') %.>%
+    pick_top_k(.,
+               partitionby = 'subjectID',
+               rev_orderby = c('probability', 'surveyCategory')) %.>%
+    materialize_node(., "tmp_res") %.>%  # <- insert caching node into pipeline prior to narrowing
+    rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
+    select_columns(., qc(subjectID, diagnosis, probability)) %.>%
+    orderby(., 'subjectID') 
+  
+  sql_list <- to_sql(rquery_pipeline_cached, my_db)
+})
+```
 
-rquery_pipeline_cached <- d_large %.>%
-  extend_nse(.,
-             probability :=
-               exp(assessmentTotal * scale))  %.>% 
-  normalize_cols(.,
-                 "probability",
-                 partitionby = 'subjectID') %.>%
-  pick_top_k(.,
-             partitionby = 'subjectID',
-             rev_orderby = c('probability', 'surveyCategory')) %.>%
-  materialize_node(., "tmp_res") %.>%  # <- insert caching node into pipeline prior to narrowing
-  rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
-  select_columns(., qc(subjectID, diagnosis, probability)) %.>%
-  orderby(., 'subjectID') 
+    ##    user  system elapsed 
+    ##   0.104   0.002   0.109
 
-sql_list <- to_sql(rquery_pipeline_cached, my_db)
+``` r
 for(i in seq_len(length(sql_list))) {
   print(paste("step", i))
   cat(format(sql_list[[i]]))
@@ -309,15 +336,15 @@ for(i in seq_len(length(sql_list))) {
     ##         exp ( `assessmentTotal` * 0.237 )  AS `probability`
     ##        FROM (
     ##         SELECT
-    ##          `rquery_mat_67177513182977640971_0000000000`.`subjectID`,
-    ##          `rquery_mat_67177513182977640971_0000000000`.`surveyCategory`,
-    ##          `rquery_mat_67177513182977640971_0000000000`.`assessmentTotal`
+    ##          `rquery_mat_33053560498827292178_0000000000`.`subjectID`,
+    ##          `rquery_mat_33053560498827292178_0000000000`.`surveyCategory`,
+    ##          `rquery_mat_33053560498827292178_0000000000`.`assessmentTotal`
     ##         FROM
-    ##          `rquery_mat_67177513182977640971_0000000000`
-    ##         ) tsql_85498935638289823819_0000000000
-    ##        ) tsql_85498935638289823819_0000000001
-    ##       ) tsql_85498935638289823819_0000000002
-    ##     ) tsql_85498935638289823819_0000000003
+    ##          `rquery_mat_33053560498827292178_0000000000`
+    ##         ) tsql_03882324506914029891_0000000000
+    ##        ) tsql_03882324506914029891_0000000001
+    ##       ) tsql_03882324506914029891_0000000002
+    ##     ) tsql_03882324506914029891_0000000003
     ##     WHERE `row_number` <= 1
     ## [1] "step 2"
     ## non SQL step:  materialize_node(tmp_res)
@@ -339,9 +366,9 @@ for(i in seq_len(length(sql_list))) {
     ##      `tmp_res`.`surveyCategory`
     ##     FROM
     ##      `tmp_res`
-    ##   ) tsql_85498935638289823819_0000000004
-    ##  ) tsql_85498935638289823819_0000000005
-    ## ) tsql_85498935638289823819_0000000006 ORDER BY `subjectID`
+    ##   ) tsql_03882324506914029891_0000000004
+    ##  ) tsql_03882324506914029891_0000000005
+    ## ) tsql_03882324506914029891_0000000006 ORDER BY `subjectID`
 
 ``` r
 # special debug-mode limits all sources to 1 row.
@@ -351,42 +378,43 @@ system.time(nrow(as.data.frame(execute(my_db, rquery_pipeline_cached, source_lim
 ```
 
     ##    user  system elapsed 
-    ##   0.125   0.005   3.442
+    ##   0.129   0.005  28.522
 
 ``` r
 # full run
 system.time(nrow(as.data.frame(execute(my_db, rquery_pipeline_cached))))
 ```
 
-    ##    user  system elapsed 
-    ##   0.616   0.080 506.902
+    ##     user   system  elapsed 
+    ##    0.679    0.284 2595.190
 
 ``` r
 base::date()
 ```
 
-    ## [1] "Sat May 12 16:45:21 2018"
+    ## [1] "Mon May 14 12:48:35 2018"
 
 And the introduction of a `dplyr::compute()` node (with the intent of speeding things up through caching) can be expensive.
 
 ``` r
 base::date()
 
-scale <- 0.237
-
-dplyr_pipeline_c <- d_large_tbl %>%
-  group_by(subjectID) %>%
-  mutate(probability =
-           exp(assessmentTotal * scale)/
-           sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
-  arrange(probability, surveyCategory) %>%
-  filter(row_number() == n()) %>%
-  compute() %>%     # <- inopportune place to try to cache
-  ungroup() %>%
-  rename(diagnosis = surveyCategory) %>%
-  select(subjectID, diagnosis, probability) %>%
-  arrange(subjectID)
-
+system.time({
+  scale <- 0.237
+  
+  dplyr_pipeline_c <- d_large_tbl %>%
+    group_by(subjectID) %>%
+    mutate(probability =
+             exp(assessmentTotal * scale)/
+             sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
+    arrange(probability, surveyCategory) %>%
+    filter(row_number() == n()) %>%
+    compute() %>%     # <- inopportune place to try to cache
+    ungroup() %>%
+    rename(diagnosis = surveyCategory) %>%
+    select(subjectID, diagnosis, probability) %>%
+    arrange(subjectID)
+})
 
 # full run
 system.time(nrow(as.data.frame(dplyr_pipeline_c)))
@@ -406,33 +434,39 @@ In `rquery` many user errors are caught during pipeline construction, independen
 base::date()
 ```
 
-    ## [1] "Sat May 12 16:45:21 2018"
+    ## [1] "Mon May 14 12:48:35 2018"
 
 ``` r
-# rquery catches the error during pipeline definition,
-# prior to sending it to the database or Spark data system.
-rquery_pipeline_late_error <- d_large %.>%
-  extend_nse(.,
-             probability :=
-               exp(assessmentTotal * scale))  %.>% 
-  normalize_cols(.,
-                 "probability",
-                 partitionby = 'subjectID') %.>%
-  pick_top_k(.,
-             partitionby = 'subjectID',
-             rev_orderby = c('probability', 'surveyCategory')) %.>%
-  rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
-  select_columns(., qc(subjectID, diagnosis, probability)) %.>%
-  orderby(., 'ZubjectIDZZZ') # <- error non-existent column
+system.time({
+  scale <- 0.237
+  
+  # rquery catches the error during pipeline definition,
+  # prior to sending it to the database or Spark data system.
+  rquery_pipeline_late_error <- d_large %.>%
+    extend_nse(.,
+               probability :=
+                 exp(assessmentTotal * scale))  %.>% 
+    normalize_cols(.,
+                   "probability",
+                   partitionby = 'subjectID') %.>%
+    pick_top_k(.,
+               partitionby = 'subjectID',
+               rev_orderby = c('probability', 'surveyCategory')) %.>%
+    rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
+    select_columns(., qc(subjectID, diagnosis, probability)) %.>%
+    orderby(., 'ZubjectIDZZZ') # <- error non-existent column
+})
 ```
 
     ## Error in check_have_cols(have, unique(c(cols, rev_cols)), "rquery::orderby"): rquery::orderby unknown columns ZubjectIDZZZ
+
+    ## Timing stopped at: 0.047 0.002 0.049
 
 ``` r
 base::date()
 ```
 
-    ## [1] "Sat May 12 16:45:21 2018"
+    ## [1] "Mon May 14 12:48:35 2018"
 
 With `dplyr` user errors are mostly caught when the command is analyzed on the remote data system.
 
@@ -440,22 +474,31 @@ With `dplyr` user errors are mostly caught when the command is analyzed on the r
 base::date()
 ```
 
-    ## [1] "Sat May 12 16:45:21 2018"
+    ## [1] "Mon May 14 12:48:35 2018"
 
 ``` r
-# dplyr accepts an incorrect pipeline
-dplyr_pipeline_late_error <- d_large_tbl %>%
-  group_by(subjectID) %>%
-  mutate(probability =
-           exp(assessmentTotal * scale)/
-           sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
-  arrange(probability, surveyCategory) %>%
-  filter(row_number() == n()) %>%
-  ungroup() %>%
-  rename(diagnosis = surveyCategory) %>%
-  select(subjectID, diagnosis, probability) %>%
-  arrange(ZubjectIDZZZ)  # <- error non-existent column
+system.time({
+  scale <- 0.237
+  
+  # dplyr accepts an incorrect pipeline
+  dplyr_pipeline_late_error <- d_large_tbl %>%
+    group_by(subjectID) %>%
+    mutate(probability =
+             exp(assessmentTotal * scale)/
+             sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
+    arrange(probability, surveyCategory) %>%
+    filter(row_number() == n()) %>%
+    ungroup() %>%
+    rename(diagnosis = surveyCategory) %>%
+    select(subjectID, diagnosis, probability) %>%
+    arrange(ZubjectIDZZZ)  # <- error non-existent column
+})
+```
 
+    ##    user  system elapsed 
+    ##   0.053   0.001   0.054
+
+``` r
 # dplyr will generate (incorrect) SQL from the incorrect pipeline
 cat(dbplyr::remote_query(dplyr_pipeline_late_error))
 ```
@@ -466,9 +509,9 @@ cat(dbplyr::remote_query(dplyr_pipeline_late_error))
     ## FROM (SELECT `subjectID`, `surveyCategory`, `assessmentTotal`, `irrelevantCol_0000001`, `irrelevantCol_0000002`, `irrelevantCol_0000003`, `irrelevantCol_0000004`, `irrelevantCol_0000005`, `irrelevantCol_0000006`, `irrelevantCol_0000007`, `irrelevantCol_0000008`, `irrelevantCol_0000009`, `irrelevantCol_0000010`, `irrelevantCol_0000011`, `irrelevantCol_0000012`, `irrelevantCol_0000013`, `irrelevantCol_0000014`, `irrelevantCol_0000015`, `irrelevantCol_0000016`, `irrelevantCol_0000017`, `irrelevantCol_0000018`, `irrelevantCol_0000019`, `irrelevantCol_0000020`, `irrelevantCol_0000021`, `irrelevantCol_0000022`, `irrelevantCol_0000023`, `irrelevantCol_0000024`, `irrelevantCol_0000025`, `irrelevantCol_0000026`, `irrelevantCol_0000027`, `irrelevantCol_0000028`, `irrelevantCol_0000029`, `irrelevantCol_0000030`, `irrelevantCol_0000031`, `irrelevantCol_0000032`, `irrelevantCol_0000033`, `irrelevantCol_0000034`, `irrelevantCol_0000035`, `irrelevantCol_0000036`, `irrelevantCol_0000037`, `irrelevantCol_0000038`, `irrelevantCol_0000039`, `irrelevantCol_0000040`, `irrelevantCol_0000041`, `irrelevantCol_0000042`, `irrelevantCol_0000043`, `irrelevantCol_0000044`, `irrelevantCol_0000045`, `irrelevantCol_0000046`, `irrelevantCol_0000047`, `irrelevantCol_0000048`, `irrelevantCol_0000049`, `irrelevantCol_0000050`, `irrelevantCol_0000051`, `irrelevantCol_0000052`, `irrelevantCol_0000053`, `irrelevantCol_0000054`, `irrelevantCol_0000055`, `irrelevantCol_0000056`, `irrelevantCol_0000057`, `irrelevantCol_0000058`, `irrelevantCol_0000059`, `irrelevantCol_0000060`, `irrelevantCol_0000061`, `irrelevantCol_0000062`, `irrelevantCol_0000063`, `irrelevantCol_0000064`, `irrelevantCol_0000065`, `irrelevantCol_0000066`, `irrelevantCol_0000067`, `irrelevantCol_0000068`, `irrelevantCol_0000069`, `irrelevantCol_0000070`, `irrelevantCol_0000071`, `irrelevantCol_0000072`, `irrelevantCol_0000073`, `irrelevantCol_0000074`, `irrelevantCol_0000075`, `irrelevantCol_0000076`, `irrelevantCol_0000077`, `irrelevantCol_0000078`, `irrelevantCol_0000079`, `irrelevantCol_0000080`, `irrelevantCol_0000081`, `irrelevantCol_0000082`, `irrelevantCol_0000083`, `irrelevantCol_0000084`, `irrelevantCol_0000085`, `irrelevantCol_0000086`, `irrelevantCol_0000087`, `irrelevantCol_0000088`, `irrelevantCol_0000089`, `irrelevantCol_0000090`, `irrelevantCol_0000091`, `irrelevantCol_0000092`, `irrelevantCol_0000093`, `irrelevantCol_0000094`, `irrelevantCol_0000095`, `irrelevantCol_0000096`, `irrelevantCol_0000097`, `irrelevantCol_0000098`, `irrelevantCol_0000099`, `irrelevantCol_0000100`, `irrelevantCol_0000101`, `irrelevantCol_0000102`, `irrelevantCol_0000103`, `irrelevantCol_0000104`, `irrelevantCol_0000105`, `irrelevantCol_0000106`, `irrelevantCol_0000107`, `irrelevantCol_0000108`, `irrelevantCol_0000109`, `irrelevantCol_0000110`, `irrelevantCol_0000111`, `irrelevantCol_0000112`, `irrelevantCol_0000113`, `irrelevantCol_0000114`, `irrelevantCol_0000115`, `irrelevantCol_0000116`, `irrelevantCol_0000117`, `irrelevantCol_0000118`, `irrelevantCol_0000119`, `irrelevantCol_0000120`, `irrelevantCol_0000121`, `irrelevantCol_0000122`, `irrelevantCol_0000123`, `irrelevantCol_0000124`, `irrelevantCol_0000125`, `irrelevantCol_0000126`, `irrelevantCol_0000127`, `irrelevantCol_0000128`, `irrelevantCol_0000129`, `irrelevantCol_0000130`, `irrelevantCol_0000131`, `irrelevantCol_0000132`, `irrelevantCol_0000133`, `irrelevantCol_0000134`, `irrelevantCol_0000135`, `irrelevantCol_0000136`, `irrelevantCol_0000137`, `irrelevantCol_0000138`, `irrelevantCol_0000139`, `irrelevantCol_0000140`, `irrelevantCol_0000141`, `irrelevantCol_0000142`, `irrelevantCol_0000143`, `irrelevantCol_0000144`, `irrelevantCol_0000145`, `irrelevantCol_0000146`, `irrelevantCol_0000147`, `irrelevantCol_0000148`, `irrelevantCol_0000149`, `irrelevantCol_0000150`, `irrelevantCol_0000151`, `irrelevantCol_0000152`, `irrelevantCol_0000153`, `irrelevantCol_0000154`, `irrelevantCol_0000155`, `irrelevantCol_0000156`, `irrelevantCol_0000157`, `irrelevantCol_0000158`, `irrelevantCol_0000159`, `irrelevantCol_0000160`, `irrelevantCol_0000161`, `irrelevantCol_0000162`, `irrelevantCol_0000163`, `irrelevantCol_0000164`, `irrelevantCol_0000165`, `irrelevantCol_0000166`, `irrelevantCol_0000167`, `irrelevantCol_0000168`, `irrelevantCol_0000169`, `irrelevantCol_0000170`, `irrelevantCol_0000171`, `irrelevantCol_0000172`, `irrelevantCol_0000173`, `irrelevantCol_0000174`, `irrelevantCol_0000175`, `irrelevantCol_0000176`, `irrelevantCol_0000177`, `irrelevantCol_0000178`, `irrelevantCol_0000179`, `irrelevantCol_0000180`, `irrelevantCol_0000181`, `irrelevantCol_0000182`, `irrelevantCol_0000183`, `irrelevantCol_0000184`, `irrelevantCol_0000185`, `irrelevantCol_0000186`, `irrelevantCol_0000187`, `irrelevantCol_0000188`, `irrelevantCol_0000189`, `irrelevantCol_0000190`, `irrelevantCol_0000191`, `irrelevantCol_0000192`, `irrelevantCol_0000193`, `irrelevantCol_0000194`, `irrelevantCol_0000195`, `irrelevantCol_0000196`, `irrelevantCol_0000197`, `irrelevantCol_0000198`, `irrelevantCol_0000199`, `irrelevantCol_0000200`, `irrelevantCol_0000201`, `irrelevantCol_0000202`, `irrelevantCol_0000203`, `irrelevantCol_0000204`, `irrelevantCol_0000205`, `irrelevantCol_0000206`, `irrelevantCol_0000207`, `irrelevantCol_0000208`, `irrelevantCol_0000209`, `irrelevantCol_0000210`, `irrelevantCol_0000211`, `irrelevantCol_0000212`, `irrelevantCol_0000213`, `irrelevantCol_0000214`, `irrelevantCol_0000215`, `irrelevantCol_0000216`, `irrelevantCol_0000217`, `irrelevantCol_0000218`, `irrelevantCol_0000219`, `irrelevantCol_0000220`, `irrelevantCol_0000221`, `irrelevantCol_0000222`, `irrelevantCol_0000223`, `irrelevantCol_0000224`, `irrelevantCol_0000225`, `irrelevantCol_0000226`, `irrelevantCol_0000227`, `irrelevantCol_0000228`, `irrelevantCol_0000229`, `irrelevantCol_0000230`, `irrelevantCol_0000231`, `irrelevantCol_0000232`, `irrelevantCol_0000233`, `irrelevantCol_0000234`, `irrelevantCol_0000235`, `irrelevantCol_0000236`, `irrelevantCol_0000237`, `irrelevantCol_0000238`, `irrelevantCol_0000239`, `irrelevantCol_0000240`, `irrelevantCol_0000241`, `irrelevantCol_0000242`, `irrelevantCol_0000243`, `irrelevantCol_0000244`, `irrelevantCol_0000245`, `irrelevantCol_0000246`, `irrelevantCol_0000247`, `irrelevantCol_0000248`, `irrelevantCol_0000249`, `irrelevantCol_0000250`, `irrelevantCol_0000251`, `irrelevantCol_0000252`, `irrelevantCol_0000253`, `irrelevantCol_0000254`, `irrelevantCol_0000255`, `irrelevantCol_0000256`, `irrelevantCol_0000257`, `irrelevantCol_0000258`, `irrelevantCol_0000259`, `irrelevantCol_0000260`, `irrelevantCol_0000261`, `irrelevantCol_0000262`, `irrelevantCol_0000263`, `irrelevantCol_0000264`, `irrelevantCol_0000265`, `irrelevantCol_0000266`, `irrelevantCol_0000267`, `irrelevantCol_0000268`, `irrelevantCol_0000269`, `irrelevantCol_0000270`, `irrelevantCol_0000271`, `irrelevantCol_0000272`, `irrelevantCol_0000273`, `irrelevantCol_0000274`, `irrelevantCol_0000275`, `irrelevantCol_0000276`, `irrelevantCol_0000277`, `irrelevantCol_0000278`, `irrelevantCol_0000279`, `irrelevantCol_0000280`, `irrelevantCol_0000281`, `irrelevantCol_0000282`, `irrelevantCol_0000283`, `irrelevantCol_0000284`, `irrelevantCol_0000285`, `irrelevantCol_0000286`, `irrelevantCol_0000287`, `irrelevantCol_0000288`, `irrelevantCol_0000289`, `irrelevantCol_0000290`, `irrelevantCol_0000291`, `irrelevantCol_0000292`, `irrelevantCol_0000293`, `irrelevantCol_0000294`, `irrelevantCol_0000295`, `irrelevantCol_0000296`, `irrelevantCol_0000297`, `irrelevantCol_0000298`, `irrelevantCol_0000299`, `irrelevantCol_0000300`, `irrelevantCol_0000301`, `irrelevantCol_0000302`, `irrelevantCol_0000303`, `irrelevantCol_0000304`, `irrelevantCol_0000305`, `irrelevantCol_0000306`, `irrelevantCol_0000307`, `irrelevantCol_0000308`, `irrelevantCol_0000309`, `irrelevantCol_0000310`, `irrelevantCol_0000311`, `irrelevantCol_0000312`, `irrelevantCol_0000313`, `irrelevantCol_0000314`, `irrelevantCol_0000315`, `irrelevantCol_0000316`, `irrelevantCol_0000317`, `irrelevantCol_0000318`, `irrelevantCol_0000319`, `irrelevantCol_0000320`, `irrelevantCol_0000321`, `irrelevantCol_0000322`, `irrelevantCol_0000323`, `irrelevantCol_0000324`, `irrelevantCol_0000325`, `irrelevantCol_0000326`, `irrelevantCol_0000327`, `irrelevantCol_0000328`, `irrelevantCol_0000329`, `irrelevantCol_0000330`, `irrelevantCol_0000331`, `irrelevantCol_0000332`, `irrelevantCol_0000333`, `irrelevantCol_0000334`, `irrelevantCol_0000335`, `irrelevantCol_0000336`, `irrelevantCol_0000337`, `irrelevantCol_0000338`, `irrelevantCol_0000339`, `irrelevantCol_0000340`, `irrelevantCol_0000341`, `irrelevantCol_0000342`, `irrelevantCol_0000343`, `irrelevantCol_0000344`, `irrelevantCol_0000345`, `irrelevantCol_0000346`, `irrelevantCol_0000347`, `irrelevantCol_0000348`, `irrelevantCol_0000349`, `irrelevantCol_0000350`, `irrelevantCol_0000351`, `irrelevantCol_0000352`, `irrelevantCol_0000353`, `irrelevantCol_0000354`, `irrelevantCol_0000355`, `irrelevantCol_0000356`, `irrelevantCol_0000357`, `irrelevantCol_0000358`, `irrelevantCol_0000359`, `irrelevantCol_0000360`, `irrelevantCol_0000361`, `irrelevantCol_0000362`, `irrelevantCol_0000363`, `irrelevantCol_0000364`, `irrelevantCol_0000365`, `irrelevantCol_0000366`, `irrelevantCol_0000367`, `irrelevantCol_0000368`, `irrelevantCol_0000369`, `irrelevantCol_0000370`, `irrelevantCol_0000371`, `irrelevantCol_0000372`, `irrelevantCol_0000373`, `irrelevantCol_0000374`, `irrelevantCol_0000375`, `irrelevantCol_0000376`, `irrelevantCol_0000377`, `irrelevantCol_0000378`, `irrelevantCol_0000379`, `irrelevantCol_0000380`, `irrelevantCol_0000381`, `irrelevantCol_0000382`, `irrelevantCol_0000383`, `irrelevantCol_0000384`, `irrelevantCol_0000385`, `irrelevantCol_0000386`, `irrelevantCol_0000387`, `irrelevantCol_0000388`, `irrelevantCol_0000389`, `irrelevantCol_0000390`, `irrelevantCol_0000391`, `irrelevantCol_0000392`, `irrelevantCol_0000393`, `irrelevantCol_0000394`, `irrelevantCol_0000395`, `irrelevantCol_0000396`, `irrelevantCol_0000397`, `irrelevantCol_0000398`, `irrelevantCol_0000399`, `irrelevantCol_0000400`, `irrelevantCol_0000401`, `irrelevantCol_0000402`, `irrelevantCol_0000403`, `irrelevantCol_0000404`, `irrelevantCol_0000405`, `irrelevantCol_0000406`, `irrelevantCol_0000407`, `irrelevantCol_0000408`, `irrelevantCol_0000409`, `irrelevantCol_0000410`, `irrelevantCol_0000411`, `irrelevantCol_0000412`, `irrelevantCol_0000413`, `irrelevantCol_0000414`, `irrelevantCol_0000415`, `irrelevantCol_0000416`, `irrelevantCol_0000417`, `irrelevantCol_0000418`, `irrelevantCol_0000419`, `irrelevantCol_0000420`, `irrelevantCol_0000421`, `irrelevantCol_0000422`, `irrelevantCol_0000423`, `irrelevantCol_0000424`, `irrelevantCol_0000425`, `irrelevantCol_0000426`, `irrelevantCol_0000427`, `irrelevantCol_0000428`, `irrelevantCol_0000429`, `irrelevantCol_0000430`, `irrelevantCol_0000431`, `irrelevantCol_0000432`, `irrelevantCol_0000433`, `irrelevantCol_0000434`, `irrelevantCol_0000435`, `irrelevantCol_0000436`, `irrelevantCol_0000437`, `irrelevantCol_0000438`, `irrelevantCol_0000439`, `irrelevantCol_0000440`, `irrelevantCol_0000441`, `irrelevantCol_0000442`, `irrelevantCol_0000443`, `irrelevantCol_0000444`, `irrelevantCol_0000445`, `irrelevantCol_0000446`, `irrelevantCol_0000447`, `irrelevantCol_0000448`, `irrelevantCol_0000449`, `irrelevantCol_0000450`, `irrelevantCol_0000451`, `irrelevantCol_0000452`, `irrelevantCol_0000453`, `irrelevantCol_0000454`, `irrelevantCol_0000455`, `irrelevantCol_0000456`, `irrelevantCol_0000457`, `irrelevantCol_0000458`, `irrelevantCol_0000459`, `irrelevantCol_0000460`, `irrelevantCol_0000461`, `irrelevantCol_0000462`, `irrelevantCol_0000463`, `irrelevantCol_0000464`, `irrelevantCol_0000465`, `irrelevantCol_0000466`, `irrelevantCol_0000467`, `irrelevantCol_0000468`, `irrelevantCol_0000469`, `irrelevantCol_0000470`, `irrelevantCol_0000471`, `irrelevantCol_0000472`, `irrelevantCol_0000473`, `irrelevantCol_0000474`, `irrelevantCol_0000475`, `irrelevantCol_0000476`, `irrelevantCol_0000477`, `irrelevantCol_0000478`, `irrelevantCol_0000479`, `irrelevantCol_0000480`, `irrelevantCol_0000481`, `irrelevantCol_0000482`, `irrelevantCol_0000483`, `irrelevantCol_0000484`, `irrelevantCol_0000485`, `irrelevantCol_0000486`, `irrelevantCol_0000487`, `irrelevantCol_0000488`, `irrelevantCol_0000489`, `irrelevantCol_0000490`, `irrelevantCol_0000491`, `irrelevantCol_0000492`, `irrelevantCol_0000493`, `irrelevantCol_0000494`, `irrelevantCol_0000495`, `irrelevantCol_0000496`, `irrelevantCol_0000497`, `irrelevantCol_0000498`, `irrelevantCol_0000499`, `irrelevantCol_0000500`, `irrelevantCol_0000501`, `irrelevantCol_0000502`, `irrelevantCol_0000503`, `irrelevantCol_0000504`, `irrelevantCol_0000505`, `irrelevantCol_0000506`, `irrelevantCol_0000507`, `irrelevantCol_0000508`, `irrelevantCol_0000509`, `irrelevantCol_0000510`, `irrelevantCol_0000511`, `irrelevantCol_0000512`, `irrelevantCol_0000513`, `irrelevantCol_0000514`, `irrelevantCol_0000515`, `irrelevantCol_0000516`, `irrelevantCol_0000517`, `irrelevantCol_0000518`, `irrelevantCol_0000519`, `irrelevantCol_0000520`, `irrelevantCol_0000521`, `irrelevantCol_0000522`, `irrelevantCol_0000523`, `irrelevantCol_0000524`, `irrelevantCol_0000525`, `irrelevantCol_0000526`, `irrelevantCol_0000527`, `irrelevantCol_0000528`, `irrelevantCol_0000529`, `irrelevantCol_0000530`, `irrelevantCol_0000531`, `irrelevantCol_0000532`, `irrelevantCol_0000533`, `irrelevantCol_0000534`, `irrelevantCol_0000535`, `irrelevantCol_0000536`, `irrelevantCol_0000537`, `irrelevantCol_0000538`, `irrelevantCol_0000539`, `irrelevantCol_0000540`, `irrelevantCol_0000541`, `irrelevantCol_0000542`, `irrelevantCol_0000543`, `irrelevantCol_0000544`, `irrelevantCol_0000545`, `irrelevantCol_0000546`, `irrelevantCol_0000547`, `irrelevantCol_0000548`, `irrelevantCol_0000549`, `irrelevantCol_0000550`, `irrelevantCol_0000551`, `irrelevantCol_0000552`, `irrelevantCol_0000553`, `irrelevantCol_0000554`, `irrelevantCol_0000555`, `irrelevantCol_0000556`, `irrelevantCol_0000557`, `irrelevantCol_0000558`, `irrelevantCol_0000559`, `irrelevantCol_0000560`, `irrelevantCol_0000561`, `irrelevantCol_0000562`, `irrelevantCol_0000563`, `irrelevantCol_0000564`, `irrelevantCol_0000565`, `irrelevantCol_0000566`, `irrelevantCol_0000567`, `irrelevantCol_0000568`, `irrelevantCol_0000569`, `irrelevantCol_0000570`, `irrelevantCol_0000571`, `irrelevantCol_0000572`, `irrelevantCol_0000573`, `irrelevantCol_0000574`, `irrelevantCol_0000575`, `irrelevantCol_0000576`, `irrelevantCol_0000577`, `irrelevantCol_0000578`, `irrelevantCol_0000579`, `irrelevantCol_0000580`, `irrelevantCol_0000581`, `irrelevantCol_0000582`, `irrelevantCol_0000583`, `irrelevantCol_0000584`, `irrelevantCol_0000585`, `irrelevantCol_0000586`, `irrelevantCol_0000587`, `irrelevantCol_0000588`, `irrelevantCol_0000589`, `irrelevantCol_0000590`, `irrelevantCol_0000591`, `irrelevantCol_0000592`, `irrelevantCol_0000593`, `irrelevantCol_0000594`, `irrelevantCol_0000595`, `irrelevantCol_0000596`, `irrelevantCol_0000597`, `irrelevantCol_0000598`, `irrelevantCol_0000599`, `irrelevantCol_0000600`, `irrelevantCol_0000601`, `irrelevantCol_0000602`, `irrelevantCol_0000603`, `irrelevantCol_0000604`, `irrelevantCol_0000605`, `irrelevantCol_0000606`, `irrelevantCol_0000607`, `irrelevantCol_0000608`, `irrelevantCol_0000609`, `irrelevantCol_0000610`, `irrelevantCol_0000611`, `irrelevantCol_0000612`, `irrelevantCol_0000613`, `irrelevantCol_0000614`, `irrelevantCol_0000615`, `irrelevantCol_0000616`, `irrelevantCol_0000617`, `irrelevantCol_0000618`, `irrelevantCol_0000619`, `irrelevantCol_0000620`, `irrelevantCol_0000621`, `irrelevantCol_0000622`, `irrelevantCol_0000623`, `irrelevantCol_0000624`, `irrelevantCol_0000625`, `irrelevantCol_0000626`, `irrelevantCol_0000627`, `irrelevantCol_0000628`, `irrelevantCol_0000629`, `irrelevantCol_0000630`, `irrelevantCol_0000631`, `irrelevantCol_0000632`, `irrelevantCol_0000633`, `irrelevantCol_0000634`, `irrelevantCol_0000635`, `irrelevantCol_0000636`, `irrelevantCol_0000637`, `irrelevantCol_0000638`, `irrelevantCol_0000639`, `irrelevantCol_0000640`, `irrelevantCol_0000641`, `irrelevantCol_0000642`, `irrelevantCol_0000643`, `irrelevantCol_0000644`, `irrelevantCol_0000645`, `irrelevantCol_0000646`, `irrelevantCol_0000647`, `irrelevantCol_0000648`, `irrelevantCol_0000649`, `irrelevantCol_0000650`, `irrelevantCol_0000651`, `irrelevantCol_0000652`, `irrelevantCol_0000653`, `irrelevantCol_0000654`, `irrelevantCol_0000655`, `irrelevantCol_0000656`, `irrelevantCol_0000657`, `irrelevantCol_0000658`, `irrelevantCol_0000659`, `irrelevantCol_0000660`, `irrelevantCol_0000661`, `irrelevantCol_0000662`, `irrelevantCol_0000663`, `irrelevantCol_0000664`, `irrelevantCol_0000665`, `irrelevantCol_0000666`, `irrelevantCol_0000667`, `irrelevantCol_0000668`, `irrelevantCol_0000669`, `irrelevantCol_0000670`, `irrelevantCol_0000671`, `irrelevantCol_0000672`, `irrelevantCol_0000673`, `irrelevantCol_0000674`, `irrelevantCol_0000675`, `irrelevantCol_0000676`, `irrelevantCol_0000677`, `irrelevantCol_0000678`, `irrelevantCol_0000679`, `irrelevantCol_0000680`, `irrelevantCol_0000681`, `irrelevantCol_0000682`, `irrelevantCol_0000683`, `irrelevantCol_0000684`, `irrelevantCol_0000685`, `irrelevantCol_0000686`, `irrelevantCol_0000687`, `irrelevantCol_0000688`, `irrelevantCol_0000689`, `irrelevantCol_0000690`, `irrelevantCol_0000691`, `irrelevantCol_0000692`, `irrelevantCol_0000693`, `irrelevantCol_0000694`, `irrelevantCol_0000695`, `irrelevantCol_0000696`, `irrelevantCol_0000697`, `irrelevantCol_0000698`, `irrelevantCol_0000699`, `irrelevantCol_0000700`, `irrelevantCol_0000701`, `irrelevantCol_0000702`, `irrelevantCol_0000703`, `irrelevantCol_0000704`, `irrelevantCol_0000705`, `irrelevantCol_0000706`, `irrelevantCol_0000707`, `irrelevantCol_0000708`, `irrelevantCol_0000709`, `irrelevantCol_0000710`, `irrelevantCol_0000711`, `irrelevantCol_0000712`, `irrelevantCol_0000713`, `irrelevantCol_0000714`, `irrelevantCol_0000715`, `irrelevantCol_0000716`, `irrelevantCol_0000717`, `irrelevantCol_0000718`, `irrelevantCol_0000719`, `irrelevantCol_0000720`, `irrelevantCol_0000721`, `irrelevantCol_0000722`, `irrelevantCol_0000723`, `irrelevantCol_0000724`, `irrelevantCol_0000725`, `irrelevantCol_0000726`, `irrelevantCol_0000727`, `irrelevantCol_0000728`, `irrelevantCol_0000729`, `irrelevantCol_0000730`, `irrelevantCol_0000731`, `irrelevantCol_0000732`, `irrelevantCol_0000733`, `irrelevantCol_0000734`, `irrelevantCol_0000735`, `irrelevantCol_0000736`, `irrelevantCol_0000737`, `irrelevantCol_0000738`, `irrelevantCol_0000739`, `irrelevantCol_0000740`, `irrelevantCol_0000741`, `irrelevantCol_0000742`, `irrelevantCol_0000743`, `irrelevantCol_0000744`, `irrelevantCol_0000745`, `irrelevantCol_0000746`, `irrelevantCol_0000747`, `irrelevantCol_0000748`, `irrelevantCol_0000749`, `irrelevantCol_0000750`, `irrelevantCol_0000751`, `irrelevantCol_0000752`, `irrelevantCol_0000753`, `irrelevantCol_0000754`, `irrelevantCol_0000755`, `irrelevantCol_0000756`, `irrelevantCol_0000757`, `irrelevantCol_0000758`, `irrelevantCol_0000759`, `irrelevantCol_0000760`, `irrelevantCol_0000761`, `irrelevantCol_0000762`, `irrelevantCol_0000763`, `irrelevantCol_0000764`, `irrelevantCol_0000765`, `irrelevantCol_0000766`, `irrelevantCol_0000767`, `irrelevantCol_0000768`, `irrelevantCol_0000769`, `irrelevantCol_0000770`, `irrelevantCol_0000771`, `irrelevantCol_0000772`, `irrelevantCol_0000773`, `irrelevantCol_0000774`, `irrelevantCol_0000775`, `irrelevantCol_0000776`, `irrelevantCol_0000777`, `irrelevantCol_0000778`, `irrelevantCol_0000779`, `irrelevantCol_0000780`, `irrelevantCol_0000781`, `irrelevantCol_0000782`, `irrelevantCol_0000783`, `irrelevantCol_0000784`, `irrelevantCol_0000785`, `irrelevantCol_0000786`, `irrelevantCol_0000787`, `irrelevantCol_0000788`, `irrelevantCol_0000789`, `irrelevantCol_0000790`, `irrelevantCol_0000791`, `irrelevantCol_0000792`, `irrelevantCol_0000793`, `irrelevantCol_0000794`, `irrelevantCol_0000795`, `irrelevantCol_0000796`, `irrelevantCol_0000797`, `irrelevantCol_0000798`, `irrelevantCol_0000799`, `irrelevantCol_0000800`, `irrelevantCol_0000801`, `irrelevantCol_0000802`, `irrelevantCol_0000803`, `irrelevantCol_0000804`, `irrelevantCol_0000805`, `irrelevantCol_0000806`, `irrelevantCol_0000807`, `irrelevantCol_0000808`, `irrelevantCol_0000809`, `irrelevantCol_0000810`, `irrelevantCol_0000811`, `irrelevantCol_0000812`, `irrelevantCol_0000813`, `irrelevantCol_0000814`, `irrelevantCol_0000815`, `irrelevantCol_0000816`, `irrelevantCol_0000817`, `irrelevantCol_0000818`, `irrelevantCol_0000819`, `irrelevantCol_0000820`, `irrelevantCol_0000821`, `irrelevantCol_0000822`, `irrelevantCol_0000823`, `irrelevantCol_0000824`, `irrelevantCol_0000825`, `irrelevantCol_0000826`, `irrelevantCol_0000827`, `irrelevantCol_0000828`, `irrelevantCol_0000829`, `irrelevantCol_0000830`, `irrelevantCol_0000831`, `irrelevantCol_0000832`, `irrelevantCol_0000833`, `irrelevantCol_0000834`, `irrelevantCol_0000835`, `irrelevantCol_0000836`, `irrelevantCol_0000837`, `irrelevantCol_0000838`, `irrelevantCol_0000839`, `irrelevantCol_0000840`, `irrelevantCol_0000841`, `irrelevantCol_0000842`, `irrelevantCol_0000843`, `irrelevantCol_0000844`, `irrelevantCol_0000845`, `irrelevantCol_0000846`, `irrelevantCol_0000847`, `irrelevantCol_0000848`, `irrelevantCol_0000849`, `irrelevantCol_0000850`, `irrelevantCol_0000851`, `irrelevantCol_0000852`, `irrelevantCol_0000853`, `irrelevantCol_0000854`, `irrelevantCol_0000855`, `irrelevantCol_0000856`, `irrelevantCol_0000857`, `irrelevantCol_0000858`, `irrelevantCol_0000859`, `irrelevantCol_0000860`, `irrelevantCol_0000861`, `irrelevantCol_0000862`, `irrelevantCol_0000863`, `irrelevantCol_0000864`, `irrelevantCol_0000865`, `irrelevantCol_0000866`, `irrelevantCol_0000867`, `irrelevantCol_0000868`, `irrelevantCol_0000869`, `irrelevantCol_0000870`, `irrelevantCol_0000871`, `irrelevantCol_0000872`, `irrelevantCol_0000873`, `irrelevantCol_0000874`, `irrelevantCol_0000875`, `irrelevantCol_0000876`, `irrelevantCol_0000877`, `irrelevantCol_0000878`, `irrelevantCol_0000879`, `irrelevantCol_0000880`, `irrelevantCol_0000881`, `irrelevantCol_0000882`, `irrelevantCol_0000883`, `irrelevantCol_0000884`, `irrelevantCol_0000885`, `irrelevantCol_0000886`, `irrelevantCol_0000887`, `irrelevantCol_0000888`, `irrelevantCol_0000889`, `irrelevantCol_0000890`, `irrelevantCol_0000891`, `irrelevantCol_0000892`, `irrelevantCol_0000893`, `irrelevantCol_0000894`, `irrelevantCol_0000895`, `irrelevantCol_0000896`, `irrelevantCol_0000897`, `irrelevantCol_0000898`, `irrelevantCol_0000899`, `irrelevantCol_0000900`, `irrelevantCol_0000901`, `irrelevantCol_0000902`, `irrelevantCol_0000903`, `irrelevantCol_0000904`, `irrelevantCol_0000905`, `irrelevantCol_0000906`, `irrelevantCol_0000907`, `irrelevantCol_0000908`, `irrelevantCol_0000909`, `irrelevantCol_0000910`, `irrelevantCol_0000911`, `irrelevantCol_0000912`, `irrelevantCol_0000913`, `irrelevantCol_0000914`, `irrelevantCol_0000915`, `irrelevantCol_0000916`, `irrelevantCol_0000917`, `irrelevantCol_0000918`, `irrelevantCol_0000919`, `irrelevantCol_0000920`, `irrelevantCol_0000921`, `irrelevantCol_0000922`, `irrelevantCol_0000923`, `irrelevantCol_0000924`, `irrelevantCol_0000925`, `irrelevantCol_0000926`, `irrelevantCol_0000927`, `irrelevantCol_0000928`, `irrelevantCol_0000929`, `irrelevantCol_0000930`, `irrelevantCol_0000931`, `irrelevantCol_0000932`, `irrelevantCol_0000933`, `irrelevantCol_0000934`, `irrelevantCol_0000935`, `irrelevantCol_0000936`, `irrelevantCol_0000937`, `irrelevantCol_0000938`, `irrelevantCol_0000939`, `irrelevantCol_0000940`, `irrelevantCol_0000941`, `irrelevantCol_0000942`, `irrelevantCol_0000943`, `irrelevantCol_0000944`, `irrelevantCol_0000945`, `irrelevantCol_0000946`, `irrelevantCol_0000947`, `irrelevantCol_0000948`, `irrelevantCol_0000949`, `irrelevantCol_0000950`, `irrelevantCol_0000951`, `irrelevantCol_0000952`, `irrelevantCol_0000953`, `irrelevantCol_0000954`, `irrelevantCol_0000955`, `irrelevantCol_0000956`, `irrelevantCol_0000957`, `irrelevantCol_0000958`, `irrelevantCol_0000959`, `irrelevantCol_0000960`, `irrelevantCol_0000961`, `irrelevantCol_0000962`, `irrelevantCol_0000963`, `irrelevantCol_0000964`, `irrelevantCol_0000965`, `irrelevantCol_0000966`, `irrelevantCol_0000967`, `irrelevantCol_0000968`, `irrelevantCol_0000969`, `irrelevantCol_0000970`, `irrelevantCol_0000971`, `irrelevantCol_0000972`, `irrelevantCol_0000973`, `irrelevantCol_0000974`, `irrelevantCol_0000975`, `irrelevantCol_0000976`, `irrelevantCol_0000977`, `irrelevantCol_0000978`, `irrelevantCol_0000979`, `irrelevantCol_0000980`, `irrelevantCol_0000981`, `irrelevantCol_0000982`, `irrelevantCol_0000983`, `irrelevantCol_0000984`, `irrelevantCol_0000985`, `irrelevantCol_0000986`, `irrelevantCol_0000987`, `irrelevantCol_0000988`, `irrelevantCol_0000989`, `irrelevantCol_0000990`, `irrelevantCol_0000991`, `irrelevantCol_0000992`, `irrelevantCol_0000993`, `irrelevantCol_0000994`, `irrelevantCol_0000995`, `irrelevantCol_0000996`, `irrelevantCol_0000997`, `irrelevantCol_0000998`, `irrelevantCol_0000999`, `irrelevantCol_0001000`, `probability`, row_number() OVER (PARTITION BY `subjectID` ORDER BY `probability`, `surveyCategory`) AS `zzz8`, COUNT(*) OVER (PARTITION BY `subjectID`) AS `zzz9`
     ## FROM (SELECT *
     ## FROM (SELECT `subjectID`, `surveyCategory`, `assessmentTotal`, `irrelevantCol_0000001`, `irrelevantCol_0000002`, `irrelevantCol_0000003`, `irrelevantCol_0000004`, `irrelevantCol_0000005`, `irrelevantCol_0000006`, `irrelevantCol_0000007`, `irrelevantCol_0000008`, `irrelevantCol_0000009`, `irrelevantCol_0000010`, `irrelevantCol_0000011`, `irrelevantCol_0000012`, `irrelevantCol_0000013`, `irrelevantCol_0000014`, `irrelevantCol_0000015`, `irrelevantCol_0000016`, `irrelevantCol_0000017`, `irrelevantCol_0000018`, `irrelevantCol_0000019`, `irrelevantCol_0000020`, `irrelevantCol_0000021`, `irrelevantCol_0000022`, `irrelevantCol_0000023`, `irrelevantCol_0000024`, `irrelevantCol_0000025`, `irrelevantCol_0000026`, `irrelevantCol_0000027`, `irrelevantCol_0000028`, `irrelevantCol_0000029`, `irrelevantCol_0000030`, `irrelevantCol_0000031`, `irrelevantCol_0000032`, `irrelevantCol_0000033`, `irrelevantCol_0000034`, `irrelevantCol_0000035`, `irrelevantCol_0000036`, `irrelevantCol_0000037`, `irrelevantCol_0000038`, `irrelevantCol_0000039`, `irrelevantCol_0000040`, `irrelevantCol_0000041`, `irrelevantCol_0000042`, `irrelevantCol_0000043`, `irrelevantCol_0000044`, `irrelevantCol_0000045`, `irrelevantCol_0000046`, `irrelevantCol_0000047`, `irrelevantCol_0000048`, `irrelevantCol_0000049`, `irrelevantCol_0000050`, `irrelevantCol_0000051`, `irrelevantCol_0000052`, `irrelevantCol_0000053`, `irrelevantCol_0000054`, `irrelevantCol_0000055`, `irrelevantCol_0000056`, `irrelevantCol_0000057`, `irrelevantCol_0000058`, `irrelevantCol_0000059`, `irrelevantCol_0000060`, `irrelevantCol_0000061`, `irrelevantCol_0000062`, `irrelevantCol_0000063`, `irrelevantCol_0000064`, `irrelevantCol_0000065`, `irrelevantCol_0000066`, `irrelevantCol_0000067`, `irrelevantCol_0000068`, `irrelevantCol_0000069`, `irrelevantCol_0000070`, `irrelevantCol_0000071`, `irrelevantCol_0000072`, `irrelevantCol_0000073`, `irrelevantCol_0000074`, `irrelevantCol_0000075`, `irrelevantCol_0000076`, `irrelevantCol_0000077`, `irrelevantCol_0000078`, `irrelevantCol_0000079`, `irrelevantCol_0000080`, `irrelevantCol_0000081`, `irrelevantCol_0000082`, `irrelevantCol_0000083`, `irrelevantCol_0000084`, `irrelevantCol_0000085`, `irrelevantCol_0000086`, `irrelevantCol_0000087`, `irrelevantCol_0000088`, `irrelevantCol_0000089`, `irrelevantCol_0000090`, `irrelevantCol_0000091`, `irrelevantCol_0000092`, `irrelevantCol_0000093`, `irrelevantCol_0000094`, `irrelevantCol_0000095`, `irrelevantCol_0000096`, `irrelevantCol_0000097`, `irrelevantCol_0000098`, `irrelevantCol_0000099`, `irrelevantCol_0000100`, `irrelevantCol_0000101`, `irrelevantCol_0000102`, `irrelevantCol_0000103`, `irrelevantCol_0000104`, `irrelevantCol_0000105`, `irrelevantCol_0000106`, `irrelevantCol_0000107`, `irrelevantCol_0000108`, `irrelevantCol_0000109`, `irrelevantCol_0000110`, `irrelevantCol_0000111`, `irrelevantCol_0000112`, `irrelevantCol_0000113`, `irrelevantCol_0000114`, `irrelevantCol_0000115`, `irrelevantCol_0000116`, `irrelevantCol_0000117`, `irrelevantCol_0000118`, `irrelevantCol_0000119`, `irrelevantCol_0000120`, `irrelevantCol_0000121`, `irrelevantCol_0000122`, `irrelevantCol_0000123`, `irrelevantCol_0000124`, `irrelevantCol_0000125`, `irrelevantCol_0000126`, `irrelevantCol_0000127`, `irrelevantCol_0000128`, `irrelevantCol_0000129`, `irrelevantCol_0000130`, `irrelevantCol_0000131`, `irrelevantCol_0000132`, `irrelevantCol_0000133`, `irrelevantCol_0000134`, `irrelevantCol_0000135`, `irrelevantCol_0000136`, `irrelevantCol_0000137`, `irrelevantCol_0000138`, `irrelevantCol_0000139`, `irrelevantCol_0000140`, `irrelevantCol_0000141`, `irrelevantCol_0000142`, `irrelevantCol_0000143`, `irrelevantCol_0000144`, `irrelevantCol_0000145`, `irrelevantCol_0000146`, `irrelevantCol_0000147`, `irrelevantCol_0000148`, `irrelevantCol_0000149`, `irrelevantCol_0000150`, `irrelevantCol_0000151`, `irrelevantCol_0000152`, `irrelevantCol_0000153`, `irrelevantCol_0000154`, `irrelevantCol_0000155`, `irrelevantCol_0000156`, `irrelevantCol_0000157`, `irrelevantCol_0000158`, `irrelevantCol_0000159`, `irrelevantCol_0000160`, `irrelevantCol_0000161`, `irrelevantCol_0000162`, `irrelevantCol_0000163`, `irrelevantCol_0000164`, `irrelevantCol_0000165`, `irrelevantCol_0000166`, `irrelevantCol_0000167`, `irrelevantCol_0000168`, `irrelevantCol_0000169`, `irrelevantCol_0000170`, `irrelevantCol_0000171`, `irrelevantCol_0000172`, `irrelevantCol_0000173`, `irrelevantCol_0000174`, `irrelevantCol_0000175`, `irrelevantCol_0000176`, `irrelevantCol_0000177`, `irrelevantCol_0000178`, `irrelevantCol_0000179`, `irrelevantCol_0000180`, `irrelevantCol_0000181`, `irrelevantCol_0000182`, `irrelevantCol_0000183`, `irrelevantCol_0000184`, `irrelevantCol_0000185`, `irrelevantCol_0000186`, `irrelevantCol_0000187`, `irrelevantCol_0000188`, `irrelevantCol_0000189`, `irrelevantCol_0000190`, `irrelevantCol_0000191`, `irrelevantCol_0000192`, `irrelevantCol_0000193`, `irrelevantCol_0000194`, `irrelevantCol_0000195`, `irrelevantCol_0000196`, `irrelevantCol_0000197`, `irrelevantCol_0000198`, `irrelevantCol_0000199`, `irrelevantCol_0000200`, `irrelevantCol_0000201`, `irrelevantCol_0000202`, `irrelevantCol_0000203`, `irrelevantCol_0000204`, `irrelevantCol_0000205`, `irrelevantCol_0000206`, `irrelevantCol_0000207`, `irrelevantCol_0000208`, `irrelevantCol_0000209`, `irrelevantCol_0000210`, `irrelevantCol_0000211`, `irrelevantCol_0000212`, `irrelevantCol_0000213`, `irrelevantCol_0000214`, `irrelevantCol_0000215`, `irrelevantCol_0000216`, `irrelevantCol_0000217`, `irrelevantCol_0000218`, `irrelevantCol_0000219`, `irrelevantCol_0000220`, `irrelevantCol_0000221`, `irrelevantCol_0000222`, `irrelevantCol_0000223`, `irrelevantCol_0000224`, `irrelevantCol_0000225`, `irrelevantCol_0000226`, `irrelevantCol_0000227`, `irrelevantCol_0000228`, `irrelevantCol_0000229`, `irrelevantCol_0000230`, `irrelevantCol_0000231`, `irrelevantCol_0000232`, `irrelevantCol_0000233`, `irrelevantCol_0000234`, `irrelevantCol_0000235`, `irrelevantCol_0000236`, `irrelevantCol_0000237`, `irrelevantCol_0000238`, `irrelevantCol_0000239`, `irrelevantCol_0000240`, `irrelevantCol_0000241`, `irrelevantCol_0000242`, `irrelevantCol_0000243`, `irrelevantCol_0000244`, `irrelevantCol_0000245`, `irrelevantCol_0000246`, `irrelevantCol_0000247`, `irrelevantCol_0000248`, `irrelevantCol_0000249`, `irrelevantCol_0000250`, `irrelevantCol_0000251`, `irrelevantCol_0000252`, `irrelevantCol_0000253`, `irrelevantCol_0000254`, `irrelevantCol_0000255`, `irrelevantCol_0000256`, `irrelevantCol_0000257`, `irrelevantCol_0000258`, `irrelevantCol_0000259`, `irrelevantCol_0000260`, `irrelevantCol_0000261`, `irrelevantCol_0000262`, `irrelevantCol_0000263`, `irrelevantCol_0000264`, `irrelevantCol_0000265`, `irrelevantCol_0000266`, `irrelevantCol_0000267`, `irrelevantCol_0000268`, `irrelevantCol_0000269`, `irrelevantCol_0000270`, `irrelevantCol_0000271`, `irrelevantCol_0000272`, `irrelevantCol_0000273`, `irrelevantCol_0000274`, `irrelevantCol_0000275`, `irrelevantCol_0000276`, `irrelevantCol_0000277`, `irrelevantCol_0000278`, `irrelevantCol_0000279`, `irrelevantCol_0000280`, `irrelevantCol_0000281`, `irrelevantCol_0000282`, `irrelevantCol_0000283`, `irrelevantCol_0000284`, `irrelevantCol_0000285`, `irrelevantCol_0000286`, `irrelevantCol_0000287`, `irrelevantCol_0000288`, `irrelevantCol_0000289`, `irrelevantCol_0000290`, `irrelevantCol_0000291`, `irrelevantCol_0000292`, `irrelevantCol_0000293`, `irrelevantCol_0000294`, `irrelevantCol_0000295`, `irrelevantCol_0000296`, `irrelevantCol_0000297`, `irrelevantCol_0000298`, `irrelevantCol_0000299`, `irrelevantCol_0000300`, `irrelevantCol_0000301`, `irrelevantCol_0000302`, `irrelevantCol_0000303`, `irrelevantCol_0000304`, `irrelevantCol_0000305`, `irrelevantCol_0000306`, `irrelevantCol_0000307`, `irrelevantCol_0000308`, `irrelevantCol_0000309`, `irrelevantCol_0000310`, `irrelevantCol_0000311`, `irrelevantCol_0000312`, `irrelevantCol_0000313`, `irrelevantCol_0000314`, `irrelevantCol_0000315`, `irrelevantCol_0000316`, `irrelevantCol_0000317`, `irrelevantCol_0000318`, `irrelevantCol_0000319`, `irrelevantCol_0000320`, `irrelevantCol_0000321`, `irrelevantCol_0000322`, `irrelevantCol_0000323`, `irrelevantCol_0000324`, `irrelevantCol_0000325`, `irrelevantCol_0000326`, `irrelevantCol_0000327`, `irrelevantCol_0000328`, `irrelevantCol_0000329`, `irrelevantCol_0000330`, `irrelevantCol_0000331`, `irrelevantCol_0000332`, `irrelevantCol_0000333`, `irrelevantCol_0000334`, `irrelevantCol_0000335`, `irrelevantCol_0000336`, `irrelevantCol_0000337`, `irrelevantCol_0000338`, `irrelevantCol_0000339`, `irrelevantCol_0000340`, `irrelevantCol_0000341`, `irrelevantCol_0000342`, `irrelevantCol_0000343`, `irrelevantCol_0000344`, `irrelevantCol_0000345`, `irrelevantCol_0000346`, `irrelevantCol_0000347`, `irrelevantCol_0000348`, `irrelevantCol_0000349`, `irrelevantCol_0000350`, `irrelevantCol_0000351`, `irrelevantCol_0000352`, `irrelevantCol_0000353`, `irrelevantCol_0000354`, `irrelevantCol_0000355`, `irrelevantCol_0000356`, `irrelevantCol_0000357`, `irrelevantCol_0000358`, `irrelevantCol_0000359`, `irrelevantCol_0000360`, `irrelevantCol_0000361`, `irrelevantCol_0000362`, `irrelevantCol_0000363`, `irrelevantCol_0000364`, `irrelevantCol_0000365`, `irrelevantCol_0000366`, `irrelevantCol_0000367`, `irrelevantCol_0000368`, `irrelevantCol_0000369`, `irrelevantCol_0000370`, `irrelevantCol_0000371`, `irrelevantCol_0000372`, `irrelevantCol_0000373`, `irrelevantCol_0000374`, `irrelevantCol_0000375`, `irrelevantCol_0000376`, `irrelevantCol_0000377`, `irrelevantCol_0000378`, `irrelevantCol_0000379`, `irrelevantCol_0000380`, `irrelevantCol_0000381`, `irrelevantCol_0000382`, `irrelevantCol_0000383`, `irrelevantCol_0000384`, `irrelevantCol_0000385`, `irrelevantCol_0000386`, `irrelevantCol_0000387`, `irrelevantCol_0000388`, `irrelevantCol_0000389`, `irrelevantCol_0000390`, `irrelevantCol_0000391`, `irrelevantCol_0000392`, `irrelevantCol_0000393`, `irrelevantCol_0000394`, `irrelevantCol_0000395`, `irrelevantCol_0000396`, `irrelevantCol_0000397`, `irrelevantCol_0000398`, `irrelevantCol_0000399`, `irrelevantCol_0000400`, `irrelevantCol_0000401`, `irrelevantCol_0000402`, `irrelevantCol_0000403`, `irrelevantCol_0000404`, `irrelevantCol_0000405`, `irrelevantCol_0000406`, `irrelevantCol_0000407`, `irrelevantCol_0000408`, `irrelevantCol_0000409`, `irrelevantCol_0000410`, `irrelevantCol_0000411`, `irrelevantCol_0000412`, `irrelevantCol_0000413`, `irrelevantCol_0000414`, `irrelevantCol_0000415`, `irrelevantCol_0000416`, `irrelevantCol_0000417`, `irrelevantCol_0000418`, `irrelevantCol_0000419`, `irrelevantCol_0000420`, `irrelevantCol_0000421`, `irrelevantCol_0000422`, `irrelevantCol_0000423`, `irrelevantCol_0000424`, `irrelevantCol_0000425`, `irrelevantCol_0000426`, `irrelevantCol_0000427`, `irrelevantCol_0000428`, `irrelevantCol_0000429`, `irrelevantCol_0000430`, `irrelevantCol_0000431`, `irrelevantCol_0000432`, `irrelevantCol_0000433`, `irrelevantCol_0000434`, `irrelevantCol_0000435`, `irrelevantCol_0000436`, `irrelevantCol_0000437`, `irrelevantCol_0000438`, `irrelevantCol_0000439`, `irrelevantCol_0000440`, `irrelevantCol_0000441`, `irrelevantCol_0000442`, `irrelevantCol_0000443`, `irrelevantCol_0000444`, `irrelevantCol_0000445`, `irrelevantCol_0000446`, `irrelevantCol_0000447`, `irrelevantCol_0000448`, `irrelevantCol_0000449`, `irrelevantCol_0000450`, `irrelevantCol_0000451`, `irrelevantCol_0000452`, `irrelevantCol_0000453`, `irrelevantCol_0000454`, `irrelevantCol_0000455`, `irrelevantCol_0000456`, `irrelevantCol_0000457`, `irrelevantCol_0000458`, `irrelevantCol_0000459`, `irrelevantCol_0000460`, `irrelevantCol_0000461`, `irrelevantCol_0000462`, `irrelevantCol_0000463`, `irrelevantCol_0000464`, `irrelevantCol_0000465`, `irrelevantCol_0000466`, `irrelevantCol_0000467`, `irrelevantCol_0000468`, `irrelevantCol_0000469`, `irrelevantCol_0000470`, `irrelevantCol_0000471`, `irrelevantCol_0000472`, `irrelevantCol_0000473`, `irrelevantCol_0000474`, `irrelevantCol_0000475`, `irrelevantCol_0000476`, `irrelevantCol_0000477`, `irrelevantCol_0000478`, `irrelevantCol_0000479`, `irrelevantCol_0000480`, `irrelevantCol_0000481`, `irrelevantCol_0000482`, `irrelevantCol_0000483`, `irrelevantCol_0000484`, `irrelevantCol_0000485`, `irrelevantCol_0000486`, `irrelevantCol_0000487`, `irrelevantCol_0000488`, `irrelevantCol_0000489`, `irrelevantCol_0000490`, `irrelevantCol_0000491`, `irrelevantCol_0000492`, `irrelevantCol_0000493`, `irrelevantCol_0000494`, `irrelevantCol_0000495`, `irrelevantCol_0000496`, `irrelevantCol_0000497`, `irrelevantCol_0000498`, `irrelevantCol_0000499`, `irrelevantCol_0000500`, `irrelevantCol_0000501`, `irrelevantCol_0000502`, `irrelevantCol_0000503`, `irrelevantCol_0000504`, `irrelevantCol_0000505`, `irrelevantCol_0000506`, `irrelevantCol_0000507`, `irrelevantCol_0000508`, `irrelevantCol_0000509`, `irrelevantCol_0000510`, `irrelevantCol_0000511`, `irrelevantCol_0000512`, `irrelevantCol_0000513`, `irrelevantCol_0000514`, `irrelevantCol_0000515`, `irrelevantCol_0000516`, `irrelevantCol_0000517`, `irrelevantCol_0000518`, `irrelevantCol_0000519`, `irrelevantCol_0000520`, `irrelevantCol_0000521`, `irrelevantCol_0000522`, `irrelevantCol_0000523`, `irrelevantCol_0000524`, `irrelevantCol_0000525`, `irrelevantCol_0000526`, `irrelevantCol_0000527`, `irrelevantCol_0000528`, `irrelevantCol_0000529`, `irrelevantCol_0000530`, `irrelevantCol_0000531`, `irrelevantCol_0000532`, `irrelevantCol_0000533`, `irrelevantCol_0000534`, `irrelevantCol_0000535`, `irrelevantCol_0000536`, `irrelevantCol_0000537`, `irrelevantCol_0000538`, `irrelevantCol_0000539`, `irrelevantCol_0000540`, `irrelevantCol_0000541`, `irrelevantCol_0000542`, `irrelevantCol_0000543`, `irrelevantCol_0000544`, `irrelevantCol_0000545`, `irrelevantCol_0000546`, `irrelevantCol_0000547`, `irrelevantCol_0000548`, `irrelevantCol_0000549`, `irrelevantCol_0000550`, `irrelevantCol_0000551`, `irrelevantCol_0000552`, `irrelevantCol_0000553`, `irrelevantCol_0000554`, `irrelevantCol_0000555`, `irrelevantCol_0000556`, `irrelevantCol_0000557`, `irrelevantCol_0000558`, `irrelevantCol_0000559`, `irrelevantCol_0000560`, `irrelevantCol_0000561`, `irrelevantCol_0000562`, `irrelevantCol_0000563`, `irrelevantCol_0000564`, `irrelevantCol_0000565`, `irrelevantCol_0000566`, `irrelevantCol_0000567`, `irrelevantCol_0000568`, `irrelevantCol_0000569`, `irrelevantCol_0000570`, `irrelevantCol_0000571`, `irrelevantCol_0000572`, `irrelevantCol_0000573`, `irrelevantCol_0000574`, `irrelevantCol_0000575`, `irrelevantCol_0000576`, `irrelevantCol_0000577`, `irrelevantCol_0000578`, `irrelevantCol_0000579`, `irrelevantCol_0000580`, `irrelevantCol_0000581`, `irrelevantCol_0000582`, `irrelevantCol_0000583`, `irrelevantCol_0000584`, `irrelevantCol_0000585`, `irrelevantCol_0000586`, `irrelevantCol_0000587`, `irrelevantCol_0000588`, `irrelevantCol_0000589`, `irrelevantCol_0000590`, `irrelevantCol_0000591`, `irrelevantCol_0000592`, `irrelevantCol_0000593`, `irrelevantCol_0000594`, `irrelevantCol_0000595`, `irrelevantCol_0000596`, `irrelevantCol_0000597`, `irrelevantCol_0000598`, `irrelevantCol_0000599`, `irrelevantCol_0000600`, `irrelevantCol_0000601`, `irrelevantCol_0000602`, `irrelevantCol_0000603`, `irrelevantCol_0000604`, `irrelevantCol_0000605`, `irrelevantCol_0000606`, `irrelevantCol_0000607`, `irrelevantCol_0000608`, `irrelevantCol_0000609`, `irrelevantCol_0000610`, `irrelevantCol_0000611`, `irrelevantCol_0000612`, `irrelevantCol_0000613`, `irrelevantCol_0000614`, `irrelevantCol_0000615`, `irrelevantCol_0000616`, `irrelevantCol_0000617`, `irrelevantCol_0000618`, `irrelevantCol_0000619`, `irrelevantCol_0000620`, `irrelevantCol_0000621`, `irrelevantCol_0000622`, `irrelevantCol_0000623`, `irrelevantCol_0000624`, `irrelevantCol_0000625`, `irrelevantCol_0000626`, `irrelevantCol_0000627`, `irrelevantCol_0000628`, `irrelevantCol_0000629`, `irrelevantCol_0000630`, `irrelevantCol_0000631`, `irrelevantCol_0000632`, `irrelevantCol_0000633`, `irrelevantCol_0000634`, `irrelevantCol_0000635`, `irrelevantCol_0000636`, `irrelevantCol_0000637`, `irrelevantCol_0000638`, `irrelevantCol_0000639`, `irrelevantCol_0000640`, `irrelevantCol_0000641`, `irrelevantCol_0000642`, `irrelevantCol_0000643`, `irrelevantCol_0000644`, `irrelevantCol_0000645`, `irrelevantCol_0000646`, `irrelevantCol_0000647`, `irrelevantCol_0000648`, `irrelevantCol_0000649`, `irrelevantCol_0000650`, `irrelevantCol_0000651`, `irrelevantCol_0000652`, `irrelevantCol_0000653`, `irrelevantCol_0000654`, `irrelevantCol_0000655`, `irrelevantCol_0000656`, `irrelevantCol_0000657`, `irrelevantCol_0000658`, `irrelevantCol_0000659`, `irrelevantCol_0000660`, `irrelevantCol_0000661`, `irrelevantCol_0000662`, `irrelevantCol_0000663`, `irrelevantCol_0000664`, `irrelevantCol_0000665`, `irrelevantCol_0000666`, `irrelevantCol_0000667`, `irrelevantCol_0000668`, `irrelevantCol_0000669`, `irrelevantCol_0000670`, `irrelevantCol_0000671`, `irrelevantCol_0000672`, `irrelevantCol_0000673`, `irrelevantCol_0000674`, `irrelevantCol_0000675`, `irrelevantCol_0000676`, `irrelevantCol_0000677`, `irrelevantCol_0000678`, `irrelevantCol_0000679`, `irrelevantCol_0000680`, `irrelevantCol_0000681`, `irrelevantCol_0000682`, `irrelevantCol_0000683`, `irrelevantCol_0000684`, `irrelevantCol_0000685`, `irrelevantCol_0000686`, `irrelevantCol_0000687`, `irrelevantCol_0000688`, `irrelevantCol_0000689`, `irrelevantCol_0000690`, `irrelevantCol_0000691`, `irrelevantCol_0000692`, `irrelevantCol_0000693`, `irrelevantCol_0000694`, `irrelevantCol_0000695`, `irrelevantCol_0000696`, `irrelevantCol_0000697`, `irrelevantCol_0000698`, `irrelevantCol_0000699`, `irrelevantCol_0000700`, `irrelevantCol_0000701`, `irrelevantCol_0000702`, `irrelevantCol_0000703`, `irrelevantCol_0000704`, `irrelevantCol_0000705`, `irrelevantCol_0000706`, `irrelevantCol_0000707`, `irrelevantCol_0000708`, `irrelevantCol_0000709`, `irrelevantCol_0000710`, `irrelevantCol_0000711`, `irrelevantCol_0000712`, `irrelevantCol_0000713`, `irrelevantCol_0000714`, `irrelevantCol_0000715`, `irrelevantCol_0000716`, `irrelevantCol_0000717`, `irrelevantCol_0000718`, `irrelevantCol_0000719`, `irrelevantCol_0000720`, `irrelevantCol_0000721`, `irrelevantCol_0000722`, `irrelevantCol_0000723`, `irrelevantCol_0000724`, `irrelevantCol_0000725`, `irrelevantCol_0000726`, `irrelevantCol_0000727`, `irrelevantCol_0000728`, `irrelevantCol_0000729`, `irrelevantCol_0000730`, `irrelevantCol_0000731`, `irrelevantCol_0000732`, `irrelevantCol_0000733`, `irrelevantCol_0000734`, `irrelevantCol_0000735`, `irrelevantCol_0000736`, `irrelevantCol_0000737`, `irrelevantCol_0000738`, `irrelevantCol_0000739`, `irrelevantCol_0000740`, `irrelevantCol_0000741`, `irrelevantCol_0000742`, `irrelevantCol_0000743`, `irrelevantCol_0000744`, `irrelevantCol_0000745`, `irrelevantCol_0000746`, `irrelevantCol_0000747`, `irrelevantCol_0000748`, `irrelevantCol_0000749`, `irrelevantCol_0000750`, `irrelevantCol_0000751`, `irrelevantCol_0000752`, `irrelevantCol_0000753`, `irrelevantCol_0000754`, `irrelevantCol_0000755`, `irrelevantCol_0000756`, `irrelevantCol_0000757`, `irrelevantCol_0000758`, `irrelevantCol_0000759`, `irrelevantCol_0000760`, `irrelevantCol_0000761`, `irrelevantCol_0000762`, `irrelevantCol_0000763`, `irrelevantCol_0000764`, `irrelevantCol_0000765`, `irrelevantCol_0000766`, `irrelevantCol_0000767`, `irrelevantCol_0000768`, `irrelevantCol_0000769`, `irrelevantCol_0000770`, `irrelevantCol_0000771`, `irrelevantCol_0000772`, `irrelevantCol_0000773`, `irrelevantCol_0000774`, `irrelevantCol_0000775`, `irrelevantCol_0000776`, `irrelevantCol_0000777`, `irrelevantCol_0000778`, `irrelevantCol_0000779`, `irrelevantCol_0000780`, `irrelevantCol_0000781`, `irrelevantCol_0000782`, `irrelevantCol_0000783`, `irrelevantCol_0000784`, `irrelevantCol_0000785`, `irrelevantCol_0000786`, `irrelevantCol_0000787`, `irrelevantCol_0000788`, `irrelevantCol_0000789`, `irrelevantCol_0000790`, `irrelevantCol_0000791`, `irrelevantCol_0000792`, `irrelevantCol_0000793`, `irrelevantCol_0000794`, `irrelevantCol_0000795`, `irrelevantCol_0000796`, `irrelevantCol_0000797`, `irrelevantCol_0000798`, `irrelevantCol_0000799`, `irrelevantCol_0000800`, `irrelevantCol_0000801`, `irrelevantCol_0000802`, `irrelevantCol_0000803`, `irrelevantCol_0000804`, `irrelevantCol_0000805`, `irrelevantCol_0000806`, `irrelevantCol_0000807`, `irrelevantCol_0000808`, `irrelevantCol_0000809`, `irrelevantCol_0000810`, `irrelevantCol_0000811`, `irrelevantCol_0000812`, `irrelevantCol_0000813`, `irrelevantCol_0000814`, `irrelevantCol_0000815`, `irrelevantCol_0000816`, `irrelevantCol_0000817`, `irrelevantCol_0000818`, `irrelevantCol_0000819`, `irrelevantCol_0000820`, `irrelevantCol_0000821`, `irrelevantCol_0000822`, `irrelevantCol_0000823`, `irrelevantCol_0000824`, `irrelevantCol_0000825`, `irrelevantCol_0000826`, `irrelevantCol_0000827`, `irrelevantCol_0000828`, `irrelevantCol_0000829`, `irrelevantCol_0000830`, `irrelevantCol_0000831`, `irrelevantCol_0000832`, `irrelevantCol_0000833`, `irrelevantCol_0000834`, `irrelevantCol_0000835`, `irrelevantCol_0000836`, `irrelevantCol_0000837`, `irrelevantCol_0000838`, `irrelevantCol_0000839`, `irrelevantCol_0000840`, `irrelevantCol_0000841`, `irrelevantCol_0000842`, `irrelevantCol_0000843`, `irrelevantCol_0000844`, `irrelevantCol_0000845`, `irrelevantCol_0000846`, `irrelevantCol_0000847`, `irrelevantCol_0000848`, `irrelevantCol_0000849`, `irrelevantCol_0000850`, `irrelevantCol_0000851`, `irrelevantCol_0000852`, `irrelevantCol_0000853`, `irrelevantCol_0000854`, `irrelevantCol_0000855`, `irrelevantCol_0000856`, `irrelevantCol_0000857`, `irrelevantCol_0000858`, `irrelevantCol_0000859`, `irrelevantCol_0000860`, `irrelevantCol_0000861`, `irrelevantCol_0000862`, `irrelevantCol_0000863`, `irrelevantCol_0000864`, `irrelevantCol_0000865`, `irrelevantCol_0000866`, `irrelevantCol_0000867`, `irrelevantCol_0000868`, `irrelevantCol_0000869`, `irrelevantCol_0000870`, `irrelevantCol_0000871`, `irrelevantCol_0000872`, `irrelevantCol_0000873`, `irrelevantCol_0000874`, `irrelevantCol_0000875`, `irrelevantCol_0000876`, `irrelevantCol_0000877`, `irrelevantCol_0000878`, `irrelevantCol_0000879`, `irrelevantCol_0000880`, `irrelevantCol_0000881`, `irrelevantCol_0000882`, `irrelevantCol_0000883`, `irrelevantCol_0000884`, `irrelevantCol_0000885`, `irrelevantCol_0000886`, `irrelevantCol_0000887`, `irrelevantCol_0000888`, `irrelevantCol_0000889`, `irrelevantCol_0000890`, `irrelevantCol_0000891`, `irrelevantCol_0000892`, `irrelevantCol_0000893`, `irrelevantCol_0000894`, `irrelevantCol_0000895`, `irrelevantCol_0000896`, `irrelevantCol_0000897`, `irrelevantCol_0000898`, `irrelevantCol_0000899`, `irrelevantCol_0000900`, `irrelevantCol_0000901`, `irrelevantCol_0000902`, `irrelevantCol_0000903`, `irrelevantCol_0000904`, `irrelevantCol_0000905`, `irrelevantCol_0000906`, `irrelevantCol_0000907`, `irrelevantCol_0000908`, `irrelevantCol_0000909`, `irrelevantCol_0000910`, `irrelevantCol_0000911`, `irrelevantCol_0000912`, `irrelevantCol_0000913`, `irrelevantCol_0000914`, `irrelevantCol_0000915`, `irrelevantCol_0000916`, `irrelevantCol_0000917`, `irrelevantCol_0000918`, `irrelevantCol_0000919`, `irrelevantCol_0000920`, `irrelevantCol_0000921`, `irrelevantCol_0000922`, `irrelevantCol_0000923`, `irrelevantCol_0000924`, `irrelevantCol_0000925`, `irrelevantCol_0000926`, `irrelevantCol_0000927`, `irrelevantCol_0000928`, `irrelevantCol_0000929`, `irrelevantCol_0000930`, `irrelevantCol_0000931`, `irrelevantCol_0000932`, `irrelevantCol_0000933`, `irrelevantCol_0000934`, `irrelevantCol_0000935`, `irrelevantCol_0000936`, `irrelevantCol_0000937`, `irrelevantCol_0000938`, `irrelevantCol_0000939`, `irrelevantCol_0000940`, `irrelevantCol_0000941`, `irrelevantCol_0000942`, `irrelevantCol_0000943`, `irrelevantCol_0000944`, `irrelevantCol_0000945`, `irrelevantCol_0000946`, `irrelevantCol_0000947`, `irrelevantCol_0000948`, `irrelevantCol_0000949`, `irrelevantCol_0000950`, `irrelevantCol_0000951`, `irrelevantCol_0000952`, `irrelevantCol_0000953`, `irrelevantCol_0000954`, `irrelevantCol_0000955`, `irrelevantCol_0000956`, `irrelevantCol_0000957`, `irrelevantCol_0000958`, `irrelevantCol_0000959`, `irrelevantCol_0000960`, `irrelevantCol_0000961`, `irrelevantCol_0000962`, `irrelevantCol_0000963`, `irrelevantCol_0000964`, `irrelevantCol_0000965`, `irrelevantCol_0000966`, `irrelevantCol_0000967`, `irrelevantCol_0000968`, `irrelevantCol_0000969`, `irrelevantCol_0000970`, `irrelevantCol_0000971`, `irrelevantCol_0000972`, `irrelevantCol_0000973`, `irrelevantCol_0000974`, `irrelevantCol_0000975`, `irrelevantCol_0000976`, `irrelevantCol_0000977`, `irrelevantCol_0000978`, `irrelevantCol_0000979`, `irrelevantCol_0000980`, `irrelevantCol_0000981`, `irrelevantCol_0000982`, `irrelevantCol_0000983`, `irrelevantCol_0000984`, `irrelevantCol_0000985`, `irrelevantCol_0000986`, `irrelevantCol_0000987`, `irrelevantCol_0000988`, `irrelevantCol_0000989`, `irrelevantCol_0000990`, `irrelevantCol_0000991`, `irrelevantCol_0000992`, `irrelevantCol_0000993`, `irrelevantCol_0000994`, `irrelevantCol_0000995`, `irrelevantCol_0000996`, `irrelevantCol_0000997`, `irrelevantCol_0000998`, `irrelevantCol_0000999`, `irrelevantCol_0001000`, EXP(`assessmentTotal` * 0.237) / sum(EXP(`assessmentTotal` * 0.237)) OVER (PARTITION BY `subjectID`) AS `probability`
-    ## FROM `rquery_mat_67177513182977640971_0000000000`) `pfjgzjbuca`
-    ## ORDER BY `probability`, `surveyCategory`) `ucdthiznex`) `pjfjwolpbf`
-    ## WHERE (`zzz8` = `zzz9`)) `hoilhdrvhv`) `mqzorkycln`
+    ## FROM `rquery_mat_33053560498827292178_0000000000`) `xterjckpqq`
+    ## ORDER BY `probability`, `surveyCategory`) `yxfpxozlme`) `oultsalday`
+    ## WHERE (`zzz8` = `zzz9`)) `rijopujokv`) `slubhsfxan`
     ## ORDER BY `ZubjectIDZZZ`
 
 ``` r
@@ -479,46 +522,46 @@ system.time(nrow(as.data.frame(dplyr_pipeline_late_error)))
 
     ## Error: org.apache.spark.sql.AnalysisException: cannot resolve '`ZubjectIDZZZ`' given input columns: [subjectID, diagnosis, probability]; line 10 pos 9;
     ## 'Sort ['ZubjectIDZZZ ASC NULLS FIRST], true
-    ## +- Project [subjectID#20662, diagnosis#20661, probability#20658]
-    ##    +- SubqueryAlias rycqfdorfw
-    ##       +- Project [subjectID#20662, surveyCategory#20663 AS diagnosis#20661, assessmentTotal#20664, irrelevantCol_0000001#20665, irrelevantCol_0000002#20666, irrelevantCol_0000003#20667, irrelevantCol_0000004#20668, irrelevantCol_0000005#20669, irrelevantCol_0000006#20670, irrelevantCol_0000007#20671, irrelevantCol_0000008#20672, irrelevantCol_0000009#20673, irrelevantCol_0000010#20674, irrelevantCol_0000011#20675, irrelevantCol_0000012#20676, irrelevantCol_0000013#20677, irrelevantCol_0000014#20678, irrelevantCol_0000015#20679, irrelevantCol_0000016#20680, irrelevantCol_0000017#20681, irrelevantCol_0000018#20682, irrelevantCol_0000019#20683, irrelevantCol_0000020#20684, irrelevantCol_0000021#20685, ... 980 more fields]
-    ##          +- SubqueryAlias crtozromgu
-    ##             +- Project [subjectID#20662, surveyCategory#20663, assessmentTotal#20664, irrelevantCol_0000001#20665, irrelevantCol_0000002#20666, irrelevantCol_0000003#20667, irrelevantCol_0000004#20668, irrelevantCol_0000005#20669, irrelevantCol_0000006#20670, irrelevantCol_0000007#20671, irrelevantCol_0000008#20672, irrelevantCol_0000009#20673, irrelevantCol_0000010#20674, irrelevantCol_0000011#20675, irrelevantCol_0000012#20676, irrelevantCol_0000013#20677, irrelevantCol_0000014#20678, irrelevantCol_0000015#20679, irrelevantCol_0000016#20680, irrelevantCol_0000017#20681, irrelevantCol_0000018#20682, irrelevantCol_0000019#20683, irrelevantCol_0000020#20684, irrelevantCol_0000021#20685, ... 980 more fields]
-    ##                +- Filter (cast(zzz10#20659 as bigint) = zzz11#20660L)
-    ##                   +- SubqueryAlias elgsmccblu
-    ##                      +- Project [subjectID#20662, surveyCategory#20663, assessmentTotal#20664, irrelevantCol_0000001#20665, irrelevantCol_0000002#20666, irrelevantCol_0000003#20667, irrelevantCol_0000004#20668, irrelevantCol_0000005#20669, irrelevantCol_0000006#20670, irrelevantCol_0000007#20671, irrelevantCol_0000008#20672, irrelevantCol_0000009#20673, irrelevantCol_0000010#20674, irrelevantCol_0000011#20675, irrelevantCol_0000012#20676, irrelevantCol_0000013#20677, irrelevantCol_0000014#20678, irrelevantCol_0000015#20679, irrelevantCol_0000016#20680, irrelevantCol_0000017#20681, irrelevantCol_0000018#20682, irrelevantCol_0000019#20683, irrelevantCol_0000020#20684, irrelevantCol_0000021#20685, ... 982 more fields]
-    ##                         +- Project [subjectID#20662, surveyCategory#20663, assessmentTotal#20664, irrelevantCol_0000001#20665, irrelevantCol_0000002#20666, irrelevantCol_0000003#20667, irrelevantCol_0000004#20668, irrelevantCol_0000005#20669, irrelevantCol_0000006#20670, irrelevantCol_0000007#20671, irrelevantCol_0000008#20672, irrelevantCol_0000009#20673, irrelevantCol_0000010#20674, irrelevantCol_0000011#20675, irrelevantCol_0000012#20676, irrelevantCol_0000013#20677, irrelevantCol_0000014#20678, irrelevantCol_0000015#20679, irrelevantCol_0000016#20680, irrelevantCol_0000017#20681, irrelevantCol_0000018#20682, irrelevantCol_0000019#20683, irrelevantCol_0000020#20684, irrelevantCol_0000021#20685, ... 984 more fields]
-    ##                            +- Window [row_number() windowspecdefinition(subjectID#20662, probability#20658 ASC NULLS FIRST, surveyCategory#20663 ASC NULLS FIRST, ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS zzz10#20659], [subjectID#20662], [probability#20658 ASC NULLS FIRST, surveyCategory#20663 ASC NULLS FIRST]
-    ##                               +- Window [count(1) windowspecdefinition(subjectID#20662, ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS zzz11#20660L], [subjectID#20662]
-    ##                                  +- Project [subjectID#20662, surveyCategory#20663, assessmentTotal#20664, irrelevantCol_0000001#20665, irrelevantCol_0000002#20666, irrelevantCol_0000003#20667, irrelevantCol_0000004#20668, irrelevantCol_0000005#20669, irrelevantCol_0000006#20670, irrelevantCol_0000007#20671, irrelevantCol_0000008#20672, irrelevantCol_0000009#20673, irrelevantCol_0000010#20674, irrelevantCol_0000011#20675, irrelevantCol_0000012#20676, irrelevantCol_0000013#20677, irrelevantCol_0000014#20678, irrelevantCol_0000015#20679, irrelevantCol_0000016#20680, irrelevantCol_0000017#20681, irrelevantCol_0000018#20682, irrelevantCol_0000019#20683, irrelevantCol_0000020#20684, irrelevantCol_0000021#20685, ... 980 more fields]
-    ##                                     +- SubqueryAlias yrnzxbgotd
-    ##                                        +- Sort [probability#20658 ASC NULLS FIRST, surveyCategory#20663 ASC NULLS FIRST], true
-    ##                                           +- Project [subjectID#20662, surveyCategory#20663, assessmentTotal#20664, irrelevantCol_0000001#20665, irrelevantCol_0000002#20666, irrelevantCol_0000003#20667, irrelevantCol_0000004#20668, irrelevantCol_0000005#20669, irrelevantCol_0000006#20670, irrelevantCol_0000007#20671, irrelevantCol_0000008#20672, irrelevantCol_0000009#20673, irrelevantCol_0000010#20674, irrelevantCol_0000011#20675, irrelevantCol_0000012#20676, irrelevantCol_0000013#20677, irrelevantCol_0000014#20678, irrelevantCol_0000015#20679, irrelevantCol_0000016#20680, irrelevantCol_0000017#20681, irrelevantCol_0000018#20682, irrelevantCol_0000019#20683, irrelevantCol_0000020#20684, irrelevantCol_0000021#20685, ... 980 more fields]
-    ##                                              +- SubqueryAlias kbuqgibzfe
-    ##                                                 +- Project [subjectID#20662, surveyCategory#20663, assessmentTotal#20664, irrelevantCol_0000001#20665, irrelevantCol_0000002#20666, irrelevantCol_0000003#20667, irrelevantCol_0000004#20668, irrelevantCol_0000005#20669, irrelevantCol_0000006#20670, irrelevantCol_0000007#20671, irrelevantCol_0000008#20672, irrelevantCol_0000009#20673, irrelevantCol_0000010#20674, irrelevantCol_0000011#20675, irrelevantCol_0000012#20676, irrelevantCol_0000013#20677, irrelevantCol_0000014#20678, irrelevantCol_0000015#20679, irrelevantCol_0000016#20680, irrelevantCol_0000017#20681, irrelevantCol_0000018#20682, irrelevantCol_0000019#20683, irrelevantCol_0000020#20684, irrelevantCol_0000021#20685, ... 980 more fields]
-    ##                                                    +- Project [subjectID#20662, surveyCategory#20663, assessmentTotal#20664, irrelevantCol_0000001#20665, irrelevantCol_0000002#20666, irrelevantCol_0000003#20667, irrelevantCol_0000004#20668, irrelevantCol_0000005#20669, irrelevantCol_0000006#20670, irrelevantCol_0000007#20671, irrelevantCol_0000008#20672, irrelevantCol_0000009#20673, irrelevantCol_0000010#20674, irrelevantCol_0000011#20675, irrelevantCol_0000012#20676, irrelevantCol_0000013#20677, irrelevantCol_0000014#20678, irrelevantCol_0000015#20679, irrelevantCol_0000016#20680, irrelevantCol_0000017#20681, irrelevantCol_0000018#20682, irrelevantCol_0000019#20683, irrelevantCol_0000020#20684, irrelevantCol_0000021#20685, ... 982 more fields]
-    ##                                                       +- Window [sum(_w0#21668) windowspecdefinition(subjectID#20662, ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS _we0#21669], [subjectID#20662]
-    ##                                                          +- Project [subjectID#20662, surveyCategory#20663, assessmentTotal#20664, irrelevantCol_0000001#20665, irrelevantCol_0000002#20666, irrelevantCol_0000003#20667, irrelevantCol_0000004#20668, irrelevantCol_0000005#20669, irrelevantCol_0000006#20670, irrelevantCol_0000007#20671, irrelevantCol_0000008#20672, irrelevantCol_0000009#20673, irrelevantCol_0000010#20674, irrelevantCol_0000011#20675, irrelevantCol_0000012#20676, irrelevantCol_0000013#20677, irrelevantCol_0000014#20678, irrelevantCol_0000015#20679, irrelevantCol_0000016#20680, irrelevantCol_0000017#20681, irrelevantCol_0000018#20682, irrelevantCol_0000019#20683, irrelevantCol_0000020#20684, irrelevantCol_0000021#20685, ... 980 more fields]
-    ##                                                             +- SubqueryAlias rquery_mat_67177513182977640971_0000000000
+    ## +- Project [subjectID#20665, diagnosis#20664, probability#20661]
+    ##    +- SubqueryAlias ansrdpelhc
+    ##       +- Project [subjectID#20665, surveyCategory#20666 AS diagnosis#20664, assessmentTotal#20667, irrelevantCol_0000001#20668, irrelevantCol_0000002#20669, irrelevantCol_0000003#20670, irrelevantCol_0000004#20671, irrelevantCol_0000005#20672, irrelevantCol_0000006#20673, irrelevantCol_0000007#20674, irrelevantCol_0000008#20675, irrelevantCol_0000009#20676, irrelevantCol_0000010#20677, irrelevantCol_0000011#20678, irrelevantCol_0000012#20679, irrelevantCol_0000013#20680, irrelevantCol_0000014#20681, irrelevantCol_0000015#20682, irrelevantCol_0000016#20683, irrelevantCol_0000017#20684, irrelevantCol_0000018#20685, irrelevantCol_0000019#20686, irrelevantCol_0000020#20687, irrelevantCol_0000021#20688, ... 980 more fields]
+    ##          +- SubqueryAlias bznaqctiqn
+    ##             +- Project [subjectID#20665, surveyCategory#20666, assessmentTotal#20667, irrelevantCol_0000001#20668, irrelevantCol_0000002#20669, irrelevantCol_0000003#20670, irrelevantCol_0000004#20671, irrelevantCol_0000005#20672, irrelevantCol_0000006#20673, irrelevantCol_0000007#20674, irrelevantCol_0000008#20675, irrelevantCol_0000009#20676, irrelevantCol_0000010#20677, irrelevantCol_0000011#20678, irrelevantCol_0000012#20679, irrelevantCol_0000013#20680, irrelevantCol_0000014#20681, irrelevantCol_0000015#20682, irrelevantCol_0000016#20683, irrelevantCol_0000017#20684, irrelevantCol_0000018#20685, irrelevantCol_0000019#20686, irrelevantCol_0000020#20687, irrelevantCol_0000021#20688, ... 980 more fields]
+    ##                +- Filter (cast(zzz10#20662 as bigint) = zzz11#20663L)
+    ##                   +- SubqueryAlias ciofljntoh
+    ##                      +- Project [subjectID#20665, surveyCategory#20666, assessmentTotal#20667, irrelevantCol_0000001#20668, irrelevantCol_0000002#20669, irrelevantCol_0000003#20670, irrelevantCol_0000004#20671, irrelevantCol_0000005#20672, irrelevantCol_0000006#20673, irrelevantCol_0000007#20674, irrelevantCol_0000008#20675, irrelevantCol_0000009#20676, irrelevantCol_0000010#20677, irrelevantCol_0000011#20678, irrelevantCol_0000012#20679, irrelevantCol_0000013#20680, irrelevantCol_0000014#20681, irrelevantCol_0000015#20682, irrelevantCol_0000016#20683, irrelevantCol_0000017#20684, irrelevantCol_0000018#20685, irrelevantCol_0000019#20686, irrelevantCol_0000020#20687, irrelevantCol_0000021#20688, ... 982 more fields]
+    ##                         +- Project [subjectID#20665, surveyCategory#20666, assessmentTotal#20667, irrelevantCol_0000001#20668, irrelevantCol_0000002#20669, irrelevantCol_0000003#20670, irrelevantCol_0000004#20671, irrelevantCol_0000005#20672, irrelevantCol_0000006#20673, irrelevantCol_0000007#20674, irrelevantCol_0000008#20675, irrelevantCol_0000009#20676, irrelevantCol_0000010#20677, irrelevantCol_0000011#20678, irrelevantCol_0000012#20679, irrelevantCol_0000013#20680, irrelevantCol_0000014#20681, irrelevantCol_0000015#20682, irrelevantCol_0000016#20683, irrelevantCol_0000017#20684, irrelevantCol_0000018#20685, irrelevantCol_0000019#20686, irrelevantCol_0000020#20687, irrelevantCol_0000021#20688, ... 984 more fields]
+    ##                            +- Window [row_number() windowspecdefinition(subjectID#20665, probability#20661 ASC NULLS FIRST, surveyCategory#20666 ASC NULLS FIRST, ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS zzz10#20662], [subjectID#20665], [probability#20661 ASC NULLS FIRST, surveyCategory#20666 ASC NULLS FIRST]
+    ##                               +- Window [count(1) windowspecdefinition(subjectID#20665, ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS zzz11#20663L], [subjectID#20665]
+    ##                                  +- Project [subjectID#20665, surveyCategory#20666, assessmentTotal#20667, irrelevantCol_0000001#20668, irrelevantCol_0000002#20669, irrelevantCol_0000003#20670, irrelevantCol_0000004#20671, irrelevantCol_0000005#20672, irrelevantCol_0000006#20673, irrelevantCol_0000007#20674, irrelevantCol_0000008#20675, irrelevantCol_0000009#20676, irrelevantCol_0000010#20677, irrelevantCol_0000011#20678, irrelevantCol_0000012#20679, irrelevantCol_0000013#20680, irrelevantCol_0000014#20681, irrelevantCol_0000015#20682, irrelevantCol_0000016#20683, irrelevantCol_0000017#20684, irrelevantCol_0000018#20685, irrelevantCol_0000019#20686, irrelevantCol_0000020#20687, irrelevantCol_0000021#20688, ... 980 more fields]
+    ##                                     +- SubqueryAlias wgcstsqfcn
+    ##                                        +- Sort [probability#20661 ASC NULLS FIRST, surveyCategory#20666 ASC NULLS FIRST], true
+    ##                                           +- Project [subjectID#20665, surveyCategory#20666, assessmentTotal#20667, irrelevantCol_0000001#20668, irrelevantCol_0000002#20669, irrelevantCol_0000003#20670, irrelevantCol_0000004#20671, irrelevantCol_0000005#20672, irrelevantCol_0000006#20673, irrelevantCol_0000007#20674, irrelevantCol_0000008#20675, irrelevantCol_0000009#20676, irrelevantCol_0000010#20677, irrelevantCol_0000011#20678, irrelevantCol_0000012#20679, irrelevantCol_0000013#20680, irrelevantCol_0000014#20681, irrelevantCol_0000015#20682, irrelevantCol_0000016#20683, irrelevantCol_0000017#20684, irrelevantCol_0000018#20685, irrelevantCol_0000019#20686, irrelevantCol_0000020#20687, irrelevantCol_0000021#20688, ... 980 more fields]
+    ##                                              +- SubqueryAlias mafbcdgafy
+    ##                                                 +- Project [subjectID#20665, surveyCategory#20666, assessmentTotal#20667, irrelevantCol_0000001#20668, irrelevantCol_0000002#20669, irrelevantCol_0000003#20670, irrelevantCol_0000004#20671, irrelevantCol_0000005#20672, irrelevantCol_0000006#20673, irrelevantCol_0000007#20674, irrelevantCol_0000008#20675, irrelevantCol_0000009#20676, irrelevantCol_0000010#20677, irrelevantCol_0000011#20678, irrelevantCol_0000012#20679, irrelevantCol_0000013#20680, irrelevantCol_0000014#20681, irrelevantCol_0000015#20682, irrelevantCol_0000016#20683, irrelevantCol_0000017#20684, irrelevantCol_0000018#20685, irrelevantCol_0000019#20686, irrelevantCol_0000020#20687, irrelevantCol_0000021#20688, ... 980 more fields]
+    ##                                                    +- Project [subjectID#20665, surveyCategory#20666, assessmentTotal#20667, irrelevantCol_0000001#20668, irrelevantCol_0000002#20669, irrelevantCol_0000003#20670, irrelevantCol_0000004#20671, irrelevantCol_0000005#20672, irrelevantCol_0000006#20673, irrelevantCol_0000007#20674, irrelevantCol_0000008#20675, irrelevantCol_0000009#20676, irrelevantCol_0000010#20677, irrelevantCol_0000011#20678, irrelevantCol_0000012#20679, irrelevantCol_0000013#20680, irrelevantCol_0000014#20681, irrelevantCol_0000015#20682, irrelevantCol_0000016#20683, irrelevantCol_0000017#20684, irrelevantCol_0000018#20685, irrelevantCol_0000019#20686, irrelevantCol_0000020#20687, irrelevantCol_0000021#20688, ... 982 more fields]
+    ##                                                       +- Window [sum(_w0#21671) windowspecdefinition(subjectID#20665, ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS _we0#21672], [subjectID#20665]
+    ##                                                          +- Project [subjectID#20665, surveyCategory#20666, assessmentTotal#20667, irrelevantCol_0000001#20668, irrelevantCol_0000002#20669, irrelevantCol_0000003#20670, irrelevantCol_0000004#20671, irrelevantCol_0000005#20672, irrelevantCol_0000006#20673, irrelevantCol_0000007#20674, irrelevantCol_0000008#20675, irrelevantCol_0000009#20676, irrelevantCol_0000010#20677, irrelevantCol_0000011#20678, irrelevantCol_0000012#20679, irrelevantCol_0000013#20680, irrelevantCol_0000014#20681, irrelevantCol_0000015#20682, irrelevantCol_0000016#20683, irrelevantCol_0000017#20684, irrelevantCol_0000018#20685, irrelevantCol_0000019#20686, irrelevantCol_0000020#20687, irrelevantCol_0000021#20688, ... 980 more fields]
+    ##                                                             +- SubqueryAlias rquery_mat_33053560498827292178_0000000000
     ## 
 
-    ## Timing stopped at: 0.072 0.001 2.242
+    ## Timing stopped at: 0.077 0.002 2.279
 
 ``` r
 base::date()
 ```
 
-    ## [1] "Sat May 12 16:45:23 2018"
+    ## [1] "Mon May 14 12:48:38 2018"
 
 ``` r
 base::date()
 ```
 
-    ## [1] "Sat May 12 16:45:23 2018"
+    ## [1] "Mon May 14 12:48:38 2018"
 
 ``` r
 sparklyr::spark_disconnect(my_db)
 base::date()
 ```
 
-    ## [1] "Sat May 12 16:45:24 2018"
+    ## [1] "Mon May 14 12:48:38 2018"

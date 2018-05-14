@@ -1,7 +1,7 @@
 ---
 title: "Debug Tools for Big Data"
 output: github_document
-date: "2018-05-11"
+date: "2018-05-14"
 ---
 
 <!-- file.md is generated from file.Rmd. Please edit that file -->
@@ -54,6 +54,8 @@ d_local <- data.frame(subjectID = sort(rep(seq_len(nSubj),2)),
                    'positive re-framing'),
                  stringsAsFactors = FALSE)
 d_local$assessmentTotal <- sample.int(10, nrow(d_local), replace = TRUE)
+irrel_col_1 <- paste("irrelevantCol", sprintf("%07g", 1), sep = "_")
+d_local[[irrel_col_1]] <- runif(nrow(d_local))
 d_small <- rquery::dbi_copy_to(my_db, 'd_small',
                  d_local,
                  overwrite = TRUE, 
@@ -70,10 +72,14 @@ base::date()
 # add in irrelevant columns
 # simulates performing a calculation against a larger data mart
 assignments <- 
-  vapply(seq_len(nIrrelCol), 
+  vapply(2:nIrrelCol, 
          function(i) {
            paste("irrelevantCol", sprintf("%07g", i), sep = "_")
-         }, character(1)) := rep("1.5", nIrrelCol)
+         }, character(1)) := 
+  vapply(2:nIrrelCol, 
+         function(i) {
+           paste(irrel_col_1, "+", i)
+         }, character(1))
 d_large <- d_small %.>%
   extend_se(., assignments) %.>%
   materialize(my_db, ., 
@@ -101,21 +107,23 @@ Define and demonstrate pipelines:
 ```{r rqueryexp}
 base::date()
 
-scale <- 0.237
-
-rquery_pipeline <- d_large %.>%
-  extend_nse(.,
-             probability :=
-               exp(assessmentTotal * scale))  %.>% 
-  normalize_cols(.,
-                 "probability",
-                 partitionby = 'subjectID') %.>%
-  pick_top_k(.,
-             partitionby = 'subjectID',
-             rev_orderby = c('probability', 'surveyCategory')) %.>%
-  rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
-  select_columns(., qc(subjectID, diagnosis, probability)) %.>%
-  orderby(., 'subjectID') 
+system.time({
+  scale <- 0.237
+  
+  rquery_pipeline <- d_large %.>%
+    extend_nse(.,
+               probability :=
+                 exp(assessmentTotal * scale))  %.>% 
+    normalize_cols(.,
+                   "probability",
+                   partitionby = 'subjectID') %.>%
+    pick_top_k(.,
+               partitionby = 'subjectID',
+               rev_orderby = c('probability', 'surveyCategory')) %.>%
+    rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
+    select_columns(., qc(subjectID, diagnosis, probability)) %.>%
+    orderby(., 'subjectID') 
+})
 
 # special debug-mode limits all sources to 1 row.
 # not correct for windowed calculations or joins- 
@@ -131,20 +139,21 @@ base::date()
 ```{r dplyrexp}
 base::date()
 
-scale <- 0.237
-
-dplyr_pipeline <- d_large_tbl %>%
-  group_by(subjectID) %>%
-  mutate(probability =
-           exp(assessmentTotal * scale)/
-           sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
-  arrange(probability, surveyCategory) %>%
-  filter(row_number() == n()) %>%
-  ungroup() %>%
-  rename(diagnosis = surveyCategory) %>%
-  select(subjectID, diagnosis, probability) %>%
-  arrange(subjectID)
-
+system.time({
+  scale <- 0.237
+  
+  dplyr_pipeline <- d_large_tbl %>%
+    group_by(subjectID) %>%
+    mutate(probability =
+             exp(assessmentTotal * scale)/
+             sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
+    arrange(probability, surveyCategory) %>%
+    filter(row_number() == n()) %>%
+    ungroup() %>%
+    rename(diagnosis = surveyCategory) %>%
+    select(subjectID, diagnosis, probability) %>%
+    arrange(subjectID)
+})
 
 # full run
 system.time(nrow(as.data.frame(dplyr_pipeline)))
@@ -158,24 +167,27 @@ works with `rquery`'s column narrowing calculations.
 ```{r rqueryexp_cache}
 base::date()
 
-scale <- 0.237
+system.time({
+  scale <- 0.237
+  
+  rquery_pipeline_cached <- d_large %.>%
+    extend_nse(.,
+               probability :=
+                 exp(assessmentTotal * scale))  %.>% 
+    normalize_cols(.,
+                   "probability",
+                   partitionby = 'subjectID') %.>%
+    pick_top_k(.,
+               partitionby = 'subjectID',
+               rev_orderby = c('probability', 'surveyCategory')) %.>%
+    materialize_node(., "tmp_res") %.>%  # <- insert caching node into pipeline prior to narrowing
+    rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
+    select_columns(., qc(subjectID, diagnosis, probability)) %.>%
+    orderby(., 'subjectID') 
+  
+  sql_list <- to_sql(rquery_pipeline_cached, my_db)
+})
 
-rquery_pipeline_cached <- d_large %.>%
-  extend_nse(.,
-             probability :=
-               exp(assessmentTotal * scale))  %.>% 
-  normalize_cols(.,
-                 "probability",
-                 partitionby = 'subjectID') %.>%
-  pick_top_k(.,
-             partitionby = 'subjectID',
-             rev_orderby = c('probability', 'surveyCategory')) %.>%
-  materialize_node(., "tmp_res") %.>%  # <- insert caching node into pipeline prior to narrowing
-  rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
-  select_columns(., qc(subjectID, diagnosis, probability)) %.>%
-  orderby(., 'subjectID') 
-
-sql_list <- to_sql(rquery_pipeline_cached, my_db)
 for(i in seq_len(length(sql_list))) {
   print(paste("step", i))
   cat(format(sql_list[[i]]))
@@ -200,21 +212,22 @@ can be expensive.
 ```{r dplyrexp_c, error = TRUE, eval=FALSE}
 base::date()
 
-scale <- 0.237
-
-dplyr_pipeline_c <- d_large_tbl %>%
-  group_by(subjectID) %>%
-  mutate(probability =
-           exp(assessmentTotal * scale)/
-           sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
-  arrange(probability, surveyCategory) %>%
-  filter(row_number() == n()) %>%
-  compute() %>%     # <- inopportune place to try to cache
-  ungroup() %>%
-  rename(diagnosis = surveyCategory) %>%
-  select(subjectID, diagnosis, probability) %>%
-  arrange(subjectID)
-
+system.time({
+  scale <- 0.237
+  
+  dplyr_pipeline_c <- d_large_tbl %>%
+    group_by(subjectID) %>%
+    mutate(probability =
+             exp(assessmentTotal * scale)/
+             sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
+    arrange(probability, surveyCategory) %>%
+    filter(row_number() == n()) %>%
+    compute() %>%     # <- inopportune place to try to cache
+    ungroup() %>%
+    rename(diagnosis = surveyCategory) %>%
+    select(subjectID, diagnosis, probability) %>%
+    arrange(subjectID)
+})
 
 # full run
 system.time(nrow(as.data.frame(dplyr_pipeline_c)))
@@ -235,21 +248,25 @@ independent of database.
 ```{r late_error_rqueryc, error=TRUE}
 base::date()
 
-# rquery catches the error during pipeline definition,
-# prior to sending it to the database or Spark data system.
-rquery_pipeline_late_error <- d_large %.>%
-  extend_nse(.,
-             probability :=
-               exp(assessmentTotal * scale))  %.>% 
-  normalize_cols(.,
-                 "probability",
-                 partitionby = 'subjectID') %.>%
-  pick_top_k(.,
-             partitionby = 'subjectID',
-             rev_orderby = c('probability', 'surveyCategory')) %.>%
-  rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
-  select_columns(., qc(subjectID, diagnosis, probability)) %.>%
-  orderby(., 'ZubjectIDZZZ') # <- error non-existent column
+system.time({
+  scale <- 0.237
+  
+  # rquery catches the error during pipeline definition,
+  # prior to sending it to the database or Spark data system.
+  rquery_pipeline_late_error <- d_large %.>%
+    extend_nse(.,
+               probability :=
+                 exp(assessmentTotal * scale))  %.>% 
+    normalize_cols(.,
+                   "probability",
+                   partitionby = 'subjectID') %.>%
+    pick_top_k(.,
+               partitionby = 'subjectID',
+               rev_orderby = c('probability', 'surveyCategory')) %.>%
+    rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
+    select_columns(., qc(subjectID, diagnosis, probability)) %.>%
+    orderby(., 'ZubjectIDZZZ') # <- error non-existent column
+})
 
 base::date()
 ```
@@ -260,18 +277,22 @@ analyzed on the remote data system.
 ```{r late_error_dplyrc, error=TRUE}
 base::date()
 
-# dplyr accepts an incorrect pipeline
-dplyr_pipeline_late_error <- d_large_tbl %>%
-  group_by(subjectID) %>%
-  mutate(probability =
-           exp(assessmentTotal * scale)/
-           sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
-  arrange(probability, surveyCategory) %>%
-  filter(row_number() == n()) %>%
-  ungroup() %>%
-  rename(diagnosis = surveyCategory) %>%
-  select(subjectID, diagnosis, probability) %>%
-  arrange(ZubjectIDZZZ)  # <- error non-existent column
+system.time({
+  scale <- 0.237
+  
+  # dplyr accepts an incorrect pipeline
+  dplyr_pipeline_late_error <- d_large_tbl %>%
+    group_by(subjectID) %>%
+    mutate(probability =
+             exp(assessmentTotal * scale)/
+             sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
+    arrange(probability, surveyCategory) %>%
+    filter(row_number() == n()) %>%
+    ungroup() %>%
+    rename(diagnosis = surveyCategory) %>%
+    select(subjectID, diagnosis, probability) %>%
+    arrange(ZubjectIDZZZ)  # <- error non-existent column
+})
 
 # dplyr will generate (incorrect) SQL from the incorrect pipeline
 cat(dbplyr::remote_query(dplyr_pipeline_late_error))
