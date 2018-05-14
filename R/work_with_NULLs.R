@@ -59,12 +59,16 @@ flatten_with_sep <- function(list_of_lists, sep_list) {
 count_null_cols <- function(source, cols, count) {
   nc <- length(cols)
   if(nc<1) {
-    stop("rquery::count_null_cols need at least one column name")
+    cols <- column_names(source)
+  } else {
+    bad_cols <- setdiff(cols, column_names(source))
+    if(length(bad_cols)>0) {
+      stop(paste("rquery::count_null_cols unknown columns:",
+                 paste(bad_cols, collapse = ", ")))
+    }
   }
-  bad_cols <- setdiff(cols, column_names(source))
-  if(length(bad_cols)>0) {
-    stop(paste("rquery::count_null_cols unknown columns:",
-               paste(bad_cols, collapse = ", ")))
+  if(count %in% column_names(source)) {
+    stop("rquery::count_null_cols count column can not be an existing column")
   }
   terms <- lapply(cols,
                   function(ci) {
@@ -126,17 +130,21 @@ count_null_cols <- function(source, cols, count) {
 #' @export
 #'
 mark_null_cols <- function(source, cols) {
-  if(length(intersect(names(cols), as.character(cols)))>0) {
-    stop("mark_null_cols: names can not intersect values")
+  if((length(cols)<=0) || (length(names(cols))<=0)) {
+    stop("rquery::mark_null_cols cost must be a named column list")
+  }
+  if(length(intersect(names(cols), column_names(source)))>0) {
+    stop("mark_null_cols: new names can not intersect column names")
   }
   nc <- length(cols)
   if(nc<1) {
-    stop("rquery::mark_null_cols need at least one column name")
-  }
-  bad_cols <- setdiff(cols, column_names(source))
-  if(length(bad_cols)>0) {
-    stop(paste("rquery::mark_null_cols unknown columns:",
-               paste(bad_cols, collapse = ", ")))
+    cols <- column_names(source)
+  } else {
+    bad_cols <- setdiff(as.character(cols), column_names(source))
+    if(length(bad_cols)>0) {
+      stop(paste("rquery::mark_null_cols unknown columns:",
+                 paste(bad_cols, collapse = ", ")))
+    }
   }
   terms <- lapply(cols,
                   function(ci) {
