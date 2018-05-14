@@ -187,12 +187,25 @@ materialize_impl <- function(db,
     dbi_remove_table(db, ti)
   }
   # work on all but last node of chain
+  notes <- data.frame(step = seq_len(n_steps),
+                      node = NA_character_,
+                      sql = NA_character_,
+                      incoming_table_name = NA_character_,
+                      outgoing_table_name = NA_character_,
+                      start_time = Sys.time(),
+                      end_time = Sys.time(),
+                      stringsAsFactors = FALSE)
+  notes$start_time[seq_len(n_steps)] <- NA
+  notes$end_time[seq_len(n_steps)] <- NA
   to_clear <- NULL
   if(n_steps>=2) {
     # do the work on all but the last node
     for(ii in seq_len(n_steps-1)) {
+      notes$start_time[[ii]] <- Sys.time()
       sqli <- sql_list[[ii]]
       if(is.character(sqli)) {
+        notes$node[[ii]] <- "sql"
+        notes$sql[[ii]] <- sqli
         dbi_execute(db, sqli)
         if(!is.null(to_clear)) {
           dbi_remove_table(db, to_clear)
@@ -200,6 +213,9 @@ materialize_impl <- function(db,
         }
       } else {
         if(!is.null(sqli$f)) {
+          notes$node[[ii]] <- sqli$display_form
+          notes$incoming_table_name[[ii]] <- sqli$incoming_table_name
+          notes$outgoing_table_name[[ii]] <- sqli$outgoing_table_name
           sqli$f(db,
                  sqli$incoming_table_name,
                  sqli$outgoing_table_name)
@@ -218,10 +234,14 @@ materialize_impl <- function(db,
           to_clear <- sqli$outgoing_table_name
         }
       }
+      notes$end_time[[ii]] <- Sys.time()
     }
   }
   # work on the last node (must be SQL)
+  notes$start_time[[n_steps]] <- Sys.time()
   sql <- sql_list[[n_steps]]
+  notes$node[[n_steps]] <- "sql"
+  notes$sql[[n_steps]] <- sql
   if(!is.null(limit)) {
     # look for limit
     # TODO: do not use string manipulation for this step
@@ -240,7 +260,10 @@ materialize_impl <- function(db,
     dbi_remove_table(db, to_clear)
     to_clear <- NULL
   }
-  dbi_table(db, table_name)
+  res <- dbi_table(db, table_name)
+  notes$end_time[[n_steps]] <- Sys.time()
+  res$notes <- notes
+  res
 }
 
 #' Materialize an optree as a table.

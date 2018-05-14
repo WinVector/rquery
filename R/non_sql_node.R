@@ -16,6 +16,7 @@
 #' @param outgoing_table_name character, name of produced table
 #' @param columns_produced character, names of additional columns produced
 #' @param display_form chacter, how to print node
+#' @param pass_using logical, if TRUE (or if f is NULL) pass using column calculations through (else assume using all columns).
 #' @param orig_columns logical if TRUE select all original columns.
 #' @param temporary logical, if TRUE mark tables temporary.
 #' @return sql node.
@@ -31,6 +32,7 @@ non_sql_node <- function(source,
                          outgoing_table_name,
                          columns_produced,
                          display_form,
+                         pass_using = FALSE,
                          orig_columns = TRUE,
                          temporary = TRUE) {
   wrapr::stop_if_dot_args(substitute(list(...)), "non_sql_node")
@@ -45,6 +47,7 @@ non_sql_node.relop <- function(source,
                                outgoing_table_name,
                                columns_produced,
                                display_form,
+                               pass_using = FALSE,
                                orig_columns = TRUE,
                                temporary = TRUE) {
   wrapr::stop_if_dot_args(substitute(list(...)), "non_sql_node.relop")
@@ -60,7 +63,7 @@ non_sql_node.relop <- function(source,
   r <- list(source = list(source),
             table_name = outgoing_table_name,
             f = f,
-            pass_using = is.null(f),
+            pass_using = pass_using || is.null(f),
             incoming_table_name = incoming_table_name,
             outgoing_table_name = outgoing_table_name,
             columns_produced = columns_produced,
@@ -80,6 +83,7 @@ non_sql_node.data.frame <- function(source,
                                     outgoing_table_name,
                                     columns_produced,
                                     display_form,
+                                    pass_using = FALSE,
                                     orig_columns = TRUE,
                                     temporary = TRUE) {
   wrapr::stop_if_dot_args(substitute(list(...)), "non_sql_node.data.frame")
@@ -88,11 +92,11 @@ non_sql_node.data.frame <- function(source,
   dnode$data <- source
   enode <- non_sql_node(source,
                         f,
-                        pass_using = is.null(f),
                         incoming_table_name = incoming_table_name,
                         outgoing_table_name = outgoing_table_name,
                         columns_produced = columns_produced,
                         display_form = display_form,
+                        pass_using = pass_using,
                         orig_columns = orig_columns,
                         temporary = temporary)
   return(enode)
