@@ -235,6 +235,13 @@ system.time({
 base::date()
 ```
 
+For larger examples the above `dplyr` pipeline often errors-out at the `compute()` step with:
+
+```r
+# Logs the following to the console and seems to never come back.
+# *** caught segfault ***
+# address 0x7fd368200000, cause 'memory not mapped'
+```
 
 Now, let's show how/where erroneous pipelines are debugged in each system.
 
