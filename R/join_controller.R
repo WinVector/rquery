@@ -14,7 +14,7 @@ example_employee_date <- function(con) {
   #       before getting to the join controller step.  We call
   #       such a table "row control" or "experimental design."
   keymap <- list()
-  DBI::dbExecute(con, "
+  rq_execute(con, "
                  CREATE TABLE employeeanddate (
                  id TEXT,
                  date INTEGER
@@ -24,7 +24,7 @@ example_employee_date <- function(con) {
   data.frame(id= c('i4', 'i4'),
              date = c(20140501, 20140601)) %.>%
     DBI::dbWriteTable(con, 'employeeanddate', value=., append=TRUE)
-  DBI::dbExecute(con, "
+  rq_execute(con, "
                  CREATE TABLE orgtable (
                  eid TEXT,
                  date INTEGER,
@@ -39,7 +39,7 @@ example_employee_date <- function(con) {
              dept = c('IT', 'SL'),
              location = c('CA', 'TX')) %.>%
     DBI::dbWriteTable(con, 'orgtable', value=., append=TRUE)
-  DBI::dbExecute(con, "
+  rq_execute(con, "
                  CREATE TABLE revenue (
                  date INTEGER,
                  dept TEXT,
@@ -52,7 +52,7 @@ example_employee_date <- function(con) {
              dept = c('SL', 'SL'),
              rev = c(1000, 2000)) %.>%
     DBI::dbWriteTable(con, 'revenue', value=., append=TRUE)
-  DBI::dbExecute(con, "
+  rq_execute(con, "
                  CREATE TABLE activity (
                  eid TEXT,
                  date INTEGER,
@@ -120,7 +120,7 @@ makeTableIndMap <- function(tableNameSeq) {
 #' @export
 #'
 key_inspector_all_cols <- function(db, tablename) {
-  sample <- DBI::dbGetQuery(db,
+  sample <- rq_get_query(db,
                             paste("SELECT * FROM",
                                   DBI::dbQuoteIdentifier(db, tablename),
                                   "LIMIT 1"))
@@ -159,7 +159,7 @@ key_inspector_all_cols <- function(db, tablename) {
 #' @export
 #'
 key_inspector_sqlite <- function(db, tablename) {
-  tabInfo <- DBI::dbGetQuery(db,
+  tabInfo <- rq_get_query(db,
                              paste0("pragma table_info(",
                                     DBI::dbQuoteIdentifier(db, tablename),
                                     ")"))
@@ -195,7 +195,7 @@ key_inspector_postgresql <- function(db, tablename) {
     AND    i.indisprimary;
     "
   )
-  tabInfo <- DBI::dbGetQuery(db, q)
+  tabInfo <- rq_get_query(db, q)
   keys <- NULL
   if((!is.null(tabInfo))&&(nrow(tabInfo)>0)) {
     keys <- tabInfo$attname

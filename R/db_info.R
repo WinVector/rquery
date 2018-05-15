@@ -12,16 +12,30 @@ rquery_db_info <- function(indentifier_quote_char,
   # does not handle quotes inside strings
   r <- list(indentifier_quote_char = indentifier_quote_char,
             string_quote_char = string_quote_char,
-            dbqi = function(id) { paste0(indentifier_quote_char,
-                                         id,
-                                         indentifier_quote_char) },
-            dbqs = function(s) { paste0(string_quote_char,
-                                        s,
-                                        string_quote_char) },
-            dbql = function(s) { format(s, scientific = 11) })
+            dbqi = function(id) {
+              paste0(indentifier_quote_char,
+                     id,
+                     indentifier_quote_char)
+            },
+            dbqs = function(s) {
+              paste0(string_quote_char,
+                     s,
+                     string_quote_char)
+            },
+            dbql = function(s) {
+              if(is.character(s) || is.factor(s)) {
+                return(paste0(string_quote_char,
+                              s,
+                              string_quote_char))
+              }
+              format(s, scientific = 11)
+            })
   class(r) <- "rquery_db_info"
   r
 }
+
+rquery_default_db_info <- rquery_db_info(indentifier_quote_char = '"',
+                                         string_quote_char = "'")
 
 #' Quote an identifier.
 #'
@@ -38,9 +52,9 @@ quote_identifier <- function (x, id, ...) {
     return(x$dbqi(id))
   }
   if(!requireNamespace("DBI", quietly = TRUE)) {
-    stop("rquery this function currently requires the DBI package")
+    return(as.character(DBI::dbQuoteIdentifier(x, id)))
   }
-  as.character(DBI::dbQuoteIdentifier(x, id))
+  rquery_default_db_info$dbqi(id)
 }
 
 #' Quote a string
@@ -59,9 +73,9 @@ quote_string <- function (x, s, ...) {
     return(x$dbqs(s))
   }
   if(!requireNamespace("DBI", quietly = TRUE)) {
-    stop("rquery this function currently requires the DBI package")
+    return(as.character(DBI::dbQuoteString(x, s)))
   }
-  as.character(DBI::dbQuoteString(x, s))
+  rquery_default_db_info$dbqs(id)
 }
 
 #' Quote a value
@@ -76,14 +90,14 @@ quote_string <- function (x, s, ...) {
 quote_literal <- function (x, s, ...) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::quote_literal")
   if(is.character(s) || is.factor(s)) {
-    quote_string(x, as.character(s))
+    return(quote_string(x, as.character(s)))
   }
   if("rquery_db_info" %in% class(x)) {
     return(x$dbql(s))
   }
   if(!requireNamespace("DBI", quietly = TRUE)) {
-    stop("rquery this function currently requires the DBI package")
+    return(as.character(DBI::dbQuoteLiteral(x, s)))
   }
-  as.character(DBI::dbQuoteLiteral(x, s))
+  rquery_default_db_info$dbql(id)
 }
 
