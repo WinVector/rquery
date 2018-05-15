@@ -18,7 +18,8 @@ Description: A 'SQL' query generator based on Edgar F. Codd's relational
     and databases. Package features include: data processing trees
     or pipelines as observable objects (able to report both columns
     produced and columns used), optimized 'SQL' generation as an explicit
-    user visible modeling step, and convenience methods for applying query
+    user visible modeling step, explicit query reasoning and checking,
+    and convenience methods for applying query
     trees to in-memory 'data.frame's.
 License: GPL-3
 Encoding: UTF-8

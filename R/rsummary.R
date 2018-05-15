@@ -29,17 +29,17 @@ summarize_columns <- function(db, tableName,
                   function(ci) {
                     paste0(lexpr,
                            " ",
-                           DBI::dbQuoteIdentifier(db, ci),
+                           quote_identifier(db, ci),
                            " ",
                            rexpr,
                            " AS ",
-                           DBI::dbQuoteIdentifier(db, ci))
+                           quote_identifier(db, ci))
                   }, character(1))
   q <- paste0("SELECT ",
               paste(terms, collapse = ", "),
               " FROM ",
-              DBI::dbQuoteIdentifier(db, tableName))
-  DBI::dbGetQuery(db, q)
+              quote_identifier(db, tableName))
+  rq_get_query(db, q)
 }
 
 
@@ -171,21 +171,21 @@ rsummary <- function(db,
       if(ngood>=2) {
         mv <- format(res$mean[[idx]])
         qdev <- paste0("SELECT SUM((",
-                       DBI::dbQuoteIdentifier(db, ci),
+                       quote_identifier(db, ci),
                        " - ",
                        mv,
                        ")*(",
-                       DBI::dbQuoteIdentifier(db, ci),
+                       quote_identifier(db, ci),
                        " - ",
                        mv,
                        ")) AS ",
-                       DBI::dbQuoteIdentifier(db, ci),
+                       quote_identifier(db, ci),
                        " FROM ",
-                       DBI::dbQuoteIdentifier(db, tableName),
+                       quote_identifier(db, tableName),
                        " WHERE ",
-                       DBI::dbQuoteIdentifier(db, ci),
+                       quote_identifier(db, ci),
                        " IS NOT NULL")
-        vdev <- as.numeric(DBI::dbGetQuery(db, qdev)[[1]][[1]])
+        vdev <- as.numeric(rq_get_query(db, qdev)[[1]][[1]])
         res$sd[[idx]] <- sqrt(vdev/(ngood-1.0))
       }
     }
@@ -194,15 +194,15 @@ rsummary <- function(db,
         idx <- which(ci==res$column)[[1]]
         if(res$nrows[[idx]]>res$nna[[idx]]) {
           qcount <- paste0("SELECT COUNT(1) FROM ( SELECT ",
-                           DBI::dbQuoteIdentifier(db, ci),
+                           quote_identifier(db, ci),
                            " FROM ",
-                           DBI::dbQuoteIdentifier(db, tableName),
+                           quote_identifier(db, tableName),
                            " WHERE ",
-                           DBI::dbQuoteIdentifier(db, ci),
+                           quote_identifier(db, ci),
                            " IS NOT NULL GROUP BY ",
-                           DBI::dbQuoteIdentifier(db, ci),
+                           quote_identifier(db, ci),
                            " ) TMPTAB ")
-          vcount <- as.numeric(DBI::dbGetQuery(db, qcount)[[1]][[1]])
+          vcount <- as.numeric(rq_get_query(db, qcount)[[1]][[1]])
           res$nunique[[idx]] <- vcount
         }
       }
@@ -256,35 +256,35 @@ rsummary <- function(db,
       idx <- which(ci==res$column)[[1]]
       if(res$nrows[[idx]]>res$nna[[idx]]) {
         qmin <- paste0("SELECT ",
-                       DBI::dbQuoteIdentifier(db, ci),
+                       quote_identifier(db, ci),
                        " FROM ",
-                       DBI::dbQuoteIdentifier(db, tableName),
+                       quote_identifier(db, tableName),
                        " WHERE ",
-                       DBI::dbQuoteIdentifier(db, ci),
+                       quote_identifier(db, ci),
                        " IS NOT NULL ORDER BY ",
-                       DBI::dbQuoteIdentifier(db, ci),
+                       quote_identifier(db, ci),
                        " LIMIT 1")
-        vmin <- DBI::dbGetQuery(db, qmin)[[1]][[1]]
+        vmin <- rq_get_query(db, qmin)[[1]][[1]]
         qmax <- paste0("SELECT ",
-                       DBI::dbQuoteIdentifier(db, ci),
+                       quote_identifier(db, ci),
                        " FROM ",
-                       DBI::dbQuoteIdentifier(db, tableName),
+                       quote_identifier(db, tableName),
                        " WHERE ",
-                       DBI::dbQuoteIdentifier(db, ci),
+                       quote_identifier(db, ci),
                        " IS NOT NULL ORDER BY ",
-                       DBI::dbQuoteIdentifier(db, ci),
+                       quote_identifier(db, ci),
                        " DESC LIMIT 1")
-        vmax <- DBI::dbGetQuery(db, qmax)[[1]][[1]]
+        vmax <- rq_get_query(db, qmax)[[1]][[1]]
         qcount <- paste0("SELECT COUNT(1) FROM ( SELECT ",
-                         DBI::dbQuoteIdentifier(db, ci),
+                         quote_identifier(db, ci),
                          " FROM ",
-                         DBI::dbQuoteIdentifier(db, tableName),
+                         quote_identifier(db, tableName),
                          " WHERE ",
-                         DBI::dbQuoteIdentifier(db, ci),
+                         quote_identifier(db, ci),
                          " IS NOT NULL GROUP BY ",
-                         DBI::dbQuoteIdentifier(db, ci),
+                         quote_identifier(db, ci),
                          " ) TMPTAB ")
-        vcount <- as.numeric(DBI::dbGetQuery(db, qcount)[[1]][[1]])
+        vcount <- as.numeric(rq_get_query(db, qcount)[[1]][[1]])
         res$lexmin[[idx]] <- vmin
         res$lexmax[[idx]] <- vmax
         res$nunique[[idx]] <- vcount

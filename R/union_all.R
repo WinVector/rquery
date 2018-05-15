@@ -159,7 +159,7 @@ to_sql.relop_unionall <- function (x,
   }
   cols <- vapply(cols,
                  function(ci) {
-                   DBI::dbQuoteIdentifier(db, ci)
+                   quote_identifier(db, ci)
                  }, character(1))
   cols <- paste(cols, collapse = ", ")
   inputs <- paste("SELECT ", cols, " FROM ( ", inputs, ")", tmps)

@@ -5,10 +5,10 @@ quantile_col <- function(db, incoming_table_name, probs, ci) {
      SELECT
         COUNT(1)
      FROM
-        ", DBI::dbQuoteIdentifier(db, incoming_table_name), "
+        ", quote_identifier(db, incoming_table_name), "
      WHERE
-        ", DBI::dbQuoteIdentifier(db, ci), " IS NOT NULL")
-  nrows <- as.numeric(DBI::dbGetQuery(db, qcount)[[1]][[1]])
+        ", quote_identifier(db, ci), " IS NOT NULL")
+  nrows <- as.numeric(rq_get_query(db, qcount)[[1]][[1]])
   # was coming back s integer64 and messing up pmax(), pmin()
   if(nrows<1) {
     return(rep(NA, length(probs)))
@@ -27,18 +27,18 @@ quantile_col <- function(db, incoming_table_name, probs, ci) {
         *
       FROM (
         SELECT
-           ", DBI::dbQuoteIdentifier(db, ci), ",
-           ROW_NUMBER() OVER (ORDER BY ", DBI::dbQuoteIdentifier(db, ci), ")  AS idx_rquery
+           ", quote_identifier(db, ci), ",
+           ROW_NUMBER() OVER (ORDER BY ", quote_identifier(db, ci), ")  AS idx_rquery
         FROM
-           ", DBI::dbQuoteIdentifier(db, incoming_table_name), "
+           ", quote_identifier(db, incoming_table_name), "
         WHERE
-           ", DBI::dbQuoteIdentifier(db, ci), " IS NOT NULL
+           ", quote_identifier(db, ci), " IS NOT NULL
       ) rquery_qtable
      WHERE
         idx_rquery IN (", indexes_str, ")
      ORDER BY
         idx_rquery")
-  r <- DBI::dbGetQuery(db, q)
+  r <- rq_get_query(db, q)
   r[[ci]][unpack]
 }
 

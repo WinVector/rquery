@@ -479,9 +479,9 @@ execute <- function(source,
                   source_limit = source_limit)
     if(length(sql)==1) {
       if(precheck) {
-        warning("rquery::execute ingoring precheck=TRUE on direct SQL commmand")
+        warning("rquery::execute ignoring precheck=TRUE on direct SQL commmand")
       }
-      res <- DBI::dbGetQuery(db, sql)
+      res <- rq_get_query(db, sql)
       return(res)
     }
   }
@@ -507,7 +507,7 @@ execute <- function(source,
                 rev_cols = optree$rev_orderby)
     }
     sql <- to_sql(ref, db, limit = limit)
-    res <- DBI::dbGetQuery(db, sql)
+    res <- rq_get_query(db, sql)
     rq_remove_table(db, ref$table_name)
   }
   res

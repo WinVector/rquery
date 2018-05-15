@@ -122,7 +122,7 @@ makeTableIndMap <- function(tableNameSeq) {
 key_inspector_all_cols <- function(db, tablename) {
   sample <- rq_get_query(db,
                             paste("SELECT * FROM",
-                                  DBI::dbQuoteIdentifier(db, tablename),
+                                  quote_identifier(db, tablename),
                                   "LIMIT 1"))
   cols <- colnames(sample)
   keys <- cols
@@ -161,7 +161,7 @@ key_inspector_all_cols <- function(db, tablename) {
 key_inspector_sqlite <- function(db, tablename) {
   tabInfo <- rq_get_query(db,
                              paste0("pragma table_info(",
-                                    DBI::dbQuoteIdentifier(db, tablename),
+                                    quote_identifier(db, tablename),
                                     ")"))
   keys <- NULL
   if((!is.null(tabInfo))&&(nrow(tabInfo)>0)) {
@@ -191,7 +191,7 @@ key_inspector_postgresql <- function(db, tablename) {
     FROM   pg_index i
     JOIN   pg_attribute a ON a.attrelid = i.indrelid
     AND a.attnum = ANY(i.indkey)
-    WHERE  i.indrelid = ", DBI::dbQuoteIdentifier(db, tablename), "::regclass
+    WHERE  i.indrelid = ", quote_identifier(db, tablename), "::regclass
     AND    i.indisprimary;
     "
   )

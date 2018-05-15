@@ -51,7 +51,7 @@ quote_identifier <- function (x, id, ...) {
   if("rquery_db_info" %in% class(x)) {
     return(x$dbqi(id))
   }
-  if(!requireNamespace("DBI", quietly = TRUE)) {
+  if(requireNamespace("DBI", quietly = TRUE)) {
     return(as.character(DBI::dbQuoteIdentifier(x, id)))
   }
   rquery_default_db_info$dbqi(id)
@@ -72,10 +72,10 @@ quote_string <- function (x, s, ...) {
   if("rquery_db_info" %in% class(x)) {
     return(x$dbqs(s))
   }
-  if(!requireNamespace("DBI", quietly = TRUE)) {
+  if(requireNamespace("DBI", quietly = TRUE)) {
     return(as.character(DBI::dbQuoteString(x, s)))
   }
-  rquery_default_db_info$dbqs(id)
+  rquery_default_db_info$dbqs(s)
 }
 
 #' Quote a value
@@ -95,9 +95,9 @@ quote_literal <- function (x, s, ...) {
   if("rquery_db_info" %in% class(x)) {
     return(x$dbql(s))
   }
-  if(!requireNamespace("DBI", quietly = TRUE)) {
+  if(requireNamespace("DBI", quietly = TRUE)) {
     return(as.character(DBI::dbQuoteLiteral(x, s)))
   }
-  rquery_default_db_info$dbql(id)
+  rquery_default_db_info$dbql(s)
 }
 

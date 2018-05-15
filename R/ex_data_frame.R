@@ -123,8 +123,8 @@ rquery_apply_to_data_frame <- function(d,
               cols = optree$orderby,
               rev_cols = optree$rev_orderby)
   }
-  sql <- sql <- to_sql(ref, my_db, limit = limit)
-  res <- DBI::dbGetQuery(my_db, sql)
+  sql <- to_sql(ref, my_db, limit = limit)
+  res <- rq_get_query(my_db, sql)
   rq_remove_table(my_db, inp_name)
   rq_remove_table(my_db, res_name)
   if(need_close) {

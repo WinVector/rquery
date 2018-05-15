@@ -159,9 +159,9 @@ to_sql.relop_null_replace <- function (x,
   cols <- column_names(x$source[[1]])
   qnames <- vapply(cols,
                    function(ci) {
-                     DBI::dbQuoteIdentifier(db, ci)
+                     quote_identifier(db, ci)
                    }, character(1))
-  tqnames <- paste0(DBI::dbQuoteIdentifier(db, tab),
+  tqnames <- paste0(quote_identifier(db, tab),
                     ".",
                     qnames)
   qexpr <- tqnames
@@ -170,7 +170,7 @@ to_sql.relop_null_replace <- function (x,
     qexpr[alter] <- paste0("CASE WHEN ",
                            tqnames[alter],
                            " IS NULL THEN ",
-                           DBI::dbQuoteLiteral(db, x$value),
+                           quote_literal(db, x$value),
                            " ELSE ",
                            tqnames[alter],
                            " END")
@@ -184,7 +184,7 @@ to_sql.relop_null_replace <- function (x,
                          " IS NULL THEN 1 ELSE 0 END )"))
     sexpr <- paste0(
       paste(sumexprs, collapse = paste0(" + \n ", prefix)),
-      " AS ", DBI::dbQuoteIdentifier(db, x$note_col),
+      " AS ", quote_identifier(db, x$note_col),
       "\n")
     texpr <- c(texpr, sexpr)
   }
