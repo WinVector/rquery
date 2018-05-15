@@ -69,8 +69,9 @@ parse_se <- function(source, assignments, env,
   }
   nms <- names(assignments)
   # R-like db-info for presentation
-  db_inf <- rquery_db_info(indentifier_quote_char = '`',
-                           string_quote_char = '"')
+  db_inf <- rquery_db_info(indentifier_quote_char = '"',
+                           string_quote_char = '\'',
+                           is_dbi = FALSE)
   parsed <- vector(n, mode = 'list')
   for(i in seq_len(n)) {
     ni <- nms[[i]]
@@ -112,8 +113,9 @@ parse_nse <- function(source, exprs, env,
   }
   nms <- names(exprs)
   # R-like db-info for presentation
-  db_inf <- rquery_db_info(indentifier_quote_char = '`',
-                           string_quote_char = '"')
+  db_inf <- rquery_db_info(indentifier_quote_char = '"',
+                           string_quote_char = '\'',
+                           is_dbi = FALSE)
   parsed <- vector(n, mode = 'list')
   for(i in seq_len(n)) {
     ni <- nms[[i]]

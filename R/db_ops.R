@@ -14,6 +14,15 @@
 #' @noRd
 #'
 rq_get_query <- function(db, q) {
+  # first shot- see if it is a db info with function overrriden
+  if("rquery_db_info" %in% class(db)) {
+    f <- db$rq_get_query
+    if(!is.null(f)) {
+      return(f(db, q))
+    }
+    db <- db$connection
+  }
+  # fall back to DBI
   if(!requireNamespace("DBI", quietly = TRUE)) {
     stop("rquery this function currently requires the DBI package")
   }
@@ -32,6 +41,14 @@ rq_get_query <- function(db, q) {
 #' @noRd
 #'
 rq_execute <- function(db, q) {
+  # first shot- see if it is a db info with function overrriden
+  if("rquery_db_info" %in% class(db)) {
+    f <- db$rq_execute
+    if(!is.null(f)) {
+      return(f(db, q))
+    }
+    db <- db$connection
+  }
   if(!requireNamespace("DBI", quietly = TRUE)) {
     stop("rquery this function currently requires the DBI package")
   }
@@ -57,6 +74,14 @@ rq_execute <- function(db, q) {
 #' @export
 #'
 rq_table_exists <- function(db, table_name) {
+  # first shot- see if it is a db info with function overrriden
+  if("rquery_db_info" %in% class(db)) {
+    f <- db$rq_table_exists
+    if(!is.null(f)) {
+      return(f(db, table_name))
+    }
+    db <- db$connection
+  }
   if(!requireNamespace("DBI", quietly = TRUE)) {
     stop("rquery this function currently requires the DBI package")
   }
@@ -93,6 +118,14 @@ rq_table_exists <- function(db, table_name) {
 #' @export
 #'
 rq_colnames <- function(db, table_name) {
+  # first shot- see if it is a db info with function overrriden
+  if("rquery_db_info" %in% class(db)) {
+    f <- db$rq_colnames
+    if(!is.null(f)) {
+      return(f(db, table_name))
+    }
+    db <- db$connection
+  }
   if(!requireNamespace("DBI", quietly = TRUE)) {
     stop("rquery this function currently requires the DBI package")
   }
@@ -167,6 +200,16 @@ rq_coltypes <- function(db, table_name,
                          force_check = FALSE) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::rq_coltypes")
+  # first shot- see if it is a db info with function overrriden
+  if("rquery_db_info" %in% class(db)) {
+    f <- db$rq_coltypes
+    if(!is.null(f)) {
+      return(f(db, table_name,
+               prefer_not_NA = prefer_not_NA,
+               force_check = force_check))
+    }
+    db <- db$connection
+  }
   if(!requireNamespace("DBI", quietly = TRUE)) {
     stop("rquery this function currently requires the DBI package")
   }
@@ -207,6 +250,14 @@ rq_coltypes <- function(db, table_name,
 #' @export
 #'
 rq_remove_table <- function(db, table_name) {
+  # first shot- see if it is a db info with function overrriden
+  if("rquery_db_info" %in% class(db)) {
+    f <- db$rq_remove_table
+    if(!is.null(f)) {
+      return(f(db, table_name))
+    }
+    db <- db$connection
+  }
   if(!requireNamespace("DBI", quietly = TRUE)) {
     stop("rquery this function currently requires the DBI package")
   }
@@ -227,7 +278,13 @@ rq_remove_table <- function(db, table_name) {
 
 
 # try not to use this too many places, prefer the configs
-connection_is_spark <- function(db) {
+connection_is_sparklyr <- function(db) {
+  if("rquery_db_info" %in% class(db)) {
+    if(!db$is_dbi) {
+      return(FALSE)
+    }
+    db <- db$connection
+  }
   length(intersect(c("spark_connection", "spark_shell_connection"),
                              class(db)))>=1
 }
@@ -267,6 +324,17 @@ rq_copy_to <- function(db, table_name, d,
                         rowidcolumn = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::rq_copy_to")
+  # first shot- see if it is a db info with function overrriden
+  if("rquery_db_info" %in% class(db)) {
+    f <- db$rq_copy_to
+    if(!is.null(f)) {
+      return(f(db, table_name, d,
+               overwrite = overwrite,
+               temporary = overwrite,
+               rowidcolumn = rowidcolumn))
+    }
+    db <- db$connection
+  }
   if(!requireNamespace("DBI", quietly = TRUE)) {
     stop("rquery this function currently requires the DBI package")
   }
@@ -279,7 +347,7 @@ rq_copy_to <- function(db, table_name, d,
   }
   can_set_temp <- getDBOption(db, "control_temporary", NULL)
   can_set_rownames <- getDBOption(db, "control_rownames", NULL)
-  if(connection_is_spark(db)) {
+  if(connection_is_sparklyr(db)) {
     if(is.null(can_set_temp)) {
       can_set_temp <- FALSE
     }
@@ -335,6 +403,14 @@ rq_copy_to <- function(db, table_name, d,
 #' @export
 #'
 rq_nrow <- function(db, table_name) {
+  # first shot- see if it is a db info with function overrriden
+  if("rquery_db_info" %in% class(db)) {
+    f <- db$rq_nrow
+    if(!is.null(f)) {
+      return(f(db, table_name))
+    }
+    db <- db$connection
+  }
   if(!requireNamespace("DBI", quietly = TRUE)) {
     stop("rquery this function currently requires the DBI package")
   }
@@ -366,6 +442,9 @@ rq_nrow <- function(db, table_name) {
 #' @export
 #'
 rq_connection_name <- function(db) {
+  if("rquery_db_info" %in% class(db)) {
+    db <- db$connection
+  }
   cls <- sort(class(db))
   cls <- paste(cls, collapse = "_")
   cls <- gsub("[^a-zA-Z]+", "_", cls)
@@ -398,7 +477,7 @@ rq_connection_name <- function(db) {
 rq_connection_advice <- function(db) {
   cname <- rq_connection_name(db)
   opts <- list()
-  if(connection_is_spark(db)) {
+  if(connection_is_sparklyr(db)) {
     opts[[paste(c("rquery", cname, "create_temporary"), collapse = ".")]] <- FALSE
     opts[[paste(c("rquery", cname, "control_rownames"), collapse = ".")]] <- FALSE
     opts[[paste(c("rquery", cname, "use_DBI_dbListFields"), collapse = ".")]] <- FALSE
@@ -455,8 +534,14 @@ rq_connection_tests <- function(db,
                                  use_advice = TRUE) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::rq_connection_tests")
+  if("rquery_db_info" %in% class(db)) {
+    if(!db$is_dbi) {
+      stop("rquery::rq_connection_tests only applies to dbi handles")
+    }
+    db <- db$connection
+  }
   if(!requireNamespace("DBI", quietly = TRUE)) {
-    stop("rquery this function currently requires the DBI package")
+    stop("rquery::rq_connection_tests this function currently requires the DBI package")
   }
   cname <- rq_connection_name(db)
   opts <- list()

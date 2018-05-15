@@ -29,7 +29,7 @@ materialize_sql_statement <- function(db, sql, table_name,
   if(isTRUE(temporary)) {
     create_temp <- getDBOption(db, "create_temporary", NULL)
     if(is.null(create_temp)) {
-      create_temp <- !connection_is_spark(db)
+      create_temp <- !connection_is_sparklyr(db)
     }
     if(!create_temp) {
       if(getOption("rquery.verbose")) {
