@@ -1,7 +1,7 @@
 ---
-title: "Debug Tools for Big Data"
+title: "Debug Tools for Big Data (Spark)"
 output: github_document
-date: "2018-05-14"
+date: "2018-05-15"
 ---
 
 <!-- file.md is generated from file.Rmd. Please edit that file -->
@@ -34,7 +34,7 @@ my_db <- sparklyr::spark_connect(version='2.2.0',
                                  config = conf)
 
 # configure rquery options
-dbopts <- dbi_connection_tests(my_db)
+dbopts <- rq_connection_tests(my_db)
 print(dbopts)
 options(dbopts)
 
@@ -44,9 +44,9 @@ base::date()
 ```{r startexample}
 base::date()
 
-# build up example data
-nSubj <- 1000000
-nIrrelCol <- 1000
+# build up medium sized example data
+nSubj <- 100000
+nIrrelCol <- 500
 
 d_local <- data.frame(subjectID = sort(rep(seq_len(nSubj),2)),
                  surveyCategory = c(
@@ -56,7 +56,7 @@ d_local <- data.frame(subjectID = sort(rep(seq_len(nSubj),2)),
 d_local$assessmentTotal <- sample.int(10, nrow(d_local), replace = TRUE)
 irrel_col_1 <- paste("irrelevantCol", sprintf("%07g", 1), sep = "_")
 d_local[[irrel_col_1]] <- runif(nrow(d_local))
-d_small <- rquery::dbi_copy_to(my_db, 'd_small',
+d_small <- rquery::rq_copy_to(my_db, 'd_small',
                  d_local,
                  overwrite = TRUE, 
                  temporary = TRUE)
@@ -92,7 +92,7 @@ rm(list = "d_small")
 d_large_tbl <- tbl(my_db, d_large$table_name)
 
 # rquery view of table
-rquery::dbi_nrow(my_db, d_large$table_name)
+rquery::rq_nrow(my_db, d_large$table_name)
 length(column_names(d_large))
 
 # dplyr/tbl view of table
@@ -209,7 +209,7 @@ base::date()
 And the introduction of a `dplyr::compute()` node (with the intent of speeding things up through caching)
 can be expensive.
 
-```{r dplyrexp_c, error = TRUE, eval=FALSE}
+```{r dplyrexp_c, error = TRUE}
 base::date()
 
 system.time({
@@ -226,17 +226,13 @@ system.time({
     ungroup() %>%
     rename(diagnosis = surveyCategory) %>%
     select(subjectID, diagnosis, probability) %>%
-    arrange(subjectID)
+    arrange(subjectID) %>%
+    as.data.frame() %>%
+    nrow()
 })
 
-# full run
-system.time(nrow(as.data.frame(dplyr_pipeline_c)))
 
 base::date()
-
-# Logs the following to the console and seems to never come back.
-# *** caught segfault ***
-# address 0x7fd368200000, cause 'memory not mapped'
 ```
 
 
@@ -300,6 +296,32 @@ cat(dbplyr::remote_query(dplyr_pipeline_late_error))
 # Fortunately, Spark's query analyzer does catch the error quickly
 # in this case.
 system.time(nrow(as.data.frame(dplyr_pipeline_late_error)))
+
+base::date()
+```
+
+
+```{r dplyrexp_ce, error = TRUE}
+base::date()
+
+system.time({
+  scale <- 0.237
+  
+  dplyr_pipeline_c <- d_large_tbl %>%
+    group_by(subjectID) %>%
+    mutate(probability =
+             exp(assessmentTotal * scale)/
+             sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
+    arrange(probability, surveyCategory) %>%
+    filter(row_number() == n()) %>%
+    compute() %>%     # <- inopportune place to try to cache
+    ungroup() %>%
+    rename(diagnosis = surveyCategory) %>%
+    select(subjectID, diagnosis, probability) %>%
+    arrange(ZubjectIDZZZ) %>% # <- error non-existent column
+    as.data.frame() %>%
+    nrow()
+})
 
 base::date()
 ```
