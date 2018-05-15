@@ -1,3 +1,4 @@
+
 library("rquery")
 context("if_else")
 
@@ -21,7 +22,7 @@ test_that("test_extend_partition: Works As Expected", {
   d <- data.frame(id = 1:3, x = c(0, 1, NA))
   # ifelse(d$x == 1, 'one', 'not one')
 
-  d_remote <- dbi_copy_to(my_db, "d_remote", d)
+  d_remote <- rq_copy_to(my_db, "d_remote", d)
 
   optree <- d_remote %.>%
     extend_nse(.,

@@ -20,7 +20,7 @@ This partitioning method ensures safe and correct results, and can lead to far f
 Here is a non-trivial database based example (demonstrating methods that might be used in big data work such as with `Spark`). We are going to assign pairs of items to complimentary treatment ("T") and control ("C") groups based on already populated pseudo-random numbers (pre-populating the pseudo-random numbers is to avoid [known issues in using `rand()` in `RSQlite`](https://winvector.github.io/rquery/reference/if_else_block.html), and would not be necessary with other databases).
 
 ```{r chpkg} 
-run_vignette <- requireNamespace("RSQLite", quietly = TRUE)
+run_vignette <- requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)
 ```
 
 
@@ -35,7 +35,7 @@ for(group in c('a', 'b', 'c', 'd', 'e')) {
 }
 my_db <- DBI::dbConnect(RSQLite::SQLite(), 
                         ":memory:")
-d1 <- dbi_copy_to(my_db, "example_table", d)
+d1 <- rq_copy_to(my_db, "example_table", d)
 d1 %.>%
   to_sql(., my_db) %.>%
   DBI::dbGetQuery(my_db, .) %.>%

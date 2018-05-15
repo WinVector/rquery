@@ -1,3 +1,4 @@
+
 #' Build an in set indicator.
 #'
 #' @param source optree relnode or data.frame.
@@ -12,7 +13,7 @@
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(),
 #'                           ":memory:")
 #'
-#'   d <- dbi_copy_to(my_db, 'd',
+#'   d <- rq_copy_to(my_db, 'd',
 #'                    data.frame(a = c("1", "2", "1", "3"),
 #'                               b = c("1", "1", "3", "2"),
 #'                               stringsAsFactors = FALSE),

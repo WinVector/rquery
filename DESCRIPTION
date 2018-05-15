@@ -1,8 +1,8 @@
 Package: rquery
 Type: Package
 Title: Relational Query Generator for Data Manipulation at Scale
-Version: 0.4.4
-Date: 2018-05-12
+Version: 0.5.0
+Date: 2018-05-15
 Authors@R: c(
     person("John", "Mount", email = "jmount@win-vector.com", role = c("aut", "cre")),
     person(family = "Win-Vector LLC", role = c("cph"))
@@ -26,9 +26,9 @@ Depends:
   R (>= 3.4.0),
   wrapr (>= 1.3.0)
 Imports:
-  DBI,
   utils
 Suggests:
+    DBI,
     RSQLite,
     igraph,
     DiagrammeR,

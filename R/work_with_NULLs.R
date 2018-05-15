@@ -35,7 +35,7 @@ flatten_with_sep <- function(list_of_lists, sep_list) {
 #'   )
 #'   RSQLite::initExtension(winvector_temp_db_handle$db)
 #'
-#'   d <- dbi_copy_to(my_db, 'd',
+#'   d <- rq_copy_to(my_db, 'd',
 #'                    data.frame(AUC = c(0.6, 0.5, NA),
 #'                               R2 = c(1.0, 0.9, NA)))
 #'   op_tree <- d %.>% count_null_cols(., c("AUC", "R2"), "nnull")
@@ -107,7 +107,7 @@ count_null_cols <- function(source, cols, count) {
 #'   )
 #'   RSQLite::initExtension(winvector_temp_db_handle$db)
 #'
-#'   d <- dbi_copy_to(my_db, 'd',
+#'   d <- rq_copy_to(my_db, 'd',
 #'                    data.frame(AUC = c(0.6, 0.5, NA),
 #'                               R2 = c(1.0, 0.9, NA)))
 #'   op_tree <- d %.>% mark_null_cols(., qc(AUC_NULL, R2_NULL) :=

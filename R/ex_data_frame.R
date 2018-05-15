@@ -103,7 +103,7 @@ rquery_apply_to_data_frame <- function(d,
   if(is.null(my_db)) {
     stop("rquery::rquery_apply_to_data_frame no database")
   }
-  dR <- dbi_copy_to(my_db,
+  dR <- rq_copy_to(my_db,
                     inp_name,
                     d,
                     temporary = TRUE,
@@ -125,8 +125,8 @@ rquery_apply_to_data_frame <- function(d,
   }
   sql <- sql <- to_sql(ref, my_db, limit = limit)
   res <- DBI::dbGetQuery(my_db, sql)
-  dbi_remove_table(my_db, inp_name)
-  dbi_remove_table(my_db, res_name)
+  rq_remove_table(my_db, inp_name)
+  rq_remove_table(my_db, res_name)
   if(need_close) {
     DBI::dbDisconnect(my_db)
   }
@@ -273,7 +273,7 @@ summary.relop <- function(object, ...) {
 #'   data.frame(x = 1:3) %.>% optree %.>% print(.)
 #'
 #'   # remote example
-#'   dbi_copy_to(db, "d",
+#'   rq_copy_to(db, "d",
 #'               data.frame(x = 7:8),
 #'               overwrite = TRUE,
 #'               temporary = TRUE)

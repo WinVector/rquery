@@ -53,7 +53,7 @@ project_impl <- function(source, ...,
 #' if (requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(),
 #'                           ":memory:")
-#'   d <- dbi_copy_to(
+#'   d <- rq_copy_to(
 #'     my_db, 'd',
 #'     data.frame(group = c('a', 'a', 'b', 'b'),
 #'                val = 1:4,
@@ -119,7 +119,7 @@ project_se.data.frame <- function(source, groupby, assignments,
 #' if (requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(),
 #'                           ":memory:")
-#'   d <- dbi_copy_to(
+#'   d <- rq_copy_to(
 #'     my_db, 'd',
 #'     data.frame(group = c('a', 'a', 'b', 'b'),
 #'                val = 1:4,

@@ -70,7 +70,7 @@ summarize_columns <- function(db, tableName,
 #'                   stringsAsFactors=FALSE)
 #'   db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   RSQLite::initExtension(db)
-#'   dbi_copy_to(db, "dRemote", d,
+#'   rq_copy_to(db, "dRemote", d,
 #'               overwrite = TRUE, temporary = TRUE)
 #'   print(rsummary(db, "dRemote"))
 #'   DBI::dbDisconnect(db)
@@ -85,7 +85,7 @@ rsummary <- function(db,
                      quartiles = FALSE,
                      cols = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::rsummary")
-  localSample <- dbi_coltypes(db, tableName)
+  localSample <- rq_coltypes(db, tableName)
   cnames <- colnames(localSample)
   if(!is.null(cols)) {
     cnames <- intersect(cnames, cols)
@@ -93,7 +93,7 @@ rsummary <- function(db,
   }
   nrows <- 0
   if(nrow(localSample)>0) {
-    nrows <- dbi_nrow(db, tableName)
+    nrows <- rq_nrow(db, tableName)
   }
   cmap <- seq_len(length(cnames))
   names(cmap) <- cnames
@@ -337,11 +337,11 @@ rsummary <- function(db,
 #'                   stringsAsFactors=FALSE)
 #'   db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   RSQLite::initExtension(db)
-#'   dbi_copy_to(db, "dRemote", d,
+#'   rq_copy_to(db, "dRemote", d,
 #'               overwrite = TRUE,
 #'               temporary = TRUE)
 #'
-#'   ops <- dbi_table(db, "dRemote") %.>%
+#'   ops <- rq_table(db, "dRemote") %.>%
 #'     extend_nse(., v := ifelse(x>2, "x", "y")) %.>%
 #'     rsummary_node(.)
 #'   cat(format(ops))
@@ -393,7 +393,7 @@ rsummary_node <- function(source,
                 outgoing_table_name) {
     stable <- rsummary(db, incoming_table_name,
                        quartiles = quartiles)
-    dbi_copy_to(db,
+    rq_copy_to(db,
                 table_name = outgoing_table_name,
                 d = stable,
                 overwrite = TRUE,

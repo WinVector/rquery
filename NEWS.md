@@ -1,6 +1,9 @@
 
+# rquery 0.5.0 2018/05/15
 
-# rquery 0.4.4 2018/05/12
+ * DBI optional version.
+
+# rquery 0.4.4 2018/05/14
 
  * Fix if_else NA treatment.
  * Fix orderby() limit bug.

@@ -243,7 +243,7 @@ describe_tables <- function(db,
   reslist <- vector(mode = "list", length = length(tablenames))
   for(ii in seq_len(length(tablenames))) {
     tablename = tablenames[[ii]]
-    sample <- dbi_coltypes(db, tablename)
+    sample <- rq_coltypes(db, tablename)
     cols <- colnames(sample)
     # may not get classes on empty tables
     # https://github.com/tidyverse/dplyr/issues/2913

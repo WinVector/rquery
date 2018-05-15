@@ -61,7 +61,7 @@ quantile_cols <- function(db, incoming_table_name,
                           ...,
                           probs = seq(0, 1, 0.25),
                           probs_name = "quantile_probability",
-                          cols = dbi_colnames(db, incoming_table_name)) {
+                          cols = rq_colnames(db, incoming_table_name)) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::quantile_cols")
   qtable <- data.frame(probs = probs)
   colnames(qtable) <- probs_name
@@ -124,7 +124,7 @@ quantile_node <- function(source,
                             probs = probs,
                             probs_name = probs_name,
                             cols = cols)
-    dbi_copy_to(db,
+    rq_copy_to(db,
                 table_name = outgoing_table_name,
                 d = qtable,
                 overwrite = TRUE,

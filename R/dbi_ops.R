@@ -1,19 +1,22 @@
 
 
-# work around common not fully DBI databases issues
+# wrap database or data system (Spark) adapters
 
 
 #' Check if a table exists.
 #'
-#' @param db DBI connection
+#' @param db Connection handle
 #' @param table_name character table name
 #' @return logical TRUE if table exists.
 #'
-#' @seealso \code{\link{dbi_table}}
+#' @seealso \code{\link{rq_table}}
 #'
 #' @export
 #'
-dbi_table_exists <- function(db, table_name) {
+rq_table_exists <- function(db, table_name) {
+  if(!requireNamespace("DBI", quietly = TRUE)) {
+    stop("rquery this function currently requires the DBI package")
+  }
   # Would like to just return DBI::dbExistsTable(db, table_name)
   if(getDBOption(db, "use_DBI_dbExistsTable", TRUE)) {
     return(DBI::dbExistsTable(db, table_name))
@@ -40,13 +43,16 @@ dbi_table_exists <- function(db, table_name) {
 
 #' List table column names.
 #'
-#' @param db DBI connection
+#' @param db Connection handle
 #' @param table_name character table name
 #' @return character list of column names
 #'
 #' @export
 #'
-dbi_colnames <- function(db, table_name) {
+rq_colnames <- function(db, table_name) {
+  if(!requireNamespace("DBI", quietly = TRUE)) {
+    stop("rquery this function currently requires the DBI package")
+  }
   # DBI::dbListFields fails intermitnently, and sometimes gives wrong results
   # filed as: https://github.com/tidyverse/dplyr/issues/3204
   if(getDBOption(db, "use_DBI_dbListFields", FALSE)) {
@@ -66,7 +72,7 @@ dbi_colnames <- function(db, table_name) {
 #' Example values not necissarily all from same row.  Taking values from different rows is
 #' to try to work around NA not carrying type/class info in many cases.
 #'
-#' @param db DBI connection.
+#' @param db Connection handle.
 #' @param table_name character table name refering to a non-empty table.
 #' @param ... force later arguments to bind by name.
 #' @param prefer_not_NA logical, if TRUE try to find an non-NA example for all columns (FALSE just for logical columns).
@@ -75,11 +81,11 @@ dbi_colnames <- function(db, table_name) {
 #'
 #' @examples
 #'
-#' if(requireNamespace("RSQLite", quietly = TRUE)) {
+#' if(requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
 #'   db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'
 #'   # getDBOption(db, "check_logical_column_types", FALSE)
-#'   # options(dbi_connection_tests(db))
+#'   # options(rq_connection_tests(db))
 #'   # getDBOption(db, "check_logical_column_types", FALSE)
 #'
 #'   d <- data.frame(w= c(NA, 1L),
@@ -88,7 +94,7 @@ dbi_colnames <- function(db, table_name) {
 #'                   z= c(NA, "y"),
 #'                   want = c(1, 0),
 #'                   stringsAsFactors=FALSE)
-#'   d <- dbi_copy_to(db, "d", d,
+#'   d <- rq_copy_to(db, "d", d,
 #'                    overwrite = TRUE,
 #'                    temporary = TRUE)
 #'   res <- d %.>%
@@ -105,19 +111,22 @@ dbi_colnames <- function(db, table_name) {
 #'   print(str(DBI::dbGetQuery(db, paste("SELECT * FROM", resn))))
 #'   print("single row mis-reported types")
 #'   print(str(DBI::dbGetQuery(db, paste("SELECT * FROM", resn, "WHERE want=1"))))
-#'   print("dbi_coltypes correct synthetic example row types")
-#'   print(str(dbi_coltypes(db, res$table_name, force_check = TRUE)))
+#'   print("rq_coltypes correct synthetic example row types")
+#'   print(str(rq_coltypes(db, res$table_name, force_check = TRUE)))
 #'   DBI::dbDisconnect(db)
 #' }
 #'
 #' @export
 #'
-dbi_coltypes <- function(db, table_name,
+rq_coltypes <- function(db, table_name,
                          ...,
                          prefer_not_NA = FALSE,
                          force_check = FALSE) {
   wrapr::stop_if_dot_args(substitute(list(...)),
-                          "rquery::dbi_coltypes")
+                          "rquery::rq_coltypes")
+  if(!requireNamespace("DBI", quietly = TRUE)) {
+    stop("rquery this function currently requires the DBI package")
+  }
   # RSQLite returns logical type for any returned column
   # that is entirely NA, regardless of storage type.
   # below is going to have issues to to R-column name conversion!
@@ -150,17 +159,20 @@ dbi_coltypes <- function(db, table_name,
 #' @param table_name character, name of table to create.
 #' @return logical TRUE if table existed, else FALSE
 #'
-#' @seealso \code{\link{dbi_table}}
+#' @seealso \code{\link{rq_table}}
 #'
 #' @export
 #'
-dbi_remove_table <- function(db, table_name) {
+rq_remove_table <- function(db, table_name) {
+  if(!requireNamespace("DBI", quietly = TRUE)) {
+    stop("rquery this function currently requires the DBI package")
+  }
   if(!is.null(table_name)) {
-    if(dbi_table_exists(db, table_name)) {
+    if(rq_table_exists(db, table_name)) {
       if(getDBOption(db, "use_DBI_dbRemoveTable", FALSE)) {
         DBI::dbRemoveTable(db, table_name)
       } else {
-        dbi_execute(db,
+        rq_execute(db,
                     paste("DROP TABLE",
                            quote_identifier(db, table_name)))
       }
@@ -172,15 +184,18 @@ dbi_remove_table <- function(db, table_name) {
 
 #' Execute a query.
 #'
-#' @param db DBI database connection
+#' @param db database connection handle
 #' @param q character query
 #' @return nothing
 #'
-#' @seealso \code{\link{dbi_table}}
+#' @seealso \code{\link{rq_table}}
 #'
-#' @export
+#' @noRd
 #'
-dbi_execute <- function(db, q) {
+rq_execute <- function(db, q) {
+  if(!requireNamespace("DBI", quietly = TRUE)) {
+    stop("rquery this function currently requires the DBI package")
+  }
   res <- NULL
   if(getDBOption(db, "use_DBI_dbExecute", TRUE)) {
     res <- DBI::dbExecute(db, q)
@@ -196,24 +211,24 @@ connection_is_spark <- function(db) {
                              class(db)))>=1
 }
 
-#' Local table to DBI data source.
+#' Copy local R table to remote data handle.
 #'
-#' @param db database connection.
+#' @param db database connection handle.
 #' @param table_name name of table to create.
 #' @param d data.frame to copy to database.
 #' @param ... force later argument to be by name
-#' @param overwrite passed to \code{\link[DBI]{dbWriteTable}}.
-#' @param temporary passed to \code{\link[DBI]{dbWriteTable}}.
+#' @param overwrite logical, if TRUE try to overwrite existing table.
+#' @param temporary logical, if TRUE try to mark table as temporary.
 #' @param rowidcolumn character, name to land row-ids.
 #' @return a relop representation of the data
 #'
-#' @seealso \code{\link{dbi_table}}, \code{\link{table_source}}, \code{\link{materialize}}, \code{\link{execute}}, \code{\link{to_sql}}
+#' @seealso \code{\link{rq_table}}, \code{\link{table_source}}, \code{\link{materialize}}, \code{\link{execute}}, \code{\link{to_sql}}
 #'
 #' @examples
 #'
-#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#' if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
 #'   db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'   d <- dbi_copy_to(db, 'd',
+#'   d <- rq_copy_to(db, 'd',
 #'                    data.frame(AUC = 0.6, R2 = 0.2))
 #'
 #'   sql <- to_sql(d, db)
@@ -224,19 +239,22 @@ connection_is_spark <- function(db) {
 #'
 #' @export
 #'
-dbi_copy_to <- function(db, table_name, d,
+rq_copy_to <- function(db, table_name, d,
                         ...,
                         overwrite = FALSE,
                         temporary = TRUE,
                         rowidcolumn = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)),
-                          "rquery::dbi_copy_to")
+                          "rquery::rq_copy_to")
+  if(!requireNamespace("DBI", quietly = TRUE)) {
+    stop("rquery this function currently requires the DBI package")
+  }
   if(!is.null(rowidcolumn)) {
     d[[rowidcolumn]] <- seq_len(nrow(d))
   }
   # sparklyr 0.7.0 does not take overwrite or row.names arguments
   if(overwrite) {
-    dbi_remove_table(db, table_name)
+    rq_remove_table(db, table_name)
   }
   can_set_temp <- getDBOption(db, "control_temporary", NULL)
   can_set_rownames <- getDBOption(db, "control_rownames", NULL)
@@ -269,7 +287,7 @@ dbi_copy_to <- function(db, table_name, d,
     }
   } else {
     if(temporary && getOption("rquery.verbose")) {
-      warning("setting rquery::dbi_copy_to setting temporary=FALSE")
+      warning("setting rquery::rq_copy_to setting temporary=FALSE")
     }
     if(can_set_rownames) {
       DBI::dbWriteTable(db,
@@ -282,7 +300,7 @@ dbi_copy_to <- function(db, table_name, d,
                         d)
     }
   }
-  dbi_table(db, table_name)
+  rq_table(db, table_name)
 }
 
 #' Count rows and return as numeric
@@ -291,11 +309,14 @@ dbi_copy_to <- function(db, table_name, d,
 #' @param table_name character, name of table
 #' @return numeric row count
 #'
-#' @seealso \code{\link{dbi_table}}
+#' @seealso \code{\link{rq_table}}
 #'
 #' @export
 #'
-dbi_nrow <- function(db, table_name) {
+rq_nrow <- function(db, table_name) {
+  if(!requireNamespace("DBI", quietly = TRUE)) {
+    stop("rquery this function currently requires the DBI package")
+  }
   nrowst <- DBI::dbGetQuery(
     db,
     paste0("SELECT COUNT(1) FROM ",
@@ -310,20 +331,20 @@ dbi_nrow <- function(db, table_name) {
 
 #' Build a cannonical name for a db connection class.
 #'
-#' @param db DBI database connection
-#' @return character
+#' @param db Database connection handle.
+#' @return character, key version of handle for option lookups.
 #'
 #' @examples
 #'
-#' if(requireNamespace("RSQLite", quietly = TRUE)) {
+#' if(requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'   print(dbi_connection_name(my_db))
+#'   print(rq_connection_name(my_db))
 #'   DBI::dbDisconnect(my_db)
 #' }
 #'
 #' @export
 #'
-dbi_connection_name <- function(db) {
+rq_connection_name <- function(db) {
   cls <- sort(class(db))
   cls <- paste(cls, collapse = "_")
   cls <- gsub("[^a-zA-Z]+", "_", cls)
@@ -334,28 +355,27 @@ dbi_connection_name <- function(db) {
 
 #' Get advice for a DB connection (beyond tests).
 #'
-#' These settings are from what was known in March 2018 about
-#' RSQLite, Sparklyr, RPostgreSQL, and RPostgres.  This is the
-#' full set of dbi options for rquery.
+#' These settings are set by the package mainteners based on experience with
+#' specific databases.
 #'
-#' @param db DBI database connection
+#' @param db database connection handle
 #' @return named list of options
 #'
-#' @seealso \code{\link{dbi_connection_tests}}
+#' @seealso \code{\link{rq_connection_tests}}
 #'
 #' @examples
 #'
-#' if(requireNamespace("RSQLite", quietly = TRUE)) {
+#' if(requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'   print(dbi_connection_name(my_db))
-#'   print(dbi_connection_advice(my_db))
+#'   print(rq_connection_name(my_db))
+#'   print(rq_connection_advice(my_db))
 #'   DBI::dbDisconnect(my_db)
 #' }
 #'
 #' @export
 #'
-dbi_connection_advice <- function(db) {
-  cname <- dbi_connection_name(db)
+rq_connection_advice <- function(db) {
+  cname <- rq_connection_name(db)
   opts <- list()
   if(connection_is_spark(db)) {
     opts[[paste(c("rquery", cname, "create_temporary"), collapse = ".")]] <- FALSE
@@ -373,6 +393,9 @@ dbi_connection_advice <- function(db) {
 
 
 brute_rm_table <- function(db, table_name) {
+  if(!requireNamespace("DBI", quietly = TRUE)) {
+    stop("rquery this function currently requires the DBI package")
+  }
   tryCatch(
     DBI::dbGetQuery(db, paste("DROP TABLE",
                               quote_identifier(db, table_name))),
@@ -386,35 +409,38 @@ brute_rm_table <- function(db, table_name) {
 #' These settings are estimated by experiments.  This is not
 #' the full set of options- but just the ones tested here.
 #'
-#' @param db DBI database connection
+#' @param db database connection handle.
 #' @param ... force later arguments to bind by name.
 #' @param overrides named character vector or list, options (just name, not DB qualification) to force
 #' @param use_advice logical if TRUE incorpeate hard-coded advice.
 #' @return named list of options
 #'
-#' @seealso \code{\link{dbi_connection_advice}}
+#' @seealso \code{\link{rq_connection_advice}}
 #'
 #' @examples
 #'
-#' if(requireNamespace("RSQLite", quietly = TRUE)) {
+#' if(requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'   print(dbi_connection_name(my_db))
-#'   print(dbi_connection_tests(my_db,
+#'   print(rq_connection_name(my_db))
+#'   print(rq_connection_tests(my_db,
 #'      overrides = c("use_DBI_dbExistsTable" = FALSE)))
 #'   # the following would set options
-#'   # print(options(dbi_connection_tests(my_db)))
+#'   # print(options(rq_connection_tests(my_db)))
 #'   DBI::dbDisconnect(my_db)
 #' }
 #'
 #' @export
 #'
-dbi_connection_tests <- function(db,
+rq_connection_tests <- function(db,
                                  ...,
                                  overrides = NULL,
                                  use_advice = TRUE) {
   wrapr::stop_if_dot_args(substitute(list(...)),
-                          "rquery::dbi_connection_tests")
-  cname <- dbi_connection_name(db)
+                          "rquery::rq_connection_tests")
+  if(!requireNamespace("DBI", quietly = TRUE)) {
+    stop("rquery this function currently requires the DBI package")
+  }
+  cname <- rq_connection_name(db)
   opts <- list()
   opts[[paste(c("rquery", cname, "use_DBI_dbListFields"), collapse = ".")]] <- FALSE
   opts[[paste(c("rquery", cname, "use_DBI_dbRemoveTable"), collapse = ".")]] <- FALSE
@@ -423,7 +449,7 @@ dbi_connection_tests <- function(db,
   opts[[paste(c("rquery", cname, "control_temporary"), collapse = ".")]] <- FALSE
   opts[[paste(c("rquery", cname, "control_rownames"), collapse = ".")]] <- FALSE
   # Run config tests in addition to dealing with known cases
-  obscure_name <- wrapr::mk_tmp_name_source("dbi_test")()
+  obscure_name <- wrapr::mk_tmp_name_source("rq_test")()
   obscure_name_q <- DBI::dbQuoteIdentifier(db, obscure_name)
   brute_rm_table(db, obscure_name)
   # see if we can turn off rownames
@@ -515,7 +541,7 @@ dbi_connection_tests <- function(db,
                   z= c(NA, "y"),
                   want = c(1, 0),
                   stringsAsFactors=FALSE)
-  d <- dbi_copy_to(db, obscure_name, d,
+  d <- rq_copy_to(db, obscure_name, d,
               overwrite = TRUE,
               temporary = TRUE)
   # make column refs not look like unbound references
@@ -546,7 +572,7 @@ dbi_connection_tests <- function(db,
   opts[[paste(c("rquery", cname, "check_logical_column_types"), collapse = ".")]] <- bad_types
   brute_rm_table(db, obscure_name)
   if(use_advice) {
-    advice <- dbi_connection_advice(db)
+    advice <- rq_connection_advice(db)
     for(ki in names(advice)) {
       vi <- advice[[ki]]
       opts[[ki]] <- vi
@@ -556,7 +582,7 @@ dbi_connection_tests <- function(db,
     vi <- overrides[[ni]]
     keyi <- paste(c("rquery", cname, ni), collapse = ".")
     if(!(keyi %in% names(opts))) {
-      stop(paste("rquery::dbi_connection_tests unknown option", ni))
+      stop(paste("rquery::rq_connection_tests unknown option", ni))
     }
     opts[[keyi]] <- vi
   }
@@ -565,14 +591,14 @@ dbi_connection_tests <- function(db,
 
 #' Set a database connection option.
 #'
-#' @param db DBI database connection handle.
+#' @param db database connection handle.
 #' @param optname character, single option name.
 #' @param default what to return if not set.
 #' @return option value
 #'
 #' @examples
 #'
-#' if(requireNamespace("RSQLite", quietly = TRUE)) {
+#' if(requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   print(getDBOption(my_db, "use_DBI_dbExecute"))
 #'   DBI::dbDisconnect(my_db)
@@ -581,7 +607,7 @@ dbi_connection_tests <- function(db,
 #' @export
 #'
 getDBOption <- function(db, optname, default) {
-  cname <- dbi_connection_name(db)
+  cname <- rq_connection_name(db)
   key <- paste(c("rquery", cname, optname), collapse = ".")
   val <- getOption(key, default = default)
   val
@@ -589,7 +615,7 @@ getDBOption <- function(db, optname, default) {
 
 #' Set a database connection option.
 #'
-#' @param db DBI database connection handle.
+#' @param db database connection handle.
 #' @param optname character, single option name.
 #' @param val value to set
 #' @return named list containing old value if any (invisible).
@@ -597,7 +623,7 @@ getDBOption <- function(db, optname, default) {
 #' @export
 #'
 setDBOption <- function(db, optname, val) {
-  cname <- dbi_connection_name(db)
+  cname <- rq_connection_name(db)
   key <- paste(c("rquery", cname, optname), collapse = ".")
   wrapr::let(
     c(KEY = key),

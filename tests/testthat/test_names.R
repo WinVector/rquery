@@ -6,7 +6,7 @@ context("namedetection")
 test_that("test_names: Works As Expected", {
   db <- DBI::dbConnect(RSQLite::SQLite(),
                        ":memory:")
-  hdl <- dbi_copy_to(db, "mtcars", mtcars,
+  hdl <- rq_copy_to(db, "mtcars", mtcars,
                      overwrite = TRUE,
                      temporary = TRUE)
 

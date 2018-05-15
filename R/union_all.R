@@ -12,7 +12,7 @@
 #'
 #' if (requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'   d <- dbi_copy_to(my_db, 'd',
+#'   d <- rq_copy_to(my_db, 'd',
 #'                    data.frame(AUC = 0.6, R2 = 0.2))
 #'   optree <- unionall(list(d, d, d))
 #'   cat(format(optree))

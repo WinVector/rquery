@@ -25,9 +25,9 @@ relop_decorate <- function(class_name, r) {
 #'
 #' if (requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'   d1 <- dbi_copy_to(my_db, 'd1',
+#'   d1 <- rq_copy_to(my_db, 'd1',
 #'                     data.frame(AUC = 0.6, R2 = 0.2))
-#'   d2 <- dbi_copy_to(my_db, 'd2',
+#'   d2 <- rq_copy_to(my_db, 'd2',
 #'                     data.frame(AUC = 0.6, D = 0.3))
 #'   optree <- natural_join(d1, d2)
 #'   cat(format(optree))
@@ -73,9 +73,9 @@ column_names.data.frame <- function (x, ...) {
 #'
 #' if (requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'   d1 <- dbi_copy_to(my_db, 'd1',
+#'   d1 <- rq_copy_to(my_db, 'd1',
 #'                     data.frame(AUC = 0.6, R2 = 0.2))
-#'   d2 <- dbi_copy_to(my_db, 'd2',
+#'   d2 <- rq_copy_to(my_db, 'd2',
 #'                     data.frame(AUC = 0.6, D = 0.3))
 #'   optree <- natural_join(d1, d2)
 #'   cat(format(optree))
@@ -125,9 +125,9 @@ columns_used.relop <- function (x,
 #'
 #' if (requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'   d1 <- dbi_copy_to(my_db, 'd1',
+#'   d1 <- rq_copy_to(my_db, 'd1',
 #'                     data.frame(AUC = 0.6, R2 = 0.2))
-#'   d2 <- dbi_copy_to(my_db, 'd2',
+#'   d2 <- rq_copy_to(my_db, 'd2',
 #'                     data.frame(AUC = 0.6, D = 0.3))
 #'   optree <- natural_join(d1, d2)
 #'   cat(format(optree))
@@ -169,15 +169,15 @@ tables_used.relop <- function(node, ...) {
 #' @param using character, if not NULL set of columns used from above.
 #' @return SQL command
 #'
-#' @seealso \code{\link{dbi_table}}, \code{\link{materialize}}, \code{\link{execute}}, \code{\link{dbi_copy_to}}, \code{\link{table_source}}
+#' @seealso \code{\link{rq_table}}, \code{\link{materialize}}, \code{\link{execute}}, \code{\link{rq_copy_to}}, \code{\link{table_source}}
 #'
 #' @examples
 #'
 #' if (requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'   d1 <- dbi_copy_to(my_db, 'd1',
+#'   d1 <- rq_copy_to(my_db, 'd1',
 #'                     data.frame(AUC = 0.6, R2 = 0.2))
-#'   d2 <- dbi_copy_to(my_db, 'd2',
+#'   d2 <- rq_copy_to(my_db, 'd2',
 #'                     data.frame(AUC = 0.6, D = 0.3))
 #'   optree <- natural_join(d1, d2)
 #'   cat(format(optree))

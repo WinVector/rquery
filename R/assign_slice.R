@@ -20,7 +20,7 @@
 #' if (requireNamespace("RSQLite", quietly = TRUE)) {
 #'   # Land random selections early to avoid SQLite bug.
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'   d <- dbi_copy_to(
+#'   d <- rq_copy_to(
 #'     my_db,
 #'     'd',
 #'     data.frame(i = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),

@@ -29,7 +29,7 @@ test_that("test_extend_partition: Works As Expected", {
     expect_true(length(grep("e_2", sql, fixed = TRUE))>0)
 
 
-    d <- dbi_copy_to(my_db, "ds",
+    d <- rq_copy_to(my_db, "ds",
                      data.frame(x = 1))
     sum <- 7
     optree <- d %.>%

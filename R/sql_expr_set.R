@@ -18,7 +18,7 @@
 #'   )
 #'   RSQLite::initExtension(winvector_temp_db_handle$db)
 #'
-#'   d <- dbi_copy_to(my_db, 'd',
+#'   d <- rq_copy_to(my_db, 'd',
 #'                    data.frame(AUC = c(NA, 0.5, NA),
 #'                               R2 = c(1.0, 0.9, NA),
 #'                               delta = 3,

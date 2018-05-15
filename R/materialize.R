@@ -8,7 +8,7 @@
 #' @param temporary logical if TRUE try to create a temporary table.
 #' @return modified SQL
 #'
-#' @seealso \code{\link{materialize}}, \code{\link{dbi_table}}, \code{\link{execute}}, \code{\link{to_sql}}, \code{\link{dbi_copy_to}}, \code{\link{table_source}}
+#' @seealso \code{\link{materialize}}, \code{\link{rq_table}}, \code{\link{execute}}, \code{\link{to_sql}}, \code{\link{rq_copy_to}}, \code{\link{table_source}}
 #'
 #' @examples
 #'
@@ -69,14 +69,14 @@ materialize_sql_statement <- function(db, sql, table_name,
 #' @param sql character, pre-rendered SQL matching optree and options- should not be set by user code.
 #' @return table handle
 #'
-#' @seealso \code{\link{dbi_table}}, \code{\link{execute}}, \code{\link{to_sql}}, \code{\link{dbi_copy_to}}, \code{\link{table_source}}
+#' @seealso \code{\link{rq_table}}, \code{\link{execute}}, \code{\link{to_sql}}, \code{\link{rq_copy_to}}, \code{\link{table_source}}
 #'
 #' @examples
 #'
 #' if (requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'
-#'   d <- dbi_copy_to(my_db, 'd',
+#'   d <- rq_copy_to(my_db, 'd',
 #'                    data.frame(AUC = 0.6, R2 = 0.2),
 #'                    temporary = TRUE, overwrite = TRUE)
 #'   optree <- extend_se(d, c("v" := "AUC + R2", "x" := "pmax(AUC,v)"))
@@ -88,7 +88,7 @@ materialize_sql_statement <- function(db, sql, table_name,
 #'   print(DBI::dbGetQuery(my_db, sql))
 #'
 #'   # extra example, table that doesn't match declared structure
-#'   dbi_copy_to(my_db, 'd',
+#'   rq_copy_to(my_db, 'd',
 #'               data.frame(z = 1:5),
 #'               temporary = TRUE, overwrite = TRUE)
 #'   tryCatch(
@@ -158,10 +158,10 @@ materialize_impl <- function(db,
     for(ni in names(needs)) {
       if(!(ni %in% temp_intermediate_tables)) {
         col_needs <- needs[[ni]]
-        if(!dbi_table_exists(db, ni)) {
+        if(!rq_table_exists(db, ni)) {
           stop(paste("rquery::materialize missing required table:", ni))
         }
-        cols_have <- dbi_colnames(db, ni)
+        cols_have <- rq_colnames(db, ni)
         missed <- setdiff(col_needs, cols_have)
         if(length(missed)>0) {
           stop(paste("rquery::materialize table",
@@ -173,9 +173,9 @@ materialize_impl <- function(db,
     }
   }
   # check/clear final result
-  if(dbi_table_exists(db, table_name)) {
+  if(rq_table_exists(db, table_name)) {
     if(overwrite) {
-      dbi_remove_table(db, table_name)
+      rq_remove_table(db, table_name)
     } else {
       stop(paste("rquery::materialize result table",
                  table_name,
@@ -184,7 +184,7 @@ materialize_impl <- function(db,
   }
   # clear intermediates
   for(ti in temp_intermediate_tables) {
-    dbi_remove_table(db, ti)
+    rq_remove_table(db, ti)
   }
   # work on all but last node of chain
   notes <- data.frame(step = seq_len(n_steps),
@@ -206,9 +206,9 @@ materialize_impl <- function(db,
       if(is.character(sqli)) {
         notes$node[[ii]] <- "sql"
         notes$sql[[ii]] <- sqli
-        dbi_execute(db, sqli)
+        rq_execute(db, sqli)
         if(!is.null(to_clear)) {
-          dbi_remove_table(db, to_clear)
+          rq_remove_table(db, to_clear)
           to_clear <- NULL
         }
       } else {
@@ -219,16 +219,16 @@ materialize_impl <- function(db,
           sqli$f(db,
                  sqli$incoming_table_name,
                  sqli$outgoing_table_name)
-          dbi_remove_table(db, sqli$incoming_table_name)
+          rq_remove_table(db, sqli$incoming_table_name)
           if((!is.null(to_clear)) &&
              (to_clear!=sqli$outgoing_table_name)) {
-            dbi_remove_table(db, to_clear)
+            rq_remove_table(db, to_clear)
           }
           to_clear <- sqli$outgoing_table_name
         } else {
           if((!is.null(to_clear)) &&
              (to_clear!=sqli$outgoing_table_name)) {
-            dbi_remove_table(db, to_clear)
+            rq_remove_table(db, to_clear)
             to_clean <- NULL
           }
           to_clear <- sqli$outgoing_table_name
@@ -255,12 +255,12 @@ materialize_impl <- function(db,
   }
   sqlc <- materialize_sql_statement(db, sql, table_name,
                                     temporary = temporary)
-  dbi_execute(db, sqlc)
+  rq_execute(db, sqlc)
   if(!is.null(to_clear)) {
-    dbi_remove_table(db, to_clear)
+    rq_remove_table(db, to_clear)
     to_clear <- NULL
   }
-  res <- dbi_table(db, table_name)
+  res <- rq_table(db, table_name)
   notes$end_time[[n_steps]] <- Sys.time()
   res$notes <- notes
   res
@@ -283,14 +283,14 @@ materialize_impl <- function(db,
 #' @param precheck logical if TRUE precheck existance of table and columns.
 #' @return table handle
 #'
-#' @seealso \code{\link{dbi_table}}, \code{\link{execute}}, \code{\link{to_sql}}, \code{\link{dbi_copy_to}}, \code{\link{table_source}}
+#' @seealso \code{\link{rq_table}}, \code{\link{execute}}, \code{\link{to_sql}}, \code{\link{rq_copy_to}}, \code{\link{table_source}}
 #'
 #' @examples
 #'
 #' if (requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'
-#'   d <- dbi_copy_to(my_db, 'd',
+#'   d <- rq_copy_to(my_db, 'd',
 #'                    data.frame(AUC = 0.6, R2 = 0.2),
 #'                    temporary = TRUE, overwrite = TRUE)
 #'   optree <- extend_se(d, c("v" := "AUC + R2", "x" := "pmax(AUC,v)"))
@@ -302,7 +302,7 @@ materialize_impl <- function(db,
 #'   print(DBI::dbGetQuery(my_db, sql))
 #'
 #'   # extra example, table that doesn't match declared structure
-#'   dbi_copy_to(my_db, 'd',
+#'   rq_copy_to(my_db, 'd',
 #'               data.frame(z = 1:5),
 #'               temporary = TRUE, overwrite = TRUE)
 #'   tryCatch(
@@ -349,14 +349,14 @@ materialize <- function(db,
 #' @param temporary logical if TRUE try to create a temporary table.
 #' @return table handle
 #'
-#' @seealso \code{\link{dbi_table}}, \code{\link{materialize}}, \code{\link{to_sql}}, \code{\link{dbi_copy_to}}, \code{\link{table_source}}
+#' @seealso \code{\link{rq_table}}, \code{\link{materialize}}, \code{\link{to_sql}}, \code{\link{rq_copy_to}}, \code{\link{table_source}}
 #'
 #' @examples
 #'
 #' if (requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'
-#'   d <- dbi_copy_to(my_db, 'd',
+#'   d <- rq_copy_to(my_db, 'd',
 #'                    data.frame(AUC = 0.6, R2 = 0.2),
 #'                    temporary = TRUE, overwrite = TRUE)
 #'   t <- materialize_sql(my_db, "SELECT AUC, R2, AUC - R2 AS d FROM d")
@@ -376,9 +376,9 @@ materialize_sql <- function(db,
                         temporary = FALSE) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::materialize_sql")
   # check/clear final result
-  if(dbi_table_exists(db, table_name)) {
+  if(rq_table_exists(db, table_name)) {
     if(overwrite) {
-      dbi_remove_table(db, table_name)
+      rq_remove_table(db, table_name)
     } else {
       stop(paste("rquery::materialize_sql result table",
                  table_name,
@@ -388,8 +388,8 @@ materialize_sql <- function(db,
   stmt <- materialize_sql_statement(db, sql,
                                     table_name = table_name,
                                     temporary = temporary)
-  dbi_execute(db, stmt)
-  dbi_table(db, table_name)
+  rq_execute(db, stmt)
+  rq_table(db, table_name)
 }
 
 
@@ -413,13 +413,13 @@ materialize_sql <- function(db,
 #' @param precheck logical if TRUE precheck existance of table and columns.
 #' @return data.frame or table handle.
 #'
-#' @seealso \code{\link{materialize}}, \code{\link{dbi_table}}, \code{\link{to_sql}}, \code{\link{dbi_copy_to}}, \code{\link{table_source}}
+#' @seealso \code{\link{materialize}}, \code{\link{rq_table}}, \code{\link{to_sql}}, \code{\link{rq_copy_to}}, \code{\link{table_source}}
 #'
 #' @examples
 #'
 #' if (requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'   d <- dbi_copy_to(my_db, 'd',
+#'   d <- rq_copy_to(my_db, 'd',
 #'                    data.frame(AUC = 0.6, R2 = 0.2))
 #'   optree <- extend_se(d, c("v" := "AUC + R2", "x" := "pmax(AUC,v)"))
 #'
@@ -508,15 +508,15 @@ execute <- function(source,
     }
     sql <- to_sql(ref, db, limit = limit)
     res <- DBI::dbGetQuery(db, sql)
-    dbi_remove_table(db, ref$table_name)
+    rq_remove_table(db, ref$table_name)
   }
   res
 }
 
 
-# Hyderdrive (science fiction show) version.
-
-#' @rdname execute
+#' Hyderdrive (science fiction show) synonym for \code{\link{execute}}
+#' @inherit execute
+#' @seealso \code{\link{execute}}
 #' @export
 commencify <- execute
 

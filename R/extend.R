@@ -102,7 +102,7 @@ extend_impl_list <- function(source, parsed,
 #'
 #' if (requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'   d <- dbi_copy_to(my_db, 'd',
+#'   d <- rq_copy_to(my_db, 'd',
 #'                    data.frame(AUC = 0.6, R2 = 0.2))
 #'   optree <- extend_se(d, c("v" := "AUC + R2", "x" := "pmax(AUC,v)"))
 #'   cat(format(optree))
@@ -189,7 +189,7 @@ extend_se.data.frame <- function(source, assignments,
 #'
 #' if (requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'   d <- dbi_copy_to(my_db, 'd',
+#'   d <- rq_copy_to(my_db, 'd',
 #'                    data.frame(AUC = 0.6, R2 = 0.2))
 #'   optree <- extend_nse(d, v := ifelse(AUC>0.5, R2, 1.0))
 #'   cat(format(optree))

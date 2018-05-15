@@ -29,7 +29,7 @@ order_names <- function(old_names, new_names) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(),
 #'                           ":memory:")
 #'   # load up example data
-#'   d <- dbi_copy_to(
+#'   d <- rq_copy_to(
 #'     my_db, 'd',
 #'     data.frame(v1 = c(1, 2, NA, 3),
 #'                v2 = c(NA, "b", NA, "c"),

@@ -80,7 +80,7 @@ use_spark <- FALSE
 if(use_spark) {
   my_db <- sparklyr::spark_connect(version='2.2.0', 
                                    master = "local")
-  cname <- dbi_connection_name(my_db)
+  cname <- rq_connection_name(my_db)
   rquery::setDBOption(my_db, 
                       "create_options",
                       "USING PARQUET OPTIONS ('compression'='snappy')")
@@ -93,7 +93,7 @@ if(use_spark) {
                           password = '')
 }
 
-dbopts <- dbi_connection_tests(my_db)
+dbopts <- rq_connection_tests(my_db)
 print(dbopts)
 options(dbopts)
 print(getDBOption(my_db, "control_rownames"))
@@ -105,23 +105,23 @@ d_local <- build_frame(
    1          , "positive re-framing", 2                , "irrel1"        , "irrel2"         |
    2          , "withdrawal behavior", 3                , "irrel1"        , "irrel2"         |
    2          , "positive re-framing", 4                , "irrel1"        , "irrel2"         )
-dbi_copy_to(my_db, 'd',
+rq_copy_to(my_db, 'd',
             d_local,
             temporary = TRUE, 
             overwrite = TRUE)
 
 # produce a hande to existing table
-d <- dbi_table(my_db, "d")
+d <- rq_table(my_db, "d")
 ```
 
-Note: in examples we use `dbi_copy_to()` to create data.  This is only for the purpose of having
+Note: in examples we use `rq_copy_to()` to create data.  This is only for the purpose of having
 easy portable examples.  With big data the data is usually already in the remote database or
 Spark system. The task is almost always to connect and work with this pre-existing remote data
-and the method to do this is [`dbi_table()`](https://winvector.github.io/rquery/reference/dbi_table.html),
+and the method to do this is [`rq_table()`](https://winvector.github.io/rquery/reference/rq_table.html),
 which builds a reference to a remote table given the table name.  The suggested pattern for working with 
-remote tables is to get inputs via [`dbi_table()`](https://winvector.github.io/rquery/reference/dbi_table.html)
+remote tables is to get inputs via [`rq_table()`](https://winvector.github.io/rquery/reference/rq_table.html)
 and land remote results with [`materialze()`](https://winvector.github.io/rquery/reference/materialize.html).
-To work with local data one can copy data from memory to the database with [`dbi_copy_to()`](https://winvector.github.io/rquery/reference/dbi_copy_to.html)
+To work with local data one can copy data from memory to the database with [`rq_copy_to()`](https://winvector.github.io/rquery/reference/rq_copy_to.html)
 and bring back results with [`execute()`](https://winvector.github.io/rquery/reference/execute.html) (though be aware 
 operation on remote non-memory data is `rquery`'s primary intent).
 

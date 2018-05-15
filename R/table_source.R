@@ -17,7 +17,7 @@
 #'
 #' if (requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'   dbi_copy_to(my_db,
+#'   rq_copy_to(my_db,
 #'              'd',
 #'              data.frame(AUC = 0.6, R2 = 0.2),
 #'              overwrite = TRUE,
@@ -31,7 +31,7 @@
 #'   DBI::dbDisconnect(my_db)
 #' }
 #'
-#' @seealso \code{\link{dbi_table}}, \code{\link{dbi_copy_to}}, \code{\link{materialize}}, \code{\link{execute}}, code{\link{to_sql}}
+#' @seealso \code{\link{rq_table}}, \code{\link{rq_copy_to}}, \code{\link{materialize}}, \code{\link{execute}}, code{\link{to_sql}}
 #'
 #' @export
 #'
@@ -54,10 +54,10 @@ table_source <- function(table_name, columns) {
 #' Build structures (table name, column names, and quoting
 #' strategy) needed to represent data from a remote table.
 #'
-#' Note: in examples we use \code{dbi_copy_to()} to create data.  This is only for the purpose of having
+#' Note: in examples we use \code{rq_copy_to()} to create data.  This is only for the purpose of having
 #' easy portable examples.  With big data the data is usually already in the remote database or
 #' Spark system. The task is almost always to connect and work with this pre-existing remote data
-#' and the method to do this is \code{dbi_table}
+#' and the method to do this is \code{rq_table}
 #' which builds a reference to a remote table given the table name.
 #'
 #'
@@ -65,18 +65,18 @@ table_source <- function(table_name, columns) {
 #' @param table_name name of table
 #' @return a relop representation of the data
 #'
-#' @seealso \code{\link{table_source}}, \code{\link{dbi_copy_to}}, \code{\link{materialize}}, \code{\link{execute}}, code{\link{to_sql}}
+#' @seealso \code{\link{table_source}}, \code{\link{rq_copy_to}}, \code{\link{materialize}}, \code{\link{execute}}, code{\link{to_sql}}
 #'
 #' @examples
 #'
 #' if (requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'   dbi_copy_to(my_db,
+#'   rq_copy_to(my_db,
 #'               'd',
 #'               data.frame(AUC = 0.6, R2 = 0.2),
 #'               overwrite = TRUE,
 #'               temporary = TRUE)
-#'   d <- dbi_table(my_db, 'd')
+#'   d <- rq_table(my_db, 'd')
 #'   print(d)
 #'   sql <- to_sql(d, my_db)
 #'   cat(sql)
@@ -92,9 +92,9 @@ table_source <- function(table_name, columns) {
 #'
 #' @export
 #'
-dbi_table <- function(db, table_name) {
+rq_table <- function(db, table_name) {
   table_source(table_name = table_name,
-               columns = dbi_colnames(db, table_name))
+               columns = rq_colnames(db, table_name))
 }
 
 
