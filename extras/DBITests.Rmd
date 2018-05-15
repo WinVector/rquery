@@ -1,7 +1,7 @@
 ---
 title: "DBI Tests"
 author: "John Mount, Win-Vector LLC"
-date: "5/11/2018"
+date: "5/15/2018"
 output: github_document
 ---
 
@@ -18,7 +18,7 @@ Here are the tests on a few popular database connections.
 db <- DBI::dbConnect(RSQLite::SQLite(), 
                      ":memory:")
 
-rquery::dbi_connection_tests(db)
+rquery::rq_connection_tests(db)
 
 DBI::dbDisconnect(db)
 ```
@@ -32,7 +32,7 @@ db <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
                      user = 'johnmount',
                      password = '')
 
-rquery::dbi_connection_tests(db)
+rquery::rq_connection_tests(db)
 
 DBI::dbDisconnect(db)
 ```
@@ -46,7 +46,7 @@ db <- DBI::dbConnect(RPostgres::Postgres(),
                      user = 'johnmount',
                      password = '')
 
-rquery::dbi_connection_tests(db)
+rquery::rq_connection_tests(db)
 
 DBI::dbDisconnect(db)
 ```
@@ -58,7 +58,7 @@ DBI::dbDisconnect(db)
 db <- sparklyr::spark_connect(version='2.2.0', 
                               master = "local")
 
-rquery::dbi_connection_tests(db)
+rquery::rq_connection_tests(db)
 
 sparklyr::spark_disconnect(db)
 ```

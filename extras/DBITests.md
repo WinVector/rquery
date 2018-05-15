@@ -1,7 +1,7 @@
 DBI Tests
 ================
 John Mount, Win-Vector LLC
-5/11/2018
+5/15/2018
 
 [`rquery`](https://github.com/WinVector/rquery) `0.4.2` now includes tests that report which [`DBI`](https://CRAN.R-project.org/package=DBI) methods appear to be correclty implemented for a given database connection. `rquery` also supplies a number of work-around methods that use these determinations.
 
@@ -14,7 +14,7 @@ Here are the tests on a few popular database connections.
 db <- DBI::dbConnect(RSQLite::SQLite(), 
                      ":memory:")
 
-rquery::dbi_connection_tests(db)
+rquery::rq_connection_tests(db)
 ```
 
     ## $rquery.SQLiteConnection.use_DBI_dbListFields
@@ -27,7 +27,7 @@ rquery::dbi_connection_tests(db)
     ## [1] TRUE
     ## 
     ## $rquery.SQLiteConnection.create_temporary
-    ## [1] TRUE
+    ## [1] FALSE
     ## 
     ## $rquery.SQLiteConnection.control_temporary
     ## [1] TRUE
@@ -55,14 +55,14 @@ db <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
                      user = 'johnmount',
                      password = '')
 
-rquery::dbi_connection_tests(db)
+rquery::rq_connection_tests(db)
 ```
 
     ## $rquery.PostgreSQLConnection.use_DBI_dbListFields
     ## [1] FALSE
     ## 
     ## $rquery.PostgreSQLConnection.use_DBI_dbRemoveTable
-    ## [1] TRUE
+    ## [1] FALSE
     ## 
     ## $rquery.PostgreSQLConnection.use_DBI_dbExecute
     ## [1] TRUE
@@ -77,7 +77,7 @@ rquery::dbi_connection_tests(db)
     ## [1] TRUE
     ## 
     ## $rquery.PostgreSQLConnection.use_DBI_dbExistsTable
-    ## [1] TRUE
+    ## [1] FALSE
     ## 
     ## $rquery.PostgreSQLConnection.check_logical_column_types
     ## [1] FALSE
@@ -98,7 +98,7 @@ db <- DBI::dbConnect(RPostgres::Postgres(),
                      user = 'johnmount',
                      password = '')
 
-rquery::dbi_connection_tests(db)
+rquery::rq_connection_tests(db)
 ```
 
     ## $rquery.PqConnection.use_DBI_dbListFields
@@ -111,7 +111,7 @@ rquery::dbi_connection_tests(db)
     ## [1] TRUE
     ## 
     ## $rquery.PqConnection.create_temporary
-    ## [1] TRUE
+    ## [1] FALSE
     ## 
     ## $rquery.PqConnection.control_temporary
     ## [1] TRUE
@@ -136,7 +136,7 @@ DBI::dbDisconnect(db)
 db <- sparklyr::spark_connect(version='2.2.0', 
                               master = "local")
 
-rquery::dbi_connection_tests(db)
+rquery::rq_connection_tests(db)
 ```
 
     ## $rquery.DBIConnection_spark_connection_spark_shell_connection.use_DBI_dbListFields

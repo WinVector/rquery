@@ -2,7 +2,7 @@
 title: "Ad Hoc Queries"
 author: "John Mount, Win-Vector LLC"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: github_document
 vignette: >
   %\VignetteIndexEntry{Ad Hoc Queries}
   %\VignetteEngine{knitr::rmarkdown}
@@ -28,7 +28,7 @@ DBI::dbWriteTable(db,
                              D = NA, z = 2),
                   overwrite = TRUE,
                   temporary = TRUE)
-d <- dbi_table(db, 'd')
+d <- rq_table(db, 'd')
 print(d)
 
 DBI::dbGetQuery(db, to_sql(d, db))

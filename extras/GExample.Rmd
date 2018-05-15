@@ -44,7 +44,7 @@ my_table %>%
 
 
 
-table_handle <- rquery::dbi_table(db, "my_table")
+table_handle <- rquery::rq_table(db, "my_table")
 
 optree <- table_handle %.>%
   project_nse(., 

@@ -59,8 +59,8 @@ my_table %>%
     ## FROM (SELECT *
     ## FROM (SELECT "groupA", "groupB", SUM("my_amount") AS "my_total"
     ## FROM "my_table"
-    ## GROUP BY "groupA", "groupB") "pnxjepeohj"
-    ## ORDER BY "my_total") "dcaatbuyyv"
+    ## GROUP BY "groupA", "groupB") "xrnjzvcptp"
+    ## ORDER BY "my_total") "vjmivsxhhp"
     ## ORDER BY "groupA", "groupB"
 
 ``` r
@@ -79,7 +79,7 @@ my_table %>%
     ## 4 B      D             5     2
 
 ``` r
-table_handle <- rquery::dbi_table(db, "my_table")
+table_handle <- rquery::rq_table(db, "my_table")
 
 optree <- table_handle %.>%
   project_nse(., 
@@ -106,7 +106,7 @@ cat(format(optree))
     ##  extend(.,
     ##   rank := rank(),
     ##   p= groupA,
-    ##   o= my_total) %.>%
+    ##   o= "my_total") %.>%
     ##  orderby(., groupA, groupB)
 
 ``` r
@@ -135,11 +135,11 @@ cat(to_sql(optree, db))
     ##     "my_table"."my_amount"
     ##    FROM
     ##     "my_table"
-    ##    ) tsql_33178416985461750469_0000000000
+    ##    ) tsql_21805362105965989539_0000000000
     ##   GROUP BY
     ##    "groupA", "groupB"
-    ##   ) tsql_33178416985461750469_0000000001
-    ## ) tsql_33178416985461750469_0000000002 ORDER BY "groupA", "groupB"
+    ##   ) tsql_21805362105965989539_0000000001
+    ## ) tsql_21805362105965989539_0000000002 ORDER BY "groupA", "groupB"
 
 ``` r
 execute(db, optree)

@@ -28,7 +28,7 @@ for(group in c('a', 'b', 'c', 'd', 'e')) {
 }
 my_db <- DBI::dbConnect(RSQLite::SQLite(), 
                         ":memory:")
-d1 <- dbi_copy_to(my_db, "example_table", d)
+d1 <- rq_copy_to(my_db, "example_table", d)
 d1 %.>%
   to_sql(., my_db) %.>%
   DBI::dbGetQuery(my_db, .) %.>%

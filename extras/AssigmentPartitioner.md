@@ -1,7 +1,7 @@
 Assignment Partitioner
 ================
 John Mount, Win-Vector LLC
-2018-04-26
+2018-05-15
 
 rquery example
 --------------
@@ -31,7 +31,7 @@ for(group in c('a', 'b', 'c', 'd', 'e')) {
 }
 my_db <- DBI::dbConnect(RSQLite::SQLite(), 
                         ":memory:")
-d1 <- dbi_copy_to(my_db, "example_table", d)
+d1 <- rq_copy_to(my_db, "example_table", d)
 d1 %.>%
   to_sql(., my_db) %.>%
   DBI::dbGetQuery(my_db, .) %.>%
@@ -142,16 +142,16 @@ cat(sql)
       `choice_d`,
       `choice_e`,
       `id`,
-      ( CASE WHEN ( `choice_a` ) THEN ( 'T' ) ELSE ( 'C' ) END )  AS `a_1`,
-      ( CASE WHEN ( `choice_a` ) THEN ( 'C' ) ELSE ( 'T' ) END )  AS `a_2`,
-      ( CASE WHEN ( `choice_b` ) THEN ( 'T' ) ELSE ( 'C' ) END )  AS `b_1`,
-      ( CASE WHEN ( `choice_b` ) THEN ( 'C' ) ELSE ( 'T' ) END )  AS `b_2`,
-      ( CASE WHEN ( `choice_c` ) THEN ( 'T' ) ELSE ( 'C' ) END )  AS `c_1`,
-      ( CASE WHEN ( `choice_c` ) THEN ( 'C' ) ELSE ( 'T' ) END )  AS `c_2`,
-      ( CASE WHEN ( `choice_d` ) THEN ( 'T' ) ELSE ( 'C' ) END )  AS `d_1`,
-      ( CASE WHEN ( `choice_d` ) THEN ( 'C' ) ELSE ( 'T' ) END )  AS `d_2`,
-      ( CASE WHEN ( `choice_e` ) THEN ( 'T' ) ELSE ( 'C' ) END )  AS `e_1`,
-      ( CASE WHEN ( `choice_e` ) THEN ( 'C' ) ELSE ( 'T' ) END )  AS `e_2`
+      ( CASE WHEN ( `choice_a` ) THEN ( 'T' ) WHEN NOT ( `choice_a` ) THEN ( 'C' ) ELSE NULL END )  AS `a_1`,
+      ( CASE WHEN ( `choice_a` ) THEN ( 'C' ) WHEN NOT ( `choice_a` ) THEN ( 'T' ) ELSE NULL END )  AS `a_2`,
+      ( CASE WHEN ( `choice_b` ) THEN ( 'T' ) WHEN NOT ( `choice_b` ) THEN ( 'C' ) ELSE NULL END )  AS `b_1`,
+      ( CASE WHEN ( `choice_b` ) THEN ( 'C' ) WHEN NOT ( `choice_b` ) THEN ( 'T' ) ELSE NULL END )  AS `b_2`,
+      ( CASE WHEN ( `choice_c` ) THEN ( 'T' ) WHEN NOT ( `choice_c` ) THEN ( 'C' ) ELSE NULL END )  AS `c_1`,
+      ( CASE WHEN ( `choice_c` ) THEN ( 'C' ) WHEN NOT ( `choice_c` ) THEN ( 'T' ) ELSE NULL END )  AS `c_2`,
+      ( CASE WHEN ( `choice_d` ) THEN ( 'T' ) WHEN NOT ( `choice_d` ) THEN ( 'C' ) ELSE NULL END )  AS `d_1`,
+      ( CASE WHEN ( `choice_d` ) THEN ( 'C' ) WHEN NOT ( `choice_d` ) THEN ( 'T' ) ELSE NULL END )  AS `d_2`,
+      ( CASE WHEN ( `choice_e` ) THEN ( 'T' ) WHEN NOT ( `choice_e` ) THEN ( 'C' ) ELSE NULL END )  AS `e_1`,
+      ( CASE WHEN ( `choice_e` ) THEN ( 'C' ) WHEN NOT ( `choice_e` ) THEN ( 'T' ) ELSE NULL END )  AS `e_2`
      FROM (
       SELECT
        `id`,
