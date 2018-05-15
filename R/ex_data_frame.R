@@ -25,7 +25,7 @@ re_write_table_names <- function(op_tree, new_name) {
 #'
 #' @examples
 #'
-#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#' if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
 #'   db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   winvector_temp_db_handle <- list(
 #'     db = db
@@ -92,7 +92,7 @@ rquery_apply_to_data_frame <- function(d,
                           inherits = TRUE)[[1]]
   my_db <- NULL
   if(is.null(db_handle)) {
-    if (requireNamespace("RSQLite", quietly = TRUE)) {
+    if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
       my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
       RSQLite::initExtension(my_db)
       need_close = TRUE
@@ -255,7 +255,7 @@ summary.relop <- function(object, ...) {
 #'
 #' @examples
 #'
-#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#' if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
 #'   # set up example database and
 #'   # db execution helper
 #'   db <- DBI::dbConnect(RSQLite::SQLite(),

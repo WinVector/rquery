@@ -28,7 +28,7 @@ flatten_with_sep <- function(list_of_lists, sep_list) {
 #'
 #' @examples
 #'
-#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#' if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   winvector_temp_db_handle <- list(
 #'     db = my_db
@@ -100,7 +100,7 @@ count_null_cols <- function(source, cols, count) {
 #'
 #' @examples
 #'
-#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#' if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   winvector_temp_db_handle <- list(
 #'     db = my_db

@@ -23,7 +23,7 @@ relop_decorate <- function(class_name, r) {
 #'
 #' @examples
 #'
-#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#' if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   d1 <- rq_copy_to(my_db, 'd1',
 #'                     data.frame(AUC = 0.6, R2 = 0.2))
@@ -71,7 +71,7 @@ column_names.data.frame <- function (x, ...) {
 #'
 #' @examples
 #'
-#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#' if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   d1 <- rq_copy_to(my_db, 'd1',
 #'                     data.frame(AUC = 0.6, R2 = 0.2))
@@ -123,7 +123,7 @@ columns_used.relop <- function (x,
 #'
 #' @examples
 #'
-#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#' if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   d1 <- rq_copy_to(my_db, 'd1',
 #'                     data.frame(AUC = 0.6, R2 = 0.2))
@@ -173,7 +173,7 @@ tables_used.relop <- function(node, ...) {
 #'
 #' @examples
 #'
-#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#' if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   d1 <- rq_copy_to(my_db, 'd1',
 #'                     data.frame(AUC = 0.6, R2 = 0.2))

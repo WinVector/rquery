@@ -28,7 +28,7 @@
 #'
 #' @examples
 #'
-#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#' if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
 #'   # Example: clear one of a or b in any row where both are set.
 #'   # Land random selections early to avoid SQLite bug.
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
@@ -155,7 +155,7 @@ if_else_block <- function(testexpr,
 #'
 #' @examples
 #'
-#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#' if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
 #'   # Example: clear one of a or b in any row where both are set.
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   d <- rq_copy_to(

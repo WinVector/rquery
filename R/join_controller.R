@@ -1,7 +1,7 @@
 
 # build some example tables
 #
-# if (requireNamespace("RSQLite", quietly = TRUE)) {
+# if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
 #   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #   rquery:::example_employee_date(my_db)
 #   DBI::dbDisconnect(my_db)
@@ -108,7 +108,7 @@ makeTableIndMap <- function(tableNameSeq) {
 #'
 #' @examples
 #'
-#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#' if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   DBI::dbWriteTable(my_db,
 #'                     "d",
@@ -141,7 +141,7 @@ key_inspector_all_cols <- function(db, tablename) {
 #'
 #' @examples
 #'
-#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#' if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   DBI::dbExecute(my_db, "
 #'     CREATE TABLE orgtable (
@@ -223,7 +223,7 @@ key_inspector_postgresql <- function(db, tablename) {
 #'
 #' @examples
 #'
-#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#' if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   ex <- rquery:::example_employee_date(my_db)
 #'   print(describe_tables(my_db, ex$tableName,
@@ -394,7 +394,7 @@ inspect_and_limit_join_plan <- function(columnJoinPlan, checkColClasses) {
 #'
 #' @examples
 #'
-#' if (requireNamespace("RSQLite", quietly = TRUE) &&
+#' if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE) &&
 #'     requireNamespace('igraph', quietly = TRUE)) {
 #'   # note: employeeanddate is likely built as a cross-product
 #'   #       join of an employee table and set of dates of interest
@@ -479,7 +479,7 @@ topo_sort_tables <- function(columnJoinPlan, leftTableName,
 #' @examples
 #'
 #'
-#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#' if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
 #'   # note: employeeanddate is likely built as a cross-product
 #'   #       join of an employee table and set of dates of interest
 #'   #       before getting to the join controller step.  We call
@@ -620,7 +620,7 @@ graph_join_plan <- function(columnJoinPlan, ...,
 #'
 #' @examples
 #'
-#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#' if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   # example data
 #'   DBI::dbWriteTable(my_db,
@@ -708,7 +708,7 @@ inspect_join_plan <- function(tDesc, columnJoinPlan,
 #'
 #' @examples
 #'
-#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#' if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   d <- data.frame(id=1:3, weight= c(200, 140, 98))
 #'   DBI::dbWriteTable(my_db,"d1", d)
@@ -850,7 +850,7 @@ strMapToString <- function(m) {
 #'
 #' @examples
 #'
-#' if (requireNamespace("RSQLite", quietly = TRUE)) {
+#' if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   # example data
 #'   DBI::dbWriteTable(my_db,
