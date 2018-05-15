@@ -1,7 +1,7 @@
 ---
 title: "Summary Example"
 author: "John Mount, Win-Vector LLC"
-date: "3/13/2018"
+date: "5/15/2018"
 output: github_document
 ---
 
@@ -11,7 +11,7 @@ library("rquery")
 run_example <- function(db) {
   print("***********")
   print(db)
-  d <- dbi_copy_to(db, "d",
+  d <- rq_copy_to(db, "d",
                    data.frame(v = NA_real_,
                               w = 1,
                               x = c(rev(1:10), NA, NA),
@@ -35,7 +35,7 @@ run_example <- function(db) {
   execute(db, optrees) %.>%
     print(.)
   
-  dbi_remove_table(db, "d")
+  rq_remove_table(db, "d")
 }
 
 db <- sparklyr::spark_connect(version='2.2.0', 

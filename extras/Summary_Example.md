@@ -1,7 +1,7 @@
 Summary Example
 ================
 John Mount, Win-Vector LLC
-3/13/2018
+5/15/2018
 
 ``` r
 library("rquery")
@@ -13,7 +13,7 @@ library("rquery")
 run_example <- function(db) {
   print("***********")
   print(db)
-  d <- dbi_copy_to(db, "d",
+  d <- rq_copy_to(db, "d",
                    data.frame(v = NA_real_,
                               w = 1,
                               x = c(rev(1:10), NA, NA),
@@ -37,7 +37,7 @@ run_example <- function(db) {
   execute(db, optrees) %.>%
     print(.)
   
-  dbi_remove_table(db, "d")
+  rq_remove_table(db, "d")
 }
 
 db <- sparklyr::spark_connect(version='2.2.0', 
@@ -78,7 +78,7 @@ run_example(db)
     ## 
     ## $backend
     ## A connection with                               
-    ## description "->localhost:52313"
+    ## description "->localhost:57304"
     ## class       "sockconn"         
     ## mode        "wb"               
     ## text        "binary"           
@@ -87,39 +87,39 @@ run_example(db)
     ## can write   "yes"              
     ## 
     ## $monitor
-    ## A connection with                               
-    ## description "->localhost:52310"
-    ## class       "sockconn"         
-    ## mode        "rb"               
-    ## text        "binary"           
-    ## opened      "opened"           
-    ## can read    "yes"              
-    ## can write   "yes"              
+    ## A connection with                              
+    ## description "->localhost:8880"
+    ## class       "sockconn"        
+    ## mode        "rb"              
+    ## text        "binary"          
+    ## opened      "opened"          
+    ## can read    "yes"             
+    ## can write   "yes"             
     ## 
     ## $output_file
-    ## [1] "/var/folders/7q/h_jp2vj131g5799gfnpzhdp80000gn/T//Rtmp4RmSTG/file133a949fb8ee_spark.log"
+    ## [1] "/var/folders/7q/h_jp2vj131g5799gfnpzhdp80000gn/T//RtmpQCCsi3/file10ba87a89304c_spark.log"
     ## 
     ## $spark_context
     ## <jobj[7]>
     ##   org.apache.spark.SparkContext
-    ##   org.apache.spark.SparkContext@1f1a7b2e
+    ##   org.apache.spark.SparkContext@65b07846
     ## 
     ## $java_context
     ## <jobj[8]>
     ##   org.apache.spark.api.java.JavaSparkContext
-    ##   org.apache.spark.api.java.JavaSparkContext@127e55
+    ##   org.apache.spark.api.java.JavaSparkContext@32504d86
     ## 
     ## attr(,"class")
     ## [1] "spark_connection"       "spark_shell_connection"
     ## [3] "DBIConnection"         
-    ## [1] "table('d') %.>% non_sql_node(., quantile_node(., qin_59384997029121443357_0000000000, qout_93686542606907208240_0000000000))"
-    ##   probs     v w  x          y z
-    ## 1  0.00 FALSE 1  1 -0.9589243 a
-    ## 2  0.25 FALSE 1  3 -0.5440211 c
-    ## 3  0.50 FALSE 1  5  0.1411200 f
-    ## 4  0.75 FALSE 1  8  0.8414710 i
-    ## 5  1.00 FALSE 1 10  0.9893582 l
-    ## [1] "table('d') %.>% non_sql_node(., rsummary_node(., rin_31808163576146474994_0000000000, rout_43147808544274825915_0000000000))"
+    ## [1] "table('d') %.>% non_sql_node(., quantile_node(.))"
+    ##   quantile_probability     v w  x          y z
+    ## 1                 0.00 FALSE 1  1 -0.9589243 a
+    ## 2                 0.25 FALSE 1  3 -0.5440211 c
+    ## 3                 0.50 FALSE 1  5  0.1411200 f
+    ## 4                 0.75 FALSE 1  8  0.8414710 i
+    ## 5                 1.00 FALSE 1 10  0.9893582 l
+    ## [1] "table('d') %.>% non_sql_node(., rsummary_node(.))"
     ##   column index     class nrows nna nunique        min        max      mean
     ## 1      v     1   numeric    12  12       0        NaN        NaN       NaN
     ## 2      w     2   numeric    12   0     NaN  1.0000000  1.0000000 1.0000000
@@ -133,7 +133,7 @@ run_example(db)
     ## 4 0.7304706     NA     NA -0.5440211 0.14112 0.841471
     ## 5       NaN      a      l        NaN     NaN      NaN
 
-    ## [1] 0
+    ## [1] TRUE
 
 ``` r
 sparklyr::spark_disconnect(db)
@@ -150,14 +150,14 @@ run_example(db)
 
     ## [1] "***********"
     ## <PostgreSQLConnection>
-    ## [1] "table('d') %.>% non_sql_node(., quantile_node(., qin_44472513068635314670_0000000000, qout_19567394717705106244_0000000000))"
-    ##   probs  v w  x          y z
-    ## 1  0.00 NA 1  1 -0.9589243 a
-    ## 2  0.25 NA 1  3 -0.5440211 c
-    ## 3  0.50 NA 1  5  0.1411200 f
-    ## 4  0.75 NA 1  8  0.8414710 i
-    ## 5  1.00 NA 1 10  0.9893582 l
-    ## [1] "table('d') %.>% non_sql_node(., rsummary_node(., rin_89301739172462436350_0000000000, rout_50200085935595930633_0000000000))"
+    ## [1] "table('d') %.>% non_sql_node(., quantile_node(.))"
+    ##   quantile_probability  v w  x          y z
+    ## 1                 0.00 NA 1  1 -0.9589243 a
+    ## 2                 0.25 NA 1  3 -0.5440211 c
+    ## 3                 0.50 NA 1  5  0.1411200 f
+    ## 4                 0.75 NA 1  8  0.8414710 i
+    ## 5                 1.00 NA 1 10  0.9893582 l
+    ## [1] "table('d') %.>% non_sql_node(., rsummary_node(.))"
     ##   column index     class nrows nna nunique        min        max      mean
     ## 1      v     1   numeric    12  12       0         NA         NA        NA
     ## 2      w     2   numeric    12   0      NA  1.0000000  1.0000000 1.0000000
@@ -171,7 +171,7 @@ run_example(db)
     ## 4 0.7304706   <NA>   <NA> -0.5440211 0.14112 0.841471
     ## 5        NA      a      l         NA      NA       NA
 
-    ## [1] 0
+    ## [1] TRUE
 
 ``` r
 DBI::dbDisconnect(db)
@@ -185,24 +185,19 @@ db <- DBI::dbConnect(RPostgres::Postgres(),
                      port = 5432,
                      user = 'johnmount',
                      password = '')
-```
-
-    ## Warning: multiple methods tables found for 'dbQuoteLiteral'
-
-``` r
 run_example(db)
 ```
 
     ## [1] "***********"
     ## <PqConnection> johnmount@localhost:5432
-    ## [1] "table('d') %.>% non_sql_node(., quantile_node(., qin_53259857491590815270_0000000000, qout_65244103743863484273_0000000000))"
-    ##   probs  v w  x         y z
-    ## 1  0.00 NA 1  1 -0.958924 a
-    ## 2  0.25 NA 1  3 -0.544021 c
-    ## 3  0.50 NA 1  5  0.141120 f
-    ## 4  0.75 NA 1  8  0.841471 i
-    ## 5  1.00 NA 1 10  0.989358 l
-    ## [1] "table('d') %.>% non_sql_node(., rsummary_node(., rin_13112075491964140955_0000000000, rout_33032872339545543398_0000000000))"
+    ## [1] "table('d') %.>% non_sql_node(., quantile_node(.))"
+    ##   quantile_probability  v w  x         y z
+    ## 1                 0.00 NA 1  1 -0.958924 a
+    ## 2                 0.25 NA 1  3 -0.544021 c
+    ## 3                 0.50 NA 1  5  0.141120 f
+    ## 4                 0.75 NA 1  8  0.841471 i
+    ## 5                 1.00 NA 1 10  0.989358 l
+    ## [1] "table('d') %.>% non_sql_node(., rsummary_node(.))"
     ##   column index     class nrows nna nunique       min       max     mean
     ## 1      v     1   numeric    12  12       0        NA        NA       NA
     ## 2      w     2   numeric    12   0      NA  1.000000  1.000000 1.000000
@@ -216,7 +211,7 @@ run_example(db)
     ## 4 0.730471   <NA>   <NA> -0.544021 0.14112 0.841471
     ## 5       NA      a      l        NA      NA       NA
 
-    ## [1] 0
+    ## [1] TRUE
 
 ``` r
 DBI::dbDisconnect(db)

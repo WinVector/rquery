@@ -295,8 +295,9 @@ rsummary <- function(db,
   rownames(res) <- NULL
   if(quartiles) {
     qs <- quantile_cols(db, tableName,
-                        c(0.25, 0.5, 0.75), "rquery_probs_col",
-                        numericCols)
+                        probs = c(0.25, 0.5, 0.75),
+                        probs_name = "rquery_probs_col",
+                        cols = numericCols)
     res$Q1 <- NA_real_
     res$median <- NA_real_
     res$Q3 <- NA_real_
