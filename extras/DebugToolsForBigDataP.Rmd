@@ -1,7 +1,7 @@
 ---
 title: "Debug Tools for Big Data (PostgreSQL)"
 output: github_document
-date: "2018-05-14"
+date: "2018-05-15"
 ---
 
 <!-- file.md is generated from file.Rmd. Please edit that file -->
@@ -20,7 +20,7 @@ my_db <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
                         password = '')
 
 # configure rquery options
-dbopts <- dbi_connection_tests(
+dbopts <- rq_connection_tests(
   my_db,
   # seeing a bug here in RPostgreSQL, possibly on CREATE queries
   overrides = c(use_DBI_dbExistsTable = FALSE, use_DBI_dbRemoveTable = FALSE) 
@@ -34,8 +34,8 @@ base::date()
 ```{r startexample}
 base::date()
 
-# build up example data
-nSubj <- 1000000
+# build up medium sized example data
+nSubj <- 100000
 nIrrelCol <- 500
 
 d_local <- data.frame(subjectID = sort(rep(seq_len(nSubj),2)),
@@ -46,7 +46,7 @@ d_local <- data.frame(subjectID = sort(rep(seq_len(nSubj),2)),
 d_local$assessmentTotal <- sample.int(10, nrow(d_local), replace = TRUE)
 irrel_col_1 <- paste("irrelevantCol", sprintf("%07g", 1), sep = "_")
 d_local[[irrel_col_1]] <- runif(nrow(d_local))
-d_small <- rquery::dbi_copy_to(my_db, 'd_small',
+d_small <- rquery::rq_copy_to(my_db, 'd_small',
                  d_local,
                  overwrite = TRUE, 
                  temporary = TRUE)
@@ -82,7 +82,7 @@ rm(list = "d_small")
 d_large_tbl <- tbl(my_db, d_large$table_name)
 
 # rquery view of table
-rquery::dbi_nrow(my_db, d_large$table_name)
+rquery::rq_nrow(my_db, d_large$table_name)
 length(column_names(d_large))
 
 base::date()
