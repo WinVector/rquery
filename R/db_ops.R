@@ -11,7 +11,7 @@
 #'
 #' @seealso \code{\link{rq_table}}
 #'
-#' @noRd
+#' @export
 #'
 rq_get_query <- function(db, q) {
   # first shot- see if it is a db info with function overrriden
@@ -38,7 +38,7 @@ rq_get_query <- function(db, q) {
 #'
 #' @seealso \code{\link{rq_table}}
 #'
-#' @noRd
+#' @export
 #'
 rq_execute <- function(db, q) {
   # first shot- see if it is a db info with function overrriden

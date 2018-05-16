@@ -1,0 +1,132 @@
+---
+title: "SparkR Example"
+output: github_document
+---
+
+Connect to a `SparkR` cluster and work a small example.
+
+```{r start_sparkr, include=FALSE}
+# From SparkR package vignette/README
+knitr::opts_hooks$set(eval = function(options) {
+  # override eval to FALSE only on windows
+  if (.Platform$OS.type == "windows") {
+    options$eval = FALSE
+  }
+  options
+})
+r_tmp_dir <- tempdir()
+tmp_arg <- paste0("-Djava.io.tmpdir=", r_tmp_dir)
+sparkSessionConfig <- list(spark.driver.extraJavaOptions = tmp_arg,
+                           spark.executor.extraJavaOptions = tmp_arg)
+old_java_opt <- Sys.getenv("_JAVA_OPTIONS")
+Sys.setenv("_JAVA_OPTIONS" = paste("-XX:-UsePerfData", old_java_opt, sep = " "))
+ses <- SparkR::sparkR.session(master = "local[1]", 
+                              sparkConfig = sparkSessionConfig, 
+                              enableHiveSupport = FALSE)
+```
+
+
+```{r build_data, include=FALSE}
+# From: https://github.com/WinVector/rquery/blob/master/extras/DebugToolsForBigData.md
+set.seed(235235)
+nSubj <- 10
+d_local <- data.frame(subjectID = sort(rep(seq_len(nSubj),2)),
+                 surveyCategory = c(
+                   'withdrawal behavior',
+                   'positive re-framing'),
+                 stringsAsFactors = FALSE)
+d_local$assessmentTotal <- sample.int(10, nrow(d_local), replace = TRUE)
+irrel_col_1 <- paste("irrelevantCol", sprintf("%07g", 1), sep = "_")
+d_local[[irrel_col_1]] <- runif(nrow(d_local))
+test_df <- SparkR::createDataFrame(d_local)
+# https://github.com/apache/spark/blob/master/examples/src/main/r/RSparkSQLExample.R
+# SparkR::createOrReplaceTempView(test_df, "table")
+# SparkR::collect(SparkR::sql("SELECT * from table"))
+```
+
+[`rquery`](https://winvector.github.io/rquery/) example.
+
+```{r connect_rquery, include=FALSE}
+
+
+sparkr_table <- function(db_hdl, df, 
+                         nam = wrapr::mk_tmp_name_source("rs")()) {
+  SparkR::createOrReplaceTempView(test_df, nam)
+  rq_table(db_hdl, nam)
+}
+
+# define SparkR adapting handle
+db_hdl <- rquery::rquery_db_info(
+  connection = ses,
+  is_dbi = FALSE,
+  indentifier_quote_char = '`',
+  string_quote_char = '"',
+  note = "SparkR",
+  overrides = list(
+    rq_get_query = function(db, q) {
+      SparkR::collect(SparkR::sql(q))
+    },
+    rq_execute = function(db, q) {
+      SparkR::sql(q)
+    },
+    rq_colnames = function(db, table_name) {
+      q <- paste0("SELECT * FROM ",
+                  rquery::quote_identifier(db, table_name),
+                  " LIMIT 1")
+      v <- rquery::rq_get_query(db, q)
+      colnames(v)
+    }
+  ))
+db_hdl$quote_identifier <- function(x, id) {
+  db_hdl$dbqi(id)
+}
+db_hdl$quote_string <- function(x, s) {
+  db_hdl$dbqs(s)
+}
+db_hdl$quote_literal <- function(x, o) {
+  if(is.character(o) || is.factor(o)) {
+    return(db_hdl$dbqs(as.character(o)))
+  }
+  db_hdl$dbql(o)
+}
+```
+
+```{r example}
+library("rquery")
+
+print(db_hdl)
+print(test_df)
+
+d_hdl <- sparkr_table(db_hdl, test_df)
+
+print(d_hdl)
+print(column_names(d_hdl))
+
+scale <- 0.237
+
+rquery_pipeline <- d_hdl %.>%
+  extend_nse(.,
+             probability :=
+               exp(assessmentTotal * scale))  %.>% 
+  normalize_cols(.,
+                 "probability",
+                 partitionby = 'subjectID') %.>%
+  pick_top_k(.,
+             partitionby = 'subjectID',
+             rev_orderby = c('probability', 'surveyCategory')) %.>%
+  rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
+  select_columns(., qc(subjectID, diagnosis, probability)) %.>%
+  orderby(., 'subjectID') 
+
+rquery_pipeline %.>%
+  op_diagram(.) %.>% 
+  DiagrammeR::grViz(.)
+
+execute(db_hdl, rquery_pipeline) %.>%
+  knitr::kable(.)
+```
+
+
+```{r cleanup, include=FALSE}
+SparkR::sparkR.session.stop()
+```

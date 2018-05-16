@@ -6,7 +6,8 @@
 #' @param is_dbi if TRUE the database connection can be used with DBI.
 #' @param indentifier_quote_char character, quote to put around identifiers.
 #' @param string_quote_char character, quote to put around strings.
-#' @param overrides named list of functions to place in info
+#' @param overrides named list of functions to place in info.
+#' @param note character note to add to display form.
 #' @return rquery_db_info object
 #'
 #' @export
@@ -16,7 +17,8 @@ rquery_db_info <- function(...,
                            is_dbi = FALSE,
                            indentifier_quote_char = NULL,
                            string_quote_char = NULL,
-                           overrides = NULL) {
+                           overrides = NULL,
+                           note = "") {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::rquery_db_info")
   # does not handle quotes inside strings
   r <- list(
@@ -24,6 +26,7 @@ rquery_db_info <- function(...,
     is_dbi = is_dbi,
     indentifier_quote_char = indentifier_quote_char,
     string_quote_char = string_quote_char,
+    note = note,
     dbqi = function(id) {
       paste0(indentifier_quote_char,
              id,
@@ -66,6 +69,19 @@ rquery_db_info <- function(...,
   r
 }
 
+#' @export
+format.rquery_db_info <- function(x, ...) {
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::format.rquery_db_info")
+  paste0("rquery_db_info(is_dbi=", x$is_dbi, ", ", x$note, ", ", format(x$connection) , ")")
+}
+
+#' @export
+print.rquery_db_info <- function(x, ...) {
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::print.rquery_db_info")
+  print(format(x))
+}
+
+
 rquery_default_db_info <- rquery_db_info(indentifier_quote_char = '"',
                                          string_quote_char = "'",
                                          is_dbi = FALSE)
@@ -76,7 +92,7 @@ rquery_default_db_info <- rquery_db_info(indentifier_quote_char = '"',
 #' @param id character to quote
 #' @return quoted identifier
 #'
-#' @noRd
+#' @export
 #'
 quote_identifier <- function (x, id) {
   if("rquery_db_info" %in% class(x)) {
@@ -98,7 +114,7 @@ quote_identifier <- function (x, id) {
 #' @param s character to quote
 #' @return quoted string
 #'
-#' @noRd
+#' @export
 #'
 quote_string <- function (x, s) {
   s <- as.character(s)
@@ -121,7 +137,7 @@ quote_string <- function (x, s) {
 #' @param o value to quote
 #' @return quoted string
 #'
-#' @noRd
+#' @export
 #'
 quote_literal <- function (x, o) {
   if(is.character(o) || is.factor(o)) {

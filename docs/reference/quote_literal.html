@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Build a db information stand-in — rquery_db_info • rquery</title>
+<title>Quote a value — quote_literal • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -28,9 +28,9 @@
 
 
 
-<meta property="og:title" content="Build a db information stand-in — rquery_db_info" />
+<meta property="og:title" content="Quote a value — quote_literal" />
 
-<meta property="og:description" content="Build a db information stand-in" />
+<meta property="og:description" content="Quote a value" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -112,57 +112,35 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Build a db information stand-in</h1>
+    <h1>Quote a value</h1>
     <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/db_info.R'><code>R/db_info.R</code></a></small>
-    <div class="hidden name"><code>rquery_db_info.Rd</code></div>
+    <div class="hidden name"><code>quote_literal.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Build a db information stand-in</p>
+    <p>Quote a value</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>rquery_db_info</span>(<span class='no'>...</span>, <span class='kw'>connection</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>is_dbi</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>indentifier_quote_char</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>string_quote_char</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>overrides</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>note</span> <span class='kw'>=</span> <span class='st'>""</span>)</pre>
+    <pre class="usage"><span class='fu'>quote_literal</span>(<span class='no'>x</span>, <span class='no'>o</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>...</th>
-      <td><p>force all arguments to be by name.</p></td>
+      <th>x</th>
+      <td><p>database handle or rquery_db_info object.</p></td>
     </tr>
     <tr>
-      <th>connection</th>
-      <td><p>connection handle to database or Spark.</p></td>
-    </tr>
-    <tr>
-      <th>is_dbi</th>
-      <td><p>if TRUE the database connection can be used with DBI.</p></td>
-    </tr>
-    <tr>
-      <th>indentifier_quote_char</th>
-      <td><p>character, quote to put around identifiers.</p></td>
-    </tr>
-    <tr>
-      <th>string_quote_char</th>
-      <td><p>character, quote to put around strings.</p></td>
-    </tr>
-    <tr>
-      <th>overrides</th>
-      <td><p>named list of functions to place in info.</p></td>
-    </tr>
-    <tr>
-      <th>note</th>
-      <td><p>character note to add to display form.</p></td>
+      <th>o</th>
+      <td><p>value to quote</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>rquery_db_info object</p>
+    <p>quoted string</p>
     
 
   </div>

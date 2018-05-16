@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Build a db information stand-in — rquery_db_info • rquery</title>
+<title>Execute a query, typcially an update that is not supposed to return results. — rq_execute • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -28,9 +28,9 @@
 
 
 
-<meta property="og:title" content="Build a db information stand-in — rquery_db_info" />
+<meta property="og:title" content="Execute a query, typcially an update that is not supposed to return results. — rq_execute" />
 
-<meta property="og:description" content="Build a db information stand-in" />
+<meta property="og:description" content="Execute a query, typcially an update that is not supposed to return results." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -112,57 +112,39 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Build a db information stand-in</h1>
-    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/db_info.R'><code>R/db_info.R</code></a></small>
-    <div class="hidden name"><code>rquery_db_info.Rd</code></div>
+    <h1>Execute a query, typcially an update that is not supposed to return results.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/db_ops.R'><code>R/db_ops.R</code></a></small>
+    <div class="hidden name"><code>rq_execute.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Build a db information stand-in</p>
+    <p>Execute a query, typcially an update that is not supposed to return results.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>rquery_db_info</span>(<span class='no'>...</span>, <span class='kw'>connection</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>is_dbi</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>indentifier_quote_char</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>string_quote_char</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>overrides</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>note</span> <span class='kw'>=</span> <span class='st'>""</span>)</pre>
+    <pre class="usage"><span class='fu'>rq_execute</span>(<span class='no'>db</span>, <span class='no'>q</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>...</th>
-      <td><p>force all arguments to be by name.</p></td>
+      <th>db</th>
+      <td><p>database connection handle</p></td>
     </tr>
     <tr>
-      <th>connection</th>
-      <td><p>connection handle to database or Spark.</p></td>
-    </tr>
-    <tr>
-      <th>is_dbi</th>
-      <td><p>if TRUE the database connection can be used with DBI.</p></td>
-    </tr>
-    <tr>
-      <th>indentifier_quote_char</th>
-      <td><p>character, quote to put around identifiers.</p></td>
-    </tr>
-    <tr>
-      <th>string_quote_char</th>
-      <td><p>character, quote to put around strings.</p></td>
-    </tr>
-    <tr>
-      <th>overrides</th>
-      <td><p>named list of functions to place in info.</p></td>
-    </tr>
-    <tr>
-      <th>note</th>
-      <td><p>character note to add to display form.</p></td>
+      <th>q</th>
+      <td><p>character query</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>rquery_db_info object</p>
+    <p>nothing</p>
+    
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><code><a href='rq_table.html'>rq_table</a></code></p></div>
     
 
   </div>
@@ -172,6 +154,8 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
+
+      <li><a href="#see-also">See also</a></li>
           </ul>
 
   </div>
