@@ -3,6 +3,7 @@
 
  * Make DBI suggested.
  * Rename dbi_ prefixes to rq_ (for now have aliases from old to new).
+ * Per-connection options.
 
 # rquery 0.4.4 2018/05/14
 

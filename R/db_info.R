@@ -8,6 +8,7 @@
 #' @param string_quote_char character, quote to put around strings.
 #' @param overrides named list of functions to place in info.
 #' @param note character note to add to display form.
+#' @param connection_options names list of per-connection options.
 #' @return rquery_db_info object
 #'
 #' @export
@@ -18,7 +19,8 @@ rquery_db_info <- function(...,
                            indentifier_quote_char = NULL,
                            string_quote_char = NULL,
                            overrides = NULL,
-                           note = "") {
+                           note = "",
+                           connection_options = list()) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::rquery_db_info")
   # does not handle quotes inside strings
   r <- list(
@@ -27,6 +29,7 @@ rquery_db_info <- function(...,
     indentifier_quote_char = indentifier_quote_char,
     string_quote_char = string_quote_char,
     note = note,
+    connection_options = connection_options,
     dbqi = function(id) {
       paste0(indentifier_quote_char,
              id,
@@ -50,16 +53,16 @@ rquery_db_info <- function(...,
       stop("rquery::rquery_db_info is_dbi=TRUE requeries DBI package")
     }
     r$quote_identifier <- function(x, id) {
-      DBI::dbQuoteIdentifier(x$connection, as.character(id))
+      DBI::dbQuoteIdentifier(r$connection, as.character(id))
     }
     r$quote_string <- function(x, s) {
-      DBI::dbQuoteString(x$connection, as.character(s))
+      DBI::dbQuoteString(r$connection, as.character(s))
     }
     r$quote_literal <- function(x, o) {
       if(is.character(o) || is.factor(o)) {
-        return(DBI::dbQuoteString(x$connection, as.character(o)))
+        return(DBI::dbQuoteString(r$connection, as.character(o)))
       }
-      DBI::dbQuoteLiteral(x$connection, o)
+      DBI::dbQuoteLiteral(r$connection, o)
     }
   }
   for(ni in names(overrides)) {

@@ -125,7 +125,7 @@
 
     <pre class="usage"><span class='fu'>rquery_db_info</span>(<span class='no'>...</span>, <span class='kw'>connection</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>is_dbi</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>indentifier_quote_char</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>string_quote_char</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>overrides</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>note</span> <span class='kw'>=</span> <span class='st'>""</span>)</pre>
+  <span class='kw'>overrides</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>note</span> <span class='kw'>=</span> <span class='st'>""</span>, <span class='kw'>connection_options</span> <span class='kw'>=</span> <span class='fu'>list</span>())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -157,6 +157,10 @@
     <tr>
       <th>note</th>
       <td><p>character note to add to display form.</p></td>
+    </tr>
+    <tr>
+      <th>connection_options</th>
+      <td><p>names list of per-connection options.</p></td>
     </tr>
     </table>
     
