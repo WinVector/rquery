@@ -22,7 +22,8 @@
 #'   # example
 #'   set <- c("1", "2")
 #'   op_tree <- d %.>%
-#'     set_indicator(., "one_two", "a", set)
+#'     set_indicator(., "one_two", "a", set) %.>%
+#'     set_indicator(., "z", "a", c())
 #'   cat(format(op_tree))
 #'   sql <- to_sql(op_tree, my_db)
 #'   cat(sql)
@@ -35,20 +36,21 @@
 #' @export
 #'
 set_indicator <- function(source, rescol, testcol, testvalues) {
-  testvname <- paste(as.character(substitute(testvalues)), collapse = "")
-  if(length(testvalues)<1) {
-    stop("rquery::set_indicator testvalues must not be empty")
-  }
-  terms = list(as.name(testcol), " IN ( ")
-  for(i in seq_len(length(testvalues))) {
-    if(i>1) {
-      terms <- c(terms, " , ")
+  testvname <- paste(deparse(substitute(testvalues)), collapse = " ")
+  if(length(testvalues)>0) {
+    terms = list(as.name(testcol), " IN ( ")
+    for(i in seq_len(length(testvalues))) {
+      if(i>1) {
+        terms <- c(terms, " , ")
+      }
+      terms <- c(terms, list(list(testvalues[[i]])))
     }
-    terms <- c(terms, list(list(testvalues[[i]])))
+    terms <- c(terms, list(" ) "))
+    terms <- list(terms)
+    names(terms) <- rescol
+  } else {
+    terms <- rescol := 0
   }
-  terms <- c(terms, list(" ) "))
-  terms <- list(terms)
-  names(terms) <- rescol
   nd <- sql_node(source, terms,
                  orig_columns = TRUE)
   if("relop" %in% class(nd)) {

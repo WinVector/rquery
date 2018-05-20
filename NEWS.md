@@ -1,5 +1,5 @@
 
-# rquery 0.5.0 2018/05/18
+# rquery 0.5.0 2018/05/20
 
  * Make DBI suggested.
  * Rename dbi_ prefixes to rq_ (for now have aliases from old to new).
