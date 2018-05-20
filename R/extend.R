@@ -218,6 +218,8 @@ extend_nse.relop <- function(source,
                              orderby = NULL,
                              rev_orderby = NULL,
                              env = parent.frame()) {
+  # Recommend way to caputre ... unevalauted from
+  # http://adv-r.had.co.nz/Computing-on-the-language.html#substitute "Capturing unevaluated ..."
   exprs <-  eval(substitute(alist(...)))
   parsed <- parse_nse(source, exprs, env = env)
   extend_impl_list(source = source,

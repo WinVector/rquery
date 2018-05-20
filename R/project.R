@@ -154,6 +154,8 @@ project_nse <- function(source, groupby, ...,
 #' @export
 project_nse.relop <- function(source, groupby, ...,
                         env = parent.frame()) {
+  # Recommend way to caputre ... unevalauted from
+  # http://adv-r.had.co.nz/Computing-on-the-language.html#substitute "Capturing unevaluated ..."
   exprs <-  eval(substitute(alist(...)))
   parsed <- parse_nse(source, exprs, env = env)
   project_impl(source, groupby = groupby, parsed = parsed)
