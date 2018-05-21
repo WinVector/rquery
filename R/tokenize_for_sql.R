@@ -216,7 +216,7 @@ tokenize_for_SQL_r <- function(lexpr,
                           colnames,
                           env) {
   n <- length(lexpr)
-  res <- list(presentation = paste(as.character(lexpr), collapse = ' '),
+  res <- list(presentation = paste(deparse(lexpr), collapse = ' '),
               parsed_toks = list(),
               symbols_used = character(0),
               symbols_produced = character(0),
