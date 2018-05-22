@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Make a select rows node. — select_rows_se • rquery</title>
+<title>Cross product vectors in database. — expand_grid • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -28,9 +28,9 @@
 
 
 
-<meta property="og:title" content="Make a select rows node. — select_rows_se" />
+<meta property="og:title" content="Cross product vectors in database. — expand_grid" />
 
-<meta property="og:description" content="Make a select rows node." />
+<meta property="og:description" content="Cross product vectors in database." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -112,66 +112,62 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Make a select rows node.</h1>
-    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/select_rows.R'><code>R/select_rows.R</code></a></small>
-    <div class="hidden name"><code>select_rows_se.Rd</code></div>
+    <h1>Cross product vectors in database.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/complete_design.R'><code>R/complete_design.R</code></a></small>
+    <div class="hidden name"><code>expand_grid.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Make a select rows node.</p>
+    <p>Cross product vectors in database.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>select_rows_se</span>(<span class='no'>source</span>, <span class='no'>expr</span>, <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
+    <pre class="usage"><span class='fu'>expand_grid</span>(<span class='no'>db</span>, <span class='no'>values</span>, <span class='no'>...</span>, <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>table_name</span> <span class='kw'>=</span> (<span class='kw pkg'>wrapr</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/wrapr/topics/mk_tmp_name_source'>mk_tmp_name_source</a></span>(<span class='st'>"eg"</span>))())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>source</th>
-      <td><p>source to select from.</p></td>
+      <th>db</th>
+      <td><p>database handle</p></td>
     </tr>
     <tr>
-      <th>expr</th>
-      <td><p>expression to select rows.</p></td>
+      <th>values</th>
+      <td><p>named list of value vectors.</p></td>
     </tr>
     <tr>
-      <th>env</th>
-      <td><p>environment to look for values in.</p></td>
+      <th>...</th>
+      <td><p>force later arguments to bind by name.</p></td>
+    </tr>
+    <tr>
+      <th>temporary</th>
+      <td><p>logical if TRUE try to make temporary table.</p></td>
+    </tr>
+    <tr>
+      <th>table_name</th>
+      <td><p>name to land result as.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>select columns node.</p>
+    <p>table handle.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='kw'>if</span> (<span class='fu'>requireNamespace</span>(<span class='st'>"DBI"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>&amp;&amp;</span> <span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
+<span class='kw'>if</span> (<span class='fu'>requireNamespace</span>(<span class='st'>"DBI"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>&amp;&amp;</span>
+    <span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
   <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
-  <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(<span class='no'>my_db</span>, <span class='st'>'d'</span>,
-                   <span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>0.6</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>0.2</span>))
-  <span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='fu'>select_rows_se</span>(<span class='no'>d</span>, <span class='st'>"AUC &gt;= 0.5"</span>)
-  <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>optree</span>))
-  <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>optree</span>, <span class='no'>my_db</span>)
-  <span class='fu'>cat</span>(<span class='no'>sql</span>)
-  <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
+  <span class='no'>values</span> <span class='kw'>&lt;-</span> <span class='fu'>list</span>(<span class='kw'>nums</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>3</span>, <span class='kw'>lets</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"a"</span>, <span class='st'>"b"</span>))
+  <span class='no'>res</span> <span class='kw'>&lt;-</span> <span class='fu'>expand_grid</span>(<span class='no'>my_db</span>, <span class='no'>values</span>)
+  <span class='fu'>print</span>(<span class='no'>res</span>)
+  <span class='fu'><a href='execute.html'>execute</a></span>(<span class='no'>my_db</span>, <span class='no'>res</span>)
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; table('d') %.&gt;%
-#&gt;  select_rows(.,
-#&gt;    AUC &gt;= 0.5)
-#&gt; SELECT * FROM (
-#&gt;  SELECT
-#&gt;   `d`.`AUC`,
-#&gt;   `d`.`R2`
-#&gt;  FROM
-#&gt;   `d`
-#&gt; ) tsql_23012829786491164338_0000000000
-#&gt; WHERE `AUC` &gt;= 0.5
-#&gt;   AUC  R2
-#&gt; 1 0.6 0.2</div></pre>
+}</div><div class='output co'>#&gt; [1] "table('eg_87311830961519019978_0000000000')"</div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
