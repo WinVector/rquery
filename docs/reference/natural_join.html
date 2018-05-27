@@ -180,9 +180,9 @@ are coalesced into a single column prefering the first or "a" table.</p>
 #&gt;   table('d2'),
 #&gt;   j= INNER, by= AUC)
 #&gt; SELECT
-#&gt;  COALESCE(`tsql_26167606645687341450_0000000000`.`AUC`, `tsql_26167606645687341450_0000000001`.`AUC`) AS `AUC`,
-#&gt;  COALESCE(`tsql_26167606645687341450_0000000000`.`D`, `tsql_26167606645687341450_0000000001`.`D`) AS `D`,
-#&gt;  `tsql_26167606645687341450_0000000000`.`R2` AS `R2`
+#&gt;  COALESCE(`tsql_45934203179645364871_0000000000`.`AUC`, `tsql_45934203179645364871_0000000001`.`AUC`) AS `AUC`,
+#&gt;  COALESCE(`tsql_45934203179645364871_0000000000`.`D`, `tsql_45934203179645364871_0000000001`.`D`) AS `D`,
+#&gt;  `tsql_45934203179645364871_0000000000`.`R2` AS `R2`
 #&gt; FROM (
 #&gt;  SELECT
 #&gt;   `d1`.`AUC`,
@@ -190,16 +190,16 @@ are coalesced into a single column prefering the first or "a" table.</p>
 #&gt;   `d1`.`D`
 #&gt;  FROM
 #&gt;   `d1`
-#&gt; ) `tsql_26167606645687341450_0000000000`
+#&gt; ) `tsql_45934203179645364871_0000000000`
 #&gt; INNER JOIN (
 #&gt;  SELECT
 #&gt;   `d2`.`AUC`,
 #&gt;   `d2`.`D`
 #&gt;  FROM
 #&gt;   `d2`
-#&gt; ) `tsql_26167606645687341450_0000000001`
+#&gt; ) `tsql_45934203179645364871_0000000001`
 #&gt; ON
-#&gt;  `tsql_26167606645687341450_0000000000`.`AUC` = `tsql_26167606645687341450_0000000001`.`AUC`
+#&gt;  `tsql_45934203179645364871_0000000000`.`AUC` = `tsql_45934203179645364871_0000000001`.`AUC`
 #&gt;   AUC   D  R2
 #&gt; 1 0.6 0.3 0.2</div><div class='input'>
 </div></pre>

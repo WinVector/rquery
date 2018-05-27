@@ -18,6 +18,6 @@ NULL
 
 
 
-#' @importFrom wrapr %.>% := mk_tmp_name_source wrapr_function pipe_step
+#' @importFrom wrapr %.>% := mk_tmp_name_source apply_left apply_right
 NULL
 

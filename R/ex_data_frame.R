@@ -159,10 +159,12 @@ as.character.relop <- function (x, ...) {
 #' Execute pipeline treating pipe_left_arg as local data to
 #' be copied into database.
 #'
-#' @param pipe_left_arg data.frame or DBI database connection
-#' @param pipe_right_arg rquery relop operation tree
-#' @param pipe_environment environment to execute in
-#' @param pipe_name name of pipling symbol
+#' @param pipe_left_arg left argument.
+#' @param pipe_right_arg substitute(pipe_right_arg) argument.
+#' @param pipe_environment environment to evaluate in.
+#' @param left_arg_name name, if not NULL name of left argument.
+#' @param pipe_string character, name of pipe operator.
+#' @param right_arg_name name, if not NULL name of right argument.
 #' @return data.frame
 #'
 #' @seealso \code{\link{rquery_apply_to_data_frame}}
@@ -181,7 +183,7 @@ as.character.relop <- function (x, ...) {
 #'   optree <- table_source("d", "x") %.>%
 #'     extend_nse(., y = x*x)
 #'
-#'   # wrapr dot pipe wrapr_function dispatch
+#'   # wrapr dot pipe apply_right dispatch
 #'   # causes this statment to apply optree
 #'   # to d.
 #'   data.frame(x = 1:3) %.>% optree %.>% print(.)
@@ -192,7 +194,7 @@ as.character.relop <- function (x, ...) {
 #'               overwrite = TRUE,
 #'               temporary = TRUE)
 #'
-#'   # wrapr dot pipe wrapr_function dispatch
+#'   # wrapr dot pipe apply_right dispatch
 #'   # causes this statment to apply optree
 #'   # to db.
 #'   db %.>% optree %.>% print(.)
@@ -204,12 +206,14 @@ as.character.relop <- function (x, ...) {
 #'
 #' @export
 #'
-wrapr_function.relop <- function(pipe_left_arg,
-                                 pipe_right_arg,
-                                 pipe_environment,
-                                 pipe_name = NULL) {
+apply_right.relop <- function(pipe_left_arg,
+                              pipe_right_arg,
+                              pipe_environment,
+                              left_arg_name,
+                              pipe_string,
+                              right_arg_name) {
   if(!("relop" %in% class(pipe_right_arg))) {
-    stop("rquery::wrapr_function.relop expect pipe_right_arg to be of class relop")
+    stop("rquery::apply_right.relop expect pipe_right_arg to be of class relop")
   }
   if(is.data.frame(pipe_left_arg)) {
     return(rquery_apply_to_data_frame(pipe_left_arg,

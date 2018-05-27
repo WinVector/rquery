@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Execute pipeline treating pipe_left_arg as local data to
-be copied into database. — wrapr_function.relop • rquery</title>
+be copied into database. — apply_right.relop • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -30,7 +30,7 @@ be copied into database. — wrapr_function.relop • rquery</title>
 
 
 <meta property="og:title" content="Execute pipeline treating pipe_left_arg as local data to
-be copied into database. — wrapr_function.relop" />
+be copied into database. — apply_right.relop" />
 
 <meta property="og:description" content="Execute pipeline treating pipe_left_arg as local data to
 be copied into database." />
@@ -118,7 +118,7 @@ be copied into database." />
     <h1>Execute pipeline treating pipe_left_arg as local data to
 be copied into database.</h1>
     <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/ex_data_frame.R'><code>R/ex_data_frame.R</code></a></small>
-    <div class="hidden name"><code>wrapr_function.relop.Rd</code></div>
+    <div class="hidden name"><code>apply_right.relop.Rd</code></div>
     </div>
 
     <div class="ref-description">
@@ -129,27 +129,35 @@ be copied into database.</p>
     </div>
 
     <pre class="usage"><span class='co'># S3 method for relop</span>
-<span class='fu'>wrapr_function</span>(<span class='no'>pipe_left_arg</span>, <span class='no'>pipe_right_arg</span>, <span class='no'>pipe_environment</span>,
-  <span class='kw'>pipe_name</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+<span class='fu'>apply_right</span>(<span class='no'>pipe_left_arg</span>, <span class='no'>pipe_right_arg</span>, <span class='no'>pipe_environment</span>,
+  <span class='no'>left_arg_name</span>, <span class='no'>pipe_string</span>, <span class='no'>right_arg_name</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>pipe_left_arg</th>
-      <td><p>data.frame or DBI database connection</p></td>
+      <td><p>left argument.</p></td>
     </tr>
     <tr>
       <th>pipe_right_arg</th>
-      <td><p>rquery relop operation tree</p></td>
+      <td><p>substitute(pipe_right_arg) argument.</p></td>
     </tr>
     <tr>
       <th>pipe_environment</th>
-      <td><p>environment to execute in</p></td>
+      <td><p>environment to evaluate in.</p></td>
     </tr>
     <tr>
-      <th>pipe_name</th>
-      <td><p>name of pipling symbol</p></td>
+      <th>left_arg_name</th>
+      <td><p>name, if not NULL name of left argument.</p></td>
+    </tr>
+    <tr>
+      <th>pipe_string</th>
+      <td><p>character, name of pipe operator.</p></td>
+    </tr>
+    <tr>
+      <th>right_arg_name</th>
+      <td><p>name, if not NULL name of right argument.</p></td>
     </tr>
     </table>
     
@@ -176,7 +184,7 @@ be copied into database.</p>
   <span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='table_source.html'>table_source</a></span>(<span class='st'>"d"</span>, <span class='st'>"x"</span>) <span class='kw'>%.&gt;%</span>
     <span class='fu'><a href='extend_nse.html'>extend_nse</a></span>(<span class='no'>.</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='no'>x</span>*<span class='no'>x</span>)
 
-  <span class='co'># wrapr dot pipe wrapr_function dispatch</span>
+  <span class='co'># wrapr dot pipe apply_right dispatch</span>
   <span class='co'># causes this statment to apply optree</span>
   <span class='co'># to d.</span>
   <span class='fu'>data.frame</span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>3</span>) <span class='kw'>%.&gt;%</span> <span class='no'>optree</span> <span class='kw'>%.&gt;%</span> <span class='fu'>print</span>(<span class='no'>.</span>)
@@ -187,7 +195,7 @@ be copied into database.</p>
               <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
               <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 
-  <span class='co'># wrapr dot pipe wrapr_function dispatch</span>
+  <span class='co'># wrapr dot pipe apply_right dispatch</span>
   <span class='co'># causes this statment to apply optree</span>
   <span class='co'># to db.</span>
   <span class='no'>db</span> <span class='kw'>%.&gt;%</span> <span class='no'>optree</span> <span class='kw'>%.&gt;%</span> <span class='fu'>print</span>(<span class='no'>.</span>)
