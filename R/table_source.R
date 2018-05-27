@@ -31,7 +31,7 @@
 #'   DBI::dbDisconnect(my_db)
 #' }
 #'
-#' @seealso \code{\link{rq_table}}, \code{\link{rq_copy_to}}, \code{\link{materialize}}, \code{\link{execute}}, code{\link{to_sql}}
+#' @seealso \code{\link{rq_table}}, \code{\link{rq_copy_to}}, \code{\link{materialize}}, \code{\link{execute}}, \code{\link{to_sql}}
 #'
 #' @export
 #'
@@ -65,7 +65,7 @@ table_source <- function(table_name, columns) {
 #' @param table_name name of table
 #' @return a relop representation of the data
 #'
-#' @seealso \code{\link{table_source}}, \code{\link{rq_copy_to}}, \code{\link{materialize}}, \code{\link{execute}}, code{\link{to_sql}}
+#' @seealso \code{\link{table_source}}, \code{\link{rq_copy_to}}, \code{\link{materialize}}, \code{\link{execute}}, \code{\link{to_sql}}
 #'
 #' @examples
 #'
@@ -95,6 +95,36 @@ table_source <- function(table_name, columns) {
 rq_table <- function(db, table_name) {
   table_source(table_name = table_name,
                columns = rq_colnames(db, table_name))
+}
+
+#' @rdname rq_table
+#' @export
+db_table <- rq_table
+
+
+#' Build a source from a data.frame.
+#'
+#' @param d data.frame to use as data source.
+#' @param ... not used, force later arguments to be optional.
+#' @param table_name name to use for table.
+#' @param name_source temporary name generator.
+#' @return a relop representation of the data
+#'
+#' @export
+#'
+frame_table <- function(d,
+                        ...,
+                        table_name = substitute(d),
+                        name_source = wrapr::mk_tmp_name_source("rqfs")) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                         "rquery::frame_table")
+  if(is.name(table_name)) {
+    table_name <- as.character(table_name)
+  } else {
+    table_name = name_source()
+  }
+  table_source(table_name = table_name,
+               columns = colnames(d))
 }
 
 

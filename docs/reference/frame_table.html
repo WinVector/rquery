@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Table data source. — table_source • rquery</title>
+<title>Build a source from a data.frame. — frame_table • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -28,9 +28,9 @@
 
 
 
-<meta property="og:title" content="Table data source. — table_source" />
+<meta property="og:title" content="Build a source from a data.frame. — frame_table" />
 
-<meta property="og:description" content="Build minimal structures (table name and column names) needed to represent data from a remote table." />
+<meta property="og:description" content="Build a source from a data.frame." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -112,29 +112,38 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Table data source.</h1>
+    <h1>Build a source from a data.frame.</h1>
     <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/table_source.R'><code>R/table_source.R</code></a></small>
-    <div class="hidden name"><code>table_source.Rd</code></div>
+    <div class="hidden name"><code>frame_table.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Build minimal structures (table name and column names) needed to represent data from a remote table.</p>
+    <p>Build a source from a data.frame.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>table_source</span>(<span class='no'>table_name</span>, <span class='no'>columns</span>)</pre>
+    <pre class="usage"><span class='fu'>frame_table</span>(<span class='no'>d</span>, <span class='no'>...</span>, <span class='kw'>table_name</span> <span class='kw'>=</span> <span class='fu'>substitute</span>(<span class='no'>d</span>),
+  <span class='kw'>name_source</span> <span class='kw'>=</span> <span class='kw pkg'>wrapr</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/wrapr/topics/mk_tmp_name_source'>mk_tmp_name_source</a></span>(<span class='st'>"rqfs"</span>))</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>table_name</th>
-      <td><p>character, name of table</p></td>
+      <th>d</th>
+      <td><p>data.frame to use as data source.</p></td>
     </tr>
     <tr>
-      <th>columns</th>
-      <td><p>character, column names of table</p></td>
+      <th>...</th>
+      <td><p>not used, force later arguments to be optional.</p></td>
+    </tr>
+    <tr>
+      <th>table_name</th>
+      <td><p>name to use for table.</p></td>
+    </tr>
+    <tr>
+      <th>name_source</th>
+      <td><p>temporary name generator.</p></td>
     </tr>
     </table>
     
@@ -142,43 +151,7 @@
 
     <p>a relop representation of the data</p>
     
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Generate a query that returns contents of a table, we
-could try to eliminate this (replace the query with the table name),
-but there are features one can work with with the query in place and
-SQL optimizers likely make this zero-cost anyway.</p>
-    
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><code><a href='rq_table.html'>rq_table</a></code>, <code><a href='rq_copy_to.html'>rq_copy_to</a></code>, <code><a href='materialize.html'>materialize</a></code>, <code><a href='execute.html'>execute</a></code>, <code><a href='to_sql.html'>to_sql</a></code></p></div>
-    
-
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-<span class='kw'>if</span> (<span class='fu'>requireNamespace</span>(<span class='st'>"DBI"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>&amp;&amp;</span> <span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
-  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
-  <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(<span class='no'>my_db</span>,
-             <span class='st'>'d'</span>,
-             <span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>0.6</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>0.2</span>),
-             <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-             <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
-  <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'>table_source</span>(<span class='st'>'d'</span>,
-                    <span class='kw'>columns</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"AUC"</span>, <span class='st'>"R2"</span>))
-  <span class='fu'>print</span>(<span class='no'>d</span>)
-  <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>d</span>, <span class='no'>my_db</span>)
-  <span class='fu'>cat</span>(<span class='no'>sql</span>)
-  <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; [1] "table('d')"
-#&gt; SELECT
-#&gt;  `d`.`AUC`,
-#&gt;  `d`.`R2`
-#&gt; FROM
-#&gt;  `d`
-#&gt;   AUC  R2
-#&gt; 1 0.6 0.2</div><div class='input'>
-</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -186,13 +159,7 @@ SQL optimizers likely make this zero-cost anyway.</p>
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-
-      <li><a href="#details">Details</a></li>
-
-      <li><a href="#see-also">See also</a></li>
-      
-      <li><a href="#examples">Examples</a></li>
-    </ul>
+          </ul>
 
   </div>
 </div>
