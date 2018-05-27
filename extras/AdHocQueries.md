@@ -1,7 +1,7 @@
 Ad Hoc Queries
 ================
 John Mount, Win-Vector LLC
-2018-05-15
+2018-05-26
 
 Database Operator Pipelines
 ===========================
@@ -114,10 +114,10 @@ cat(sql)
         `d`.`R2`
        FROM
         `d`
-      ) tsql_24202580347421524376_0000000000
+      ) tsql_23469896330956563736_0000000000
       WHERE `R2` > 0.14
-      ) tsql_24202580347421524376_0000000001
-    ) tsql_24202580347421524376_0000000002
+      ) tsql_23469896330956563736_0000000001
+    ) tsql_23469896330956563736_0000000002
 
 ``` r
 DBI::dbGetQuery(db, sql) %.>%
@@ -143,12 +143,17 @@ winvector_temp_db_handle <- list(db = db)
 We can now run operators directly on in-memory `data.frame`s.
 
 ``` r
-dL <-  data.frame(AUC = 0.6, 
-                  R2 = c(0.1, 0.2), 
-                  D = NA, z = 2)
+dL <- data.frame(AUC = 0.6, 
+                 R2 = c(0.1, 0.2), 
+                 D = NA, z = 2)
 
-dL %.>%
-  select_rows_nse(., R2 > 0.14) %.>%
+# use data frame to define the pipeline, captures only column structure
+ops <- dL %.>%
+  select_rows_nse(., R2 > 0.14)
+
+# apply pipeline to any data frame with similar column structure
+dL %.>% 
+  ops %.>% 
   knitr::kable(.)
 ```
 
@@ -157,231 +162,19 @@ dL %.>%
 |  0.6|  0.2|   NA|    2|
 
 ``` r
-dL %.>%
+ops <- dL %.>%
   select_rows_nse(., R2 > 0.14) %.>%
   extend_nse(., c = sqrt(R2))  %.>%
-  select_columns(., c("AUC", "R2", "c")) %.>%
-  knitr::kable(.)
-```
-
-|  AUC|   R2|          c|
-|----:|----:|----------:|
-|  0.6|  0.2|  0.4472136|
-
-Using a function wrapper we can also save ad hoc pipelines for later use.
-
-``` r
-q2 <- . := {
-  select_rows_nse(., R2 > 0.14) %.>%
-  extend_nse(., c = sqrt(R2)) %.>%
-  select_columns(., c("AUC", "R2", "c"))
-}
+  select_columns(., c("AUC", "R2", "c")) 
 
 dL %.>% 
-  q2 %.>%
+  ops %.>% 
   knitr::kable(.)
 ```
 
 |  AUC|   R2|          c|
 |----:|----:|----------:|
 |  0.6|  0.2|  0.4472136|
-
-Or we can use a table model based pipeline directly (without needing additional wrapping). To do this we need to define an S3 function as follows.
-
-``` r
-print(rquery:::wrapr_function.relop)
-```
-
-    ## function(pipe_left_arg,
-    ##                                  pipe_right_arg,
-    ##                                  pipe_environment,
-    ##                                  pipe_name = NULL) {
-    ##   if(!("relop" %in% class(pipe_right_arg))) {
-    ##     stop("rquery::wrapr_function.relop expect pipe_right_arg to be of class relop")
-    ##   }
-    ##   if(is.data.frame(pipe_left_arg)) {
-    ##     return(rquery_apply_to_data_frame(pipe_left_arg,
-    ##                                       pipe_right_arg,
-    ##                                       env = pipe_environment))
-    ##   }
-    ##   # assume pipe_left_arg is a DB connection, execute and bring back result
-    ##   execute(pipe_left_arg, pipe_right_arg)
-    ## }
-    ## <bytecode: 0x7fc2b1d1d718>
-    ## <environment: namespace:rquery>
-
-``` r
-needed_columns <- columns_used(q)
-print(needed_columns)
-```
-
-    ## $d
-    ## [1] "AUC" "R2"
-
-``` r
-q3 <- table_source(table_name = 'tmp', 
-                   columns = needed_columns$d) %.>%
-  select_rows_nse(., R2 > 0.14) %.>%
-  extend_nse(., c = sqrt(R2)) %.>%
-  select_columns(., c("AUC", "R2", "c"))
-
-dL %.>% 
-  q3 %.>%
-  knitr::kable(.)
-```
-
-|  AUC|   R2|          c|
-|----:|----:|----------:|
-|  0.6|  0.2|  0.4472136|
-
-For stored queries we either need the table model (which places a bound on what columns are thought to exist in the table) or a function wrapper (which allows us to use the later to be named table as our future table bound).
-
-We can also use the original pipeline `q`, but only after removing the original backing table (for safety the ad hoc system will not overwrite existing tables).
-
-``` r
-DBI::dbExecute(db, "DROP TABLE d")
-```
-
-    ## [1] 0
-
-``` r
-dL %.>% 
-  q %.>%
-  knitr::kable(.)
-```
-
-|  AUC|   R2|          c|
-|----:|----:|----------:|
-|  0.6|  0.2|  0.4472136|
-
-Ad Hoc Mode Works
-=================
-
-Ad Hoc mode is implemented on top of `wrapr::%.>%` using a few fine points of `R` programming:
-
--   `S3` deceleration of query nodes, allowing different effects when the data source is another query node or a `data.frame`.
--   `S3` overrides of `as.data.frame()`, `print()` and `head()` to trigger execution of pipelines.
--   [`wrapr`](https://winvector.github.io/wrapr/) pipeline controls to allow `S3` dispatch of pipeline stages.
-
-Basic ad hoc mode
------------------
-
-The basic version of ad hoc mode is implemented by overriding the `S3` classes `as.data.frame()`, `print()` and `head()` for our `rquery::"relop"` operator trees / pipelines.
-
-Consider our earlier ad hoc pipeline:
-
-``` r
-z <- dL %.>%
-  select_rows_nse(., R2 > 0.14) %.>%
-  extend_nse(., c = sqrt(R2))  %.>%
-  select_columns(., c("AUC", "R2", "c"))
-
-class(z)
-```
-
-    ## [1] "relop_select_columns" "relop"
-
-Notice `z` declares class `"relop"`. This means `z` is a `rquery` operator tree. Formatting it shows that it is starts with "`table+()`" node, meaning the operator tree has a reference to an in-memory `data.frame` bound into it.
-
-``` r
-cat(format(z))
-```
-
-    table+('rquery_tmp_12279762678601372044_0000000000') %.>%
-     select_rows(.,
-       R2 > 0.14) %.>%
-     extend(.,
-      c := sqrt(R2)) %.>%
-     select_columns(.,
-       AUC, R2, c)
-
-``` r
-cat(to_sql(z, db))
-```
-
-    SELECT
-     `AUC`,
-     `R2`,
-     `c`
-    FROM (
-     SELECT
-      `AUC`,
-      `R2`,
-      sqrt ( `R2` )  AS `c`
-     FROM (
-      SELECT * FROM (
-       SELECT
-        `rquery_tmp_12279762678601372044_0000000000`.`AUC`,
-        `rquery_tmp_12279762678601372044_0000000000`.`R2`
-       FROM
-        `rquery_tmp_12279762678601372044_0000000000`
-      ) tsql_41311662173789195946_0000000000
-      WHERE `R2` > 0.14
-      ) tsql_41311662173789195946_0000000001
-    ) tsql_41311662173789195946_0000000002
-
-The production of `SQL` and execution is triggered if we pass `z` to one of the generic `S3` functions `as.data.frame()` or `print()` (including the possible implicit `print()` implied by `R`'s statement rules):
-
-``` r
-print(z)
-```
-
-    ##   AUC  R2         c
-    ## 1 0.6 0.2 0.4472136
-
-``` r
-as.data.frame(z)
-```
-
-    ##   AUC  R2         c
-    ## 1 0.6 0.2 0.4472136
-
-`knitr::kable()` itself calls `as.data.frame()` at some point, allowing `z` results to formatted by passing to `knitr::kable()`:
-
-``` r
-knitr::kable(z)
-```
-
-|  AUC|   R2|          c|
-|----:|----:|----------:|
-|  0.6|  0.2|  0.4472136|
-
-Stored ad hoc pipeline
-----------------------
-
-To re-use regular operator trees as ad hoc pipelines we need one more trick: the operator tree object needs to act as if it were a function. As of version `1.2.0` `wrapr` de-references right-hand side names as functions or as surrogate functions through the `S3` method `wrapr_function()` (dispatched by the class of its second or right hand side argument). This gives us the ability to treat an `rquery` operator tree as a data processing pipeline. Results are then produced by overriding the `S3` methods `as.data.frame()` and `print()`.
-
-This is a bit simpler if demonstrated.
-
-``` r
-class(q)
-```
-
-    ## [1] "relop_select_columns" "relop"
-
-``` r
-cat(format(q))
-```
-
-    table('d') %.>%
-     select_rows(.,
-       R2 > 0.14) %.>%
-     extend(.,
-      c := sqrt(R2)) %.>%
-     select_columns(.,
-       AUC, R2, c)
-
-``` r
-dL %.>% 
-  q %.>%
-  knitr::kable(.)
-```
-
-|  AUC|   R2|          c|
-|----:|----:|----------:|
-|  0.6|  0.2|  0.4472136|
-
-For an `R` language name `q`, the `wrapr` pipeline operator (`%.>%`) will interpret "`dL %.>% q`" as `q(dL)` (if `q` is a function), or as "`wrapr_function(dL,q)`" (dispatched by the class of `q`). This facility allows objects to declare what sort of function they would like to be treated a in a pipeline.
 
 Cleanup
 =======

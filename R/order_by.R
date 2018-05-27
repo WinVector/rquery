@@ -73,7 +73,6 @@ orderby.data.frame <- function(source,
                           "rquery::orderby.data.frame")
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- table_source(tmp_name, colnames(source))
-  dnode$data <- source
   enode <- orderby(dnode,
                    orderby = cols,
                    rev_orderby = rev_cols,

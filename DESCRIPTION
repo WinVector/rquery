@@ -2,7 +2,7 @@ Package: rquery
 Type: Package
 Title: Relational Query Generator for Data Manipulation at Scale
 Version: 0.5.0
-Date: 2018-05-22
+Date: 2018-05-26
 Authors@R: c(
     person("John", "Mount", email = "jmount@win-vector.com", role = c("aut", "cre")),
     person(family = "Win-Vector LLC", role = c("cph"))
@@ -26,8 +26,6 @@ Encoding: UTF-8
 Depends:
   R (>= 3.4.0),
   wrapr (>= 1.4.1)
-Imports:
-  utils
 Suggests:
     DBI,
     RSQLite,

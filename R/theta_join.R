@@ -134,10 +134,8 @@ theta_join_se.data.frame <- function(a, b,
   nmgen <- mk_tmp_name_source("rquery_tmp")
   tmp_namea <- nmgen()
   dnodea <- table_source(tmp_namea, colnames(a))
-  dnodea$data <- a
   tmp_nameb <- nmgen()
   dnodeb <- table_source(tmp_namea, colnames(b))
-  dnodeb$data <- b
   enode <- theta_join_se(dnodea, dnodeb,
                          expr,
                          jointype = jointype,
@@ -239,10 +237,8 @@ theta_join_nse.data.frame <- function(a, b,
   nmgen <- mk_tmp_name_source("rquery_tmp")
   tmp_namea <- nmgen()
   dnodea <- table_source(tmp_namea, colnames(a))
-  dnodea$data <- a
   tmp_nameb <- nmgen()
   dnodeb <- table_source(tmp_namea, colnames(b))
-  dnodeb$data <- b
   enode <- theta_join_nse(dnodea, dnodeb,
                           deparse(exprq),
                           jointype = jointype,

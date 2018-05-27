@@ -51,7 +51,6 @@ unionall <- function(sources) {
                           function(i) {
                             tmp_name <- tmp_name_source()
                             dnode <- table_source(tmp_name, cols)
-                            dnode$data <- sources[[i]]
                             dnode
                           })
     return(unionall(sources_tmp))

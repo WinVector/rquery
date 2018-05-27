@@ -131,7 +131,6 @@ sql_node.data.frame <- function(source, exprs,
   wrapr::stop_if_dot_args(substitute(list(...)), "sql_node.data.frame")
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- table_source(tmp_name, colnames(source))
-  dnode$data <- source
   enode <- sql_node(dnode, exprs = exprs,
                     mods = mods,
                     orig_columns = orig_columns)

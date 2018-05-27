@@ -63,7 +63,6 @@ drop_columns.data.frame <- function(source, drops,
   }
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- table_source(tmp_name, colnames(source))
-  dnode$data <- source
   enode <- drop_columns(dnode, drops, strict = strict)
   return(enode)
 }

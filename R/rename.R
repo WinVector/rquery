@@ -66,7 +66,6 @@ rename_columns.data.frame <- function(source, cmap) {
   }
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- table_source(tmp_name, colnames(source))
-  dnode$data <- source
   enode <- rename_columns(dnode, cmap)
   return(enode)
 }

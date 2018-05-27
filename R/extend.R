@@ -158,7 +158,6 @@ extend_se.data.frame <- function(source, assignments,
                           "rquery::extend_se.data.frame")
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- table_source(tmp_name, colnames(source))
-  dnode$data <- source
   enode <- extend_se(dnode,
                      assignments = assignments,
                      partitionby = partitionby,
@@ -239,7 +238,6 @@ extend_nse.data.frame <- function(source,
                                   env = parent.frame()) {
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- table_source(tmp_name, colnames(source))
-  dnode$data <- source
   enode <- extend_nse(dnode,
                       ...,
                       partitionby = partitionby,

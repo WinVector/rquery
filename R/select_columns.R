@@ -47,7 +47,6 @@ select_columns.data.frame <- function(source, columns) {
   }
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- table_source(tmp_name, colnames(source))
-  dnode$data <- source
   enode <- select_columns(dnode, columns)
   return(enode)
 }

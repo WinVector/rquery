@@ -39,8 +39,7 @@ table_source <- function(table_name, columns) {
   r <- list(source = list(),
             table_name = table_name,
             parsed = NULL,
-            columns = columns,
-            data = NULL)
+            columns = columns)
   r <- relop_decorate("relop_table_source", r)
   r
 }
@@ -210,11 +209,7 @@ to_sql.relop_table_source <- function (x,
 
 #' @export
 format_node.relop_table_source <- function(node) {
-  sym <- ""
-  if(!is.null(node$data)) {
-    sym <- "+"
-  }
-  paste0("table", sym, "('", node$table_name, "')",
+  paste0("table('", node$table_name, "')",
          "\n")
 }
 

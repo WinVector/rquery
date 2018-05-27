@@ -366,7 +366,6 @@ rsummary_node <- function(source,
   if(is.data.frame(source)) {
     tmp_name <- mk_tmp_name_source("rquery_tmp")()
     dnode <- table_source(tmp_name, colnames(source))
-    dnode$data <- source
     source <- dnode
   }
   columns_produced <- c("column",

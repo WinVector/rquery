@@ -133,112 +133,26 @@ rquery_apply_to_data_frame <- function(d,
   res
 }
 
-grab_first_dat <- function(op_tree) {
-  for(i in seq_len(length(op_tree$source))) {
-    di <- grab_first_dat(op_tree$source[[i]])
-    if(!is.null(di)) {
-      return(di)
-    }
-  }
-  op_tree$data
-}
-
-#' Attempt to execute a pipeline (assuming it has local data, or is passed local data).
-#'
-#' @param optree rquery relop pipeline.
-#' @param ... force later arguments to bind by name.
-#' @param env environment to work in.
-#' @param data data.frame to evaluate.
-#' @param limit numeric if not null limit result to this many rows.
-#' @return executed pipleline or NULL if not executable.
-#'
-#'
-#' @noRd
-#'
-execute_embeded_data_frame <- function(optree,
-               ...,
-               env = parent.frame(),
-               data = NULL,
-               limit = NULL) {
-  wrapr::stop_if_dot_args(substitute(list(...)),
-                          "rquery:::execute_embeded_data_frame")
-  tabs <- tables_used(optree)
-  if(length(tabs)!=1) {
-    return(NULL)
-  }
-  data <- grab_first_dat(optree)
-  if(is.null(data)) {
-    return(NULL)
-  }
-  res <- rquery_apply_to_data_frame(data, optree,
-                                    env = env,
-                                    limit = limit)
-  return(res)
-}
-
-#' @export
-as.data.frame.relop <- function (x,
-                                 row.names = NULL,
-                                 optional = FALSE,
-                                 ...) {
-  dotargs <- list(...)
-  n <- NULL
-  if(!is.null(dotargs$n)) {
-    n <- dotargs$n
-  }
-  execute_embeded_data_frame(x,
-          env = parent.frame(), limit = n)
-}
-
-
 #' @export
 print.relop <- function(x, ...) {
-  dotargs <- list(...)
-  n <- NULL
-  if(!is.null(dotargs$n)) {
-    n <- dotargs$n
-  }
-  res <- execute_embeded_data_frame(x,
-                 env = parent.frame(), limit = n)
-  if(!is.null(res)) {
-    print(res)
-  } else {
-    txt <- format(x)
-    txt <- trimws(gsub("[ \t\r\n]+", " ", txt), which = "both")
-    print(txt, ...)
-  }
+  txt <- format(x)
+  txt <- trimws(gsub("[ \t\r\n]+", " ", txt), which = "both")
+  print(txt, ...)
 }
 
-#' @importFrom utils head
-NULL
-
-#' @export
-head.relop <- function(x, ...) {
-  dotargs <- list(...)
-  n <- 6
-  if(!is.null(dotargs$n)) {
-    n <- dotargs$n
-  }
-  res <- execute_embeded_data_frame(x,
-                 env = parent.frame(), limit = n)
-  if(!is.null(res)) {
-    res
-  } else {
-    x
-  }
-}
 
 #' @export
 summary.relop <- function(object, ...) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::summary.relop")
-  res <- execute_embeded_data_frame(object,
-                                    env = parent.frame())
-  if(!is.null(res)) {
-    summary(res)
-  } else {
-    format(object)
-  }
+  format(object)
+}
+
+#' @export
+as.character.relop <- function (x, ...) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::as.character.relop")
+  format(object)
 }
 
 
