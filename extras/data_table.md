@@ -11,10 +11,19 @@ library("rquery")
 
     ## Loading required package: wrapr
 
-    ## Loading required package: cdata
+``` r
+# load data.table second so its definiton of := wins
+library("data.table")
+```
+
+    ## 
+    ## Attaching package: 'data.table'
+
+    ## The following object is masked from 'package:wrapr':
+    ## 
+    ##     :=
 
 ``` r
-suppressPackageStartupMessages(library("data.table"))
 source("data_table.R") # our example data.table back-end
 
 dL <- data.table(
@@ -39,10 +48,8 @@ dL <- data.table(
 
 scale <- 0.237
 
-d <- data_table_source(dL)
-
 # example pipeline
-dq <- d %.>%
+dq <- local_td(dL) %.>%
   extend_nse(.,
              one := 1) %.>%
   extend_nse(.,
@@ -50,67 +57,59 @@ dq <- d %.>%
                exp(assessmentTotal * scale)/
                sum(exp(assessmentTotal * scale)),
              count := sum(one),
-             rank := rank(probability),
+             rank := rank(probability, surveyCategory),
              partitionby = 'subjectID') %.>%
   extend_nse(.,
              isdiagnosis := rank == count,
-             diagnosis := surveyCategory)
+             diagnosis := surveyCategory) %.>%
+  select_rows_nse(., 
+                  isdiagnosis == TRUE) %.>%
+  select_columns(., 
+                 c('subjectID', 'diagnosis', 'probability')) %.>%
+  orderby(., 'subjectID')
 ```
+
+Show expanded form of query tree.
 
 ``` r
 cat(format(dq))
 ```
 
-    table('dL') %.>%
+    table('dL'; 
+      subjectID,
+      surveyCategory,
+      assessmentTotal,
+      irrelevantCol1,
+      irrelevantCol2) %.>%
      extend(.,
-       := one := 1) %.>%
+      one := 1) %.>%
      extend(.,
-       := probability := exp(assessmentTotal * scale) / sum(exp(assessmentTotal * scale)),
-       := count := sum(one),
+      probability := exp(assessmentTotal * scale)/sum(exp(assessmentTotal * scale)),
+      count := sum(one),
       p= subjectID) %.>%
      extend(.,
-       := rank := rank(probability),
+      rank := rank(probability, surveyCategory),
       p= subjectID) %.>%
      extend(.,
-       := isdiagnosis := rank = count,
-       := diagnosis := surveyCategory)
-
-``` r
-# translation to data.table
-expr <- to_data_table(dq)
-cat(gsub("][", " ][\n  ", 
-         expr, 
-         fixed = TRUE))
-```
-
-    dL[, one := 1 ][
-      , probability := exp ( `assessmentTotal` * 0.237 ) / sum ( exp ( `assessmentTotal` * 0.237 ) ) ,subjectID ][
-      , count := sum ( `one` ) ,subjectID ][
-      , rank := rank ( `probability` ) ,subjectID ][
-      , isdiagnosis := `rank` == `count` ][
-      , diagnosis := `surveyCategory`]
+      isdiagnosis := rank == count,
+      diagnosis := surveyCategory) %.>%
+     select_rows(.,
+       isdiagnosis == TRUE) %.>%
+     select_columns(.,
+       subjectID, diagnosis, probability) %.>%
+     orderby(., subjectID)
 
 ``` r
 # execute
 # https://stackoverflow.com/questions/10527072/using-data-table-package-inside-my-own-package
 .datatable.aware <- TRUE
 # Note: data.table has in-place mutate semantics
-res <- as.data.frame(eval(parse(text = expr)))
+res <- ex_data_table(dq)
 
-# finish in base-R 
-# (we only implemented a couple of operators for this demonstration)
-res <- res[res$isdiagnosis, 
-           c('subjectID', 'diagnosis', 'probability'),
-           drop = FALSE]
-row.names(res) <- NULL
-res <- res[order(res$subjectID), , drop = FALSE]
-
-knitr::kable(res)
+knitr::kable(as.data.frame(res))
 ```
 
 |  subjectID| diagnosis           |  probability|
 |----------:|:--------------------|------------:|
 |          1| withdrawal behavior |    0.6706221|
 |          2| positive re-framing |    0.5589742|
-
-Notice how "`][`" looks a lot like it is already a pipe operator for `data.table`.

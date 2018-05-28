@@ -88,7 +88,7 @@ ex_data_table.relop_select_columns <- function(optree,
   }
   cols <- optree$columns
   x <- ex_data_table(optree$source[[1]])
-  x[, cols]
+  x[, cols, with=FALSE]
 }
 
 
@@ -103,7 +103,7 @@ ex_data_table.relop_drop_columns <- function(optree,
   }
   cols <- optree$columns
   x <- ex_data_table(optree$source[[1]])
-  x[, cols]
+  x[, cols, with=FALSE]
 }
 
 
@@ -153,19 +153,19 @@ ex_data_table.relop_non_sql <- function(optree,
 
 
 
-#  TODO: implement the following
-
-
 
 #' @export
 ex_data_table.relop_extend <- function(optree,
                                        ...,
                                        tables = list(),
                                        env = parent.frame()) {
-  # TODO: ordering terms
-  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::ex_data_table.relop_extend")
   if(!requireNamespace("data.table", quietly = TRUE)) {
     stop("rquery::ex_data_table.relop_extend() requires the data.table package be installed")
+  }
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::ex_data_table.relop_extend")
+  if((length(optree$orderby)>0) || (length(optree$rev_orderby)>0)) {
+    # TODO: implement ordering terms
+    stop("rquery::ex_data_table.relop_extend does not yet implement window ordering")
   }
   n <- length(optree$parsed)
   if(n<0) {
@@ -174,7 +174,7 @@ ex_data_table.relop_extend <- function(optree,
   x <- ex_data_table(optree$source[[1]])
   byi <- ""
   if(length(optree$partitionby)>0) {
-    pterms <- paste("\"", optree$partitionby, "\"")
+    pterms <- paste0("\"", optree$partitionby, "\"")
     byi <- paste0(" , by = c(", paste(pterms, collapse = ", "), ")")
   }
   tmpnam <- ".rquery_ex_extend_tmp"
@@ -192,10 +192,42 @@ ex_data_table.relop_extend <- function(optree,
              gsub("^[^:]*:=[[:space:]]*", "", as.character(optree$parsed[[i]]$presentation))
            }, character(1))
   eexprs <- paste0("list(", paste(eexprs, collapse = ", "), ")")
-  src <- paste0("data.table::set(", tmpnam,
-                ", j = ", enames,
-                ", value = ", eexprs,
-                ")")
+  src <- paste0(tmpnam, "[ ",
+                ", ", paste(enames, ":=", eexprs),
+                byi,
+                " ]")
+  expr <- parse(text = src)
+  eval(expr, envir = tmpenv, enclos = env)
+}
+
+
+
+#' @export
+ex_data_table.relop_orderby <- function(optree,
+                                        ...,
+                                        tables = list(),
+                                        env = parent.frame()) {
+  if(!requireNamespace("data.table", quietly = TRUE)) {
+    stop("rquery::ex_data_table.relop_orderby() requires the data.table package be installed")
+  }
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::ex_data_table.relop_orderby")
+  x <- ex_data_table(optree$source[[1]])
+  oterms <- character(0)
+  if(length(optree$orderby)>0) {
+    oterms <- c(oterms, optree$orderby)
+  }
+  if(length(optree$rev_orderby)>0) {
+    oterms <- c(oterms, paste0("-", optree$orderev_orderbyrby))
+  }
+  if(length(oterms)<=0) {
+    return(x)
+  }
+  tmpnam <- ".rquery_ex_orderby_tmp"
+  tmpenv <- new.env(parent = env)
+  assign(tmpnam, x, envir = tmpenv)
+  src <- paste0(tmpnam, "[order(",
+                paste(oterms, collapse = ", "),
+                ")]")
   expr <- parse(text = src)
   eval(expr, envir = tmpenv, enclos = env)
 }
@@ -204,8 +236,7 @@ ex_data_table.relop_extend <- function(optree,
 
 
 
-
-
+#  TODO: implement the following
 
 
 
@@ -236,18 +267,6 @@ ex_data_table.relop_null_replace <- function(optree,
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::ex_data_table.relop_null_replace")
   if(!requireNamespace("data.table", quietly = TRUE)) {
     stop("rquery::ex_data_table.relop_null_replace() requires the data.table package be installed")
-  }
-}
-
-#' @export
-ex_data_table.relop_orderby <- function(optree,
-                                        ...,
-                                        tables = list(),
-                                        env = parent.frame()) {
-  stop("rquery::ex_data_table.relop_orderby not implemented yet") # TODO: implement
-  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::ex_data_table.relop_orderby")
-  if(!requireNamespace("data.table", quietly = TRUE)) {
-    stop("rquery::ex_data_table.relop_orderby() requires the data.table package be installed")
   }
 }
 
