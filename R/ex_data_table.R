@@ -69,6 +69,9 @@ ex_data_table.relop_table_source <- function(optree,
                paste(class(res), collapse = ", "),
                ")"))
   }
+  if(!data.table::is.data.table(res)) {
+    res <- data.table::as.data.table(res)
+  }
   res
 }
 
