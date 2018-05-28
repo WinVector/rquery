@@ -15,7 +15,7 @@ library("rquery")
 print(db_hdl)
 ```
 
-    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7f9f9b489340>)"
+    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7ff37e860318>)"
 
 ``` r
 print(test_df)
@@ -29,7 +29,7 @@ d_hdl <- sparkr_table(db_hdl, test_df)
 print(d_hdl)
 ```
 
-    ## [1] "table('rs_81899890864282959322_0000000000')"
+    ## [1] "table('rs_81899890864282959322_0000000000'; subjectID, surveyCategory, assessmentTotal, irrelevantCol_0000001)"
 
 ``` r
 print(column_names(d_hdl))

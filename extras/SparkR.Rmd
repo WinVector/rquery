@@ -52,7 +52,7 @@ test_df <- SparkR::createDataFrame(d_local)
 sparkr_table <- function(db_hdl, df, 
                          nam = wrapr::mk_tmp_name_source("rs")()) {
   SparkR::createOrReplaceTempView(test_df, nam)
-  rq_table(db_hdl, nam)
+  db_td(db_hdl, nam)
 }
 
 # define SparkR adapting handle
