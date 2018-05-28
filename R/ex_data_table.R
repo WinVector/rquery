@@ -7,8 +7,8 @@
 #'
 #' @param optree relop operations tree.
 #' @param ... not used, force later arguments to bind by name.
-#' @param tables named list map from table names used in nodes to data.tables.
-#' @param env environment  to work in.
+#' @param tables named list map from table names used in nodes to data.tables and data.frames.
+#' @param env environment to work in.
 #' @return resulting data.table (input tables can somtimes be mutated as is practice with data.table).
 #'
 #' @examples
