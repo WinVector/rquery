@@ -3,6 +3,33 @@ ltok <- function(v) {
   list(pre_sql_token(v))
 }
 
+
+inlineops <- c(":=", "==", "!=", ">=", "<=", "=",
+              "<", ">",
+              "+", "-", "*", "/",
+              "&&", "||",
+              "&", "|")
+
+#' Cross-parse a call from an R parse tree into SQL.
+#'
+#' @param lexpr item from  \code{substitute} with length(lexpr)>0 and is.call(lexpr)
+#' @return sql info: list(parsed_toks(list of tokens), symbols_used, symbols_produced, free_symbols)
+#'
+#' @noRd
+#'
+tokenize_call_for_R <- function(lexpr) {
+  if(is.call(lexpr)) {
+    n <- length(lexpr)
+    callName <- as.character(lexpr[[1]])
+    if((n==3) && (callName %in% inlineops)) {
+      lhs <- lexpr[[2]]
+      rhs <- lexpr[[3]]
+      return(paste(deparse(lhs), callName, deparse(rhs)))
+    }
+  }
+  return(deparse(lexpr))
+}
+
 #' Cross-parse a call from an R parse tree into SQL.
 #'
 #' @param lexpr item from  \code{substitute} with length(lexpr)>0 and is.call(lexpr)
@@ -19,11 +46,6 @@ tokenize_call_for_SQL <- function(lexpr,
   if((n<=0) || (!is.call(lexpr))) {
     stop("rquery::tokenize_call_for_SQL called on non-call")
   }
-  inlineops = c(":=", "==", "!=", ">=", "<=", "=",
-                "<", ">",
-                "+", "-", "*", "/",
-                "&&", "||",
-                "&", "|")
   res <- list(parsed_toks = list(),
               symbols_used = character(0),
               symbols_produced = character(0),
@@ -289,7 +311,8 @@ tokenize_for_SQL_r <- function(lexpr,
 #'
 #' @examples
 #'
-#' tokenize_for_SQL(substitute(1 + 1), colnames= NULL)
+#' tokenize_for_SQL(substitute(1 + 2), colnames= NULL)
+#' tokenize_for_SQL(substitute(a := 3), colnames= NULL)
 #'
 #' @export
 #'
@@ -299,7 +322,8 @@ tokenize_for_SQL <- function(lexpr,
   p <- tokenize_for_SQL_r(lexpr = lexpr,
                           colnames = colnames,
                           env = env)
-  p <- c(list(presentation = deparse(lexpr)), p)
+  presentation <- tokenize_call_for_R(lexpr)
+  p <- c(list(presentation = presentation), p)
   class(p$parsed_toks) <- c("pre_sql_expr")
   p
 }
