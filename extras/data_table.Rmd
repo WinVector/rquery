@@ -10,7 +10,8 @@ back-end.
 
 ```{r}
 library("rquery")
-suppressPackageStartupMessages(library("data.table"))
+# load data.table second so its definiton of := wins
+library("data.table")
 source("data_table.R") # our example data.table back-end
 
 dL <- data.table(

@@ -34,8 +34,6 @@ Suggests:
     knitr,
     rmarkdown,
     testthat
-Enhances:
-    data.table
 LazyData: true
 RoxygenNote: 6.0.1
 ByteCompile: true
