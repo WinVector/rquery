@@ -86,8 +86,24 @@ ex_data_table.relop_select_columns <- function(optree,
   if(!requireNamespace("data.table", quietly = TRUE)) {
     stop("rquery::ex_data_table.relop_select_columns() requires the data.table package be installed")
   }
+  cols <- optree$columns
   x <- ex_data_table(optree$source[[1]])
-  x[, optree$columns]
+  x[, cols]
+}
+
+
+#' @export
+ex_data_table.relop_drop_columns <- function(optree,
+                                             ...,
+                                             tables = list(),
+                                             env = parent.frame()) {
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::ex_data_table.relop_drop_columns")
+  if(!requireNamespace("data.table", quietly = TRUE)) {
+    stop("rquery::ex_data_table.relop_drop_columns() requires the data.table package be installed")
+  }
+  cols <- optree$columns
+  x <- ex_data_table(optree$source[[1]])
+  x[, cols]
 }
 
 
@@ -102,7 +118,11 @@ ex_data_table.relop_select_rows <- function(optree,
   }
   x <- ex_data_table(optree$source[[1]])
   tmpnam <- ".rquery_ex_select_rows_tmp"
-  src <- paste0(tmpnam, "[ ", optree$parsed[[1]]$presentation, " , ]")
+  src <- vapply(seq_len(length(optree$parsed)),
+                function(i) {
+                  paste0(tmpnam, "[ ", optree$parsed[[1]]$presentation, " , ]")
+                }, character(1))
+  src <- paste(src, collapse = " & ")
   expr <- parse(text = src)
   tmpenv <- new.env(parent = env)
   assign(tmpnam, x, envir = tmpenv)
@@ -131,34 +151,61 @@ ex_data_table.relop_non_sql <- function(optree,
 }
 
 
-
-#  TODO: implement the following
-
-
-
-#' @export
-ex_data_table.relop_drop_columns <- function(optree,
-                                             ...,
-                                             tables = list(),
-                                             env = parent.frame()) {
-  stop("rquery::ex_data_table.relop_drop_columns not implemented yet") # TODO: implement
-  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::ex_data_table.relop_drop_columns")
-  if(!requireNamespace("data.table", quietly = TRUE)) {
-    stop("rquery::ex_data_table.relop_drop_columns() requires the data.table package be installed")
-  }
-}
-
 #' @export
 ex_data_table.relop_extend <- function(optree,
                                        ...,
                                        tables = list(),
                                        env = parent.frame()) {
-  stop("rquery::ex_data_table.relop_extend not implemented yet") # TODO: implement
+  # TODO: ordering terms
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::ex_data_table.relop_extend")
   if(!requireNamespace("data.table", quietly = TRUE)) {
     stop("rquery::ex_data_table.relop_extend() requires the data.table package be installed")
   }
+  n <- length(optree$parsed)
+  if(n<0) {
+    stop("rquery::ex_data_table.relop_extend() must have at least one assignment")
+  }
+  x <- ex_data_table(optree$source[[1]])
+  byi <- ""
+  if(length(optree$partitionby)>0) {
+    pterms <- paste("\"", optree$partitionby, "\"")
+    byi <- paste0(" , by = c(", paste(pterms, collapse = ", "), ")")
+  }
+  tmpnam <- ".rquery_ex_extend_tmp"
+  tmpenv <- new.env(parent = env)
+  assign(tmpnam, x, envir = tmpenv)
+  enames <-
+    vapply(seq_len(n),
+           function(i) {
+             paste0("\"", optree$parsed[[i]]$symbols_produced, "\"")
+           }, character(1))
+  enames <- paste0("c(", paste(enames, collapse = ", "), ")")
+  eexprs <-
+    vapply(seq_len(n),
+           function(i) {
+             as.character(optree$parsed[[i]]$presentation)
+           }, character(1))
+  eexprs <- paste0("list(", paste(eexprs, collapse = ", "), ")")
+  src <- paste0("data.table::set(", tmpnam,
+                ", j = ", enames,
+                ", value = ", eexprs,
+                ")")
+  expr <- parse(text = src)
+  eval(expr, envir = tmpenv, enclos = env)
 }
+
+
+
+
+
+
+
+
+#  TODO: implement the following
+
+
+
+
 
 #' @export
 ex_data_table.relop_natural_join <- function(optree,
