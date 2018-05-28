@@ -48,7 +48,7 @@ dL <- data.table(
 
 scale <- 0.237
 
-# example pipeline
+# example rquery pipeline
 dq <- local_td(dL) %.>%
   extend_nse(.,
              one := 1) %.>%
@@ -103,7 +103,7 @@ cat(format(dq))
 # execute
 # https://stackoverflow.com/questions/10527072/using-data-table-package-inside-my-own-package
 .datatable.aware <- TRUE
-# Note: data.table has in-place mutate semantics
+
 res <- ex_data_table(dq)
 
 knitr::kable(as.data.frame(res))

@@ -71,6 +71,8 @@ ex_data_table.relop_table_source <- function(optree,
   }
   if(!data.table::is.data.table(res)) {
     res <- data.table::as.data.table(res)
+  } else {
+    res <- copy(res) # try to break reference semantics
   }
   res
 }
@@ -151,6 +153,22 @@ ex_data_table.relop_non_sql <- function(optree,
 }
 
 
+build_order_clause <- function(orderby, rev_orderby) {
+  oterms <- character(0)
+  if(length(orderby)>0) {
+    oterms <- c(oterms, orderby)
+  }
+  if(length(rev_orderby)>0) {
+    oterms <- c(oterms, paste0("-", orderev_orderbyrby))
+  }
+  if(length(oterms)<=0) {
+    return(NULL)
+  }
+  paste("order(",
+        paste(oterms, collapse = ", "),
+        ")")
+}
+
 
 
 
@@ -163,9 +181,9 @@ ex_data_table.relop_extend <- function(optree,
     stop("rquery::ex_data_table.relop_extend() requires the data.table package be installed")
   }
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::ex_data_table.relop_extend")
-  if((length(optree$orderby)>0) || (length(optree$rev_orderby)>0)) {
-    # TODO: implement ordering terms
-    stop("rquery::ex_data_table.relop_extend does not yet implement window ordering")
+  oclause <- build_order_clause(optree$orderby, optree$rev_orderby)
+  if(length(oclause)<=0) {
+    oclause = ""
   }
   n <- length(optree$parsed)
   if(n<0) {
@@ -193,13 +211,13 @@ ex_data_table.relop_extend <- function(optree,
            }, character(1))
   eexprs <- paste0("list(", paste(eexprs, collapse = ", "), ")")
   src <- paste0(tmpnam, "[ ",
-                ", ", paste(enames, ":=", eexprs),
+                oclause,
+                " , ", paste(enames, ":=", eexprs),
                 byi,
                 " ]")
   expr <- parse(text = src)
   eval(expr, envir = tmpenv, enclos = env)
 }
-
 
 
 #' @export
@@ -212,22 +230,16 @@ ex_data_table.relop_orderby <- function(optree,
   }
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::ex_data_table.relop_orderby")
   x <- ex_data_table(optree$source[[1]])
-  oterms <- character(0)
-  if(length(optree$orderby)>0) {
-    oterms <- c(oterms, optree$orderby)
-  }
-  if(length(optree$rev_orderby)>0) {
-    oterms <- c(oterms, paste0("-", optree$orderev_orderbyrby))
-  }
-  if(length(oterms)<=0) {
+  oclause <- build_order_clause(optree$orderby, optree$orderev_orderbyrby)
+  if(length(oclause)<=0) {
     return(x)
   }
   tmpnam <- ".rquery_ex_orderby_tmp"
   tmpenv <- new.env(parent = env)
   assign(tmpnam, x, envir = tmpenv)
-  src <- paste0(tmpnam, "[order(",
-                paste(oterms, collapse = ", "),
-                ")]")
+  src <- paste0(tmpnam, "[ ",
+                oclause,
+                " ]")
   expr <- parse(text = src)
   eval(expr, envir = tmpenv, enclos = env)
 }
