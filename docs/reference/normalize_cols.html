@@ -178,9 +178,9 @@
 #&gt;   surveyCategory,
 #&gt;   assessmentTotal) %.&gt;%
 #&gt;  extend(.,
-#&gt;   `:=`(probability, exp(assessmentTotal * scale))) %.&gt;%
+#&gt;   probability := exp(assessmentTotal * scale)) %.&gt;%
 #&gt;  extend(.,
-#&gt;   probability := probability/sum(probability),
+#&gt;   probability := probability / sum(probability),
 #&gt;   p= subjectID) %.&gt;%
 #&gt;  extend(.,
 #&gt;   row_number := row_number(),

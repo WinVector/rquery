@@ -182,7 +182,7 @@
 }</div><div class='output co'>#&gt; table('d'; 
 #&gt;   group,
 #&gt;   val) %.&gt;%
-#&gt;  project(., `:=`(vmax, max(val)),
+#&gt;  project(., vmax := max(val),
 #&gt;   g= group)
 #&gt; SELECT `group`, max ( `val` ) AS `vmax` FROM (
 #&gt;  SELECT
@@ -199,7 +199,7 @@
 #&gt; table('d'; 
 #&gt;   group,
 #&gt;   val) %.&gt;%
-#&gt;  project(., `:=`(vmax, max(val)),
+#&gt;  project(., vmax := max(val),
 #&gt;   g= )
 #&gt; SELECT max ( `val` ) AS `vmax` FROM (
 #&gt;  SELECT

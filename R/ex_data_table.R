@@ -151,11 +151,18 @@ ex_data_table.relop_non_sql <- function(optree,
 }
 
 
+
+
+#  TODO: implement the following
+
+
+
 #' @export
 ex_data_table.relop_extend <- function(optree,
                                        ...,
                                        tables = list(),
                                        env = parent.frame()) {
+  stop("rquery::ex_data_table.relop_extend not implemented yet") # TODO: implement
   # TODO: ordering terms
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::ex_data_table.relop_extend")
   if(!requireNamespace("data.table", quietly = TRUE)) {
@@ -183,7 +190,7 @@ ex_data_table.relop_extend <- function(optree,
   eexprs <-
     vapply(seq_len(n),
            function(i) {
-             as.character(optree$parsed[[i]]$presentation)
+             gsub("^[^:]*:=[[:space:]]*", "", as.character(optree$parsed[[i]]$presentation))
            }, character(1))
   eexprs <- paste0("list(", paste(eexprs, collapse = ", "), ")")
   src <- paste0("data.table::set(", tmpnam,
@@ -201,7 +208,7 @@ ex_data_table.relop_extend <- function(optree,
 
 
 
-#  TODO: implement the following
+
 
 
 
