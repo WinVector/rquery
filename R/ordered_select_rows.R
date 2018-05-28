@@ -18,7 +18,7 @@
 #'
 #' # by hand logistic regression example
 #' scale <- 0.237
-#' d <- table_source("survey_table",
+#' d <- mk_td("survey_table",
 #'                   c("subjectID", "surveyCategory", "assessmentTotal"))
 #' optree <- d %.>%
 #'   extend_nse(.,

@@ -85,9 +85,9 @@ natural_join.data.frame <- function(a, b,
   }
   nmgen <- mk_tmp_name_source("rquery_tmp")
   tmp_namea <- nmgen()
-  dnodea <- table_source(tmp_namea, colnames(a))
+  dnodea <- mk_td(tmp_namea, colnames(a))
   tmp_nameb <- nmgen()
-  dnodeb <- table_source(tmp_namea, colnames(b))
+  dnodeb <- mk_td(tmp_namea, colnames(b))
   enode <- natural_join(dnodea, dnodeb,
                         jointype = jointype,
                         by = by)

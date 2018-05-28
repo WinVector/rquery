@@ -1,7 +1,7 @@
 Join Dependency Sorting
 ================
 John Mount
-2018-04-18
+2018-05-28
 
 Let's discuss the task of left joining many tables from a data warehouse using [`R`](https://www.r-project.org) and a system called "a join controller" (last discussed [here](http://www.win-vector.com/blog/2017/06/use-a-join-controller-to-document-your-work/)).
 
@@ -37,7 +37,7 @@ library("rquery")
 packageVersion("rquery")
 ```
 
-    ## [1] '0.4.3'
+    ## [1] '0.5.0'
 
 ``` r
 tDesc <- describe_tables(my_db, tableNames,
@@ -172,12 +172,18 @@ optree <- actualize_join_plan(sorted$columnJoinPlan)
 cat(format(optree))
 ```
 
-    ## table('employeeanddate') %.>%
+    ## table('employeeanddate'; 
+    ##   id,
+    ##   date) %.>%
     ##  rename(.,
     ##   c('eid' = 'id',
     ##     'date' = 'date')) %.>%
     ##  natural_join(.,
-    ##   table('activity') %.>%
+    ##   table('activity'; 
+    ##     eid,
+    ##     date,
+    ##     hours,
+    ##     location) %.>%
     ##    rename(.,
     ##     c('eid' = 'eid',
     ##       'date' = 'date',
@@ -185,7 +191,11 @@ cat(format(optree))
     ##       'activity_location' = 'location')),
     ##   j= LEFT, by= eid, date) %.>%
     ##  natural_join(.,
-    ##   table('orgtable') %.>%
+    ##   table('orgtable'; 
+    ##     eid,
+    ##     date,
+    ##     dept,
+    ##     location) %.>%
     ##    rename(.,
     ##     c('eid' = 'eid',
     ##       'date' = 'date',
@@ -193,7 +203,10 @@ cat(format(optree))
     ##       'orgtable_location' = 'location')),
     ##   j= LEFT, by= eid, date) %.>%
     ##  natural_join(.,
-    ##   table('revenue'),
+    ##   table('revenue'; 
+    ##     date,
+    ##     dept,
+    ##     rev),
     ##   j= LEFT, by= date, dept)
 
 ``` r
@@ -209,10 +222,10 @@ execute(my_db, optree) %.>%
   knitr::kable(.)
 ```
 
-|      date| dept | activity\_location | eid |  hours| orgtable\_location |   rev|
-|---------:|:-----|:-------------------|:----|------:|:-------------------|-----:|
-|  20140501| IT   | office             | i4  |     50| CA                 |    NA|
-|  20140601| SL   | client             | i4  |      3| TX                 |  2000|
+|      date| dept | eid |  hours| activity\_location | orgtable\_location |   rev|
+|---------:|:-----|:----|------:|:-------------------|:-------------------|-----:|
+|  20140501| IT   | i4  |     50| office             | CA                 |    NA|
+|  20140601| SL   | i4  |      3| client             | TX                 |  2000|
 
 And this is how we use tools to do the heavy lifting in building a left join plan:
 

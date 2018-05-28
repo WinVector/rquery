@@ -233,17 +233,17 @@ d_local &lt;-<span class="st"> </span><span class="kw">build_frame</span>(
             d_local,
             <span class="dt">temporary =</span> <span class="ot">TRUE</span>, 
             <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</code></pre></div>
-<pre><code>## [1] "table('d')"</code></pre>
+<pre><code>## [1] "table('d'; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2)"</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># produce a hande to existing table</span>
-d &lt;-<span class="st"> </span><span class="kw"><a href="reference/rq_table.html">rq_table</a></span>(my_db, <span class="st">"d"</span>)</code></pre></div>
-<p>Note: in examples we use <code><a href="reference/rq_copy_to.html">rq_copy_to()</a></code> to create data. This is only for the purpose of having easy portable examples. With big data the data is usually already in the remote database or Spark system. The task is almost always to connect and work with this pre-existing remote data and the method to do this is <a href="https://winvector.github.io/rquery/reference/rq_table.html"><code><a href="reference/rq_table.html">rq_table()</a></code></a>, which builds a reference to a remote table given the table name. The suggested pattern for working with remote tables is to get inputs via <a href="https://winvector.github.io/rquery/reference/rq_table.html"><code><a href="reference/rq_table.html">rq_table()</a></code></a> and land remote results with <a href="https://winvector.github.io/rquery/reference/materialize.html"><code>materialze()</code></a>. To work with local data one can copy data from memory to the database with <a href="https://winvector.github.io/rquery/reference/rq_copy_to.html"><code><a href="reference/rq_copy_to.html">rq_copy_to()</a></code></a> and bring back results with <a href="https://winvector.github.io/rquery/reference/execute.html"><code><a href="reference/execute.html">execute()</a></code></a> (though be aware operation on remote non-memory data is <code>rquery</code>’s primary intent).</p>
+d &lt;-<span class="st"> </span><span class="kw"><a href="reference/db_td.html">db_td</a></span>(my_db, <span class="st">"d"</span>)</code></pre></div>
+<p>Note: in examples we use <code><a href="reference/rq_copy_to.html">rq_copy_to()</a></code> to create data. This is only for the purpose of having easy portable examples. With big data the data is usually already in the remote database or Spark system. The task is almost always to connect and work with this pre-existing remote data and the method to do this is <a href="https://winvector.github.io/rquery/reference/db_td.html"><code><a href="reference/db_td.html">db_td()</a></code></a>, which builds a reference to a remote table given the table name. The suggested pattern for working with remote tables is to get inputs via <a href="https://winvector.github.io/rquery/reference/db_td.html"><code><a href="reference/db_td.html">db_td()</a></code></a> and land remote results with <a href="https://winvector.github.io/rquery/reference/materialize.html"><code>materialze()</code></a>. To work with local data one can copy data from memory to the database with <a href="https://winvector.github.io/rquery/reference/rq_copy_to.html"><code><a href="reference/rq_copy_to.html">rq_copy_to()</a></code></a> and bring back results with <a href="https://winvector.github.io/rquery/reference/execute.html"><code><a href="reference/execute.html">execute()</a></code></a> (though be aware operation on remote non-memory data is <code>rquery</code>’s primary intent).</p>
 <p>First we show the Spark/database version of the original example data:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">class</span>(my_db)</code></pre></div>
 <pre><code>## [1] "PostgreSQLConnection"
 ## attr(,"package")
 ## [1] "RPostgreSQL"</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(d)</code></pre></div>
-<pre><code>## [1] "table('d')"</code></pre>
+<pre><code>## [1] "table('d'; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2)"</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">d <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="reference/execute.html">execute</a></span>(my_db, .) <span class="op">%.&gt;%</span>
 <span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</code></pre></div>
@@ -365,14 +365,14 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
         "d"."assessmentTotal"
        FROM
         "d" LIMIT 1000
-       ) tsql_37192236790848733989_0000000000
-      ) tsql_37192236790848733989_0000000001
-     ) tsql_37192236790848733989_0000000002
-   ) tsql_37192236790848733989_0000000003
+       ) tsql_04505599329007724654_0000000000
+      ) tsql_04505599329007724654_0000000001
+     ) tsql_04505599329007724654_0000000002
+   ) tsql_04505599329007724654_0000000003
    WHERE "row_number" &lt;= 1
-  ) tsql_37192236790848733989_0000000004
- ) tsql_37192236790848733989_0000000005
-) tsql_37192236790848733989_0000000006 ORDER BY "subjectID"</code></pre>
+  ) tsql_04505599329007724654_0000000004
+ ) tsql_04505599329007724654_0000000005
+) tsql_04505599329007724654_0000000006 ORDER BY "subjectID"</code></pre>
 <p>The query is large, but due to its regular structure it should be very amenable to query optimization.</p>
 <p>A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our <a href="https://github.com/WinVector/rquery/blob/master/extras/PerfTest.html">initial experiments</a> show <code>rquery</code> narrowed queries to be twice as fast as un-narrowed <code>dplyr</code> on a synthetic problem simulating large disk-based queries. We think if we connected directly to <code>Spark</code>’s relational operators (avoiding the <code>SQL</code> layer) we may be able to achieve even faster performance.</p>
 <p>The above optimization is possible because the <code>rquery</code> representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query. For example:</p>
@@ -385,11 +385,16 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 ## [1] "subjectID"       "surveyCategory"  "assessmentTotal"</code></pre>
 <p>The additional record-keeping in the operator nodes allows checking and optimization (such as <a href="http://www.win-vector.com/blog/2017/12/how-to-greatly-speed-up-your-spark-queries/">query narrowing</a>). The flow itself is represented as follows:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw">format</span>(dq))</code></pre></div>
-<pre><code>table('d') %.&gt;%
+<pre><code>table('d'; 
+  subjectID,
+  surveyCategory,
+  assessmentTotal,
+  irrelevantCol1,
+  irrelevantCol2) %.&gt;%
  extend(.,
-  probability := exp(assessmentTotal * scale)) %.&gt;%
+  `:=`(probability, exp(assessmentTotal * scale))) %.&gt;%
  extend(.,
-  probability := probability / sum(probability),
+  probability := probability/sum(probability),
   p= subjectID) %.&gt;%
  extend(.,
   row_number := row_number(),

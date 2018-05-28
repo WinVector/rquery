@@ -1,6 +1,6 @@
 
 
-#' Table data source.
+#' Make a table description directly.
 #'
 #' Build minimal structures (table name and column names) needed to represent data from a remote table.
 #'
@@ -22,7 +22,7 @@
 #'              data.frame(AUC = 0.6, R2 = 0.2),
 #'              overwrite = TRUE,
 #'              temporary = TRUE)
-#'   d <- table_source('d',
+#'   d <- mk_td('d',
 #'                     columns = c("AUC", "R2"))
 #'   print(d)
 #'   sql <- to_sql(d, my_db)
@@ -31,11 +31,11 @@
 #'   DBI::dbDisconnect(my_db)
 #' }
 #'
-#' @seealso \code{\link{rq_table}}, \code{\link{rq_copy_to}}, \code{\link{materialize}}, \code{\link{execute}}, \code{\link{to_sql}}
+#' @seealso \code{\link{db_td}}, \code{\link{rq_copy_to}}, \code{\link{materialize}}, \code{\link{execute}}, \code{\link{to_sql}}
 #'
 #' @export
 #'
-table_source <- function(table_name, columns) {
+mk_td <- function(table_name, columns) {
   r <- list(source = list(),
             table_name = table_name,
             parsed = NULL,
@@ -44,11 +44,14 @@ table_source <- function(table_name, columns) {
   r
 }
 
+#' @describeIn mk_td old name for mk_td
+#' @export
+table_source <- mk_td
 
 
 
 
-#' DBI data source.
+#' Make a table description from a database source.
 #'
 #' Build structures (table name, column names, and quoting
 #' strategy) needed to represent data from a remote table.
@@ -56,7 +59,7 @@ table_source <- function(table_name, columns) {
 #' Note: in examples we use \code{rq_copy_to()} to create data.  This is only for the purpose of having
 #' easy portable examples.  With big data the data is usually already in the remote database or
 #' Spark system. The task is almost always to connect and work with this pre-existing remote data
-#' and the method to do this is \code{rq_table}
+#' and the method to do this is \code{db_td}
 #' which builds a reference to a remote table given the table name.
 #'
 #'
@@ -64,7 +67,7 @@ table_source <- function(table_name, columns) {
 #' @param table_name name of table
 #' @return a relop representation of the data
 #'
-#' @seealso \code{\link{table_source}}, \code{\link{rq_copy_to}}, \code{\link{materialize}}, \code{\link{execute}}, \code{\link{to_sql}}
+#' @seealso \code{\link{mk_td}}, \code{\link{rq_copy_to}}, \code{\link{materialize}}, \code{\link{execute}}, \code{\link{to_sql}}
 #'
 #' @examples
 #'
@@ -75,7 +78,7 @@ table_source <- function(table_name, columns) {
 #'               data.frame(AUC = 0.6, R2 = 0.2),
 #'               overwrite = TRUE,
 #'               temporary = TRUE)
-#'   d <- rq_table(my_db, 'd')
+#'   d <- db_td(my_db, 'd')
 #'   print(d)
 #'   sql <- to_sql(d, my_db)
 #'   cat(sql)
@@ -91,40 +94,96 @@ table_source <- function(table_name, columns) {
 #'
 #' @export
 #'
-rq_table <- function(db, table_name) {
-  table_source(table_name = table_name,
-               columns = rq_colnames(db, table_name))
+db_td <- function(db, table_name) {
+  mk_td(table_name = table_name,
+        columns = rq_colnames(db, table_name))
 }
 
-#' @rdname rq_table
+#' @describeIn db_td old name for db_td
 #' @export
-db_table <- rq_table
+dbi_table <- db_td
 
 
-#' Build a source from a data.frame.
+
+#' Make a table description of a local data.frame.
 #'
-#' @param d data.frame to use as data source.
+#' @param d data.frame or name of data.frame to use as a data source.
 #' @param ... not used, force later arguments to be optional.
-#' @param table_name name to use for table.
-#' @param name_source temporary name generator.
+#' @param name_source temporary name source.
+#' @param env environment to work in.
 #' @return a relop representation of the data
 #'
+#' @examples
+#'
+#' d <- data.frame(x = 1)
+#' local_td(d)
+#' local_td("d")
+#' local_td(as.name("d"))
+#' local_td(data.frame(x = 1))
+#' d %.>% local_td # needs wrapr 1.5.0 or newer to capture name
+#'
 #' @export
 #'
-frame_table <- function(d,
-                        ...,
-                        table_name = substitute(d),
-                        name_source = wrapr::mk_tmp_name_source("rqfs")) {
+local_td <- function(d,
+                     ...,
+                     name_source = wrapr::mk_tmp_name_source("rqltd"),
+                     env = parent.frame()) {
+  UseMethod("local_td")
+}
+
+#' @export
+local_td.data.frame <- function(d,
+                                ...,
+                                name_source = wrapr::mk_tmp_name_source("rqltd"),
+                                env = parent.frame()) {
   wrapr::stop_if_dot_args(substitute(list(...)),
-                         "rquery::frame_table")
-  if(is.name(table_name)) {
+                          "rquery::local_td.data.frame")
+  table_name <- substitute(d)
+  if(is.name(table_name) || is.character(table_name)) {
     table_name <- as.character(table_name)
   } else {
     table_name = name_source()
   }
-  table_source(table_name = table_name,
-               columns = colnames(d))
+  mk_td(table_name = table_name,
+        columns = colnames(d))
 }
+
+#' @export
+local_td.character <- function(d,
+                               ...,
+                               name_source = wrapr::mk_tmp_name_source("rqltd"),
+                               env = parent.frame()) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::local_td.character")
+  table_name <- d
+  d <- get(table_name, envir = env)
+  if(!is.data.frame(d)) {
+    stop("rquery::local_td.character: argument d must be a string that resolves to a data.frame")
+  }
+  mk_td(table_name = table_name,
+        columns = colnames(d))
+}
+
+
+#' @export
+local_td.name <- function(d,
+                          ...,
+                          name_source = wrapr::mk_tmp_name_source("rqltd"),
+                          env = parent.frame()) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::local_td.name")
+  table_name <- as.character(d)
+  d <- get(table_name, envir = env)
+  if(!is.data.frame(d)) {
+    stop("rquery::local_td.name: argument d must be a name that resolves to a data.frame")
+  }
+  mk_td(table_name = table_name,
+        columns = colnames(d))
+}
+
+
+
+
 
 
 #' @export
@@ -207,10 +266,18 @@ to_sql.relop_table_source <- function (x,
   q
 }
 
+
+
 #' @export
 format_node.relop_table_source <- function(node) {
-  paste0("table('", node$table_name, "')",
-         "\n")
+  max_cols <- 20
+  cols <- node$columns
+  if(length(cols)>max_cols) {
+    cols <- c(cols[seq_len(max_cols)], "...")
+  }
+  paste0("table('", node$table_name, "'; \n  ",
+         paste(cols, collapse = ",\n  "),
+         ")\n")
 }
 
 

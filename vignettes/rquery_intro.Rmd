@@ -63,7 +63,7 @@ rq_copy_to(
   overwrite = TRUE)
 
 # produce a hande to existing table
-d <- rq_table(db, "d")
+d <- db_td(db, "d")
 ```
 
 `d` is a "table description" which is just
@@ -77,9 +77,9 @@ descriptions later.
 Note: in examples we use `rq_copy_to()` to create data.  This is only for the purpose of having
 easy portable examples.  With big data the data is usually already in the remote database or
 Spark system. The task is almost always to connect and work with this pre-existing remote data
-and the method to do this is [`rq_table()`](https://winvector.github.io/rquery/reference/rq_table.html),
+and the method to do this is [`db_td()`](https://winvector.github.io/rquery/reference/db_td.html),
 which builds a reference to a remote table given the table name.  The suggested pattern for working with 
-remote tables is to get inputs via [`rq_table()`](https://winvector.github.io/rquery/reference/rq_table.html)
+remote tables is to get inputs via [`db_td()`](https://winvector.github.io/rquery/reference/db_td.html)
 and land remote results with [`materialze()`](https://winvector.github.io/rquery/reference/materialize.html).
 To work with local data one can copy data from memory to the database with [`rq_copy_to()`](https://winvector.github.io/rquery/reference/rq_copy_to.html)
 and bring back results with [`execute()`](https://winvector.github.io/rquery/reference/execute.html) (though be aware 
@@ -360,10 +360,12 @@ can be used in a given `rquery` pipeline.
 The table description "`d`" we have been using in examples was produced
 as a result of moving data to a database by 
 [`rq_copy_to()`](https://winvector.github.io/rquery/reference/rq_copy_to.html).
-However we can also create a description of an existing table with
-[`rq_table()`](https://winvector.github.io/rquery/reference/rq_table.html) or
+However we can also create a description of an existing database table with
+[`db_td()`](https://winvector.github.io/rquery/reference/db_td.html) or
 even build a description by hand with 
-[`table_source()`](https://winvector.github.io/rquery/reference/table_source.html).
+[`mk_td()`](https://winvector.github.io/rquery/reference/mk_td.html).
+Also one can build descriptions of local or in-memory `data.frame`s with
+[`local_td()`](https://winvector.github.io/rquery/reference/local_td.html).
 
 # Operators
 
@@ -426,7 +428,7 @@ sequence of relational nodes.
 ```{r logisticex, eval=run_vignette}
 scale <- 0.237
 
-dq <- table_source("d3", 
+dq <- mk_td("d3", 
                    columns = qc(subjectID, 
                                 surveyCategory, 
                                 assessmentTotal)) %.>%
@@ -527,7 +529,7 @@ performant results.  This allows the user to write large
 Here is an example.
 
 ```{r assignmentpart, eval=run_vignette}
-ot <- table_source('d4',
+ot <- mk_td('d4',
                    columns = qc('a', 'b', 'c', 'd')) %.>%
   extend_nse(., 
              x = a + 1,
@@ -550,7 +552,7 @@ systems such as `SAS` (also meaning `rquery` can be critical porting code from `
 This allows coordinated assignments such as the following:
 
 ```{r ifelseblock, eval=run_vignette}
-ifet <- table_source("d5",
+ifet <- mk_td("d5",
                      columns = "test") %.>%
   extend_se(.,
             c(qae(x = '',
@@ -600,7 +602,7 @@ has show significant additional performance advantages
 From a coding point of view the automatic narrowing effect looks like this.
 
 ```{r, eval=run_vignette}
-wp <- table_source(table = 'd6',
+wp <- mk_td(table = 'd6',
                    columns = letters[1:5]) %.>%
   extend_nse(., res := a + b)
 

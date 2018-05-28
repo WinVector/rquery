@@ -178,7 +178,9 @@ which does preserve row order).</p>
   <span class='fu'>cat</span>(<span class='no'>sql</span>)
   <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; table('d') %.&gt;%
+}</div><div class='output co'>#&gt; table('d'; 
+#&gt;   AUC,
+#&gt;   R2) %.&gt;%
 #&gt;  orderby(., desc(AUC))
 #&gt; SELECT * FROM (
 #&gt;  SELECT
@@ -186,7 +188,7 @@ which does preserve row order).</p>
 #&gt;   `d`.`R2`
 #&gt;  FROM
 #&gt;   `d`
-#&gt; ) tsql_57261411398261364781_0000000000 ORDER BY `AUC` DESC LIMIT 4
+#&gt; ) tsql_68364151615050822369_0000000000 ORDER BY `AUC` DESC LIMIT 4
 #&gt;   AUC  R2
 #&gt; 1 0.6 0.2</div><div class='input'>
 </div></pre>

@@ -96,7 +96,7 @@ project_se.relop <- function(source, groupby, assignments,
 project_se.data.frame <- function(source, groupby, assignments,
                                   env = parent.frame()) {
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
-  dnode <- table_source(tmp_name, colnames(source))
+  dnode <- mk_td(tmp_name, colnames(source))
   enode <- project_se(dnode, groupby, assignments,
                       env = env)
   return(enode)
@@ -164,7 +164,7 @@ project_nse.relop <- function(source, groupby, ...,
 project_nse.data.frame <- function(source, groupby, ...,
                                    env = parent.frame()) {
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
-  dnode <- table_source(tmp_name, colnames(source))
+  dnode <- mk_td(tmp_name, colnames(source))
   enode <- project_nse(dnode, groupby, ...,
                        env = env)
   return(enode)

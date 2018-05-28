@@ -181,7 +181,7 @@ be copied into database.</p>
   <span class='no'>winvector_temp_db_handle</span> <span class='kw'>&lt;-</span> <span class='fu'>list</span>(<span class='kw'>db</span> <span class='kw'>=</span> <span class='no'>db</span>)
 
   <span class='co'># operations pipeline/tree</span>
-  <span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='table_source.html'>table_source</a></span>(<span class='st'>"d"</span>, <span class='st'>"x"</span>) <span class='kw'>%.&gt;%</span>
+  <span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='mk_td.html'>mk_td</a></span>(<span class='st'>"d"</span>, <span class='st'>"x"</span>) <span class='kw'>%.&gt;%</span>
     <span class='fu'><a href='extend_nse.html'>extend_nse</a></span>(<span class='no'>.</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='no'>x</span>*<span class='no'>x</span>)
 
   <span class='co'># wrapr dot pipe apply_right dispatch</span>

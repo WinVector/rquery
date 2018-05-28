@@ -46,7 +46,7 @@ select_columns.data.frame <- function(source, columns) {
     stop("rquery::select_columns must select at least 1 column")
   }
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
-  dnode <- table_source(tmp_name, colnames(source))
+  dnode <- mk_td(tmp_name, colnames(source))
   enode <- select_columns(dnode, columns)
   return(enode)
 }

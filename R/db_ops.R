@@ -9,7 +9,7 @@
 #' @param q character query
 #' @return nothing
 #'
-#' @seealso \code{\link{rq_table}}
+#' @seealso \code{\link{db_td}}
 #'
 #' @export
 #'
@@ -36,7 +36,7 @@ rq_get_query <- function(db, q) {
 #' @param q character query
 #' @return nothing
 #'
-#' @seealso \code{\link{rq_table}}
+#' @seealso \code{\link{db_td}}
 #'
 #' @export
 #'
@@ -71,7 +71,7 @@ rq_execute <- function(db, q) {
 #' @param table_name character table name
 #' @return logical TRUE if table exists.
 #'
-#' @seealso \code{\link{rq_table}}
+#' @seealso \code{\link{db_td}}
 #'
 #' @export
 #'
@@ -253,7 +253,7 @@ rq_coltypes <- function(db, table_name,
 #' @param table_name character, name of table to create.
 #' @return logical TRUE if table existed, else FALSE
 #'
-#' @seealso \code{\link{rq_table}}
+#' @seealso \code{\link{db_td}}
 #'
 #' @export
 #'
@@ -310,7 +310,7 @@ connection_is_sparklyr <- function(db) {
 #' @param rowidcolumn character, name to land row-ids.
 #' @return a relop representation of the data
 #'
-#' @seealso \code{\link{rq_table}}, \code{\link{table_source}}, \code{\link{materialize}}, \code{\link{execute}}, \code{\link{to_sql}}
+#' @seealso \code{\link{db_td}}, \code{\link{mk_td}}, \code{\link{materialize}}, \code{\link{execute}}, \code{\link{to_sql}}
 #'
 #' @examples
 #'
@@ -401,7 +401,7 @@ rq_copy_to <- function(db, table_name, d,
                         d)
     }
   }
-  rq_table(db, table_name)
+  db_td(db, table_name)
 }
 
 #' Count rows and return as numeric
@@ -410,7 +410,7 @@ rq_copy_to <- function(db, table_name, d,
 #' @param table_name character, name of table
 #' @return numeric row count
 #'
-#' @seealso \code{\link{rq_table}}
+#' @seealso \code{\link{db_td}}
 #'
 #' @export
 #'

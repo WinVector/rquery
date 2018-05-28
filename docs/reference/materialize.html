@@ -178,7 +178,7 @@ in pipelines.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='rq_table.html'>rq_table</a></code>, <code><a href='execute.html'>execute</a></code>, <code><a href='to_sql.html'>to_sql</a></code>, <code><a href='rq_copy_to.html'>rq_copy_to</a></code>, <code><a href='table_source.html'>table_source</a></code></p></div>
+    <div class='dont-index'><p><code><a href='db_td.html'>db_td</a></code>, <code><a href='execute.html'>execute</a></code>, <code><a href='to_sql.html'>to_sql</a></code>, <code><a href='rq_copy_to.html'>rq_copy_to</a></code>, <code><a href='mk_td.html'>mk_td</a></code></p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -207,12 +207,18 @@ in pipelines.</p>
      <span class='fu'>print</span>(<span class='no'>.</span>)
 
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; table('d') %.&gt;%
+}</div><div class='output co'>#&gt; table('d'; 
+#&gt;   AUC,
+#&gt;   R2) %.&gt;%
 #&gt;  extend(.,
 #&gt;   v := AUC + R2) %.&gt;%
 #&gt;  extend(.,
 #&gt;   x := pmax(AUC, v))
-#&gt; table('example')
+#&gt; table('example'; 
+#&gt;   AUC,
+#&gt;   R2,
+#&gt;   v,
+#&gt;   x)
 #&gt; SELECT
 #&gt;  `example`.`AUC`,
 #&gt;  `example`.`R2`,

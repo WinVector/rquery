@@ -49,12 +49,12 @@ rq_copy_to(my_db, 'd',
 Note: in examples we use `rq_copy_to()` to create data.  This is only for the purpose of having
 easy portable examples.  With big data the data is usually already in the remote database or
 Spark system. The task is almost always to connect and work with this pre-existing remote data
-and the method to do this is [`rq_table()`](https://winvector.github.io/rquery/reference/rq_table.html),
+and the method to do this is [`db_td()`](https://winvector.github.io/rquery/reference/db_td.html),
 which builds a reference to a remote table given the table name.
 
 ```{r calc, eval=run_vignette}
 # produce a hande to existing table
-d <- rq_table(my_db, "d")
+d <- db_td(my_db, "d")
 
 scale <- 0.237
 

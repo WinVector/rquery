@@ -7,11 +7,11 @@ test_that("test_extend_partition: Works As Expected", {
   if (requireNamespace("RSQLite", quietly = TRUE)) {
     my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 
-    d <- table_source("d",
-                      c("rowNum",
-                        "a_1", "a_2", "b_1", "b_2",
-                        "c_1", "c_2", "d_1", "d_2",
-                        "e_1", "e_2"  ))
+    d <- mk_td("d",
+               c("rowNum",
+                 "a_1", "a_2", "b_1", "b_2",
+                 "c_1", "c_2", "d_1", "d_2",
+                 "e_1", "e_2"  ))
     dQ <- d %.>%
       extend_se(.,
                 if_else_block(

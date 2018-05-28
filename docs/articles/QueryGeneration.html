@@ -85,7 +85,7 @@
       <h1>Query Generation</h1>
                         <h4 class="author">John Mount</h4>
             
-            <h4 class="date">2018-05-27</h4>
+            <h4 class="date">2018-05-28</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery//blob/master/vignettes/QueryGeneration.Rmd"><code>vignettes/QueryGeneration.Rmd</code></a></small>
       <div class="hidden name"><code>QueryGeneration.Rmd</code></div>
@@ -96,9 +96,9 @@
     
 <p>This is a very brief place-holder example (not executed, as <code>SQLite</code> does not have the needed window functions). For more details please see the fuller note: <a href="https://winvector.github.io/rquery/index.html"><code>rquery README</code></a>.</p>
 <p>The primary purpose of <code>rquery</code> is <code>SQL</code> query generation. We demonstrate this below.</p>
-<p>Note: in examples we use <code><a href="../reference/rq_copy_to.html">rq_copy_to()</a></code> to create data. This is only for the purpose of having easy portable examples. With big data the data is usually already in the remote database or Spark system. The task is almost always to connect and work with this pre-existing remote data and the method to do this is <a href="https://winvector.github.io/rquery/reference/rq_table.html"><code><a href="../reference/rq_table.html">rq_table()</a></code></a>, which builds a reference to a remote table given the table name.</p>
+<p>Note: in examples we use <code><a href="../reference/rq_copy_to.html">rq_copy_to()</a></code> to create data. This is only for the purpose of having easy portable examples. With big data the data is usually already in the remote database or Spark system. The task is almost always to connect and work with this pre-existing remote data and the method to do this is <a href="https://winvector.github.io/rquery/reference/db_td.html"><code><a href="../reference/db_td.html">db_td()</a></code></a>, which builds a reference to a remote table given the table name.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># produce a hande to existing table</span>
-d &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rq_table.html">rq_table</a></span>(my_db, <span class="st">"d"</span>)
+d &lt;-<span class="st"> </span><span class="kw"><a href="../reference/db_td.html">db_td</a></span>(my_db, <span class="st">"d"</span>)
 
 scale &lt;-<span class="st"> </span><span class="fl">0.237</span>
 
@@ -125,19 +125,24 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <span class="co">#&gt; attr(,"package")</span>
 <span class="co">#&gt; [1] "RSQLite"</span></code></pre></div>
 <p>Presentation format (see also <a href="https://winvector.github.io/rquery/reference/op_diagram.html"><code><a href="../reference/op_diagram.html">op_diagram()</a></code></a>):</p>
-<pre><code>  table('d') %.&gt;%
+<pre><code>  table('d'; 
+    subjectID,
+    surveyCategory,
+    assessmentTotal,
+    irrelevantCol1,
+    irrelevantCol2) %.&gt;%
    extend(.,
-    probability := exp(assessmentTotal * scale) / sum(exp(assessmentTotal * scale)),
-    count := count(1),
+    `:=`(probability, exp(assessmentTotal * scale)/sum(exp(assessmentTotal *      scale))),
+    `:=`(count, count(1)),
     p= subjectID) %.&gt;%
    extend(.,
-    rank := rank(),
+    `:=`(rank, rank()),
     p= subjectID,
     o= "probability", "surveyCategory") %.&gt;%
    rename(.,
     c('diagnosis' = 'surveyCategory')) %.&gt;%
    select_rows(.,
-     rank = count) %.&gt;%
+     rank == count) %.&gt;%
    select_columns(.,
      subjectID, diagnosis, probability) %.&gt;%
    orderby(., subjectID)</code></pre>
@@ -176,13 +181,13 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
          `d`.`assessmentTotal`
         FROM
          `d` LIMIT 1000
-        ) tsql_85432732420523806986_0000000000
-       ) tsql_85432732420523806986_0000000001
-     ) tsql_85432732420523806986_0000000002
-    ) tsql_85432732420523806986_0000000003
+        ) tsql_14209074540274360366_0000000000
+       ) tsql_14209074540274360366_0000000001
+     ) tsql_14209074540274360366_0000000002
+    ) tsql_14209074540274360366_0000000003
     WHERE `rank` = `count`
-   ) tsql_85432732420523806986_0000000004
-  ) tsql_85432732420523806986_0000000005 ORDER BY `subjectID`</code></pre>
+   ) tsql_14209074540274360366_0000000004
+  ) tsql_14209074540274360366_0000000005 ORDER BY `subjectID`</code></pre>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

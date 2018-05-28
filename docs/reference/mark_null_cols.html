@@ -174,7 +174,9 @@
   <span class='co'># cleanup</span>
   <span class='fu'>rm</span>(<span class='kw'>list</span> <span class='kw'>=</span> <span class='st'>"winvector_temp_db_handle"</span>)
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; table('d') %.&gt;%
+}</div><div class='output co'>#&gt; table('d'; 
+#&gt;   AUC,
+#&gt;   R2) %.&gt;%
 #&gt;  sql_node(.,
 #&gt;           mark_null_cols(c('AUC_NULL' = 'AUC', 'R2_NULL' = 'R2')))
 #&gt; SELECT
@@ -188,7 +190,7 @@
 #&gt;   `d`.`R2`
 #&gt;  FROM
 #&gt;   `d`
-#&gt; ) tsql_84197068678211589630_0000000000
+#&gt; ) tsql_47451065980701857394_0000000000
 #&gt;   AUC  R2 AUC_NULL R2_NULL
 #&gt; 1 0.6 1.0        0       0
 #&gt; 2 0.5 0.9        0       0

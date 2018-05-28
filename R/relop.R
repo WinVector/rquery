@@ -169,7 +169,7 @@ tables_used.relop <- function(node, ...) {
 #' @param using character, if not NULL set of columns used from above.
 #' @return SQL command
 #'
-#' @seealso \code{\link{rq_table}}, \code{\link{materialize}}, \code{\link{execute}}, \code{\link{rq_copy_to}}, \code{\link{table_source}}
+#' @seealso \code{\link{db_td}}, \code{\link{materialize}}, \code{\link{execute}}, \code{\link{rq_copy_to}}, \code{\link{mk_td}}
 #'
 #' @examples
 #'

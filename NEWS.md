@@ -8,6 +8,7 @@
  * Get rid of embedded data cases.
  * Move to new wrapr ops.
  * Start on data.table adapter.
+ * Rationalize names of table description methods.
 
 # rquery 0.4.4 2018/05/14
 

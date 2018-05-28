@@ -175,7 +175,9 @@
 
   <span class='co'># cleanup</span>
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; table('d') %.&gt;%
+}</div><div class='output co'>#&gt; table('d'; 
+#&gt;   a,
+#&gt;   b) %.&gt;%
 #&gt;  sql_node(.,
 #&gt;           set_indicator(., one_two = a IN set)) %.&gt;%
 #&gt;  sql_node(.,
@@ -196,8 +198,8 @@
 #&gt;    `d`.`b`
 #&gt;   FROM
 #&gt;    `d`
-#&gt;  ) tsql_11090134104390167605_0000000000
-#&gt; ) tsql_11090134104390167605_0000000001
+#&gt;  ) tsql_87088771131844733382_0000000000
+#&gt; ) tsql_87088771131844733382_0000000001
 #&gt;   a z b one_two
 #&gt; 1 1 0 1       1
 #&gt; 2 2 0 1       1

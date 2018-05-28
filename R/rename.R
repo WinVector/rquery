@@ -65,7 +65,7 @@ rename_columns.data.frame <- function(source, cmap) {
     stop("rquery::rename_columns map keys must be unique")
   }
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
-  dnode <- table_source(tmp_name, colnames(source))
+  dnode <- mk_td(tmp_name, colnames(source))
   enode <- rename_columns(dnode, cmap)
   return(enode)
 }

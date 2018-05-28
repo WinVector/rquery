@@ -178,29 +178,33 @@
   <span class='fu'>cat</span>(<span class='no'>sql</span>)
   <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; table('d1') %.&gt;%
+}</div><div class='output co'>#&gt; table('d1'; 
+#&gt;   AUC,
+#&gt;   R2) %.&gt;%
 #&gt;  theta_join(.,
-#&gt;   table('d2'),
+#&gt;   table('d2'; 
+#&gt;     AUC2,
+#&gt;     R2),
 #&gt;   j= INNER; on= AUC &gt;= AUC2)
 #&gt; SELECT
-#&gt;  `tsql_00032446839994195421_0000000000`.`AUC` AS `AUC`,
-#&gt;  `tsql_00032446839994195421_0000000000`.`R2` AS `R2_a`,
-#&gt;  `tsql_00032446839994195421_0000000001`.`AUC2` AS `AUC2`,
-#&gt;  `tsql_00032446839994195421_0000000001`.`R2` AS `R2_b`
+#&gt;  `tsql_24207746012802677052_0000000000`.`AUC` AS `AUC`,
+#&gt;  `tsql_24207746012802677052_0000000000`.`R2` AS `R2_a`,
+#&gt;  `tsql_24207746012802677052_0000000001`.`AUC2` AS `AUC2`,
+#&gt;  `tsql_24207746012802677052_0000000001`.`R2` AS `R2_b`
 #&gt; FROM (
 #&gt;  SELECT
 #&gt;   `d1`.`AUC`,
 #&gt;   `d1`.`R2`
 #&gt;  FROM
 #&gt;   `d1`
-#&gt; ) `tsql_00032446839994195421_0000000000`
+#&gt; ) `tsql_24207746012802677052_0000000000`
 #&gt; INNER JOIN (
 #&gt;  SELECT
 #&gt;   `d2`.`AUC2`,
 #&gt;   `d2`.`R2`
 #&gt;  FROM
 #&gt;   `d2`
-#&gt; ) `tsql_00032446839994195421_0000000001` ON "AUC" &gt;= "AUC2"
+#&gt; ) `tsql_24207746012802677052_0000000001` ON "AUC" &gt;= "AUC2"
 #&gt;   AUC R2_a AUC2 R2_b
 #&gt; 1 0.6  0.2  0.4  0.3</div><div class='input'>
 </div></pre>

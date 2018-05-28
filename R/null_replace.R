@@ -83,7 +83,7 @@ null_replace.data.frame <- function(src,
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::null_replace.data.frame")
   nmgen <- mk_tmp_name_source("rquery_tmp")
   tmp_namea <- nmgen()
-  dnodea <- table_source(tmp_namea, colnames(src))
+  dnodea <- mk_td(tmp_namea, colnames(src))
   enode <- null_replace(dnodea,
                         cols = cols,
                         value = value,

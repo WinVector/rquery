@@ -76,7 +76,7 @@ r_optree_diagram <- function(optree, nextid, use_table_names) {
 #'
 #' @examples
 #'
-#' d <- table_source('d',
+#' d <- mk_td('d',
 #'              columns = qc(AUC, R2))
 #' optree <- d %.>%
 #'   extend_nse(., v := ifelse(AUC>0.5, R2, 1.0)) %.>%

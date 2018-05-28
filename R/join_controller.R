@@ -915,7 +915,7 @@ actualize_join_plan <- function(columnJoinPlan,
   res <- NULL
   for(tabnam in tableNameSeq) {
     rows <- columnJoinPlan[columnJoinPlan$tableName==tabnam, , drop= FALSE]
-    si <- table_source(tabnam, rows$sourceColumn)
+    si <- mk_td(tabnam, rows$sourceColumn)
     if(!isTRUE(all.equal(rows$sourceColumn, rows$resultColumn))) {
       si <- rename_columns(si,  rows$resultColumn := rows$sourceColumn)
     }

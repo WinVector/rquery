@@ -173,7 +173,7 @@
     <pre class="examples"><div class='input'>
 <span class='co'># by hand logistic regression example</span>
 <span class='no'>scale</span> <span class='kw'>&lt;-</span> <span class='fl'>0.237</span>
-<span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='table_source.html'>table_source</a></span>(<span class='st'>"survey_table"</span>,
+<span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='mk_td.html'>mk_td</a></span>(<span class='st'>"survey_table"</span>,
                   <span class='fu'>c</span>(<span class='st'>"subjectID"</span>, <span class='st'>"surveyCategory"</span>, <span class='st'>"assessmentTotal"</span>))
 <span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span>
   <span class='fu'><a href='extend_nse.html'>extend_nse</a></span>(<span class='no'>.</span>,
@@ -190,11 +190,14 @@
                       <span class='st'>'diagnosis'</span>,
                       <span class='st'>'probability'</span>)) <span class='kw'>%.&gt;%</span>
   <span class='fu'><a href='orderby.html'>orderby</a></span>(<span class='no'>.</span>, <span class='st'>'subjectID'</span>)
-<span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>optree</span>))</div><div class='output co'>#&gt; table('survey_table') %.&gt;%
+<span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>optree</span>))</div><div class='output co'>#&gt; table('survey_table'; 
+#&gt;   subjectID,
+#&gt;   surveyCategory,
+#&gt;   assessmentTotal) %.&gt;%
 #&gt;  extend(.,
-#&gt;   probability := exp(assessmentTotal * scale)) %.&gt;%
+#&gt;   `:=`(probability, exp(assessmentTotal * scale))) %.&gt;%
 #&gt;  extend(.,
-#&gt;   probability := probability / sum(probability),
+#&gt;   probability := probability/sum(probability),
 #&gt;   p= subjectID) %.&gt;%
 #&gt;  extend(.,
 #&gt;   row_number := row_number(),

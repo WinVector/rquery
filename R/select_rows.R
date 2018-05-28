@@ -48,7 +48,7 @@ select_rows_se.relop <- function(source, expr,
 select_rows_se.data.frame <- function(source, expr,
                                       env = parent.frame()) {
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
-  dnode <- table_source(tmp_name, colnames(source))
+  dnode <- mk_td(tmp_name, colnames(source))
   enode <- select_rows_se(dnode, expr,
                           env = env)
   return(enode)
@@ -109,7 +109,7 @@ select_rows_nse.data.frame <- function(source, expr,
                             env = parent.frame()) {
   exprq <- substitute(expr)
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
-  dnode <- table_source(tmp_name, colnames(source))
+  dnode <- mk_td(tmp_name, colnames(source))
   enode <- select_rows_se(dnode, deparse(exprq),
                           env = env)
   return(enode)

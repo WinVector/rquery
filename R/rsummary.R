@@ -342,7 +342,7 @@ rsummary <- function(db,
 #'               overwrite = TRUE,
 #'               temporary = TRUE)
 #'
-#'   ops <- rq_table(db, "dRemote") %.>%
+#'   ops <- db_td(db, "dRemote") %.>%
 #'     extend_nse(., v := ifelse(x>2, "x", "y")) %.>%
 #'     rsummary_node(.)
 #'   cat(format(ops))
@@ -365,7 +365,7 @@ rsummary_node <- function(source,
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::rsummary_node")
   if(is.data.frame(source)) {
     tmp_name <- mk_tmp_name_source("rquery_tmp")()
-    dnode <- table_source(tmp_name, colnames(source))
+    dnode <- mk_td(tmp_name, colnames(source))
     source <- dnode
   }
   columns_produced <- c("column",

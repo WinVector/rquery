@@ -8,7 +8,7 @@
 #' @param temporary logical if TRUE try to create a temporary table.
 #' @return modified SQL
 #'
-#' @seealso \code{\link{materialize}}, \code{\link{rq_table}}, \code{\link{execute}}, \code{\link{to_sql}}, \code{\link{rq_copy_to}}, \code{\link{table_source}}
+#' @seealso \code{\link{materialize}}, \code{\link{db_td}}, \code{\link{execute}}, \code{\link{to_sql}}, \code{\link{rq_copy_to}}, \code{\link{mk_td}}
 #'
 #' @examples
 #'
@@ -69,7 +69,7 @@ materialize_sql_statement <- function(db, sql, table_name,
 #' @param sql character, pre-rendered SQL matching optree and options- should not be set by user code.
 #' @return table handle
 #'
-#' @seealso \code{\link{rq_table}}, \code{\link{execute}}, \code{\link{to_sql}}, \code{\link{rq_copy_to}}, \code{\link{table_source}}
+#' @seealso \code{\link{db_td}}, \code{\link{execute}}, \code{\link{to_sql}}, \code{\link{rq_copy_to}}, \code{\link{mk_td}}
 #'
 #' @examples
 #'
@@ -260,7 +260,7 @@ materialize_impl <- function(db,
     rq_remove_table(db, to_clear)
     to_clear <- NULL
   }
-  res <- rq_table(db, table_name)
+  res <- db_td(db, table_name)
   notes$end_time[[n_steps]] <- Sys.time()
   res$notes <- notes
   res
@@ -283,7 +283,7 @@ materialize_impl <- function(db,
 #' @param precheck logical if TRUE precheck existance of table and columns.
 #' @return table handle
 #'
-#' @seealso \code{\link{rq_table}}, \code{\link{execute}}, \code{\link{to_sql}}, \code{\link{rq_copy_to}}, \code{\link{table_source}}
+#' @seealso \code{\link{db_td}}, \code{\link{execute}}, \code{\link{to_sql}}, \code{\link{rq_copy_to}}, \code{\link{mk_td}}
 #'
 #' @examples
 #'
@@ -349,7 +349,7 @@ materialize <- function(db,
 #' @param temporary logical if TRUE try to create a temporary table.
 #' @return table handle
 #'
-#' @seealso \code{\link{rq_table}}, \code{\link{materialize}}, \code{\link{to_sql}}, \code{\link{rq_copy_to}}, \code{\link{table_source}}
+#' @seealso \code{\link{db_td}}, \code{\link{materialize}}, \code{\link{to_sql}}, \code{\link{rq_copy_to}}, \code{\link{mk_td}}
 #'
 #' @examples
 #'
@@ -389,7 +389,7 @@ materialize_sql <- function(db,
                                     table_name = table_name,
                                     temporary = temporary)
   rq_execute(db, stmt)
-  rq_table(db, table_name)
+  db_td(db, table_name)
 }
 
 
@@ -413,7 +413,7 @@ materialize_sql <- function(db,
 #' @param precheck logical if TRUE precheck existance of table and columns.
 #' @return data.frame or table handle.
 #'
-#' @seealso \code{\link{materialize}}, \code{\link{rq_table}}, \code{\link{to_sql}}, \code{\link{rq_copy_to}}, \code{\link{table_source}}
+#' @seealso \code{\link{materialize}}, \code{\link{db_td}}, \code{\link{to_sql}}, \code{\link{rq_copy_to}}, \code{\link{mk_td}}
 #'
 #' @examples
 #'

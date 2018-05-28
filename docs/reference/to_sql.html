@@ -173,7 +173,7 @@
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='rq_table.html'>rq_table</a></code>, <code><a href='materialize.html'>materialize</a></code>, <code><a href='execute.html'>execute</a></code>, <code><a href='rq_copy_to.html'>rq_copy_to</a></code>, <code><a href='table_source.html'>table_source</a></code></p></div>
+    <div class='dont-index'><p><code><a href='db_td.html'>db_td</a></code>, <code><a href='materialize.html'>materialize</a></code>, <code><a href='execute.html'>execute</a></code>, <code><a href='rq_copy_to.html'>rq_copy_to</a></code>, <code><a href='mk_td.html'>mk_td</a></code></p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -189,11 +189,15 @@
   <span class='fu'>print</span>(<span class='fu'>to_sql</span>(<span class='no'>optree</span>, <span class='no'>my_db</span>))
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
 }</div><div class='output co'>#&gt; [1] "rquery::natural_join.relop joining by  AUC"
-#&gt; table('d1') %.&gt;%
+#&gt; table('d1'; 
+#&gt;   AUC,
+#&gt;   R2) %.&gt;%
 #&gt;  natural_join(.,
-#&gt;   table('d2'),
+#&gt;   table('d2'; 
+#&gt;     AUC,
+#&gt;     D),
 #&gt;   j= INNER, by= AUC)
-#&gt; [1] "SELECT\n COALESCE(`tsql_86357942372121508260_0000000000`.`AUC`, `tsql_86357942372121508260_0000000001`.`AUC`) AS `AUC`,\n `tsql_86357942372121508260_0000000000`.`R2` AS `R2`,\n `tsql_86357942372121508260_0000000001`.`D` AS `D`\nFROM (\n SELECT\n  `d1`.`AUC`,\n  `d1`.`R2`\n FROM\n  `d1`\n) `tsql_86357942372121508260_0000000000`\nINNER JOIN (\n SELECT\n  `d2`.`AUC`,\n  `d2`.`D`\n FROM\n  `d2`\n) `tsql_86357942372121508260_0000000001`\nON\n `tsql_86357942372121508260_0000000000`.`AUC` = `tsql_86357942372121508260_0000000001`.`AUC`\n"</div><div class='input'>
+#&gt; [1] "SELECT\n COALESCE(`tsql_92580631348306354205_0000000000`.`AUC`, `tsql_92580631348306354205_0000000001`.`AUC`) AS `AUC`,\n `tsql_92580631348306354205_0000000000`.`R2` AS `R2`,\n `tsql_92580631348306354205_0000000001`.`D` AS `D`\nFROM (\n SELECT\n  `d1`.`AUC`,\n  `d1`.`R2`\n FROM\n  `d1`\n) `tsql_92580631348306354205_0000000000`\nINNER JOIN (\n SELECT\n  `d2`.`AUC`,\n  `d2`.`D`\n FROM\n  `d2`\n) `tsql_92580631348306354205_0000000001`\nON\n `tsql_92580631348306354205_0000000000`.`AUC` = `tsql_92580631348306354205_0000000001`.`AUC`\n"</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

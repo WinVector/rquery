@@ -1,7 +1,7 @@
 Assignment Partitioner
 ================
 John Mount, Win-Vector LLC
-2018-05-15
+2018-05-28
 
 rquery example
 --------------
@@ -94,7 +94,13 @@ plan <- d1 %.>%
 cat(format(plan))
 ```
 
-    table('example_table') %.>%
+    table('example_table'; 
+      id,
+      rand_a,
+      rand_b,
+      rand_c,
+      rand_d,
+      rand_e) %.>%
      extend(.,
       choice_a := rand_a >= 0.5,
       choice_b := rand_b >= 0.5,
@@ -243,7 +249,13 @@ plan2 <- d1 %.>%
 cat(format(plan2))
 ```
 
-    table('example_table') %.>%
+    table('example_table'; 
+      id,
+      rand_a,
+      rand_b,
+      rand_c,
+      rand_d,
+      rand_e) %.>%
      extend(.,
       choice := rand_a >= 0.5) %.>%
      extend(.,
@@ -298,6 +310,10 @@ library("dplyr")
 
     ## 
     ## Attaching package: 'dplyr'
+
+    ## The following object is masked from 'package:wrapr':
+    ## 
+    ##     coalesce
 
     ## The following objects are masked from 'package:stats':
     ## 

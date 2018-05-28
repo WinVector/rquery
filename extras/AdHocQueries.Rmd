@@ -28,7 +28,7 @@ DBI::dbWriteTable(db,
                              D = NA, z = 2),
                   overwrite = TRUE,
                   temporary = TRUE)
-d <- rq_table(db, 'd')
+d <- db_td(db, 'd')
 print(d)
 
 DBI::dbGetQuery(db, to_sql(d, db))

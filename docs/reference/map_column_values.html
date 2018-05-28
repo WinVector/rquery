@@ -181,7 +181,10 @@
 
   <span class='co'># cleanup</span>
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; table('d') %.&gt;%
+}</div><div class='output co'>#&gt; table('d'; 
+#&gt;   a,
+#&gt;   b,
+#&gt;   c) %.&gt;%
 #&gt;  sql_node(.,
 #&gt;           map_column_values(., mp))
 #&gt; SELECT
@@ -195,7 +198,7 @@
 #&gt;   `d`.`c`
 #&gt;  FROM
 #&gt;   `d`
-#&gt; ) tsql_54094953509695757633_0000000000
+#&gt; ) tsql_84197068678211589630_0000000000
 #&gt;    a   b c
 #&gt; 1 10 100 1
 #&gt; 2 20 100 2

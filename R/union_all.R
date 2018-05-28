@@ -50,7 +50,7 @@ unionall <- function(sources) {
     sources_tmp <- lapply(1:ns,
                           function(i) {
                             tmp_name <- tmp_name_source()
-                            dnode <- table_source(tmp_name, cols)
+                            dnode <- mk_td(tmp_name, cols)
                             dnode
                           })
     return(unionall(sources_tmp))

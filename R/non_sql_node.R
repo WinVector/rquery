@@ -88,7 +88,7 @@ non_sql_node.data.frame <- function(source,
                                     temporary = TRUE) {
   wrapr::stop_if_dot_args(substitute(list(...)), "non_sql_node.data.frame")
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
-  dnode <- table_source(tmp_name, colnames(source))
+  dnode <- mk_td(tmp_name, colnames(source))
   enode <- non_sql_node(source,
                         f,
                         incoming_table_name = incoming_table_name,
@@ -175,7 +175,7 @@ to_sql.relop_non_sql <- function (x,
   if(!getDBOption(db, "use_pass_limit", TRUE)) {
     qlimit = NULL
   }
-  step3 <- list(to_sql(table_source(x$outgoing_table_name, column_names(x)),
+  step3 <- list(to_sql(mk_td(x$outgoing_table_name, column_names(x)),
                        db = db,
                        limit = qlimit,
                        source_limit = source_limit,

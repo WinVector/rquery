@@ -241,13 +241,18 @@ is a reserved column name for this procedure.</p>
 #&gt; $edited
 #&gt; [1] "ifelse( ifebtest_2, 1, edited)"
 #&gt; 
-#&gt; table('d') %.&gt;%
+#&gt; table('d'; 
+#&gt;   i,
+#&gt;   a,
+#&gt;   b,
+#&gt;   r,
+#&gt;   edited) %.&gt;%
 #&gt;  extend(.,
-#&gt;   ifebtest_2 := ( a + b ) &gt; 1,
+#&gt;   ifebtest_2 := (a + b) &gt; 1,
 #&gt;   ifebtest_1 := r &gt;= 0.5) %.&gt;%
 #&gt;  extend(.,
 #&gt;   a := ifelse(ifebtest_2, ifelse(ifebtest_1, 0, a), a),
-#&gt;   b := ifelse(ifebtest_2, ifelse(!( ifebtest_1 ), 0, b), b),
+#&gt;   b := ifelse(ifebtest_2, ifelse(!ifebtest_1, 0, b), b),
 #&gt;   edited := ifelse(ifebtest_2, 1, edited))
 #&gt; SELECT
 #&gt;  `i`,
@@ -288,9 +293,9 @@ is a reserved column name for this procedure.</p>
 #&gt; 8   8          0          1 0.3937777 1 0      1
 #&gt; 9   9          1          1 0.5512907 0 1      1
 #&gt; 10 10          0          1 0.2424927 1 0      1
-#&gt;                    r1                   r2
-#&gt; 1 4835590247851748658 -2429263662678406779
-#&gt; 2  391139287913343817 -8552282979374642859</div><div class='input'>
+#&gt;                     r1                   r2
+#&gt; 1 -5145753947637937911  -459125551792324538
+#&gt; 2 -3090085798768731827 -1303948200316527220</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

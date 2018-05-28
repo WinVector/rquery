@@ -1,7 +1,7 @@
 Ad Hoc Queries
 ================
 John Mount, Win-Vector LLC
-2018-05-26
+2018-05-28
 
 Database Operator Pipelines
 ===========================
@@ -28,11 +28,11 @@ DBI::dbWriteTable(db,
                              D = NA, z = 2),
                   overwrite = TRUE,
                   temporary = TRUE)
-d <- rq_table(db, 'd')
+d <- db_td(db, 'd')
 print(d)
 ```
 
-    ## [1] "table('d')"
+    ## [1] "table('d'; AUC, R2, D, z)"
 
 ``` r
 DBI::dbGetQuery(db, to_sql(d, db))
@@ -62,7 +62,11 @@ We can print the query/operator pipeline:
 cat(format(q))
 ```
 
-    table('d') %.>%
+    table('d'; 
+      AUC,
+      R2,
+      D,
+      z) %.>%
      select_rows(.,
        R2 > 0.14) %.>%
      extend(.,
@@ -114,10 +118,10 @@ cat(sql)
         `d`.`R2`
        FROM
         `d`
-      ) tsql_23469896330956563736_0000000000
+      ) tsql_94942948059332565859_0000000000
       WHERE `R2` > 0.14
-      ) tsql_23469896330956563736_0000000001
-    ) tsql_23469896330956563736_0000000002
+      ) tsql_94942948059332565859_0000000001
+    ) tsql_94942948059332565859_0000000002
 
 ``` r
 DBI::dbGetQuery(db, sql) %.>%

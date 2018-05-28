@@ -159,7 +159,9 @@
   <span class='fu'>cat</span>(<span class='no'>sql</span>)
   <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; table('d') %.&gt;%
+}</div><div class='output co'>#&gt; table('d'; 
+#&gt;   AUC,
+#&gt;   R2) %.&gt;%
 #&gt;  select_rows(.,
 #&gt;    AUC &gt;= 0.5)
 #&gt; SELECT * FROM (
@@ -168,7 +170,7 @@
 #&gt;   `d`.`R2`
 #&gt;  FROM
 #&gt;   `d`
-#&gt; ) tsql_56746092371016672756_0000000000
+#&gt; ) tsql_11090134104390167605_0000000000
 #&gt; WHERE `AUC` &gt;= 0.5
 #&gt;   AUC  R2
 #&gt; 1 0.6 0.2</div></pre>

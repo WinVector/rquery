@@ -32,7 +32,7 @@ re_write_table_names <- function(op_tree, new_name) {
 #'   )
 #'   RSQLite::initExtension(winvector_temp_db_handle$db)
 #'
-#'   optree <- table_source("d", c("AUC", "R2", "D")) %.>%
+#'   optree <- mk_td("d", c("AUC", "R2", "D")) %.>%
 #'   	extend_nse(., c := sqrt(R2)) %.>%
 #'     orderby(., rev_cols = "R2")
 #'
@@ -180,7 +180,7 @@ as.character.relop <- function (x, ...) {
 #'   winvector_temp_db_handle <- list(db = db)
 #'
 #'   # operations pipeline/tree
-#'   optree <- table_source("d", "x") %.>%
+#'   optree <- mk_td("d", "x") %.>%
 #'     extend_nse(., y = x*x)
 #'
 #'   # wrapr dot pipe apply_right dispatch

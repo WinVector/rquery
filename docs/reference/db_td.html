@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Cross product vectors in database. — expand_grid • rquery</title>
+<title>Make a table description from a database source. — db_td • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -28,9 +28,10 @@
 
 
 
-<meta property="og:title" content="Cross product vectors in database. — expand_grid" />
+<meta property="og:title" content="Make a table description from a database source. — db_td" />
 
-<meta property="og:description" content="Cross product vectors in database." />
+<meta property="og:description" content="Build structures (table name, column names, and quoting
+strategy) needed to represent data from a remote table." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -112,61 +113,96 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Cross product vectors in database.</h1>
-    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/complete_design.R'><code>R/complete_design.R</code></a></small>
-    <div class="hidden name"><code>expand_grid.Rd</code></div>
+    <h1>Make a table description from a database source.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/table_source.R'><code>R/table_source.R</code></a></small>
+    <div class="hidden name"><code>db_td.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Cross product vectors in database.</p>
+    <p>Build structures (table name, column names, and quoting
+strategy) needed to represent data from a remote table.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>expand_grid</span>(<span class='no'>db</span>, <span class='no'>values</span>, <span class='no'>...</span>, <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>table_name</span> <span class='kw'>=</span> (<span class='kw pkg'>wrapr</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/wrapr/topics/mk_tmp_name_source'>mk_tmp_name_source</a></span>(<span class='st'>"eg"</span>))())</pre>
+    <pre class="usage"><span class='fu'>db_td</span>(<span class='no'>db</span>, <span class='no'>table_name</span>)
+
+<span class='fu'>dbi_table</span>(<span class='no'>db</span>, <span class='no'>table_name</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>db</th>
-      <td><p>database handle</p></td>
-    </tr>
-    <tr>
-      <th>values</th>
-      <td><p>named list of value vectors.</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>force later arguments to bind by name.</p></td>
-    </tr>
-    <tr>
-      <th>temporary</th>
-      <td><p>logical if TRUE try to make temporary table.</p></td>
+      <td><p>database connection</p></td>
     </tr>
     <tr>
       <th>table_name</th>
-      <td><p>name to land result as.</p></td>
+      <td><p>name of table</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>table handle.</p>
+    <p>a relop representation of the data</p>
+    
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>Note: in examples we use <code><a href='rq_copy_to.html'>rq_copy_to()</a></code> to create data.  This is only for the purpose of having
+easy portable examples.  With big data the data is usually already in the remote database or
+Spark system. The task is almost always to connect and work with this pre-existing remote data
+and the method to do this is <code>db_td</code>
+which builds a reference to a remote table given the table name.</p>
+    
+    <h2 class="hasAnchor" id="functions"><a class="anchor" href="#functions"></a>Functions</h2>
+
+    <ul>
+<li><p><code>dbi_table</code>: old name for db_td</p></li>
+</ul>
+    
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><code><a href='mk_td.html'>mk_td</a></code>, <code><a href='rq_copy_to.html'>rq_copy_to</a></code>, <code><a href='materialize.html'>materialize</a></code>, <code><a href='execute.html'>execute</a></code>, <code><a href='to_sql.html'>to_sql</a></code></p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='kw'>if</span> (<span class='fu'>requireNamespace</span>(<span class='st'>"DBI"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>&amp;&amp;</span>
-    <span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
+<span class='kw'>if</span> (<span class='fu'>requireNamespace</span>(<span class='st'>"DBI"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>&amp;&amp;</span> <span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
   <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
-  <span class='no'>values</span> <span class='kw'>&lt;-</span> <span class='fu'>list</span>(<span class='kw'>nums</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>3</span>, <span class='kw'>lets</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"a"</span>, <span class='st'>"b"</span>))
-  <span class='no'>res</span> <span class='kw'>&lt;-</span> <span class='fu'>expand_grid</span>(<span class='no'>my_db</span>, <span class='no'>values</span>)
-  <span class='fu'>print</span>(<span class='no'>res</span>)
-  <span class='fu'><a href='execute.html'>execute</a></span>(<span class='no'>my_db</span>, <span class='no'>res</span>)
+  <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(<span class='no'>my_db</span>,
+              <span class='st'>'d'</span>,
+              <span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>0.6</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>0.2</span>),
+              <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+              <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+  <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'>db_td</span>(<span class='no'>my_db</span>, <span class='st'>'d'</span>)
+  <span class='fu'>print</span>(<span class='no'>d</span>)
+  <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>d</span>, <span class='no'>my_db</span>)
+  <span class='fu'>cat</span>(<span class='no'>sql</span>)
+  <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
+  <span class='no'>cols</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='columns_used.html'>columns_used</a></span>(<span class='no'>d</span>)
+  <span class='fu'>print</span>(<span class='no'>cols</span>)
+
+  <span class='no'>sql2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>d</span>, <span class='no'>my_db</span>, <span class='kw'>using</span> <span class='kw'>=</span> <span class='st'>"AUC"</span>)
+  <span class='fu'>cat</span>(<span class='no'>sql2</span>)
+  <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql2</span>))
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; [1] "table('eg_58132400991134741975_0000000000'; nums, lets)"</div><div class='input'>
+}</div><div class='output co'>#&gt; [1] "table('d'; AUC, R2)"
+#&gt; SELECT
+#&gt;  `d`.`AUC`,
+#&gt;  `d`.`R2`
+#&gt; FROM
+#&gt;  `d`
+#&gt;   AUC  R2
+#&gt; 1 0.6 0.2
+#&gt; $d
+#&gt; [1] "AUC" "R2" 
+#&gt; 
+#&gt; SELECT
+#&gt;  `d`.`AUC`
+#&gt; FROM
+#&gt;  `d`
+#&gt;   AUC
+#&gt; 1 0.6</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -175,6 +211,12 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
+
+      <li><a href="#details">Details</a></li>
+
+      <li><a href="#functions">Functions</a></li>
+
+      <li><a href="#see-also">See also</a></li>
       
       <li><a href="#examples">Examples</a></li>
     </ul>

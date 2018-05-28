@@ -156,9 +156,13 @@
   <span class='fu'>print</span>(<span class='fu'>tables_used</span>(<span class='no'>optree</span>))
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
 }</div><div class='output co'>#&gt; [1] "rquery::natural_join.relop joining by  AUC"
-#&gt; table('d1') %.&gt;%
+#&gt; table('d1'; 
+#&gt;   AUC,
+#&gt;   R2) %.&gt;%
 #&gt;  natural_join(.,
-#&gt;   table('d2'),
+#&gt;   table('d2'; 
+#&gt;     AUC,
+#&gt;     D),
 #&gt;   j= INNER, by= AUC)
 #&gt; [1] "d1" "d2"</div><div class='input'>
 </div></pre>

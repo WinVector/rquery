@@ -215,15 +215,19 @@ is a reserved column name for this procedure.</p>
   <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
 
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; table('d') %.&gt;%
+}</div><div class='output co'>#&gt; table('d'; 
+#&gt;   i,
+#&gt;   a,
+#&gt;   b,
+#&gt;   edited) %.&gt;%
 #&gt;  extend(.,
-#&gt;   ifebtest_1 := ( a + b ) &gt; 1) %.&gt;%
+#&gt;   ifebtest_1 := (a + b) &gt; 1) %.&gt;%
 #&gt;  extend(.,
 #&gt;   a := ifelse(ifebtest_1, 0, a),
 #&gt;   b := ifelse(ifebtest_1, 0, b),
 #&gt;   edited := ifelse(ifebtest_1, 1, edited)) %.&gt;%
 #&gt;  extend(.,
-#&gt;   edited := ifelse(!( ifebtest_1 ), 0, edited)) %.&gt;%
+#&gt;   edited := ifelse(!ifebtest_1, 0, edited)) %.&gt;%
 #&gt;  drop_columns(.,
 #&gt;    ifebtest_1)
 #&gt; SELECT

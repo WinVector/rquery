@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Build a source from a data.frame. — frame_table • rquery</title>
+<title>Execute a pipeline with <code>data.table</code> sources. — ex_data_table • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -28,9 +28,9 @@
 
 
 
-<meta property="og:title" content="Build a source from a data.frame. — frame_table" />
+<meta property="og:title" content="Execute a pipeline with <code>data.table</code> sources. — ex_data_table" />
 
-<meta property="og:description" content="Build a source from a data.frame." />
+<meta property="og:description" content="data.tables are looked for in the tables argument and in the execution environment." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -112,46 +112,63 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Build a source from a data.frame.</h1>
-    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/table_source.R'><code>R/table_source.R</code></a></small>
-    <div class="hidden name"><code>frame_table.Rd</code></div>
+    <h1>Execute a pipeline with <code>data.table</code> sources.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/ex_data_table.R'><code>R/ex_data_table.R</code></a></small>
+    <div class="hidden name"><code>ex_data_table.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Build a source from a data.frame.</p>
+    <p><code>data.table</code>s are looked for in the <code>tables</code> argument and in the execution environment.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>frame_table</span>(<span class='no'>d</span>, <span class='no'>...</span>, <span class='kw'>table_name</span> <span class='kw'>=</span> <span class='fu'>substitute</span>(<span class='no'>d</span>),
-  <span class='kw'>name_source</span> <span class='kw'>=</span> <span class='kw pkg'>wrapr</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/wrapr/topics/mk_tmp_name_source'>mk_tmp_name_source</a></span>(<span class='st'>"rqfs"</span>))</pre>
+    <pre class="usage"><span class='fu'>ex_data_table</span>(<span class='no'>optree</span>, <span class='no'>...</span>, <span class='kw'>tables</span> <span class='kw'>=</span> <span class='fu'>list</span>(), <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>d</th>
-      <td><p>data.frame to use as data source.</p></td>
+      <th>optree</th>
+      <td><p>relop operations tree.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>not used, force later arguments to be optional.</p></td>
+      <td><p>not used, force later arguments to bind by name.</p></td>
     </tr>
     <tr>
-      <th>table_name</th>
-      <td><p>name to use for table.</p></td>
+      <th>tables</th>
+      <td><p>named list map from table names used in nodes to data.tables and data.frames.</p></td>
     </tr>
     <tr>
-      <th>name_source</th>
-      <td><p>temporary name generator.</p></td>
+      <th>env</th>
+      <td><p>environment to work in.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a relop representation of the data</p>
+    <p>resulting data.table (input tables can somtimes be mutated as is practice with data.table).</p>
     
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'>
+<span class='kw'>if</span>(<span class='fu'>requireNamespace</span>(<span class='st'>"data.table"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
+  <span class='no'>a</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>data.table</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/data.table/topics/data.table'>data.table</a></span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>1</span>, <span class='fl'>2</span>) , <span class='kw'>y</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>20</span>, <span class='fl'>30</span>), <span class='kw'>z</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>300</span>, <span class='fl'>400</span>))
+  <span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='local_td.html'>local_td</a></span>(<span class='no'>a</span>) <span class='kw'>%.&gt;%</span>
+     <span class='fu'><a href='select_columns.html'>select_columns</a></span>(<span class='no'>.</span>, <span class='fu'>c</span>(<span class='st'>"x"</span>, <span class='st'>"y"</span>)) <span class='kw'>%.&gt;%</span>
+     <span class='fu'><a href='select_rows_nse.html'>select_rows_nse</a></span>(<span class='no'>.</span>, <span class='no'>x</span><span class='kw'>&lt;</span><span class='fl'>2</span> <span class='kw'>&amp;</span> <span class='no'>y</span><span class='kw'>&lt;</span><span class='fl'>30</span>)
+  <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>optree</span>))
+  <span class='fu'>print</span>(<span class='fu'>ex_data_table</span>(<span class='no'>optree</span>))
+}</div><div class='output co'>#&gt; table('a'; 
+#&gt;   x,
+#&gt;   y,
+#&gt;   z) %.&gt;%
+#&gt;  select_columns(.,
+#&gt;    x, y) %.&gt;%
+#&gt;  select_rows(.,
+#&gt;    x &lt; 2 &amp; y &lt; 30)</div><div class='output co'>#&gt; <span class='error'>Error in get(name, envir = env): object 'a' not found</span></div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -159,7 +176,9 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-          </ul>
+      
+      <li><a href="#examples">Examples</a></li>
+    </ul>
 
   </div>
 </div>

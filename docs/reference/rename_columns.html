@@ -155,7 +155,10 @@
   <span class='fu'>cat</span>(<span class='no'>sql</span>)
   <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; table('d') %.&gt;%
+}</div><div class='output co'>#&gt; table('d'; 
+#&gt;   AUC,
+#&gt;   R2,
+#&gt;   z) %.&gt;%
 #&gt;  rename(.,
 #&gt;   c('R2' = 'AUC',
 #&gt;     'AUC' = 'R2'))
@@ -170,7 +173,7 @@
 #&gt;   `d`.`z`
 #&gt;  FROM
 #&gt;   `d`
-#&gt; ) tsql_88309723133921418577_0000000000
+#&gt; ) tsql_26261709003721486707_0000000000
 #&gt;    R2 AUC z
 #&gt; 1 0.6 0.2 3</div><div class='input'>
 </div></pre>

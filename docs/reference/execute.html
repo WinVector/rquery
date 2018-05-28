@@ -180,7 +180,7 @@ table.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='materialize.html'>materialize</a></code>, <code><a href='rq_table.html'>rq_table</a></code>, <code><a href='to_sql.html'>to_sql</a></code>, <code><a href='rq_copy_to.html'>rq_copy_to</a></code>, <code><a href='table_source.html'>table_source</a></code></p></div>
+    <div class='dont-index'><p><code><a href='materialize.html'>materialize</a></code>, <code><a href='db_td.html'>db_td</a></code>, <code><a href='to_sql.html'>to_sql</a></code>, <code><a href='rq_copy_to.html'>rq_copy_to</a></code>, <code><a href='mk_td.html'>mk_td</a></code></p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -209,8 +209,10 @@ table.</p>
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbRemoveTable'>dbRemoveTable</a></span>(<span class='no'>my_db</span>, <span class='no'>res_hdl</span>$<span class='no'>table_name</span>)
 
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; [1] "table('d') %.&gt;% extend(., v := AUC + R2) %.&gt;% extend(., x := pmax(AUC, v))"
-#&gt; table('d') %.&gt;%
+}</div><div class='output co'>#&gt; [1] "table('d'; AUC, R2) %.&gt;% extend(., v := AUC + R2) %.&gt;% extend(., x := pmax(AUC, v))"
+#&gt; table('d'; 
+#&gt;   AUC,
+#&gt;   R2) %.&gt;%
 #&gt;  extend(.,
 #&gt;   v := AUC + R2) %.&gt;%
 #&gt;  extend(.,
@@ -219,7 +221,7 @@ table.</p>
 #&gt; 1 0.6 0.2 0.8 0.8
 #&gt;   AUC R2 v x
 #&gt; 1   1  2 3 3
-#&gt; [1] "table('res')"
+#&gt; [1] "table('res'; AUC, R2, v, x)"
 #&gt;   AUC  R2   v   x
 #&gt; 1 0.6 0.2 0.8 0.8
 #&gt;   AUC  R2   v   x

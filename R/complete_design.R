@@ -44,7 +44,7 @@ expand_grid <- function(db,
   sql <- paste(qs, collapse = " ")
   sql <- materialize_sql_statement(db, sql, table_name, temporary = temporary)
   rq_execute(db, sql)
-  res <- rq_table(db, table_name)
+  res <- db_td(db, table_name)
   for(tni in tabs) {
     rq_remove_table(db, tni$table_name)
   }
