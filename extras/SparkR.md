@@ -15,7 +15,7 @@ library("rquery")
 print(db_hdl)
 ```
 
-    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7fa8fd0a8bc0>)"
+    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7fdd8519e8a0>)"
 
 ``` r
 print(test_df)
