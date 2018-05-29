@@ -18,7 +18,6 @@ library("data.table")
 source("data_table.R") # our example data.table back-end
 
 dL <- data.frame(
-  data.frame(
     subjectID = c(1,                   
                   1,
                   2,                   
@@ -35,8 +34,11 @@ dL <- data.frame(
                         4),
     irrelevantCol1 = "irrel1",
     irrelevantCol2 = "irrel2",
-    stringsAsFactors = FALSE))
+    stringsAsFactors = FALSE)
+```
 
+
+```{r}
 scale <- 0.237
 
 # example rquery pipeline
@@ -81,6 +83,8 @@ knitr::kable(res)
 
 
 ```{r}
+scale <- 0.237
+
 dplyr_pipeline <- . %>% group_by(subjectID) %>%
   mutate(probability =
            exp(assessmentTotal * scale)/
@@ -104,7 +108,9 @@ dL$subjectID <- paste(dL$subjectID, (1+seq_len(nrow(dL))) %/% 2, sep = "_")
 for(i in seq_len(10)) {
   dL[[paste0("irrelevantCol", i)]] <- runif(nrow(dL))
 }
-  
+```
+
+```{r}
 timings <- microbenchmark(nrow(ex_data_table(rquery_pileline)),
                           nrow(dplyr_pipeline(dL)))
 
