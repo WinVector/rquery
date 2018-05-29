@@ -1,7 +1,7 @@
 ---
 title: "data.table backend for rquery"
 author: "John Mount, Win-Vector LLC"
-date: "05/28/2018"
+date: "05/29/2018"
 output: github_document
 ---
 
@@ -15,26 +15,19 @@ library("dplyr")
 library("rquery")
 # load data.table second so its definiton of := wins
 library("data.table")
-source("data_table.R") # our example data.table back-end
+library("dtplyr")
+source("data_table.R") # our example rquery data.table back-end
+```
 
-dL <- data.frame(
-    subjectID = c(1,                   
-                  1,
-                  2,                   
-                  2),
-    surveyCategory = c(
-      'withdrawal behavior',
-      'positive re-framing',
-      'withdrawal behavior',
-      'positive re-framing'
-    ),
-    assessmentTotal = c(5,                 
-                        2,
-                        3,                  
-                        4),
-    irrelevantCol1 = "irrel1",
-    irrelevantCol2 = "irrel2",
-    stringsAsFactors = FALSE)
+
+```{r}
+# data example
+dL <- build_frame(
+   "subjectID", "surveyCategory"     , "assessmentTotal" |
+   1          , "withdrawal behavior", 5                 |
+   1          , "positive re-framing", 2                 |
+   2          , "withdrawal behavior", 3                 |
+   2          , "positive re-framing", 4                 )
 ```
 
 
@@ -72,11 +65,10 @@ cat(format(rquery_pileline))
 ```{r}
 # execute
 # https://stackoverflow.com/questions/10527072/using-data-table-package-inside-my-own-package
-.datatable.aware <- TRUE
+#.datatable.aware <- TRUE
 
-res <- ex_data_table(rquery_pileline)
-
-knitr::kable(res)
+ex_data_table(rquery_pileline) %.>%
+  knitr::kable(.)
 ```
 
 `dplyr` pipeline.
@@ -96,8 +88,18 @@ dplyr_pipeline <- . %>% group_by(subjectID) %>%
   select(subjectID, diagnosis, probability) %>%
   arrange(subjectID) 
 
-dL %>% dplyr_pipeline
+dL %>% 
+  dplyr_pipeline %>%
+  knitr::kable()
 ```
+
+Try `dtplyr`.
+
+```{r, error = TRUE}
+data.table::as.data.table(dL) %>% 
+  dplyr_pipeline
+```
+
 
 Timings.
 
@@ -111,12 +113,26 @@ for(i in seq_len(10)) {
 ```
 
 ```{r}
-timings <- microbenchmark(nrow(ex_data_table(rquery_pileline)),
-                          nrow(dplyr_pipeline(dL)))
+timings <- microbenchmark(
+  nrow(ex_data_table(rquery_pileline)),
+  nrow(dplyr_pipeline(dL)))
+```
 
+
+```{r}
 print(timings)
 
+summary_pipeline <- timings %.>%
+  as.data.frame(.) %.>%
+  project_nse(., "expr", mean = avg(time)) 
+timings %.>% 
+  as.data.frame(.) %.>%
+  summary_pipeline %.>%
+  knitr::kable(.)
+
 autoplot(timings)
+
+WVPlots::ScatterBoxPlotH(as.data.frame(timings), "time", "expr", "runtime by expression in nanoseconds")
 ```
 
 

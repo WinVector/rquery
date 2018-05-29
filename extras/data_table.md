@@ -1,7 +1,7 @@
 data.table backend for rquery
 ================
 John Mount, Win-Vector LLC
-05/28/2018
+05/29/2018
 
 We can work an example similar to the [`rquery`](https://winvector.github.io/rquery/) [example](https://winvector.github.io/rquery/index.html) using a [`data.table`](http://r-datatable.com/) back-end.
 
@@ -52,26 +52,18 @@ library("data.table")
     ##     between, first, last
 
 ``` r
-source("data_table.R") # our example data.table back-end
+library("dtplyr")
+source("data_table.R") # our example rquery data.table back-end
+```
 
-dL <- data.frame(
-    subjectID = c(1,                   
-                  1,
-                  2,                   
-                  2),
-    surveyCategory = c(
-      'withdrawal behavior',
-      'positive re-framing',
-      'withdrawal behavior',
-      'positive re-framing'
-    ),
-    assessmentTotal = c(5,                 
-                        2,
-                        3,                  
-                        4),
-    irrelevantCol1 = "irrel1",
-    irrelevantCol2 = "irrel2",
-    stringsAsFactors = FALSE)
+``` r
+# data example
+dL <- build_frame(
+   "subjectID", "surveyCategory"     , "assessmentTotal" |
+   1          , "withdrawal behavior", 5                 |
+   1          , "positive re-framing", 2                 |
+   2          , "withdrawal behavior", 3                 |
+   2          , "positive re-framing", 4                 )
 ```
 
 ``` r
@@ -107,9 +99,7 @@ cat(format(rquery_pileline))
     table('dL'; 
       subjectID,
       surveyCategory,
-      assessmentTotal,
-      irrelevantCol1,
-      irrelevantCol2) %.>%
+      assessmentTotal) %.>%
      extend(.,
       one := 1) %.>%
      extend(.,
@@ -131,11 +121,10 @@ cat(format(rquery_pileline))
 ``` r
 # execute
 # https://stackoverflow.com/questions/10527072/using-data-table-package-inside-my-own-package
-.datatable.aware <- TRUE
+#.datatable.aware <- TRUE
 
-res <- ex_data_table(rquery_pileline)
-
-knitr::kable(res)
+ex_data_table(rquery_pileline) %.>%
+  knitr::kable(.)
 ```
 
 |  subjectID| diagnosis           |  probability|
@@ -159,14 +148,24 @@ dplyr_pipeline <- . %>% group_by(subjectID) %>%
   select(subjectID, diagnosis, probability) %>%
   arrange(subjectID) 
 
-dL %>% dplyr_pipeline
+dL %>% 
+  dplyr_pipeline %>%
+  knitr::kable()
 ```
 
-    ## # A tibble: 2 x 3
-    ##   subjectID diagnosis           probability
-    ##       <dbl> <chr>                     <dbl>
-    ## 1         1 withdrawal behavior       0.671
-    ## 2         2 positive re-framing       0.559
+|  subjectID| diagnosis           |  probability|
+|----------:|:--------------------|------------:|
+|          1| withdrawal behavior |    0.6706221|
+|          2| positive re-framing |    0.5589742|
+
+Try `dtplyr`.
+
+``` r
+data.table::as.data.table(dL) %>% 
+  dplyr_pipeline
+```
+
+    ## Error in rank(x, ties.method = "first", na.last = "keep"): argument "x" is missing, with no default
 
 Timings.
 
@@ -180,22 +179,46 @@ for(i in seq_len(10)) {
 ```
 
 ``` r
-timings <- microbenchmark(nrow(ex_data_table(rquery_pileline)),
-                          nrow(dplyr_pipeline(dL)))
+timings <- microbenchmark(
+  nrow(ex_data_table(rquery_pileline)),
+  nrow(dplyr_pipeline(dL)))
+```
 
+``` r
 print(timings)
 ```
 
     ## Unit: seconds
-    ##                                  expr       min       lq      mean
-    ##  nrow(ex_data_table(rquery_pileline))  2.880735  3.02395  3.109183
-    ##              nrow(dplyr_pipeline(dL)) 15.963767 16.41814 16.728273
-    ##     median        uq       max neval
-    ##   3.091604  3.161661  3.993402   100
-    ##  16.655399 16.884735 19.943980   100
+    ##                                  expr       min        lq     mean
+    ##  nrow(ex_data_table(rquery_pileline))  3.037158  3.283017  3.53165
+    ##              nrow(dplyr_pipeline(dL)) 15.778748 16.707364 17.52465
+    ##     median       uq       max neval
+    ##   3.440509  3.63411  5.061729   100
+    ##  17.180783 18.14753 22.765549   100
+
+``` r
+summary_pipeline <- timings %.>%
+  as.data.frame(.) %.>%
+  project_nse(., "expr", mean = avg(time)) 
+timings %.>% 
+  as.data.frame(.) %.>%
+  summary_pipeline %.>%
+  knitr::kable(.)
+```
+
+| expr                                    |         mean|
+|:----------------------------------------|------------:|
+| nrow(dplyr\_pipeline(dL))               |  17524646610|
+| nrow(ex\_data\_table(rquery\_pileline)) |   3531650484|
 
 ``` r
 autoplot(timings)
 ```
 
-![](data_table_files/figure-markdown_github/unnamed-chunk-7-1.png)
+![](data_table_files/figure-markdown_github/unnamed-chunk-10-1.png)
+
+``` r
+WVPlots::ScatterBoxPlotH(as.data.frame(timings), "time", "expr", "runtime by expression in nanoseconds")
+```
+
+![](data_table_files/figure-markdown_github/unnamed-chunk-10-2.png)
