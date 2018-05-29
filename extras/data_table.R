@@ -1,6 +1,9 @@
 
 # execute a pipeline with data.table sources
 
+
+# Note could also imitate the to_sql() narrowing calculations to use fewer columns.
+
 #' Execute a pipeline with \code{data.table} sources.
 #'
 #' \code{data.table}s are looked for in the \code{tables} argument and in the execution environment.
