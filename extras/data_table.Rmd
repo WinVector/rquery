@@ -34,6 +34,15 @@ dL <- build_frame(
 ```{r}
 scale <- 0.237
 
+test_p <- local_td(dL) %.>%
+  extend_nse(.,
+             one := 1) %.>%
+  project_nse(.,
+             maxscore = max(assessmentTotal),
+             groupby = 'subjectID')
+ex_data_table(test_p) %.>%
+  knitr::kable(.)
+
 # example rquery pipeline
 rquery_pileline <- local_td(dL) %.>%
   extend_nse(.,
@@ -105,7 +114,7 @@ Timings.
 
 ```{r}
 # fatten up data.frame a bit
-dL <- dL[rep(seq_len(nrow(dL)), 100000), , drop = FALSE]
+dL <- dL[rep(seq_len(nrow(dL)), 10000), , drop = FALSE]
 dL$subjectID <- paste(dL$subjectID, (1+seq_len(nrow(dL))) %/% 2, sep = "_")
 for(i in seq_len(10)) {
   dL[[paste0("irrelevantCol", i)]] <- runif(nrow(dL))
