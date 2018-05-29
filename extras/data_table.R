@@ -143,9 +143,9 @@ ex_data_table.relop_select_rows <- function(optree,
   tmpnam <- ".rquery_ex_select_rows_tmp"
   src <- vapply(seq_len(length(optree$parsed)),
                 function(i) {
-                  paste0(tmpnam, "[ ", optree$parsed[[1]]$presentation, " , ]")
+                  paste("(", optree$parsed[[i]]$presentation, ")")
                 }, character(1))
-  src <- paste(src, collapse = " & ")
+  src <- paste0(tmpnam, "[ ", paste(src, collapse = " & "), " ]")
   expr <- parse(text = src)
   tmpenv <- new.env(parent = env)
   assign(tmpnam, x, envir = tmpenv)
@@ -295,8 +295,8 @@ ex_data_table.relop_natural_join <- function(optree,
                                              env = parent.frame()) {
   stop("rquery::ex_data_table.relop_natural_join not implemented yet") # TODO: implement
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::ex_data_table.relop_natural_join")
-  if(!is.null(source_usage)) {
-    cols <- source_usage[[name]]
+  if(is.null(source_usage)) {
+    source_usage <- columns_used(optree)
   }
 }
 
@@ -310,8 +310,8 @@ ex_data_table.relop_null_replace <- function(optree,
                                              env = parent.frame()) {
   stop("rquery::ex_data_table.relop_null_replace not implemented yet") # TODO: implement
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::ex_data_table.relop_null_replace")
-  if(!is.null(source_usage)) {
-    cols <- source_usage[[name]]
+  if(is.null(source_usage)) {
+    source_usage <- columns_used(optree)
   }
 }
 
@@ -323,8 +323,8 @@ ex_data_table.relop_project <- function(optree,
                                         env = parent.frame()) {
   stop("rquery::ex_data_table.relop_project not implemented yet") # TODO: implement
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::ex_data_table.relop_project")
-  if(!is.null(source_usage)) {
-    cols <- source_usage[[name]]
+  if(is.null(source_usage)) {
+    source_usage <- columns_used(optree)
   }
 }
 
@@ -336,8 +336,8 @@ ex_data_table.relop_rename_columns <- function(optree,
                                                env = parent.frame()) {
   stop("rquery::ex_data_table.relop_rename_columns not implemented yet") # TODO: implement
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::ex_data_table.relop_rename_columns")
-  if(!is.null(source_usage)) {
-    cols <- source_usage[[name]]
+  if(is.null(source_usage)) {
+    source_usage <- columns_used(optree)
   }
 }
 
@@ -349,8 +349,8 @@ ex_data_table.relop_theta_join <- function(optree,
                                            env = parent.frame()) {
   stop("rquery::ex_data_table.relop_theta_join not implemented yet") # TODO: implement
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::ex_data_table.relop_theta_join")
-  if(!is.null(source_usage)) {
-    cols <- source_usage[[name]]
+  if(is.null(source_usage)) {
+    source_usage <- columns_used(optree)
   }
 }
 
@@ -362,8 +362,8 @@ ex_data_table.relop_unionall <- function(optree,
                                          env = parent.frame()) {
   stop("rquery::ex_data_table.relop_unionall not implemented yet") # TODO: implement
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::ex_data_table.relop_unionall")
-  if(!is.null(source_usage)) {
-    cols <- source_usage[[name]]
+  if(is.null(source_usage)) {
+    source_usage <- columns_used(optree)
   }
 }
 

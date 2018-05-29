@@ -110,6 +110,11 @@ dL$subjectID <- paste(dL$subjectID, (1+seq_len(nrow(dL))) %/% 2, sep = "_")
 for(i in seq_len(10)) {
   dL[[paste0("irrelevantCol", i)]] <- runif(nrow(dL))
 }
+
+# show we are working on the new larger data
+system.time(print(nrow(ex_data_table(rquery_pileline))))
+
+system.time(print(nrow(dplyr_pipeline(dL))))
 ```
 
 ```{r}
@@ -122,9 +127,10 @@ timings <- microbenchmark(
 ```{r}
 print(timings)
 
+# summarize by hand using rquery database connector
 summary_pipeline <- timings %.>%
   as.data.frame(.) %.>%
-  project_nse(., "expr", mean = avg(time)) 
+  project_nse(., groupby = "expr", mean = avg(time)) 
 timings %.>% 
   as.data.frame(.) %.>%
   summary_pipeline %.>%
