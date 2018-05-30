@@ -110,20 +110,15 @@ format_node.relop_null_replace <- function(node) {
 column_names.relop_null_replace <- function (x, ...) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::column_names.relop_null_replace")
-  c(column_names(x$src[[1]], x$note_col))
+  c(column_names(x$source[[1]], x$note_col))
 }
 
-calc_used_relop_null_replace <- function (x, ...,
-                                          using = NULL,
-                                          contract = FALSE) {
-  column_names(x$src[[1]])
-}
 
 #' @export
 columns_used.relop_null_replace <- function (x, ...,
                                              using = NULL,
                                              contract = FALSE) {
-  calc_used_relop_null_replace(x)
+  columns_used(x$source[[1]])
 }
 
 
