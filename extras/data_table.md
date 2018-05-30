@@ -52,7 +52,7 @@ dL <- build_frame(
 scale <- 0.237
 
 # example rquery pipeline
-rquery_pileline <- local_td(dL) %.>%
+rquery_pipeline <- local_td(dL) %.>%
   extend_nse(.,
              one := 1) %.>%
   extend_nse(.,
@@ -75,7 +75,7 @@ rquery_pileline <- local_td(dL) %.>%
 Show expanded form of query tree.
 
 ``` r
-cat(format(rquery_pileline))
+cat(format(rquery_pipeline))
 ```
 
     table('dL'; 
@@ -102,7 +102,7 @@ cat(format(rquery_pileline))
 
 ``` r
 # execute
-ex_data_table(rquery_pileline) %.>%
+ex_data_table(rquery_pipeline) %.>%
   knitr::kable(.)
 ```
 
@@ -150,33 +150,33 @@ Timings.
 
 ``` r
 # fatten up data.frame a bit
-dL <- dL[rep(seq_len(nrow(dL)), 10000), , drop = FALSE]
+dL <- dL[rep(seq_len(nrow(dL)), 100000), , drop = FALSE]
 dL$subjectID <- paste(dL$subjectID, (1+seq_len(nrow(dL))) %/% 2, sep = "_")
 for(i in seq_len(10)) {
   dL[[paste0("irrelevantCol", i)]] <- runif(nrow(dL))
 }
 
 # show we are working on the new larger data
-system.time(print(nrow(ex_data_table(rquery_pileline))))
+system.time(print(nrow(ex_data_table(rquery_pipeline))))
 ```
 
-    ## [1] 20000
+    ## [1] 200000
 
     ##    user  system elapsed 
-    ##   0.510   0.015   0.285
+    ##   3.702   0.066   3.395
 
 ``` r
 system.time(print(nrow(dplyr_pipeline(dL))))
 ```
 
-    ## [1] 20000
+    ## [1] 200000
 
     ##    user  system elapsed 
-    ##   1.244   0.017   1.270
+    ##  16.881   0.165  17.116
 
 ``` r
 timings <- microbenchmark(
-  nrow(ex_data_table(rquery_pileline)),
+  nrow(ex_data_table(rquery_pipeline)),
   nrow(dplyr_pipeline(dL)))
 ```
 
@@ -184,13 +184,13 @@ timings <- microbenchmark(
 print(timings)
 ```
 
-    ## Unit: milliseconds
+    ## Unit: seconds
     ##                                  expr       min        lq      mean
-    ##  nrow(ex_data_table(rquery_pileline))  245.7367  274.3203  323.6974
-    ##              nrow(dplyr_pipeline(dL)) 1217.0533 1263.8712 1378.8133
+    ##  nrow(ex_data_table(rquery_pipeline))  2.864153  3.034936  3.307495
+    ##              nrow(dplyr_pipeline(dL)) 15.216550 15.828906 16.498627
     ##     median        uq       max neval
-    ##   302.3802  348.7881  515.1796   100
-    ##  1303.9606 1395.0246 2049.2771   100
+    ##   3.157655  3.263684  7.508477   100
+    ##  16.239003 16.637208 42.928718   100
 
 ``` r
 # summarize by hand using rquery database connector
@@ -203,10 +203,10 @@ timings %.>%
   knitr::kable(.)
 ```
 
-| expr                                    |        mean|
-|:----------------------------------------|-----------:|
-| nrow(dplyr\_pipeline(dL))               |  1378813259|
-| nrow(ex\_data\_table(rquery\_pileline)) |   323697401|
+| expr                                    |         mean|
+|:----------------------------------------|------------:|
+| nrow(dplyr\_pipeline(dL))               |  16498627225|
+| nrow(ex\_data\_table(rquery\_pipeline)) |   3307495474|
 
 ``` r
 autoplot(timings)

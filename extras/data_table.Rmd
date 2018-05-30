@@ -32,7 +32,7 @@ dL <- build_frame(
 scale <- 0.237
 
 # example rquery pipeline
-rquery_pileline <- local_td(dL) %.>%
+rquery_pipeline <- local_td(dL) %.>%
   extend_nse(.,
              one := 1) %.>%
   extend_nse(.,
@@ -55,13 +55,13 @@ rquery_pileline <- local_td(dL) %.>%
 Show expanded form of query tree.
 
 ```{r, comment=""}
-cat(format(rquery_pileline))
+cat(format(rquery_pipeline))
 ```
 
 
 ```{r}
 # execute
-ex_data_table(rquery_pileline) %.>%
+ex_data_table(rquery_pipeline) %.>%
   knitr::kable(.)
 ```
 
@@ -99,21 +99,21 @@ Timings.
 
 ```{r}
 # fatten up data.frame a bit
-dL <- dL[rep(seq_len(nrow(dL)), 10000), , drop = FALSE]
+dL <- dL[rep(seq_len(nrow(dL)), 100000), , drop = FALSE]
 dL$subjectID <- paste(dL$subjectID, (1+seq_len(nrow(dL))) %/% 2, sep = "_")
 for(i in seq_len(10)) {
   dL[[paste0("irrelevantCol", i)]] <- runif(nrow(dL))
 }
 
 # show we are working on the new larger data
-system.time(print(nrow(ex_data_table(rquery_pileline))))
+system.time(print(nrow(ex_data_table(rquery_pipeline))))
 
 system.time(print(nrow(dplyr_pipeline(dL))))
 ```
 
 ```{r}
 timings <- microbenchmark(
-  nrow(ex_data_table(rquery_pileline)),
+  nrow(ex_data_table(rquery_pipeline)),
   nrow(dplyr_pipeline(dL)))
 ```
 
