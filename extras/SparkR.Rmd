@@ -113,7 +113,8 @@ rquery_pipeline <- d_hdl %.>%
                  partitionby = 'subjectID') %.>%
   pick_top_k(.,
              partitionby = 'subjectID',
-             rev_orderby = c('probability', 'surveyCategory')) %.>%
+             orderby = c('probability', 'surveyCategory'),
+             reverse = c('probability', 'surveyCategory')) %.>%
   rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
   select_columns(., qc(subjectID, diagnosis, probability)) %.>%
   orderby(., 'subjectID') 

@@ -15,7 +15,7 @@ library("rquery")
 print(db_hdl)
 ```
 
-    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7fdd8519e8a0>)"
+    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7fcca47df518>)"
 
 ``` r
 print(test_df)
@@ -50,7 +50,8 @@ rquery_pipeline <- d_hdl %.>%
                  partitionby = 'subjectID') %.>%
   pick_top_k(.,
              partitionby = 'subjectID',
-             rev_orderby = c('probability', 'surveyCategory')) %.>%
+             orderby = c('probability', 'surveyCategory'),
+             reverse = c('probability', 'surveyCategory')) %.>%
   rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
   select_columns(., qc(subjectID, diagnosis, probability)) %.>%
   orderby(., 'subjectID') 

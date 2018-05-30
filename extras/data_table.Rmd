@@ -42,7 +42,8 @@ rquery_pipeline <- local_td(dL) %.>%
                  partitionby = 'subjectID') %.>%
   pick_top_k(.,
              partitionby = 'subjectID',
-             rev_orderby = c('probability', 'surveyCategory')) %.>% 
+             orderby = c('probability', 'surveyCategory'),
+             reverse = c('probability', 'surveyCategory')) %.>% 
   rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
   select_columns(., c('subjectID', 
                       'diagnosis', 
@@ -95,7 +96,7 @@ dplyr_pipeline <- . %>% group_by(subjectID) %>%
            exp(assessmentTotal * scale)/
            sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
   arrange(probability, surveyCategory) %>%
-  filter(rank() == n()) %>%
+  filter(row_number() == n()) %>%
   ungroup() %>%
   rename(diagnosis = surveyCategory) %>%
   select(subjectID, diagnosis, probability) %>%
@@ -124,9 +125,9 @@ data.table_local <- function(dL) {
                     probability = exp (assessmentTotal * scale ) /
                       sum ( exp ( assessmentTotal * scale ) ))
              , subjectID ]
-  setorder(dDT, subjectID, probability, -diagnosis)
+  data.table::setorder(dDT, subjectID, probability, -diagnosis)
   dDT <- dDT[, .SD[.N], subjectID]
-  setorder(dDT, subjectID)
+  data.table::setorder(dDT, subjectID)
 }
 
 data.table_local(dL) %.>%
@@ -138,7 +139,7 @@ Timings.
 
 ```{r}
 # fatten up data.frame a bit
-dL <- dL[rep(seq_len(nrow(dL)), 100000), , drop = FALSE]
+dL <- dL[rep(seq_len(nrow(dL)), 1000), , drop = FALSE]
 dL$subjectID <- paste(dL$subjectID, (1+seq_len(nrow(dL))) %/% 2, sep = "_")
 for(i in seq_len(10)) {
   dL[[paste0("irrelevantCol", i)]] <- runif(nrow(dL))
