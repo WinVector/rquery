@@ -230,7 +230,7 @@ cat(to_sql(dq, my_db, source_limit = 1000))
          "probability",
          "subjectID",
          "surveyCategory",
-         row_number ( ) OVER (  PARTITION BY "subjectID" ORDER BY "probability" DESC, "surveyCategory" DESC ) AS "row_number"
+         rank ( ) OVER (  PARTITION BY "subjectID" ORDER BY "probability" DESC, "surveyCategory" DESC ) AS "row_rank"
         FROM (
          SELECT
           "subjectID",
@@ -249,14 +249,14 @@ cat(to_sql(dq, my_db, source_limit = 1000))
             "d"."assessmentTotal"
            FROM
             "d" LIMIT 1000
-           ) tsql_60146893397977518258_0000000000
-          ) tsql_60146893397977518258_0000000001
-         ) tsql_60146893397977518258_0000000002
-       ) tsql_60146893397977518258_0000000003
-       WHERE "row_number" <= 1
-      ) tsql_60146893397977518258_0000000004
-     ) tsql_60146893397977518258_0000000005
-    ) tsql_60146893397977518258_0000000006 ORDER BY "subjectID"
+           ) tsql_26081767123614414359_0000000000
+          ) tsql_26081767123614414359_0000000001
+         ) tsql_26081767123614414359_0000000002
+       ) tsql_26081767123614414359_0000000003
+       WHERE "row_rank" <= 1
+      ) tsql_26081767123614414359_0000000004
+     ) tsql_26081767123614414359_0000000005
+    ) tsql_26081767123614414359_0000000006 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
@@ -301,11 +301,11 @@ cat(format(dq))
       probability := probability / sum(probability),
       p= subjectID) %.>%
      extend(.,
-      row_number := row_number(),
+      row_rank := rank(),
       p= subjectID,
       o= "probability" DESC, "surveyCategory" DESC) %.>%
      select_rows(.,
-       row_number <= 1) %.>%
+       row_rank <= 1) %.>%
      rename(.,
       c('diagnosis' = 'surveyCategory')) %.>%
      select_columns(.,

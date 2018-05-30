@@ -10,6 +10,7 @@
 #' @param orderby character, ordering (in window function) column names.
 #' @param rev_orderby character, reverse ordering (in window function) column names.
 #' @param k integer, number of rows to limit to in each group.
+#' @param order_expression character, command to compute row-order/rank.
 #' @param order_column character, column name to write per-group rank in (no ties).
 #' @param keep_order_column logical, if TRUE retain the order column in the result.
 #' @param env environment to look for values in.
@@ -19,7 +20,7 @@
 #' # by hand logistic regression example
 #' scale <- 0.237
 #' d <- mk_td("survey_table",
-#'                   c("subjectID", "surveyCategory", "assessmentTotal"))
+#'            c("subjectID", "surveyCategory", "assessmentTotal"))
 #' optree <- d %.>%
 #'   extend_nse(.,
 #'              probability :=
@@ -45,14 +46,15 @@ pick_top_k <- function(source,
                        orderby = NULL,
                        rev_orderby = NULL,
                        k = 1L,
-                       order_column = "row_number",
+                       order_expression = "rank()",
+                       order_column = "row_rank",
                        keep_order_column = TRUE,
                        env = parent.frame()) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::pick_top_k")
   pipe <- source %.>%
     extend_se(.,
-              assignments = order_column := "row_number()",
+              assignments = order_column := order_expression,
               partitionby = partitionby,
               orderby = orderby,
               rev_orderby = rev_orderby,
