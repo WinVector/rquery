@@ -366,14 +366,14 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
         "d"."assessmentTotal"
        FROM
         "d" LIMIT 1000
-       ) tsql_73283142396900105822_0000000000
-      ) tsql_73283142396900105822_0000000001
-     ) tsql_73283142396900105822_0000000002
-   ) tsql_73283142396900105822_0000000003
+       ) tsql_12829600833638758213_0000000000
+      ) tsql_12829600833638758213_0000000001
+     ) tsql_12829600833638758213_0000000002
+   ) tsql_12829600833638758213_0000000003
    WHERE "row_rank" &lt;= 1
-  ) tsql_73283142396900105822_0000000004
- ) tsql_73283142396900105822_0000000005
-) tsql_73283142396900105822_0000000006 ORDER BY "subjectID"</code></pre>
+  ) tsql_12829600833638758213_0000000004
+ ) tsql_12829600833638758213_0000000005
+) tsql_12829600833638758213_0000000006 ORDER BY "subjectID"</code></pre>
 <p>The query is large, but due to its regular structure it should be very amenable to query optimization.</p>
 <p>A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our <a href="https://github.com/WinVector/rquery/blob/master/extras/PerfTest.html">initial experiments</a> show <code>rquery</code> narrowed queries to be twice as fast as un-narrowed <code>dplyr</code> on a synthetic problem simulating large disk-based queries. We think if we connected directly to <code>Spark</code>’s relational operators (avoiding the <code>SQL</code> layer) we may be able to achieve even faster performance.</p>
 <p>The above optimization is possible because the <code>rquery</code> representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query. For example:</p>
@@ -462,7 +462,7 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 ## 2        NA         NA positive re-framing withdrawal behavior
 ## 3 0.6147982 0.07894697                &lt;NA&gt;                &lt;NA&gt;</code></pre>
 <p>We have found most big-data projects either require joining very many tables (something <code>rquery</code> join planners help with, please see <a href="https://github.com/WinVector/rquery/blob/master/extras/JoinController.html">here</a> and <a href="https://github.com/WinVector/rquery/blob/master/extras/JoinController.html">here</a>) or they require working with wide data-marts (where <code>rquery</code> query narrowing helps, please see <a href="https://github.com/WinVector/rquery/blob/master/extras/PerfTest.html">here</a>).</p>
-<p>We also could stand <code>rquery</code> up on non-<code>DBI</code> sources such as <a href="https://github.com/WinVector/rquery/blob/master/extras/SparkRExample.html"><code>SparkR</code></a> and perhaps even <a href="https://github.com/WinVector/rquery/blob/master/extras/data_table.html"><code>data.table</code></a>.</p>
+<p>We can also stand <code>rquery</code> up on non-<code>DBI</code> sources such as <a href="https://github.com/WinVector/rquery/blob/master/extras/SparkR.html"><code>SparkR</code></a> and also <a href="https://github.com/WinVector/rquery/blob/master/extras/data_table.html"><code>data.table</code></a>. The <code>data.table</code> adapter is being developed in the <a href="https://github.com/WinVector/qdatatable"><code>qdatatable</code></a> package, and can be <a href="https://github.com/WinVector/rquery/blob/master/extras/data_table.html">quite fast</a>. Notice also the examples in this paragram all essentially use the same query pipeline, the user can choose where to apply it: in memory (<code>data.table</code>), in a <code>DBI</code> database (<code>PostgreSQL</code>, <code>Sparklyr</code>), and with even non-DBI systems (<code>SparkR</code>).</p>
 </div>
 <div id="see-also" class="section level1">
 <h1 class="hasAnchor">
@@ -471,7 +471,6 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <ul>
 <li><a href="https://github.com/WinVector/rquery/blob/master/extras/JoinController.html">Join Controller</a></li>
 <li><a href="https://github.com/WinVector/rquery/blob/master/extras/DependencySorting.html">Join Dependency Sorting</a></li>
-<li><a href="https://github.com/WinVector/rquery/blob/master/extras/PerfTest.html">PerfTest</a></li>
 <li><a href="https://github.com/WinVector/rquery/blob/master/extras/AssigmentPartitioner.html">Assignment Partitioner</a></li>
 <li><a href="https://github.com/WinVector/rquery/blob/master/extras/ExtraDBs.html">DifferentDBs</a></li>
 </ul>

@@ -250,14 +250,14 @@ cat(to_sql(dq, my_db, source_limit = 1000))
             "d"."assessmentTotal"
            FROM
             "d" LIMIT 1000
-           ) tsql_04446349963413696788_0000000000
-          ) tsql_04446349963413696788_0000000001
-         ) tsql_04446349963413696788_0000000002
-       ) tsql_04446349963413696788_0000000003
+           ) tsql_65032531554127400894_0000000000
+          ) tsql_65032531554127400894_0000000001
+         ) tsql_65032531554127400894_0000000002
+       ) tsql_65032531554127400894_0000000003
        WHERE "row_rank" <= 1
-      ) tsql_04446349963413696788_0000000004
-     ) tsql_04446349963413696788_0000000005
-    ) tsql_04446349963413696788_0000000006 ORDER BY "subjectID"
+      ) tsql_65032531554127400894_0000000004
+     ) tsql_65032531554127400894_0000000005
+    ) tsql_65032531554127400894_0000000006 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
@@ -387,7 +387,7 @@ dq %.>%
 
 We have found most big-data projects either require joining very many tables (something `rquery` join planners help with, please see [here](https://github.com/WinVector/rquery/blob/master/extras/JoinController.md) and [here](https://github.com/WinVector/rquery/blob/master/extras/JoinController.md)) or they require working with wide data-marts (where `rquery` query narrowing helps, please see [here](https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md)).
 
-We also could stand `rquery` up on non-`DBI` sources such as [`SparkR`](https://github.com/WinVector/rquery/blob/master/extras/SparkRExample.md) and perhaps even [`data.table`](https://github.com/WinVector/rquery/blob/master/extras/data_table.md).
+We can also stand `rquery` up on non-`DBI` sources such as [`SparkR`](https://github.com/WinVector/rquery/blob/master/extras/SparkR.md) and also [`data.table`](https://github.com/WinVector/rquery/blob/master/extras/data_table.md). The `data.table` adapter is being developed in the [`qdatatable`](https://github.com/WinVector/qdatatable) package, and can be [quite fast](https://github.com/WinVector/rquery/blob/master/extras/data_table.md). Notice also the examples in this paragram all essentially use the same query pipeline, the user can choose where to apply it: in memory (`data.table`), in a `DBI` database (`PostgreSQL`, `Sparklyr`), and with even non-DBI systems (`SparkR`).
 
 See also
 ========
@@ -396,6 +396,5 @@ For deeper dives into specific topics, please see also:
 
 -   [Join Controller](https://github.com/WinVector/rquery/blob/master/extras/JoinController.md)
 -   [Join Dependency Sorting](https://github.com/WinVector/rquery/blob/master/extras/DependencySorting.md)
--   [PerfTest](https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md)
 -   [Assignment Partitioner](https://github.com/WinVector/rquery/blob/master/extras/AssigmentPartitioner.md)
 -   [DifferentDBs](https://github.com/WinVector/rquery/blob/master/extras/ExtraDBs.md)
