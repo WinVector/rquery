@@ -12,9 +12,6 @@ back-end ([`qdatatable`](https://github.com/WinVector/qdatatable)).
 library("ggplot2")
 library("microbenchmark")
 library("dplyr")
-library("rquery")
-# load data.table second so its definiton of := wins
-library("data.table")
 library("dtplyr")
 library("qdatatable") # devtools::install.packages("WinVector/qdatatable")
 ```
@@ -64,9 +61,6 @@ cat(format(rquery_pileline))
 
 ```{r}
 # execute
-# https://stackoverflow.com/questions/10527072/using-data-table-package-inside-my-own-package
-#.datatable.aware <- TRUE
-
 ex_data_table(rquery_pileline) %.>%
   knitr::kable(.)
 ```

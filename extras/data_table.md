@@ -23,8 +23,11 @@ library("dplyr")
     ##     intersect, setdiff, setequal, union
 
 ``` r
-library("rquery")
+library("dtplyr")
+library("qdatatable") # devtools::install.packages("WinVector/qdatatable")
 ```
+
+    ## Loading required package: rquery
 
     ## Loading required package: wrapr
 
@@ -34,27 +37,6 @@ library("rquery")
     ## The following object is masked from 'package:dplyr':
     ## 
     ##     coalesce
-
-``` r
-# load data.table second so its definiton of := wins
-library("data.table")
-```
-
-    ## 
-    ## Attaching package: 'data.table'
-
-    ## The following object is masked from 'package:wrapr':
-    ## 
-    ##     :=
-
-    ## The following objects are masked from 'package:dplyr':
-    ## 
-    ##     between, first, last
-
-``` r
-library("dtplyr")
-library("qdatatable") # devtools::install.packages("WinVector/qdatatable")
-```
 
 ``` r
 # data example
@@ -120,9 +102,6 @@ cat(format(rquery_pileline))
 
 ``` r
 # execute
-# https://stackoverflow.com/questions/10527072/using-data-table-package-inside-my-own-package
-#.datatable.aware <- TRUE
-
 ex_data_table(rquery_pileline) %.>%
   knitr::kable(.)
 ```
@@ -184,7 +163,7 @@ system.time(print(nrow(ex_data_table(rquery_pileline))))
     ## [1] 20000
 
     ##    user  system elapsed 
-    ##   0.562   0.029   0.386
+    ##   0.510   0.015   0.285
 
 ``` r
 system.time(print(nrow(dplyr_pipeline(dL))))
@@ -193,7 +172,7 @@ system.time(print(nrow(dplyr_pipeline(dL))))
     ## [1] 20000
 
     ##    user  system elapsed 
-    ##   1.310   0.020   1.372
+    ##   1.244   0.017   1.270
 
 ``` r
 timings <- microbenchmark(
@@ -207,11 +186,11 @@ print(timings)
 
     ## Unit: milliseconds
     ##                                  expr       min        lq      mean
-    ##  nrow(ex_data_table(rquery_pileline))  257.9102  273.8922  334.8001
-    ##              nrow(dplyr_pipeline(dL)) 1185.0832 1233.9211 1422.0820
+    ##  nrow(ex_data_table(rquery_pileline))  245.7367  274.3203  323.6974
+    ##              nrow(dplyr_pipeline(dL)) 1217.0533 1263.8712 1378.8133
     ##     median        uq       max neval
-    ##   322.5735  373.5357  565.5198   100
-    ##  1284.1473 1511.5009 2920.6255   100
+    ##   302.3802  348.7881  515.1796   100
+    ##  1303.9606 1395.0246 2049.2771   100
 
 ``` r
 # summarize by hand using rquery database connector
@@ -226,8 +205,8 @@ timings %.>%
 
 | expr                                    |        mean|
 |:----------------------------------------|-----------:|
-| nrow(dplyr\_pipeline(dL))               |  1422081990|
-| nrow(ex\_data\_table(rquery\_pileline)) |   334800089|
+| nrow(dplyr\_pipeline(dL))               |  1378813259|
+| nrow(ex\_data\_table(rquery\_pileline)) |   323697401|
 
 ``` r
 autoplot(timings)
