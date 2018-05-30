@@ -139,7 +139,7 @@ Timings.
 
 ```{r}
 # fatten up data.frame a bit
-dL <- dL[rep(seq_len(nrow(dL)), 1000), , drop = FALSE]
+dL <- dL[rep(seq_len(nrow(dL)), 100000), , drop = FALSE]
 dL$subjectID <- paste(dL$subjectID, (1+seq_len(nrow(dL))) %/% 2, sep = "_")
 for(i in seq_len(10)) {
   dL[[paste0("irrelevantCol", i)]] <- runif(nrow(dL))
