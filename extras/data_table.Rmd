@@ -6,7 +6,7 @@ output: github_document
 ---
 
 We can work an example similar to the [`rquery`](https://winvector.github.io/rquery/) [example](https://winvector.github.io/rquery/index.html) using a [`data.table`](http://r-datatable.com/) 
-back-end.
+back-end ([`qdatatable`](https://github.com/WinVector/qdatatable)).
 
 ```{r}
 library("ggplot2")
@@ -16,7 +16,7 @@ library("rquery")
 # load data.table second so its definiton of := wins
 library("data.table")
 library("dtplyr")
-source("data_table.R") # our example rquery data.table back-end
+library("qdatatable") # devtools::install.packages("WinVector/qdatatable")
 ```
 
 
@@ -33,15 +33,6 @@ dL <- build_frame(
 
 ```{r}
 scale <- 0.237
-
-test_p <- local_td(dL) %.>%
-  extend_nse(.,
-             one := 1) %.>%
-  project_nse(.,
-             maxscore = max(assessmentTotal),
-             groupby = 'subjectID')
-ex_data_table(test_p) %.>%
-  knitr::kable(.)
 
 # example rquery pipeline
 rquery_pileline <- local_td(dL) %.>%

@@ -3,7 +3,7 @@ data.table backend for rquery
 John Mount, Win-Vector LLC
 05/29/2018
 
-We can work an example similar to the [`rquery`](https://winvector.github.io/rquery/) [example](https://winvector.github.io/rquery/index.html) using a [`data.table`](http://r-datatable.com/) back-end.
+We can work an example similar to the [`rquery`](https://winvector.github.io/rquery/) [example](https://winvector.github.io/rquery/index.html) using a [`data.table`](http://r-datatable.com/) back-end ([`qdatatable`](https://github.com/WinVector/qdatatable)).
 
 ``` r
 library("ggplot2")
@@ -53,7 +53,7 @@ library("data.table")
 
 ``` r
 library("dtplyr")
-source("data_table.R") # our example rquery data.table back-end
+library("qdatatable") # devtools::install.packages("WinVector/qdatatable")
 ```
 
 ``` r
@@ -69,22 +69,6 @@ dL <- build_frame(
 ``` r
 scale <- 0.237
 
-test_p <- local_td(dL) %.>%
-  extend_nse(.,
-             one := 1) %.>%
-  project_nse(.,
-             maxscore = max(assessmentTotal),
-             groupby = 'subjectID')
-ex_data_table(test_p) %.>%
-  knitr::kable(.)
-```
-
-|  subjectID|  maxscore|
-|----------:|---------:|
-|          1|         5|
-|          2|         4|
-
-``` r
 # example rquery pipeline
 rquery_pileline <- local_td(dL) %.>%
   extend_nse(.,
@@ -200,7 +184,7 @@ system.time(print(nrow(ex_data_table(rquery_pileline))))
     ## [1] 20000
 
     ##    user  system elapsed 
-    ##   0.635   0.026   0.416
+    ##   0.562   0.029   0.386
 
 ``` r
 system.time(print(nrow(dplyr_pipeline(dL))))
@@ -209,7 +193,7 @@ system.time(print(nrow(dplyr_pipeline(dL))))
     ## [1] 20000
 
     ##    user  system elapsed 
-    ##   1.398   0.027   1.455
+    ##   1.310   0.020   1.372
 
 ``` r
 timings <- microbenchmark(
@@ -223,11 +207,11 @@ print(timings)
 
     ## Unit: milliseconds
     ##                                  expr       min        lq      mean
-    ##  nrow(ex_data_table(rquery_pileline))  273.6537  295.5555  344.2774
-    ##              nrow(dplyr_pipeline(dL)) 1230.6227 1275.6322 1403.5798
+    ##  nrow(ex_data_table(rquery_pileline))  257.9102  273.8922  334.8001
+    ##              nrow(dplyr_pipeline(dL)) 1185.0832 1233.9211 1422.0820
     ##     median        uq       max neval
-    ##   323.5548  370.5334  564.7431   100
-    ##  1325.5366 1413.5868 2355.5739   100
+    ##   322.5735  373.5357  565.5198   100
+    ##  1284.1473 1511.5009 2920.6255   100
 
 ``` r
 # summarize by hand using rquery database connector
@@ -242,8 +226,8 @@ timings %.>%
 
 | expr                                    |        mean|
 |:----------------------------------------|-----------:|
-| nrow(dplyr\_pipeline(dL))               |  1403579784|
-| nrow(ex\_data\_table(rquery\_pileline)) |   344277450|
+| nrow(dplyr\_pipeline(dL))               |  1422081990|
+| nrow(ex\_data\_table(rquery\_pileline)) |   334800089|
 
 ``` r
 autoplot(timings)
