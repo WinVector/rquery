@@ -204,37 +204,43 @@ dL$subjectID <- paste(dL$subjectID, (1+seq_len(nrow(dL))) %/% 2, sep = "_")
 for(i in seq_len(10)) {
   dL[[paste0("irrelevantCol", i)]] <- runif(nrow(dL))
 }
-
-# show we are working on the new larger data
-system.time(print(nrow(ex_data_table(rquery_pipeline))))
 ```
 
-    ## [1] 200000
-
-    ##    user  system elapsed 
-    ##  41.830   0.673  42.571
-
 ``` r
-system.time(print(nrow(dplyr_pipeline(dL))))
+# show we are working on the new larger data and results agree
+ref <- as.data.frame(ex_data_table(rquery_pipeline))
+assertthat::assert_that(min(ref$probability)>=0.5) # sensible effect
 ```
 
-    ## [1] 200000
-
-    ##    user  system elapsed 
-    ##  17.320   0.139  17.500
+    ## [1] TRUE
 
 ``` r
-system.time(nrow(data.table_local(dL)))
+c1 <- as.data.frame(execute(dL, rquery_pipeline))
+assertthat::are_equal(ref, c1)
 ```
 
-    ##    user  system elapsed 
-    ##   1.367   0.048   0.810
+    ## [1] TRUE
 
 ``` r
-timings <- microbenchmark(
-  nrow(ex_data_table(rquery_pipeline)),
-  nrow(data.table_local(dL)),
-  nrow(dplyr_pipeline(dL)))
+c2 <- as.data.frame(dplyr_pipeline(dL))
+assertthat::are_equal(ref, c2)
+```
+
+    ## [1] TRUE
+
+``` r
+c3 <- as.data.frame(data.table_local(dL))
+assertthat::are_equal(ref, c3)
+```
+
+    ## [1] TRUE
+
+``` r
+timings <- microbenchmark(times = 10L,
+  rquery_database = nrow(execute(dL, rquery_pipeline)),
+  rquery_data.table = nrow(ex_data_table(rquery_pipeline)),
+  data.table = nrow(data.table_local(dL)),
+  dplyr = nrow(dplyr_pipeline(dL)))
 ```
 
 ``` r
@@ -242,14 +248,16 @@ print(timings)
 ```
 
     ## Unit: milliseconds
-    ##                                  expr        min         lq       mean
-    ##  nrow(ex_data_table(rquery_pipeline)) 34862.2797 36901.0846 38805.5518
-    ##            nrow(data.table_local(dL))   650.1954   849.8022   891.8786
-    ##              nrow(dplyr_pipeline(dL)) 15066.6152 15873.5946 16410.9090
-    ##     median        uq       max neval
-    ##  38575.962 39719.327 52297.380   100
-    ##    890.274   920.545  1699.954   100
-    ##  16287.420 16891.901 18911.649   100
+    ##               expr        min         lq       mean     median         uq
+    ##    rquery_database 12142.7993 12320.7961 12681.7088 12620.9087 13064.7130
+    ##  rquery_data.table   673.5670   691.3015   730.9552   709.7306   774.7688
+    ##         data.table   703.7485   798.0307   866.0074   917.4921   935.7896
+    ##              dplyr 15974.8765 16134.2316 16836.6624 16340.9353 16928.0881
+    ##         max neval
+    ##  13409.0698    10
+    ##    839.8092    10
+    ##    960.7547    10
+    ##  20002.3947    10
 
 ``` r
 # summarize by hand using rquery database connector
@@ -262,22 +270,23 @@ timings %.>%
   knitr::kable(.)
 ```
 
-| expr                                    |         mean|
-|:----------------------------------------|------------:|
-| nrow(dplyr\_pipeline(dL))               |  16410908996|
-| nrow(data.table\_local(dL))             |    891878555|
-| nrow(ex\_data\_table(rquery\_pipeline)) |  38805551750|
+| expr               |         mean|
+|:-------------------|------------:|
+| dplyr              |  16836662392|
+| rquery\_database   |  12681708822|
+| rquery\_data.table |    730955241|
+| data.table         |    866007351|
 
 ``` r
 autoplot(timings)
 ```
 
-![](data_table_files/figure-markdown_github/unnamed-chunk-12-1.png)
+![](data_table_files/figure-markdown_github/unnamed-chunk-13-1.png)
 
 ``` r
 WVPlots::ScatterBoxPlotH(as.data.frame(timings), "time", "expr", "runtime by expression in nanoseconds")
 ```
 
-![](data_table_files/figure-markdown_github/unnamed-chunk-12-2.png)
+![](data_table_files/figure-markdown_github/unnamed-chunk-13-2.png)
 
 For more timings (including fast base-R implementations), please see [here](https://github.com/WinVector/rquery/blob/master/extras/QTimingFollowup/QTiming4.md).

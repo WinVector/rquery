@@ -144,20 +144,30 @@ dL$subjectID <- paste(dL$subjectID, (1+seq_len(nrow(dL))) %/% 2, sep = "_")
 for(i in seq_len(10)) {
   dL[[paste0("irrelevantCol", i)]] <- runif(nrow(dL))
 }
+```
 
-# show we are working on the new larger data
-system.time(print(nrow(ex_data_table(rquery_pipeline))))
 
-system.time(print(nrow(dplyr_pipeline(dL))))
+```{r}
+# show we are working on the new larger data and results agree
+ref <- as.data.frame(ex_data_table(rquery_pipeline))
+assertthat::assert_that(min(ref$probability)>=0.5) # sensible effect
 
-system.time(nrow(data.table_local(dL)))
+c1 <- as.data.frame(execute(dL, rquery_pipeline))
+assertthat::are_equal(ref, c1)
+
+c2 <- as.data.frame(dplyr_pipeline(dL))
+assertthat::are_equal(ref, c2)
+
+c3 <- as.data.frame(data.table_local(dL))
+assertthat::are_equal(ref, c3)
 ```
 
 ```{r}
-timings <- microbenchmark(
-  nrow(ex_data_table(rquery_pipeline)),
-  nrow(data.table_local(dL)),
-  nrow(dplyr_pipeline(dL)))
+timings <- microbenchmark(times = 10L,
+  rquery_database = nrow(execute(dL, rquery_pipeline)),
+  rquery_data.table = nrow(ex_data_table(rquery_pipeline)),
+  data.table = nrow(data.table_local(dL)),
+  dplyr = nrow(dplyr_pipeline(dL)))
 ```
 
 
