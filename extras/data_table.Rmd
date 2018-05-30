@@ -91,7 +91,9 @@ execute(dL, rquery_pipeline) %.>%
 ```{r}
 scale <- 0.237
 
-dplyr_pipeline <- . %>% group_by(subjectID) %>%
+dplyr_pipeline <- . %>% 
+  as.tbl(.[, c("subjectID", "surveyCategory", "assessmentTotal")]) %>% # narrow and convert to preferred structure
+  group_by(subjectID) %>%
   mutate(probability =
            exp(assessmentTotal * scale)/
            sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
@@ -120,7 +122,9 @@ Idiomatic `data.table` pipeline.
 # improved code from:
 # http://www.win-vector.com/blog/2018/01/base-r-can-be-fast/#comment-66746
 data.table_local <- function(dL) {
-  dDT <- data.table::as.data.table(dL)
+  # data.table is paying for this copy in its timings (not quite fair)
+  # so we will try to minimize it by narrowing columns.
+  dDT <- data.table::as.data.table(dL[, c("subjectID", "surveyCategory", "assessmentTotal")])
   dDT <- dDT[, list(diagnosis = surveyCategory,
                     probability = exp (assessmentTotal * scale ) /
                       sum ( exp ( assessmentTotal * scale ) ))
@@ -144,6 +148,7 @@ dL$subjectID <- paste(dL$subjectID, (1+seq_len(nrow(dL))) %/% 2, sep = "_")
 for(i in seq_len(10)) {
   dL[[paste0("irrelevantCol", i)]] <- runif(nrow(dL))
 }
+dLorig <- dL
 ```
 
 
@@ -160,6 +165,9 @@ assertthat::are_equal(ref, c2)
 
 c3 <- as.data.frame(data.table_local(dL))
 assertthat::are_equal(ref, c3)
+
+# confirm no side-effects back to orginal frame
+assertthat::are_equal(dLorig, dL)
 ```
 
 ```{r}

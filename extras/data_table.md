@@ -140,7 +140,9 @@ execute(dL, rquery_pipeline) %.>%
 ``` r
 scale <- 0.237
 
-dplyr_pipeline <- . %>% group_by(subjectID) %>%
+dplyr_pipeline <- . %>% 
+  as.tbl(.[, c("subjectID", "surveyCategory", "assessmentTotal")]) %>% # narrow and convert to preferred structure
+  group_by(subjectID) %>%
   mutate(probability =
            exp(assessmentTotal * scale)/
            sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
@@ -176,7 +178,9 @@ Idiomatic `data.table` pipeline.
 # improved code from:
 # http://www.win-vector.com/blog/2018/01/base-r-can-be-fast/#comment-66746
 data.table_local <- function(dL) {
-  dDT <- data.table::as.data.table(dL)
+  # data.table is paying for this copy in its timings (not quite fair)
+  # so we will try to minimize it by narrowing columns.
+  dDT <- data.table::as.data.table(dL[, c("subjectID", "surveyCategory", "assessmentTotal")])
   dDT <- dDT[, list(diagnosis = surveyCategory,
                     probability = exp (assessmentTotal * scale ) /
                       sum ( exp ( assessmentTotal * scale ) ))
@@ -204,6 +208,7 @@ dL$subjectID <- paste(dL$subjectID, (1+seq_len(nrow(dL))) %/% 2, sep = "_")
 for(i in seq_len(10)) {
   dL[[paste0("irrelevantCol", i)]] <- runif(nrow(dL))
 }
+dLorig <- dL
 ```
 
 ``` r
@@ -236,6 +241,13 @@ assertthat::are_equal(ref, c3)
     ## [1] TRUE
 
 ``` r
+# confirm no side-effects back to orginal frame
+assertthat::are_equal(dLorig, dL)
+```
+
+    ## [1] TRUE
+
+``` r
 timings <- microbenchmark(times = 10L,
   rquery_database = nrow(execute(dL, rquery_pipeline)),
   rquery_data.table = nrow(ex_data_table(rquery_pipeline)),
@@ -249,15 +261,15 @@ print(timings)
 
     ## Unit: milliseconds
     ##               expr        min         lq       mean     median         uq
-    ##    rquery_database 12142.7993 12320.7961 12681.7088 12620.9087 13064.7130
-    ##  rquery_data.table   673.5670   691.3015   730.9552   709.7306   774.7688
-    ##         data.table   703.7485   798.0307   866.0074   917.4921   935.7896
-    ##              dplyr 15974.8765 16134.2316 16836.6624 16340.9353 16928.0881
+    ##    rquery_database 10096.8669 10209.7952 10454.1202 10273.5284 10802.6368
+    ##  rquery_data.table   718.9044   721.2533   789.1431   753.1543   825.3029
+    ##         data.table   723.5045   761.9016   818.0956   787.5019   869.4023
+    ##              dplyr 17897.0035 18086.7331 18850.8112 18421.9741 19956.2487
     ##         max neval
-    ##  13409.0698    10
-    ##    839.8092    10
-    ##    960.7547    10
-    ##  20002.3947    10
+    ##  11159.0482    10
+    ##    978.8552    10
+    ##    968.0280    10
+    ##  20619.4354    10
 
 ``` r
 # summarize by hand using rquery database connector
@@ -272,10 +284,10 @@ timings %.>%
 
 | expr               |         mean|
 |:-------------------|------------:|
-| dplyr              |  16836662392|
-| rquery\_database   |  12681708822|
-| rquery\_data.table |    730955241|
-| data.table         |    866007351|
+| dplyr              |  18850811222|
+| rquery\_database   |  10454120200|
+| rquery\_data.table |    789143110|
+| data.table         |    818095618|
 
 ``` r
 autoplot(timings)

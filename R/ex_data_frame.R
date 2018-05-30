@@ -78,6 +78,7 @@ rquery_apply_to_data_frame <- function(d,
     stop(paste("rquery::rquery_apply_to_data_frame d missing required columns:",
          paste(missing, collapse = ", ")))
   }
+  d <- d[ , cols_used, drop = FALSE]
   if((!is.null(source_limit)) && (source_limit<nrow(d))) {
     d <- d[seq_len(source_limit), , drop = FALSE]
   }
