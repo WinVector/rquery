@@ -199,7 +199,7 @@ Timings.
 
 ``` r
 # fatten up data.frame a bit
-dL <- dL[rep(seq_len(nrow(dL)), 1000), , drop = FALSE]
+dL <- dL[rep(seq_len(nrow(dL)), 100000), , drop = FALSE]
 dL$subjectID <- paste(dL$subjectID, (1+seq_len(nrow(dL))) %/% 2, sep = "_")
 for(i in seq_len(10)) {
   dL[[paste0("irrelevantCol", i)]] <- runif(nrow(dL))
@@ -209,26 +209,26 @@ for(i in seq_len(10)) {
 system.time(print(nrow(ex_data_table(rquery_pipeline))))
 ```
 
-    ## [1] 2000
+    ## [1] 200000
 
     ##    user  system elapsed 
-    ##   0.972   0.038   0.425
+    ##  41.830   0.673  42.571
 
 ``` r
 system.time(print(nrow(dplyr_pipeline(dL))))
 ```
 
-    ## [1] 2000
+    ## [1] 200000
 
     ##    user  system elapsed 
-    ##   0.399   0.007   0.162
+    ##  17.320   0.139  17.500
 
 ``` r
 system.time(nrow(data.table_local(dL)))
 ```
 
     ##    user  system elapsed 
-    ##   0.024   0.000   0.015
+    ##   1.367   0.048   0.810
 
 ``` r
 timings <- microbenchmark(
@@ -242,14 +242,14 @@ print(timings)
 ```
 
     ## Unit: milliseconds
-    ##                                  expr        min        lq      mean
-    ##  nrow(ex_data_table(rquery_pipeline)) 391.962113 416.69022 440.90833
-    ##            nrow(data.table_local(dL))   6.726181   9.44222  11.74941
-    ##              nrow(dplyr_pipeline(dL)) 110.235372 133.27840 162.92683
+    ##                                  expr        min         lq       mean
+    ##  nrow(ex_data_table(rquery_pipeline)) 34862.2797 36901.0846 38805.5518
+    ##            nrow(data.table_local(dL))   650.1954   849.8022   891.8786
+    ##              nrow(dplyr_pipeline(dL)) 15066.6152 15873.5946 16410.9090
     ##     median        uq       max neval
-    ##  430.11953 448.85524 610.36693   100
-    ##   11.16799  12.70062  53.89847   100
-    ##  171.69554 185.02202 210.10075   100
+    ##  38575.962 39719.327 52297.380   100
+    ##    890.274   920.545  1699.954   100
+    ##  16287.420 16891.901 18911.649   100
 
 ``` r
 # summarize by hand using rquery database connector
@@ -262,11 +262,11 @@ timings %.>%
   knitr::kable(.)
 ```
 
-| expr                                    |       mean|
-|:----------------------------------------|----------:|
-| nrow(dplyr\_pipeline(dL))               |  162926829|
-| nrow(data.table\_local(dL))             |   11749411|
-| nrow(ex\_data\_table(rquery\_pipeline)) |  440908327|
+| expr                                    |         mean|
+|:----------------------------------------|------------:|
+| nrow(dplyr\_pipeline(dL))               |  16410908996|
+| nrow(data.table\_local(dL))             |    891878555|
+| nrow(ex\_data\_table(rquery\_pipeline)) |  38805551750|
 
 ``` r
 autoplot(timings)
