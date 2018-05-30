@@ -24,7 +24,8 @@
 #'                  partitionby = 'subjectID') %.>%
 #'   pick_top_k(.,
 #'              partitionby = 'subjectID',
-#'              rev_orderby = c('probability', 'surveyCategory')) %.>%
+#'              orderby = c('probability', 'surveyCategory'),
+#'              reverse = c('probability')) %.>%
 #'   rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
 #'   select_columns(., c('subjectID',
 #'                       'diagnosis',

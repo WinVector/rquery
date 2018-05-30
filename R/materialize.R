@@ -504,7 +504,7 @@ execute <- function(source,
       ref <- ref  %.>%
         orderby(.,
                 cols = optree$orderby,
-                rev_cols = optree$rev_orderby)
+                reverse = optree$reverse)
     }
     sql <- to_sql(ref, db, limit = limit)
     res <- rq_get_query(db, sql)

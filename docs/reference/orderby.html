@@ -125,7 +125,7 @@ limit number of rows in that order.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>orderby</span>(<span class='no'>source</span>, <span class='kw'>cols</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>, <span class='kw'>rev_cols</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>limit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>orderby</span>(<span class='no'>source</span>, <span class='kw'>cols</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>, <span class='kw'>reverse</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>limit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -143,8 +143,8 @@ limit number of rows in that order.</p>
       <td><p>force later arguments to be bound by name</p></td>
     </tr>
     <tr>
-      <th>rev_cols</th>
-      <td><p>order by reverse of these column names.</p></td>
+      <th>reverse</th>
+      <td><p>character, which columns to reverse ordering of.</p></td>
     </tr>
     <tr>
       <th>limit</th>
@@ -172,7 +172,7 @@ which does preserve row order).</p>
   <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
   <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(<span class='no'>my_db</span>, <span class='st'>'d'</span>,
                    <span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>0.6</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>0.2</span>))
-  <span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='fu'>orderby</span>(<span class='no'>d</span>, <span class='kw'>rev_cols</span> <span class='kw'>=</span> <span class='st'>"AUC"</span>, <span class='kw'>limit</span><span class='kw'>=</span><span class='fl'>4</span>)
+  <span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='fu'>orderby</span>(<span class='no'>d</span>, <span class='kw'>cols</span> <span class='kw'>=</span> <span class='st'>"AUC"</span>, <span class='kw'>reverse</span> <span class='kw'>=</span> <span class='st'>"AUC"</span>, <span class='kw'>limit</span><span class='kw'>=</span><span class='fl'>4</span>)
   <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>optree</span>))
   <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>optree</span>, <span class='no'>my_db</span>)
   <span class='fu'>cat</span>(<span class='no'>sql</span>)
@@ -181,7 +181,7 @@ which does preserve row order).</p>
 }</div><div class='output co'>#&gt; table('d'; 
 #&gt;   AUC,
 #&gt;   R2) %.&gt;%
-#&gt;  orderby(., desc(AUC))
+#&gt;  orderby(., desc(AUC), LIMIT 4)
 #&gt; SELECT * FROM (
 #&gt;  SELECT
 #&gt;   `d`.`AUC`,

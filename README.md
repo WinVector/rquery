@@ -185,7 +185,8 @@ dq <- d %.>%
                  partitionby = 'subjectID') %.>%
   pick_top_k(.,
              partitionby = 'subjectID',
-             rev_orderby = c('probability', 'surveyCategory')) %.>% 
+             orderby = c('probability', 'surveyCategory'),
+             reverse = c('probability')) %.>% 
   rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
   select_columns(., c('subjectID', 
                       'diagnosis', 
@@ -230,7 +231,7 @@ cat(to_sql(dq, my_db, source_limit = 1000))
          "probability",
          "subjectID",
          "surveyCategory",
-         rank ( ) OVER (  PARTITION BY "subjectID" ORDER BY "probability" DESC, "surveyCategory" DESC ) AS "row_rank"
+         rank ( ) OVER (  PARTITION BY "subjectID" ORDER BY "probability" DESC, "surveyCategory" ) AS "row_rank"
         FROM (
          SELECT
           "subjectID",
@@ -249,14 +250,14 @@ cat(to_sql(dq, my_db, source_limit = 1000))
             "d"."assessmentTotal"
            FROM
             "d" LIMIT 1000
-           ) tsql_26081767123614414359_0000000000
-          ) tsql_26081767123614414359_0000000001
-         ) tsql_26081767123614414359_0000000002
-       ) tsql_26081767123614414359_0000000003
+           ) tsql_04446349963413696788_0000000000
+          ) tsql_04446349963413696788_0000000001
+         ) tsql_04446349963413696788_0000000002
+       ) tsql_04446349963413696788_0000000003
        WHERE "row_rank" <= 1
-      ) tsql_26081767123614414359_0000000004
-     ) tsql_26081767123614414359_0000000005
-    ) tsql_26081767123614414359_0000000006 ORDER BY "subjectID"
+      ) tsql_04446349963413696788_0000000004
+     ) tsql_04446349963413696788_0000000005
+    ) tsql_04446349963413696788_0000000006 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
@@ -303,7 +304,7 @@ cat(format(dq))
      extend(.,
       row_rank := rank(),
       p= subjectID,
-      o= "probability" DESC, "surveyCategory" DESC) %.>%
+      o= "probability" DESC, "surveyCategory") %.>%
      select_rows(.,
        row_rank <= 1) %.>%
      rename(.,

@@ -34,7 +34,7 @@ re_write_table_names <- function(op_tree, new_name) {
 #'
 #'   optree <- mk_td("d", c("AUC", "R2", "D")) %.>%
 #'   	extend_nse(., c := sqrt(R2)) %.>%
-#'     orderby(., rev_cols = "R2")
+#'     orderby(., cols = "R2", reverse = "R2")
 #'
 #'   d <- data.frame(AUC = 0.6, R2 = c(0.1, 0.2), D = NA, z = 2)
 #'   v <- rquery_apply_to_data_frame(d, optree)
@@ -121,7 +121,7 @@ rquery_apply_to_data_frame <- function(d,
     ref <- ref  %.>%
       orderby(.,
               cols = optree$orderby,
-              rev_cols = optree$rev_orderby)
+              reverse = optree$reverse)
   }
   sql <- to_sql(ref, my_db, limit = limit)
   res <- rq_get_query(my_db, sql)

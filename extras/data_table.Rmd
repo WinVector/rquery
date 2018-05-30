@@ -1,7 +1,7 @@
 ---
 title: "data.table backend for rquery"
 author: "John Mount, Win-Vector LLC"
-date: "05/29/2018"
+date: "05/30/2018"
 output: github_document
 ---
 
@@ -13,6 +13,7 @@ library("ggplot2")
 library("microbenchmark")
 library("dplyr")
 library("dtplyr")
+# https://github.com/WinVector/qdatatable
 library("qdatatable") # devtools::install.packages("WinVector/qdatatable")
 ```
 
@@ -34,22 +35,19 @@ scale <- 0.237
 # example rquery pipeline
 rquery_pipeline <- local_td(dL) %.>%
   extend_nse(.,
-             one := 1) %.>%
-  extend_nse(.,
              probability :=
-               exp(assessmentTotal * scale)/
-               sum(exp(assessmentTotal * scale)),
-             count := sum(one),
-             rank := rank(probability, surveyCategory),
-             partitionby = 'subjectID') %.>%
-  extend_nse(.,
-             isdiagnosis := rank == count,
-             diagnosis := surveyCategory) %.>%
-  select_rows_nse(., 
-                  isdiagnosis == TRUE) %.>%
-  select_columns(., 
-                 c('subjectID', 'diagnosis', 'probability')) %.>%
-  orderby(., 'subjectID')
+               exp(assessmentTotal * scale))  %.>% 
+  normalize_cols(.,
+                 "probability",
+                 partitionby = 'subjectID') %.>%
+  pick_top_k(.,
+             partitionby = 'subjectID',
+             rev_orderby = c('probability', 'surveyCategory')) %.>% 
+  rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
+  select_columns(., c('subjectID', 
+                      'diagnosis', 
+                      'probability')) %.>%
+  orderby(., cols = 'subjectID')
 ```
 
 Show expanded form of query tree.
@@ -58,12 +56,33 @@ Show expanded form of query tree.
 cat(format(rquery_pipeline))
 ```
 
+Execute `rquery` pipeline using `data.table` as the impementation.
 
 ```{r}
-# execute
 ex_data_table(rquery_pipeline) %.>%
   knitr::kable(.)
 ```
+
+Execute `rquery` pipeline using `PostgreSQL` as the implementation.
+
+```{r}
+# configure a database connection
+my_db <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
+                          host = 'localhost',
+                          port = 5432,
+                          user = 'johnmount',
+                          password = '')
+dbopts <- rq_connection_tests(my_db)
+options(dbopts)
+# build the shared handle
+winvector_temp_db_handle <- list(db = my_db)
+
+
+# run the job
+execute(dL, rquery_pipeline) %.>%
+  knitr::kable(.)
+```
+
 
 `dplyr` pipeline.
 
@@ -76,7 +95,7 @@ dplyr_pipeline <- . %>% group_by(subjectID) %>%
            exp(assessmentTotal * scale)/
            sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
   arrange(probability, surveyCategory) %>%
-  filter(row_number() == n()) %>%
+  filter(rank() == n()) %>%
   ungroup() %>%
   rename(diagnosis = surveyCategory) %>%
   select(subjectID, diagnosis, probability) %>%
@@ -94,6 +113,26 @@ data.table::as.data.table(dL) %>%
   dplyr_pipeline
 ```
 
+Idiomatic `data.table` pipeline.
+
+```{r}
+# improved code from:
+# http://www.win-vector.com/blog/2018/01/base-r-can-be-fast/#comment-66746
+data.table_local <- function(dL) {
+  dDT <- data.table::as.data.table(dL)
+  dDT <- dDT[, list(diagnosis = surveyCategory,
+                    probability = exp (assessmentTotal * scale ) /
+                      sum ( exp ( assessmentTotal * scale ) ))
+             , subjectID ]
+  setorder(dDT, subjectID, probability, -diagnosis)
+  dDT <- dDT[, .SD[.N], subjectID]
+  setorder(dDT, subjectID)
+}
+
+data.table_local(dL) %.>%
+  knitr::kable(.)
+```
+
 
 Timings.
 
@@ -109,11 +148,14 @@ for(i in seq_len(10)) {
 system.time(print(nrow(ex_data_table(rquery_pipeline))))
 
 system.time(print(nrow(dplyr_pipeline(dL))))
+
+system.time(nrow(data.table_local(dL)))
 ```
 
 ```{r}
 timings <- microbenchmark(
   nrow(ex_data_table(rquery_pipeline)),
+  nrow(data.table_local(dL)),
   nrow(dplyr_pipeline(dL)))
 ```
 
@@ -135,7 +177,12 @@ autoplot(timings)
 WVPlots::ScatterBoxPlotH(as.data.frame(timings), "time", "expr", "runtime by expression in nanoseconds")
 ```
 
+For more timings (including fast base-R implementations), please see [here](https://github.com/WinVector/rquery/blob/master/extras/QTimingFollowup/QTiming4.md).
 
+```{r, include=FALSE}
+rm(list = "winvector_temp_db_handle")
+DBI::dbDisconnect(my_db)
+```
 
 
 

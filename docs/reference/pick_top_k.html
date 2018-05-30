@@ -124,8 +124,9 @@
     </div>
 
     <pre class="usage"><span class='fu'>pick_top_k</span>(<span class='no'>source</span>, <span class='no'>...</span>, <span class='kw'>partitionby</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>orderby</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>rev_orderby</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>order_column</span> <span class='kw'>=</span> <span class='st'>"row_number"</span>,
-  <span class='kw'>keep_order_column</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
+  <span class='kw'>reverse</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>order_expression</span> <span class='kw'>=</span> <span class='st'>"rank()"</span>,
+  <span class='kw'>order_column</span> <span class='kw'>=</span> <span class='st'>"row_rank"</span>, <span class='kw'>keep_order_column</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -147,12 +148,16 @@
       <td><p>character, ordering (in window function) column names.</p></td>
     </tr>
     <tr>
-      <th>rev_orderby</th>
-      <td><p>character, reverse ordering (in window function) column names.</p></td>
+      <th>reverse</th>
+      <td><p>character, reverse ordering (in window function) of these column names.</p></td>
     </tr>
     <tr>
       <th>k</th>
       <td><p>integer, number of rows to limit to in each group.</p></td>
+    </tr>
+    <tr>
+      <th>order_expression</th>
+      <td><p>character, command to compute row-order/rank.</p></td>
     </tr>
     <tr>
       <th>order_column</th>
@@ -174,7 +179,7 @@
 <span class='co'># by hand logistic regression example</span>
 <span class='no'>scale</span> <span class='kw'>&lt;-</span> <span class='fl'>0.237</span>
 <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='mk_td.html'>mk_td</a></span>(<span class='st'>"survey_table"</span>,
-                  <span class='fu'>c</span>(<span class='st'>"subjectID"</span>, <span class='st'>"surveyCategory"</span>, <span class='st'>"assessmentTotal"</span>))
+           <span class='fu'>c</span>(<span class='st'>"subjectID"</span>, <span class='st'>"surveyCategory"</span>, <span class='st'>"assessmentTotal"</span>))
 <span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span>
   <span class='fu'><a href='extend_nse.html'>extend_nse</a></span>(<span class='no'>.</span>,
              <span class='no'>probability</span> <span class='kw'>:=</span>
@@ -184,7 +189,8 @@
                  <span class='kw'>partitionby</span> <span class='kw'>=</span> <span class='st'>'subjectID'</span>) <span class='kw'>%.&gt;%</span>
   <span class='fu'>pick_top_k</span>(<span class='no'>.</span>,
              <span class='kw'>partitionby</span> <span class='kw'>=</span> <span class='st'>'subjectID'</span>,
-             <span class='kw'>rev_orderby</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>'probability'</span>, <span class='st'>'surveyCategory'</span>)) <span class='kw'>%.&gt;%</span>
+             <span class='kw'>orderby</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>'probability'</span>, <span class='st'>'surveyCategory'</span>),
+             <span class='kw'>reverse</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>'probability'</span>, <span class='st'>'surveyCategory'</span>)) <span class='kw'>%.&gt;%</span>
   <span class='fu'><a href='rename_columns.html'>rename_columns</a></span>(<span class='no'>.</span>, <span class='st'>'diagnosis'</span> <span class='kw'>:=</span> <span class='st'>'surveyCategory'</span>) <span class='kw'>%.&gt;%</span>
   <span class='fu'><a href='select_columns.html'>select_columns</a></span>(<span class='no'>.</span>, <span class='fu'>c</span>(<span class='st'>'subjectID'</span>,
                       <span class='st'>'diagnosis'</span>,
@@ -200,11 +206,11 @@
 #&gt;   probability := probability / sum(probability),
 #&gt;   p= subjectID) %.&gt;%
 #&gt;  extend(.,
-#&gt;   row_number := row_number(),
+#&gt;   row_rank := rank(),
 #&gt;   p= subjectID,
 #&gt;   o= "probability" DESC, "surveyCategory" DESC) %.&gt;%
 #&gt;  select_rows(.,
-#&gt;    row_number &lt;= 1) %.&gt;%
+#&gt;    row_rank &lt;= 1) %.&gt;%
 #&gt;  rename(.,
 #&gt;   c('diagnosis' = 'surveyCategory')) %.&gt;%
 #&gt;  select_columns(.,

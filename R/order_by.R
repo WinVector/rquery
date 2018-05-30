@@ -15,7 +15,7 @@
 #' @param source source to select from.
 #' @param cols order by column names.
 #' @param ... force later arguments to be bound by name
-#' @param rev_cols order by reverse of these column names.
+#' @param reverse character, which columns to reverse ordering of.
 #' @param limit number limit row count.
 #' @return order_by node.
 #'
@@ -25,7 +25,7 @@
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   d <- rq_copy_to(my_db, 'd',
 #'                    data.frame(AUC = 0.6, R2 = 0.2))
-#'   optree <- orderby(d, rev_cols = "AUC", limit=4)
+#'   optree <- orderby(d, cols = "AUC", reverse = "AUC", limit=4)
 #'   cat(format(optree))
 #'   sql <- to_sql(optree, my_db)
 #'   cat(sql)
@@ -38,7 +38,7 @@
 orderby <- function(source,
                      cols = NULL,
                      ...,
-                     rev_cols = NULL,
+                     reverse = NULL,
                      limit = NULL) {
   UseMethod("orderby", source)
 }
@@ -47,17 +47,20 @@ orderby <- function(source,
 orderby.relop <- function(source,
                     cols = NULL,
                     ...,
-                    rev_cols = NULL,
+                    reverse = NULL,
                     limit = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::orderby.relop")
+  if(length(setdiff(reverse, cols))>0) {
+    stop("rquery::orderby.relop all reverse columns must be in cols list")
+  }
   have <- column_names(source)
-  check_have_cols(have, unique(c(cols, rev_cols)), "rquery::orderby")
+  check_have_cols(have, cols, "rquery::orderby.relop")
   r <- list(source = list(source),
             table_name = NULL,
             parsed = NULL,
             orderby = cols,
-            rev_orderby = rev_cols,
+            reverse = reverse,
             limit = limit)
   r <- relop_decorate("relop_orderby", r)
   r
@@ -67,15 +70,18 @@ orderby.relop <- function(source,
 orderby.data.frame <- function(source,
                     cols = NULL,
                     ...,
-                    rev_cols = NULL,
+                    reverse = NULL,
                     limit = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::orderby.data.frame")
+  if(length(setdiff(reverse, orderby))>0) {
+    stop("rquery::orderby.data.frame all reverse columns must also be orderby columns")
+  }
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- mk_td(tmp_name, colnames(source))
   enode <- orderby(dnode,
                    orderby = cols,
-                   rev_orderby = rev_cols,
+                   reverse = reverse,
                    limit = limit)
   return(enode)
 }
@@ -85,9 +91,9 @@ orderby.data.frame <- function(source,
 
 #' @export
 format_node.relop_orderby <- function(node) {
-  ot <- c(node$orderby)
-  if(length(node$rev_orderby)>0) {
-    ot <- c(ot, paste0("desc(", node$rev_orderby, ")"))
+  ot <- node$orderby
+  if(length(node$reverse)>0) {
+    ot[ot %in% node$reverse] <- paste0("desc(", ot[ot %in% node$reverse], ")")
   }
   paste0("orderby(., ",
          ifelse(length(ot)>0,
@@ -157,12 +163,8 @@ to_sql.relop_orderby <- function (x,
                function(ci) {
                  quote_identifier(db, ci)
                }, character(1))
-  if(length(x$rev_orderby)>0) {
-    rev_ot <- vapply(x$rev_orderby,
-                     function(ci) {
-                       paste(quote_identifier(db, ci), "DESC")
-                     }, character(1))
-    ot <- c(ot, rev_ot)
+  if(length(x$reverse)>0) {
+    ot[x$orderby %in% x$reverse] <- paste(ot[x$orderby %in% x$reverse], "DESC")
   }
   subcols <- calc_used_relop_orderby(x, using=using)
   subsql_list <- to_sql(x$source[[1]],
