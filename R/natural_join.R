@@ -54,8 +54,8 @@ natural_join.relop <- function(a, b,
   common <- intersect(usesa, usesb)
   if(is.null(by)) {
     by <- common
-    print(paste("rquery::natural_join.relop joining by ",
-                paste(by, collapse = ", ")))
+    # print(paste("rquery::natural_join.relop joining by ",
+    #             paste(by, collapse = ", ")))
   } else {
     bads <- setdiff(by, common)
     if(length(bads)>0) {
