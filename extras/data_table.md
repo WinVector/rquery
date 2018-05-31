@@ -59,12 +59,24 @@ packageVersion("rquery")
 
 ``` r
 # data example
-dL <- build_frame(
-   "subjectID", "surveyCategory"     , "assessmentTotal" |
-   1          , "withdrawal behavior", 5                 |
-   1          , "positive re-framing", 2                 |
-   2          , "withdrawal behavior", 3                 |
-   2          , "positive re-framing", 4                 )
+set.seed(2362)
+mk_example <- function(nsubjects, nirrelcols) {
+  d <- rbind(data.frame(subjectID = seq_len(nsubjects), 
+                        surveyCategory = "withdrawal behavior",
+                        stringsAsFactors = FALSE),
+             data.frame(subjectID = seq_len(nsubjects), 
+                        surveyCategory = "positive re-framing",
+                        stringsAsFactors = FALSE))
+  d <- d[order(d$subjectID, d$surveyCategory), , drop = FALSE]
+  d$assessmentTotal <- rbinom(nrow(d), 10, 0.3)
+  for(i in seq_len(nirrelcols)) {
+    d[[paste0("irrelevantCol_", i)]] <- runif(nrow(dL))
+  }
+  rownames(d) <- NULL
+  d
+}
+
+dL <- mk_example(2, 0)
 ```
 
 ``` r
@@ -116,7 +128,7 @@ cat(format(rquery_pipeline))
        subjectID, diagnosis, probability) %.>%
      orderby(., subjectID)
 
-Execute `rquery` pipeline using `data.table` as the impementation.
+Execute `rquery` pipeline using `data.table` as the implementation.
 
 ``` r
 ex_data_table(rquery_pipeline) %.>%
@@ -125,7 +137,7 @@ ex_data_table(rquery_pipeline) %.>%
 
 |  subjectID| diagnosis           |  probability|
 |----------:|:--------------------|------------:|
-|          1| withdrawal behavior |    0.6706221|
+|          1| positive re-framing |    0.6706221|
 |          2| positive re-framing |    0.5589742|
 
 Execute `rquery` pipeline using `PostgreSQL` as the implementation.
@@ -142,7 +154,6 @@ options(dbopts)
 # build the shared handle
 winvector_temp_db_handle <- list(db = my_db)
 
-
 # run the job
 execute(dL, rquery_pipeline) %.>%
   knitr::kable(.)
@@ -150,7 +161,7 @@ execute(dL, rquery_pipeline) %.>%
 
 |  subjectID| diagnosis           |  probability|
 |----------:|:--------------------|------------:|
-|          1| withdrawal behavior |    0.6706221|
+|          1| positive re-framing |    0.6706221|
 |          2| positive re-framing |    0.5589742|
 
 `dplyr` pipeline.
@@ -178,7 +189,7 @@ dL %>%
 
 |  subjectID| diagnosis           |  probability|
 |----------:|:--------------------|------------:|
-|          1| withdrawal behavior |    0.6706221|
+|          1| positive re-framing |    0.6706221|
 |          2| positive re-framing |    0.5589742|
 
 Try `dtplyr`.
@@ -214,23 +225,19 @@ data.table_local(dL) %.>%
 
 |  subjectID| diagnosis           |  probability|
 |----------:|:--------------------|------------:|
-|          1| withdrawal behavior |    0.6706221|
+|          1| positive re-framing |    0.6706221|
 |          2| positive re-framing |    0.5589742|
 
-Timings.
+Timings on a larger example.
 
 ``` r
-# fatten up data.frame a bit
-dL <- dL[rep(seq_len(nrow(dL)), 100000), , drop = FALSE]
-dL$subjectID <- paste(dL$subjectID, (1+seq_len(nrow(dL))) %/% 2, sep = "_")
-for(i in seq_len(10)) {
-  dL[[paste0("irrelevantCol", i)]] <- runif(nrow(dL))
-}
-dLorig <- dL
+dL <- mk_example(100000, 10)
 ```
 
 ``` r
 # show we are working on the new larger data and results agree
+dLorig <- dL
+
 ref <- as.data.frame(ex_data_table(rquery_pipeline))
 assertthat::assert_that(min(ref$probability)>=0.5) # sensible effect
 ```
@@ -256,7 +263,7 @@ c3 <- as.data.frame(data.table_local(dL))
 assertthat::are_equal(ref, c3)
 ```
 
-    ## [1] TRUE
+    ## [1] FALSE
 
 ``` r
 # confirm no side-effects back to orginal frame
@@ -278,16 +285,16 @@ print(timings)
 ```
 
     ## Unit: milliseconds
-    ##               expr        min         lq       mean     median         uq
-    ##    rquery_database  9557.6507  9769.8670  9974.0528  9970.5300 10142.3420
-    ##  rquery_data.table   661.5817   670.0105   697.4420   697.3102   715.1854
-    ##         data.table   714.1491   760.9654   852.9112   865.7167   924.6815
-    ##              dplyr 16389.5809 16585.1609 17513.4590 16979.4044 18518.0801
-    ##         max neval
-    ##  10459.1781    10
-    ##    757.0487    10
-    ##    974.5648    10
-    ##  20392.0191    10
+    ##               expr       min        lq      mean    median        uq
+    ##    rquery_database 2557.7157 2583.9592 2644.7636 2654.7578 2690.8698
+    ##  rquery_data.table  274.4236  278.8500  318.7364  284.5770  348.1733
+    ##         data.table  293.4394  303.7185  331.2156  314.5797  334.8992
+    ##              dplyr 4250.0448 4317.4416 4702.7179 4514.3201 4762.3052
+    ##        max neval
+    ##  2738.1579    10
+    ##   516.1708    10
+    ##   420.9102    10
+    ##  6368.6649    10
 
 ``` r
 # summarize by hand using rquery database connector
@@ -300,23 +307,23 @@ timings %.>%
   knitr::kable(.)
 ```
 
-| expr               |         mean|
-|:-------------------|------------:|
-| dplyr              |  17513458966|
-| rquery\_database   |   9974052834|
-| rquery\_data.table |    697441982|
-| data.table         |    852911245|
+| expr               |        mean|
+|:-------------------|-----------:|
+| dplyr              |  4702717876|
+| rquery\_database   |  2644763550|
+| rquery\_data.table |   318736368|
+| data.table         |   331215570|
 
 ``` r
 autoplot(timings)
 ```
 
-![](data_table_files/figure-markdown_github/unnamed-chunk-13-1.png)
+![](data_table_files/figure-markdown_github/presenttimings-1.png)
 
 ``` r
 WVPlots::ScatterBoxPlotH(as.data.frame(timings), "time", "expr", "runtime by expression in nanoseconds")
 ```
 
-![](data_table_files/figure-markdown_github/unnamed-chunk-13-2.png)
+![](data_table_files/figure-markdown_github/presenttimings-2.png)
 
 For more timings (including fast base-R implementations), please see [here](https://github.com/WinVector/rquery/blob/master/extras/QTimingFollowup/QTiming4.md).

@@ -8,7 +8,7 @@ output: github_document
 We can work an example similar to the [`rquery`](https://winvector.github.io/rquery/) [example](https://winvector.github.io/rquery/index.html) using a [`data.table`](http://r-datatable.com/) 
 back-end ([`qdatatable`](https://github.com/WinVector/qdatatable)).
 
-```{r}
+```{r packages}
 library("ggplot2")
 library("microbenchmark")
 library("dplyr")
@@ -21,18 +21,30 @@ packageVersion("rquery")
 ```
 
 
-```{r}
+```{r example1}
 # data example
-dL <- build_frame(
-   "subjectID", "surveyCategory"     , "assessmentTotal" |
-   1          , "withdrawal behavior", 5                 |
-   1          , "positive re-framing", 2                 |
-   2          , "withdrawal behavior", 3                 |
-   2          , "positive re-framing", 4                 )
+set.seed(2362)
+mk_example <- function(nsubjects, nirrelcols) {
+  d <- rbind(data.frame(subjectID = seq_len(nsubjects), 
+                        surveyCategory = "withdrawal behavior",
+                        stringsAsFactors = FALSE),
+             data.frame(subjectID = seq_len(nsubjects), 
+                        surveyCategory = "positive re-framing",
+                        stringsAsFactors = FALSE))
+  d <- d[order(d$subjectID, d$surveyCategory), , drop = FALSE]
+  d$assessmentTotal <- rbinom(nrow(d), 10, 0.3)
+  for(i in seq_len(nirrelcols)) {
+    d[[paste0("irrelevantCol_", i)]] <- runif(nrow(dL))
+  }
+  rownames(d) <- NULL
+  d
+}
+
+dL <- mk_example(2, 0)
 ```
 
 
-```{r}
+```{r rqueryp}
 scale <- 0.237
 
 # example rquery pipeline
@@ -56,20 +68,20 @@ rquery_pipeline <- local_td(dL) %.>%
 
 Show expanded form of query tree.
 
-```{r, comment=""}
+```{r printrqueryp, comment=""}
 cat(format(rquery_pipeline))
 ```
 
-Execute `rquery` pipeline using `data.table` as the impementation.
+Execute `rquery` pipeline using `data.table` as the implementation.
 
-```{r}
+```{r runrqueryp}
 ex_data_table(rquery_pipeline) %.>%
   knitr::kable(.)
 ```
 
 Execute `rquery` pipeline using `PostgreSQL` as the implementation.
 
-```{r}
+```{r rquerydb}
 # configure a database connection
 my_db <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
                           host = 'localhost',
@@ -81,7 +93,6 @@ options(dbopts)
 # build the shared handle
 winvector_temp_db_handle <- list(db = my_db)
 
-
 # run the job
 execute(dL, rquery_pipeline) %.>%
   knitr::kable(.)
@@ -91,7 +102,7 @@ execute(dL, rquery_pipeline) %.>%
 `dplyr` pipeline.
 
 
-```{r}
+```{r dplyrp}
 scale <- 0.237
 
 dplyr_pipeline <- . %>% 
@@ -114,14 +125,14 @@ dL %>%
 
 Try `dtplyr`.
 
-```{r, error = TRUE}
+```{r dtplyr, error = TRUE}
 data.table::as.data.table(dL) %>% 
   dplyr_pipeline
 ```
 
 Idiomatic `data.table` pipeline.
 
-```{r}
+```{r datatablef}
 # improved code from:
 # http://www.win-vector.com/blog/2018/01/base-r-can-be-fast/#comment-66746
 data.table_local <- function(dL) {
@@ -142,21 +153,17 @@ data.table_local(dL) %.>%
 ```
 
 
-Timings.
+Timings on a larger example.
 
-```{r}
-# fatten up data.frame a bit
-dL <- dL[rep(seq_len(nrow(dL)), 100000), , drop = FALSE]
-dL$subjectID <- paste(dL$subjectID, (1+seq_len(nrow(dL))) %/% 2, sep = "_")
-for(i in seq_len(10)) {
-  dL[[paste0("irrelevantCol", i)]] <- runif(nrow(dL))
-}
-dLorig <- dL
+```{r mklargeex}
+dL <- mk_example(100000, 10)
 ```
 
 
-```{r}
+```{r confirm}
 # show we are working on the new larger data and results agree
+dLorig <- dL
+
 ref <- as.data.frame(ex_data_table(rquery_pipeline))
 assertthat::assert_that(min(ref$probability)>=0.5) # sensible effect
 
@@ -173,7 +180,7 @@ assertthat::are_equal(ref, c3)
 assertthat::are_equal(dLorig, dL)
 ```
 
-```{r}
+```{r time}
 timings <- microbenchmark(times = 10L,
   rquery_database = nrow(execute(dL, rquery_pipeline)),
   rquery_data.table = nrow(ex_data_table(rquery_pipeline)),
@@ -182,7 +189,7 @@ timings <- microbenchmark(times = 10L,
 ```
 
 
-```{r}
+```{r presenttimings}
 print(timings)
 
 # summarize by hand using rquery database connector
@@ -201,7 +208,7 @@ WVPlots::ScatterBoxPlotH(as.data.frame(timings), "time", "expr", "runtime by exp
 
 For more timings (including fast base-R implementations), please see [here](https://github.com/WinVector/rquery/blob/master/extras/QTimingFollowup/QTiming4.md).
 
-```{r, include=FALSE}
+```{r cleanup, include=FALSE}
 rm(list = "winvector_temp_db_handle")
 DBI::dbDisconnect(my_db)
 ```
