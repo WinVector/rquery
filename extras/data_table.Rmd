@@ -15,6 +15,9 @@ library("dplyr")
 library("dtplyr")
 # https://github.com/WinVector/qdatatable
 library("qdatatable") # devtools::install.packages("WinVector/qdatatable")
+packageVersion("dplyr")
+packageVersion("data.table")
+packageVersion("rquery")
 ```
 
 

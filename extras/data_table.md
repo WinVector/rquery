@@ -40,6 +40,24 @@ library("qdatatable") # devtools::install.packages("WinVector/qdatatable")
     ##     coalesce
 
 ``` r
+packageVersion("dplyr")
+```
+
+    ## [1] '0.7.5'
+
+``` r
+packageVersion("data.table")
+```
+
+    ## [1] '1.10.4.3'
+
+``` r
+packageVersion("rquery")
+```
+
+    ## [1] '0.5.0'
+
+``` r
 # data example
 dL <- build_frame(
    "subjectID", "surveyCategory"     , "assessmentTotal" |
@@ -261,15 +279,15 @@ print(timings)
 
     ## Unit: milliseconds
     ##               expr        min         lq       mean     median         uq
-    ##    rquery_database 10096.8669 10209.7952 10454.1202 10273.5284 10802.6368
-    ##  rquery_data.table   718.9044   721.2533   789.1431   753.1543   825.3029
-    ##         data.table   723.5045   761.9016   818.0956   787.5019   869.4023
-    ##              dplyr 17897.0035 18086.7331 18850.8112 18421.9741 19956.2487
+    ##    rquery_database  9557.6507  9769.8670  9974.0528  9970.5300 10142.3420
+    ##  rquery_data.table   661.5817   670.0105   697.4420   697.3102   715.1854
+    ##         data.table   714.1491   760.9654   852.9112   865.7167   924.6815
+    ##              dplyr 16389.5809 16585.1609 17513.4590 16979.4044 18518.0801
     ##         max neval
-    ##  11159.0482    10
-    ##    978.8552    10
-    ##    968.0280    10
-    ##  20619.4354    10
+    ##  10459.1781    10
+    ##    757.0487    10
+    ##    974.5648    10
+    ##  20392.0191    10
 
 ``` r
 # summarize by hand using rquery database connector
@@ -284,10 +302,10 @@ timings %.>%
 
 | expr               |         mean|
 |:-------------------|------------:|
-| dplyr              |  18850811222|
-| rquery\_database   |  10454120200|
-| rquery\_data.table |    789143110|
-| data.table         |    818095618|
+| dplyr              |  17513458966|
+| rquery\_database   |   9974052834|
+| rquery\_data.table |    697441982|
+| data.table         |    852911245|
 
 ``` r
 autoplot(timings)
