@@ -231,7 +231,7 @@ data.table_local(dL) %.>%
 Timings on a larger example.
 
 ``` r
-dL <- mk_example(100000, 10)
+dL <- mk_example(1000000, 10)
 ```
 
 ``` r
@@ -284,17 +284,17 @@ timings <- microbenchmark(times = 10L,
 print(timings)
 ```
 
-    ## Unit: milliseconds
+    ## Unit: seconds
     ##               expr       min        lq      mean    median        uq
-    ##    rquery_database 2639.4338 2670.7015 2874.9780 2811.0716 2983.3504
-    ##  rquery_data.table  273.0115  279.4621  305.6823  291.4216  302.9606
-    ##         data.table  300.9833  318.7320  340.4424  336.1054  357.8602
-    ##              dplyr 4547.3340 4600.1153 5032.4030 4700.9753 5810.9175
+    ##    rquery_database 25.454224 25.773197 26.182181 26.051107 26.292597
+    ##  rquery_data.table  2.000953  2.041727  2.159701  2.070891  2.323013
+    ##         data.table  2.598339  2.615932  2.728320  2.714212  2.848972
+    ##              dplyr 43.045310 43.256783 44.359776 43.774823 44.511908
     ##        max neval
-    ##  3286.7449    10
-    ##   402.3675    10
-    ##   399.4076    10
-    ##  6051.7388    10
+    ##  27.716502    10
+    ##   2.368721    10
+    ##   2.898287    10
+    ##  49.418618    10
 
 ``` r
 # summarize by hand using rquery database connector
@@ -307,12 +307,12 @@ timings %.>%
   knitr::kable(.)
 ```
 
-| expr               |        mean|
-|:-------------------|-----------:|
-| dplyr              |  5032402983|
-| rquery\_database   |  2874978012|
-| rquery\_data.table |   305682287|
-| data.table         |   340442440|
+| expr               |         mean|
+|:-------------------|------------:|
+| dplyr              |  44359776206|
+| rquery\_database   |  26182180787|
+| rquery\_data.table |   2159700612|
+| data.table         |   2728320460|
 
 ``` r
 autoplot(timings)

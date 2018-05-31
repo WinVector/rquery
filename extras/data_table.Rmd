@@ -156,7 +156,7 @@ data.table_local(dL) %.>%
 Timings on a larger example.
 
 ```{r mklargeex}
-dL <- mk_example(100000, 10)
+dL <- mk_example(1000000, 10)
 ```
 
 
