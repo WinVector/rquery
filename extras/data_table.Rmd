@@ -166,6 +166,14 @@ dL <- mk_example(nSubj, 10)
 dR <- rq_copy_to(my_db, table_name = "dL", dL, 
                  temporary = TRUE, overwrite = TRUE)
 dRtbl <- dplyr::tbl(my_db, dR$table_name)
+
+dplyr_round_trip <- function(dL) {
+  # https://github.com/tidyverse/dplyr/issues/3026#issuecomment-339035129
+  DBI::dbWriteTable(my_db, "dplyr_tmp", 
+                    select(dL, subjectID, surveyCategory, assessmentTotal), 
+                    overwrite = TRUE, temporary = TRUE)
+  as.data.frame(dplyr_pipeline(dplyr::tbl(my_db, "dplyr_tmp")))
+}
 ```
 
 
@@ -197,9 +205,7 @@ assertthat::are_equal(ref, c3)
 
 # database round trip version
 # narrow by hand before copying to give all advantages.
-c4 <- as.data.frame(dplyr_pipeline(dplyr::copy_to(my_db, 
-                                                  select(dL, subjectID, surveyCategory, assessmentTotal), 
-                                                  "dLtmp", overwrite = TRUE, temporary = TRUE)))
+c4 <- dplyr_round_trip(dL)
 assertthat::are_equal(ref, c4)
 
 c5 <- as.data.frame(data.table_function(dL))
@@ -218,9 +224,7 @@ timings <- microbenchmark(times = 10L,
   data.table = nrow(data.table_function(dL)),
   dplyr = nrow(dplyr_pipeline(dL)),
   dplyr_database_read = nrow(as.data.frame(dplyr_pipeline(dRtbl))),
-  dplyr_database_round_trip = nrow(as.data.frame(dplyr_pipeline(dplyr::copy_to(my_db, 
-                                                  select(dL, subjectID, surveyCategory, assessmentTotal), 
-                                                  "dLtmp", overwrite = TRUE, temporary = TRUE))))
+  dplyr_database_round_trip = nrow(dplyr_round_trip(dL))
 )
 ```
 
@@ -241,13 +245,15 @@ knitr::kable(means)
 autoplot(timings)
 
 timings <- as.data.frame(timings)
+timings$seconds <- timings$time/1e9
 timings$expr <- factor(timings$expr, rev(means$expr))
 WVPlots::ScatterBoxPlotH(as.data.frame(timings), 
-                         "time", "expr", 
-                         "runtime in nanoseconds by implementation")
+                         "seconds", "expr", 
+                         paste0("task time in seconds by implementation\n(",
+                                nrow(dL), " row by ", ncol(dL), " column task)"))
+                               
 ```
 
-For more timings (including fast base-R implementations), please see [here](https://github.com/WinVector/rquery/blob/master/extras/QTimingFollowup/QTiming4.md).
 
 ```{r cleanup, include=FALSE}
 rm(list = "winvector_temp_db_handle")

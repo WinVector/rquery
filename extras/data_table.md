@@ -245,6 +245,14 @@ dL <- mk_example(nSubj, 10)
 dR <- rq_copy_to(my_db, table_name = "dL", dL, 
                  temporary = TRUE, overwrite = TRUE)
 dRtbl <- dplyr::tbl(my_db, dR$table_name)
+
+dplyr_round_trip <- function(dL) {
+  # https://github.com/tidyverse/dplyr/issues/3026#issuecomment-339035129
+  DBI::dbWriteTable(my_db, "dplyr_tmp", 
+                    select(dL, subjectID, surveyCategory, assessmentTotal), 
+                    overwrite = TRUE, temporary = TRUE)
+  as.data.frame(dplyr_pipeline(dplyr::tbl(my_db, "dplyr_tmp")))
+}
 ```
 
 ``` r
@@ -310,9 +318,7 @@ assertthat::are_equal(ref, c3)
 ``` r
 # database round trip version
 # narrow by hand before copying to give all advantages.
-c4 <- as.data.frame(dplyr_pipeline(dplyr::copy_to(my_db, 
-                                                  select(dL, subjectID, surveyCategory, assessmentTotal), 
-                                                  "dLtmp", overwrite = TRUE, temporary = TRUE)))
+c4 <- dplyr_round_trip(dL)
 assertthat::are_equal(ref, c4)
 ```
 
@@ -340,9 +346,7 @@ timings <- microbenchmark(times = 10L,
   data.table = nrow(data.table_function(dL)),
   dplyr = nrow(dplyr_pipeline(dL)),
   dplyr_database_read = nrow(as.data.frame(dplyr_pipeline(dRtbl))),
-  dplyr_database_round_trip = nrow(as.data.frame(dplyr_pipeline(dplyr::copy_to(my_db, 
-                                                  select(dL, subjectID, surveyCategory, assessmentTotal), 
-                                                  "dLtmp", overwrite = TRUE, temporary = TRUE))))
+  dplyr_database_round_trip = nrow(dplyr_round_trip(dL))
 )
 ```
 
@@ -352,21 +356,21 @@ print(timings)
 
     ## Unit: seconds
     ##                        expr       min        lq      mean    median
-    ##  rquery_database_round_trip 25.073923 25.511922 26.476737 26.213450
-    ##        rquery_database_read 22.122548 22.449000 23.217000 22.976704
-    ##           rquery_data.table  1.948125  2.017964  2.546166  2.096369
-    ##                  data.table  1.983775  2.032302  2.149564  2.088585
-    ##                       dplyr 38.683119 39.352977 40.995207 40.055997
-    ##         dplyr_database_read 25.390203 25.734740 26.776651 26.391443
-    ##   dplyr_database_round_trip 58.310197 59.455975 62.334416 62.846960
+    ##  rquery_database_round_trip 26.311931 26.663063 27.624205 27.173163
+    ##        rquery_database_read 23.156904 24.973815 26.508566 26.398277
+    ##           rquery_data.table  1.972515  2.096254  2.286348  2.344883
+    ##                  data.table  2.045507  2.083433  2.247139  2.269959
+    ##                       dplyr 40.344201 41.148170 43.625014 42.052570
+    ##         dplyr_database_read 26.316840 26.629779 27.846407 27.003085
+    ##   dplyr_database_round_trip 39.008824 39.631231 41.588376 40.088924
     ##         uq       max neval
-    ##  27.068791 28.504425    10
-    ##  23.615097 24.916866    10
-    ##   3.181604  4.215407    10
-    ##   2.131426  2.698049    10
-    ##  43.501381 44.644376    10
-    ##  27.624446 29.125548    10
-    ##  64.142818 67.516631    10
+    ##  27.886658 30.828309    10
+    ##  28.546030 29.868441    10
+    ##   2.396575  2.593061    10
+    ##   2.368214  2.498477    10
+    ##  46.133084 49.360182    10
+    ##  28.790255 32.697245    10
+    ##  43.710269 48.375979    10
 
 ``` r
 # summarize by hand using rquery database connector
@@ -382,13 +386,13 @@ knitr::kable(means)
 
 | expr                          |   mean\_time|
 |:------------------------------|------------:|
-| data.table                    |   2149564386|
-| rquery\_data.table            |   2546165543|
-| rquery\_database\_read        |  23216999521|
-| rquery\_database\_round\_trip |  26476736507|
-| dplyr\_database\_read         |  26776650863|
-| dplyr                         |  40995207251|
-| dplyr\_database\_round\_trip  |  62334416223|
+| data.table                    |   2247139445|
+| rquery\_data.table            |   2286348101|
+| rquery\_database\_read        |  26508565574|
+| rquery\_database\_round\_trip |  27624204998|
+| dplyr\_database\_read         |  27846407352|
+| dplyr\_database\_round\_trip  |  41588375679|
+| dplyr                         |  43625013775|
 
 ``` r
 autoplot(timings)
@@ -398,12 +402,13 @@ autoplot(timings)
 
 ``` r
 timings <- as.data.frame(timings)
+timings$seconds <- timings$time/1e9
 timings$expr <- factor(timings$expr, rev(means$expr))
 WVPlots::ScatterBoxPlotH(as.data.frame(timings), 
-                         "time", "expr", 
-                         "runtime in nanoseconds by implementation")
+                         "seconds", "expr", 
+                         paste0("task time in seconds by implementation\n(",
+                                nrow(dL), " row by ", ncol(dL), " column task)"))
 ```
 
 ![](data_table_files/figure-markdown_github/presenttimings-2.png)
 
-For more timings (including fast base-R implementations), please see [here](https://github.com/WinVector/rquery/blob/master/extras/QTimingFollowup/QTiming4.md).
