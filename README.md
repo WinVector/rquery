@@ -21,9 +21,11 @@ Discussion
 There are many prior relational algebra inspired specialized query languages. Just a few include:
 
 -   [`Alpha`](https://en.wikipedia.org/wiki/Alpha_(programming_language)) ~1971.
+-   `ISBL` / Information system based language ~1973
 -   [`QUEL`](https://en.wikipedia.org/wiki/QUEL_query_languages) ~1974.
--   [`SQL`](https://en.wikipedia.org/wiki/SQL) ~1986.
--   [`Tutorial D`](https://en.wikipedia.org/wiki/D_(data_language_specification)#Tutorial_D) ~2000.
+-   [`IBM System R`](https://en.wikipedia.org/wiki/IBM_System_R) ~1974.
+-   [`SQL`](https://en.wikipedia.org/wiki/SQL) ~1974.
+-   [`Tutorial D`](https://en.wikipedia.org/wiki/D_(data_language_specification)#Tutorial_D) ~1994.
 -   [`data.table`](http://r-datatable.com/) ~2006.
 -   [`LINQ`](https://msdn.microsoft.com/en-us/library/bb308959.aspx) ~2007.
 -   [`pandas`](http://pandas.pydata.org) ~2008.
@@ -250,14 +252,14 @@ cat(to_sql(dq, my_db, source_limit = 1000))
             "d"."assessmentTotal"
            FROM
             "d" LIMIT 1000
-           ) tsql_65032531554127400894_0000000000
-          ) tsql_65032531554127400894_0000000001
-         ) tsql_65032531554127400894_0000000002
-       ) tsql_65032531554127400894_0000000003
+           ) tsql_99589893614172407719_0000000000
+          ) tsql_99589893614172407719_0000000001
+         ) tsql_99589893614172407719_0000000002
+       ) tsql_99589893614172407719_0000000003
        WHERE "row_rank" <= 1
-      ) tsql_65032531554127400894_0000000004
-     ) tsql_65032531554127400894_0000000005
-    ) tsql_65032531554127400894_0000000006 ORDER BY "subjectID"
+      ) tsql_99589893614172407719_0000000004
+     ) tsql_99589893614172407719_0000000005
+    ) tsql_99589893614172407719_0000000006 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
