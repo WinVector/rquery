@@ -170,15 +170,15 @@ execute(dL, rquery_pipeline) %.>%
 scale <- 0.237
 
 dplyr_pipeline <- . %>% 
-  as.tbl(.[, c("subjectID", "surveyCategory", "assessmentTotal")]) %>% # narrow and convert to preferred structure
-  group_by(subjectID) %>%
-  mutate(probability =
-           exp(assessmentTotal * scale)/
-           sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
-  arrange(probability, surveyCategory) %>%
-  filter(row_number() == n()) %>%
-  ungroup() %>%
+  select(subjectID, surveyCategory, assessmentTotal) %>% # narrow to columns of interest
   rename(diagnosis = surveyCategory) %>%
+  mutate(probability = exp(assessmentTotal * scale)) %>%
+  group_by(subjectID) %>%
+  mutate(probability = probability / sum(probability, na.rm = TRUE)) %>%
+  arrange(probability, diagnosis) %>%
+  mutate(isDiagnosis = row_number() == n()) %>% # try to avoid grouped filtering overhead
+  ungroup() %>% 
+  filter(isDiagnosis) %>% 
   select(subjectID, diagnosis, probability) %>%
   arrange(subjectID) 
 
@@ -206,32 +206,37 @@ Idiomatic `data.table` pipeline.
 ``` r
 # improved code from:
 # http://www.win-vector.com/blog/2018/01/base-r-can-be-fast/#comment-66746
-data.table_local <- function(dL) {
+data.table_function <- function(dL) {
   # data.table is paying for this copy in its timings (not quite fair)
   # so we will try to minimize it by narrowing columns.
   dDT <- data.table::as.data.table(dL[, c("subjectID", "surveyCategory", "assessmentTotal")])
-  dDT <- dDT[, list(diagnosis = surveyCategory,
-                    probability = exp (assessmentTotal * scale ) /
-                      sum ( exp ( assessmentTotal * scale ) ))
-             , subjectID ]
+  data.table::setnames(dDT, old = "surveyCategory", new = "diagnosis")
+  dDT[, probability := exp(assessmentTotal * scale)]
+  dDT[, probability := probability / sum( probability ), subjectID ]
   data.table::setorder(dDT, subjectID, probability, -diagnosis)
   dDT <- dDT[, .SD[.N], subjectID]
   data.table::setorder(dDT, subjectID)
 }
 
-data.table_local(dL) %.>%
+data.table_function(dL) %.>%
   knitr::kable(.)
 ```
 
-|  subjectID| diagnosis           |  probability|
-|----------:|:--------------------|------------:|
-|          1| positive re-framing |    0.6706221|
-|          2| positive re-framing |    0.5589742|
+|  subjectID| diagnosis           |  assessmentTotal|  probability|
+|----------:|:--------------------|----------------:|------------:|
+|          1| positive re-framing |                6|    0.6706221|
+|          2| positive re-framing |                3|    0.5589742|
 
 Timings on a larger example.
 
 ``` r
-dL <- mk_example(1000000, 10)
+nSubj <- 1000000
+dL <- mk_example(nSubj, 10)
+
+# and an in-database copy
+dR <- rq_copy_to(my_db, table_name = "dL", dL, 
+                 temporary = TRUE, overwrite = TRUE)
+dRtbl <- dplyr::tbl(my_db, dR$table_name)
 ```
 
 ``` r
@@ -239,12 +244,40 @@ dL <- mk_example(1000000, 10)
 dLorig <- dL
 
 ref <- as.data.frame(ex_data_table(rquery_pipeline))
-assertthat::assert_that(min(ref$probability)>=0.5) # sensible effect
+# sensible consequences we can check
+assertthat::assert_that(min(ref$probability)>=0.5) 
 ```
 
     ## [1] TRUE
 
 ``` r
+assertthat::are_equal(nSubj, nrow(ref))
+```
+
+    ## [1] TRUE
+
+``` r
+assertthat::are_equal(ref$subjectID, seq_len(nSubj))
+```
+
+    ## [1] TRUE
+
+``` r
+assertthat::are_equal(colnames(ref), c("subjectID", "diagnosis", "probability"))
+```
+
+    ## [1] TRUE
+
+``` r
+# from database version
+c0 <- as.data.frame(execute(my_db, rquery_pipeline))
+assertthat::are_equal(ref, c0)
+```
+
+    ## [1] TRUE
+
+``` r
+# database round trip version
 c1 <- as.data.frame(execute(dL, rquery_pipeline))
 assertthat::are_equal(ref, c1)
 ```
@@ -259,8 +292,27 @@ assertthat::are_equal(ref, c2)
     ## [1] TRUE
 
 ``` r
-c3 <- as.data.frame(data.table_local(dL))
+# from database version
+c3 <- as.data.frame(dplyr_pipeline(dRtbl))
 assertthat::are_equal(ref, c3)
+```
+
+    ## [1] TRUE
+
+``` r
+# database round trip version
+# narrow by hand before copying to give all advantages.
+c4 <- as.data.frame(dplyr_pipeline(dplyr::copy_to(my_db, 
+                                                  select(dL, subjectID, surveyCategory, assessmentTotal), 
+                                                  "dLtmp", overwrite = TRUE, temporary = TRUE)))
+assertthat::are_equal(ref, c4)
+```
+
+    ## [1] TRUE
+
+``` r
+c5 <- as.data.frame(data.table_function(dL))
+assertthat::are_equal(ref, c5)
 ```
 
     ## [1] FALSE
@@ -274,10 +326,16 @@ assertthat::are_equal(dLorig, dL)
 
 ``` r
 timings <- microbenchmark(times = 10L,
-  rquery_database = nrow(execute(dL, rquery_pipeline)),
+  rquery_database_round_trip = nrow(execute(dL, rquery_pipeline)),
+  rquery_database_read = nrow(as.data.frame(execute(my_db, rquery_pipeline))),
   rquery_data.table = nrow(ex_data_table(rquery_pipeline)),
-  data.table = nrow(data.table_local(dL)),
-  dplyr = nrow(dplyr_pipeline(dL)))
+  data.table = nrow(data.table_function(dL)),
+  dplyr = nrow(dplyr_pipeline(dL)),
+  dplyr_database_read = nrow(as.data.frame(dplyr_pipeline(dRtbl))),
+  dplyr_database_round_trip = nrow(as.data.frame(dplyr_pipeline(dplyr::copy_to(my_db, 
+                                                  select(dL, subjectID, surveyCategory, assessmentTotal), 
+                                                  "dLtmp", overwrite = TRUE, temporary = TRUE))))
+)
 ```
 
 ``` r
@@ -285,34 +343,44 @@ print(timings)
 ```
 
     ## Unit: seconds
-    ##               expr       min        lq      mean    median        uq
-    ##    rquery_database 25.937187 26.147443 27.056254 26.770974 27.095235
-    ##  rquery_data.table  1.968407  1.997359  2.113113  2.053531  2.243977
-    ##         data.table  2.664357  2.719975  2.761548  2.749884  2.791781
-    ##              dplyr 44.068924 44.303141 45.220298 44.563911 45.294210
-    ##        max neval
-    ##  31.200949    10
-    ##   2.311344    10
-    ##   2.940137    10
-    ##  49.800809    10
+    ##                        expr       min        lq      mean    median
+    ##  rquery_database_round_trip 24.932563 25.112882 25.740986 25.862333
+    ##        rquery_database_read 22.101619 22.770426 23.108142 23.071979
+    ##           rquery_data.table  1.906723  2.044988  2.973002  2.153297
+    ##                  data.table  1.993420  2.070655  2.128269  2.148503
+    ##                       dplyr 38.938460 40.362938 41.197011 40.790600
+    ##         dplyr_database_read 25.516189 26.585125 26.630053 26.701492
+    ##   dplyr_database_round_trip 57.998092 59.904662 65.661184 60.836108
+    ##         uq       max neval
+    ##  25.938123 26.732262    10
+    ##  23.724803 23.988663    10
+    ##   4.137149  5.379728    10
+    ##   2.178044  2.263854    10
+    ##  42.556378 43.403159    10
+    ##  26.881072 27.102760    10
+    ##  65.096731 97.828567    10
 
 ``` r
 # summarize by hand using rquery database connector
 summary_pipeline <- timings %.>%
   as.data.frame(.) %.>%
-  project_nse(., groupby = "expr", mean = avg(time)) 
-timings %.>% 
+  project_nse(., groupby = "expr", mean_time = avg(time)) %.>%
+  orderby(., "mean_time")
+means <- timings %.>% 
   as.data.frame(.) %.>%
-  summary_pipeline %.>%
-  knitr::kable(.)
+  summary_pipeline 
+knitr::kable(means)
 ```
 
-| expr               |         mean|
-|:-------------------|------------:|
-| dplyr              |  45220298061|
-| rquery\_database   |  27056253678|
-| rquery\_data.table |   2113113376|
-| data.table         |   2761548488|
+| expr                          |   mean\_time|
+|:------------------------------|------------:|
+| data.table                    |   2128269296|
+| rquery\_data.table            |   2973002074|
+| rquery\_database\_read        |  23108141583|
+| rquery\_database\_round\_trip |  25740986002|
+| dplyr\_database\_read         |  26630052963|
+| dplyr                         |  41197010592|
+| dplyr\_database\_round\_trip  |  65661183543|
 
 ``` r
 autoplot(timings)
@@ -321,9 +389,11 @@ autoplot(timings)
 ![](data_table_files/figure-markdown_github/presenttimings-1.png)
 
 ``` r
+timings <- as.data.frame(timings)
+timings$expr <- factor(timings$expr, rev(means$expr))
 WVPlots::ScatterBoxPlotH(as.data.frame(timings), 
                          "time", "expr", 
-                         "runtime by implementation in nanoseconds")
+                         "runtime in nanoseconds by implementation")
 ```
 
 ![](data_table_files/figure-markdown_github/presenttimings-2.png)

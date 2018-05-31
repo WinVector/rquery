@@ -106,15 +106,15 @@ execute(dL, rquery_pipeline) %.>%
 scale <- 0.237
 
 dplyr_pipeline <- . %>% 
-  as.tbl(.[, c("subjectID", "surveyCategory", "assessmentTotal")]) %>% # narrow and convert to preferred structure
-  group_by(subjectID) %>%
-  mutate(probability =
-           exp(assessmentTotal * scale)/
-           sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
-  arrange(probability, surveyCategory) %>%
-  filter(row_number() == n()) %>%
-  ungroup() %>%
+  select(subjectID, surveyCategory, assessmentTotal) %>% # narrow to columns of interest
   rename(diagnosis = surveyCategory) %>%
+  mutate(probability = exp(assessmentTotal * scale)) %>%
+  group_by(subjectID) %>%
+  mutate(probability = probability / sum(probability, na.rm = TRUE)) %>%
+  arrange(probability, diagnosis) %>%
+  mutate(isDiagnosis = row_number() == n()) %>% # try to avoid grouped filtering overhead
+  ungroup() %>% 
+  filter(isDiagnosis) %>% 
   select(subjectID, diagnosis, probability) %>%
   arrange(subjectID) 
 
@@ -135,20 +135,19 @@ Idiomatic `data.table` pipeline.
 ```{r datatablef}
 # improved code from:
 # http://www.win-vector.com/blog/2018/01/base-r-can-be-fast/#comment-66746
-data.table_local <- function(dL) {
+data.table_function <- function(dL) {
   # data.table is paying for this copy in its timings (not quite fair)
   # so we will try to minimize it by narrowing columns.
   dDT <- data.table::as.data.table(dL[, c("subjectID", "surveyCategory", "assessmentTotal")])
-  dDT <- dDT[, list(diagnosis = surveyCategory,
-                    probability = exp (assessmentTotal * scale ) /
-                      sum ( exp ( assessmentTotal * scale ) ))
-             , subjectID ]
+  data.table::setnames(dDT, old = "surveyCategory", new = "diagnosis")
+  dDT[, probability := exp(assessmentTotal * scale)]
+  dDT[, probability := probability / sum( probability ), subjectID ]
   data.table::setorder(dDT, subjectID, probability, -diagnosis)
   dDT <- dDT[, .SD[.N], subjectID]
   data.table::setorder(dDT, subjectID)
 }
 
-data.table_local(dL) %.>%
+data.table_function(dL) %.>%
   knitr::kable(.)
 ```
 
@@ -156,7 +155,13 @@ data.table_local(dL) %.>%
 Timings on a larger example.
 
 ```{r mklargeex}
-dL <- mk_example(1000000, 10)
+nSubj <- 1000000
+dL <- mk_example(nSubj, 10)
+
+# and an in-database copy
+dR <- rq_copy_to(my_db, table_name = "dL", dL, 
+                 temporary = TRUE, overwrite = TRUE)
+dRtbl <- dplyr::tbl(my_db, dR$table_name)
 ```
 
 
@@ -165,16 +170,37 @@ dL <- mk_example(1000000, 10)
 dLorig <- dL
 
 ref <- as.data.frame(ex_data_table(rquery_pipeline))
-assertthat::assert_that(min(ref$probability)>=0.5) # sensible effect
+# sensible consequences we can check
+assertthat::assert_that(min(ref$probability)>=0.5) 
+assertthat::are_equal(nSubj, nrow(ref))
+assertthat::are_equal(ref$subjectID, seq_len(nSubj))
+assertthat::are_equal(colnames(ref), c("subjectID", "diagnosis", "probability"))
 
+# from database version
+c0 <- as.data.frame(execute(my_db, rquery_pipeline))
+assertthat::are_equal(ref, c0)
+
+# database round trip version
 c1 <- as.data.frame(execute(dL, rquery_pipeline))
 assertthat::are_equal(ref, c1)
 
 c2 <- as.data.frame(dplyr_pipeline(dL))
 assertthat::are_equal(ref, c2)
 
-c3 <- as.data.frame(data.table_local(dL))
+# from database version
+c3 <- as.data.frame(dplyr_pipeline(dRtbl))
 assertthat::are_equal(ref, c3)
+
+# database round trip version
+# narrow by hand before copying to give all advantages.
+c4 <- as.data.frame(dplyr_pipeline(dplyr::copy_to(my_db, 
+                                                  select(dL, subjectID, surveyCategory, assessmentTotal), 
+                                                  "dLtmp", overwrite = TRUE, temporary = TRUE)))
+assertthat::are_equal(ref, c4)
+
+c5 <- as.data.frame(data.table_function(dL))
+assertthat::are_equal(ref, c5)
+
 
 # confirm no side-effects back to orginal frame
 assertthat::are_equal(dLorig, dL)
@@ -182,10 +208,16 @@ assertthat::are_equal(dLorig, dL)
 
 ```{r time}
 timings <- microbenchmark(times = 10L,
-  rquery_database = nrow(execute(dL, rquery_pipeline)),
+  rquery_database_round_trip = nrow(execute(dL, rquery_pipeline)),
+  rquery_database_read = nrow(as.data.frame(execute(my_db, rquery_pipeline))),
   rquery_data.table = nrow(ex_data_table(rquery_pipeline)),
-  data.table = nrow(data.table_local(dL)),
-  dplyr = nrow(dplyr_pipeline(dL)))
+  data.table = nrow(data.table_function(dL)),
+  dplyr = nrow(dplyr_pipeline(dL)),
+  dplyr_database_read = nrow(as.data.frame(dplyr_pipeline(dRtbl))),
+  dplyr_database_round_trip = nrow(as.data.frame(dplyr_pipeline(dplyr::copy_to(my_db, 
+                                                  select(dL, subjectID, surveyCategory, assessmentTotal), 
+                                                  "dLtmp", overwrite = TRUE, temporary = TRUE))))
+)
 ```
 
 
@@ -195,17 +227,20 @@ print(timings)
 # summarize by hand using rquery database connector
 summary_pipeline <- timings %.>%
   as.data.frame(.) %.>%
-  project_nse(., groupby = "expr", mean = avg(time)) 
-timings %.>% 
+  project_nse(., groupby = "expr", mean_time = avg(time)) %.>%
+  orderby(., "mean_time")
+means <- timings %.>% 
   as.data.frame(.) %.>%
-  summary_pipeline %.>%
-  knitr::kable(.)
+  summary_pipeline 
+knitr::kable(means)
 
 autoplot(timings)
 
+timings <- as.data.frame(timings)
+timings$expr <- factor(timings$expr, rev(means$expr))
 WVPlots::ScatterBoxPlotH(as.data.frame(timings), 
                          "time", "expr", 
-                         "runtime by implementation in nanoseconds")
+                         "runtime in nanoseconds by implementation")
 ```
 
 For more timings (including fast base-R implementations), please see [here](https://github.com/WinVector/rquery/blob/master/extras/QTimingFollowup/QTiming4.md).
