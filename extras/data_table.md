@@ -286,15 +286,15 @@ print(timings)
 
     ## Unit: milliseconds
     ##               expr       min        lq      mean    median        uq
-    ##    rquery_database 2557.7157 2583.9592 2644.7636 2654.7578 2690.8698
-    ##  rquery_data.table  274.4236  278.8500  318.7364  284.5770  348.1733
-    ##         data.table  293.4394  303.7185  331.2156  314.5797  334.8992
-    ##              dplyr 4250.0448 4317.4416 4702.7179 4514.3201 4762.3052
+    ##    rquery_database 2639.4338 2670.7015 2874.9780 2811.0716 2983.3504
+    ##  rquery_data.table  273.0115  279.4621  305.6823  291.4216  302.9606
+    ##         data.table  300.9833  318.7320  340.4424  336.1054  357.8602
+    ##              dplyr 4547.3340 4600.1153 5032.4030 4700.9753 5810.9175
     ##        max neval
-    ##  2738.1579    10
-    ##   516.1708    10
-    ##   420.9102    10
-    ##  6368.6649    10
+    ##  3286.7449    10
+    ##   402.3675    10
+    ##   399.4076    10
+    ##  6051.7388    10
 
 ``` r
 # summarize by hand using rquery database connector
@@ -309,10 +309,10 @@ timings %.>%
 
 | expr               |        mean|
 |:-------------------|-----------:|
-| dplyr              |  4702717876|
-| rquery\_database   |  2644763550|
-| rquery\_data.table |   318736368|
-| data.table         |   331215570|
+| dplyr              |  5032402983|
+| rquery\_database   |  2874978012|
+| rquery\_data.table |   305682287|
+| data.table         |   340442440|
 
 ``` r
 autoplot(timings)
@@ -321,7 +321,9 @@ autoplot(timings)
 ![](data_table_files/figure-markdown_github/presenttimings-1.png)
 
 ``` r
-WVPlots::ScatterBoxPlotH(as.data.frame(timings), "time", "expr", "runtime by expression in nanoseconds")
+WVPlots::ScatterBoxPlotH(as.data.frame(timings), 
+                         "time", "expr", 
+                         "runtime by implementation in nanoseconds")
 ```
 
 ![](data_table_files/figure-markdown_github/presenttimings-2.png)

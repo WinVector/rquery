@@ -203,7 +203,9 @@ timings %.>%
 
 autoplot(timings)
 
-WVPlots::ScatterBoxPlotH(as.data.frame(timings), "time", "expr", "runtime by expression in nanoseconds")
+WVPlots::ScatterBoxPlotH(as.data.frame(timings), 
+                         "time", "expr", 
+                         "runtime by implementation in nanoseconds")
 ```
 
 For more timings (including fast base-R implementations), please see [here](https://github.com/WinVector/rquery/blob/master/extras/QTimingFollowup/QTiming4.md).
