@@ -1,20 +1,20 @@
 ---
 title: "data.table backend for rquery"
 author: "John Mount, Win-Vector LLC"
-date: "05/30/2018"
+date: "05/31/2018"
 output: github_document
 ---
 
 We can work an example similar to the [`rquery`](https://winvector.github.io/rquery/) [example](https://winvector.github.io/rquery/index.html) using a [`data.table`](http://r-datatable.com/) 
-back-end ([`qdatatable`](https://github.com/WinVector/qdatatable)).
+back-end ([`rqdatatable`](https://github.com/WinVector/rqdatatable)).
 
 ```{r packages}
 library("ggplot2")
 library("microbenchmark")
 library("dplyr")
 library("dtplyr")
-# https://github.com/WinVector/qdatatable
-library("qdatatable") # devtools::install.packages("WinVector/qdatatable")
+# https://github.com/WinVector/rqdatatable
+library("rqdatatable") # devtools::install.packages("WinVector/rqdatatable")
 packageVersion("dplyr")
 packageVersion("data.table")
 packageVersion("rquery")
@@ -70,6 +70,10 @@ Show expanded form of query tree.
 
 ```{r printrqueryp, comment=""}
 cat(format(rquery_pipeline))
+
+rquery_pipeline %.>%
+  op_diagram(.) %.>% 
+  DiagrammeR::grViz(.)
 ```
 
 Execute `rquery` pipeline using `data.table` as the implementation.

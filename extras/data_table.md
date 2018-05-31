@@ -1,9 +1,9 @@
 data.table backend for rquery
 ================
 John Mount, Win-Vector LLC
-05/30/2018
+05/31/2018
 
-We can work an example similar to the [`rquery`](https://winvector.github.io/rquery/) [example](https://winvector.github.io/rquery/index.html) using a [`data.table`](http://r-datatable.com/) back-end ([`qdatatable`](https://github.com/WinVector/qdatatable)).
+We can work an example similar to the [`rquery`](https://winvector.github.io/rquery/) [example](https://winvector.github.io/rquery/index.html) using a [`data.table`](http://r-datatable.com/) back-end ([`rqdatatable`](https://github.com/WinVector/rqdatatable)).
 
 ``` r
 library("ggplot2")
@@ -24,8 +24,8 @@ library("dplyr")
 
 ``` r
 library("dtplyr")
-# https://github.com/WinVector/qdatatable
-library("qdatatable") # devtools::install.packages("WinVector/qdatatable")
+# https://github.com/WinVector/rqdatatable
+library("rqdatatable") # devtools::install.packages("WinVector/rqdatatable")
 ```
 
     ## Loading required package: rquery
@@ -127,6 +127,14 @@ cat(format(rquery_pipeline))
      select_columns(.,
        subjectID, diagnosis, probability) %.>%
      orderby(., subjectID)
+
+``` r
+rquery_pipeline %.>%
+  op_diagram(.) %.>% 
+  DiagrammeR::grViz(.)
+```
+
+![](data_table_files/figure-markdown_github/printrqueryp-1.png)
 
 Execute `rquery` pipeline using `data.table` as the implementation.
 
@@ -344,21 +352,21 @@ print(timings)
 
     ## Unit: seconds
     ##                        expr       min        lq      mean    median
-    ##  rquery_database_round_trip 24.932563 25.112882 25.740986 25.862333
-    ##        rquery_database_read 22.101619 22.770426 23.108142 23.071979
-    ##           rquery_data.table  1.906723  2.044988  2.973002  2.153297
-    ##                  data.table  1.993420  2.070655  2.128269  2.148503
-    ##                       dplyr 38.938460 40.362938 41.197011 40.790600
-    ##         dplyr_database_read 25.516189 26.585125 26.630053 26.701492
-    ##   dplyr_database_round_trip 57.998092 59.904662 65.661184 60.836108
+    ##  rquery_database_round_trip 25.073923 25.511922 26.476737 26.213450
+    ##        rquery_database_read 22.122548 22.449000 23.217000 22.976704
+    ##           rquery_data.table  1.948125  2.017964  2.546166  2.096369
+    ##                  data.table  1.983775  2.032302  2.149564  2.088585
+    ##                       dplyr 38.683119 39.352977 40.995207 40.055997
+    ##         dplyr_database_read 25.390203 25.734740 26.776651 26.391443
+    ##   dplyr_database_round_trip 58.310197 59.455975 62.334416 62.846960
     ##         uq       max neval
-    ##  25.938123 26.732262    10
-    ##  23.724803 23.988663    10
-    ##   4.137149  5.379728    10
-    ##   2.178044  2.263854    10
-    ##  42.556378 43.403159    10
-    ##  26.881072 27.102760    10
-    ##  65.096731 97.828567    10
+    ##  27.068791 28.504425    10
+    ##  23.615097 24.916866    10
+    ##   3.181604  4.215407    10
+    ##   2.131426  2.698049    10
+    ##  43.501381 44.644376    10
+    ##  27.624446 29.125548    10
+    ##  64.142818 67.516631    10
 
 ``` r
 # summarize by hand using rquery database connector
@@ -374,13 +382,13 @@ knitr::kable(means)
 
 | expr                          |   mean\_time|
 |:------------------------------|------------:|
-| data.table                    |   2128269296|
-| rquery\_data.table            |   2973002074|
-| rquery\_database\_read        |  23108141583|
-| rquery\_database\_round\_trip |  25740986002|
-| dplyr\_database\_read         |  26630052963|
-| dplyr                         |  41197010592|
-| dplyr\_database\_round\_trip  |  65661183543|
+| data.table                    |   2149564386|
+| rquery\_data.table            |   2546165543|
+| rquery\_database\_read        |  23216999521|
+| rquery\_database\_round\_trip |  26476736507|
+| dplyr\_database\_read         |  26776650863|
+| dplyr                         |  40995207251|
+| dplyr\_database\_round\_trip  |  62334416223|
 
 ``` r
 autoplot(timings)
