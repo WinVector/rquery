@@ -1,7 +1,7 @@
 data.table backend for rquery
 ================
 John Mount, Win-Vector LLC
-05/31/2018
+06/01/2018
 
 We can work an example similar to the [`rquery`](https://winvector.github.io/rquery/) [example](https://winvector.github.io/rquery/index.html) using a [`data.table`](http://r-datatable.com/) back-end ([`rqdatatable`](https://github.com/WinVector/rqdatatable)).
 
@@ -49,7 +49,7 @@ packageVersion("dplyr")
 packageVersion("data.table")
 ```
 
-    ## [1] '1.10.4.3'
+    ## [1] '1.11.4'
 
 ``` r
 packageVersion("rquery")
@@ -134,8 +134,10 @@ rquery_pipeline %.>%
   DiagrammeR::grViz(.)
 ```
 
-![](data_table_files/figure-markdown_github/printrqueryp-1.png)
+<!--html_preserve-->
 
+<script type="application/json" data-for="htmlwidget-a953ff6e9c99ea0b2309">{"x":{"diagram":"\ndigraph rquery_optree {\n  graph [ layout = dot, rankdir = TB, overlap = prism, compound = true, nodesep = .5, ranksep = .25]\n  edge [decorate = true, arrowhead = normal]\n  node [style=filled, fillcolor=lightgrey]\n\nnode_1 [ shape = \"folder\" , label = \"table(dL; \\l  subjectID,\\l  surveyCategory,\\l  assessmentTotal)\\l\"]\n\nnode_2 [ shape = \"tab\" , label = \"extend(.,\\l  probability := exp(assessmentTotal * scale))\\l\"]\n\nnode_3 [ shape = \"tab\" , label = \"extend(.,\\l  probability := probability / sum(probability),\\l  p= subjectID)\\l\"]\n\nnode_4 [ shape = \"tab\" , label = \"extend(.,\\l  row_rank := rank(),\\l  p= subjectID,\\l  o= probability DESC, surveyCategory DESC)\\l\"]\n\nnode_5 [ shape = \"tab\" , label = \"select_rows(.,\\l   row_rank <= 1)\\l\"]\n\nnode_6 [ shape = \"tab\" , label = \"rename(.,\\l  c(diagnosis = surveyCategory))\\l\"]\n\nnode_7 [ shape = \"tab\" , label = \"select_columns(.,\\l   subjectID, diagnosis, probability)\\l\"]\n\nnode_8 [ shape = \"tab\" , label = \"orderby(., subjectID)\\l\"]\nnode_1 -> node_2 [ label = \".\"]\nnode_2 -> node_3 [ label = \".\"]\nnode_3 -> node_4 [ label = \".\"]\nnode_4 -> node_5 [ label = \".\"]\nnode_5 -> node_6 [ label = \".\"]\nnode_6 -> node_7 [ label = \".\"]\nnode_7 -> node_8 [ label = \".\"]\n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<!--/html_preserve-->
 Execute `rquery` pipeline using `data.table` as the implementation.
 
 ``` r
@@ -422,138 +424,138 @@ for(nSubj in 10^(0:7)) {
     ## [1] "nSubj 1"
     ## Unit: milliseconds
     ##                        expr        min         lq       mean     median
-    ##  rquery_database_round_trip  69.029450  74.377429  82.379580  80.474265
-    ##           rquery_data.table   7.127195   8.760327   9.518508   8.897789
-    ##                  data.table   2.051221   2.754013   2.847343   2.853673
-    ##                       dplyr   6.272380   6.516135   8.181771   7.757346
-    ##   dplyr_database_round_trip 144.512507 144.927179 165.566531 173.417670
-    ##      base_r_stats_aggregate   2.615925   2.766526   3.074400   2.816567
+    ##  rquery_database_round_trip  71.138681  83.393231  83.147045  84.833661
+    ##           rquery_data.table   9.608766   9.971618  10.323950  10.195958
+    ##                  data.table   2.075675   2.180758   2.456860   2.497990
+    ##                       dplyr   7.612825  11.489418  12.256675  13.087308
+    ##   dplyr_database_round_trip 147.132946 201.682862 209.952480 217.776187
+    ##      base_r_stats_aggregate   3.085184   3.785181   4.658687   3.806105
     ##          uq        max neval
-    ##   89.696811  98.319946     5
-    ##    9.661508  13.145722     5
-    ##    2.929362   3.648446     5
-    ##   10.109809  10.253185     5
-    ##  174.707281 190.268019     5
-    ##    3.074001   4.098979     5
+    ##   84.865362  91.504292     5
+    ##   10.318854  11.524552     5
+    ##    2.764750   2.765127     5
+    ##   13.905702  15.188124     5
+    ##  227.597322 255.573083     5
+    ##    4.969376   7.647591     5
     ## [1] "******"
     ## [1] "nSubj 10"
     ## Unit: milliseconds
     ##                        expr        min         lq       mean     median
-    ##  rquery_database_round_trip  67.156440  73.060626  82.920443  80.510089
-    ##           rquery_data.table   7.570936   8.689809   9.777107   9.030820
-    ##                  data.table   2.426472   2.456784   2.618393   2.515110
-    ##                       dplyr  10.086663  10.414506  11.512049  10.575411
-    ##   dplyr_database_round_trip 135.769876 142.734392 162.646726 159.879842
-    ##      base_r_stats_aggregate   3.549091   4.463815   4.678033   4.823753
-    ##          uq        max neval
-    ##   96.526495  97.348565     5
-    ##   10.630271  12.963699     5
-    ##    2.765184   2.928414     5
-    ##   11.969104  14.514560     5
-    ##  186.323910 188.525612     5
-    ##    5.153381   5.400124     5
+    ##  rquery_database_round_trip  67.845813  69.336879  81.562058  87.188163
+    ##           rquery_data.table   9.497021   9.934465  15.616941  10.279672
+    ##                  data.table   2.090796   2.190110   2.308872   2.361299
+    ##                       dplyr   9.452232  11.476213  30.016245  11.974590
+    ##   dplyr_database_round_trip 162.622927 186.228870 202.306599 203.067094
+    ##      base_r_stats_aggregate   4.200695   4.735195  11.830658   8.206472
+    ##         uq        max neval
+    ##   88.31182  95.127611     5
+    ##   12.34138  36.032167     5
+    ##    2.40091   2.501245     5
+    ##   12.88391 104.294283     5
+    ##  207.49438 252.119725     5
+    ##   13.50275  28.508181     5
     ## [1] "******"
     ## [1] "nSubj 100"
     ## Unit: milliseconds
     ##                        expr        min         lq       mean     median
-    ##  rquery_database_round_trip  68.280159  73.989883  73.936998  74.659266
-    ##           rquery_data.table   8.375911   8.378464  10.549381   8.692715
-    ##                  data.table   2.315128   2.681626   2.942087   2.686290
-    ##                       dplyr  10.857070  11.261897  13.411790  14.374825
-    ##   dplyr_database_round_trip 138.566279 147.701370 174.968423 194.220404
-    ##      base_r_stats_aggregate   4.273186   4.864971   5.635442   6.170974
+    ##  rquery_database_round_trip  66.815639  73.894296  79.361467  76.052675
+    ##           rquery_data.table   8.229293   8.950303  14.725861   9.802629
+    ##                  data.table   2.786475   3.068548   4.051763   3.070573
+    ##                       dplyr  10.333904  10.484546  16.072997  14.972173
+    ##   dplyr_database_round_trip 148.623101 159.382159 182.954371 200.123005
+    ##      base_r_stats_aggregate   5.082886   5.883054   6.326022   6.077374
     ##          uq        max neval
-    ##   75.820915  76.934769     5
-    ##   12.730262  14.569554     5
-    ##    2.742238   4.285151     5
-    ##   15.228917  15.336241     5
-    ##  196.047638 198.306423     5
-    ##    6.390031   6.478047     5
+    ##   78.736378 101.308346     5
+    ##   10.685754  35.961328     5
+    ##    3.503149   7.830071     5
+    ##   20.218128  24.356233     5
+    ##  201.934320 204.709268     5
+    ##    6.257049   8.329749     5
     ## [1] "******"
     ## [1] "nSubj 1000"
     ## Unit: milliseconds
     ##                        expr        min         lq       mean     median
-    ##  rquery_database_round_trip  94.986501 100.771336 118.889078 128.822785
-    ##           rquery_data.table   9.746145  10.946424  11.927772  11.016319
-    ##                  data.table   4.691801   5.407834   5.694072   5.435403
-    ##                       dplyr  42.611197  44.262719  50.811715  45.120315
-    ##   dplyr_database_round_trip 213.902981 220.829752 222.092339 222.388739
-    ##      base_r_stats_aggregate  14.211198  14.245266  19.065685  14.510214
-    ##         uq        max neval
-    ##  132.60659 137.258174     5
-    ##   11.81526  16.114708     5
-    ##    5.44712   7.488202     5
-    ##   49.51443  72.549909     5
-    ##  223.22590 230.114323     5
-    ##   25.25964  27.102103     5
+    ##  rquery_database_round_trip 127.568661 141.437378 159.243990 143.464920
+    ##           rquery_data.table  12.676699  13.250249  14.418486  13.856080
+    ##                  data.table   5.668883   6.140717   8.336774   7.738183
+    ##                       dplyr  56.862057  59.126697  60.837393  59.275752
+    ##   dplyr_database_round_trip 233.333187 251.438677 262.828636 260.351315
+    ##      base_r_stats_aggregate  14.741730  15.019510  21.130873  17.589373
+    ##          uq       max neval
+    ##  168.810764 214.93823     5
+    ##   14.798054  17.51135     5
+    ##    7.781801  14.35429     5
+    ##   61.420543  67.50192     5
+    ##  264.086126 304.93388     5
+    ##   26.282366  32.02139     5
     ## [1] "******"
     ## [1] "nSubj 10000"
     ## Unit: milliseconds
     ##                        expr       min        lq      mean    median
-    ##  rquery_database_round_trip 317.22013 318.06215 327.66363 322.86430
-    ##           rquery_data.table  31.45375  35.43023  57.98260  38.85422
-    ##                  data.table  28.94477  29.23703  33.47433  31.36060
-    ##                       dplyr 405.79107 454.09806 452.05943 457.46704
-    ##   dplyr_database_round_trip 459.03060 460.07174 477.24078 466.56148
-    ##      base_r_stats_aggregate 158.70025 160.63810 185.14380 166.09851
+    ##  rquery_database_round_trip 323.06561 324.99739 364.25126 348.38187
+    ##           rquery_data.table  44.87562  47.42099  48.44307  48.20416
+    ##                  data.table  34.68167  35.58400  43.90367  41.19149
+    ##                       dplyr 422.10237 429.92637 461.00641 463.65321
+    ##   dplyr_database_round_trip 464.34444 547.46560 597.25658 629.65887
+    ##      base_r_stats_aggregate 137.86605 152.89420 194.53529 161.97059
     ##         uq       max neval
-    ##  325.06523 355.10634     5
-    ##   45.92310 138.25168     5
-    ##   35.91055  41.91869     5
-    ##  457.64969 485.29128     5
-    ##  466.67314 533.86696     5
-    ##  219.04842 221.23373     5
+    ##  395.85655 428.95486     5
+    ##   49.75908  51.95547     5
+    ##   46.67471  61.38648     5
+    ##  490.44204 498.90806     5
+    ##  631.87214 712.94184     5
+    ##  247.05048 272.89515     5
     ## [1] "******"
     ## [1] "nSubj 1e+05"
     ## Unit: milliseconds
     ##                        expr       min        lq      mean    median
-    ##  rquery_database_round_trip 2562.9472 2638.2651 3176.6772 2638.4237
-    ##           rquery_data.table  276.6464  323.7509  330.4065  325.2370
-    ##                  data.table  290.1218  312.0355  324.5827  317.1223
-    ##                       dplyr 4124.8296 4140.0092 5096.0283 4174.3510
-    ##   dplyr_database_round_trip 3781.7411 3835.2941 4260.0795 4121.7297
-    ##      base_r_stats_aggregate 2223.9412 2257.1987 2824.7896 2260.4321
+    ##  rquery_database_round_trip 2534.0234 2542.1845 2607.5515 2605.2087
+    ##           rquery_data.table  330.9433  336.4919  350.7774  348.4246
+    ##                  data.table  329.7817  333.4134  335.8603  333.5674
+    ##                       dplyr 3812.4155 3876.5725 3987.9899 3906.9410
+    ##   dplyr_database_round_trip 3749.2049 3819.9913 4006.8039 4142.7523
+    ##      base_r_stats_aggregate 2263.6486 2300.8380 2430.0946 2365.4907
     ##         uq       max neval
-    ##  2885.0333 5158.7170     5
-    ##   344.4928  381.9053     5
-    ##   339.1800  364.4538     5
-    ##  6365.2965 6675.6551     5
-    ##  4457.4407 5104.1918     5
-    ##  2422.9427 4959.4331     5
+    ##  2661.6754 2694.6654     5
+    ##   352.9374  385.0898     5
+    ##   334.2273  348.3116     5
+    ##  3997.6523 4346.3683     5
+    ##  4151.4921 4170.5791     5
+    ##  2601.1329 2619.3627     5
     ## [1] "******"
     ## [1] "nSubj 1e+06"
     ## Unit: seconds
     ##                        expr       min        lq      mean    median
-    ##  rquery_database_round_trip 25.790816 26.236574 26.656177 27.000283
-    ##           rquery_data.table  2.107890  2.192299  2.604533  2.289485
-    ##                  data.table  2.115763  2.188365  2.279532  2.190283
-    ##                       dplyr 39.675550 40.776398 41.237920 40.779588
-    ##   dplyr_database_round_trip 42.433460 43.103537 43.767424 43.196339
-    ##      base_r_stats_aggregate 22.234256 22.258174 23.358680 22.677609
+    ##  rquery_database_round_trip 25.897362 26.143649 27.142575 26.677837
+    ##           rquery_data.table  2.438871  2.500997  2.706722  2.503838
+    ##                  data.table  2.483940  2.610533  2.727376  2.655502
+    ##                       dplyr 37.874685 38.211236 41.371857 42.072642
+    ##   dplyr_database_round_trip 38.570147 40.874372 41.607898 42.832009
+    ##      base_r_stats_aggregate 22.033998 23.257504 23.966391 23.637800
     ##         uq       max neval
-    ##  27.115695 27.137518     5
-    ##   2.833142  3.599851     5
-    ##   2.285832  2.617417     5
-    ##  41.125615 43.832448     5
-    ##  44.879094 45.224692     5
-    ##  23.807583 25.815779     5
+    ##  28.312361 28.681667     5
+    ##   2.920099  3.169806     5
+    ##   2.760413  3.126494     5
+    ##  42.809214 45.891508     5
+    ##  42.835209 42.927754     5
+    ##  23.866012 27.036639     5
     ## [1] "******"
     ## [1] "nSubj 1e+07"
     ## Unit: seconds
     ##                        expr       min        lq      mean    median
-    ##  rquery_database_round_trip 299.42903 321.26485 323.47056 324.49628
-    ##           rquery_data.table  20.52984  23.37411  31.57351  25.49861
-    ##                  data.table  24.10960  24.27099  30.34697  26.06031
-    ##                       dplyr 408.80455 418.61819 453.77822 470.67962
-    ##   dplyr_database_round_trip 467.47587 470.47306 504.37742 512.16376
-    ##      base_r_stats_aggregate 364.34942 376.03824 420.56751 405.05481
+    ##  rquery_database_round_trip 276.57327 284.39720 295.60391 289.33218
+    ##           rquery_data.table  24.89220  26.62269  30.93817  28.65483
+    ##                  data.table  26.70312  30.98182  34.86265  33.73271
+    ##                       dplyr 381.63089 419.96944 435.00829 428.00963
+    ##   dplyr_database_round_trip 440.34283 453.07472 469.02831 459.56673
+    ##      base_r_stats_aggregate 348.90100 351.54848 387.53749 394.07234
     ##         uq       max neval
-    ##  328.53626 343.62639     5
-    ##   35.75514  52.70985     5
-    ##   38.11929  39.17465     5
-    ##  478.46271 492.32604     5
-    ##  531.76685 540.00756     5
-    ##  471.07160 486.32345     5
+    ##  302.13699 325.57989     5
+    ##   34.82853  39.69262     5
+    ##   37.24384  45.65175     5
+    ##  447.89854 497.53295     5
+    ##  477.89150 514.26578     5
+    ##  412.54710 430.61854     5
 
 ``` r
 saveRDS(all_timings, "all_timings.RDS")
@@ -583,12 +585,12 @@ knitr::kable(means)
 
 | expr                          |  mean\_time\_seconds|
 |:------------------------------|--------------------:|
-| data.table                    |             30.34697|
-| rquery\_data.table            |             31.57351|
-| rquery\_database\_round\_trip |            323.47056|
-| base\_r\_stats\_aggregate     |            420.56751|
-| dplyr                         |            453.77822|
-| dplyr\_database\_round\_trip  |            504.37742|
+| rquery\_data.table            |             30.93817|
+| data.table                    |             34.86265|
+| rquery\_database\_round\_trip |            295.60391|
+| base\_r\_stats\_aggregate     |            387.53749|
+| dplyr                         |            435.00829|
+| dplyr\_database\_round\_trip  |            469.02831|
 
 ``` r
 timings <- as.data.frame(timings)

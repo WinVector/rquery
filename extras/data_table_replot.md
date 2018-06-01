@@ -1,7 +1,7 @@
 data.table backend for rquery replot
 ================
 John Mount, Win-Vector LLC
-05/31/2018
+06/01/2018
 
 We can work an example similar to the [`rquery`](https://winvector.github.io/rquery/) [example](https://winvector.github.io/rquery/index.html) using a [`data.table`](http://r-datatable.com/) back-end ([`rqdatatable`](https://github.com/WinVector/rqdatatable)).
 
@@ -53,12 +53,12 @@ knitr::kable(means)
 
 | expr                          |  mean\_time\_seconds|
 |:------------------------------|--------------------:|
-| data.table                    |             2.279532|
-| rquery\_data.table            |             2.604534|
-| base\_r\_stats\_aggregate     |            23.358680|
-| rquery\_database\_round\_trip |            26.656177|
-| dplyr                         |            41.237920|
-| dplyr\_database\_round\_trip  |            43.767424|
+| rquery\_data.table            |             2.706722|
+| data.table                    |             2.727376|
+| base\_r\_stats\_aggregate     |            23.966391|
+| rquery\_database\_round\_trip |            27.142575|
+| dplyr                         |            41.371857|
+| dplyr\_database\_round\_trip  |            41.607898|
 
 ``` r
 timings <- as.data.frame(timings)
