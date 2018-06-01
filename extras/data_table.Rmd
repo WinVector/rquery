@@ -264,7 +264,7 @@ assertthat::are_equal(dLorig, dL)
 ```{r time, message=FALSE, warning=FALSE}
 all_timings <- NULL
 
-for(nSubj in 10^(0:6)) {
+for(nSubj in 10^(0:7)) {
   print("******")
   print(paste("nSubj", nSubj))
   
