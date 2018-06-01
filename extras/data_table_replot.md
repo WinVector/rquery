@@ -68,7 +68,37 @@ WVPlots::ScatterBoxPlotH(as.data.frame(timings),
                          "seconds", "implementation", 
                          paste0("task time in seconds by implementation\n(",
                                 timings$nrows[[1]], " row by ", timings$ncols[[1]], " column task)")) +
-  geom_hline(yintercept = cutpt, linetype=2, alpha = 0.5) 
+  geom_hline(yintercept = cutpt, linetype=2, alpha = 0.5)
 ```
 
 ![](data_table_replot_files/figure-markdown_github/presenttimings-1.png)
+
+``` r
+summaries <- split(all_timings, all_timings$expr) %.>%
+  lapply(., 
+         function(gi) {
+           model <- lm(seconds ~ nrows, data= gi)
+           si <- as.data.frame(summary(model)$coefficients)
+           si$coef <- rownames(si)
+           si$impementation <- as.character(gi$expr[[1]])
+           si
+         }) %.>%
+  data.table::rbindlist(.)
+colnames(summaries) <- gsub("Pr(>|t|)", "P[g.t. abs(t)]", colnames(summaries), fixed = TRUE)
+knitr::kable(summaries)
+```
+
+|    Estimate|  Std. Error|      t value|  P\[g.t. abs(t)\]| coef        | impementation                 |
+|-----------:|-----------:|------------:|-----------------:|:------------|:------------------------------|
+|  -0.3035627|   1.0797929|   -0.2811305|         0.7801355| (Intercept) | rquery\_database\_round\_trip |
+|   0.0000148|   0.0000002|   97.3063224|         0.0000000| nrows       | rquery\_database\_round\_trip |
+|  -0.0345898|   0.3450240|   -0.1002533|         0.9206703| (Intercept) | rquery\_data.table            |
+|   0.0000015|   0.0000000|   31.8628736|         0.0000000| nrows       | rquery\_data.table            |
+|  -0.0982218|   0.4016570|   -0.2445414|         0.8081272| (Intercept) | data.table                    |
+|   0.0000017|   0.0000001|   30.8710124|         0.0000000| nrows       | data.table                    |
+|  -0.3181092|   2.3751597|   -0.1339317|         0.8941634| (Intercept) | dplyr                         |
+|   0.0000218|   0.0000003|   65.0994740|         0.0000000| nrows       | dplyr                         |
+|  -0.6572150|   1.6329677|   -0.4024666|         0.6895958| (Intercept) | dplyr\_database\_round\_trip  |
+|   0.0000235|   0.0000002|  102.1025822|         0.0000000| nrows       | dplyr\_database\_round\_trip  |
+|  -2.1809550|   2.2043976|   -0.9893655|         0.3287426| (Intercept) | base\_r\_stats\_aggregate     |
+|   0.0000194|   0.0000003|   62.6169134|         0.0000000| nrows       | base\_r\_stats\_aggregate     |
