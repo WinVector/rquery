@@ -1,0 +1,55 @@
+---
+title: "pipeline_example"
+output: github_document
+---
+
+```{r}
+library("dplyr")
+library("rqdatatable")
+library("microbenchmark")
+
+batting <- Lahman::Batting
+
+
+# dplyr pipeline example from R for Data Science.
+fn_dplyr <- function(batting) {
+  # http://r4ds.had.co.nz/transform.html
+  batting %>% 
+    group_by(playerID) %>% 
+    summarise(
+      ba = sum(H, na.rm = TRUE) / sum(AB, na.rm = TRUE),
+      ab = sum(AB, na.rm = TRUE)
+    ) %>%
+    filter(ab > 100) 
+}
+
+system.time(
+  batters <- fn_dplyr(batting)
+)
+batters <- arrange(batters, playerID)
+
+# translation of above example into an rquery pipeline
+fn_rquery <- function(batting) {
+  rq_pipeline <- local_td(batting) %.>%
+    project_nse(., groupby = "playerID",
+                ba = sum(H) / sum(AB),
+                ab = sum(AB)) %>%
+    select_rows_nse(., ab > 100) %>%
+    orderby(., "playerID")
+  ex_data_table(rq_pipeline)
+}
+
+system.time({
+  batters2 <- fn_rquery(batting)
+})
+
+
+assertthat::are_equal(as.data.frame(batters),
+                      as.data.frame(batters2))
+
+microbenchmark(
+  dplyr = nrow(fn_dplyr(batting)),
+  rquery = nrow(fn_rquery(batting))
+)
+```
+

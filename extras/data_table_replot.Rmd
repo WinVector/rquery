@@ -1,13 +1,12 @@
 ---
 title: "data.table backend for rquery replot"
 author: "John Mount, Win-Vector LLC"
-date: "06/01/2018"
+date: "06/02/2018"
 output: github_document
 always_allow_html: yes
 ---
 
-We can work an example similar to the [`rquery`](https://winvector.github.io/rquery/) [example](https://winvector.github.io/rquery/index.html) using a [`data.table`](http://r-datatable.com/) 
-back-end ([`rqdatatable`](https://github.com/WinVector/rqdatatable)).
+Re-plot some of the measurements from [here](https://github.com/WinVector/rquery/blob/master/extras/data_table.md).
 
 ```{r packages}
 library("ggplot2")
@@ -17,51 +16,68 @@ library("rqdatatable") # devtools::install.packages("WinVector/rqdatatable")
 
 
 
-```{r rquerydb}
-# configure a database connection
-my_db <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
-                          host = 'localhost',
-                          port = 5432,
-                          user = 'johnmount',
-                          password = '')
-dbopts <- rq_connection_tests(my_db)
-options(dbopts)
-# build the shared handle
-winvector_temp_db_handle <- list(db = my_db)
-```
-
-
 ```{r presenttimings, message=FALSE, warning=FALSE}
 all_timings <- readRDS("all_timings.RDS")
 all_timings$seconds <- all_timings$time/1e9
-timings <- all_timings[all_timings$nrow == 2000000, , drop = FALSE]
 
+summary_pipeline <- local_td(all_timings) %.>%
+  project_nse(., groupby = c("nrows", "expr"), mean_time_seconds = mean(seconds)) %.>%
+  orderby(., c("nrows", "expr"))
+all_means <- as.data.frame(ex_data_table(summary_pipeline))
+knitr::kable(all_means)
+
+# get a shared lvel ordering
+means <- all_means[all_means$nrows == max(all_means$nrows), , drop = FALSE]
+means <- means[order(means$mean_time_seconds), , drop = FALSE]
+levels <-  means$expr
+
+# plot scatter plots for each experiment
+for(target_size in sort(unique(all_timings$nrows))) {
+  timings <- all_timings[all_timings$nrows == target_size, , drop = FALSE]
+  timings$implementation <- factor(timings$expr, levels)
+  cutpt <- median(timings$seconds[timings$expr=="base_r_stats_aggregate"])
+  plt <- WVPlots::ScatterBoxPlotH(timings, 
+                                  "seconds", "implementation", 
+                                  paste0("task time in seconds by implementation\n(",
+                                         timings$nrows[[1]], " row by ", timings$ncols[[1]], " column task)")) +
+    geom_hline(yintercept = cutpt, linetype=2, alpha = 0.5) 
+  print(plt)
+}
+
+
+# plot as a function of problem size
 cmap <- 
-  c(dplyr = "#e6550d",
-    dplyr_database_round_trip = "#a63603",
-    data.table = "#756bb1",
+  c(dplyr_data_frame = "#a63603",
+    dplyr_tbl = "#e6550d",
+    dplyr_database_round_trip = "#fd8d3c",
+    data.table = "#7851a9",
     rquery_database_round_trip = "#31a354",
     rquery_data.table = "#006d2c")
+lmap <- c(dplyr_data_frame = 1,
+          dplyr_tbl = 3,
+          dplyr_database_round_trip = 4,
+          data.table = 1,
+          rquery_database_round_trip = 4,
+          rquery_data.table = 2)
+all_timings$implementation <- factor(all_timings$expr, rev(levels))
+ex1 <- all_timings[all_timings$expr != 'base_r_stats_aggregate', , drop = FALSE]
+exb <- all_timings[all_timings$expr == 'base_r_stats_aggregate', , drop = FALSE]
+sm <- loess(seconds ~ nrows, data= exb)
+smf <- data.frame(nrows = exp(seq(log(min(ex1$nrows)), log(max(ex1$nrows)), length.out = 100)))
+smf$seconds <- predict(sm, newdata=smf)
+ymin = min(all_timings$seconds)
+ggplot(mapping = aes(x = nrows, y = seconds, ymax = seconds, ymin = ymin)) +
+  geom_ribbon(data = smf, alpha = 0.3) +
+  geom_line(data = ex1, se = FALSE, aes(color = implementation, linetype = implementation), 
+            stat = "smooth", method = "loess", alpha = 0.7, size = 1) + 
+  scale_x_log10() + scale_y_log10() +
+  scale_color_manual(values = cmap) +
+  scale_linetype_manual(values = lmap) +
+  ggtitle("task time in seconds by nrows and implementation",
+          subtitle = "shading boundary time taken by base R stats::aggregate() solution")
 
-# summarize by hand using rquery database connector
-summary_pipeline <- timings %.>%
-  as.data.frame(.) %.>%
-  project_nse(., groupby = "expr", mean_time_seconds = avg(seconds)) %.>%
-  orderby(., "mean_time_seconds")
-means <- timings %.>% 
-  as.data.frame(.) %.>%
-  summary_pipeline 
-knitr::kable(means)
 
-timings <- as.data.frame(timings)
-timings$implementation <- factor(timings$expr, means$expr)
-cutpt <- median(timings$seconds[timings$expr=="base_r_stats_aggregate"])
-WVPlots::ScatterBoxPlotH(as.data.frame(timings), 
-                         "seconds", "implementation", 
-                         paste0("task time in seconds by implementation\n(",
-                                timings$nrows[[1]], " row by ", timings$ncols[[1]], " column task)")) +
-  geom_hline(yintercept = cutpt, linetype=2, alpha = 0.5)
-
+# look at slopes
 summaries <- split(all_timings, all_timings$expr) %.>%
   lapply(., 
          function(gi) {
@@ -76,11 +92,6 @@ colnames(summaries) <- gsub("Pr(>|t|)", "P[g.t. abs(t)]", colnames(summaries), f
 knitr::kable(summaries)
 ```
 
-
-```{r cleanup, include=FALSE}
-rm(list = "winvector_temp_db_handle")
-DBI::dbDisconnect(my_db)
-```
 
 
 
