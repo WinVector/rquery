@@ -1,0 +1,64 @@
+---
+title: "join_example"
+output: github_document
+---
+
+A case where `dplyr` is faster than `rquery`.
+
+```{r}
+library("dplyr")
+library("rqdatatable")
+library("microbenchmark")
+
+batting <- Lahman::Batting
+players <- data.frame(playerID = sort(unique(batting$playerID)),
+                      stringsAsFactors = FALSE)
+players$player_name_rank <- seq_len(nrow(players))
+for(i in 1:20) {
+  players[[paste0("pd_", i)]] <- runif(nrow(players))
+}
+# try a large example (where delays hurt)
+batting <- data.table::rbindlist(rep(list(batting), 10))
+# get a cannonical order for columns
+cols <- unique(c(colnames(batting), colnames(players)))
+
+
+# Example dplyr pipeline
+fn_dplyr <- function() {
+  left_join(batting, players, by = "playerID")
+}
+
+system.time(
+  res1 <- fn_dplyr()
+)
+res1 <- res1 %>%
+  select(!!!cols) %>%
+  arrange(playerID, yearID, stint, teamID)
+
+  
+# translation of above example into an rquery pipeline
+fn_rquery <- function() {
+  rq_pipeline <- natural_join(local_td(batting), local_td(players), 
+                            by = "playerID",
+                            jointype = "LEFT")
+  ex_data_table(rq_pipeline)
+}
+
+system.time({
+  res2 <- fn_rquery()
+})
+oderq <- local_td(res2) %.>% 
+  select_columns(., cols) %.>% 
+  orderby(., qc(playerID, yearID, stint, teamID))
+res2 <- ex_data_table(oderq)
+
+
+assertthat::are_equal(as.data.frame(res1),
+                      as.data.frame(res2))
+
+microbenchmark(
+  dplyr = nrow(fn_dplyr()),
+  rquery = nrow(fn_rquery())
+)
+```
+
