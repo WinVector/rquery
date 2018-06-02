@@ -1,16 +1,17 @@
----
-title: "rquery diagram example"
-author: "John Mount, Win-Vector LLC"
-output: github_document
-date: "06/02/2018"
-always_allow_html: yes
----
+rquery diagram example
+================
+John Mount, Win-Vector LLC
+06/02/2018
 
 Example of drawing an `rquery` pipeline diagram.
 
-```{r example}
+``` r
 library("rquery")
+```
 
+    ## Loading required package: wrapr
+
+``` r
 scale <- 0.237
 
 rquery_pipeline <- mk_td("assesment_table", 
