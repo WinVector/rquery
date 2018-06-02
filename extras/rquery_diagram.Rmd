@@ -1,0 +1,38 @@
+---
+title: "rquery diagram example"
+author: "John Mount, Win-Vector LLC"
+output: html_document
+date: "06/02/2018"
+always_allow_html: yes
+---
+
+Example of drawing an `rquery` pipeline diagram.
+
+```{r example}
+library("rquery")
+
+scale <- 0.237
+
+rquery_pipeline <- mk_td("assesment_table", 
+                         qc(subjectID, surveyCategory, assessmentTotal)) %.>%
+  extend_nse(.,
+             probability :=
+               exp(assessmentTotal * scale))  %.>% 
+  normalize_cols(.,
+                 "probability",
+                 partitionby = 'subjectID') %.>%
+  pick_top_k(.,
+             partitionby = 'subjectID',
+             orderby = c('probability', 'surveyCategory'),
+             reverse = c('probability', 'surveyCategory')) %.>% 
+  rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
+  select_columns(., c('subjectID', 
+                      'diagnosis', 
+                      'probability')) %.>%
+  orderby(., cols = 'subjectID')
+
+rquery_pipeline %.>%
+  op_diagram(.) %.>% 
+  DiagrammeR::grViz(.)
+```
+
