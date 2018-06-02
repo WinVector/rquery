@@ -93,6 +93,13 @@ r_optree_diagram <- function(optree, nextid, use_table_names) {
 #'     op_diagram(., merge_tables = TRUE) %.>%
 #'     DiagrammeR::grViz(.) %.>%
 #'     print(.)
+#'  # # or to render to png
+#'  # optree %.>%
+#'  #   op_diagram(., merge_tables = TRUE) %.>%
+#'  #   DiagrammeR::DiagrammeR(diagram = ., type = "grViz") %.>%
+#'  #     DiagrammeRsvg::export_svg(.) %.>%
+#'  #     charToRaw(.) %.>%
+#'  #     rsvg::rsvg_png(., file = "diagram1.png")
 #' }
 #'
 #' @export

@@ -197,6 +197,13 @@
     <span class='fu'>op_diagram</span>(<span class='no'>.</span>, <span class='kw'>merge_tables</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>%.&gt;%</span>
     <span class='kw pkg'>DiagrammeR</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DiagrammeR/topics/grViz'>grViz</a></span>(<span class='no'>.</span>) <span class='kw'>%.&gt;%</span>
     <span class='fu'>print</span>(<span class='no'>.</span>)
+ <span class='co'># # or to render to png</span>
+ <span class='co'># optree %.&gt;%</span>
+ <span class='co'>#   op_diagram(., merge_tables = TRUE) %.&gt;%</span>
+ <span class='co'>#   DiagrammeR::DiagrammeR(diagram = ., type = "grViz") %.&gt;%</span>
+ <span class='co'>#     DiagrammeRsvg::export_svg(.) %.&gt;%</span>
+ <span class='co'>#     charToRaw(.) %.&gt;%</span>
+ <span class='co'>#     rsvg::rsvg_png(., file = "diagram1.png")</span>
 }</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
