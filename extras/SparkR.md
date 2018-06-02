@@ -24,7 +24,7 @@ library("rquery")
 print(db_hdl)
 ```
 
-    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7fbff5960448>)"
+    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7f89cc7e98c8>)"
 
 ``` r
 print(test_df)
@@ -66,16 +66,19 @@ rquery_pipeline <- d_hdl %.>%
                       'diagnosis', 
                       'probability')) %.>%
   orderby(., cols = 'subjectID')
-
-rquery_pipeline %.>%
-  op_diagram(.) %.>% 
-  DiagrammeR::grViz(.)
 ```
 
-<!--html_preserve-->
+``` r
+rquery_pipeline %.>%
+  op_diagram(.) %.>% 
+  DiagrammeR::DiagrammeR(diagram = ., type = "grViz") %.>% 
+  DiagrammeRsvg::export_svg(.) %.>% 
+  charToRaw(.) %.>%
+  rsvg::rsvg_png(., file = "Sparkr_files/diagram1.png")
+```
 
-<script type="application/json" data-for="htmlwidget-bd94130bfb3b243fc9cd">{"x":{"diagram":"\ndigraph rquery_optree {\n  graph [ layout = dot, rankdir = TB, overlap = prism, compound = true, nodesep = .5, ranksep = .25]\n  edge [decorate = true, arrowhead = normal]\n  node [style=filled, fillcolor=lightgrey]\n\nnode_1 [ shape = \"folder\" , label = \"table(rs_81899890864282959322_0000000000; \\l  subjectID,\\l  surveyCategory,\\l  assessmentTotal,\\l  irrelevantCol_0000001)\\l\"]\n\nnode_2 [ shape = \"tab\" , label = \"extend(.,\\l  probability := exp(assessmentTotal * scale))\\l\"]\n\nnode_3 [ shape = \"tab\" , label = \"extend(.,\\l  probability := probability / sum(probability),\\l  p= subjectID)\\l\"]\n\nnode_4 [ shape = \"tab\" , label = \"extend(.,\\l  row_rank := rank(),\\l  p= subjectID,\\l  o= probability DESC, surveyCategory DESC)\\l\"]\n\nnode_5 [ shape = \"tab\" , label = \"select_rows(.,\\l   row_rank <= 1)\\l\"]\n\nnode_6 [ shape = \"tab\" , label = \"rename(.,\\l  c(diagnosis = surveyCategory))\\l\"]\n\nnode_7 [ shape = \"tab\" , label = \"select_columns(.,\\l   subjectID, diagnosis, probability)\\l\"]\n\nnode_8 [ shape = \"tab\" , label = \"orderby(., subjectID)\\l\"]\nnode_1 -> node_2 [ label = \".\"]\nnode_2 -> node_3 [ label = \".\"]\nnode_3 -> node_4 [ label = \".\"]\nnode_4 -> node_5 [ label = \".\"]\nnode_5 -> node_6 [ label = \".\"]\nnode_6 -> node_7 [ label = \".\"]\nnode_7 -> node_8 [ label = \".\"]\n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
-<!--/html_preserve-->
+![](Sparkr_files/diagram1.png)
+
 ``` r
 execute(db_hdl, rquery_pipeline) %.>%
   knitr::kable(.)

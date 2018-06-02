@@ -134,11 +134,21 @@ rquery_pipeline <- d_hdl %.>%
                       'diagnosis', 
                       'probability')) %.>%
   orderby(., cols = 'subjectID')
+```
 
+
+```{r}
 rquery_pipeline %.>%
   op_diagram(.) %.>% 
-  DiagrammeR::grViz(.)
+  DiagrammeR::DiagrammeR(diagram = ., type = "grViz") %.>% 
+  DiagrammeRsvg::export_svg(.) %.>% 
+  charToRaw(.) %.>%
+  rsvg::rsvg_png(., file = "Sparkr_files/diagram1.png")
+```
 
+![](Sparkr_files/diagram1.png)
+
+```{r}
 execute(db_hdl, rquery_pipeline) %.>%
   knitr::kable(.)
 ```
