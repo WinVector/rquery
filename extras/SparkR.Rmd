@@ -126,6 +126,7 @@ rquery_pipeline <- d_hdl %.>%
                  "probability",
                  partitionby = 'subjectID') %.>%
   pick_top_k(.,
+             k = 1,
              partitionby = 'subjectID',
              orderby = c('probability', 'surveyCategory'),
              reverse = c('probability', 'surveyCategory')) %.>% 
@@ -147,6 +148,10 @@ rquery_pipeline %.>%
 ```
 
 ![](Sparkr_files/diagram1.png)
+```{r}
+columns_used(rquery_pipeline)
+```
+
 
 ```{r}
 execute(db_hdl, rquery_pipeline) %.>%

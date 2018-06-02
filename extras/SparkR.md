@@ -24,7 +24,7 @@ library("rquery")
 print(db_hdl)
 ```
 
-    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7f89cc7e98c8>)"
+    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7f84aebc0678>)"
 
 ``` r
 print(test_df)
@@ -58,6 +58,7 @@ rquery_pipeline <- d_hdl %.>%
                  "probability",
                  partitionby = 'subjectID') %.>%
   pick_top_k(.,
+             k = 1,
              partitionby = 'subjectID',
              orderby = c('probability', 'surveyCategory'),
              reverse = c('probability', 'surveyCategory')) %.>% 
@@ -78,6 +79,13 @@ rquery_pipeline %.>%
 ```
 
 ![](Sparkr_files/diagram1.png)
+
+``` r
+columns_used(rquery_pipeline)
+```
+
+    ## $rs_81899890864282959322_0000000000
+    ## [1] "subjectID"       "surveyCategory"  "assessmentTotal"
 
 ``` r
 execute(db_hdl, rquery_pipeline) %.>%
