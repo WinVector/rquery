@@ -1,12 +1,26 @@
 ---
 title: "SparkR Example"
+author: "John Mount, Win-Vector LLC"
 output: github_document
+date: "06/02/2018"
+always_allow_html: yes
 ---
 
 Connect to a `SparkR` cluster and work a small example.
 
+To install a practice version of `Spark`/`SparkR` v2.3.0 on a stand-alone workstation:
+
+  * First download Spark 2.3.0 Pre-built for Apache Hadoop 2.7 or later ([spark-2.3.0-bin-hadoop2.7.tgz](https://www.apache.org/dyn/closer.lua/spark/spark-2.3.0/spark-2.3.0-bin-hadoop2.7.tgz)) from [Apache Spark Downloads](https://spark.apache.org/downloads.html).
+  * Uncompress this into a directory named `spark-2.3.0-bin-hadoop2.7`.
+  * Install `SparkR` from `spark-2.3.0-bin-hadoop2.7/spark-2.3.0-bin-hadoop2.7/R/lib/SparkR`: `install.packages("~/Downloads/spark-2.3.0-bin-hadoop2.7/R/lib/SparkR/", repos = NULL, type = "source")`.
+  * Use `SparkR` package to install its own local `Spark`: `SparkR::install.spark()` (based on [sparkr-vignettes.Rmd](https://github.com/apache/spark/blob/master/R/pkg/vignettes/sparkr-vignettes.Rmd)).
+
+
+
+
 ```{r start_sparkr, include=FALSE}
 # From SparkR package vignette/README
+# https://github.com/apache/spark/blob/master/R/pkg/vignettes/sparkr-vignettes.Rmd
 knitr::opts_hooks$set(eval = function(options) {
   # override eval to FALSE only on windows
   if (.Platform$OS.type == "windows") {
