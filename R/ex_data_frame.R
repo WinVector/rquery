@@ -136,19 +136,20 @@ rquery_apply_to_data_frame <- function(d,
   res_name <- tmp_name_source()
   optree <- re_write_table_names(optree, inp_name)
   need_close <- FALSE
+  my_db <- NULL
   db_handle <- base::mget("winvector_temp_db_handle",
                           envir = env,
                           ifnotfound = list(NULL),
                           inherits = TRUE)[[1]]
-  my_db <- NULL
-  if(is.null(db_handle)) {
-    if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
-      my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-      RSQLite::initExtension(my_db)
-      need_close = TRUE
-    }
-  } else {
+  if(!is.null(db_handle)) {
     my_db <- db_handle$db
+  }
+  if(is.null(my_db) &&
+     isTRUE(getOption("rquery.use_temp_rsqlite", default = FALSE)) &&
+     requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
+    my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+    RSQLite::initExtension(my_db)
+    need_close = TRUE
   }
   if(is.null(my_db)) {
     stop("rquery::rquery_apply_to_data_frame no database")
