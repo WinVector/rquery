@@ -66,7 +66,7 @@ rquery_pipeline <- local_td(dL) %.>%
              partitionby = 'subjectID',
              orderby = c('probability', 'surveyCategory'),
              reverse = c('probability', 'surveyCategory')) %.>% 
-  rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
+  rename_columns(., c('diagnosis' = 'surveyCategory')) %.>%
   select_columns(., c('subjectID', 
                       'diagnosis', 
                       'probability')) %.>%
@@ -95,7 +95,7 @@ my_db <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
                           port = 5432,
                           user = 'johnmount',
                           password = '')
-dbopts <- rq_connection_tests(my_db)
+dbopts <- rquery::rq_connection_tests(my_db)
 options(dbopts)
 # build the shared handle
 winvector_temp_db_handle <- list(db = my_db)
@@ -207,8 +207,8 @@ nSubj <- 10000
 dL <- mk_example(nSubj, 10)
 
 # and an in-database copy
-dR <- rq_copy_to(my_db, table_name = "dL", dL, 
-                 temporary = TRUE, overwrite = TRUE)
+dR <- rquery::rq_copy_to(my_db, table_name = "dL", dL, 
+                         temporary = TRUE, overwrite = TRUE)
 dRtbl <- dplyr::tbl(my_db, dR$table_name)
 
 dplyr_round_trip <- function(dL) {
@@ -276,8 +276,8 @@ sizes <- expand.grid(c(1, 2, 5), 10^(0:6)) %.>%
   (.$Var1 * .$Var2) %.>% 
   sort(.)
 for(nSubj in sizes) {
-  print("******")
-  print(paste("nSubj", nSubj))
+  # print("******")
+  # print(paste("nSubj", nSubj))
   
   dL <- mk_example(nSubj, 10)
   
