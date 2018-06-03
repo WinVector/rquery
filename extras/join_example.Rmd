@@ -3,7 +3,7 @@ title: "join_example"
 output: github_document
 ---
 
-A case where `dplyr` is faster than `rquery`.
+
 
 ```{r}
 library("dplyr")
@@ -11,7 +11,9 @@ library("rqdatatable")
 library("microbenchmark")
 
 batting <- Lahman::Batting
-players <- data.frame(playerID = sort(unique(batting$playerID)),
+
+
+players <- data.frame(playerID = sort(unique(c(batting$playerID, paste0("np_", seq_len(1000000))))),
                       stringsAsFactors = FALSE)
 players$player_name_rank <- seq_len(nrow(players))
 for(i in 1:20) {

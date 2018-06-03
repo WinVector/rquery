@@ -1,8 +1,6 @@
 join\_example
 ================
 
-A case where `dplyr` is faster than `rquery`.
-
 ``` r
 library("dplyr")
 ```
@@ -37,7 +35,9 @@ library("rqdatatable")
 library("microbenchmark")
 
 batting <- Lahman::Batting
-players <- data.frame(playerID = sort(unique(batting$playerID)),
+
+
+players <- data.frame(playerID = sort(unique(c(batting$playerID, paste0("np_", seq_len(1000000))))),
                       stringsAsFactors = FALSE)
 players$player_name_rank <- seq_len(nrow(players))
 for(i in 1:20) {
@@ -60,7 +60,7 @@ system.time(
 ```
 
     ##    user  system elapsed 
-    ##   0.477   0.078   0.556
+    ##   1.214   0.153   1.387
 
 ``` r
 res1 <- res1 %>%
@@ -82,7 +82,7 @@ system.time({
 ```
 
     ##    user  system elapsed 
-    ##   1.163   0.145   0.898
+    ##   1.449   0.215   1.227
 
 ``` r
 oderq <- local_td(res2) %.>% 
@@ -106,5 +106,5 @@ microbenchmark(
 
     ## Unit: milliseconds
     ##    expr      min       lq     mean   median       uq      max neval
-    ##   dplyr 288.0542 308.8646 351.5743 353.2086 370.3865  502.838   100
-    ##  rquery 861.7233 918.3661 960.6034 949.6775 997.6931 1115.688   100
+    ##   dplyr 985.4968 1032.250 1132.759 1079.941 1193.747 2159.046   100
+    ##  rquery 974.2718 1040.978 1143.286 1127.294 1223.117 2129.621   100
