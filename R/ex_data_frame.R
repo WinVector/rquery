@@ -115,8 +115,11 @@ rquery_apply_to_data_frame <- function(d,
   if(length(tabNames)!=1) {
     stop("rquery::rquery_apply_to_data_frame optree must reference exactly one table when rquery_executor is not set")
   }
+  if(is_named_list_of_data_frames(d) && (length(d)==1)) {
+    d <- d[[1]]
+  }
   if(!is.data.frame(d)) {
-    stop("rquery::rquery_apply_to_data_frame d must be a data.frame when rquery_executor is not set")
+    stop("rquery::rquery_apply_to_data_frame d must be a data.frame or list with one data.frame when rquery_executor is not set")
   }
   cols_used <- columns_used(optree)[[tabNames]]
   missing <- setdiff(cols_used, colnames(d))

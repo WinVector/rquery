@@ -109,6 +109,7 @@ dbi_table <- db_td
 #'
 #' @param d data.frame or name of data.frame to use as a data source.
 #' @param ... not used, force later arguments to be optional.
+#' @param name if not null name to user for table.
 #' @param name_source temporary name source.
 #' @param env environment to work in.
 #' @return a relop representation of the data
@@ -126,6 +127,7 @@ dbi_table <- db_td
 #'
 local_td <- function(d,
                      ...,
+                     name = NULL,
                      name_source = wrapr::mk_tmp_name_source("rqltd"),
                      env = parent.frame()) {
   UseMethod("local_td")
@@ -134,15 +136,19 @@ local_td <- function(d,
 #' @export
 local_td.data.frame <- function(d,
                                 ...,
+                                name = NULL,
                                 name_source = wrapr::mk_tmp_name_source("rqltd"),
                                 env = parent.frame()) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::local_td.data.frame")
-  table_name <- substitute(d)
-  if(is.name(table_name) || is.character(table_name)) {
-    table_name <- as.character(table_name)
-  } else {
-    table_name = name_source()
+  table_name <- name
+  if(is.null(table_name)) {
+    table_name <- substitute(d)
+    if(is.name(table_name) || is.character(table_name)) {
+      table_name <- as.character(table_name)
+    } else {
+      table_name = name_source()
+    }
   }
   mk_td(table_name = table_name,
         columns = colnames(d))
