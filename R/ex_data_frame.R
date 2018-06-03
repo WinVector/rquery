@@ -81,8 +81,8 @@ rquery_apply_to_data_frame <- function(d,
   if(!("relop" %in% class(optree))) {
     stop("rquery::rquery_apply_to_data_frame expect optree to be of class relop")
   }
-  if((!is.data.frame(d)) && (!is_named_list_of_data_frames(d))) {
-    stop("rquery::rquery_apply_to_data_frame d must be a data.frame or named list of data.frames")
+  if((!is.data.frame(d)) && (!is_named_list_of_data_frames(d)) && (!is.environment(d))) {
+    stop("rquery::rquery_apply_to_data_frame d must be a data.frame, a named list of data.frames, or an environment")
   }
   tabNames <- tables_used(optree)
   executor <- base::mget("rquery_executor",
@@ -90,13 +90,18 @@ rquery_apply_to_data_frame <- function(d,
                          ifnotfound = list(NULL),
                          inherits = TRUE)[[1]]
   if(!is.null(executor)) {
-    tables <- d
+    tables <- NULL
+    env <- env
     if(is.data.frame(d)) {
       if(length(tabNames)!=1) {
         stop("rquery::rquery_apply_to_data_frame optree must reference exactly one table a non-list is passed to rquery_executor")
       }
       tables <- list(x = d)
       names(tables) <- tabNames
+    } else if(is_named_list_of_data_frames(d)) {
+      tables <- d
+    } else if(is.environment(d)) {
+      env <- d
     }
     res <- executor$f(optree = optree,
                       tables = tables,
