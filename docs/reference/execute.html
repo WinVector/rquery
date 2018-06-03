@@ -131,7 +131,7 @@ table.</p>
 
     <pre class="usage"><span class='fu'>execute</span>(<span class='no'>source</span>, <span class='no'>optree</span>, <span class='no'>...</span>, <span class='kw'>table_name</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>limit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>source_limit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>precheck</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+  <span class='kw'>precheck</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -171,6 +171,10 @@ table.</p>
     <tr>
       <th>precheck</th>
       <td><p>logical if TRUE precheck existance of table and columns.</p></td>
+    </tr>
+    <tr>
+      <th>env</th>
+      <td><p>environment to work in.</p></td>
     </tr>
     </table>
     

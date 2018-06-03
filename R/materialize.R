@@ -411,6 +411,7 @@ materialize_sql <- function(db,
 #' @param overwrite logical if TRUE drop an previous table.
 #' @param temporary logical if TRUE try to create a temporary table.
 #' @param precheck logical if TRUE precheck existance of table and columns.
+#' @param env environment to work in.
 #' @return data.frame or table handle.
 #'
 #' @seealso \code{\link{materialize}}, \code{\link{db_td}}, \code{\link{to_sql}}, \code{\link{rq_copy_to}}, \code{\link{mk_td}}
@@ -453,20 +454,21 @@ execute <- function(source,
                     source_limit = NULL,
                     overwrite = TRUE,
                     temporary = FALSE,
-                    precheck = FALSE) {
+                    precheck = FALSE,
+                    env = parent.frame()) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::execute")
   if(!("relop" %in% class(optree))) {
     stop("rquery::execute expect optree to be of class relop")
   }
   table_name_set <- !is.null(table_name)
-  if(is.data.frame(source)) {
+  if(is.data.frame(source) || is_named_list_of_data_frames(source)) {
     if(table_name_set) {
       stop("rquery::execute table_name set when applying to data.frame argument")
     }
     res <- rquery_apply_to_data_frame(source,
                                       optree,
-                                      env = parent.frame(),
                                       limit = limit,
+                                      env = env,
                                       source_limit = source_limit)
     return(res)
   }

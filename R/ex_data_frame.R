@@ -11,11 +11,27 @@ re_write_table_names <- function(op_tree, new_name) {
   op_tree
 }
 
+is_named_list_of_data_frames <- function(o) {
+  if(!is.list(o)) {
+    return(FALSE)
+  }
+  nms <- names(o)
+  if(length(nms)!=length(o)) {
+    return(FALSE)
+  }
+  for(ni in nms) {
+    if(!is.data.frame(o[[ni]])) {
+      return(FALSE)
+    }
+  }
+  return(TRUE)
+}
+
 #' Execture optree in an enviroment where d is the only data.
 #'
 #' Default DB uses RSQLite (so some functions are not supported).
 #'
-#' @param d data.frame
+#' @param d data.frame or named list of data.frames.
 #' @param optree rquery rel_op operation tree.
 #' @param ... force later arguments to bind by name.
 #' @param limit integer, if not NULL limit result to no more than this many rows.
@@ -62,15 +78,40 @@ rquery_apply_to_data_frame <- function(d,
                                        source_limit = NULL,
                                        env = parent.frame()) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::rquery_apply_to_data_frame")
-  if(!is.data.frame(d)) {
-    stop("rquery::rquery_apply_to_data_frame d must be a data.frame")
-  }
   if(!("relop" %in% class(optree))) {
     stop("rquery::rquery_apply_to_data_frame expect optree to be of class relop")
   }
+  if((!is.data.frame(d)) && (!is_named_list_of_data_frames(d))) {
+    stop("rquery::rquery_apply_to_data_frame d must be a data.frame or named list of data.frames")
+  }
   tabNames <- tables_used(optree)
+  executor <- base::mget("rquery_executor",
+                         envir = env,
+                         ifnotfound = list(NULL),
+                         inherits = TRUE)[[1]]
+  if(!is.null(executor)) {
+    tables <- d
+    if(is.data.frame(d)) {
+      if(length(tabNames)!=1) {
+        stop("rquery::rquery_apply_to_data_frame optree must reference exactly one table a non-list is passed to rquery_executor")
+      }
+      tables <- list(x = d)
+      names(tables) <- tabNames
+    }
+    res <- executor$f(optree = optree,
+                      tables = tables,
+                      source_limit = source_limit,
+                      env = env)
+    if((!is.null(limit)) && (limit<nrow(res))) {
+      res <- res[seq_len(limit), , drop = FALSE]
+    }
+    return(res)
+  }
   if(length(tabNames)!=1) {
-    stop("rquery::rquery_apply_to_data_frame optree must reference exactly one table")
+    stop("rquery::rquery_apply_to_data_frame optree must reference exactly one table when rquery_executor is not set")
+  }
+  if(!is.data.frame(d)) {
+    stop("rquery::rquery_apply_to_data_frame d must be a data.frame when rquery_executor is not set")
   }
   cols_used <- columns_used(optree)[[tabNames]]
   missing <- setdiff(cols_used, colnames(d))
@@ -216,11 +257,11 @@ apply_right.relop <- function(pipe_left_arg,
   if(!("relop" %in% class(pipe_right_arg))) {
     stop("rquery::apply_right.relop expect pipe_right_arg to be of class relop")
   }
-  if(is.data.frame(pipe_left_arg)) {
+  if(is.data.frame(pipe_left_arg) || is_named_list_of_data_frames(pipe_left_arg)) {
     return(rquery_apply_to_data_frame(pipe_left_arg,
                                       pipe_right_arg,
                                       env = pipe_environment))
   }
   # assume pipe_left_arg is a DB connection, execute and bring back result
-  execute(pipe_left_arg, pipe_right_arg)
+  execute(pipe_left_arg, pipe_right_arg, env = pipe_environment)
 }

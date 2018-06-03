@@ -8,6 +8,7 @@
  * Get rid of embedded data cases.
  * Move to new wrapr ops.
  * Rationalize names of table description methods.
+ * Add rquery_executor hook.
 
 # rquery 0.4.4 2018/05/14
 
