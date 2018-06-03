@@ -189,7 +189,7 @@ dq <- d %.>%
              partitionby = 'subjectID',
              orderby = c('probability', 'surveyCategory'),
              reverse = c('probability')) %.>% 
-  rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
+  rename_columns(., c('diagnosis' = 'surveyCategory')) %.>%
   select_columns(., c('subjectID', 
                       'diagnosis', 
                       'probability')) %.>%
@@ -252,14 +252,14 @@ cat(to_sql(dq, my_db, source_limit = 1000))
             "d"."assessmentTotal"
            FROM
             "d" LIMIT 1000
-           ) tsql_55225562427310894126_0000000000
-          ) tsql_55225562427310894126_0000000001
-         ) tsql_55225562427310894126_0000000002
-       ) tsql_55225562427310894126_0000000003
+           ) tsql_48978783059536889121_0000000000
+          ) tsql_48978783059536889121_0000000001
+         ) tsql_48978783059536889121_0000000002
+       ) tsql_48978783059536889121_0000000003
        WHERE "row_rank" <= 1
-      ) tsql_55225562427310894126_0000000004
-     ) tsql_55225562427310894126_0000000005
-    ) tsql_55225562427310894126_0000000006 ORDER BY "subjectID"
+      ) tsql_48978783059536889121_0000000004
+     ) tsql_48978783059536889121_0000000005
+    ) tsql_48978783059536889121_0000000006 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 

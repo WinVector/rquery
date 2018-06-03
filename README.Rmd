@@ -154,7 +154,7 @@ dq <- d %.>%
              partitionby = 'subjectID',
              orderby = c('probability', 'surveyCategory'),
              reverse = c('probability')) %.>% 
-  rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
+  rename_columns(., c('diagnosis' = 'surveyCategory')) %.>%
   select_columns(., c('subjectID', 
                       'diagnosis', 
                       'probability')) %.>%
