@@ -57,7 +57,7 @@ materialize_sql_statement <- function(db, sql, table_name,
 #' that can be applied to relop trees, not as a component to place
 #' in pipelines.
 #'
-#' @param db DBI connecton.
+#' @param db database connecton handle.
 #' @param optree relop operation tree.
 #' @param table_name character, name of table to create.
 #' @param ... force later arguments to bind by name.
@@ -115,6 +115,13 @@ materialize_impl <- function(db,
   if(!("relop" %in% class(optree))) {
     stop("rquery::materialize expect optree to be of class relop")
   }
+  if("relop" %in% class(db)) {
+    stop("rquery::materialize_impl db can not be a relop tree (should be a database handle)")
+  }
+  if(is.environment(db)) {
+    stop("rquery::materialize_impl db can not be an environment (should be a database handle)")
+  }
+
   if(!is.null(sql)) {
     sql_list <- sql
   } else {
@@ -272,7 +279,7 @@ materialize_impl <- function(db,
 #' that can be applied to relop trees, not as a component to place
 #' in pipelines.
 #'
-#' @param db DBI connecton.
+#' @param db database connecton.
 #' @param optree relop operation tree.
 #' @param table_name character, name of table to create.
 #' @param ... force later arguments to bind by name.
@@ -461,6 +468,12 @@ execute <- function(source,
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::execute")
   if(!("relop" %in% class(optree))) {
     stop("rquery::execute expect optree to be of class relop")
+  }
+  if("relop" %in% class(source)) {
+    stop("rquery::execute source can not be a relop tree (should be a database handle, data.frame, or named list of data.frames)")
+  }
+  if(is.environment(source)) {
+    stop("rquery::execute source can not be an environment (should be a database handle, data.frame, or named list of data.frames)")
   }
   table_name_set <- !is.null(table_name)
   if(is.data.frame(source) || is_named_list_of_data_frames(source)) {

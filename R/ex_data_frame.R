@@ -271,6 +271,9 @@ apply_right.relop <- function(pipe_left_arg,
                                       pipe_right_arg,
                                       env = pipe_environment))
   }
+  if("relop" %in% class(pipe_left_arg)) {
+    stop("rquery::apply_right.relop left argument can not be an already defined relop pipeline")
+  }
   # assume pipe_left_arg is a DB connection, execute and bring back result
   execute(pipe_left_arg, pipe_right_arg, env = pipe_environment)
 }
