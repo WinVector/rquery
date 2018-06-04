@@ -154,7 +154,7 @@
   <span class='no'>design</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='expand_grid.html'>expand_grid</a></span>(<span class='no'>my_db</span>, <span class='no'>values</span>)
 
   <span class='co'># not quite matching data</span>
-  <span class='no'>data</span> <span class='kw'>&lt;-</span> <span class='fu'>build_frame</span>(
+  <span class='no'>data</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/wrapr/topics/build_frame'>build_frame</a></span>(
     <span class='st'>"nums"</span>, <span class='st'>"lets"</span>   <span class='kw'>|</span>
       <span class='fl'>1L</span>    , <span class='st'>"a"</span>    <span class='kw'>|</span>
       <span class='fl'>1L</span>    , <span class='st'>"b"</span>    <span class='kw'>|</span>
@@ -180,7 +180,7 @@
   <span class='no'>res</span> <span class='kw'>%.&gt;%</span>
     <span class='fu'><a href='project_se.html'>project_se</a></span>(<span class='no'>.</span>,
                <span class='kw'>groupby</span> <span class='kw'>=</span> <span class='fu'><a href='column_names.html'>column_names</a></span>(<span class='no'>design</span>),
-               <span class='st'>"count"</span> <span class='kw'>:=</span> <span class='st'>"SUM(1)"</span>) <span class='kw'>%.&gt;%</span>
+               <span class='st'>"count"</span> <span class='kw'>%:=%</span> <span class='st'>"SUM(1)"</span>) <span class='kw'>%.&gt;%</span>
     <span class='fu'><a href='select_rows_se.html'>select_rows_se</a></span>(<span class='no'>.</span>, <span class='st'>"count&gt;1"</span>) <span class='kw'>%.&gt;%</span>
     <span class='fu'><a href='execute.html'>execute</a></span>(<span class='no'>my_db</span>, <span class='no'>.</span>) <span class='kw'>%.&gt;%</span>
     <span class='fu'>print</span>(<span class='no'>.</span>)

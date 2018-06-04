@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Set a database connection option. — getDBOption • rquery</title>
+<title>Objects exported from other packages — reexports • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -28,9 +28,13 @@
 
 
 
-<meta property="og:title" content="Set a database connection option. — getDBOption" />
+<meta property="og:title" content="Objects exported from other packages — reexports" />
 
-<meta property="og:description" content="Set a database connection option." />
+<meta property="og:description" content="These objects are imported from other packages. Follow the links
+below to see their documentation.
+
+  wraprmk_tmp_name_source, map_to_char, %.&gt;%, let, qc, qe, qae, build_frame, draw_frame, qchar_frame, :=, %:=%
+" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -112,63 +116,28 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Set a database connection option.</h1>
-    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/db_ops.R'><code>R/db_ops.R</code></a></small>
-    <div class="hidden name"><code>getDBOption.Rd</code></div>
+    <h1>Objects exported from other packages</h1>
+    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/package.R'><code>R/package.R</code></a></small>
+    <div class="hidden name"><code>reexports.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Set a database connection option.</p>
+    <p>These objects are imported from other packages. Follow the links
+below to see their documentation.</p>
+<dl class='dl-horizontal'>
+  <dt>wrapr</dt><dd><p><code><a href='http://www.rdocumentation.org/packages/wrapr/topics/mk_tmp_name_source'>mk_tmp_name_source</a></code>, <code><a href='http://www.rdocumentation.org/packages/wrapr/topics/map_to_char'>map_to_char</a></code>, <code>%.&gt;%</code>, <code><a href='http://www.rdocumentation.org/packages/wrapr/topics/let'>let</a></code>, <code><a href='http://www.rdocumentation.org/packages/wrapr/topics/qc'>qc</a></code>, <code><a href='http://www.rdocumentation.org/packages/wrapr/topics/qe'>qe</a></code>, <code><a href='http://www.rdocumentation.org/packages/wrapr/topics/qae'>qae</a></code>, <code><a href='http://www.rdocumentation.org/packages/wrapr/topics/build_frame'>build_frame</a></code>, <code><a href='http://www.rdocumentation.org/packages/wrapr/topics/draw_frame'>draw_frame</a></code>, <code><a href='http://www.rdocumentation.org/packages/wrapr/topics/qchar_frame'>qchar_frame</a></code>, <code><a href='http://www.rdocumentation.org/packages/wrapr/topics/named_map_builder'>:=</a></code>, <code><a href='http://www.rdocumentation.org/packages/wrapr/topics/named_map_builder'>%:=%</a></code></p></dd>
+</dl>
     
     </div>
 
-    <pre class="usage"><span class='fu'>getDBOption</span>(<span class='no'>db</span>, <span class='no'>optname</span>, <span class='no'>default</span>, <span class='kw'>connection_options</span> <span class='kw'>=</span> <span class='fu'>list</span>())</pre>
-    
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>db</th>
-      <td><p>database connection handle.</p></td>
-    </tr>
-    <tr>
-      <th>optname</th>
-      <td><p>character, single option name.</p></td>
-    </tr>
-    <tr>
-      <th>default</th>
-      <td><p>what to return if not set.</p></td>
-    </tr>
-    <tr>
-      <th>connection_options</th>
-      <td><p>name list of per connection options.</p></td>
-    </tr>
-    </table>
-    
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+        
 
-    <p>option value</p>
-    
-
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-<span class='kw'>if</span>(<span class='fu'>requireNamespace</span>(<span class='st'>"DBI"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>&amp;&amp;</span> <span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
-  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
-  <span class='fu'>print</span>(<span class='fu'>getDBOption</span>(<span class='no'>my_db</span>, <span class='st'>"use_DBI_dbExecute"</span>))
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; [1] TRUE</div><div class='input'>
-</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#value">Value</a></li>
-      
-      <li><a href="#examples">Examples</a></li>
-    </ul>
+                </ul>
 
   </div>
 </div>

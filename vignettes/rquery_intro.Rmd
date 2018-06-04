@@ -45,6 +45,7 @@ run_vignette <- requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQ
 
 ```{r setup, eval=run_vignette}
 library("rquery")
+library("wrapr")
 
 # example database connection
 db <- DBI::dbConnect(RSQLite::SQLite(),

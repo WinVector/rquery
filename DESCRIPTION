@@ -24,7 +24,8 @@ Description: A 'SQL' query generator based on Edgar F. Codd's relational
 License: GPL-3
 Encoding: UTF-8
 Depends:
-  R (>= 3.4.0),
+  R (>= 3.4.0)
+Imports:
   wrapr (>= 1.5.0)
 Suggests:
     DBI,

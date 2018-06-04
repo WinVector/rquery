@@ -94,7 +94,7 @@ expand_grid <- function(db,
 #'   res %.>%
 #'     project_se(.,
 #'                groupby = column_names(design),
-#'                "count" := "SUM(1)") %.>%
+#'                "count" %:=% "SUM(1)") %.>%
 #'     select_rows_se(., "count>1") %.>%
 #'     execute(my_db, .) %.>%
 #'     print(.)
@@ -128,9 +128,9 @@ complete_design <- function(design_table, data_table) {
                paste(missing, collapse = ", ")))
   }
   design_table <- design_table %.>%
-    extend_se(., "row_in_design_table" := 1)
+    extend_se(., "row_in_design_table" %:=% 1)
   data_table <- data_table %.>%
-    extend_se(., "row_in_data_table" := 1)
+    extend_se(., "row_in_data_table" %:=% 1)
   natural_join(design_table, data_table, jointype = "LEFT")  %.>%
     null_replace(., c("row_in_design_table", "row_in_data_table"), 0)
 }

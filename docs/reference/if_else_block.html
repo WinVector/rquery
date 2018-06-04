@@ -199,13 +199,13 @@ is a reserved column name for this procedure.</p>
     <span class='kw'>temporary</span><span class='kw'>=</span><span class='fl'>TRUE</span>, <span class='kw'>overwrite</span><span class='kw'>=</span><span class='fl'>TRUE</span>)
 
   <span class='no'>program</span> <span class='kw'>&lt;-</span> <span class='fu'>if_else_block</span>(
-    <span class='kw'>testexpr</span> <span class='kw'>=</span> <span class='fu'>qe</span>((<span class='no'>a</span>+<span class='no'>b</span>)<span class='kw'>&gt;</span><span class='fl'>1</span>),
+    <span class='kw'>testexpr</span> <span class='kw'>=</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/wrapr/topics/qe'>qe</a></span>((<span class='no'>a</span>+<span class='no'>b</span>)<span class='kw'>&gt;</span><span class='fl'>1</span>),
     <span class='kw'>thenexprs</span> <span class='kw'>=</span> <span class='fu'>c</span>(
       <span class='fu'>if_else_block</span>(
-        <span class='kw'>testexpr</span> <span class='kw'>=</span> <span class='fu'>qe</span>(<span class='no'>r</span> <span class='kw'>&gt;=</span> <span class='fl'>0.5</span>),
-        <span class='kw'>thenexprs</span> <span class='kw'>=</span> <span class='fu'>qae</span>(<span class='no'>a</span> <span class='kw'>:=</span> <span class='fl'>0</span>),
-        <span class='kw'>elseexprs</span> <span class='kw'>=</span> <span class='fu'>qae</span>(<span class='no'>b</span> <span class='kw'>:=</span> <span class='fl'>0</span>)),
-      <span class='fu'>qae</span>(<span class='no'>edited</span> <span class='kw'>:=</span> <span class='fl'>1</span>)))
+        <span class='kw'>testexpr</span> <span class='kw'>=</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/wrapr/topics/qe'>qe</a></span>(<span class='no'>r</span> <span class='kw'>&gt;=</span> <span class='fl'>0.5</span>),
+        <span class='kw'>thenexprs</span> <span class='kw'>=</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/wrapr/topics/qae'>qae</a></span>(<span class='no'>a</span> <span class='kw'>:=</span> <span class='fl'>0</span>),
+        <span class='kw'>elseexprs</span> <span class='kw'>=</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/wrapr/topics/qae'>qae</a></span>(<span class='no'>b</span> <span class='kw'>:=</span> <span class='fl'>0</span>)),
+      <span class='fu'><a href='http://www.rdocumentation.org/packages/wrapr/topics/qae'>qae</a></span>(<span class='no'>edited</span> <span class='kw'>:=</span> <span class='fl'>1</span>)))
   <span class='fu'>print</span>(<span class='no'>program</span>)
 
   <span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='extend_se.html'>extend_se</a></span>(<span class='no'>d</span>, <span class='no'>program</span>)
@@ -293,9 +293,9 @@ is a reserved column name for this procedure.</p>
 #&gt; 8   8          1          1 0.6390610 0 1      1
 #&gt; 9   9          0          1 0.3789607 1 0      1
 #&gt; 10 10          0          1 0.3595307 1 0      1
-#&gt;                    r1                  r2
-#&gt; 1 4804690734117375650 2700214537239287969
-#&gt; 2 7849439633206051779 8425839734837084841</div><div class='input'>
+#&gt;                     r1                  r2
+#&gt; 1 -9002976910923333914 8900116220434120672
+#&gt; 2   -10471714483132042 3357949178479632406</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

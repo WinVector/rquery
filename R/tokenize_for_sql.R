@@ -4,11 +4,27 @@ ltok <- function(v) {
 }
 
 
-inlineops <- c(":=", "==", "!=", ">=", "<=", "=",
-              "<", ">",
-              "+", "-", "*", "/",
-              "&&", "||",
-              "&", "|")
+is_inline_expr <- function(lexpr) {
+  if(!is.call(lexpr)) {
+    return(FALSE)
+  }
+  if(length(lexpr)!=3) {
+    return(FALSE)
+  }
+  callName <- trimws(as.character(lexpr[[1]]), which = "both")
+  inlineops <- c(":=", "==", "!=", ">=", "<=", "=",
+                 "<", ">",
+                 "+", "-", "*", "/",
+                 "&&", "||",
+                 "&", "|")
+  if(callName %in% inlineops) {
+    return(TRUE)
+  }
+  if(length(grep("^%.*%$", callName))==1) {
+    return(TRUE)
+  }
+  return(FALSE)
+}
 
 #' Cross-parse a call from an R parse tree into SQL.
 #'
@@ -18,14 +34,11 @@ inlineops <- c(":=", "==", "!=", ">=", "<=", "=",
 #' @noRd
 #'
 tokenize_call_for_R <- function(lexpr) {
-  if(is.call(lexpr)) {
-    n <- length(lexpr)
+  if(is_inline_expr(lexpr)) {
     callName <- as.character(lexpr[[1]])
-    if((n==3) && (callName %in% inlineops)) {
-      lhs <- lexpr[[2]]
-      rhs <- lexpr[[3]]
-      return(paste(deparse(lhs), callName, deparse(rhs)))
-    }
+    lhs <- lexpr[[2]]
+    rhs <- lexpr[[3]]
+    return(paste(deparse(lhs), callName, deparse(rhs)))
   }
   return(deparse(lexpr))
 }
@@ -40,8 +53,8 @@ tokenize_call_for_R <- function(lexpr) {
 #' @noRd
 #'
 tokenize_call_for_SQL <- function(lexpr,
-                               colnames,
-                               env) {
+                                  colnames,
+                                  env) {
   n <- length(lexpr)
   if((n<=0) || (!is.call(lexpr))) {
     stop("rquery::tokenize_call_for_SQL called on non-call")
@@ -124,10 +137,10 @@ tokenize_call_for_SQL <- function(lexpr,
     return(res)
   }
   # ifelse back in place.
-  if((n==3) && (callName %in% inlineops)) {
+  if(is_inline_expr(lexpr)) {
     lhs <- args[[1]]
     rhs <- args[[2]]
-    if(callName==":=") { # assignment special case
+    if(callName %in% c(":=", "%:=%")) { # assignment special case
       res$parsed_toks <- rhs$parsed_toks
       res$symbols_used <- rhs$symbols_used
       res$symbols_produced <- unique(c(as.character(lexpr[[2]]),
@@ -313,6 +326,7 @@ tokenize_for_SQL_r <- function(lexpr,
 #'
 #' tokenize_for_SQL(substitute(1 + 2), colnames= NULL)
 #' tokenize_for_SQL(substitute(a := 3), colnames= NULL)
+#' tokenize_for_SQL(substitute(a %:=% 3), colnames= NULL)
 #'
 #' @export
 #'

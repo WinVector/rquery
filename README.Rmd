@@ -77,6 +77,7 @@ from [Let’s Have Some Sympathy For The Part-time R User](http://www.win-vector
 
 ```{r ex, warning=FALSE, message=FALSE}
 library("rquery")
+library("wrapr")
 use_spark <- FALSE
 
 if(use_spark) {
@@ -154,12 +155,14 @@ dq <- d %.>%
              partitionby = 'subjectID',
              orderby = c('probability', 'surveyCategory'),
              reverse = c('probability')) %.>% 
-  rename_columns(., c('diagnosis' = 'surveyCategory')) %.>%
+  rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
   select_columns(., c('subjectID', 
                       'diagnosis', 
                       'probability')) %.>%
   orderby(., cols = 'subjectID')
 ```
+
+(Note one can also use the named map builder alias `%:=%` if there is concern of aliasing with `data.table`'s definiton of `:=`.)
 
 We then generate our result:
 

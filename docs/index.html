@@ -180,10 +180,11 @@
 <p>A lot of the grace of the Codd theory can be recovered through the usual trick changing function composition notation from <code>g(f(x))</code> to <code>x . f() . g()</code>. This experiment is asking (and not for the first time): “what if <code>SQL</code> were piped (expressed composition as a left to right flow, instead of a right to left nesting)?”</p>
 <p>Let’s work a non-trivial example: the <code>dplyr</code> pipeline from <a href="http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/">Let’s Have Some Sympathy For The Part-time R User</a>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">"rquery"</span>)
+<span class="kw">library</span>(<span class="st">"wrapr"</span>)
 use_spark &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 
 <span class="cf">if</span>(use_spark) {
-  my_db &lt;-<span class="st"> </span>sparklyr<span class="op">::</span><span class="kw">spark_connect</span>(<span class="dt">version=</span><span class="st">'2.2.0'</span>, 
+  my_db &lt;-<span class="st"> </span>sparklyr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/sparklyr/topics/spark-connections">spark_connect</a></span>(<span class="dt">version=</span><span class="st">'2.2.0'</span>, 
                                    <span class="dt">master =</span> <span class="st">"local"</span>)
   cname &lt;-<span class="st"> </span><span class="kw"><a href="reference/rq_connection_name.html">rq_connection_name</a></span>(my_db)
   rquery<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/rquery/topics/setDBOption">setDBOption</a></span>(my_db, 
@@ -227,7 +228,7 @@ dbopts &lt;-<span class="st"> </span><span class="kw"><a href="reference/rq_conn
 <span class="kw">print</span>(<span class="kw"><a href="reference/getDBOption.html">getDBOption</a></span>(my_db, <span class="st">"control_rownames"</span>))</code></pre></div>
 <pre><code>## [1] TRUE</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># copy data in so we have an example</span>
-d_local &lt;-<span class="st"> </span><span class="kw">build_frame</span>(
+d_local &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/wrapr/topics/build_frame">build_frame</a></span>(
    <span class="st">"subjectID"</span>, <span class="st">"surveyCategory"</span>     , <span class="st">"assessmentTotal"</span>, <span class="st">"irrelevantCol1"</span>, <span class="st">"irrelevantCol2"</span> <span class="op">|</span>
 <span class="st">   </span><span class="dv">1</span>          , <span class="st">"withdrawal behavior"</span>, <span class="dv">5</span>                , <span class="st">"irrel1"</span>        , <span class="st">"irrel2"</span>         <span class="op">|</span>
 <span class="st">   </span><span class="dv">1</span>          , <span class="st">"positive re-framing"</span>, <span class="dv">2</span>                , <span class="st">"irrel1"</span>        , <span class="st">"irrel2"</span>         <span class="op">|</span>
@@ -304,11 +305,12 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
              <span class="dt">partitionby =</span> <span class="st">'subjectID'</span>,
              <span class="dt">orderby =</span> <span class="kw">c</span>(<span class="st">'probability'</span>, <span class="st">'surveyCategory'</span>),
              <span class="dt">reverse =</span> <span class="kw">c</span>(<span class="st">'probability'</span>)) <span class="op">%.&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw"><a href="reference/rename_columns.html">rename_columns</a></span>(., <span class="kw">c</span>(<span class="st">'diagnosis'</span> =<span class="st"> 'surveyCategory'</span>)) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="reference/rename_columns.html">rename_columns</a></span>(., <span class="st">'diagnosis'</span> <span class="op">:</span><span class="er">=</span><span class="st"> 'surveyCategory'</span>) <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="reference/select_columns.html">select_columns</a></span>(., <span class="kw">c</span>(<span class="st">'subjectID'</span>, 
                       <span class="st">'diagnosis'</span>, 
                       <span class="st">'probability'</span>)) <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="reference/orderby.html">orderby</a></span>(., <span class="dt">cols =</span> <span class="st">'subjectID'</span>)</code></pre></div>
+<p>(Note one can also use the named map builder alias <code>%:=%</code> if there is concern of aliasing with <code>data.table</code>’s definiton of <code>:=</code>.)</p>
 <p>We then generate our result:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dq <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="reference/execute.html">execute</a></span>(my_db, .) <span class="op">%.&gt;%</span>
@@ -370,14 +372,14 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
         "d"."assessmentTotal"
        FROM
         "d" LIMIT 1000
-       ) tsql_35499868435870520356_0000000000
-      ) tsql_35499868435870520356_0000000001
-     ) tsql_35499868435870520356_0000000002
-   ) tsql_35499868435870520356_0000000003
+       ) tsql_16361369705125645580_0000000000
+      ) tsql_16361369705125645580_0000000001
+     ) tsql_16361369705125645580_0000000002
+   ) tsql_16361369705125645580_0000000003
    WHERE "row_rank" &lt;= 1
-  ) tsql_35499868435870520356_0000000004
- ) tsql_35499868435870520356_0000000005
-) tsql_35499868435870520356_0000000006 ORDER BY "subjectID"</code></pre>
+  ) tsql_16361369705125645580_0000000004
+ ) tsql_16361369705125645580_0000000005
+) tsql_16361369705125645580_0000000006 ORDER BY "subjectID"</code></pre>
 <p>The query is large, but due to its regular structure it should be very amenable to query optimization.</p>
 <p>A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our <a href="https://github.com/WinVector/rquery/blob/master/extras/PerfTest.html">initial experiments</a> show <code>rquery</code> narrowed queries to be twice as fast as un-narrowed <code>dplyr</code> on a synthetic problem simulating large disk-based queries. We think if we connected directly to <code>Spark</code>’s relational operators (avoiding the <code>SQL</code> layer) we may be able to achieve even faster performance.</p>
 <p>The above optimization is possible because the <code>rquery</code> representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query. For example:</p>

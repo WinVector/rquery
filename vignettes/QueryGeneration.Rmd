@@ -24,6 +24,7 @@ The primary purpose of `rquery` is `SQL` query generation.  We demonstrate this 
 
 ```{r ex, warning=FALSE, message=FALSE, include=FALSE, eval=run_vignette}
 library("rquery")
+library("wrapr")
 
 # this db does not have window fns
 my_db <- DBI::dbConnect(RSQLite::SQLite(), 

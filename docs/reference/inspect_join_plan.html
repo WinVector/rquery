@@ -171,7 +171,7 @@
                                <span class='kw'>weight</span><span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>130</span>, <span class='fl'>110</span>),
                                <span class='kw'>width</span><span class='kw'>=</span> <span class='fl'>1</span>))
   <span class='co'># get the initial description of table defs</span>
-  <span class='no'>tDesc</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='describe_tables.html'>describe_tables</a></span>(<span class='no'>my_db</span>, <span class='fu'>qc</span>(<span class='no'>d1</span>, <span class='no'>d2</span>))
+  <span class='no'>tDesc</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='describe_tables.html'>describe_tables</a></span>(<span class='no'>my_db</span>, <span class='fu'><a href='http://www.rdocumentation.org/packages/wrapr/topics/qc'>qc</a></span>(<span class='no'>d1</span>, <span class='no'>d2</span>))
   <span class='co'># declare keys (and give them consistent names)</span>
   <span class='no'>tDesc</span>$<span class='no'>keys</span><span class='kw'>[[</span><span class='fl'>1</span>]] <span class='kw'>&lt;-</span> <span class='fu'>list</span>(<span class='kw'>PrimaryKey</span><span class='kw'>=</span> <span class='st'>'id'</span>)
   <span class='no'>tDesc</span>$<span class='no'>keys</span><span class='kw'>[[</span><span class='fl'>2</span>]] <span class='kw'>&lt;-</span> <span class='fu'>list</span>(<span class='kw'>PrimaryKey</span><span class='kw'>=</span> <span class='st'>'pid'</span>)
