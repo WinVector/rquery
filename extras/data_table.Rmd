@@ -149,8 +149,9 @@ data.table_function <- function(dL) {
   data.table::setnames(dDT, old = "surveyCategory", new = "diagnosis")
   dDT[, probability := exp(assessmentTotal * scale)]
   dDT[, probability := probability / sum( probability ), subjectID ]
-  data.table::setorder(dDT, subjectID, probability, -diagnosis)
+  data.table::setorder(dDT, subjectID, probability, diagnosis)
   dDT <- dDT[, .SD[.N], subjectID]
+  dDT[, assessmentTotal := NULL]
   data.table::setorder(dDT, subjectID)
 }
 
@@ -229,42 +230,42 @@ dLorig <- dL
 
 ref <- as.data.frame(ex_data_table(rquery_pipeline))
 # sensible consequences we can check
-assertthat::assert_that(min(ref$probability)>=0.5) 
-assertthat::are_equal(nSubj, nrow(ref))
-assertthat::are_equal(ref$subjectID, seq_len(nSubj))
-assertthat::are_equal(colnames(ref), c("subjectID", "diagnosis", "probability"))
+assertthat::assert_that(min(ref$probability)>=0.5)
+assertthat::assert_that(assertthat::are_equal(nSubj, nrow(ref)))
+assertthat::assert_that(assertthat::are_equal(ref$subjectID, seq_len(nSubj)))
+assertthat::assert_that(assertthat::are_equal(colnames(ref), c("subjectID", "diagnosis", "probability")))
 
 # from database version
 c0 <- as.data.frame(execute(my_db, rquery_pipeline))
-assertthat::are_equal(ref, c0)
+assertthat::assert_that(assertthat::are_equal(ref, c0))
 
 # database round trip version
 c1 <- as.data.frame(execute(dL, rquery_pipeline))
-assertthat::are_equal(ref, c1)
+assertthat::assert_that(assertthat::are_equal(ref, c1))
 
 c2 <- as.data.frame(dplyr_pipeline(dL))
-assertthat::are_equal(ref, c2)
+assertthat::assert_that(assertthat::are_equal(ref, c2))
 
 c2b <- as.data.frame(dplyr_pipeline(dplyr::as.tbl(dL)))
-assertthat::are_equal(ref, c2b)
+assertthat::assert_that(assertthat::are_equal(ref, c2b))
 
 # from database version
 c3 <- as.data.frame(dplyr_pipeline(dRtbl))
-assertthat::are_equal(ref, c3)
+assertthat::assert_that(assertthat::are_equal(ref, c3))
 
 # database round trip version
 # narrow by hand before copying to give all advantages.
 c4 <- dplyr_round_trip(dL)
-assertthat::are_equal(ref, c4)
+assertthat::assert_that(assertthat::are_equal(ref, c4))
 
 c5 <- as.data.frame(data.table_function(dL))
-assertthat::are_equal(ref, c5)
+assertthat::assert_that(assertthat::are_equal(ref, c5))
 
 c6 <- stats_aggregate_soln(dL)
-assertthat::are_equal(ref, c6)
+assertthat::assert_that(assertthat::are_equal(ref, c6))
 
 # confirm no side-effects back to orginal frame
-assertthat::are_equal(dLorig, dL)
+assertthat::assert_that(assertthat::are_equal(dLorig, dL))
 
 rm(list = c("dL", "dLorig", "dR", "dRtbl"))
 ```
