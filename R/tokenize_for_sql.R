@@ -140,7 +140,7 @@ tokenize_call_for_SQL <- function(lexpr,
   if(is_inline_expr(lexpr)) {
     lhs <- args[[1]]
     rhs <- args[[2]]
-    if(callName %in% c(":=", "%:=%")) { # assignment special case
+    if(callName %in% c("=", ":=", "%:=%")) { # assignment special case
       res$parsed_toks <- rhs$parsed_toks
       res$symbols_used <- rhs$symbols_used
       res$symbols_produced <- unique(c(as.character(lexpr[[2]]),

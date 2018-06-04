@@ -119,6 +119,11 @@ parse_nse <- function(source, exprs, env,
   parsed <- vector(n, mode = 'list')
   for(i in seq_len(n)) {
     ni <- nms[[i]]
+    if(!is.null(ni)) {
+      if(is.na(ni) || (nchar(ni)<=0)) {
+        ni <- NULL
+      }
+    }
     ei <- exprs[[i]]
     pi <- tokenize_for_SQL(ei,
                         colnames = have,
