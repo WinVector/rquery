@@ -49,7 +49,7 @@ is_named_list_of_data_frames <- function(o) {
 #'   RSQLite::initExtension(winvector_temp_db_handle$db)
 #'
 #'   optree <- mk_td("d", c("AUC", "R2", "D")) %.>%
-#'   	extend_nse(., c := sqrt(R2)) %.>%
+#'   	extend_nse(., c %:=% sqrt(R2)) %.>%
 #'     orderby(., cols = "R2", reverse = "R2")
 #'
 #'   d <- data.frame(AUC = 0.6, R2 = c(0.1, 0.2), D = NA, z = 2)

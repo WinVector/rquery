@@ -40,7 +40,7 @@ unpack_assignments <- function(source, parsed,
     }
     if(check_is_assignment) {
       if(length(si$symbols_produced)!=1) {
-        stop("each assignment must be of the form name := expr")
+        stop("each assignment must be of the form name := expr or name %:=% expr")
       }
     }
     if(length(si$symbols_produced)==1) {

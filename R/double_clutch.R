@@ -38,7 +38,7 @@ double_apply_impl <- function(d, ds, ops, env) {
 #'   winvector_temp_db_handle <- list(db = my_db)
 #'
 #'   data.frame(AUC = c(0.6, 0.45), R2 = c(0.2, 0.01)) %>>% (
-#'     extend_se(., c("v" := "AUC + R2", "x" := "pmax(AUC,v)")) %.>%
+#'     extend_se(., c("v" %:=% "AUC + R2", "x" %:=% "pmax(AUC,v)")) %.>%
 #'     select_rows_nse(., x > 0.5) ) %.>%
 #'     print(.)
 #'

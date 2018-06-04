@@ -917,11 +917,11 @@ actualize_join_plan <- function(columnJoinPlan,
     rows <- columnJoinPlan[columnJoinPlan$tableName==tabnam, , drop= FALSE]
     si <- mk_td(tabnam, rows$sourceColumn)
     if(!isTRUE(all.equal(rows$sourceColumn, rows$resultColumn))) {
-      si <- rename_columns(si,  rows$resultColumn := rows$sourceColumn)
+      si <- rename_columns(si,  rows$resultColumn %:=% rows$sourceColumn)
     }
     if(add_ind_cols) {
       indcol <-  paste0(tabnam, "_present")
-      si <- extend_se(si, indcol := 1)
+      si <- extend_se(si, indcol %:=% 1)
     }
     if(is.null(res)) {
       res <- si

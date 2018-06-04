@@ -191,7 +191,7 @@
 
   <span class='co'># instantiate the operator node</span>
   <span class='no'>op_tree</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span>
-    <span class='fu'>sql_node</span>(<span class='no'>.</span>, <span class='st'>"num_missing"</span> <span class='kw'>:=</span> <span class='fu'>list</span>(<span class='no'>expr</span>))
+    <span class='fu'>sql_node</span>(<span class='no'>.</span>, <span class='st'>"num_missing"</span> <span class='kw'>%:=%</span> <span class='fu'>list</span>(<span class='no'>expr</span>))
   <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>op_tree</span>))
 
   <span class='co'># examine produced SQL</span>
@@ -215,7 +215,7 @@
 #&gt;   v2,
 #&gt;   v3) %.&gt;%
 #&gt;  sql_node(.,
-#&gt;           num_missing := 0 + (CASE WHEN ( v1 IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( v2 IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( v3 IS NULL ) THEN 1.0 ELSE 0.0 END),
+#&gt;           num_missing %:=% 0 + (CASE WHEN ( v1 IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( v2 IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( v3 IS NULL ) THEN 1.0 ELSE 0.0 END),
 #&gt;              *=TRUE)
 #&gt; SELECT
 #&gt;  `v3` AS `v3`,

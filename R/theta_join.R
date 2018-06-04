@@ -99,14 +99,14 @@ theta_join_se.relop <- function(a, b,
   vnam <- setdiff(paste("rquery_thetajoin_condition",
                         1:(length(have)+1), sep = "_"),
                   have)[[1]]
-  parsed <- parse_se(a, vnam := expr,
+  parsed <- parse_se(a, vnam %:=% expr,
                      env = env,
                      have = have,
                      check_names = FALSE)
   assignments <- unpack_assignments(a, parsed,
                                     have = have)
   parsed[[1]]$symbols_produced <- character(0)
-  parsed[[1]]$presentation <- gsub("^.*:= ", "", parsed[[1]]$presentation)
+  parsed[[1]]$presentation <- gsub("^.*%:=% ", "", parsed[[1]]$presentation)
   r <- list(source = list(a, b),
             table_name = NULL,
             cmap = build_col_name_map(usesa, usesb, suffix),
@@ -213,7 +213,7 @@ theta_join_nse.relop <- function(a, b,
   assignments <- unpack_assignments(a, parsed,
                                     have = have)
   parsed[[1]]$symbols_produced <- character(0)
-  parsed[[1]]$presentation <- gsub("^.*:= ", "", parsed[[1]]$presentation)
+  parsed[[1]]$presentation <- gsub("^.*%:=% ", "", parsed[[1]]$presentation)
   r <- list(source = list(a, b),
             cmap = build_col_name_map(usesa, usesb, suffix),
             jointype = jointype,

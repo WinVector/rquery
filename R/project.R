@@ -60,7 +60,7 @@ project_impl <- function(source, ...,
 #'                stringsAsFactors = FALSE))
 #'
 #'   op_tree <- d %.>%
-#'     project_se(., groupby = "group", "vmax" := "max(val)")
+#'     project_se(., groupby = "group", "vmax" %:=% "max(val)")
 #'   cat(format(op_tree))
 #'   sql <- to_sql(op_tree, my_db)
 #'   cat(sql)
@@ -68,7 +68,7 @@ project_impl <- function(source, ...,
 #'      print(.)
 #'
 #'   op_tree <- d %.>%
-#'     project_se(., groupby = NULL, "vmax" := "max(val)")
+#'     project_se(., groupby = NULL, "vmax" %:=% "max(val)")
 #'   cat(format(op_tree))
 #'   sql <- to_sql(op_tree, my_db)
 #'   cat(sql)
@@ -125,7 +125,7 @@ project_se.data.frame <- function(source, groupby, assignments,
 #'                stringsAsFactors = FALSE))
 #'
 #'   op_tree <- d %.>%
-#'     project_nse(., groupby = "group", vmax := max(val))
+#'     project_nse(., groupby = "group", vmax %:=% max(val))
 #'   cat(format(op_tree))
 #'   sql <- to_sql(op_tree, my_db)
 #'   cat(sql)
@@ -133,7 +133,7 @@ project_se.data.frame <- function(source, groupby, assignments,
 #'      print(.)
 #'
 #'   op_tree <- d %.>%
-#'     project_nse(., groupby = NULL, vmax := max(val))
+#'     project_nse(., groupby = NULL, vmax %:=% max(val))
 #'   cat(format(op_tree))
 #'   sql <- to_sql(op_tree, my_db)
 #'   cat(sql)

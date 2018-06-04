@@ -62,9 +62,6 @@ wrapr::qchar_frame
 # can collide with data.table := , but we
 # need this for a lot of the pipe examples.
 
-#' @importFrom wrapr :=
-#' @export
-wrapr::`:=`
 
 #' @importFrom wrapr %:=%
 #' @export

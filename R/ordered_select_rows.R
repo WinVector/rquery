@@ -23,7 +23,7 @@
 #'            c("subjectID", "surveyCategory", "assessmentTotal"))
 #' optree <- d %.>%
 #'   extend_nse(.,
-#'              probability :=
+#'              probability %:=%
 #'                exp(assessmentTotal * scale))  %.>%
 #'   normalize_cols(.,
 #'                  "probability",
@@ -32,7 +32,7 @@
 #'              partitionby = 'subjectID',
 #'              orderby = c('probability', 'surveyCategory'),
 #'              reverse = c('probability', 'surveyCategory')) %.>%
-#'   rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
+#'   rename_columns(., 'diagnosis' %:=% 'surveyCategory') %.>%
 #'   select_columns(., c('subjectID',
 #'                       'diagnosis',
 #'                       'probability')) %.>%
@@ -58,7 +58,7 @@ pick_top_k <- function(source,
   }
   pipe <- source %.>%
     extend_se(.,
-              assignments = order_column := order_expression,
+              assignments = order_column %:=% order_expression,
               partitionby = partitionby,
               orderby = orderby,
               reverse = reverse,

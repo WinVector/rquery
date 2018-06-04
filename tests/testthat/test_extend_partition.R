@@ -18,11 +18,11 @@ test_that("test_extend_partition: Works As Expected", {
                   testexpr =
                     "rand()>=0.5",
                   thenexprs = qae(
-                    a_1 := 'treatment',
-                    a_2 := 'control'),
+                    a_1 %:=% 'treatment',
+                    a_2 %:=% 'control'),
                   elseexprs =  qae(
-                    a_1 := 'control',
-                    a_2 := 'treatment')))
+                    a_1 %:=% 'control',
+                    a_2 %:=% 'treatment')))
     txt <- format(dQ)
     expect_true(length(grep("!", txt, fixed = TRUE))>0)
     sql <- to_sql(dQ, my_db)

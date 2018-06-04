@@ -47,9 +47,9 @@
 #'     thenexprs = c(
 #'       if_else_block(
 #'         testexpr = qe(r >= 0.5),
-#'         thenexprs = qae(a := 0),
-#'         elseexprs = qae(b := 0)),
-#'       qae(edited := 1)))
+#'         thenexprs = qae(a %:=% 0),
+#'         elseexprs = qae(b %:=% 0)),
+#'       qae(edited %:=% 1)))
 #'   print(program)
 #'
 #'   optree <- extend_se(d, program)
@@ -88,7 +88,7 @@ if_else_block <- function(testexpr,
   testsym <- setdiff(
     paste0('ifebtest_', seq_len(length(knownsyms)+1)),
     knownsyms)[[1]]
-  program <- c(testsym := testexpr) # this statement is special, perculates out
+  program <- c(testsym %:=% testexpr) # this statement is special, perculates out
   # the idea is we don't have to nest testsym generation as it is a unique
   # name, so can not be confused with other values.
   prepStmts <- function(stmts, condition) {
@@ -170,10 +170,10 @@ if_else_block <- function(testexpr,
 #'   optree <- d %.>%
 #'     if_else_op(.,
 #'                testexpr = qe((a+b)>1),
-#'                thenexprs = qae(a := 0,
-#'                                b := 0,
-#'                                edited := 1),
-#'                elseexprs = qae(edited := 0))
+#'                thenexprs = qae(a %:=% 0,
+#'                                b %:=% 0,
+#'                                edited %:=% 1),
+#'                elseexprs = qae(edited %:=% 0))
 #'   cat(format(optree))
 #'
 #'   sql <- to_sql(optree, my_db)

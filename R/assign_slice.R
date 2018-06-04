@@ -64,5 +64,5 @@ assign_slice <- function(source, testexpr, columns, value) {
   }
   if_else_op(source = source,
              testexpr = testexpr,
-             thenexprs = columns := rep(value, length(columns)))
+             thenexprs = columns %:=% rep(value, length(columns)))
 }

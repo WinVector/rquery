@@ -58,7 +58,7 @@ order_names <- function(old_names, new_names) {
 #'
 #'   # instantiate the operator node
 #'   op_tree <- d %.>%
-#'     sql_node(., "num_missing" := list(expr))
+#'     sql_node(., "num_missing" %:=% list(expr))
 #'   cat(format(op_tree))
 #'
 #'   # examine produced SQL
@@ -160,7 +160,7 @@ format_node.relop_sql <- function(node) {
                     function(ei) {
                       paste(as.character(ei), collapse = " ")
                     }, character(1))
-  assignments <- paste(names(node$exprs), ":=", exprtxt)
+  assignments <- paste(names(node$exprs), "%:=%", exprtxt)
   modsstr <- ""
   indent_sep <- "\n             "
   if(!is.null(node$mods)) {

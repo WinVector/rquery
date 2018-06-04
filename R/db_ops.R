@@ -181,12 +181,12 @@ rq_colnames <- function(db, table_name) {
 #'                    temporary = TRUE)
 #'   res <- d %.>%
 #'     extend_nse(.,
-#'                wc := ifelse(w>1, "x", "y"),
-#'                wn := ifelse(w>1, 1, 2),
-#'                xc := ifelse(x>1, "x", "y"),
-#'                xn := ifelse(x>1, 1, 2),
-#'                yc := ifelse(y=="a", "x", "y"),
-#'                yn := ifelse(y=="a", "x", "y")) %.>%
+#'                wc %:=% ifelse(w>1, "x", "y"),
+#'                wn %:=% ifelse(w>1, 1, 2),
+#'                xc %:=% ifelse(x>1, "x", "y"),
+#'                xn %:=% ifelse(x>1, 1, 2),
+#'                yc %:=% ifelse(y=="a", "x", "y"),
+#'                yn %:=% ifelse(y=="a", "x", "y")) %.>%
 #'     materialize(db, .)
 #'   resn <- DBI::dbQuoteIdentifier(db, res$table_name)
 #'   print("full table types")
@@ -673,12 +673,12 @@ rq_connection_tests <- function(db,
   yn <- NULL # don't appear unbound
   local_sample <- d %.>%
     extend_nse(.,
-               wc := ifelse(w>1, "x", "y"),
-               wn := ifelse(w>1, 1, 2),
-               xc := ifelse(x>1, "x", "y"),
-               xn := ifelse(x>1, 1, 2),
-               yc := ifelse(y=="a", "x", "y"),
-               yn := ifelse(y=="a", "x", "y")) %.>%
+               wc %:=% ifelse(w>1, "x", "y"),
+               wn %:=% ifelse(w>1, 1, 2),
+               xc %:=% ifelse(x>1, "x", "y"),
+               xn %:=% ifelse(x>1, 1, 2),
+               yc %:=% ifelse(y=="a", "x", "y"),
+               yn %:=% ifelse(y=="a", "x", "y")) %.>%
     select_rows_nse(.,
                     want == 1) %.>%
     execute(db, .)

@@ -77,7 +77,7 @@ count_null_cols <- function(source, cols, count) {
                          "IS NULL ) THEN 1 ELSE 0 END )")
                   })
   expr <- flatten_with_sep(terms, list("+"))
-  nd <- sql_node(source, count := list(expr),
+  nd <- sql_node(source, count %:=% list(expr),
                  orig_columns = TRUE)
   if("relop" %in% class(nd)) {
     nd$display_form <- paste0("count_null_cols(",
@@ -110,7 +110,7 @@ count_null_cols <- function(source, cols, count) {
 #'   d <- rq_copy_to(my_db, 'd',
 #'                    data.frame(AUC = c(0.6, 0.5, NA),
 #'                               R2 = c(1.0, 0.9, NA)))
-#'   op_tree <- d %.>% mark_null_cols(., qc(AUC_NULL, R2_NULL) :=
+#'   op_tree <- d %.>% mark_null_cols(., qc(AUC_NULL, R2_NULL) %:=%
 #'                                      qc(AUC, R2))
 #'   cat(format(op_tree))
 #'   sql <- to_sql(op_tree, my_db)

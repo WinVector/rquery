@@ -49,7 +49,7 @@ set_indicator <- function(source, rescol, testcol, testvalues) {
     terms <- list(terms)
     names(terms) <- rescol
   } else {
-    terms <- rescol := 0
+    terms <- rescol %:=% 0
   }
   nd <- sql_node(source, terms,
                  orig_columns = TRUE)

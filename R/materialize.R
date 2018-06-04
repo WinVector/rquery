@@ -79,7 +79,7 @@ materialize_sql_statement <- function(db, sql, table_name,
 #'   d <- rq_copy_to(my_db, 'd',
 #'                    data.frame(AUC = 0.6, R2 = 0.2),
 #'                    temporary = TRUE, overwrite = TRUE)
-#'   optree <- extend_se(d, c("v" := "AUC + R2", "x" := "pmax(AUC,v)"))
+#'   optree <- extend_se(d, c("v" %:=% "AUC + R2", "x" %:=% "pmax(AUC,v)"))
 #'   cat(format(optree))
 #'   res <- materialize(my_db, optree, "example", precheck = TRUE)
 #'   cat(format(res))
@@ -293,7 +293,7 @@ materialize_impl <- function(db,
 #'   d <- rq_copy_to(my_db, 'd',
 #'                    data.frame(AUC = 0.6, R2 = 0.2),
 #'                    temporary = TRUE, overwrite = TRUE)
-#'   optree <- extend_se(d, c("v" := "AUC + R2", "x" := "pmax(AUC,v)"))
+#'   optree <- extend_se(d, c("v" %:=% "AUC + R2", "x" %:=% "pmax(AUC,v)"))
 #'   cat(format(optree))
 #'   res <- materialize(my_db, optree, "example", precheck = TRUE)
 #'   cat(format(res))
@@ -423,7 +423,7 @@ materialize_sql <- function(db,
 #'   winvector_temp_db_handle <- list(db = my_db)
 #'   d <- rq_copy_to(my_db, 'd',
 #'                    data.frame(AUC = 0.6, R2 = 0.2))
-#'   optree <- extend_se(d, c("v" := "AUC + R2", "x" := "pmax(AUC,v)"))
+#'   optree <- extend_se(d, c("v" %:=% "AUC + R2", "x" %:=% "pmax(AUC,v)"))
 #'
 #'   print(optree)
 #'

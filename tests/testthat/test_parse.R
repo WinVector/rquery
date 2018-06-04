@@ -63,6 +63,10 @@ test_that("test_parse: Works As Expected", {
   expect_equal("1 + 1", ex13$check)
   expect_equal("x", ex13$symbols_produced)
 
+  ex13b <- do_parse("x := 1+1")
+  expect_equal("1 + 1", ex13b$check)
+  expect_equal("x", ex13b$symbols_produced)
+
   ex14 <- do_parse("rank := rank")
   expect_equal("rank", ex14$check)
   expect_equal("rank", ex14$symbols_produced)
@@ -71,7 +75,7 @@ test_that("test_parse: Works As Expected", {
   expect_equal("rank ( )", ex15$check)
   expect_equal("rank", ex15$symbols_produced)
 
-  ex17 <- do_parse("x" := "exp(3 * 5)")
+  ex17 <- do_parse("x" %:=% "exp(3 * 5)")
   expect_equal("exp ( 3 * 5 )", ex17$check)
 
   ex18 <- do_parse("y := y + 1")

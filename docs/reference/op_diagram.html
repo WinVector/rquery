@@ -152,7 +152,7 @@
 <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='mk_td.html'>mk_td</a></span>(<span class='st'>'d'</span>,
              <span class='kw'>columns</span> <span class='kw'>=</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/wrapr/topics/qc'>qc</a></span>(<span class='no'>AUC</span>, <span class='no'>R2</span>))
 <span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span>
-  <span class='fu'><a href='extend_nse.html'>extend_nse</a></span>(<span class='no'>.</span>, <span class='no'>v</span> <span class='kw'>:=</span> <span class='fu'>ifelse</span>(<span class='no'>AUC</span><span class='kw'>&gt;</span><span class='fl'>0.5</span>, <span class='no'>R2</span>, <span class='fl'>1.0</span>)) <span class='kw'>%.&gt;%</span>
+  <span class='fu'><a href='extend_nse.html'>extend_nse</a></span>(<span class='no'>.</span>, <span class='no'>v</span> <span class='kw'>%:=%</span> <span class='fu'>ifelse</span>(<span class='no'>AUC</span><span class='kw'>&gt;</span><span class='fl'>0.5</span>, <span class='no'>R2</span>, <span class='fl'>1.0</span>)) <span class='kw'>%.&gt;%</span>
   <span class='fu'><a href='quantile_node.html'>quantile_node</a></span>(<span class='no'>.</span>) <span class='kw'>%.&gt;%</span>
   <span class='fu'><a href='natural_join.html'>natural_join</a></span>(<span class='no'>.</span>, <span class='no'>d</span>, <span class='kw'>jointype</span> <span class='kw'>=</span> <span class='st'>"LEFT"</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='st'>"AUC"</span>) <span class='kw'>%.&gt;%</span>
   <span class='fu'><a href='orderby.html'>orderby</a></span>(<span class='no'>.</span>, <span class='st'>"AUC"</span>)
@@ -161,7 +161,7 @@
 #&gt;   AUC,
 #&gt;   R2) %.&gt;%
 #&gt;  extend(.,
-#&gt;   v := ifelse(AUC &gt; 0.5, R2, 1)) %.&gt;%
+#&gt;   v %:=% ifelse(AUC &gt; 0.5, R2, 1)) %.&gt;%
 #&gt;  non_sql_node(., quantile_node(.)) %.&gt;%
 #&gt;  natural_join(.,
 #&gt;   table('d'; 
@@ -177,7 +177,7 @@
 #&gt; 
 #&gt; node_1 [ shape = 'folder' , label = 'table(d; \l  AUC,\l  R2)\l']
 #&gt; 
-#&gt; node_2 [ shape = 'tab' , label = 'extend(.,\l  v := ifelse(AUC &gt; 0.5, R2, 1))\l']
+#&gt; node_2 [ shape = 'tab' , label = 'extend(.,\l  v %:=% ifelse(AUC &gt; 0.5, R2, 1))\l']
 #&gt; 
 #&gt; node_3 [ shape = 'tab' , label = 'non_sql_node(., quantile_node(.))\l']
 #&gt; 

@@ -163,7 +163,7 @@
                <span class='kw'>stringsAsFactors</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>))
 
   <span class='no'>op_tree</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span>
-    <span class='fu'>project_nse</span>(<span class='no'>.</span>, <span class='kw'>groupby</span> <span class='kw'>=</span> <span class='st'>"group"</span>, <span class='no'>vmax</span> <span class='kw'>:=</span> <span class='fu'>max</span>(<span class='no'>val</span>))
+    <span class='fu'>project_nse</span>(<span class='no'>.</span>, <span class='kw'>groupby</span> <span class='kw'>=</span> <span class='st'>"group"</span>, <span class='no'>vmax</span> <span class='kw'>%:=%</span> <span class='fu'>max</span>(<span class='no'>val</span>))
   <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>op_tree</span>))
   <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>op_tree</span>, <span class='no'>my_db</span>)
   <span class='fu'>cat</span>(<span class='no'>sql</span>)
@@ -171,7 +171,7 @@
      <span class='fu'>print</span>(<span class='no'>.</span>)
 
   <span class='no'>op_tree</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span>
-    <span class='fu'>project_nse</span>(<span class='no'>.</span>, <span class='kw'>groupby</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>vmax</span> <span class='kw'>:=</span> <span class='fu'>max</span>(<span class='no'>val</span>))
+    <span class='fu'>project_nse</span>(<span class='no'>.</span>, <span class='kw'>groupby</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>vmax</span> <span class='kw'>%:=%</span> <span class='fu'>max</span>(<span class='no'>val</span>))
   <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>op_tree</span>))
   <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>op_tree</span>, <span class='no'>my_db</span>)
   <span class='fu'>cat</span>(<span class='no'>sql</span>)
@@ -182,7 +182,7 @@
 }</div><div class='output co'>#&gt; table('d'; 
 #&gt;   group,
 #&gt;   val) %.&gt;%
-#&gt;  project(., vmax := max(val),
+#&gt;  project(., vmax %:=% max(val),
 #&gt;   g= group)
 #&gt; SELECT `group`, max ( `val` ) AS `vmax` FROM (
 #&gt;  SELECT
@@ -199,7 +199,7 @@
 #&gt; table('d'; 
 #&gt;   group,
 #&gt;   val) %.&gt;%
-#&gt;  project(., vmax := max(val),
+#&gt;  project(., vmax %:=% max(val),
 #&gt;   g= )
 #&gt; SELECT max ( `val` ) AS `vmax` FROM (
 #&gt;  SELECT

@@ -160,7 +160,7 @@
                   <span class='fu'>c</span>(<span class='st'>"subjectID"</span>, <span class='st'>"surveyCategory"</span>, <span class='st'>"assessmentTotal"</span>))
 <span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span>
   <span class='fu'><a href='extend_nse.html'>extend_nse</a></span>(<span class='no'>.</span>,
-             <span class='no'>probability</span> <span class='kw'>:=</span>
+             <span class='no'>probability</span> <span class='kw'>%:=%</span>
                <span class='fu'>exp</span>(<span class='no'>assessmentTotal</span> * <span class='no'>scale</span>))  <span class='kw'>%.&gt;%</span>
   <span class='fu'>normalize_cols</span>(<span class='no'>.</span>,
                  <span class='st'>"probability"</span>,
@@ -169,7 +169,7 @@
              <span class='kw'>partitionby</span> <span class='kw'>=</span> <span class='st'>'subjectID'</span>,
              <span class='kw'>orderby</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>'probability'</span>, <span class='st'>'surveyCategory'</span>),
              <span class='kw'>reverse</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>'probability'</span>)) <span class='kw'>%.&gt;%</span>
-  <span class='fu'><a href='rename_columns.html'>rename_columns</a></span>(<span class='no'>.</span>, <span class='st'>'diagnosis'</span> <span class='kw'>:=</span> <span class='st'>'surveyCategory'</span>) <span class='kw'>%.&gt;%</span>
+  <span class='fu'><a href='rename_columns.html'>rename_columns</a></span>(<span class='no'>.</span>, <span class='st'>'diagnosis'</span> <span class='kw'>%:=%</span> <span class='st'>'surveyCategory'</span>) <span class='kw'>%.&gt;%</span>
   <span class='fu'><a href='select_columns.html'>select_columns</a></span>(<span class='no'>.</span>, <span class='fu'>c</span>(<span class='st'>'subjectID'</span>,
                       <span class='st'>'diagnosis'</span>,
                       <span class='st'>'probability'</span>)) <span class='kw'>%.&gt;%</span>
@@ -179,7 +179,7 @@
 #&gt;   surveyCategory,
 #&gt;   assessmentTotal) %.&gt;%
 #&gt;  extend(.,
-#&gt;   probability := exp(assessmentTotal * scale)) %.&gt;%
+#&gt;   probability %:=% exp(assessmentTotal * scale)) %.&gt;%
 #&gt;  extend(.,
 #&gt;   probability := probability / sum(probability),
 #&gt;   p= subjectID) %.&gt;%
