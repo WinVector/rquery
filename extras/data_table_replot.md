@@ -1,7 +1,7 @@
 data.table backend for rquery replot
 ================
 John Mount, Win-Vector LLC
-06/02/2018
+06/04/2018
 
 Re-plot some of the measurements from [here](https://github.com/WinVector/rquery/blob/master/extras/data_table.md).
 
@@ -10,10 +10,6 @@ library("ggplot2")
 # https://github.com/WinVector/rqdatatable
 library("rqdatatable") # devtools::install.packages("WinVector/rqdatatable")
 ```
-
-    ## Loading required package: rquery
-
-    ## Loading required package: wrapr
 
 ``` r
 all_timings <- readRDS("all_timings.RDS")
@@ -28,153 +24,153 @@ knitr::kable(all_means)
 
 |  nrows| expr                          |  mean\_time\_seconds|
 |------:|:------------------------------|--------------------:|
-|  2e+00| rquery\_database\_round\_trip |            0.0703325|
-|  2e+00| rquery\_data.table            |            0.0096857|
-|  2e+00| data.table                    |            0.0030508|
-|  2e+00| dplyr\_data\_frame            |            0.0135261|
-|  2e+00| dplyr\_tbl                    |            0.0108139|
-|  2e+00| dplyr\_database\_round\_trip  |            0.2047052|
-|  2e+00| base\_r\_stats\_aggregate     |            0.0051542|
-|  4e+00| rquery\_database\_round\_trip |            0.0878100|
-|  4e+00| rquery\_data.table            |            0.0131219|
-|  4e+00| data.table                    |            0.0023351|
-|  4e+00| dplyr\_data\_frame            |            0.0126025|
-|  4e+00| dplyr\_tbl                    |            0.0115099|
-|  4e+00| dplyr\_database\_round\_trip  |            0.1821005|
-|  4e+00| base\_r\_stats\_aggregate     |            0.0054051|
-|  1e+01| rquery\_database\_round\_trip |            0.0744409|
-|  1e+01| rquery\_data.table            |            0.0089338|
-|  1e+01| data.table                    |            0.0026941|
-|  1e+01| dplyr\_data\_frame            |            0.0099450|
-|  1e+01| dplyr\_tbl                    |            0.0088911|
-|  1e+01| dplyr\_database\_round\_trip  |            0.2053992|
-|  1e+01| base\_r\_stats\_aggregate     |            0.0033595|
-|  2e+01| rquery\_database\_round\_trip |            0.0832583|
-|  2e+01| rquery\_data.table            |            0.0095478|
-|  2e+01| data.table                    |            0.0041614|
-|  2e+01| dplyr\_data\_frame            |            0.0133272|
-|  2e+01| dplyr\_tbl                    |            0.0112278|
-|  2e+01| dplyr\_database\_round\_trip  |            0.1873735|
-|  2e+01| base\_r\_stats\_aggregate     |            0.0052560|
-|  4e+01| rquery\_database\_round\_trip |            0.0858668|
-|  4e+01| rquery\_data.table            |            0.0200639|
-|  4e+01| data.table                    |            0.0039966|
-|  4e+01| dplyr\_data\_frame            |            0.0136767|
-|  4e+01| dplyr\_tbl                    |            0.0132299|
-|  4e+01| dplyr\_database\_round\_trip  |            0.1823177|
-|  4e+01| base\_r\_stats\_aggregate     |            0.0059831|
-|  1e+02| rquery\_database\_round\_trip |            0.1197727|
-|  1e+02| rquery\_data.table            |            0.0121455|
-|  1e+02| data.table                    |            0.0029779|
-|  1e+02| dplyr\_data\_frame            |            0.0138996|
-|  1e+02| dplyr\_tbl                    |            0.0117382|
-|  1e+02| dplyr\_database\_round\_trip  |            0.1859998|
-|  1e+02| base\_r\_stats\_aggregate     |            0.0058052|
-|  2e+02| rquery\_database\_round\_trip |            0.0815498|
-|  2e+02| rquery\_data.table            |            0.0117515|
-|  2e+02| data.table                    |            0.0026316|
-|  2e+02| dplyr\_data\_frame            |            0.0139964|
-|  2e+02| dplyr\_tbl                    |            0.0109423|
-|  2e+02| dplyr\_database\_round\_trip  |            0.1885674|
-|  2e+02| base\_r\_stats\_aggregate     |            0.0053333|
-|  4e+02| rquery\_database\_round\_trip |            0.0764473|
-|  4e+02| rquery\_data.table            |            0.0105428|
-|  4e+02| data.table                    |            0.0030793|
-|  4e+02| dplyr\_data\_frame            |            0.0163067|
-|  4e+02| dplyr\_tbl                    |            0.0181373|
-|  4e+02| dplyr\_database\_round\_trip  |            0.1911515|
-|  4e+02| base\_r\_stats\_aggregate     |            0.0060530|
-|  1e+03| rquery\_database\_round\_trip |            0.1129037|
-|  1e+03| rquery\_data.table            |            0.0130051|
-|  1e+03| data.table                    |            0.0058056|
-|  1e+03| dplyr\_data\_frame            |            0.0318945|
-|  1e+03| dplyr\_tbl                    |            0.0359882|
-|  1e+03| dplyr\_database\_round\_trip  |            0.2040048|
-|  1e+03| base\_r\_stats\_aggregate     |            0.0123077|
-|  2e+03| rquery\_database\_round\_trip |            0.0951743|
-|  2e+03| rquery\_data.table            |            0.0142652|
-|  2e+03| data.table                    |            0.0063695|
-|  2e+03| dplyr\_data\_frame            |            0.0701281|
-|  2e+03| dplyr\_tbl                    |            0.0498358|
-|  2e+03| dplyr\_database\_round\_trip  |            0.2033026|
-|  2e+03| base\_r\_stats\_aggregate     |            0.0203487|
-|  4e+03| rquery\_database\_round\_trip |            0.1475338|
-|  4e+03| rquery\_data.table            |            0.0187106|
-|  4e+03| data.table                    |            0.0100284|
-|  4e+03| dplyr\_data\_frame            |            0.1188543|
-|  4e+03| dplyr\_tbl                    |            0.0890460|
-|  4e+03| dplyr\_database\_round\_trip  |            0.2429075|
-|  4e+03| base\_r\_stats\_aggregate     |            0.0341621|
-|  1e+04| rquery\_database\_round\_trip |            0.2140592|
-|  1e+04| rquery\_data.table            |            0.0278973|
-|  1e+04| data.table                    |            0.0212909|
-|  1e+04| dplyr\_data\_frame            |            0.2362265|
-|  1e+04| dplyr\_tbl                    |            0.2283054|
-|  1e+04| dplyr\_database\_round\_trip  |            0.3239990|
-|  1e+04| base\_r\_stats\_aggregate     |            0.1015219|
-|  2e+04| rquery\_database\_round\_trip |            0.3499170|
-|  2e+04| rquery\_data.table            |            0.0439004|
-|  2e+04| data.table                    |            0.0410845|
-|  2e+04| dplyr\_data\_frame            |            0.4343037|
-|  2e+04| dplyr\_tbl                    |            0.3862575|
-|  2e+04| dplyr\_database\_round\_trip  |            0.5041247|
-|  2e+04| base\_r\_stats\_aggregate     |            0.1719530|
-|  4e+04| rquery\_database\_round\_trip |            0.5611411|
-|  4e+04| rquery\_data.table            |            0.0821118|
-|  4e+04| data.table                    |            0.0777648|
-|  4e+04| dplyr\_data\_frame            |            0.8703418|
-|  4e+04| dplyr\_tbl                    |            0.7970521|
-|  4e+04| dplyr\_database\_round\_trip  |            0.8726638|
-|  4e+04| base\_r\_stats\_aggregate     |            0.4051961|
-|  1e+05| rquery\_database\_round\_trip |            1.3340817|
-|  1e+05| rquery\_data.table            |            0.1941148|
-|  1e+05| data.table                    |            0.1979971|
-|  1e+05| dplyr\_data\_frame            |            2.0322712|
-|  1e+05| dplyr\_tbl                    |            2.0227748|
-|  1e+05| dplyr\_database\_round\_trip  |            1.9124696|
-|  1e+05| base\_r\_stats\_aggregate     |            1.1517713|
-|  2e+05| rquery\_database\_round\_trip |            2.5995955|
-|  2e+05| rquery\_data.table            |            0.3549038|
-|  2e+05| data.table                    |            0.3465581|
-|  2e+05| dplyr\_data\_frame            |            4.1943811|
-|  2e+05| dplyr\_tbl                    |            4.1771784|
-|  2e+05| dplyr\_database\_round\_trip  |            3.9360320|
-|  2e+05| base\_r\_stats\_aggregate     |            2.6166716|
-|  4e+05| rquery\_database\_round\_trip |            5.3581625|
-|  4e+05| rquery\_data.table            |            0.6014588|
-|  4e+05| data.table                    |            0.6365327|
-|  4e+05| dplyr\_data\_frame            |            8.6649357|
-|  4e+05| dplyr\_tbl                    |            8.4680607|
-|  4e+05| dplyr\_database\_round\_trip  |            8.1813729|
-|  4e+05| base\_r\_stats\_aggregate     |            4.6742564|
-|  1e+06| rquery\_database\_round\_trip |           13.9203899|
-|  1e+06| rquery\_data.table            |            1.4084696|
-|  1e+06| data.table                    |            1.4632299|
-|  1e+06| dplyr\_data\_frame            |           20.7676020|
-|  1e+06| dplyr\_tbl                    |           20.0745484|
-|  1e+06| dplyr\_database\_round\_trip  |           20.6013084|
-|  1e+06| base\_r\_stats\_aggregate     |           10.8978805|
-|  2e+06| rquery\_database\_round\_trip |           28.2170268|
-|  2e+06| rquery\_data.table            |            2.8262867|
-|  2e+06| data.table                    |            2.7987888|
-|  2e+06| dplyr\_data\_frame            |           41.9015499|
-|  2e+06| dplyr\_tbl                    |           39.9879179|
-|  2e+06| dplyr\_database\_round\_trip  |           43.2652332|
-|  2e+06| base\_r\_stats\_aggregate     |           24.4619783|
-|  4e+06| rquery\_database\_round\_trip |           55.6668174|
-|  4e+06| rquery\_data.table            |            5.1934182|
-|  4e+06| data.table                    |            5.0682226|
-|  4e+06| dplyr\_data\_frame            |           77.8899823|
-|  4e+06| dplyr\_tbl                    |           77.6862649|
-|  4e+06| dplyr\_database\_round\_trip  |           84.9865783|
-|  4e+06| base\_r\_stats\_aggregate     |           46.7380972|
-|  1e+07| rquery\_database\_round\_trip |          145.6941668|
-|  1e+07| rquery\_data.table            |           12.2358251|
-|  1e+07| data.table                    |           14.0780015|
-|  1e+07| dplyr\_data\_frame            |          189.8347662|
-|  1e+07| dplyr\_tbl                    |          187.5360824|
-|  1e+07| dplyr\_database\_round\_trip  |          222.8468867|
-|  1e+07| base\_r\_stats\_aggregate     |          125.0071230|
+|  2e+00| rquery\_database\_round\_trip |            0.0654814|
+|  2e+00| rquery\_data.table            |            0.0108208|
+|  2e+00| data.table                    |            0.0033844|
+|  2e+00| dplyr\_data\_frame            |            0.0106840|
+|  2e+00| dplyr\_tbl                    |            0.0094259|
+|  2e+00| dplyr\_database\_round\_trip  |            0.1836964|
+|  2e+00| base\_r\_stats\_aggregate     |            0.0040605|
+|  4e+00| rquery\_database\_round\_trip |            0.0830495|
+|  4e+00| rquery\_data.table            |            0.0095108|
+|  4e+00| data.table                    |            0.0043406|
+|  4e+00| dplyr\_data\_frame            |            0.0117333|
+|  4e+00| dplyr\_tbl                    |            0.0109606|
+|  4e+00| dplyr\_database\_round\_trip  |            0.1735006|
+|  4e+00| base\_r\_stats\_aggregate     |            0.0043916|
+|  1e+01| rquery\_database\_round\_trip |            0.0733981|
+|  1e+01| rquery\_data.table            |            0.0100308|
+|  1e+01| data.table                    |            0.0028250|
+|  1e+01| dplyr\_data\_frame            |            0.0115701|
+|  1e+01| dplyr\_tbl                    |            0.0089683|
+|  1e+01| dplyr\_database\_round\_trip  |            0.1961207|
+|  1e+01| base\_r\_stats\_aggregate     |            0.0036994|
+|  2e+01| rquery\_database\_round\_trip |            0.0786481|
+|  2e+01| rquery\_data.table            |            0.0095924|
+|  2e+01| data.table                    |            0.0038322|
+|  2e+01| dplyr\_data\_frame            |            0.0106201|
+|  2e+01| dplyr\_tbl                    |            0.0107345|
+|  2e+01| dplyr\_database\_round\_trip  |            0.1674403|
+|  2e+01| base\_r\_stats\_aggregate     |            0.0048509|
+|  4e+01| rquery\_database\_round\_trip |            0.0817040|
+|  4e+01| rquery\_data.table            |            0.0099081|
+|  4e+01| data.table                    |            0.0037267|
+|  4e+01| dplyr\_data\_frame            |            0.0133294|
+|  4e+01| dplyr\_tbl                    |            0.0111169|
+|  4e+01| dplyr\_database\_round\_trip  |            0.1730015|
+|  4e+01| base\_r\_stats\_aggregate     |            0.0041934|
+|  1e+02| rquery\_database\_round\_trip |            0.1025533|
+|  1e+02| rquery\_data.table            |            0.0100890|
+|  1e+02| data.table                    |            0.0034931|
+|  1e+02| dplyr\_data\_frame            |            0.0127589|
+|  1e+02| dplyr\_tbl                    |            0.0143131|
+|  1e+02| dplyr\_database\_round\_trip  |            0.2007111|
+|  1e+02| base\_r\_stats\_aggregate     |            0.0061682|
+|  2e+02| rquery\_database\_round\_trip |            0.1147537|
+|  2e+02| rquery\_data.table            |            0.0113551|
+|  2e+02| data.table                    |            0.0042214|
+|  2e+02| dplyr\_data\_frame            |            0.0176142|
+|  2e+02| dplyr\_tbl                    |            0.0190319|
+|  2e+02| dplyr\_database\_round\_trip  |            0.2594731|
+|  2e+02| base\_r\_stats\_aggregate     |            0.0137462|
+|  4e+02| rquery\_database\_round\_trip |            0.0728453|
+|  4e+02| rquery\_data.table            |            0.0101235|
+|  4e+02| data.table                    |            0.0036705|
+|  4e+02| dplyr\_data\_frame            |            0.0182649|
+|  4e+02| dplyr\_tbl                    |            0.0187859|
+|  4e+02| dplyr\_database\_round\_trip  |            0.1827481|
+|  4e+02| base\_r\_stats\_aggregate     |            0.0057901|
+|  1e+03| rquery\_database\_round\_trip |            0.0989568|
+|  1e+03| rquery\_data.table            |            0.0108178|
+|  1e+03| data.table                    |            0.0055226|
+|  1e+03| dplyr\_data\_frame            |            0.0290568|
+|  1e+03| dplyr\_tbl                    |            0.0311728|
+|  1e+03| dplyr\_database\_round\_trip  |            0.1897072|
+|  1e+03| base\_r\_stats\_aggregate     |            0.0119885|
+|  2e+03| rquery\_database\_round\_trip |            0.0981908|
+|  2e+03| rquery\_data.table            |            0.0137548|
+|  2e+03| data.table                    |            0.0070157|
+|  2e+03| dplyr\_data\_frame            |            0.0709655|
+|  2e+03| dplyr\_tbl                    |            0.0571365|
+|  2e+03| dplyr\_database\_round\_trip  |            0.2172660|
+|  2e+03| base\_r\_stats\_aggregate     |            0.0202563|
+|  4e+03| rquery\_database\_round\_trip |            0.1452668|
+|  4e+03| rquery\_data.table            |            0.0164238|
+|  4e+03| data.table                    |            0.0118542|
+|  4e+03| dplyr\_data\_frame            |            0.1219377|
+|  4e+03| dplyr\_tbl                    |            0.1015341|
+|  4e+03| dplyr\_database\_round\_trip  |            0.2689793|
+|  4e+03| base\_r\_stats\_aggregate     |            0.0365467|
+|  1e+04| rquery\_database\_round\_trip |            0.1994007|
+|  1e+04| rquery\_data.table            |            0.0262523|
+|  1e+04| data.table                    |            0.0200566|
+|  1e+04| dplyr\_data\_frame            |            0.2104650|
+|  1e+04| dplyr\_tbl                    |            0.2198989|
+|  1e+04| dplyr\_database\_round\_trip  |            0.3109264|
+|  1e+04| base\_r\_stats\_aggregate     |            0.1171423|
+|  2e+04| rquery\_database\_round\_trip |            0.3578869|
+|  2e+04| rquery\_data.table            |            0.0445040|
+|  2e+04| data.table                    |            0.0437927|
+|  2e+04| dplyr\_data\_frame            |            0.4570072|
+|  2e+04| dplyr\_tbl                    |            0.4226030|
+|  2e+04| dplyr\_database\_round\_trip  |            0.5308257|
+|  2e+04| base\_r\_stats\_aggregate     |            0.1945873|
+|  4e+04| rquery\_database\_round\_trip |            0.5850938|
+|  4e+04| rquery\_data.table            |            0.0750215|
+|  4e+04| data.table                    |            0.0824241|
+|  4e+04| dplyr\_data\_frame            |            0.9001748|
+|  4e+04| dplyr\_tbl                    |            0.8718410|
+|  4e+04| dplyr\_database\_round\_trip  |            0.8561995|
+|  4e+04| base\_r\_stats\_aggregate     |            0.4161678|
+|  1e+05| rquery\_database\_round\_trip |            1.3177568|
+|  1e+05| rquery\_data.table            |            0.1845145|
+|  1e+05| data.table                    |            0.1985531|
+|  1e+05| dplyr\_data\_frame            |            1.9865069|
+|  1e+05| dplyr\_tbl                    |            1.8862559|
+|  1e+05| dplyr\_database\_round\_trip  |            1.9380941|
+|  1e+05| base\_r\_stats\_aggregate     |            1.3115429|
+|  2e+05| rquery\_database\_round\_trip |            2.5084395|
+|  2e+05| rquery\_data.table            |            0.3159885|
+|  2e+05| data.table                    |            0.3390903|
+|  2e+05| dplyr\_data\_frame            |            4.5489106|
+|  2e+05| dplyr\_tbl                    |            4.2946216|
+|  2e+05| dplyr\_database\_round\_trip  |            3.7869956|
+|  2e+05| base\_r\_stats\_aggregate     |            2.4347116|
+|  4e+05| rquery\_database\_round\_trip |            5.7816050|
+|  4e+05| rquery\_data.table            |            0.5910693|
+|  4e+05| data.table                    |            0.6513486|
+|  4e+05| dplyr\_data\_frame            |            7.9060443|
+|  4e+05| dplyr\_tbl                    |            8.5016137|
+|  4e+05| dplyr\_database\_round\_trip  |            8.1757056|
+|  4e+05| base\_r\_stats\_aggregate     |            4.3274996|
+|  1e+06| rquery\_database\_round\_trip |           13.5909247|
+|  1e+06| rquery\_data.table            |            1.4106712|
+|  1e+06| data.table                    |            1.4632462|
+|  1e+06| dplyr\_data\_frame            |           20.3271250|
+|  1e+06| dplyr\_tbl                    |           19.5561871|
+|  1e+06| dplyr\_database\_round\_trip  |           20.3892507|
+|  1e+06| base\_r\_stats\_aggregate     |           11.0431010|
+|  2e+06| rquery\_database\_round\_trip |           27.0604623|
+|  2e+06| rquery\_data.table            |            2.6854535|
+|  2e+06| data.table                    |            2.9283660|
+|  2e+06| dplyr\_data\_frame            |           40.6944977|
+|  2e+06| dplyr\_tbl                    |           40.2082821|
+|  2e+06| dplyr\_database\_round\_trip  |           41.6983661|
+|  2e+06| base\_r\_stats\_aggregate     |           22.1890656|
+|  4e+06| rquery\_database\_round\_trip |           57.6204792|
+|  4e+06| rquery\_data.table            |            4.9765232|
+|  4e+06| data.table                    |            5.9540594|
+|  4e+06| dplyr\_data\_frame            |           78.8708303|
+|  4e+06| dplyr\_tbl                    |           80.4030980|
+|  4e+06| dplyr\_database\_round\_trip  |           88.2261153|
+|  4e+06| base\_r\_stats\_aggregate     |           51.4177099|
+|  1e+07| rquery\_database\_round\_trip |          141.7345717|
+|  1e+07| rquery\_data.table            |           12.4899875|
+|  1e+07| data.table                    |           13.9822876|
+|  1e+07| dplyr\_data\_frame            |          184.9806182|
+|  1e+07| dplyr\_tbl                    |          188.3135020|
+|  1e+07| dplyr\_database\_round\_trip  |          225.7453855|
+|  1e+07| base\_r\_stats\_aggregate     |          125.0941576|
 
 ``` r
 # get a shared lvel ordering
@@ -251,17 +247,17 @@ knitr::kable(summaries)
 
 |    Estimate|  Std. Error|      t value|  P\[g.t. abs(t)\]| coef        | impementation                 |
 |-----------:|-----------:|------------:|-----------------:|:------------|:------------------------------|
-|  -0.1155771|   0.1786283|   -0.6470254|         0.5190549| (Intercept) | rquery\_database\_round\_trip |
-|   0.0000145|   0.0000001|  194.7180823|         0.0000000| nrows       | rquery\_database\_round\_trip |
-|   0.0561448|   0.0265336|    2.1159877|         0.0367562| (Intercept) | rquery\_data.table            |
-|   0.0000012|   0.0000000|  111.6993510|         0.0000000| nrows       | rquery\_data.table            |
-|   0.0037459|   0.0409711|    0.0914270|         0.9273308| (Intercept) | data.table                    |
-|   0.0000014|   0.0000000|   81.4646731|         0.0000000| nrows       | data.table                    |
-|   0.3822043|   0.2450147|    1.5599239|         0.1218453| (Intercept) | dplyr\_data\_frame            |
-|   0.0000191|   0.0000001|  187.0500347|         0.0000000| nrows       | dplyr\_data\_frame            |
-|   0.3086954|   0.1257861|    2.4541285|         0.0157997| (Intercept) | dplyr\_tbl                    |
-|   0.0000189|   0.0000001|  360.0779267|         0.0000000| nrows       | dplyr\_tbl                    |
-|  -0.1868047|   0.1928281|   -0.9687629|         0.3349328| (Intercept) | dplyr\_database\_round\_trip  |
-|   0.0000221|   0.0000001|  275.8004412|         0.0000000| nrows       | dplyr\_database\_round\_trip  |
-|  -0.1942426|   0.1344143|   -1.4451035|         0.1514644| (Intercept) | base\_r\_stats\_aggregate     |
-|   0.0000124|   0.0000001|  221.6057649|         0.0000000| nrows       | base\_r\_stats\_aggregate     |
+|  -0.0151133|   0.2349371|   -0.0643292|         0.9488328| (Intercept) | rquery\_database\_round\_trip |
+|   0.0000142|   0.0000001|  145.0066467|         0.0000000| nrows       | rquery\_database\_round\_trip |
+|   0.0349215|   0.0249315|    1.4006996|         0.1643094| (Intercept) | rquery\_data.table            |
+|   0.0000012|   0.0000000|  120.2752990|         0.0000000| nrows       | rquery\_data.table            |
+|   0.0321537|   0.0482951|    0.6657759|         0.5070426| (Intercept) | data.table                    |
+|   0.0000014|   0.0000000|   70.0728403|         0.0000000| nrows       | data.table                    |
+|   0.4394796|   0.2053032|    2.1406372|         0.0346632| (Intercept) | dplyr\_data\_frame            |
+|   0.0000187|   0.0000001|  218.5266100|         0.0000000| nrows       | dplyr\_data\_frame            |
+|   0.3417861|   0.2416780|    1.4142208|         0.1603128| (Intercept) | dplyr\_tbl                    |
+|   0.0000190|   0.0000001|  188.8861895|         0.0000000| nrows       | dplyr\_tbl                    |
+|  -0.2626280|   0.3120026|   -0.8417493|         0.4018784| (Intercept) | dplyr\_database\_round\_trip  |
+|   0.0000225|   0.0000001|  172.9896993|         0.0000000| nrows       | dplyr\_database\_round\_trip  |
+|  -0.1876453|   0.3188291|   -0.5885452|         0.5574548| (Intercept) | base\_r\_stats\_aggregate     |
+|   0.0000125|   0.0000001|   94.3532753|         0.0000000| nrows       | base\_r\_stats\_aggregate     |

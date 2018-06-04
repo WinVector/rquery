@@ -27,20 +27,7 @@ library("dplyr")
 library("dtplyr")
 # https://github.com/WinVector/rqdatatable
 library("rqdatatable") # devtools::install.packages("WinVector/rqdatatable")
-```
 
-    ## Loading required package: rquery
-
-    ## Loading required package: wrapr
-
-    ## 
-    ## Attaching package: 'wrapr'
-
-    ## The following object is masked from 'package:dplyr':
-    ## 
-    ##     coalesce
-
-``` r
 print("R.version.string")
 ```
 
@@ -114,7 +101,7 @@ rquery_pipeline <- local_td(dL) %.>%
              partitionby = 'subjectID',
              orderby = c('probability', 'surveyCategory'),
              reverse = c('probability', 'surveyCategory')) %.>% 
-  rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
+  rename_columns(., c('diagnosis' = 'surveyCategory')) %.>%
   select_columns(., c('subjectID', 
                       'diagnosis', 
                       'probability')) %.>%
@@ -169,7 +156,7 @@ my_db <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
                           port = 5432,
                           user = 'johnmount',
                           password = '')
-dbopts <- rq_connection_tests(my_db)
+dbopts <- rquery::rq_connection_tests(my_db)
 options(dbopts)
 # build the shared handle
 winvector_temp_db_handle <- list(db = my_db)
@@ -233,8 +220,9 @@ data.table_function <- function(dL) {
   data.table::setnames(dDT, old = "surveyCategory", new = "diagnosis")
   dDT[, probability := exp(assessmentTotal * scale)]
   dDT[, probability := probability / sum( probability ), subjectID ]
-  data.table::setorder(dDT, subjectID, probability, -diagnosis)
+  data.table::setorder(dDT, subjectID, probability, diagnosis)
   dDT <- dDT[, .SD[.N], subjectID]
+  dDT[, assessmentTotal := NULL]
   data.table::setorder(dDT, subjectID)
 }
 
@@ -242,10 +230,10 @@ data.table_function(dL) %.>%
   knitr::kable(.)
 ```
 
-|  subjectID| diagnosis           |  assessmentTotal|  probability|
-|----------:|:--------------------|----------------:|------------:|
-|          1| positive re-framing |                6|    0.6706221|
-|          2| positive re-framing |                3|    0.5589742|
+|  subjectID| diagnosis           |  probability|
+|----------:|:--------------------|------------:|
+|          1| positive re-framing |    0.6706221|
+|          2| positive re-framing |    0.5589742|
 
 ``` r
 stats_aggregate_soln <- function(d) {
@@ -294,8 +282,8 @@ nSubj <- 10000
 dL <- mk_example(nSubj, 10)
 
 # and an in-database copy
-dR <- rq_copy_to(my_db, table_name = "dL", dL, 
-                 temporary = TRUE, overwrite = TRUE)
+dR <- rquery::rq_copy_to(my_db, table_name = "dL", dL, 
+                         temporary = TRUE, overwrite = TRUE)
 dRtbl <- dplyr::tbl(my_db, dR$table_name)
 
 dplyr_round_trip <- function(dL) {
@@ -313,25 +301,25 @@ dLorig <- dL
 
 ref <- as.data.frame(ex_data_table(rquery_pipeline))
 # sensible consequences we can check
-assertthat::assert_that(min(ref$probability)>=0.5) 
+assertthat::assert_that(min(ref$probability)>=0.5)
 ```
 
     ## [1] TRUE
 
 ``` r
-assertthat::are_equal(nSubj, nrow(ref))
+assertthat::assert_that(assertthat::are_equal(nSubj, nrow(ref)))
 ```
 
     ## [1] TRUE
 
 ``` r
-assertthat::are_equal(ref$subjectID, seq_len(nSubj))
+assertthat::assert_that(assertthat::are_equal(ref$subjectID, seq_len(nSubj)))
 ```
 
     ## [1] TRUE
 
 ``` r
-assertthat::are_equal(colnames(ref), c("subjectID", "diagnosis", "probability"))
+assertthat::assert_that(assertthat::are_equal(colnames(ref), c("subjectID", "diagnosis", "probability")))
 ```
 
     ## [1] TRUE
@@ -339,7 +327,7 @@ assertthat::are_equal(colnames(ref), c("subjectID", "diagnosis", "probability"))
 ``` r
 # from database version
 c0 <- as.data.frame(execute(my_db, rquery_pipeline))
-assertthat::are_equal(ref, c0)
+assertthat::assert_that(assertthat::are_equal(ref, c0))
 ```
 
     ## [1] TRUE
@@ -347,21 +335,21 @@ assertthat::are_equal(ref, c0)
 ``` r
 # database round trip version
 c1 <- as.data.frame(execute(dL, rquery_pipeline))
-assertthat::are_equal(ref, c1)
+assertthat::assert_that(assertthat::are_equal(ref, c1))
 ```
 
     ## [1] TRUE
 
 ``` r
 c2 <- as.data.frame(dplyr_pipeline(dL))
-assertthat::are_equal(ref, c2)
+assertthat::assert_that(assertthat::are_equal(ref, c2))
 ```
 
     ## [1] TRUE
 
 ``` r
 c2b <- as.data.frame(dplyr_pipeline(dplyr::as.tbl(dL)))
-assertthat::are_equal(ref, c2b)
+assertthat::assert_that(assertthat::are_equal(ref, c2b))
 ```
 
     ## [1] TRUE
@@ -369,7 +357,7 @@ assertthat::are_equal(ref, c2b)
 ``` r
 # from database version
 c3 <- as.data.frame(dplyr_pipeline(dRtbl))
-assertthat::are_equal(ref, c3)
+assertthat::assert_that(assertthat::are_equal(ref, c3))
 ```
 
     ## [1] TRUE
@@ -378,28 +366,28 @@ assertthat::are_equal(ref, c3)
 # database round trip version
 # narrow by hand before copying to give all advantages.
 c4 <- dplyr_round_trip(dL)
-assertthat::are_equal(ref, c4)
+assertthat::assert_that(assertthat::are_equal(ref, c4))
 ```
 
     ## [1] TRUE
 
 ``` r
 c5 <- as.data.frame(data.table_function(dL))
-assertthat::are_equal(ref, c5)
+assertthat::assert_that(assertthat::are_equal(ref, c5))
 ```
 
-    ## [1] FALSE
+    ## [1] TRUE
 
 ``` r
 c6 <- stats_aggregate_soln(dL)
-assertthat::are_equal(ref, c6)
+assertthat::assert_that(assertthat::are_equal(ref, c6))
 ```
 
     ## [1] TRUE
 
 ``` r
 # confirm no side-effects back to orginal frame
-assertthat::are_equal(dLorig, dL)
+assertthat::assert_that(assertthat::are_equal(dLorig, dL))
 ```
 
     ## [1] TRUE
@@ -415,8 +403,8 @@ sizes <- expand.grid(c(1, 2, 5), 10^(0:6)) %.>%
   (.$Var1 * .$Var2) %.>% 
   sort(.)
 for(nSubj in sizes) {
-  print("******")
-  print(paste("nSubj", nSubj))
+  # print("******")
+  # print(paste("nSubj", nSubj))
   
   dL <- mk_example(nSubj, 10)
   
@@ -446,52 +434,7 @@ for(nSubj in sizes) {
   timings$ncols <- ncol(dL)
   all_timings <- rbind(all_timings, as.data.frame(timings))
 }
-```
 
-    ## [1] "******"
-    ## [1] "nSubj 1"
-    ## [1] "******"
-    ## [1] "nSubj 2"
-    ## [1] "******"
-    ## [1] "nSubj 5"
-    ## [1] "******"
-    ## [1] "nSubj 10"
-    ## [1] "******"
-    ## [1] "nSubj 20"
-    ## [1] "******"
-    ## [1] "nSubj 50"
-    ## [1] "******"
-    ## [1] "nSubj 100"
-    ## [1] "******"
-    ## [1] "nSubj 200"
-    ## [1] "******"
-    ## [1] "nSubj 500"
-    ## [1] "******"
-    ## [1] "nSubj 1000"
-    ## [1] "******"
-    ## [1] "nSubj 2000"
-    ## [1] "******"
-    ## [1] "nSubj 5000"
-    ## [1] "******"
-    ## [1] "nSubj 10000"
-    ## [1] "******"
-    ## [1] "nSubj 20000"
-    ## [1] "******"
-    ## [1] "nSubj 50000"
-    ## [1] "******"
-    ## [1] "nSubj 1e+05"
-    ## [1] "******"
-    ## [1] "nSubj 2e+05"
-    ## [1] "******"
-    ## [1] "nSubj 5e+05"
-    ## [1] "******"
-    ## [1] "nSubj 1e+06"
-    ## [1] "******"
-    ## [1] "nSubj 2e+06"
-    ## [1] "******"
-    ## [1] "nSubj 5e+06"
-
-``` r
 saveRDS(all_timings, "all_timings.RDS")
 ```
 
