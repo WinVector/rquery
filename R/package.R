@@ -17,6 +17,14 @@
 NULL
 
 
+#' @importFrom wrapr apply_left
+#' @export
+wrapr::apply_left
+
+#' @importFrom wrapr apply_right
+#' @export
+wrapr::apply_right
+
 
 #' @importFrom wrapr mk_tmp_name_source
 #' @export
