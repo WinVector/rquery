@@ -16,15 +16,11 @@ To install a practice version of `Spark`/`SparkR` v2.3.0 on a stand-alone workst
 
 ``` r
 library("rquery")
-```
 
-    ## Loading required package: wrapr
-
-``` r
 print(db_hdl)
 ```
 
-    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7f84aebc0678>)"
+    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7ff3b10275b0>)"
 
 ``` r
 print(test_df)
@@ -62,7 +58,7 @@ rquery_pipeline <- d_hdl %.>%
              partitionby = 'subjectID',
              orderby = c('probability', 'surveyCategory'),
              reverse = c('probability', 'surveyCategory')) %.>% 
-  rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
+  rename_columns(., c('diagnosis' = 'surveyCategory')) %.>%
   select_columns(., c('subjectID', 
                       'diagnosis', 
                       'probability')) %.>%
