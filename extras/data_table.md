@@ -27,7 +27,11 @@ library("dplyr")
 library("dtplyr")
 # https://github.com/WinVector/rqdatatable
 library("rqdatatable") # devtools::install.packages("WinVector/rqdatatable")
+```
 
+    ## Loading required package: rquery
+
+``` r
 print("R.version.string")
 ```
 
@@ -393,7 +397,9 @@ assertthat::assert_that(assertthat::are_equal(dLorig, dL))
     ## [1] TRUE
 
 ``` r
-rm(list = c("dL", "dLorig", "dR", "dRtbl"))
+rm(list = c("dL", "dLorig", "dR", "dRtbl", 
+            "ref", "c0", "c1", "c2", "c2b", 
+            "c3", "c4", "c5", "c6"))
 ```
 
 ``` r

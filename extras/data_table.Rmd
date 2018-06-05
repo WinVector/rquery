@@ -267,7 +267,9 @@ assertthat::assert_that(assertthat::are_equal(ref, c6))
 # confirm no side-effects back to orginal frame
 assertthat::assert_that(assertthat::are_equal(dLorig, dL))
 
-rm(list = c("dL", "dLorig", "dR", "dRtbl"))
+rm(list = c("dL", "dLorig", "dR", "dRtbl", 
+            "ref", "c0", "c1", "c2", "c2b", 
+            "c3", "c4", "c5", "c6"))
 ```
 
 ```{r time, message=FALSE, warning=FALSE}
