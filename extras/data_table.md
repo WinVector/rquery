@@ -1,7 +1,7 @@
 data.table backend for rquery
 ================
 John Mount, Win-Vector LLC
-06/02/2018
+06/05/2018
 
 We can work an example similar to the [`rquery`](https://winvector.github.io/rquery/) [example](https://winvector.github.io/rquery/index.html) using a [`data.table`](http://r-datatable.com/) back-end ([`rqdatatable`](https://github.com/WinVector/rqdatatable)).
 
@@ -163,10 +163,10 @@ my_db <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
 dbopts <- rquery::rq_connection_tests(my_db)
 options(dbopts)
 # build the shared handle
-winvector_temp_db_handle <- list(db = my_db)
+old_o <- options(list("rquery.rquery_db_executor" = list(db = my_db)))
 
 # run the job
-execute(dL, rquery_pipeline) %.>%
+execute(dL, rquery_pipeline, allow_executor = FALSE) %.>%
   knitr::kable(.)
 ```
 
@@ -330,7 +330,7 @@ assertthat::assert_that(assertthat::are_equal(colnames(ref), c("subjectID", "dia
 
 ``` r
 # from database version
-c0 <- as.data.frame(execute(my_db, rquery_pipeline))
+c0 <- as.data.frame(execute(my_db, rquery_pipeline, allow_executor = FALSE))
 assertthat::assert_that(assertthat::are_equal(ref, c0))
 ```
 
@@ -338,7 +338,7 @@ assertthat::assert_that(assertthat::are_equal(ref, c0))
 
 ``` r
 # database round trip version
-c1 <- as.data.frame(execute(dL, rquery_pipeline))
+c1 <- as.data.frame(execute(dL, rquery_pipeline, allow_executor = FALSE))
 assertthat::assert_that(assertthat::are_equal(ref, c1))
 ```
 
@@ -423,8 +423,8 @@ for(nSubj in sizes) {
   # dRtbl <- dplyr::tbl(my_db, dR$table_name)
   
   timings <- microbenchmark(times = 5L,
-                            rquery_database_round_trip = nrow(execute(dL, rquery_pipeline)),
-                            # rquery_database_read = nrow(as.data.frame(execute(my_db, rquery_pipeline))),
+                            rquery_database_round_trip = nrow(execute(dL, rquery_pipeline, allow_executor = FALSE)),
+                            # rquery_database_read = nrow(as.data.frame(execute(my_db, rquery_pipeline, allow_executor = FALSE))),
                             rquery_data.table = nrow(ex_data_table(rquery_pipeline)),
                             data.table = nrow(data.table_function(dL)),
                             dplyr_data_frame = nrow(dplyr_pipeline(dL)),

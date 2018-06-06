@@ -1,7 +1,7 @@
 ---
 title: "data.table backend for rquery"
 author: "John Mount, Win-Vector LLC"
-date: "06/02/2018"
+date: "06/05/2018"
 output: github_document
 always_allow_html: yes
 ---
@@ -98,10 +98,10 @@ my_db <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
 dbopts <- rquery::rq_connection_tests(my_db)
 options(dbopts)
 # build the shared handle
-winvector_temp_db_handle <- list(db = my_db)
+old_o <- options(list("rquery.rquery_db_executor" = list(db = my_db)))
 
 # run the job
-execute(dL, rquery_pipeline) %.>%
+execute(dL, rquery_pipeline, allow_executor = FALSE) %.>%
   knitr::kable(.)
 ```
 
@@ -236,11 +236,11 @@ assertthat::assert_that(assertthat::are_equal(ref$subjectID, seq_len(nSubj)))
 assertthat::assert_that(assertthat::are_equal(colnames(ref), c("subjectID", "diagnosis", "probability")))
 
 # from database version
-c0 <- as.data.frame(execute(my_db, rquery_pipeline))
+c0 <- as.data.frame(execute(my_db, rquery_pipeline, allow_executor = FALSE))
 assertthat::assert_that(assertthat::are_equal(ref, c0))
 
 # database round trip version
-c1 <- as.data.frame(execute(dL, rquery_pipeline))
+c1 <- as.data.frame(execute(dL, rquery_pipeline, allow_executor = FALSE))
 assertthat::assert_that(assertthat::are_equal(ref, c1))
 
 c2 <- as.data.frame(dplyr_pipeline(dL))
@@ -293,8 +293,8 @@ for(nSubj in sizes) {
   # dRtbl <- dplyr::tbl(my_db, dR$table_name)
   
   timings <- microbenchmark(times = 5L,
-                            rquery_database_round_trip = nrow(execute(dL, rquery_pipeline)),
-                            # rquery_database_read = nrow(as.data.frame(execute(my_db, rquery_pipeline))),
+                            rquery_database_round_trip = nrow(execute(dL, rquery_pipeline, allow_executor = FALSE)),
+                            # rquery_database_read = nrow(as.data.frame(execute(my_db, rquery_pipeline, allow_executor = FALSE))),
                             rquery_data.table = nrow(ex_data_table(rquery_pipeline)),
                             data.table = nrow(data.table_function(dL)),
                             dplyr_data_frame = nrow(dplyr_pipeline(dL)),
@@ -317,7 +317,7 @@ saveRDS(all_timings, "all_timings.RDS")
 Please see [here](https://github.com/WinVector/rquery/blob/master/extras/data_table_replot.md) for presentation and plots.
 
 ```{r cleanup, include=FALSE}
-rm(list = "winvector_temp_db_handle")
+options(old_o)
 DBI::dbDisconnect(my_db)
 ```
 
