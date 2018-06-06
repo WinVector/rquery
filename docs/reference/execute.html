@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Execute a operator tree, either bringing back the result or landing it as a table. — execute • rquery</title>
+<title>Execute a operator tree, bringing back the result to memory. — execute • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -28,12 +28,9 @@
 
 
 
-<meta property="og:title" content="Execute a operator tree, either bringing back the result or landing it as a table. — execute" />
+<meta property="og:title" content="Execute a operator tree, bringing back the result to memory. — execute" />
 
-<meta property="og:description" content="Run the data query.  If table_name is not set results
-(up to limit rows) are brought back to R. If
-table_name is set full results are materailized as a remote
-table." />
+<meta property="og:description" content="Run the data query." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -115,23 +112,21 @@ table." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Execute a operator tree, either bringing back the result or landing it as a table.</h1>
+    <h1>Execute a operator tree, bringing back the result to memory.</h1>
     <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/materialize.R'><code>R/materialize.R</code></a></small>
     <div class="hidden name"><code>execute.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Run the data query.  If table_name is not set results
-(up to limit rows) are brought back to R. If
-table_name is set full results are materailized as a remote
-table.</p>
+    <p>Run the data query.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>execute</span>(<span class='no'>source</span>, <span class='no'>optree</span>, <span class='no'>...</span>, <span class='kw'>table_name</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>limit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>source_limit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>precheck</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>allow_executor</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
+    <pre class="usage"><span class='fu'>execute</span>(<span class='no'>source</span>, <span class='no'>optree</span>, <span class='no'>...</span>, <span class='kw'>limit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>source_limit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>precheck</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>allow_executor</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>temp_source</span> <span class='kw'>=</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/wrapr/topics/mk_tmp_name_source'>mk_tmp_name_source</a></span>(<span class='st'>"rquery_ex"</span>),
+  <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -147,10 +142,6 @@ table.</p>
     <tr>
       <th>...</th>
       <td><p>force later arguments to bind by name.</p></td>
-    </tr>
-    <tr>
-      <th>table_name</th>
-      <td><p>character, name of table to create.</p></td>
     </tr>
     <tr>
       <th>limit</th>
@@ -177,6 +168,10 @@ table.</p>
       <td><p>logical if TRUE allow any executor set as rquery.rquery_executor to be used.</p></td>
     </tr>
     <tr>
+      <th>temp_source</th>
+      <td><p>temporary name generator.</p></td>
+    </tr>
+    <tr>
       <th>env</th>
       <td><p>environment to work in.</p></td>
     </tr>
@@ -184,7 +179,7 @@ table.</p>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>data.frame or table handle.</p>
+    <p>data.frame</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
@@ -211,13 +206,6 @@ table.</p>
   <span class='no'>v2</span> <span class='kw'>&lt;-</span> <span class='fu'>execute</span>(<span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>2</span>), <span class='no'>optree</span>)
   <span class='fu'>print</span>(<span class='no'>v2</span>)
 
-  <span class='co'># land result in database</span>
-  <span class='no'>res_hdl</span> <span class='kw'>&lt;-</span> <span class='fu'>execute</span>(<span class='no'>my_db</span>, <span class='no'>optree</span>, <span class='kw'>table_name</span> <span class='kw'>=</span> <span class='st'>"res"</span>)
-  <span class='fu'>print</span>(<span class='no'>res_hdl</span>)
-  <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>res_hdl</span>, <span class='no'>my_db</span>)))
-  <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbReadTable'>dbReadTable</a></span>(<span class='no'>my_db</span>, <span class='no'>res_hdl</span>$<span class='no'>table_name</span>))
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbRemoveTable'>dbRemoveTable</a></span>(<span class='no'>my_db</span>, <span class='no'>res_hdl</span>$<span class='no'>table_name</span>)
-
   <span class='fu'>options</span>(<span class='no'>old_o</span>)
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
 }</div><div class='output co'>#&gt; [1] "table('d'; AUC, R2) %.&gt;% extend(., v := AUC + R2) %.&gt;% extend(., x := pmax(AUC, v))"
@@ -231,12 +219,7 @@ table.</p>
 #&gt;   AUC  R2   v   x
 #&gt; 1 0.6 0.2 0.8 0.8
 #&gt;   AUC R2 v x
-#&gt; 1   1  2 3 3
-#&gt; [1] "table('res'; AUC, R2, v, x)"
-#&gt;   AUC  R2   v   x
-#&gt; 1 0.6 0.2 0.8 0.8
-#&gt;   AUC  R2   v   x
-#&gt; 1 0.6 0.2 0.8 0.8</div><div class='input'>
+#&gt; 1   1  2 3 3</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

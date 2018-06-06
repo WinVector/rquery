@@ -402,25 +402,22 @@ materialize_sql <- function(db,
 
 
 
-#' Execute a operator tree, either bringing back the result or landing it as a table.
+#' Execute a operator tree, bringing back the result to memory.
 #'
-#' Run the data query.  If table_name is not set results
-#' (up to limit rows) are brought back to R. If
-#' table_name is set full results are materailized as a remote
-#' table.
+#' Run the data query.
 #'
 #' @param source data.frame or DBI connection.
 #' @param optree relop operation tree.
 #' @param ... force later arguments to bind by name.
-#' @param table_name character, name of table to create.
 #' @param limit numeric, if set limit to this many rows during data bring back (not used when landing a table).
 #' @param source_limit numeric if not NULL limit sources to this many rows.
 #' @param overwrite logical if TRUE drop an previous table.
 #' @param temporary logical if TRUE try to create a temporary table.
 #' @param precheck logical if TRUE precheck existance of table and columns.
 #' @param allow_executor logical if TRUE allow any executor set as rquery.rquery_executor to be used.
+#' @param temp_source temporary name generator.
 #' @param env environment to work in.
-#' @return data.frame or table handle.
+#' @return data.frame
 #'
 #' @seealso \code{\link{materialize}}, \code{\link{db_td}}, \code{\link{to_sql}}, \code{\link{rq_copy_to}}, \code{\link{mk_td}}
 #'
@@ -444,13 +441,6 @@ materialize_sql <- function(db,
 #'   v2 <- execute(data.frame(AUC = 1, R2 = 2), optree)
 #'   print(v2)
 #'
-#'   # land result in database
-#'   res_hdl <- execute(my_db, optree, table_name = "res")
-#'   print(res_hdl)
-#'   print(DBI::dbGetQuery(my_db, to_sql(res_hdl, my_db)))
-#'   print(DBI::dbReadTable(my_db, res_hdl$table_name))
-#'   DBI::dbRemoveTable(my_db, res_hdl$table_name)
-#'
 #'   options(old_o)
 #'   DBI::dbDisconnect(my_db)
 #' }
@@ -460,13 +450,13 @@ materialize_sql <- function(db,
 execute <- function(source,
                     optree,
                     ...,
-                    table_name = NULL,
                     limit = NULL,
                     source_limit = NULL,
                     overwrite = TRUE,
-                    temporary = FALSE,
+                    temporary = TRUE,
                     precheck = FALSE,
                     allow_executor = TRUE,
+                    temp_source = mk_tmp_name_source('rquery_ex'),
                     env = parent.frame()) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::execute")
   if(!("relop" %in% class(optree))) {
@@ -478,11 +468,7 @@ execute <- function(source,
   if(is.environment(source)) {
     stop("rquery::execute source can not be an environment (should be a database handle, data.frame, or named list of data.frames)")
   }
-  table_name_set <- !is.null(table_name)
   if(is.data.frame(source) || is_named_list_of_data_frames(source)) {
-    if(table_name_set) {
-      stop("rquery::execute table_name set when applying to data.frame argument")
-    }
     res <- rquery_apply_to_data_frame(source,
                                       optree,
                                       limit = limit,
@@ -492,23 +478,18 @@ execute <- function(source,
     return(res)
   }
   db <- source # assume it is a DBI connection (as data.frame and DBI connections should not share a base class, and do not as of 5-11-2018)
-  sql <- NULL
   # fast SQL only path
-  if(!table_name_set) {
-    sql <- to_sql(optree, db,
-                  limit = limit,
-                  source_limit = source_limit)
-    if(length(sql)==1) {
-      if(precheck) {
-        warning("rquery::execute ignoring precheck=TRUE on direct SQL commmand")
-      }
-      res <- rq_get_query(db, sql)
-      return(res)
+  sql <- to_sql(optree, db,
+                limit = limit,
+                source_limit = source_limit)
+  if(length(sql)==1) {
+    if(precheck) {
+      warning("rquery::execute ignoring precheck=TRUE on direct SQL commmand")
     }
+    res <- rq_get_query(db, sql)
+    return(res)
   }
-  if(!table_name_set) {
-    table_name <-  mk_tmp_name_source('rquery_ex')()
-  }
+  table_name <-  temp_source()
   ref <- materialize_impl(db, optree,
                           table_name = table_name,
                           limit = limit,
@@ -518,19 +499,17 @@ execute <- function(source,
                           precheck = precheck,
                           sql = sql)
   res <- ref
-  if(!table_name_set) {
-    # if last step is order we have to re-do that
-    # as order is not well define in materialized tables
-    if("relop_orderby" %in% class(optree)) {
-      ref <- ref  %.>%
-        orderby(.,
-                cols = optree$orderby,
-                reverse = optree$reverse)
-    }
-    sql <- to_sql(ref, db, limit = limit)
-    res <- rq_get_query(db, sql)
-    rq_remove_table(db, ref$table_name)
+  # if last step is order we have to re-do that
+  # as order is not well define in materialized tables
+  if("relop_orderby" %in% class(optree)) {
+    ref <- ref  %.>%
+      orderby(.,
+              cols = optree$orderby,
+              reverse = optree$reverse)
   }
+  sql <- to_sql(ref, db, limit = limit)
+  res <- rq_get_query(db, sql)
+  rq_remove_table(db, ref$table_name)
   res
 }
 
