@@ -152,7 +152,9 @@ rquery_apply_to_data_frame <- function(d,
                  limit = limit,
                  overwrite = TRUE,
                  temporary = TRUE,
-                 precheck = FALSE)
+                 precheck = FALSE,
+                 allow_executor = allow_executor,
+                 env = env)
   rq_remove_table(my_db, inp_name)
   res
 }
