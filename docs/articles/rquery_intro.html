@@ -215,8 +215,8 @@ FROM (
    `d`.`v`
   FROM
    `d`
- ) tsql_24021109652144562028_0000000000
-) tsql_24021109652144562028_0000000001</code></pre>
+ ) tsql_28388657200347606013_0000000000
+) tsql_28388657200347606013_0000000001</code></pre>
 <p>Notice the above translations did not add identifier quotes to our use of “<code>v</code>” in “<code>ABS(v)</code>”. This is because the <code>SQL</code> expression is not parsed in <code>R</code>. If we want to identify terms as variables we can wrap them with <code>as.name()</code> or <code>quote()</code> to get the quoting (and other variable oriented features). The extra <code>SELECT</code> step to pull data from the inner table is used by <code>rquery</code> for important column narrowing steps, and can actually improve query performance.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">op_tree &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(., <span class="st">"absv"</span> <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">list</span>(<span class="kw">list</span>(<span class="st">"ABS("</span>, <span class="kw">quote</span>(v), <span class="st">")"</span>))) <span class="op">%.&gt;%</span>
@@ -235,8 +235,8 @@ FROM (
    `d`.`v`
   FROM
    `d`
- ) tsql_88510508932221822093_0000000000
-) tsql_88510508932221822093_0000000001</code></pre>
+ ) tsql_76197248354774320416_0000000000
+) tsql_76197248354774320416_0000000001</code></pre>
 <p>The <code>list(list())</code> notation is how we say in <code>R</code> that we have a single element list (i.e. one expression) that is built up as a list of terms. The marking notation is cumbersome, but is not needed when we move on to relation nodes, which are parsed in <code>R</code> and can spot identifiers without additional help.</p>
 <p><code>op_tree</code> itself is a an object with its own presentation format:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw">format</span>(op_tree))</code></pre></div>
@@ -342,7 +342,7 @@ sql &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.
 ##   `d2`.`v3`
 ##  FROM
 ##   `d2`
-## ) tsql_30025969241305194796_0000000000</code></pre>
+## ) tsql_95358043022611037077_0000000000</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># execute</span>
 <span class="kw"><a href="../reference/execute.html">execute</a></span>(db, op_tree_count_null)</code></pre></div>
 <pre><code>##   v3 num_missing v1   v2
@@ -391,7 +391,7 @@ s_tree &lt;-<span class="st"> </span>d2 <span class="op">%.&gt;%</span>
 ##   `d2`.`v3`
 ##  FROM
 ##   `d2`
-## ) tsql_27070856024453484418_0000000000</code></pre>
+## ) tsql_82320563992910233095_0000000000</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/execute.html">execute</a></span>(db, s_tree)</code></pre></div>
 <pre><code>##   v1   v2 v3 v1_isNA v2_isNA v3_isNA
 ## 1  1 &lt;NA&gt; NA       0       1       1
@@ -432,7 +432,7 @@ s_tree &lt;-<span class="st"> </span>d2 <span class="op">%.&gt;%</span>
 <p>The above calculation is managed by <a href="https://github.com/WinVector/wrapr/blob/master/extras/wrapr_pipe.pdf"><code>wrapr</code> dot pipe <code>S3</code> <code>wrapr_function</code></a> extensions.</p>
 <p><code>rquery</code> operators can be used directly (without any table description nodes) when working with in-memory <code>data.frame</code>s.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data.frame</span>(<span class="dt">x =</span> <span class="dv">5</span>) <span class="op">%.&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(., <span class="st">"z"</span> <span class="op">:</span><span class="er">=</span><span class="st"> "sqrt(x)"</span>)</code></pre></div>
-<pre><code>## [1] "table('rquery_tmp_19597536691617773985_0000000000'; x) %.&gt;% sql_node(., z %:=% sqrt(x), *=TRUE)"</code></pre>
+<pre><code>## [1] "table('rquery_tmp_00583431916214521309_0000000000'; x) %.&gt;% sql_node(., z %:=% sqrt(x), *=TRUE)"</code></pre>
 <p>The above calculation is triggered by <code>S3</code> override of any of <code>print()</code>, <code>as.data.frame()</code> and <code>head()</code>. Remote tables need an <code><a href="../reference/execute.html">execute()</a></code> or <code><a href="../reference/materialize.html">materialize()</a></code> step to specify the database connection.</p>
 </div>
 <div id="table-descriptions" class="section level1">
@@ -482,7 +482,7 @@ s_tree &lt;-<span class="st"> </span>d2 <span class="op">%.&gt;%</span>
 ##   `d`.`v`
 ##  FROM
 ##   `d`
-##  ) tsql_09538569393583310187_0000000000</code></pre>
+##  ) tsql_49162917038802863177_0000000000</code></pre>
 <p>The exact translation depends on the database (which is why <code><a href="../reference/to_sql.html">to_sql()</a></code> takes a database argument). Some care has to be taken as <code>SQL</code> types are different than <code>R</code> types (in particular for some databases logical types are not numeric).</p>
 <p>With a database that supplies window functions one can quickly work the “logistic scoring by hand” example from<br>
 from <a href="http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/">Let’s Have Some Sympathy For The Part-time R User</a>. This example worked with <code>rquery</code> code that works with both <code>PostgreSQL</code> and <code>Spark</code> can be found <a href="https://github.com/WinVector/rquery/blob/master/README.html">here</a>.</p>
@@ -577,14 +577,14 @@ dq &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mk_td.ht
 ##         `d3`.`assessmentTotal`
 ##        FROM
 ##         `d3`
-##        ) tsql_56411356462971284993_0000000000
-##       ) tsql_56411356462971284993_0000000001
-##      ) tsql_56411356462971284993_0000000002
-##    ) tsql_56411356462971284993_0000000003
+##        ) tsql_35837029736646100315_0000000000
+##       ) tsql_35837029736646100315_0000000001
+##      ) tsql_35837029736646100315_0000000002
+##    ) tsql_35837029736646100315_0000000003
 ##    WHERE `row_rank` &lt;= 1
-##   ) tsql_56411356462971284993_0000000004
-##  ) tsql_56411356462971284993_0000000005
-## ) tsql_56411356462971284993_0000000006 ORDER BY `subjectID`</code></pre>
+##   ) tsql_35837029736646100315_0000000004
+##  ) tsql_35837029736646100315_0000000005
+## ) tsql_35837029736646100315_0000000006 ORDER BY `subjectID`</code></pre>
 <p>The above query is long, but actually quite performant.</p>
 <p>To see the query executed, please see <a href="https://github.com/WinVector/rquery/blob/master/README.html">here</a>.</p>
 </div>
@@ -702,7 +702,7 @@ dq &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mk_td.ht
 ##   `d6`.`e`
 ##  FROM
 ##   `d6`
-##  ) tsql_31625298767448474386_0000000000</code></pre>
+##  ) tsql_75012445396038078719_0000000000</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># longer pipeline</span>
 wn &lt;-<span class="st"> </span>wp <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/select_columns.html">select_columns</a></span>(., <span class="st">"res"</span>)
@@ -724,8 +724,8 @@ wn &lt;-<span class="st"> </span>wp <span class="op">%.&gt;%</span>
 ##    `d6`.`b`
 ##   FROM
 ##    `d6`
-##   ) tsql_33977325575679287002_0000000000
-## ) tsql_33977325575679287002_0000000001</code></pre>
+##   ) tsql_55764678252441799744_0000000000
+## ) tsql_55764678252441799744_0000000001</code></pre>
 <p>A graph of the the effects of this kind of narrowing (for <code>dplyr</code> by hand as <code>dplyr</code> currently does not have the above type of automatic query analysis/optimization) shows the sensitivity to this optimization.</p>
 <blockquote>
 <p><img src="present-2.png"></p>

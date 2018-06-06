@@ -200,13 +200,13 @@ the calculation prior to it losing narrowing optimizations.</p>
 #&gt;   v %:=% ifelse(x &gt; 2, "x", "y")) %.&gt;%
 #&gt;  non_sql_node(., rsummary_node(.))
 #&gt; [[1]]
-#&gt; [1] "CREATE  TABLE `sn_23012829786491164338_0000000000`  AS  SELECT\n  `p`,\n  `s`,\n  `w`,\n  `x`,\n  `y`,\n  `z`,\n  ( CASE WHEN ( `x` &gt; 2 ) THEN ( 'x' ) WHEN NOT ( `x` &gt; 2 ) THEN ( 'y' ) ELSE NULL END )  AS `v`\n FROM (\n  SELECT\n   `dRemote`.`p`,\n   `dRemote`.`s`,\n   `dRemote`.`w`,\n   `dRemote`.`x`,\n   `dRemote`.`y`,\n   `dRemote`.`z`\n  FROM\n   `dRemote`\n  ) tsql_26490355639477894239_0000000000\n"
+#&gt; [1] "CREATE  TABLE `sn_79450996061126207338_0000000000`  AS  SELECT\n  `p`,\n  `s`,\n  `w`,\n  `x`,\n  `y`,\n  `z`,\n  ( CASE WHEN ( `x` &gt; 2 ) THEN ( 'x' ) WHEN NOT ( `x` &gt; 2 ) THEN ( 'y' ) ELSE NULL END )  AS `v`\n FROM (\n  SELECT\n   `dRemote`.`p`,\n   `dRemote`.`s`,\n   `dRemote`.`w`,\n   `dRemote`.`x`,\n   `dRemote`.`y`,\n   `dRemote`.`z`\n  FROM\n   `dRemote`\n  ) tsql_23012829786491164338_0000000000\n"
 #&gt; 
 #&gt; [[2]]
 #&gt; [1] "non SQL step:  rsummary_node(.)"
 #&gt; 
 #&gt; [[3]]
-#&gt; [1] " SELECT\n  `sn_23012829786491164338_0000000001`.`column`,\n  `sn_23012829786491164338_0000000001`.`index`,\n  `sn_23012829786491164338_0000000001`.`class`,\n  `sn_23012829786491164338_0000000001`.`nrows`,\n  `sn_23012829786491164338_0000000001`.`nna`,\n  `sn_23012829786491164338_0000000001`.`nunique`,\n  `sn_23012829786491164338_0000000001`.`min`,\n  `sn_23012829786491164338_0000000001`.`max`,\n  `sn_23012829786491164338_0000000001`.`mean`,\n  `sn_23012829786491164338_0000000001`.`sd`,\n  `sn_23012829786491164338_0000000001`.`lexmin`,\n  `sn_23012829786491164338_0000000001`.`lexmax`\n FROM\n  `sn_23012829786491164338_0000000001`\n"
+#&gt; [1] " SELECT\n  `sn_79450996061126207338_0000000001`.`column`,\n  `sn_79450996061126207338_0000000001`.`index`,\n  `sn_79450996061126207338_0000000001`.`class`,\n  `sn_79450996061126207338_0000000001`.`nrows`,\n  `sn_79450996061126207338_0000000001`.`nna`,\n  `sn_79450996061126207338_0000000001`.`nunique`,\n  `sn_79450996061126207338_0000000001`.`min`,\n  `sn_79450996061126207338_0000000001`.`max`,\n  `sn_79450996061126207338_0000000001`.`mean`,\n  `sn_79450996061126207338_0000000001`.`sd`,\n  `sn_79450996061126207338_0000000001`.`lexmin`,\n  `sn_79450996061126207338_0000000001`.`lexmax`\n FROM\n  `sn_79450996061126207338_0000000001`\n"
 #&gt; 
 #&gt;   column index     class nrows nna nunique min max mean        sd lexmin lexmax
 #&gt; 1      p     1   integer     3   1      NA   0   1  0.5 0.7071068   &lt;NA&gt;   &lt;NA&gt;

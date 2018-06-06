@@ -142,32 +142,18 @@ rquery_apply_to_data_frame <- function(d,
   }
   tmp_name_source <- mk_tmp_name_source('rqatmp')
   inp_name <- tmp_name_source()
-  res_name <- tmp_name_source()
   optree <- re_write_table_names(optree, inp_name)
   dR <- rq_copy_to(my_db,
                     inp_name,
                     d,
                     temporary = TRUE,
                     overwrite = FALSE)
-  ref <- materialize(my_db,
-                     optree,
-                     limit = limit,
-                     table_name = res_name,
-                     overwrite = TRUE,
-                     temporary = TRUE,
-                     precheck = FALSE)
-  # if last step is order we have to re-do that
-  # as order is not well define in materialized tables
-  if("relop_orderby" %in% class(optree)) {
-    ref <- ref  %.>%
-      orderby(.,
-              cols = optree$orderby,
-              reverse = optree$reverse)
-  }
-  sql <- to_sql(ref, my_db, limit = limit)
-  res <- rq_get_query(my_db, sql)
+  res <- execute(my_db, optree,
+                 limit = limit,
+                 overwrite = TRUE,
+                 temporary = TRUE,
+                 precheck = FALSE)
   rq_remove_table(my_db, inp_name)
-  rq_remove_table(my_db, res_name)
   res
 }
 
