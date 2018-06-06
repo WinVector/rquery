@@ -36,6 +36,7 @@ is_named_list_of_data_frames <- function(o) {
 #' @param ... force later arguments to bind by name.
 #' @param limit integer, if not NULL limit result to no more than this many rows.
 #' @param source_limit numeric if not NULL limit sources to this many rows.
+#' @param allow_executor logical if TRUE allow any executor set as rquery.rquery_executor to be used.
 #' @param env environment to work in.
 #' @return data.frame result
 #'
@@ -75,6 +76,7 @@ rquery_apply_to_data_frame <- function(d,
                                        ...,
                                        limit = NULL,
                                        source_limit = NULL,
+                                       allow_executor = TRUE,
                                        env = parent.frame()) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::rquery_apply_to_data_frame")
   if(!("relop" %in% class(optree))) {
@@ -84,7 +86,10 @@ rquery_apply_to_data_frame <- function(d,
     stop("rquery::rquery_apply_to_data_frame d must be a data.frame, a named list of data.frames, or an environment")
   }
   tabNames <- tables_used(optree)
-  executor <- getOption("rquery.rquery_executor", default = NULL)
+  executor <- NULL
+  if(allow_executor) {
+    executor <- getOption("rquery.rquery_executor", default = NULL)
+  }
   if(!is.null(executor)) {
     tables <- NULL
     env <- env

@@ -418,6 +418,7 @@ materialize_sql <- function(db,
 #' @param overwrite logical if TRUE drop an previous table.
 #' @param temporary logical if TRUE try to create a temporary table.
 #' @param precheck logical if TRUE precheck existance of table and columns.
+#' @param allow_executor logical if TRUE allow any executor set as rquery.rquery_executor to be used.
 #' @param env environment to work in.
 #' @return data.frame or table handle.
 #'
@@ -465,6 +466,7 @@ execute <- function(source,
                     overwrite = TRUE,
                     temporary = FALSE,
                     precheck = FALSE,
+                    allow_executor = TRUE,
                     env = parent.frame()) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::execute")
   if(!("relop" %in% class(optree))) {
@@ -484,8 +486,9 @@ execute <- function(source,
     res <- rquery_apply_to_data_frame(source,
                                       optree,
                                       limit = limit,
-                                      env = env,
-                                      source_limit = source_limit)
+                                      allow_executor = allow_executor,
+                                      source_limit = source_limit,
+                                      env = env)
     return(res)
   }
   db <- source # assume it is a DBI connection (as data.frame and DBI connections should not share a base class, and do not as of 5-11-2018)
