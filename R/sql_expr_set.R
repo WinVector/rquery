@@ -11,12 +11,11 @@
 #'
 #' @examples
 #'
+#' # WARNING: example tries to change rquery.rquery_db_executor option to RSQLite and back.
 #' if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'   winvector_temp_db_handle <- list(
-#'     db = my_db
-#'   )
-#'   RSQLite::initExtension(winvector_temp_db_handle$db)
+#'   RSQLite::initExtension(my_db)
+#'   old_o <- options(list("rquery.rquery_db_executor" = list(db = my_db)))
 #'
 #'   d <- rq_copy_to(my_db, 'd',
 #'                    data.frame(AUC = c(NA, 0.5, NA),
@@ -43,7 +42,7 @@
 #'   cat(to_sql(op_tree3, my_db))
 #'
 #'   # cleanup
-#'   rm(list = "winvector_temp_db_handle")
+#'   options(old_o)
 #'   DBI::dbDisconnect(my_db)
 #' }
 #'

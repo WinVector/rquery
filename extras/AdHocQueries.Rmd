@@ -83,12 +83,12 @@ DBI::dbGetQuery(db, sql) %.>%
 In this mode things are sped up in that the use can work with in-memory tables
 and also skip the table modeling step.
 
-Let's first set the global variable `winvector_temp_db_handle` to our 
+Let's first set the global option `rquery.rquery_db_executor` to our 
 database handle so the ad hoc mode knows which database to use to implement
 the analyses.
 
 ```{r defdb}
-winvector_temp_db_handle <- list(db = db)
+old_o <- options(list("rquery.rquery_db_executor" = list(db = db)))
 ```
 
 
@@ -116,6 +116,13 @@ ops <- dL %.>%
 dL %.>% 
   ops %.>% 
   knitr::kable(.)
+
+# can use pipelines on the fly with
+# the %>>% double apply operator.
+
+dL %>>% ( select_rows_nse(., R2 > 0.14) %.>%
+  extend_nse(., c = sqrt(R2))  %.>%
+  select_columns(., c("AUC", "R2", "c")) )
 ```
 
 
@@ -131,6 +138,6 @@ the reference when finished as follows.
 
 
 ```{r cleanup}
-winvector_temp_db_handle <- NULL
+options(old_o)
 DBI::dbDisconnect(db)
 ```

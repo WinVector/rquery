@@ -58,4 +58,5 @@ test_that("test_names: Works As Expected", {
                d2 = mpg)
   expect_equal(qc(am, carb, cyl, d2, disp, drat, gear, hp, mpg, qsec, vs, wt),
                column_names(p))
+  DBI::dbDisconnect(db)
 })

@@ -320,11 +320,11 @@ of performance and in terms of function (such as the availability of `SQL` windo
 
 As a convenience `rquery` can work with in-memory `data.frame`s by sending them to 
 the `SQL` service provider.  This provider defaults to `RSQlite` or can be
-set by setting the global variable `winvector_temp_db_handle`.  We demonstrate
+set by setting the global option `rquery.rquery_db_executor`.  We demonstrate
 this below.
 
 ```{r execd, eval=run_vignette}
-winvector_temp_db_handle <- list(db = db)
+old_o <- options(list("rquery.rquery_db_executor" = list(db = db)))
 
 data.frame(v = -2:2) %.>%
   execute(., op_tree)
@@ -653,7 +653,7 @@ For deeper dives into specific topics, please see also:
 # Appendix: Always clean up on the way out
 
 ```{r cleanup, eval=run_vignette}
-rm(list = "winvector_temp_db_handle")
+options(old_o)
 DBI::dbDisconnect(db)
 ```
 

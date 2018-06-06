@@ -155,16 +155,17 @@ Please see the example for how this is done.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
+<span class='co'># WARNING: example tries to change rquery.rquery_db_executor option to RSQLite and back.</span>
 <span class='kw'>if</span> (<span class='fu'>requireNamespace</span>(<span class='st'>"DBI"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>&amp;&amp;</span> <span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
   <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
-  <span class='no'>winvector_temp_db_handle</span> <span class='kw'>&lt;-</span> <span class='fu'>list</span>(<span class='kw'>db</span> <span class='kw'>=</span> <span class='no'>my_db</span>)
+  <span class='no'>old_o</span> <span class='kw'>&lt;-</span> <span class='fu'>options</span>(<span class='fu'>list</span>(<span class='st'>"rquery.rquery_db_executor"</span> <span class='kw'>=</span> <span class='fu'>list</span>(<span class='kw'>db</span> <span class='kw'>=</span> <span class='no'>my_db</span>)))
 
   <span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>0.6</span>, <span class='fl'>0.45</span>), <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>0.2</span>, <span class='fl'>0.01</span>)) <span class='kw'>%&gt;&gt;%</span> (
     <span class='fu'><a href='extend_se.html'>extend_se</a></span>(<span class='no'>.</span>, <span class='fu'>c</span>(<span class='st'>"v"</span> <span class='kw'>%:=%</span> <span class='st'>"AUC + R2"</span>, <span class='st'>"x"</span> <span class='kw'>%:=%</span> <span class='st'>"pmax(AUC,v)"</span>)) <span class='kw'>%.&gt;%</span>
     <span class='fu'><a href='select_rows_nse.html'>select_rows_nse</a></span>(<span class='no'>.</span>, <span class='no'>x</span> <span class='kw'>&gt;</span> <span class='fl'>0.5</span>) ) <span class='kw'>%.&gt;%</span>
     <span class='fu'>print</span>(<span class='no'>.</span>)
 
-  <span class='fu'>rm</span>(<span class='kw'>list</span> <span class='kw'>=</span> <span class='st'>"winvector_temp_db_handle"</span>)
+  <span class='fu'>options</span>(<span class='no'>old_o</span>)
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
 }</div><div class='output co'>#&gt;   AUC  R2   v   x
 #&gt; 1 0.6 0.2 0.8 0.8</div><div class='input'>

@@ -1,5 +1,5 @@
 
-# rquery 0.5.0 2018/06/04
+# rquery 0.5.0 2018/06/05
 
  * Make DBI suggested.
  * Rename dbi_ prefixes to rq_ (for now have aliases from old to new).
@@ -12,6 +12,7 @@
  * Don't default to setting up a temporary RSQLite database.
  * Limit wrapr re-exports.
  * Add ability to use %:=% in parsing.
+ * Move to executor options.
 
 # rquery 0.4.4 2018/05/14
 

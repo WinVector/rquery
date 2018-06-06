@@ -33,16 +33,17 @@ double_apply_impl <- function(d, ds, ops, env) {
 #'
 #' @examples
 #'
+#' # WARNING: example tries to change rquery.rquery_db_executor option to RSQLite and back.
 #' if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'   winvector_temp_db_handle <- list(db = my_db)
+#'   old_o <- options(list("rquery.rquery_db_executor" = list(db = my_db)))
 #'
 #'   data.frame(AUC = c(0.6, 0.45), R2 = c(0.2, 0.01)) %>>% (
 #'     extend_se(., c("v" %:=% "AUC + R2", "x" %:=% "pmax(AUC,v)")) %.>%
 #'     select_rows_nse(., x > 0.5) ) %.>%
 #'     print(.)
 #'
-#'   rm(list = "winvector_temp_db_handle")
+#'   options(old_o)
 #'   DBI::dbDisconnect(my_db)
 #' }
 #'

@@ -1,7 +1,7 @@
 Ad Hoc Queries
 ================
 John Mount, Win-Vector LLC
-2018-05-28
+2018-06-05
 
 Database Operator Pipelines
 ===========================
@@ -12,11 +12,6 @@ Let's try an example. First let's set up our example database and data.
 
 ``` r
 library("rquery")
-```
-
-    ## Loading required package: wrapr
-
-``` r
 db = DBI::dbConnect(RSQLite::SQLite(), 
                     ":memory:")
 RSQLite::initExtension(db)
@@ -118,10 +113,10 @@ cat(sql)
         `d`.`R2`
        FROM
         `d`
-      ) tsql_94942948059332565859_0000000000
+      ) tsql_48865607422839468718_0000000000
       WHERE `R2` > 0.14
-      ) tsql_94942948059332565859_0000000001
-    ) tsql_94942948059332565859_0000000002
+      ) tsql_48865607422839468718_0000000001
+    ) tsql_48865607422839468718_0000000002
 
 ``` r
 DBI::dbGetQuery(db, sql) %.>%
@@ -138,10 +133,10 @@ Ad Hoc mode
 `rquery` also has an "Ad Hoc" mode for interactive analysis.
 In this mode things are sped up in that the use can work with in-memory tables and also skip the table modeling step.
 
-Let's first set the global variable `winvector_temp_db_handle` to our database handle so the ad hoc mode knows which database to use to implement the analyses.
+Let's first set the global option `rquery.rquery_db_executor` to our database handle so the ad hoc mode knows which database to use to implement the analyses.
 
 ``` r
-winvector_temp_db_handle <- list(db = db)
+old_o <- options(list("rquery.rquery_db_executor" = list(db = db)))
 ```
 
 We can now run operators directly on in-memory `data.frame`s.
@@ -180,6 +175,18 @@ dL %.>%
 |----:|----:|----------:|
 |  0.6|  0.2|  0.4472136|
 
+``` r
+# can use pipelines on the fly with
+# the %>>% double apply operator.
+
+dL %>>% ( select_rows_nse(., R2 > 0.14) %.>%
+  extend_nse(., c = sqrt(R2))  %.>%
+  select_columns(., c("AUC", "R2", "c")) )
+```
+
+    ##   AUC  R2         c
+    ## 1 0.6 0.2 0.4472136
+
 Cleanup
 =======
 
@@ -187,6 +194,6 @@ The ad hoc method defaults to using a transient `RSQLite` database connection.
 Our a non-transient `DBI` database connection can be specified by adding one as the "`db`" value in a list bound to the global variable "`winvector_temp_db_handle`" (as we did in this note). If one has done this one can use a more powerful database (such as `PostgeSQL` which has window functions). In this case one should also probably close the `DB` connection or at least break the reference when finished as follows.
 
 ``` r
-winvector_temp_db_handle <- NULL
+options(old_o)
 DBI::dbDisconnect(db)
 ```

@@ -425,9 +425,10 @@ materialize_sql <- function(db,
 #'
 #' @examples
 #'
+#' # WARNING: example tries to change rquery.rquery_db_executor option to RSQLite and back.
 #' if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'   winvector_temp_db_handle <- list(db = my_db)
+#'   old_o <- options(list("rquery.rquery_db_executor" = list(db = my_db)))
 #'   d <- rq_copy_to(my_db, 'd',
 #'                    data.frame(AUC = 0.6, R2 = 0.2))
 #'   optree <- extend_se(d, c("v" %:=% "AUC + R2", "x" %:=% "pmax(AUC,v)"))
@@ -449,7 +450,7 @@ materialize_sql <- function(db,
 #'   print(DBI::dbReadTable(my_db, res_hdl$table_name))
 #'   DBI::dbRemoveTable(my_db, res_hdl$table_name)
 #'
-#'   rm(list = "winvector_temp_db_handle")
+#'   options(old_o)
 #'   DBI::dbDisconnect(my_db)
 #' }
 #'

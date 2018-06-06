@@ -6,7 +6,7 @@ context("partitioning")
 test_that("test_extend_partition: Works As Expected", {
   if (requireNamespace("RSQLite", quietly = TRUE)) {
     my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-    winvector_temp_db_handle <- list(db = my_db)
+    old_o <- options(list("rquery.rquery_db_executor" = list(db = my_db)))
 
     d <- mk_td("d",
                c("rowNum",
@@ -48,7 +48,7 @@ test_that("test_extend_partition: Works As Expected", {
     tab3 <- execute(my_db, optree)
     expect_equal(data.frame(x = 1, a = 1, b = 2, c = 4), tab3)
 
-    winvector_temp_db_handle <- NULL
+    options(old_o)
     DBI::dbDisconnect(my_db)
   }
 })

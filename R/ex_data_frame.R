@@ -36,17 +36,16 @@ is_named_list_of_data_frames <- function(o) {
 #' @param ... force later arguments to bind by name.
 #' @param limit integer, if not NULL limit result to no more than this many rows.
 #' @param source_limit numeric if not NULL limit sources to this many rows.
-#' @param env environment to look for "winvector_temp_db_handle" in.
+#' @param env environment to work in.
 #' @return data.frame result
 #'
 #' @examples
 #'
+#' # WARNING: example tries to change rquery.rquery_db_executor option to RSQLite and back.
 #' if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
 #'   db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'   winvector_temp_db_handle <- list(
-#'     db = db
-#'   )
-#'   RSQLite::initExtension(winvector_temp_db_handle$db)
+#'   RSQLite::initExtension(db)
+#'   old_o <- options(list("rquery.rquery_db_executor" = list(db = db)))
 #'
 #'   optree <- mk_td("d", c("AUC", "R2", "D")) %.>%
 #'   	extend_nse(., c %:=% sqrt(R2)) %.>%
@@ -65,7 +64,7 @@ is_named_list_of_data_frames <- function(o) {
 #'     ) %.>%
 #'     print(.)
 #'
-#'   winvector_temp_db_handle <- NULL
+#'   options(old_o)
 #'   DBI::dbDisconnect(db)
 #' }
 #'
@@ -109,6 +108,14 @@ rquery_apply_to_data_frame <- function(d,
     }
     return(res)
   }
+  my_db <- NULL
+  rquery.rquery_db_executor <- getOption("rquery.rquery_db_executor", default = NULL)
+  if(!is.null(rquery.rquery_db_executor)) {
+    my_db <- rquery.rquery_db_executor$db
+  }
+  if(is.null(my_db)) {
+    stop("rquery::rquery_apply_to_data_frame no database")
+  }
   if(length(tabNames)!=1) {
     stop("rquery::rquery_apply_to_data_frame optree must reference exactly one table when rquery.rquery_executor option is not set")
   }
@@ -132,25 +139,6 @@ rquery_apply_to_data_frame <- function(d,
   inp_name <- tmp_name_source()
   res_name <- tmp_name_source()
   optree <- re_write_table_names(optree, inp_name)
-  need_close <- FALSE
-  my_db <- NULL
-  db_handle <- base::mget("winvector_temp_db_handle",
-                          envir = env,
-                          ifnotfound = list(NULL),
-                          inherits = TRUE)[[1]]
-  if(!is.null(db_handle)) {
-    my_db <- db_handle$db
-  }
-  if(is.null(my_db) &&
-     isTRUE(getOption("rquery.use_temp_rsqlite", default = FALSE)) &&
-     requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
-    my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-    RSQLite::initExtension(my_db)
-    need_close = TRUE
-  }
-  if(is.null(my_db)) {
-    stop("rquery::rquery_apply_to_data_frame no database")
-  }
   dR <- rq_copy_to(my_db,
                     inp_name,
                     d,
@@ -175,9 +163,6 @@ rquery_apply_to_data_frame <- function(d,
   res <- rq_get_query(my_db, sql)
   rq_remove_table(my_db, inp_name)
   rq_remove_table(my_db, res_name)
-  if(need_close) {
-    DBI::dbDisconnect(my_db)
-  }
   res
 }
 
@@ -219,13 +204,14 @@ as.character.relop <- function (x, ...) {
 #'
 #' @examples
 #'
+#' # WARNING: example tries to change rquery.rquery_db_executor option to RSQLite and back.
 #' if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
 #'   # set up example database and
 #'   # db execution helper
 #'   db <- DBI::dbConnect(RSQLite::SQLite(),
 #'                        ":memory:")
 #'   RSQLite::initExtension(db)
-#'   winvector_temp_db_handle <- list(db = db)
+#'   old_o <- options(list("rquery.rquery_db_executor" = list(db = db)))
 #'
 #'   # operations pipeline/tree
 #'   optree <- mk_td("d", "x") %.>%
@@ -248,7 +234,7 @@ as.character.relop <- function (x, ...) {
 #'   db %.>% optree %.>% print(.)
 #'
 #'   # clean up
-#'   rm(list = "winvector_temp_db_handle")
+#'   options(old_o)
 #'   DBI::dbDisconnect(db)
 #' }
 #'

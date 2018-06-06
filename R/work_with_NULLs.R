@@ -28,12 +28,11 @@ flatten_with_sep <- function(list_of_lists, sep_list) {
 #'
 #' @examples
 #'
+#' # WARNING: example tries to change rquery.rquery_db_executor option to RSQLite and back.
 #' if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'   winvector_temp_db_handle <- list(
-#'     db = my_db
-#'   )
-#'   RSQLite::initExtension(winvector_temp_db_handle$db)
+#'   RSQLite::initExtension(my_db)
+#'   old_o <- options(list("rquery.rquery_db_executor" = list(db = my_db)))
 #'
 #'   d <- rq_copy_to(my_db, 'd',
 #'                    data.frame(AUC = c(0.6, 0.5, NA),
@@ -50,7 +49,7 @@ flatten_with_sep <- function(list_of_lists, sep_list) {
 #'      print(.)
 #'
 #'   # cleanup
-#'   rm(list = "winvector_temp_db_handle")
+#'   options(old_o)
 #'   DBI::dbDisconnect(my_db)
 #' }
 #'
@@ -100,12 +99,11 @@ count_null_cols <- function(source, cols, count) {
 #'
 #' @examples
 #'
+#' # WARNING: example tries to change rquery.rquery_db_executor option to RSQLite and back.
 #' if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'   winvector_temp_db_handle <- list(
-#'     db = my_db
-#'   )
-#'   RSQLite::initExtension(winvector_temp_db_handle$db)
+#'   RSQLite::initExtension(my_db)
+#'   old_o <- options(list("rquery.rquery_db_executor" = list(db = my_db)))
 #'
 #'   d <- rq_copy_to(my_db, 'd',
 #'                    data.frame(AUC = c(0.6, 0.5, NA),
@@ -123,7 +121,7 @@ count_null_cols <- function(source, cols, count) {
 #'      print(.)
 #'
 #'   # cleanup
-#'   rm(list = "winvector_temp_db_handle")
+#'   options(old_o)
 #'   DBI::dbDisconnect(my_db)
 #' }
 #'
