@@ -129,12 +129,6 @@ dL %>>% ( select_rows_nse(., R2 > 0.14) %.>%
 
 # Cleanup
 
-The ad hoc method defaults to using a transient `RSQLite` database connection.  
-Our a non-transient `DBI` database connection can be specified by adding one as the "`db`" value
-in a list bound to the global variable "`winvector_temp_db_handle`" (as we did in this note).
-If one has done this one can use a more powerful database (such as `PostgeSQL` which has window 
-functions).  In this case one should also probably close the `DB` connection or at least break
-the reference when finished as follows.
 
 
 ```{r cleanup}
