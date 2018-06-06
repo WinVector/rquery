@@ -1,7 +1,7 @@
 data.table backend for rquery
 ================
 John Mount, Win-Vector LLC
-06/05/2018
+06/06/2018
 
 We can work an example similar to the [`rquery`](https://winvector.github.io/rquery/) [example](https://winvector.github.io/rquery/index.html) using a [`data.table`](http://r-datatable.com/) back-end ([`rqdatatable`](https://github.com/WinVector/rqdatatable)).
 
