@@ -228,7 +228,7 @@ We have found most big-data projects either require joining very many tables (so
 
 
 We can also stand `rquery` up on non-`DBI` sources such as [`SparkR`](https://github.com/WinVector/rquery/blob/master/extras/SparkR.md)
-and also [`data.table`](https://github.com/WinVector/rquery/blob/master/extras/data_table.md).  The `data.table` adapter is being developed in the [`qdatatable`](https://github.com/WinVector/qdatatable) package, and can be [quite fast](https://github.com/WinVector/rquery/blob/master/extras/data_table.md).  Notice also the examples in this paragram all essentially use the same query pipeline, the user can choose where to apply it: in memory (`data.table`), in a `DBI` database (`PostgreSQL`, `Sparklyr`), and with even non-DBI systems (`SparkR`).
+and also [`data.table`]().  The `data.table` adapter is being developed in the [`rqdatatable`](https://github.com/WinVector/rqdatatable) package, and can be [quite fast](http://www.win-vector.com/blog/2018/06/rqdatatable-rquery-powered-by-data-table/).  Notice the examples in this paragram all essentially use the same query pipeline, the user can choose where to apply it: in memory (`data.table`), in a `DBI` database (`PostgreSQL`, `Sparklyr`), and with even non-DBI systems (`SparkR`).
 
 
 

@@ -9,7 +9,7 @@ Authors@R: c(
     )
 Maintainer: John Mount <jmount@win-vector.com>
 URL: https://github.com/WinVector/rquery/, https://winvector.github.io/rquery/
-Description: A 'SQL' query generator based on Edgar F. Codd's relational
+Description: A 'SQL' piped query generator based on Edgar F. Codd's relational
     algebra and experience using 'SQL' and 'dplyr' at big data
     scale.  The design represents an attempt to make 'SQL' more teachable by
     denoting composition by a sequential pipeline notation instead of nested
