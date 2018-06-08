@@ -255,14 +255,14 @@ cat(to_sql(dq, my_db, source_limit = 1000))
             "d"."assessmentTotal"
            FROM
             "d" LIMIT 1000
-           ) tsql_10407909615403415547_0000000000
-          ) tsql_10407909615403415547_0000000001
-         ) tsql_10407909615403415547_0000000002
-       ) tsql_10407909615403415547_0000000003
+           ) tsql_12581346536758518745_0000000000
+          ) tsql_12581346536758518745_0000000001
+         ) tsql_12581346536758518745_0000000002
+       ) tsql_12581346536758518745_0000000003
        WHERE "row_rank" <= 1
-      ) tsql_10407909615403415547_0000000004
-     ) tsql_10407909615403415547_0000000005
-    ) tsql_10407909615403415547_0000000006 ORDER BY "subjectID"
+      ) tsql_12581346536758518745_0000000004
+     ) tsql_12581346536758518745_0000000005
+    ) tsql_12581346536758518745_0000000006 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
@@ -403,3 +403,11 @@ For deeper dives into specific topics, please see also:
 -   [Join Dependency Sorting](https://github.com/WinVector/rquery/blob/master/extras/DependencySorting.md)
 -   [Assignment Partitioner](https://github.com/WinVector/rquery/blob/master/extras/AssigmentPartitioner.md)
 -   [DifferentDBs](https://github.com/WinVector/rquery/blob/master/extras/ExtraDBs.md)
+-   [rqdatatable](https://github.com/WinVector/rqdatatable)
+
+To install `rquery` please use `devtools` as follows.
+
+``` r
+# install.packages("devtools")
+devtools::install_github("WinVector/rquery")
+```

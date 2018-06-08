@@ -200,7 +200,7 @@ the calculation prior to it losing narrowing optimizations.</p>
 #&gt;   v %:=% ifelse(x &gt; 2, "x", "y")) %.&gt;%
 #&gt;  non_sql_node(., rsummary_node(.))
 #&gt; [[1]]
-#&gt; [1] "CREATE  TABLE `sn_79450996061126207338_0000000000`  AS  SELECT\n  `p`,\n  `s`,\n  `w`,\n  `x`,\n  `y`,\n  `z`,\n  ( CASE WHEN ( `x` &gt; 2 ) THEN ( 'x' ) WHEN NOT ( `x` &gt; 2 ) THEN ( 'y' ) ELSE NULL END )  AS `v`\n FROM (\n  SELECT\n   `dRemote`.`p`,\n   `dRemote`.`s`,\n   `dRemote`.`w`,\n   `dRemote`.`x`,\n   `dRemote`.`y`,\n   `dRemote`.`z`\n  FROM\n   `dRemote`\n  ) tsql_23012829786491164338_0000000000\n"
+#&gt; [1] "CREATE TEMPORARY  TABLE `sn_79450996061126207338_0000000000`  AS  SELECT\n  `p`,\n  `s`,\n  `w`,\n  `x`,\n  `y`,\n  `z`,\n  ( CASE WHEN ( `x` &gt; 2 ) THEN ( 'x' ) WHEN NOT ( `x` &gt; 2 ) THEN ( 'y' ) ELSE NULL END )  AS `v`\n FROM (\n  SELECT\n   `dRemote`.`p`,\n   `dRemote`.`s`,\n   `dRemote`.`w`,\n   `dRemote`.`x`,\n   `dRemote`.`y`,\n   `dRemote`.`z`\n  FROM\n   `dRemote`\n  ) tsql_23012829786491164338_0000000000\n"
 #&gt; 
 #&gt; [[2]]
 #&gt; [1] "non SQL step:  rsummary_node(.)"
@@ -215,7 +215,7 @@ the calculation prior to it losing narrowing optimizations.</p>
 #&gt; 4      x     4   numeric     3   1      NA   2   3  2.5 0.7071068   &lt;NA&gt;   &lt;NA&gt;
 #&gt; 5      y     5 character     3   1       2  NA  NA   NA        NA      3      5
 #&gt; 6      z     6 character     3   1       1  NA  NA   NA        NA      a      a
-#&gt; 7      v     7 character     3   1       2  NA  NA   NA        NA      x      y</div><div class='input'>
+#&gt; 7      v     7   logical     3   1       2   0   0  0.0 0.0000000  FALSE  FALSE</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

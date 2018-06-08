@@ -240,6 +240,7 @@ For deeper dives into specific topics, please see also:
   * [Join Dependency Sorting](https://github.com/WinVector/rquery/blob/master/extras/DependencySorting.md)
   * [Assignment Partitioner](https://github.com/WinVector/rquery/blob/master/extras/AssigmentPartitioner.md)
   * [DifferentDBs](https://github.com/WinVector/rquery/blob/master/extras/ExtraDBs.md)
+  * [rqdatatable](https://github.com/WinVector/rqdatatable)
 
 
 ```{r cleanup, include=FALSE}
@@ -250,3 +251,9 @@ if(use_spark) {
 }
 ```
 
+To install `rquery` please use `devtools` as follows.
+
+```{r, eval=FALSE}
+# install.packages("devtools")
+devtools::install_github("WinVector/rquery")
+```
