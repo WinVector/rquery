@@ -10,24 +10,26 @@
 #' so can be expensive and should be used sparingly.
 #'
 #' @param source source to work from (data.frame or relop node)
-#' @param f implementation signature: f(db, incoming_table_name, outgoing_table_name)
 #' @param ... force later arguments to bind by name
+#' @param f_db implementation signature: f_db(db, incoming_table_name, outgoing_table_name) (db being a database handle)
+#' @param f_df implementation signature: f_df(data.frame)
 #' @param incoming_table_name character, name of incoming table
 #' @param outgoing_table_name character, name of produced table
 #' @param columns_produced character, names of additional columns produced
 #' @param display_form chacter, how to print node
-#' @param pass_using logical, if TRUE (or if f is NULL) pass using column calculations through (else assume using all columns).
+#' @param pass_using logical, if TRUE (or if f_db is NULL) pass using column calculations through (else assume using all columns).
 #' @param orig_columns logical if TRUE select all original columns.
 #' @param temporary logical, if TRUE mark tables temporary.
 #' @return sql node.
 #'
-#' @seealso \code{\link{rsummary_node}}
+#' @seealso \code{\link{rsummary_node}}, \code{\link{quantile_node}}, \code{\link{materialize_node}}
 #'
 #' @export
 #'
 non_sql_node <- function(source,
-                         f,
                          ...,
+                         f_db,
+                         f_df,
                          incoming_table_name,
                          outgoing_table_name,
                          columns_produced,
@@ -41,8 +43,9 @@ non_sql_node <- function(source,
 
 #' @export
 non_sql_node.relop <- function(source,
-                               f,
                                ...,
+                               f_db,
+                               f_df,
                                incoming_table_name,
                                outgoing_table_name,
                                columns_produced,
@@ -51,19 +54,20 @@ non_sql_node.relop <- function(source,
                                orig_columns = TRUE,
                                temporary = TRUE) {
   wrapr::stop_if_dot_args(substitute(list(...)), "non_sql_node.relop")
-  if(is.null(f)) {
+  if(is.null(f_db)) {
     if(incoming_table_name!=outgoing_table_name) {
-      stop("non_sql_node.relop: must have incoming_table_name==outgoing_table_name when f is NULL")
+      stop("non_sql_node.relop: must have incoming_table_name==outgoing_table_name when f_db is NULL")
     }
   } else {
     if(incoming_table_name==outgoing_table_name) {
-      stop("non_sql_node.relop: must have incoming_table_name!=outgoing_table_name when f is not NULL")
+      stop("non_sql_node.relop: must have incoming_table_name!=outgoing_table_name when f_db is not NULL")
     }
   }
   r <- list(source = list(source),
             table_name = outgoing_table_name,
-            f = f,
-            pass_using = pass_using || is.null(f),
+            f_db = f_db,
+            f_df = f_df,
+            pass_using = pass_using || is.null(f_db),
             incoming_table_name = incoming_table_name,
             outgoing_table_name = outgoing_table_name,
             columns_produced = columns_produced,
@@ -77,8 +81,9 @@ non_sql_node.relop <- function(source,
 
 #' @export
 non_sql_node.data.frame <- function(source,
-                                    f,
                                     ...,
+                                    f_db,
+                                    f_df,
                                     incoming_table_name,
                                     outgoing_table_name,
                                     columns_produced,
@@ -90,7 +95,8 @@ non_sql_node.data.frame <- function(source,
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- mk_td(tmp_name, colnames(source))
   enode <- non_sql_node(source,
-                        f,
+                        f_db = f_db,
+                        f_df = f_df,
                         incoming_table_name = incoming_table_name,
                         outgoing_table_name = outgoing_table_name,
                         columns_produced = columns_produced,
@@ -168,7 +174,7 @@ to_sql.relop_non_sql <- function (x,
                     incoming_table_name = x$incoming_table_name,
                     outgoing_table_name = x$outgoing_table_name,
                     temporary = x$temporary,
-                    f = x$f)
+                    f = x$f_db)
   class(nsql_step) <- "rquery_non_sql_step"
   step2 <- list(nsql_step)
   qlimit = limit
@@ -208,7 +214,7 @@ print.rquery_non_sql_step <- function(x, ...) {
 #' @param temporary logical, if TRUE mark tables temporary.
 #' @return sql node.
 #'
-#' @seealso \code{\link{rsummary_node}}
+#' @seealso \code{\link{rsummary_node}}, \code{\link{non_sql_node}}
 #'
 #' @export
 #'
@@ -218,7 +224,8 @@ materialize_node <- function(source,
                              temporary = TRUE) {
   wrapr::stop_if_dot_args(substitute(list(...)), "materialize_node")
   non_sql_node(source = source,
-               f = NULL,
+               f_db = NULL,
+               f_df = function(x) { x },
                incoming_table_name = table_name,
                outgoing_table_name = table_name,
                columns_produced = NULL,

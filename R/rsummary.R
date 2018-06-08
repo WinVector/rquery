@@ -388,7 +388,7 @@ rsummary_node <- function(source,
   force(quartiles)
   incoming_table_name = tmp_name_source()
   outgoing_table_name = tmp_name_source()
-  f <- function(db,
+  f_db <- function(db,
                 incoming_table_name,
                 outgoing_table_name) {
     stable <- rsummary(db, incoming_table_name,
@@ -400,7 +400,8 @@ rsummary_node <- function(source,
                 temporary = temporary)
   }
   nd <- non_sql_node(source,
-                     f,
+                     f_db = f_db,
+                     f_df = NULL, # TODO: add an implementation
                      incoming_table_name = incoming_table_name,
                      outgoing_table_name = outgoing_table_name,
                      columns_produced = columns_produced,
