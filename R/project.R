@@ -22,17 +22,17 @@ project_impl <- function(source, ...,
     groupby
   )))
   check_have_cols(have, required_cols, "rquery::project")
-  assignments <- unpack_assignments(source, parsed)
-  producing <- names(assignments)
-  overlap <- intersect(have, producing)
-  if(length(overlap)>0) {
-    stop(paste("rquery:::project_impl produced columns must be disjoint from incoming table: ",
-               paste(overlap, collapse = ", ")))
-  }
   parts <- partition_assignments(parsed)
   if(length(parts)>1) {
     stop(paste("rquery:::project_impl can not use produced column names during a project"))
   }
+  assignments <- unpack_assignments(source, parsed)
+  # producing <- names(assignments)
+  # overlap <- intersect(have, producing)
+  # if(length(overlap)>0) {
+  #   stop(paste("rquery:::project_impl produced columns must be disjoint from incoming table: ",
+  #              paste(overlap, collapse = ", ")))
+  # }
   r <- list(source = list(source),
             table_name = NULL,
             parsed = parsed,
@@ -156,7 +156,7 @@ project_nse <- function(source, groupby, ...,
 
 #' @export
 project_nse.relop <- function(source, groupby, ...,
-                        env = parent.frame()) {
+                              env = parent.frame()) {
   # Recommend way to caputre ... unevalauted from
   # http://adv-r.had.co.nz/Computing-on-the-language.html#substitute "Capturing unevaluated ..."
   exprs <-  eval(substitute(alist(...)))
@@ -285,9 +285,9 @@ to_sql.relop_project <- function (x,
               prefix, " ) ", tab)
   if(length(cols)>0) {
     q <- paste0(q,
-               "\n",
-               prefix, "GROUP BY\n",
-               prefix, " ", paste(cols, collapse = ", "))
+                "\n",
+                prefix, "GROUP BY\n",
+                prefix, " ", paste(cols, collapse = ", "))
   }
   if(!is.null(limit)) {
     q <- paste(q, "LIMIT",
