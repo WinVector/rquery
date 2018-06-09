@@ -136,7 +136,7 @@ DBI::dbGetQuery(db, "
 Using `rquery` we can write the `SQL` composition using pipe notation
 (where composition is written as `x %.>% f %.>% g` instead of 
 `g(f(x))`).  We are going to use [`wrapr`](https://github.com/WinVector/wrapr) 
-[dot-pipe](https://winvector.github.io/wrapr/reference/grapes-.-greater-than-grapes.html) instead of 
+[dot-pipe](https://winvector.github.io/wrapr/reference/dot_arrow.html) instead of 
 the [`magrittr`](https://CRAN.R-project.org/package=magrittr) pipe to pick up 
 a neat feature we will use later (all other examples
 will work with the `magrittr` pipe).  The "`%.>%`" glyph can
