@@ -401,7 +401,7 @@ rsummary_node <- function(source,
   }
   nd <- non_sql_node(source,
                      f_db = f_db,
-                     f_df = NULL, # TODO: add an implementation
+                     f_df = function(...) { stop("rquery::rsummary_node not implemented for rqdatatable") }, # TODO: impelement
                      incoming_table_name = incoming_table_name,
                      outgoing_table_name = outgoing_table_name,
                      columns_produced = columns_produced,

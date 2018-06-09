@@ -42,6 +42,27 @@ quantile_col <- function(db, incoming_table_name, probs, ci) {
   r[[ci]][unpack]
 }
 
+# same semantics as DB fn.
+quantile_col_d <- function(d, probs, ci) {
+  dcol <- d[[ci]][!is.na(d[[ci]])]
+  nrows <- length(dcol)
+  # was coming back s integer64 and messing up pmax(), pmin()
+  if(nrows<1) {
+    return(rep(NA, length(probs)))
+  }
+  indexes <- round((nrows+0.5)*probs)
+  indexes <- pmax(1, indexes)
+  indexes <- pmin(nrows, indexes)
+  # deal with repeated indexes
+  # also make sure index 1 is present so we get something back
+  # if there is only one value
+  uindexes <- sort(unique(c(1, indexes, nrows)))
+  indexes_str <- paste(uindexes, collapse = ", ")
+  unpack <- match(indexes, uindexes)
+  r <- sort(dcol)[uindexes]
+  r[unpack]
+}
+
 #' Compute quantiles of specified columns
 #' (without interpolation, needs a database with window functions).
 #'
@@ -71,6 +92,25 @@ quantile_cols <- function(db, incoming_table_name,
   }
   qtable
 }
+
+quantile_cols_d <- function(d,
+                            ...,
+                            probs = seq(0, 1, 0.25),
+                            probs_name = "quantile_probability",
+                            cols = column_names(d)) {
+  if(!is.data.frame(d)) {
+    stop("rquery::quantile_cols_d: d must be a data.frame")
+  }
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::quantile_cols_d")
+  qtable <- data.frame(probs = probs)
+  colnames(qtable) <- probs_name
+  for(ci in cols) {
+    qi <- quantile_col_d(d, probs, ci)
+    qtable[[ci]] <- qi
+  }
+  qtable
+}
+
 
 #' Compute quantiles over non-NULL values
 #' (without interpolation, needs a database with window functions).
@@ -118,21 +158,27 @@ quantile_node <- function(source,
   incoming_table_name = tmp_name_source()
   outgoing_table_name = tmp_name_source()
   f_db <- function(db,
-                incoming_table_name,
-                outgoing_table_name) {
+                   incoming_table_name,
+                   outgoing_table_name) {
     qtable <- quantile_cols(db, incoming_table_name,
                             probs = probs,
                             probs_name = probs_name,
                             cols = cols)
     rq_copy_to(db,
-                table_name = outgoing_table_name,
-                d = qtable,
-                overwrite = TRUE,
-                temporary = temporary)
+               table_name = outgoing_table_name,
+               d = qtable,
+               overwrite = TRUE,
+               temporary = temporary)
+  }
+  f_df <- function(d) {
+    quantile_cols_d(d,
+                    probs = probs,
+                    probs_name = probs_name,
+                    cols = cols)
   }
   nd <- non_sql_node(source,
                      f_db = f_db,
-                     f_df = NULL,  # TODO: add an implementation
+                     f_df = f_df,
                      incoming_table_name = incoming_table_name,
                      outgoing_table_name = outgoing_table_name,
                      columns_produced = c(probs_name, cols),
