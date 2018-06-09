@@ -29,6 +29,10 @@ project_impl <- function(source, ...,
     stop(paste("rquery:::project_impl produced columns must be disjoint from incoming table: ",
                paste(overlap, collapse = ", ")))
   }
+  parts <- partition_assignments(parsed)
+  if(length(parts)>1) {
+    stop(paste("rquery:::project_impl can not use produced column names during a project"))
+  }
   r <- list(source = list(source),
             table_name = NULL,
             parsed = parsed,
