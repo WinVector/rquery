@@ -1,12 +1,16 @@
 
-#' build a map of original column names to unambigous column names
+#' build a map of original column names to unambigous column names.
+#'
+#' Principles: non-colliding columns keep their original names.
+#' Initially colliding columns are not to collide with anything else.
+#' Same suffix strategy used on all altered columns.
 #'
 #' @param colsa character columns from table a
 #' @param colsb character columns from table b
 #' @param suffix  character length 2, suffices to disambiguate columns.
 #' @return list length 2 of name column lists
 #'
-#' # build_col_name_map(c("a", "a_a"), c("a"), c("_a", ""))
+#' # build_col_name_map(c("a", "a_a", "b"), c("a", "c"), c("_a", ""))
 #'
 #' @noRd
 #'
@@ -14,30 +18,36 @@ build_col_name_map <- function(colsa, colsb, suffix) {
   if(suffix[[1]]==suffix[[2]]) {
     stop("rquery::build_col_name_map suffix entries must differ")
   }
+  if(length(colsa)!=length(unique(colsa))) {
+    stop("rquery::build_col_name_map colsa already not unique")
+  }
+  if(length(colsb)!=length(unique(colsb))) {
+    stop("rquery::build_col_name_map colsb already not unique")
+  }
+  # optimistic: names are already disjoint
   mapa <- colsa
   names(mapa) <- colsa
   mapb <- colsb
   names(mapb) <- colsb
   overlap = intersect(colsa, colsb)
-  for(oi in overlap) {
-    oia <- paste0(oi, suffix[[1]])
-    oib <- paste0(oi, suffix[[2]])
-    ova <- oia
-    ovb <- oib
-    retry_count = 1
-    while(TRUE) {
-      others <- unique(c(mapa[setdiff(colsa, oi)],
-                         mapb[setdiff(colsa, oi)]))
-      if(length(intersect(others, c(ova, ovb)))<=0) {
-        break
-      }
-      ova <- paste(oia, retry_count, sep = "_")
-      ovb <- paste(oib, retry_count, sep = "_")
-    }
-    mapa[[oi]] <- ova
-    mapb[[oi]] <- ovb
+  if(length(overlap)<=0) {
+    return(list("a" = mapa, "b" = mapb))
   }
-  list("a" = mapa, "b" = mapb)
+  n_target <- length(colsa) + length(colsb)
+  fixl <- ""
+  fixr <- ""
+  try_num <- 0
+  while(TRUE) {
+    mapa[[overlap]] <- paste0(overlap, suffix[[1]], fixl)
+    mapb[[overlap]] <- paste0(overlap, suffix[[2]], fixr)
+    # altered names can collide with other names in either vector
+    if(length(unique(c(as.character(mapa), as.character(mapb)))) == n_target) {
+      return(list("a" = mapa, "b" = mapb))
+    }
+    try_num <- try_num + 1
+    fixl <- paste0("_l", try_num)
+    fixr <- paste0("_r", try_num)
+  }
 }
 
 #' Make a theta_join node.
