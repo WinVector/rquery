@@ -29,7 +29,7 @@ relop_decorate <- function(class_name, r) {
 #'                     data.frame(AUC = 0.6, R2 = 0.2))
 #'   d2 <- rq_copy_to(my_db, 'd2',
 #'                     data.frame(AUC = 0.6, D = 0.3))
-#'   optree <- natural_join(d1, d2)
+#'   optree <- natural_join(d1, d2, by = "AUC")
 #'   cat(format(optree))
 #'   print(column_names(optree))
 #'   DBI::dbDisconnect(my_db)
@@ -77,7 +77,7 @@ column_names.data.frame <- function (x, ...) {
 #'                     data.frame(AUC = 0.6, R2 = 0.2))
 #'   d2 <- rq_copy_to(my_db, 'd2',
 #'                     data.frame(AUC = 0.6, D = 0.3))
-#'   optree <- natural_join(d1, d2)
+#'   optree <- natural_join(d1, d2, by = "AUC")
 #'   cat(format(optree))
 #'   print(columns_used(optree))
 #'   DBI::dbDisconnect(my_db)
@@ -129,7 +129,7 @@ columns_used.relop <- function (x,
 #'                     data.frame(AUC = 0.6, R2 = 0.2))
 #'   d2 <- rq_copy_to(my_db, 'd2',
 #'                     data.frame(AUC = 0.6, D = 0.3))
-#'   optree <- natural_join(d1, d2)
+#'   optree <- natural_join(d1, d2, by = "AUC")
 #'   cat(format(optree))
 #'   print(tables_used(optree))
 #'   DBI::dbDisconnect(my_db)
@@ -179,7 +179,7 @@ tables_used.relop <- function(node, ...) {
 #'                     data.frame(AUC = 0.6, R2 = 0.2))
 #'   d2 <- rq_copy_to(my_db, 'd2',
 #'                     data.frame(AUC = 0.6, D = 0.3))
-#'   optree <- natural_join(d1, d2)
+#'   optree <- natural_join(d1, d2, by = "AUC")
 #'   cat(format(optree))
 #'   print(to_sql(optree, my_db))
 #'   DBI::dbDisconnect(my_db)

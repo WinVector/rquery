@@ -131,6 +131,7 @@ complete_design <- function(design_table, data_table) {
     extend_se(., "row_in_design_table" %:=% 1)
   data_table <- data_table %.>%
     extend_se(., "row_in_data_table" %:=% 1)
-  natural_join(design_table, data_table, jointype = "LEFT")  %.>%
+  by = intersect(column_names(design_table), column_names(data_table))
+  natural_join(design_table, data_table, jointype = "LEFT", by = by)  %.>%
     null_replace(., c("row_in_design_table", "row_in_data_table"), 0)
 }

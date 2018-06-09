@@ -14,6 +14,7 @@
  * Add ability to use %:=% in parsing.
  * Move to executor options.
  * Separate execute() and materialize() roles.
+ * Fix natural_join() semantics and make "by" a required argument.
 
 # rquery 0.4.4 2018/05/14
 
