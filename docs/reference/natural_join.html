@@ -190,11 +190,13 @@ are coalesced into a single column prefering the first or "a" table.</p>
     <span class='fu'>print</span>(<span class='no'>.</span>)
 
   <span class='co'># full cross-product join</span>
-  <span class='co'># (usually with jointype = "FULL", but RSQLite does not support that).</span>
+  <span class='co'># (usually with jointype = "FULL", but "LEFT" is more</span>
+  <span class='co'># compatible with rquery field merg semantics).</span>
   <span class='no'>optree2</span> <span class='kw'>&lt;-</span> <span class='fu'>natural_join</span>(<span class='no'>d1</span>, <span class='no'>d2</span>,
                           <span class='kw'>jointype</span> <span class='kw'>=</span> <span class='st'>"LEFT"</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
   <span class='fu'><a href='execute.html'>execute</a></span>(<span class='no'>my_db</span>, <span class='no'>optree2</span>) <span class='kw'>%.&gt;%</span>
     <span class='fu'>print</span>(<span class='no'>.</span>)
+  <span class='co'># notice ALL non-"by" fields take coalese to left table.</span>
 
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
 }</div><div class='output co'>#&gt;   key val val1 val2

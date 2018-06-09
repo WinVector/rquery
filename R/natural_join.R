@@ -42,11 +42,13 @@
 #'     print(.)
 #'
 #'   # full cross-product join
-#'   # (usually with jointype = "FULL", but RSQLite does not support that).
+#'   # (usually with jointype = "FULL", but "LEFT" is more
+#'   # compatible with rquery field merg semantics).
 #'   optree2 <- natural_join(d1, d2,
 #'                           jointype = "LEFT", by = NULL)
 #'   execute(my_db, optree2) %.>%
 #'     print(.)
+#'   # notice ALL non-"by" fields take coalese to left table.
 #'
 #'   DBI::dbDisconnect(my_db)
 #' }
