@@ -2,6 +2,8 @@
 # make . not look unbound
 . <- NULL
 
+#' @importFrom stats sd
+NULL
 
 #' Apply summary function to many columns.
 #'
@@ -216,10 +218,10 @@ rsummary <- function(db,
                              skipNulls = TRUE) %.>%
       populate_column(res, "min", .)
     res <- summarize_columns(db, tableName,
-                            "MAX(CASE WHEN",
-                            logicalCols,
-                            "THEN 1.0 ELSE 0.0 END)",
-                            skipNulls = TRUE) %.>%
+                             "MAX(CASE WHEN",
+                             logicalCols,
+                             "THEN 1.0 ELSE 0.0 END)",
+                             skipNulls = TRUE) %.>%
       populate_column(res, "max", .)
     res <- summarize_columns(db, tableName,
                              "AVG(CASE WHEN",
@@ -311,6 +313,143 @@ rsummary <- function(db,
   res
 }
 
+# d <- data.frame(p= c(TRUE, FALSE, NA),
+#                 s= NA,
+#                 w= 1:3,
+#                 x= c(NA,2,3),
+#                 y= factor(c(3,5,NA)),
+#                 z= c('a',NA,'a'),
+#                 stringsAsFactors=FALSE)
+# rquery:::rsummary_d(d)
+#
+rsummary_d <- function(d,
+                       ...,
+                       countUniqueNum = TRUE,
+                       quartiles = TRUE,
+                       cols = NULL) {
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::rsummary_d")
+  if(!is.data.frame(d)) {
+    stop("rquery::rsummary_d d is supposed to be a data.frame")
+  }
+  cnames <- colnames(d)
+  if(!is.null(cols)) {
+    cnames <- intersect(cnames, cols)
+    d <- d[, cnames, drop=FALSE]
+  }
+  nrows <- nrow(d)
+  cmap <- seq_len(length(cnames))
+  names(cmap) <- cnames
+  numericCols <- c(cnames[vapply(d, is.numeric, logical(1))],
+                   cnames[vapply(d, is.logical, logical(1))])
+  charCols <- c(cnames[vapply(d, is.character, logical(1))],
+                cnames[vapply(d, is.factor, logical(1))])
+  workingCols <- c(numericCols, charCols)
+  exoticCols <- setdiff(cnames, workingCols)
+  cclass <- lapply(d, class)
+  names(cclass) <- colnames(d)
+  res <- data.frame(column = cnames,
+                    index = NA_real_,
+                    class = NA_character_,
+                    nrows = nrows,
+                    nna = NA_real_,
+                    nunique = NA_real_,
+                    min = NA_real_,
+                    max = NA_real_,
+                    mean = NA_real_,
+                    sd = NA_real_,
+                    lexmin = NA_real_,
+                    lexmax = NA_real_,
+                    stringsAsFactors = FALSE)
+  classtr <- vapply(cclass,function(vi) {
+    paste(vi,collapse=', ')
+  }, character(1))
+  res$class <- classtr[res$column]
+  res$index <- match(res$column, cnames)
+  if((nrows<1)||(length(workingCols)<1)) {
+    return(res)
+  }
+  populate_column <- function(res, colname, z) {
+    idxs <- match(names(z), res$column)
+    res[[colname]][idxs] <- z
+    res
+  }
+  null_stats <- vapply(workingCols,
+                       function(ci) {
+                         sum(is.na(d[[ci]]))
+                       },
+                       numeric(1))
+  res <- populate_column(res, "nna", null_stats)
+  # limit down to populated columns
+  unpop_cols <- res$column[res$nna>=res$nrows]
+  res$nunique[res$column %in% unpop_cols] <- 0.0
+  numericCols <- setdiff(numericCols, unpop_cols)
+  charCols <-  setdiff(charCols, unpop_cols)
+  if(length(numericCols)>=1) {
+    res <- vapply(numericCols,
+                  function(ci) {
+                    max(as.numeric(d[[ci]]), na.rm = TRUE)
+                  }, numeric(1)) %.>%
+      populate_column(res, "max", .)
+    res <- vapply(numericCols,
+                  function(ci) {
+                    min(as.numeric(d[[ci]]), na.rm = TRUE)
+                  }, numeric(1)) %.>%
+      populate_column(res, "min", .)
+    res <- vapply(numericCols,
+                  function(ci) {
+                    mean(as.numeric(d[[ci]]), na.rm = TRUE)
+                  }, numeric(1)) %.>%
+      populate_column(res, "mean", .)
+    res <- vapply(numericCols,
+                  function(ci) {
+                    stats::sd(as.numeric(d[[ci]]), na.rm = TRUE)
+                  }, numeric(1)) %.>%
+      populate_column(res, "sd", .)
+    if(countUniqueNum) {
+      res <- vapply(numericCols,
+                    function(ci) {
+                      length(unique(d[[ci]]))
+                    }, numeric(1)) %.>%
+        populate_column(res, "nunique", .)
+    }
+  }
+  if(length(charCols)>=1) {
+    res <- vapply(charCols,
+                  function(ci) {
+                    max(as.character(d[[ci]]), na.rm = TRUE)
+                  }, character(1)) %.>%
+      populate_column(res, "lexmax", .)
+    res <- vapply(charCols,
+                  function(ci) {
+                    min(as.character(d[[ci]]), na.rm = TRUE)
+                  }, character(1)) %.>%
+      populate_column(res, "lexmin", .)
+    res <- vapply(charCols,
+                  function(ci) {
+                    length(unique(as.character(d[[ci]])))
+                  }, numeric(1)) %.>%
+      populate_column(res, "nunique", .)
+  }
+  res <- res[order(res$index),]
+  rownames(res) <- NULL
+  if(quartiles) {
+    qs <- quantile_cols_d(d,
+                          probs = c(0.25, 0.5, 0.75),
+                          probs_name = "rquery_probs_col",
+                          cols = numericCols)
+    res$Q1 <- NA_real_
+    res$median <- NA_real_
+    res$Q3 <- NA_real_
+    for(ci in numericCols) {
+      idx <- which(res$column == ci)[[1]]
+      res$Q1[[idx]] <- qs[[ci]][[1]]
+      res$median[[idx]] <- qs[[ci]][[2]]
+      res$Q3[[idx]] <- qs[[ci]][[3]]
+    }
+  }
+  res
+}
+
 
 #' Create an rsumary relop operator node.
 #'
@@ -389,15 +528,19 @@ rsummary_node <- function(source,
   incoming_table_name = tmp_name_source()
   outgoing_table_name = tmp_name_source()
   f_db <- function(db,
-                incoming_table_name,
-                outgoing_table_name) {
+                   incoming_table_name,
+                   outgoing_table_name) {
     stable <- rsummary(db, incoming_table_name,
                        quartiles = quartiles)
     rq_copy_to(db,
-                table_name = outgoing_table_name,
-                d = stable,
-                overwrite = TRUE,
-                temporary = temporary)
+               table_name = outgoing_table_name,
+               d = stable,
+               overwrite = TRUE,
+               temporary = temporary)
+  }
+  f_df <- function(d) {
+    rsummary_d(d,
+               quartiles = quartiles)
   }
   nd <- non_sql_node(source,
                      f_db = f_db,
