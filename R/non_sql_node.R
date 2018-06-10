@@ -11,8 +11,8 @@
 #'
 #' @param source source to work from (data.frame or relop node)
 #' @param ... force later arguments to bind by name
-#' @param f_db implementation signature: f_db(db, incoming_table_name, outgoing_table_name) (db being a database handle)
-#' @param f_df implementation signature: f_df(data.frame)
+#' @param f_db database implementation signature: f_db(db, incoming_table_name, outgoing_table_name) (db being a database handle)
+#' @param f_df data.frame implementation signature: f_df(data.frame) (NULL defaults to taking from database).
 #' @param incoming_table_name character, name of incoming table
 #' @param outgoing_table_name character, name of produced table
 #' @param columns_produced character, names of additional columns produced
@@ -29,7 +29,7 @@
 non_sql_node <- function(source,
                          ...,
                          f_db,
-                         f_df,
+                         f_df = NULL,
                          incoming_table_name,
                          outgoing_table_name,
                          columns_produced,
@@ -45,7 +45,7 @@ non_sql_node <- function(source,
 non_sql_node.relop <- function(source,
                                ...,
                                f_db,
-                               f_df,
+                               f_df = NULL,
                                incoming_table_name,
                                outgoing_table_name,
                                columns_produced,
@@ -83,7 +83,7 @@ non_sql_node.relop <- function(source,
 non_sql_node.data.frame <- function(source,
                                     ...,
                                     f_db,
-                                    f_df,
+                                    f_df = NULL,
                                     incoming_table_name,
                                     outgoing_table_name,
                                     columns_produced,

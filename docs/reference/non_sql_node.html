@@ -131,9 +131,9 @@ so can be expensive and should be used sparingly.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>non_sql_node</span>(<span class='no'>source</span>, <span class='no'>...</span>, <span class='no'>f_db</span>, <span class='no'>f_df</span>, <span class='no'>incoming_table_name</span>, <span class='no'>outgoing_table_name</span>,
-  <span class='no'>columns_produced</span>, <span class='no'>display_form</span>, <span class='kw'>pass_using</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>orig_columns</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>non_sql_node</span>(<span class='no'>source</span>, <span class='no'>...</span>, <span class='no'>f_db</span>, <span class='kw'>f_df</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>incoming_table_name</span>,
+  <span class='no'>outgoing_table_name</span>, <span class='no'>columns_produced</span>, <span class='no'>display_form</span>, <span class='kw'>pass_using</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>orig_columns</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -148,11 +148,11 @@ so can be expensive and should be used sparingly.</p>
     </tr>
     <tr>
       <th>f_db</th>
-      <td><p>implementation signature: f_db(db, incoming_table_name, outgoing_table_name) (db being a database handle)</p></td>
+      <td><p>database implementation signature: f_db(db, incoming_table_name, outgoing_table_name) (db being a database handle)</p></td>
     </tr>
     <tr>
       <th>f_df</th>
-      <td><p>implementation signature: f_df(data.frame)</p></td>
+      <td><p>data.frame implementation signature: f_df(data.frame) (NULL defaults to taking from database).</p></td>
     </tr>
     <tr>
       <th>incoming_table_name</th>
