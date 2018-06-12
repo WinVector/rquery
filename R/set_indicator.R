@@ -1,11 +1,16 @@
 
-#' Build an in set indicator.
+
+
+#' Make an set indicator node.
 #'
-#' @param source optree relnode or data.frame.
+#' Create a new column indicating the membership of another column in a given set.
+#'
+#'
+#' @param source source to select from.
 #' @param rescol name of column to land indicator in.
 #' @param testcol name of column to check.
 #' @param testvalues values to check for.
-#' @return implementing optree or altered data.frame
+#' @return set_indicator node.
 #'
 #' @examples
 #'
@@ -35,8 +40,33 @@
 #'
 #' @export
 #'
-set_indicator <- function(source, rescol, testcol, testvalues) {
+set_indicator <- function(source,
+                          rescol,
+                          testcol,
+                          testvalues) {
+  UseMethod("set_indicator", source)
+}
+
+#' @export
+set_indicator.relop <- function(source,
+                                rescol,
+                                testcol,
+                                testvalues) {
   testvname <- paste(deparse(substitute(testvalues)), collapse = " ")
+  cols <- column_names(source)
+  if(rescol %in% cols) {
+    stop("rquery::set_indicator.relop rescol must not be a column name of source data")
+  }
+  if(!(testcol %in% cols)) {
+    stop("rquery::set_indicator.relop testcol must be a column name of source data")
+  }
+  display_form <- paste0("set_indicator(., ",
+                         rescol,
+                         " = ",
+                         testcol,
+                         " IN ",
+                         testvname,
+                         ")")
   if(length(testvalues)>0) {
     terms = list(as.name(testcol), " IN ( ")
     for(i in seq_len(length(testvalues))) {
@@ -51,16 +81,116 @@ set_indicator <- function(source, rescol, testcol, testvalues) {
   } else {
     terms <- rescol %:=% 0
   }
-  nd <- sql_node(source, terms,
-                 orig_columns = TRUE)
-  if("relop" %in% class(nd)) {
-    nd$display_form <- paste0("set_indicator(., ",
-                              rescol,
-                              " = ",
-                              testcol,
-                              " IN ",
-                              testvname,
-                              ")")
-  }
-  nd
+  r <- list(source = list(source),
+            table_name = NULL,
+            parsed = NULL,
+            rescol = rescol,
+            testcol = testcol,
+            testvalues = testvalues,
+            display_form = display_form,
+            terms = terms)
+  r <- relop_decorate("relop_set_indicator", r)
+  r
 }
+
+#' @export
+set_indicator.data.frame <- function(source,
+                                     rescol,
+                                     testcol,
+                                     testvalues) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::set_indicator.data.frame")
+  if(length(setdiff(reverse, set_indicator))>0) {
+    stop("rquery::set_indicator.data.frame all reverse columns must also be set_indicator columns")
+  }
+  tmp_name <- mk_tmp_name_source("rquery_tmp")()
+  dnode <- mk_td(tmp_name, colnames(source))
+  enode <- set_indicator(source = dnode,
+                         rescol = rescol,
+                         testcol = testcol,
+                         testvalues = testvalues)
+  return(enode)
+}
+
+
+
+
+#' @export
+format_node.relop_set_indicator <- function(node) {
+  paste0(node$display_form,
+         "\n")
+}
+
+
+
+
+#' @export
+columns_used.relop_set_indicator <- function (x, ...,
+                                              using = NULL,
+                                              contract = FALSE) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::columns_used.relop_set_indicator")
+  if(!is.null(using)) {
+    if(!(x$testcol %in% using)) {
+      using <- c(using, x$testcol)
+    }
+    using <- setdiff(using, x$rescol)
+  }
+  return(columns_used(x$source[[1]],
+                      using = using,
+                      contract = contract))
+}
+
+
+#' @export
+to_sql.relop_set_indicator <- function (x,
+                                        db,
+                                        ...,
+                                        limit = NULL,
+                                        source_limit = NULL,
+                                        indent_level = 0,
+                                        tnum = mk_tmp_name_source('tsql'),
+                                        append_cr = TRUE,
+                                        using = NULL) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::to_sql.relop_set_indicator")
+  cols1 <- column_names(x$source[[1]])
+  # cols <- vapply(cols1,
+  #                function(ci) {
+  #                  quote_identifier(db, ci)
+  #                }, character(1))
+  sqlexprs <- vapply(x$terms,
+                     function(ei) {
+                       prep_sql_toks(db, ei)
+                     }, character(1))
+  if(length(sqlexprs)!=1) {
+    stop("rquery::to_sql.relop_set_indicator expected indicator calculation to be length 1")
+  }
+  subsql_list <- to_sql(x$source[[1]],
+                        db = db,
+                        limit = limit,
+                        source_limit = source_limit,
+                        indent_level = indent_level + 1,
+                        tnum = tnum,
+                        append_cr = FALSE,
+                        using = cols1)  # TODO: double check using calculation
+  subsql <- subsql_list[[length(subsql_list)]]
+  tab <- tnum()
+  prefix <- paste(rep(' ', indent_level), collapse = '')
+  q <- paste0(prefix, "SELECT *, ",
+              sqlexprs[[1]], " AS ", quote_identifier(db, names(sqlexprs)),
+              " FROM (\n",
+              subsql, "\n",
+              prefix, ") ",
+              tab)
+  if(!is.null(limit)) {
+    q <- paste(q, "LIMIT",
+               format(ceiling(limit), scientific = FALSE))
+  }
+  if(append_cr) {
+    q <- paste0(q, "\n")
+  }
+  c(subsql_list[-length(subsql_list)], q)
+}
+
+
