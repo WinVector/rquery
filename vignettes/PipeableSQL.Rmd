@@ -40,7 +40,8 @@ are listed [here](https://github.com/WinVector/rquery/blob/master/README.md)).
 Let's set up our environment so we can work with examples.
 
 ```{r chpkg} 
-run_vignette <- requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)
+run_vignette <- requireNamespace("DBI", quietly = TRUE) && 
+  requireNamespace("RSQLite", quietly = TRUE)
 ```
 
 ```{r setup, eval=run_vignette}
