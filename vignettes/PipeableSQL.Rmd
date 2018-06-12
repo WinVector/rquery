@@ -1,0 +1,398 @@
+---
+title: "Pipeable SQL"
+author: "John Mount"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Pipeable SQL}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Introduction
+
+[`rquery`](https://github.com/WinVector/rquery) is a 
+query generator for [`R`](https://www.r-project.org).  It is based on [Edgar F. Codd's relational
+algebra](https://en.wikipedia.org/wiki/Relational_algebra) plus experience using `SQL` 
+and [`dplyr`](https://CRAN.R-project.org/package=dplyr) at big data
+scale.  The design represents an attempt to make `SQL` more teachable by
+denoting composition by a sequential pipeline notation instead of nested
+queries or functions.  The implementation delivers reliable high 
+performance data processing on large data systems such as `Spark`
+and databases.
+Package features include: data processing trees
+or pipelines as observable objects (able to report both columns
+produced and columns used), optimized `SQL` generation as an explicit
+user visible modeling step, convenience methods for applying query
+trees to in-memory `data.frame`s, and low direct package dependencies.
+
+# Pipeable `SQL`
+
+`SQL` is a very powerful data processing (or data engineering) grammar.
+Data scientists are well advised to learn to work with `SQL`.  
+
+An inessential difficulty in using `SQL` is `SQL` represents
+composition of operations by nesting, which can rapidly become
+confusing and illegible.  This can be overcome by using a
+query composer such as `rquery` (some more query composers
+are listed [here](https://github.com/WinVector/rquery/blob/master/README.md)).
+
+Let's set up our environment so we can work with examples.
+
+```{r chpkg} 
+run_vignette <- requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)
+```
+
+```{r setup, eval=run_vignette}
+library("rquery")
+library("wrapr")
+
+# example database connection
+db <- DBI::dbConnect(RSQLite::SQLite(),
+                     ":memory:")
+RSQLite::initExtension(db)
+
+dbopts <- rq_connection_tests(db)
+print(dbopts)
+options(dbopts)
+
+# copy in example data
+rq_copy_to(
+  db, 'd',
+  data.frame(v = c(1, -5, 3)),
+  temporary = FALSE,
+  overwrite = TRUE)
+
+# produce a hande to existing table
+d <- db_td(db, "d")
+```
+
+`d` is a "table description" which is just
+the name of a table and the names of expected columns.
+`d` does not store data or a database reference (making it
+safe to serialize/de-serialize).  All `rquery` operation trees or
+pipelines must start either with a table description or a `data.frame`.
+We will discuss table 
+descriptions later.
+
+Note: in examples we use `rq_copy_to()` to create data.  This is only for the purpose of having
+easy portable examples.  With big data the data is usually already in the remote database or
+Spark system. The task is almost always to connect and work with this pre-existing remote data
+and the method to do this is [`db_td()`](https://winvector.github.io/rquery/reference/db_td.html),
+which builds a reference to a remote table given the table name.  The suggested pattern for working with 
+remote tables is to get inputs via [`db_td()`](https://winvector.github.io/rquery/reference/db_td.html)
+and land remote results with [`materialze()`](https://winvector.github.io/rquery/reference/materialize.html).
+To work with local data one can copy data from memory to the database with [`rq_copy_to()`](https://winvector.github.io/rquery/reference/rq_copy_to.html)
+and bring back results with [`execute()`](https://winvector.github.io/rquery/reference/execute.html) (though be aware 
+operation on remote non-memory data is `rquery`'s primary intent).
+
+
+For our first example we will introduce a new column and perform
+a calculation using this column.  This is achieved
+in `SQL` by writing code in one of two styles: defining the 
+first new column
+twice (once to land the value and once to use), or sequencing
+two queries by nesting.  We will demonstrate both methods.
+
+The define the column twice solution looks like the following.
+
+```{r defcoltwice, eval=run_vignette}
+DBI::dbGetQuery(db, "
+  SELECT
+    *,
+    ABS(v) AS absv,
+    ABS(v) - v AS delta
+  FROM
+    d
+")
+```
+
+In `SQL` the column `absv` is not available for calculation in the
+same query that it is produced.  
+
+The nested method looks like the following, we produce the column 
+`absv` in one query and then wrap that in another query 
+to later use the column.  For expressions longer than `ABS(v)` this
+is the preferred solution (until one moves to something like common
+table expressions).
+
+```{r nestsql, eval=run_vignette}
+DBI::dbGetQuery(db, "
+  SELECT
+    *,
+    absv - v AS delta
+  FROM (
+    SELECT
+      *,
+      ABS(v) AS absv
+    FROM
+      d
+  ) subtab
+")
+```
+
+## `sql_node()`
+
+Using `rquery` we can write the `SQL` composition using pipe notation
+(where composition is written as `x %.>% f %.>% g` instead of 
+`g(f(x))`).  We are going to use [`wrapr`](https://github.com/WinVector/wrapr) 
+[dot-pipe](https://winvector.github.io/wrapr/reference/dot_arrow.html) instead of 
+the [`magrittr`](https://CRAN.R-project.org/package=magrittr) pipe to pick up 
+a neat feature we will use later (all other examples
+will work with the `magrittr` pipe).  The "`%.>%`" glyph can
+be [bound to a keyboard shortcut](https://github.com/WinVector/addinexamplesWV) for convenience.
+
+The `rquery` realization of the above calculation is as follows:
+
+```{r rquerypipe1, eval=run_vignette}
+op_tree <- d %.>%
+  sql_node(., "absv" := "ABS(v)") %.>%
+  sql_node(., "delta" := "absv - v")
+execute(db, op_tree)
+```
+
+The above is what we call "piped `SQL`" and represents a major convenience for
+users as the details of how to compose the statements are left to the package.
+The `sql_node()` is a very powerful node.  We will use it in our first
+few examples and move onto more convenient higher level relational nodes.
+
+We can view the `SQL` translation of the operations tree as follows:
+
+```{r printsql, comment="", eval=run_vignette}
+cat(to_sql(op_tree, db))
+```
+
+Notice the above translations did not add identifier quotes to our
+use of "`v`" in "`ABS(v)`".  This is because the `SQL` expression 
+is not parsed in `R`.  If we want to identify terms as variables we
+can wrap them with `as.name()` or `quote()` to get the quoting (and other variable
+oriented features).  The extra `SELECT` step to pull data from the inner
+table is used by `rquery` for important column narrowing steps, and 
+can actually improve query performance.
+
+```{r rquerypipe11, comment="", eval=run_vignette}
+op_tree <- d %.>%
+  sql_node(., "absv" := list(list("ABS(", quote(v), ")"))) %.>%
+  sql_node(., "delta" := list(list(quote(absv),"-", quote(v))))
+cat(to_sql(op_tree, db))
+```
+
+The `list(list())` notation is how we say in `R` that we have a 
+single element list (i.e. one expression) that is built up as a list
+of terms.  The marking notation is cumbersome, but is not needed when
+we move on to relation nodes, which are parsed in `R` and can spot
+identifiers without additional help.
+
+`op_tree` itself is a an object with its own presentation format:
+
+```{r printoptree, eval=run_vignette}
+cat(format(op_tree))
+```
+
+The `op_tree` supplies an number of important summaries about the proposed query:
+
+```{r opsummaries, eval=run_vignette}
+column_names(op_tree)
+
+tables_used(op_tree)
+
+columns_used(op_tree)
+```
+
+### Composing nodes
+
+We can add nodes to an `op_tree` to build larger operator trees (or pipelines).
+
+```{r addop, eval=run_vignette}
+op_tree <- op_tree %.>%
+  sql_node(., "prod" := "absv * delta")
+
+cat(format(op_tree))
+```
+
+And, the `op_tree` record keeping can be used to catch potential errors
+early in pipeline construction.  For example if we try to refer to a non-existent
+variable when adding an operator we get an thrown exception (note: a `sql_node()`
+being added must have its variables marked as above for pre-checking to occur, 
+relational nodes will get this checking automatically).
+
+```{r addoperror, error=TRUE, eval=run_vignette}
+op_tree <- op_tree %.>%
+  sql_node(., "z" := list(list("1 + ", quote(z))))
+```
+
+### A non-trivial example
+
+We can express non-trivial operations in `sql_node()`s.  For example 
+we can build a node the calculates for each row how many columns
+contain `NA`/`NULL` as is demonstrated here.
+
+```{r countna, eval=run_vignette}
+# load up example data
+d2 <- rq_copy_to(
+  db, 'd2',
+  data.frame(v1 = c(1, 2, NA, 3),
+             v2 = c(NA, "b", NA, "c"),
+             v3 = c(NA, NA, 7, 8),
+             stringsAsFactors = FALSE))
+
+# look at table
+execute(db, d2)
+
+# get list of columns
+vars <- column_names(d2)
+print(vars)
+
+# build a NA/NULLs per-row counting expression.
+# names are "quoted" by wrapping them with as.name().
+# constants can be quoted by an additional list wrapping.
+expr <- lapply(vars,
+               function(vi) {
+                 list("+ (CASE WHEN (",
+                      as.name(vi),
+                      "IS NULL ) THEN 1.0 ELSE 0.0 END)")
+               })
+expr <- unlist(expr, recursive = FALSE)
+expr <- c(list(0.0), expr)
+cat(paste(unlist(expr), collapse = " "))
+
+# instantiate the operator node
+op_tree_count_null <- d2 %.>%
+  sql_node(., "num_missing" := list(expr))
+cat(format(op_tree_count_null))
+
+# examine produced SQL
+sql <- to_sql(op_tree_count_null, db)
+cat(sql)
+
+# execute
+execute(db, op_tree_count_null)
+```
+
+And, as this is an important capability, this exact functionality
+is wrapped in [`count_null_cols()`](https://winvector.github.io/rquery/reference/count_null_cols.html).
+
+```{r countna2, eval=run_vignette}
+# whole process wrapped in convenience node
+d2 %.>%
+  count_null_cols(., vars, "nnull") %.>%
+  execute(db, .)
+```
+
+## Working with sets of columns
+
+There is a method to apply a parameterized `SQL` expression to a set
+of columns.
+
+```{r psql, eval=run_vignette}
+# vector of columns we want to work on
+colset <- qc(v1, v2, v3)
+# build new names we want as results
+colterms <- paste0(colset, "_isNA") := colset
+map_to_char(colterms)
+
+# build an apply expression to set of columns query 
+s_tree <- d2 %.>%
+  sql_expr_set(., colterms, 
+               "CASE WHEN . IS NULL THEN 1 ELSE 0 END")
+cat(to_sql(s_tree, db))
+execute(db, s_tree)
+```
+
+# `SQL` first
+
+`rquery` is a "`SQL` first" system.  It is designed to create `SQL`
+queries and dispatch them to remote systems (`SQLite`, `Spark`, `PostgreSQL`,
+`Redshift`, and other databases) for execution.  The [`execute()`](https://winvector.github.io/rquery/reference/execute.html) method
+can be used with big data by adding a `table_name` argument (or also by using the
+[`materialize()`](https://winvector.github.io/rquery/reference/materialize.html) method) to land results in a remote table instead of pulling
+them back to `R`.
+
+The mantra of `SQL`-first is data starts in the database, and stays in the database (i.e., it is too large to 
+depend on round-tripping through `R`).  Another important `SQL`-first package is [`cdata`](https://github.com/WinVector/cdata/)
+which provides pure `SQL` based implementations of operators that generalize pivot/un-pivot, cast/melt, or spread/gather.
+
+The better the database implementation the better `rquery` will be, both in terms
+of performance and in terms of function (such as the availability of `SQL` window functions).
+
+
+# Ad-hoc mode
+
+As a convenience `rquery` can work with in-memory `data.frame`s by sending them to 
+the `SQL` service provider.  This provider defaults to `RSQlite` or can be
+set by setting the global option `rquery.rquery_db_executor`.  We demonstrate
+this below.
+
+```{r execd, eval=run_vignette}
+old_o <- options(list("rquery.rquery_db_executor" = list(db = db)))
+
+data.frame(v = -2:2) %.>%
+  execute(., op_tree)
+```
+
+When using the `wrapr` dot pipe the above can be abbreviated as:
+
+```{r rwpipe, eval=run_vignette}
+data.frame(v = -2:2) %.>% op_tree
+```
+
+The above calculation is managed by [`wrapr` dot pipe
+`S3` `wrapr_function`](https://github.com/WinVector/wrapr/blob/master/extras/wrapr_pipe.pdf) extensions.
+
+`rquery` operators can be used directly (without any table description nodes)
+when working with in-memory `data.frame`s.
+
+```{r adhocops, eval=run_vignette}
+data.frame(x = 5) %.>% sql_node(., "z" := "sqrt(x)")
+```
+
+The above calculation is triggered by `S3` override
+of any of `print()`, `as.data.frame()` and `head()`.  Remote tables need
+an `execute()` or `materialize()` step to specify the database connection.
+
+
+# Table descriptions
+
+`rquery` table descriptions are simple objects that store only 
+the name of a table and expected columns.  Any local data or database
+table that has at least the set of columns named in the table description
+can be used in a given `rquery` pipeline.
+
+The table description "`d`" we have been using in examples was produced
+as a result of moving data to a database by 
+[`rq_copy_to()`](https://winvector.github.io/rquery/reference/rq_copy_to.html).
+However we can also create a description of an existing database table with
+[`db_td()`](https://winvector.github.io/rquery/reference/db_td.html) or
+even build a description by hand with 
+[`mk_td()`](https://winvector.github.io/rquery/reference/mk_td.html).
+Also one can build descriptions of local or in-memory `data.frame`s with
+[`local_td()`](https://winvector.github.io/rquery/reference/local_td.html).
+
+
+# Conclusion
+
+`rquery` is new package, but it is already proving to be correct (avoiding [known data processing issues](http://www.win-vector.com/blog/2018/01/advisory-on-multiple-assignment-dplyrmutate-on-databases/)) and [performant](http://www.win-vector.com/blog/2018/01/advisory-on-multiple-assignment-dplyrmutate-on-databases/).
+For working with `R` at a big data scale (say using `PostgreSQL` or `Spark`)
+`rquery` is the right specialized tool for specifying data manipulation.
+
+# See also
+
+For deeper dives into specific topics, please see also:
+
+  * [`rquery README`](https://winvector.github.io/rquery/index.html)
+  * [Join Controller](https://github.com/WinVector/rquery/blob/master/extras/JoinController.md)
+  * [Join Dependency Sorting](https://github.com/WinVector/rquery/blob/master/extras/DependencySorting.md)
+  * [PerfTest](https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md)
+  * [Assignment Partitioner](https://github.com/WinVector/rquery/blob/master/extras/AssigmentPartitioner.md)
+  * [DifferentDBs](https://github.com/WinVector/rquery/blob/master/extras/ExtraDBs.md)
+  * [`data.table based` implementation](https://github.com/WinVector/rqdatatable)
+
+------------
+
+# Appendix: Always clean up on the way out
+
+```{r cleanup, eval=run_vignette}
+options(old_o)
+DBI::dbDisconnect(db)
+```
+
