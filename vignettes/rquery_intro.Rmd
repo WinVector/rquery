@@ -361,6 +361,7 @@ For deeper dives into specific topics, please see also:
   * [PerfTest](https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md)
   * [Assignment Partitioner](https://github.com/WinVector/rquery/blob/master/extras/AssigmentPartitioner.md)
   * [DifferentDBs](https://github.com/WinVector/rquery/blob/master/extras/ExtraDBs.md)
+  * [`data.table based` implementation](https://github.com/WinVector/rqdatatable)
 
 ------------
 
