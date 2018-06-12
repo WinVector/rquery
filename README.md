@@ -41,19 +41,36 @@ The primary relational operators include:
 -   [`theta_join()`](https://winvector.github.io/rquery/reference/theta_join_nse.html). This is the relational join operator allowing an arbitrary matching predicate.
 -   [`select_rows()`](https://winvector.github.io/rquery/reference/theta_join_nse.html). This is Codd's relational row selection. Obviously `select` alone is an over-used and now ambiguous term (for example: it is already used as the "doit" verb in `SQL` and the *column* selector in `dplyr`).
 -   [`rename_columns()`](https://winvector.github.io/rquery/reference/rename_columns.html). This operator renames sets of columns.
+-   [`set_indicator()`](https://winvector.github.io/rquery/reference/set_indicator.html). This operator produces a new column indicating set membership of a named column.
 
 The primary non-relational (traditional `SQL`) operators are:
 
 -   [`select_columns()`](https://winvector.github.io/rquery/reference/select_columns.html). This allows choice of columns (central to `SQL`), but is not a relational operator as it can damage row-uniqueness.
 -   [`orderby()`](https://winvector.github.io/rquery/reference/orderby.html). Row order is not a concept in the relational algebra (and also not maintained in most `SQL` implementations). This operator is only useful when used with its `limit=` option, or as the last step as data comes out of the relation store and is moved to `R` (where row-order is usually maintained).
--   [`map_column_values()`](https://winvector.github.io/rquery/reference/map_column_values.html) re-map values in columns (very useful for re-coding data).
+-   [`map_column_values()`](https://winvector.github.io/rquery/reference/map_column_values.html) re-map values in columns (very useful for re-coding data, currently implemented as a [`sql_node()`](https://winvector.github.io/rquery/reference/sql_node.html)).
 -   [`unionall()`](https://winvector.github.io/rquery/reference/unionall.html) concatenate tables.
+
+And `rquery` supports higher-order (written in terms of other operators, both package supplied and user supplied):
+
+-   [`pick_top_k()`](https://winvector.github.io/rquery/reference/pick_top_k.html). Pick top `k` rows per group given a row ordering.
+-   [`assign_slice()`](https://winvector.github.io/rquery/reference/assign_slice.html). Conditionaly assign sets of rows and columns a scalar value.
+-   [`if_else_op()`](https://winvector.github.io/rquery/reference/if_else_op.html). Simulate simultaneous if/else assigments.
+
+`rquery` also has impelementation helpers for building both `SQL`-nodes (nodes that are just `SQL` expressions) and non-`SQL`-nodes (nodes that are general functions of their input data values).
+
+-   [`sql_node()`](https://winvector.github.io/rquery/reference/sql_node.html)
+-   [`sql_expr_set()`](https://winvector.github.io/rquery/reference/sql_expr_set.html)
+-   [`non_sql_node()`](https://winvector.github.io/rquery/reference/non_sql_node.html)
+-   [`quantile_node()`](https://winvector.github.io/rquery/reference/quantile_node.html)
+-   [`rsummary_node()`](https://winvector.github.io/rquery/reference/rsummary_node.html)
 
 The primary missing relational operators are:
 
 -   Union.
 -   Direct set difference, anti-join.
 -   Division.
+
+One of the prinples of `rquery` is to prefer expressive nodes, and not depend on complicated in-node expressions.
 
 A great benefit of Codd's relational algebra is it gives one concepts to decompose complex data transformations into sequences of simpler transformations.
 
@@ -197,7 +214,7 @@ dq <- d %.>%
   orderby(., cols = 'subjectID')
 ```
 
-(Note one can also use the named map builder alias `%:=%` if there is concern of aliasing with `data.table`'s definiton of `:=`.)
+(Note one can also use the named map builder alias `%:=%` if there is concern of aliasing with `data.table`'s definition of `:=`.)
 
 We then generate our result:
 
@@ -255,14 +272,14 @@ cat(to_sql(dq, my_db, source_limit = 1000))
             "d"."assessmentTotal"
            FROM
             "d" LIMIT 1000
-           ) tsql_22736193634950768458_0000000000
-          ) tsql_22736193634950768458_0000000001
-         ) tsql_22736193634950768458_0000000002
-       ) tsql_22736193634950768458_0000000003
+           ) tsql_90536021732586143393_0000000000
+          ) tsql_90536021732586143393_0000000001
+         ) tsql_90536021732586143393_0000000002
+       ) tsql_90536021732586143393_0000000003
        WHERE "row_rank" <= 1
-      ) tsql_22736193634950768458_0000000004
-     ) tsql_22736193634950768458_0000000005
-    ) tsql_22736193634950768458_0000000006 ORDER BY "subjectID"
+      ) tsql_90536021732586143393_0000000004
+     ) tsql_90536021732586143393_0000000005
+    ) tsql_90536021732586143393_0000000006 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
@@ -392,7 +409,7 @@ dq %.>%
 
 We have found most big-data projects either require joining very many tables (something `rquery` join planners help with, please see [here](https://github.com/WinVector/rquery/blob/master/extras/JoinController.md) and [here](https://github.com/WinVector/rquery/blob/master/extras/JoinController.md)) or they require working with wide data-marts (where `rquery` query narrowing helps, please see [here](https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md)).
 
-We can also stand `rquery` up on non-`DBI` sources such as [`SparkR`](https://github.com/WinVector/rquery/blob/master/extras/SparkR.md) and also [`data.table`](https://CRAN.R-project.org/package=data.table). The `data.table` adapter is being developed in the [`rqdatatable`](https://github.com/WinVector/rqdatatable) package, and can be [quite fast](http://www.win-vector.com/blog/2018/06/rqdatatable-rquery-powered-by-data-table/). Notice the examples in this paragram all essentially use the same query pipeline, the user can choose where to apply it: in memory (`data.table`), in a `DBI` database (`PostgreSQL`, `Sparklyr`), and with even non-DBI systems (`SparkR`).
+We can also stand `rquery` up on non-`DBI` sources such as [`SparkR`](https://github.com/WinVector/rquery/blob/master/extras/SparkR.md) and also [`data.table`](https://CRAN.R-project.org/package=data.table). The `data.table` adapter is being developed in the [`rqdatatable`](https://github.com/WinVector/rqdatatable) package, and can be [quite fast](http://www.win-vector.com/blog/2018/06/rqdatatable-rquery-powered-by-data-table/). Notice the examples in this mode all essentially use the same query pipeline, the user can choose where to apply it: in memory (`data.table`), in a `DBI` database (`PostgreSQL`, `Sparklyr`), and with even non-DBI systems (`SparkR`).
 
 See also
 ========

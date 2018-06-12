@@ -21,6 +21,7 @@
 #'   d <- rq_copy_to(my_db, 'd',
 #'                    data.frame(a = c("1", "2", "1", "3"),
 #'                               b = c("1", "1", "3", "2"),
+#'                               q = 1,
 #'                               stringsAsFactors = FALSE),
 #'                    temporary = TRUE,
 #'                    overwrite = TRUE)
@@ -29,10 +30,19 @@
 #'   op_tree <- d %.>%
 #'     set_indicator(., "one_two", "a", set) %.>%
 #'     set_indicator(., "z", "a", c())
+#'   print(column_names(op_tree))
+#'   print(columns_used(op_tree))
 #'   cat(format(op_tree))
 #'   sql <- to_sql(op_tree, my_db)
 #'   cat(sql)
 #'   print(DBI::dbGetQuery(my_db, sql))
+#'
+#'   op_tree2 <- d %.>%
+#'     set_indicator(., "one_two", "a", set) %.>%
+#'     set_indicator(., "z", "b", c()) %.>%
+#'     select_columns(., c("z", "one_two"))
+#'   print(column_names(op_tree2))
+#'   print(columns_used(op_tree2))
 #'
 #'   # cleanup
 #'   DBI::dbDisconnect(my_db)
@@ -100,9 +110,6 @@ set_indicator.data.frame <- function(source,
                                      testvalues) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::set_indicator.data.frame")
-  if(length(setdiff(reverse, set_indicator))>0) {
-    stop("rquery::set_indicator.data.frame all reverse columns must also be set_indicator columns")
-  }
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- mk_td(tmp_name, colnames(source))
   enode <- set_indicator(source = dnode,
@@ -124,21 +131,49 @@ format_node.relop_set_indicator <- function(node) {
 
 
 
+
+calc_used_relop_set_indicator <- function(x,
+                                          using = NULL,
+                                          contract = FALSE) {
+  cols <- column_names(x)
+  if(length(using)>0) {
+    cols <- using
+  }
+  if(!(x$testcol %in% cols)) {
+    cols <- c(cols, x$testcol)
+  }
+  cols
+}
+
 #' @export
 columns_used.relop_set_indicator <- function (x, ...,
                                               using = NULL,
                                               contract = FALSE) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::columns_used.relop_set_indicator")
-  if(!is.null(using)) {
-    if(!(x$testcol %in% using)) {
-      using <- c(using, x$testcol)
-    }
-    using <- setdiff(using, x$rescol)
+  cols <- calc_used_relop_set_indicator(x,
+                                        using = using,
+                                        contract = contract)
+  cols <- setdiff(cols, x$rescol)
+  columns_used(x$source[[1]],
+               using = cols,
+               contract = contract)
+}
+
+
+
+#' @export
+column_names.relop_set_indicator <- function (x, ...) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::column_names.relop_set_indicator")
+  cols <- column_names(x$source[[1]])
+  if(!(x$testcol %in% cols)) {
+    cols <- c(cols, x$testcol)
   }
-  return(columns_used(x$source[[1]],
-                      using = using,
-                      contract = contract))
+  if(!(x$rescol %in% cols)) {
+    cols <- c(cols, x$rescol)
+  }
+  cols
 }
 
 
@@ -155,10 +190,6 @@ to_sql.relop_set_indicator <- function (x,
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::to_sql.relop_set_indicator")
   cols1 <- column_names(x$source[[1]])
-  # cols <- vapply(cols1,
-  #                function(ci) {
-  #                  quote_identifier(db, ci)
-  #                }, character(1))
   sqlexprs <- vapply(x$terms,
                      function(ei) {
                        prep_sql_toks(db, ei)

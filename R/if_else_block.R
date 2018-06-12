@@ -1,6 +1,6 @@
 
 
-#' Simulate a per-row block-\code{if(){}else{}}.
+#' Build a sequence of statements simulating an if/else block-\code{if(){}else{}}.
 #'
 #' This device uses expression-\code{ifelse(,,)} to simulate the
 #' more powerful per-row block-\code{if(){}else{}}.  The difference is
@@ -126,7 +126,7 @@ if_else_block <- function(testexpr,
 }
 
 
-#' Simulate a per-row block-\code{if(){}else{}}.
+#' Build a \code{relop} node simulating a per-row block-\code{if(){}else{}}.
 #'
 #' This device uses expression-\code{ifelse(,,)} to simulate the
 #' more powerful per-row block-\code{if(){}else{}}.  The difference is
