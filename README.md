@@ -3,7 +3,7 @@
 `rquery`
 ========
 
-[`rquery`](https://winvector.github.io/rquery/) is a piped query generator based on [Codd's relational algebra](https://en.wikipedia.org/wiki/Relational_algebra) (updated to reflect lessons learned from working with [`R`](https://www.r-project.org), [`SQL`](https://en.wikipedia.org/wiki/SQL), and [`dplyr`](https://CRAN.R-project.org/package=dplyr) at big data scale in production). One goal of this experiment is to see if `SQL` would be more fun teachable if it had a sequential data-flow or pipe notation.
+[`rquery`](https://winvector.github.io/rquery/) is a piped query generator based on [Codd's relational algebra](https://en.wikipedia.org/wiki/Relational_algebra) (updated to reflect lessons learned from working with [`R`](https://www.r-project.org), [`SQL`](https://en.wikipedia.org/wiki/SQL), and [`dplyr`](https://CRAN.R-project.org/package=dplyr) at big data scale in production).
 
 `rquery` is currently recommended for user with `Spark` and `PostgreSQL` (and with non-window functionality with `RSQLite`).
 
@@ -255,14 +255,14 @@ cat(to_sql(dq, my_db, source_limit = 1000))
             "d"."assessmentTotal"
            FROM
             "d" LIMIT 1000
-           ) tsql_14745733450816289362_0000000000
-          ) tsql_14745733450816289362_0000000001
-         ) tsql_14745733450816289362_0000000002
-       ) tsql_14745733450816289362_0000000003
+           ) tsql_39973635002779860050_0000000000
+          ) tsql_39973635002779860050_0000000001
+         ) tsql_39973635002779860050_0000000002
+       ) tsql_39973635002779860050_0000000003
        WHERE "row_rank" <= 1
-      ) tsql_14745733450816289362_0000000004
-     ) tsql_14745733450816289362_0000000005
-    ) tsql_14745733450816289362_0000000006 ORDER BY "subjectID"
+      ) tsql_39973635002779860050_0000000004
+     ) tsql_39973635002779860050_0000000005
+    ) tsql_39973635002779860050_0000000006 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
