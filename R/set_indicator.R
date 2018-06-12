@@ -108,8 +108,6 @@ set_indicator.data.frame <- function(source,
                                      rescol,
                                      testcol,
                                      testvalues) {
-  wrapr::stop_if_dot_args(substitute(list(...)),
-                          "rquery::set_indicator.data.frame")
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- mk_td(tmp_name, colnames(source))
   enode <- set_indicator(source = dnode,
