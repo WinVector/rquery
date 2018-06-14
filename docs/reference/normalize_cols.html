@@ -187,11 +187,11 @@
 #&gt;   probability := probability / sum(probability),
 #&gt;   p= subjectID) %.&gt;%
 #&gt;  extend(.,
-#&gt;   row_rank := rank(),
+#&gt;   row_number := row_number(),
 #&gt;   p= subjectID,
 #&gt;   o= "probability" DESC, "surveyCategory") %.&gt;%
 #&gt;  select_rows(.,
-#&gt;    row_rank &lt;= 1) %.&gt;%
+#&gt;    row_number &lt;= 1) %.&gt;%
 #&gt;  rename(.,
 #&gt;   c('diagnosis' = 'surveyCategory')) %.&gt;%
 #&gt;  select_columns(.,
