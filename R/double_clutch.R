@@ -1,18 +1,18 @@
 
 double_apply_impl <- function(d, ds, ops, env) {
   if(!is.data.frame(d)) {
-    stop("rquery::`%>>%` d must be a data.frame")
+    stop("rquery::`%>>%` left hand side argument must be a data.frame")
   }
   b <- wrapr:::pipe_impl(pipe_left_arg = ds,
                          pipe_right_arg = ops,
                          pipe_environment = env,
                          pipe_string = "%.>%")
   if(!("relop" %in% class(b))) {
-    stop("rquery::`%>>%` ops must must evaluate to a relop tree")
+    stop("rquery::`%>>%` right hand side argument must must evaluate to a relop tree")
   }
   tabs <- tables_used(b)
   if(length(tabs)!=1) {
-    stop("rquery::`%>>%` ops must use only one table")
+    stop("rquery::`%>>%` right hand side argument must use exactly one table")
   }
   lst <- list(x = d)
   names(lst) <- tabs
