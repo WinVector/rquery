@@ -1,11 +1,6 @@
 
 # Support old dbi_ naming of basic database functions, eventually these will all go away.
 
-#' Hyderdrive (science fiction show) synonym for \code{\link{execute}}
-#' @inherit execute
-#' @seealso \code{\link{execute}}
-#' @export
-commencify <- execute
 
 
 #' Old function name for \code{\link{rq_table_exists}} (old alias will eventually be removed).
