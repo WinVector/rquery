@@ -4,11 +4,12 @@
 ## Test environments
 
     * OSX (local machien using --as-cran from the command line)
-    * using R version 3.4.4 (2018-03-15)
+    * using R version 3.5.0 (2018-04-23)
     * using platform: x86_64-apple-darwin15.6.0 (64-bit)
 
     * Windows ( win-builder.r-project.org uses --as-cran )
- 
+    * using R Under development (unstable) (2018-06-13 r74894)
+    * using platform: x86_64-w64-mingw32 (64-bit)
 
    
 ## R CMD check results
@@ -37,3 +38,5 @@ New package, now reverse dependencies.
      
      
 Note: "Edgar F. Codd", "SQL", and "observable" are all spelled correctly.
+Also: rquery is using the non-public function wrapr:::pipe_impl(); I maintain both packages, so I don't think this will cause confusion.
+
