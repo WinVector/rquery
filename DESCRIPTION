@@ -26,7 +26,7 @@ Encoding: UTF-8
 Depends:
   R (>= 3.4.0)
 Imports:
-  wrapr (>= 1.5.1),
+  wrapr (>= 1.5.0),
   stats
 Suggests:
     DBI,
@@ -42,7 +42,5 @@ LazyData: true
 RoxygenNote: 6.0.1
 ByteCompile: true
 VignetteBuilder: knitr
-Remotes:
-  github::WinVector/wrapr
 
 

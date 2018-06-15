@@ -38,5 +38,6 @@ New package, now reverse dependencies.
      
      
 Note: "Edgar F. Codd", "SQL", and "observable" are all spelled correctly.
-Also: rquery is using the non-public function wrapr:::pipe_impl(); I maintain both packages, so I don't think this will cause confusion.
+
+
 
