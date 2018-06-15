@@ -3,10 +3,10 @@ double_apply_impl <- function(d, ds, ops, env) {
   if(!is.data.frame(d)) {
     stop("rquery::`%>>%` left hand side argument must be a data.frame")
   }
-  b <- wrapr:::pipe_impl(pipe_left_arg = ds,
-                         pipe_right_arg = ops,
-                         pipe_environment = env,
-                         pipe_string = "%.>%")
+  b <- wrapr::pipe_impl(pipe_left_arg = ds,
+                        pipe_right_arg = ops,
+                        pipe_environment = env,
+                        pipe_string = "%.>%")
   if(!("relop" %in% class(b))) {
     stop("rquery::`%>>%` right hand side argument must must evaluate to a relop tree")
   }

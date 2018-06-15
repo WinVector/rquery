@@ -1,11 +1,18 @@
 
-# build some example tables
-#
-# if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
-#   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#   rquery:::example_employee_date(my_db)
-#   DBI::dbDisconnect(my_db)
-# }
+#' build some example tables
+#'
+#' @param con db connection
+#' @return example tables
+#'
+#' @examples
+#'
+#' if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
+#'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#'   example_employee_date(my_db)
+#'   DBI::dbDisconnect(my_db)
+#' }
+#'
+#' @export
 #
 example_employee_date <- function(con) {
   . <- NULL # Declare not an unbound varaible
@@ -225,7 +232,7 @@ key_inspector_postgresql <- function(db, tablename) {
 #'
 #' if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-#'   ex <- rquery:::example_employee_date(my_db)
+#'   ex <- example_employee_date(my_db)
 #'   print(describe_tables(my_db, ex$tableName,
 #'                          keyInspector = key_inspector_sqlite))
 #'   DBI::dbDisconnect(my_db)
@@ -402,7 +409,7 @@ inspect_and_limit_join_plan <- function(columnJoinPlan, checkColClasses) {
 #'   #       such a table "row control" or "experimental design."
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   RSQLite::initExtension(my_db)
-#'   tDesc <- rquery:::example_employee_date(my_db)
+#'   tDesc <- example_employee_date(my_db)
 #'   columnJoinPlan <- build_join_plan(tDesc, check= FALSE)
 #'   # unify keys
 #'   columnJoinPlan$resultColumn[columnJoinPlan$resultColumn=='id'] <- 'eid'
@@ -486,7 +493,7 @@ topo_sort_tables <- function(columnJoinPlan, leftTableName,
 #'   #       such a table "row control" or "experimental design."
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   RSQLite::initExtension(my_db)
-#'   tDesc <- rquery:::example_employee_date(my_db)
+#'   tDesc <- example_employee_date(my_db)
 #'   # fix order by hand, please see rquery::topo_sort_tables for
 #'   # how to automate this.
 #'   ord <- match(c('employeeanddate', 'orgtable', 'activity', 'revenue'),
