@@ -132,7 +132,13 @@ to_query.pre_sql_token <- function (x,
   }
   if((!is.null(x$is_zero_argument_call)) && (x$is_zero_argument_call)) {
     val <- paste(as.character(x$value), collapse = " ")
-    # TODO: re-map function names using db_info.
+    zero_arg_fn_map <- getDBOption(db_info, "zero_arg_fn_map")
+    if(!is.null(zero_arg_fn_map)) {
+      xlation <- zero_arg_fn_map[[val]]
+      if(!is.null(xlation)) {
+        val <- xlation
+      }
+    }
     return(val)
   }
   if(x$token_type == "column") {

@@ -22,6 +22,9 @@ rquery_db_info <- function(...,
                            note = "",
                            connection_options = list()) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::rquery_db_info")
+  if("rquery_db_info" %in% class(connection)) {
+    stop("rquery::rquery_db_info connection is already of class rquery_db_info")
+  }
   # does not handle quotes inside strings
   r <- list(
     connection = connection,
