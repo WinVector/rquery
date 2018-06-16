@@ -188,7 +188,7 @@
 #&gt;   table('d2'; 
 #&gt;     AUC2,
 #&gt;     R2),
-#&gt;   j= INNER; on= rquery_thetajoin_condition_1 := AUC &gt;= AUC2)
+#&gt;   j= INNER; on= rquery_thetajoin_condition_1 := quote(AUC) &gt;= quote(AUC2))
 #&gt; SELECT
 #&gt;  `tsql_86076896464168684770_0000000000`.`AUC` AS `AUC`,
 #&gt;  `tsql_86076896464168684770_0000000000`.`R2` AS `R2_a`,

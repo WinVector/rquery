@@ -211,14 +211,14 @@
 
   <span class='fu'>options</span>(<span class='no'>old_o</span>)
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; [1] "table('d'; AUC, R2) %.&gt;% extend(., v := AUC + R2) %.&gt;% extend(., x := pmax(AUC, v))"
+}</div><div class='output co'>#&gt; [1] "table('d'; AUC, R2) %.&gt;% extend(., v := quote(AUC) + quote(R2)) %.&gt;% extend(., x := quote(pmax(AUC, v)))"
 #&gt; table('d'; 
 #&gt;   AUC,
 #&gt;   R2) %.&gt;%
 #&gt;  extend(.,
-#&gt;   v := AUC + R2) %.&gt;%
+#&gt;   v := quote(AUC) + quote(R2)) %.&gt;%
 #&gt;  extend(.,
-#&gt;   x := pmax(AUC, v))
+#&gt;   x := quote(pmax(AUC, v)))
 #&gt;   AUC  R2   v   x
 #&gt; 1 0.6 0.2 0.8 0.8
 #&gt;   AUC R2 v x

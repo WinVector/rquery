@@ -38,9 +38,9 @@ tokenize_call_for_R <- function(lexpr) {
     callName <- as.character(lexpr[[1]])
     lhs <- lexpr[[2]]
     rhs <- lexpr[[3]]
-    return(paste(deparse(lhs), callName, deparse(rhs)))
+    return(paste(rquery_deparse(lhs), callName, rquery_deparse(rhs)))
   }
-  return(deparse(lexpr))
+  return(rquery_deparse(lexpr))
 }
 
 #' Cross-parse a call from an R parse tree into SQL.

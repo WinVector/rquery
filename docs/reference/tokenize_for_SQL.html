@@ -198,7 +198,7 @@
 #&gt; $free_symbols
 #&gt; character(0)
 #&gt; </div><div class='input'><span class='fu'>tokenize_for_SQL</span>(<span class='fu'>substitute</span>(<span class='no'>a</span> <span class='kw'>:=</span> <span class='fl'>3</span>), <span class='kw'>colnames</span><span class='kw'>=</span> <span class='kw'>NULL</span>)</div><div class='output co'>#&gt; $presentation
-#&gt; [1] "a := 3"
+#&gt; [1] "quote(a) := 3"
 #&gt; 
 #&gt; $parsed_toks
 #&gt; [[1]]
@@ -223,7 +223,7 @@
 #&gt; $free_symbols
 #&gt; character(0)
 #&gt; </div><div class='input'><span class='fu'>tokenize_for_SQL</span>(<span class='fu'>substitute</span>(<span class='no'>a</span> <span class='kw'>%:=%</span> <span class='fl'>3</span>), <span class='kw'>colnames</span><span class='kw'>=</span> <span class='kw'>NULL</span>)</div><div class='output co'>#&gt; $presentation
-#&gt; [1] "a %:=% 3"
+#&gt; [1] "quote(a) %:=% 3"
 #&gt; 
 #&gt; $parsed_toks
 #&gt; [[1]]

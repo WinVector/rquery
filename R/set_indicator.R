@@ -62,7 +62,7 @@ set_indicator.relop <- function(source,
                                 rescol,
                                 testcol,
                                 testvalues) {
-  testvname <- paste(deparse(substitute(testvalues)), collapse = " ")
+  testvname <- rquery_deparse(substitute(testvalues))
   cols <- column_names(source)
   if(rescol %in% cols) {
     stop("rquery::set_indicator.relop rescol must not be a column name of source data")

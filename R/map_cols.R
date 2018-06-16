@@ -46,7 +46,7 @@ map_column_values <- function(source, colmap,
                               null_default = FALSE) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::map_column_values")
-  colmap_name <- paste(deparse(substitute(colmap)), collapse = " ")
+  colmap_name <- rquery_deparse(substitute(colmap))
   control_cols <- c("column_name", "old_value", "new_value")
   missing <- setdiff(control_cols, colnames(colmap))
   if(length(missing)>0) {

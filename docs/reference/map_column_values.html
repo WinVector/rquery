@@ -189,7 +189,7 @@
 #&gt;   b,
 #&gt;   c) %.&gt;%
 #&gt;  sql_node(.,
-#&gt;           map_column_values(., mp))
+#&gt;           map_column_values(., quote(mp)))
 #&gt; SELECT
 #&gt;  CASE  WHEN  `a`  =  '1'  THEN  '10' WHEN  `a`  =  '2'  THEN  '20'  ELSE  `a`  END AS `a`,
 #&gt;  CASE  WHEN  `b`  =  '1'  THEN  '100' WHEN  `b`  =  '3'  THEN  '300'  ELSE  `b`  END AS `b`,

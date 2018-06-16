@@ -184,7 +184,7 @@
 #&gt;   AUC,
 #&gt;   R2) %.&gt;%
 #&gt;  extend(.,
-#&gt;   v %:=% ifelse(AUC &gt; 0.5, R2, 1))
+#&gt;   quote(v) %:=% quote(ifelse(AUC &gt; 0.5, R2, 1)))
 #&gt; SELECT
 #&gt;  `AUC`,
 #&gt;  `R2`,

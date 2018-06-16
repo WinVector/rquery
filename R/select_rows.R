@@ -110,7 +110,7 @@ select_rows_nse.data.frame <- function(source, expr,
   exprq <- substitute(expr)
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- mk_td(tmp_name, colnames(source))
-  enode <- select_rows_se(dnode, deparse(exprq),
+  enode <- select_rows_se(dnode, rquery_deparse(exprq),
                           env = env)
   return(enode)
 }

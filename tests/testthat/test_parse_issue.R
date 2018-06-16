@@ -14,5 +14,5 @@ test_that("test_parse_issue: Works As Expected", {
   op <- extend_se(dat, expr)
   str <- format(op) # notice some lines have more than 1 := !
   parts <- strsplit(str, ":=", fixed = TRUE)
-  expect_equal(length(parts), 2)
+  expect_equal(length(parts[[1]]), 2)
 })
