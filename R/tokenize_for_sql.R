@@ -64,6 +64,14 @@ tokenize_call_for_SQL <- function(lexpr,
               symbols_produced = character(0),
               free_symbols = character(0))
   callName <- as.character(lexpr[[1]])
+  if(n==1) {
+    # zero argument call
+    # wire-up for possible later name-remapping.
+    ctok <- ltok(callName)
+    ctok[[1]]$is_zero_argument_call <- TRUE
+    res$parsed_toks <- c(ctok, ltok("("),  ltok(")"))
+    return(res)
+  }
   args <- list()
   subseq <- list()
   subpres <- ""

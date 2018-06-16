@@ -19,7 +19,8 @@
 #'
 pre_sql_identifier <- function(column_name) {
   t <- list(token_type = "column",
-            column_name = column_name)
+            column_name = column_name,
+            is_zero_argument_call = FALSE)
   class(t) <- "pre_sql_token"
   t
 }
@@ -33,7 +34,8 @@ pre_sql_identifier <- function(column_name) {
 #'
 pre_sql_string <- function(value) {
   t <- list(token_type = "string",
-            value = value)
+            value = value,
+            is_zero_argument_call = FALSE)
   class(t) <- "pre_sql_token"
   t
 }
@@ -51,7 +53,8 @@ pre_sql_string <- function(value) {
 #'
 pre_sql_token <- function(value) {
   t <- list(token_type = "token",
-            value = value)
+            value = value,
+            is_zero_argument_call = FALSE)
   class(t) <- "pre_sql_token"
   t
 }
@@ -126,6 +129,11 @@ to_query.pre_sql_token <- function (x,
                                     using = NULL) {
   if(length(list(...))>0) {
     stop("unexpected arguments")
+  }
+  if((!is.null(x$is_zero_argument_call)) && (x$is_zero_argument_call)) {
+    val <- paste(as.character(x$value), collapse = " ")
+    # TODO: re-map function names using db_info.
+    return(val)
   }
   if(x$token_type == "column") {
     if((!is.null(source_table)) && (!is.na(source_table))) {
