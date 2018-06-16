@@ -317,10 +317,10 @@ prepColumnNames <- function(db, tabName, tabColumns, cmap) {
 calc_used_relop_theta_join <- function (x, ...,
                                         using = NULL,
                                         contract = FALSE) {
-  cols <- unique(c(column_names(x$source[[1]]),
+  cols <- unique(c(c1,
                    column_names(x$source[[2]])))
   if(length(using)>0) {
-    mpback <- c(column_names(x$source[[1]]),
+    mpback <- c(c1,
                 column_names(x$source[[2]]))
     names(mpback) <- column_names(x)
     using <- unique(mpback[using])
@@ -394,8 +394,8 @@ to_sql.relop_theta_join <- function (x,
   subsqlb <- subsqlb_list[[length(subsqlb_list)]]
   taba <- tnum()
   tabb <- tnum()
-  bterms <- setdiff(column_names(x$source[[1]]),
-                    column_names(x$source[[2]]))
+  bterms <- setdiff(c1,
+                    c2)
   if(length(bterms)>0) {
     bcols <- vapply(bterms,
                     function(ci) {
@@ -403,10 +403,10 @@ to_sql.relop_theta_join <- function (x,
                     }, character(1))
   }
   prefix <- paste(rep(' ', indent_level), collapse = '')
-  cseta <- prepColumnNames(db, taba, column_names(x$source[[1]]),
+  cseta <- prepColumnNames(db, taba, c1,
                           x$cmap[['a']])
   ctermsa <- paste(cseta, collapse = paste0(",\n", prefix, " "))
-  csetb <- prepColumnNames(db, tabb, column_names(x$source[[2]]),
+  csetb <- prepColumnNames(db, tabb, c2,
                           x$cmap[['b']])
   ctermsb <- paste(csetb, collapse = paste0(",\n", prefix, " "))
   q <- paste0(prefix, "SELECT\n",

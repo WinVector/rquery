@@ -197,9 +197,16 @@ to_sql.relop_natural_join <- function (x,
   if(length(list(...))>0) {
     stop("unexpected arguments")
   }
-  using <- calc_used_relop_natural_join(x,
-                                        using=using)
-  c1 <- intersect(using, column_names(x$source[[1]]))
+  using <- unique(c(calc_used_relop_natural_join(x,
+                                        using=using),
+                    x$by))
+  cs1 <- column_names(x$source[[1]])
+  cs2 <- column_names(x$source[[2]])
+  if(length(setdiff(using, c(cs1, cs2)))>0) {
+    stop(paste("to_sql.relop_natural_join input table(s) missing columns ",
+               paste(setdiff(using, c(cs1, cs2)), collapse = ", ")))
+  }
+  c1 <- intersect(using, cs1)
   subsqla_list <- to_sql(x$source[[1]],
                          db = db,
                          source_limit = source_limit,
@@ -208,7 +215,7 @@ to_sql.relop_natural_join <- function (x,
                          append_cr = FALSE,
                          using = c1)
   subsqla <- subsqla_list[[length(subsqla_list)]]
-  c2 <- intersect(using, column_names(x$source[[2]]))
+  c2 <- intersect(using, cs2)
   subsqlb_list <- to_sql(x$source[[2]],
                          db = db,
                          source_limit = source_limit,
@@ -222,8 +229,8 @@ to_sql.relop_natural_join <- function (x,
   tabb <- tnum()
   tabbq <- quote_identifier(db, tabb)
   bexpr <- NULL
-  aterms <- setdiff(column_names(x$source[[1]]), x$by)
-  bterms <- setdiff(column_names(x$source[[2]]), x$by)
+  aterms <- setdiff(c1, x$by)
+  bterms <- setdiff(c2, x$by)
   overlap <- c(x$by, intersect(aterms, bterms))
   prefix <- paste(rep(' ', indent_level), collapse = '')
   osql <- vapply(overlap,

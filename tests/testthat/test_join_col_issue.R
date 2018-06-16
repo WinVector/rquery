@@ -13,7 +13,7 @@ test_that("test_join_col_issue: Works As Expected", {
     ops <- readRDS("ops2.RDS")
     str <- to_sql(ops, db)
     match_idx <- grep("Var63", str)
-    expect_that(length(match_idx)==0)
+    expect_equal(length(match_idx), 0)
 
     DBI::dbDisconnect(db)
   }
