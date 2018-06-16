@@ -308,17 +308,15 @@ format_node.relop_extend <- function(node) {
 
 
 calc_used_relop_extend <- function (x,
-                                    using = NULL,
-                                    contract = FALSE) {
+                                    using = NULL) {
   cols <- column_names(x)
   if(length(using)>0) {
     cols <- using
   }
   producing <- merge_fld(x$parsed, "symbols_produced")
   expressions <- x$parsed
-  if(contract) {
-    expressions <- x$parsed[producing %in% cols]
-  }
+  # TODO: test and instantiante this
+  #   expressions <- x$parsed[producing %in% cols]
   cols <- setdiff(cols, producing)
   consuming <- merge_fld(expressions, "symbols_used")
   subusing <- unique(c(cols, consuming, x$partitionby, x$orderby))
@@ -327,16 +325,13 @@ calc_used_relop_extend <- function (x,
 
 #' @export
 columns_used.relop_extend <- function (x, ...,
-                                       using = NULL,
-                                       contract = FALSE) {
+                                       using = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::columns_used.relop_extend")
   cols <- calc_used_relop_extend(x,
-                                 using = using,
-                                 contract = contract)
+                                 using = using)
   columns_used(x$source[[1]],
-               using = cols,
-               contract = contract)
+               using = cols)
 }
 
 

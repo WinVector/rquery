@@ -131,15 +131,13 @@ format_node.relop_non_sql <- function(node) {
 
 #' @export
 columns_used.relop_non_sql <- function (x, ...,
-                                        using = NULL,
-                                        contract = FALSE) {
+                                        using = NULL) {
   usingQ <- NULL
   if(x$pass_using) {
     usingQ <- using
   }
   return(columns_used(x$source[[1]],
-                      using = usingQ,
-                      contract = contract))
+                      using = usingQ))
 }
 
 

@@ -86,8 +86,7 @@ format_node.relop_drop_columns <- function(node) {
 
 
 calc_using_relop_drop_columns <- function(x, ...,
-                                          using = NULL,
-                                          contract = FALSE) {
+                                          using = NULL) {
   cols <- x$columns
   if(length(using)>0) {
     missing <- setdiff(using, x$columns)
@@ -102,14 +101,11 @@ calc_using_relop_drop_columns <- function(x, ...,
 
 #' @export
 columns_used.relop_drop_columns <- function (x, ...,
-                                             using = NULL,
-                                             contract = FALSE) {
+                                             using = NULL) {
   cols <- calc_using_relop_drop_columns(x,
-                                        using = using,
-                                        contract = contract)
+                                        using = using)
   return(columns_used(x$source[[1]],
-                      using = cols,
-                      contract = contract))
+                      using = cols))
 }
 
 #' @export

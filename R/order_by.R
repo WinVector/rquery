@@ -110,8 +110,7 @@ format_node.relop_orderby <- function(node) {
 
 
 calc_used_relop_orderby <- function (x, ...,
-                                      using = NULL,
-                                      contract = FALSE) {
+                                      using = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery:::calc_used_relop_orderby")
   if(length(using)<=0) {
@@ -129,16 +128,13 @@ calc_used_relop_orderby <- function (x, ...,
 
 #' @export
 columns_used.relop_orderby <- function (x, ...,
-                                        using = NULL,
-                                        contract = FALSE) {
+                                        using = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::columns_used.relop_orderby")
   cols <- calc_used_relop_orderby(x,
-                                  using = using,
-                                  contract = contract)
+                                  using = using)
   return(columns_used(x$source[[1]],
-                      using = cols,
-                      contract = contract))
+                      using = cols))
 }
 
 

@@ -96,8 +96,7 @@ format_node.relop_rename_columns <- function(node) {
 
 calc_used_relop_rename_columns <- function (x,
                                             ...,
-                                            using = NULL,
-                                            contract = FALSE) {
+                                            using = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery:::calc_used_relop_rename_columns")
   cols <- column_names(x)
@@ -120,14 +119,12 @@ calc_used_relop_rename_columns <- function (x,
 #' @export
 columns_used.relop_rename_columns <- function (x,
                                                ...,
-                                               using = NULL,
-                                               contract = FALSE) {
+                                               using = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::columns_used.relop_rename_columns")
-  qmap <- calc_used_relop_rename_columns(x, using=using, contract=contract)
+  qmap <- calc_used_relop_rename_columns(x, using=using)
   return(columns_used(x$source[[1]],
-                      using = as.character(qmap),
-                      contract = contract))
+                      using = as.character(qmap)))
 }
 
 

@@ -1,11 +1,11 @@
 
-# rquery 0.5.0 2018/06/14
+# rquery 0.5.0 2018/06/16
 
  * Make DBI suggested.
  * Rename dbi_ prefixes to rq_ (for now have aliases from old to new).
  * Per-connection options.
  * Add expand_grid()/complete_design().
- * Get rid of embedded data cases.
+ * Get rid of embedded data cases and print-execution.
  * Move to new wrapr ops.
  * Rationalize names of table description methods.
  * Add rquery_executor hook.

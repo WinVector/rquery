@@ -149,8 +149,7 @@ format.relop_natural_join <- function(x, ...) {
 
 
 calc_used_relop_natural_join <- function (x, ...,
-                                          using = NULL,
-                                          contract = FALSE) {
+                                          using = NULL) {
   cols <- column_names(x)
   if(length(using)>0) {
     missing <- setdiff(using, cols)
@@ -167,19 +166,15 @@ calc_used_relop_natural_join <- function (x, ...,
 
 #' @export
 columns_used.relop_natural_join <- function (x, ...,
-                                             using = NULL,
-                                             contract = FALSE) {
+                                             using = NULL) {
   using <- calc_used_relop_natural_join(x,
-                                        using=using,
-                                        contract = contract)
+                                        using=using)
   c1 <- intersect(using, column_names(x$source[[1]]))
   s1 <- columns_used(x$source[[1]],
-                     using = c1,
-                     contract = contract)
+                     using = c1)
   c2 <- intersect(using, column_names(x$source[[2]]))
   s2 <- columns_used(x$source[[2]],
-                     using = c2,
-                     contract = contract)
+                     using = c2)
   merge_columns_used(s1, s2)
 }
 

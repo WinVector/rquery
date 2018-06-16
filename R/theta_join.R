@@ -315,13 +315,13 @@ prepColumnNames <- function(db, tabName, tabColumns, cmap) {
 }
 
 calc_used_relop_theta_join <- function (x, ...,
-                                        using = NULL,
-                                        contract = FALSE) {
-  cols <- unique(c(c1,
-                   column_names(x$source[[2]])))
+                                        using = NULL) {
+  # TODO: reconsider this calculation
+  c1 <- column_names(x$source[[1]])
+  c2 <- column_names(x$source[[2]])
+  cols <- unique(c(c1, c2))
   if(length(using)>0) {
-    mpback <- c(c1,
-                column_names(x$source[[2]]))
+    mpback <- c(c1, c2)
     names(mpback) <- column_names(x)
     using <- unique(mpback[using])
     missing <- setdiff(using, cols)
@@ -340,19 +340,15 @@ calc_used_relop_theta_join <- function (x, ...,
 
 #' @export
 columns_used.relop_theta_join <- function (x, ...,
-                                           using = NULL,
-                                           contract = FALSE) {
+                                           using = NULL) {
   using <- calc_used_relop_theta_join(x,
-                                      using=using,
-                                      contract = contract)
+                                      using=using)
   c1 <- intersect(using, column_names(x$source[[1]]))
   s1 <- columns_used(x$source[[1]],
-                     using = c1,
-                     contract = contract)
+                     using = c1)
   c2 <- intersect(using, column_names(x$source[[2]]))
   s2 <- columns_used(x$source[[2]],
-                     using = c2,
-                     contract = contract)
+                     using = c2)
   merge_columns_used(s1, s2)
 }
 

@@ -88,7 +88,7 @@
       <h1>Pipeable SQL</h1>
                         <h4 class="author">John Mount</h4>
             
-            <h4 class="date">2018-06-15</h4>
+            <h4 class="date">2018-06-16</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery//blob/master/vignettes/PipeableSQL.Rmd"><code>vignettes/PipeableSQL.Rmd</code></a></small>
       <div class="hidden name"><code>PipeableSQL.Rmd</code></div>
@@ -219,8 +219,8 @@ FROM (
    `d`.`v`
   FROM
    `d`
- ) tsql_29631401102089296264_0000000000
-) tsql_29631401102089296264_0000000001</code></pre>
+ ) tsql_58883000078064428056_0000000000
+) tsql_58883000078064428056_0000000001</code></pre>
 <p>Notice the above translations did not add identifier quotes to our use of “<code>v</code>” in “<code>ABS(v)</code>”. This is because the <code>SQL</code> expression is not parsed in <code>R</code>. If we want to identify terms as variables we can wrap them with <code>as.name()</code> or <code>quote()</code> to get the quoting (and other variable oriented features). The extra <code>SELECT</code> step to pull data from the inner table is used by <code>rquery</code> for important column narrowing steps, and can actually improve query performance.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">op_tree &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(., <span class="st">"absv"</span> <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">list</span>(<span class="kw">list</span>(<span class="st">"ABS("</span>, <span class="kw">quote</span>(v), <span class="st">")"</span>))) <span class="op">%.&gt;%</span>
@@ -239,8 +239,8 @@ FROM (
    `d`.`v`
   FROM
    `d`
- ) tsql_24379170724773545782_0000000000
-) tsql_24379170724773545782_0000000001</code></pre>
+ ) tsql_86251165214129047688_0000000000
+) tsql_86251165214129047688_0000000001</code></pre>
 <p>The <code>list(list())</code> notation is how we say in <code>R</code> that we have a single element list (i.e. one expression) that is built up as a list of terms. The marking notation is cumbersome, but is not needed when we move on to relation nodes, which are parsed in <code>R</code> and can spot identifiers without additional help.</p>
 <p><code>op_tree</code> itself is a an object with its own presentation format:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw">format</span>(op_tree))</code></pre></div>
@@ -346,7 +346,7 @@ sql &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.
 ##   `d2`.`v3`
 ##  FROM
 ##   `d2`
-## ) tsql_72023009129947824017_0000000000</code></pre>
+## ) tsql_83528445207669565357_0000000000</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># execute</span>
 <span class="kw"><a href="../reference/execute.html">execute</a></span>(db, op_tree_count_null)</code></pre></div>
 <pre><code>##   v3 num_missing v1   v2
@@ -395,7 +395,7 @@ s_tree &lt;-<span class="st"> </span>d2 <span class="op">%.&gt;%</span>
 ##   `d2`.`v3`
 ##  FROM
 ##   `d2`
-## ) tsql_50918519769857312619_0000000000</code></pre>
+## ) tsql_42842261285776391836_0000000000</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/execute.html">execute</a></span>(db, s_tree)</code></pre></div>
 <pre><code>##   v1   v2 v3 v1_isNA v2_isNA v3_isNA
 ## 1  1 &lt;NA&gt; NA       0       1       1
@@ -436,7 +436,7 @@ s_tree &lt;-<span class="st"> </span>d2 <span class="op">%.&gt;%</span>
 <p>The above calculation is managed by <a href="https://github.com/WinVector/wrapr/blob/master/extras/wrapr_pipe.pdf"><code>wrapr</code> dot pipe <code>S3</code> <code>wrapr_function</code></a> extensions.</p>
 <p><code>rquery</code> operators can be used directly (without any table description nodes) when working with in-memory <code>data.frame</code>s.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data.frame</span>(<span class="dt">x =</span> <span class="dv">5</span>) <span class="op">%.&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(., <span class="st">"z"</span> <span class="op">:</span><span class="er">=</span><span class="st"> "sqrt(x)"</span>)</code></pre></div>
-<pre><code>## [1] "table('rquery_tmp_40142751182024845371_0000000000'; x) %.&gt;% sql_node(., z %:=% sqrt(x), *=TRUE)"</code></pre>
+<pre><code>## [1] "table('rquery_tmp_91237301257691020195_0000000000'; x) %.&gt;% sql_node(., z %:=% sqrt(x), *=TRUE)"</code></pre>
 <p>The above calculation is triggered by <code>S3</code> override of any of <code>print()</code>, <code>as.data.frame()</code> and <code>head()</code>. Remote tables need an <code><a href="../reference/execute.html">execute()</a></code> or <code><a href="../reference/materialize.html">materialize()</a></code> step to specify the database connection.</p>
 </div>
 <div id="table-descriptions" class="section level1">

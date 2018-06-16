@@ -126,8 +126,7 @@ format_node.relop_select_rows <- function(node) {
 
 
 calc_used_relop_select_rows <- function (x, ...,
-                                         using = NULL,
-                                         contract = FALSE) {
+                                         using = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery:::calc_used_relop_select_rows")
   if(length(using)<=0) {
@@ -145,16 +144,13 @@ calc_used_relop_select_rows <- function (x, ...,
 
 #' @export
 columns_used.relop_select_rows <- function (x, ...,
-                                         using = NULL,
-                                         contract = FALSE) {
+                                         using = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::columns_used.relop_select_rows")
   cols <- calc_used_relop_select_rows(x,
-                                      using = using,
-                                      contract = contract)
+                                      using = using)
   return(columns_used(x$source[[1]],
-                      using = cols,
-                      contract = contract))
+                      using = cols))
 }
 
 

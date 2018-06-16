@@ -116,8 +116,7 @@ column_names.relop_null_replace <- function (x, ...) {
 
 #' @export
 columns_used.relop_null_replace <- function (x, ...,
-                                             using = NULL,
-                                             contract = FALSE) {
+                                             using = NULL) {
   columns_used(x$source[[1]])
 }
 

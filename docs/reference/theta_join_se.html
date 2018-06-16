@@ -192,8 +192,8 @@
 #&gt; SELECT
 #&gt;  `tsql_86076896464168684770_0000000000`.`AUC` AS `AUC`,
 #&gt;  `tsql_86076896464168684770_0000000000`.`R2` AS `R2_a`,
-#&gt;  `tsql_86076896464168684770_0000000001`.`AUC2` AS `AUC2`,
-#&gt;  `tsql_86076896464168684770_0000000001`.`R2` AS `R2_b`
+#&gt;  `tsql_86076896464168684770_0000000001`.`R2` AS `R2_b`,
+#&gt;  `tsql_86076896464168684770_0000000001`.`AUC2` AS `AUC2`
 #&gt; FROM (
 #&gt;  SELECT
 #&gt;   `d1`.`AUC`,
@@ -208,8 +208,8 @@
 #&gt;  FROM
 #&gt;   `d2`
 #&gt; ) `tsql_86076896464168684770_0000000001` ON "AUC" &gt;= "AUC2"
-#&gt;   AUC R2_a AUC2 R2_b
-#&gt; 1 0.6  0.2  0.4  0.3</div><div class='input'>
+#&gt;   AUC R2_a R2_b AUC2
+#&gt; 1 0.6  0.2  0.3  0.4</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

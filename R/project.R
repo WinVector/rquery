@@ -200,17 +200,15 @@ format_node.relop_project <- function(node) {
 }
 
 calc_used_relop_project <- function (x,
-                                     using = NULL,
-                                     contract = FALSE) {
+                                     using = NULL) {
   cols <- column_names(x)
   if(length(using)>0) {
     cols <- using
   }
   producing <- merge_fld(x$parsed, "symbols_produced")
   expressions <- x$parsed
-  if(contract) {
-    expressions <- x$parsed[producing %in% cols]
-  }
+  # TODO: test and instantiate this
+  # expressions <- x$parsed[producing %in% cols]
   cols <- setdiff(cols, producing)
   consuming <- merge_fld(expressions, "symbols_used")
   subusing <- unique(c(cols, consuming, x$groupby, x$orderby))
@@ -219,17 +217,14 @@ calc_used_relop_project <- function (x,
 
 #' @export
 columns_used.relop_project <- function (x, ...,
-                                        using = NULL,
-                                        contract = FALSE) {
+                                        using = NULL) {
   if(length(list(...))>0) {
     stop("rquery:columns_used: unexpected arguments")
   }
   cols <- calc_used_relop_project(x,
-                                  using = using,
-                                  contract = contract)
+                                  using = using)
   columns_used(x$source[[1]],
-               using = cols,
-               contract = contract)
+               using = cols)
 }
 
 

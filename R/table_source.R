@@ -209,8 +209,7 @@ column_names.relop_table_source <- function (x, ...) {
 
 columns_used_relop_table_source <- function (x,
                                              ...,
-                                             using = NULL,
-                                             contract = FALSE) {
+                                             using = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery:::columns_used_relop_table_source")
   cols <- x$columns
@@ -227,9 +226,8 @@ columns_used_relop_table_source <- function (x,
 
 #' @export
 columns_used.relop_table_source <- function (x, ...,
-                                             using = NULL,
-                                             contract = FALSE) {
-  cols <- columns_used_relop_table_source(x, using = using, contract=contract)
+                                             using = NULL) {
+  cols <- columns_used_relop_table_source(x, using = using)
   r <- list(cols)
   names(r) <- x$table_name
   r

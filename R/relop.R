@@ -66,7 +66,6 @@ column_names.data.frame <- function (x, ...) {
 #' @param x rquery operation tree.
 #' @param ... generic additional arguments (not used)
 #' @param using character, if not NULL set of columns used from above.
-#' @param contract logical, if TRUE perform unused value elimination.
 #' @return vector of table qualified column names.
 #'
 #' @examples
@@ -87,16 +86,14 @@ column_names.data.frame <- function (x, ...) {
 #'
 columns_used <- function (x,
                           ...,
-                          using = NULL,
-                          contract = FALSE) {
+                          using = NULL) {
   UseMethod("columns_used", x)
 }
 
 #' @export
 columns_used.relop <- function (x,
                                 ...,
-                                using = NULL,
-                                contract = FALSE) {
+                                using = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::columns_used.relop")
   subs <- lapply(x$source,

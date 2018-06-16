@@ -131,8 +131,7 @@ format_node.relop_set_indicator <- function(node) {
 
 
 calc_used_relop_set_indicator <- function(x,
-                                          using = NULL,
-                                          contract = FALSE) {
+                                          using = NULL) {
   cols <- column_names(x)
   if(length(using)>0) {
     cols <- using
@@ -145,17 +144,14 @@ calc_used_relop_set_indicator <- function(x,
 
 #' @export
 columns_used.relop_set_indicator <- function (x, ...,
-                                              using = NULL,
-                                              contract = FALSE) {
+                                              using = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::columns_used.relop_set_indicator")
   cols <- calc_used_relop_set_indicator(x,
-                                        using = using,
-                                        contract = contract)
+                                        using = using)
   cols <- setdiff(cols, x$rescol)
   columns_used(x$source[[1]],
-               using = cols,
-               contract = contract)
+               using = cols)
 }
 
 

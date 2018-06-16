@@ -2,7 +2,7 @@
 #' Make an unionall node (not a relational operation).
 #'
 #'
-#' Concatenate tables.
+#' Concatenate tables by rows.
 #'
 #'
 #' @param sources list of relop trees or list of data.frames
@@ -107,9 +107,8 @@ column_names.relop_unionall <- function (x, ...) {
 
 #' @export
 columns_used.relop_unionall <- function (x, ...,
-                                          using = NULL,
-                                          contract = FALSE) {
-  columns_used(x$source[[1]], using = using, contract = contract)
+                                          using = NULL) {
+  columns_used(x$source[[1]], using = using)
 }
 
 
