@@ -204,12 +204,12 @@
 #&gt;   surveyCategory,
 #&gt;   assessmentTotal) %.&gt;%
 #&gt;  extend(.,
-#&gt;   quote(probability) %:=% quote(exp(assessmentTotal * scale))) %.&gt;%
+#&gt;   probability %:=% exp(assessmentTotal * scale)) %.&gt;%
 #&gt;  extend(.,
-#&gt;   probability := quote(probability) / quote(sum(probability)),
+#&gt;   probability := probability / sum(probability),
 #&gt;   p= subjectID) %.&gt;%
 #&gt;  extend(.,
-#&gt;   row_number := quote(row_number()),
+#&gt;   row_number := row_number(),
 #&gt;   p= subjectID,
 #&gt;   o= "probability" DESC, "surveyCategory" DESC) %.&gt;%
 #&gt;  select_rows(.,

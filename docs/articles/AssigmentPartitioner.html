@@ -216,22 +216,22 @@ plan &lt;-<span class="st"> </span>d1 <span class="op">%.&gt;%</span>
   rand_d,
   rand_e) %.&gt;%
  extend(.,
-  choice_a := quote(rand_a) &gt;= 0.5,
-  choice_b := quote(rand_b) &gt;= 0.5,
-  choice_c := quote(rand_c) &gt;= 0.5,
-  choice_d := quote(rand_d) &gt;= 0.5,
-  choice_e := quote(rand_e) &gt;= 0.5) %.&gt;%
+  choice_a := rand_a &gt;= 0.5,
+  choice_b := rand_b &gt;= 0.5,
+  choice_c := rand_c &gt;= 0.5,
+  choice_d := rand_d &gt;= 0.5,
+  choice_e := rand_e &gt;= 0.5) %.&gt;%
  extend(.,
-  a_1 := quote(ifelse(choice_a, "T", "C")),
-  a_2 := quote(ifelse(choice_a, "C", "T")),
-  b_1 := quote(ifelse(choice_b, "T", "C")),
-  b_2 := quote(ifelse(choice_b, "C", "T")),
-  c_1 := quote(ifelse(choice_c, "T", "C")),
-  c_2 := quote(ifelse(choice_c, "C", "T")),
-  d_1 := quote(ifelse(choice_d, "T", "C")),
-  d_2 := quote(ifelse(choice_d, "C", "T")),
-  e_1 := quote(ifelse(choice_e, "T", "C")),
-  e_2 := quote(ifelse(choice_e, "C", "T"))) %.&gt;%
+  a_1 := ifelse(choice_a, "T", "C"),
+  a_2 := ifelse(choice_a, "C", "T"),
+  b_1 := ifelse(choice_b, "T", "C"),
+  b_2 := ifelse(choice_b, "C", "T"),
+  c_1 := ifelse(choice_c, "T", "C"),
+  c_2 := ifelse(choice_c, "C", "T"),
+  d_1 := ifelse(choice_d, "T", "C"),
+  d_2 := ifelse(choice_d, "C", "T"),
+  e_1 := ifelse(choice_e, "T", "C"),
+  e_2 := ifelse(choice_e, "C", "T")) %.&gt;%
  select_columns(.,
    id, a_1, a_2, b_1, b_2, c_1, c_2, d_1, d_2, e_1, e_2)</code></pre>
 <p>Notice <code><a href="../reference/extend_se.html">rquery::extend_se()</a></code> split the work into 3 unambiguous groups. The statements inside each group can now be executed in any order (or even in parallel) with no ambiguity of meaning or risk of error. The goal was: split into a small number of groups such that the observable execution semantics are very close to executing the original statements in order in completely separate groups (which is likely what a user intends).</p>
@@ -419,30 +419,30 @@ FROM (
   rand_d,
   rand_e) %.&gt;%
  extend(.,
-  choice := quote(rand_a) &gt;= 0.5) %.&gt;%
+  choice := rand_a &gt;= 0.5) %.&gt;%
  extend(.,
-  a_1 := quote(ifelse(choice, "T", "C")),
-  a_2 := quote(ifelse(choice, "C", "T"))) %.&gt;%
+  a_1 := ifelse(choice, "T", "C"),
+  a_2 := ifelse(choice, "C", "T")) %.&gt;%
  extend(.,
-  choice := quote(rand_b) &gt;= 0.5) %.&gt;%
+  choice := rand_b &gt;= 0.5) %.&gt;%
  extend(.,
-  b_1 := quote(ifelse(choice, "T", "C")),
-  b_2 := quote(ifelse(choice, "C", "T"))) %.&gt;%
+  b_1 := ifelse(choice, "T", "C"),
+  b_2 := ifelse(choice, "C", "T")) %.&gt;%
  extend(.,
-  choice := quote(rand_c) &gt;= 0.5) %.&gt;%
+  choice := rand_c &gt;= 0.5) %.&gt;%
  extend(.,
-  c_1 := quote(ifelse(choice, "T", "C")),
-  c_2 := quote(ifelse(choice, "C", "T"))) %.&gt;%
+  c_1 := ifelse(choice, "T", "C"),
+  c_2 := ifelse(choice, "C", "T")) %.&gt;%
  extend(.,
-  choice := quote(rand_d) &gt;= 0.5) %.&gt;%
+  choice := rand_d &gt;= 0.5) %.&gt;%
  extend(.,
-  d_1 := quote(ifelse(choice, "T", "C")),
-  d_2 := quote(ifelse(choice, "C", "T"))) %.&gt;%
+  d_1 := ifelse(choice, "T", "C"),
+  d_2 := ifelse(choice, "C", "T")) %.&gt;%
  extend(.,
-  choice := quote(rand_e) &gt;= 0.5) %.&gt;%
+  choice := rand_e &gt;= 0.5) %.&gt;%
  extend(.,
-  e_1 := quote(ifelse(choice, "T", "C")),
-  e_2 := quote(ifelse(choice, "C", "T"))) %.&gt;%
+  e_1 := ifelse(choice, "T", "C"),
+  e_2 := ifelse(choice, "C", "T")) %.&gt;%
  select_columns(.,
    id, a_1, a_2, b_1, b_2, c_1, c_2, d_1, d_2, e_1, e_2)</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sql2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(plan2, my_db)

@@ -201,10 +201,10 @@ is a reserved column name for this procedure.</p>
 #&gt;   b,
 #&gt;   r) %.&gt;%
 #&gt;  extend(.,
-#&gt;   ifebtest_1 := quote(r) &lt; 0.5) %.&gt;%
+#&gt;   ifebtest_1 := r &lt; 0.5) %.&gt;%
 #&gt;  extend(.,
-#&gt;   a := quote(ifelse(ifebtest_1, 2, a)),
-#&gt;   b := quote(ifelse(ifebtest_1, 2, b))) %.&gt;%
+#&gt;   a := ifelse(ifebtest_1, 2, a),
+#&gt;   b := ifelse(ifebtest_1, 2, b)) %.&gt;%
 #&gt;  drop_columns(.,
 #&gt;    ifebtest_1)
 #&gt; SELECT
@@ -249,8 +249,8 @@ is a reserved column name for this procedure.</p>
 #&gt; 9  1 1  9 0.67176682
 #&gt; 10 2 2 10 0.05861411
 #&gt;                     r1                   r2
-#&gt; 1 -1634097272072962638  2473575935085615834
-#&gt; 2  2476887726861753940 -8463637394894789524</div><div class='input'>
+#&gt; 1 -7349921711147650250  2613634328444501840
+#&gt; 2 -7960683043958434137 -6524198485311238332</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

@@ -189,7 +189,7 @@ merge_columns_used <- function(cu1, cu2) {
 }
 
 rquery_deparse <- function(item) {
-  paste(deparse(item, width.cutoff = 500L, nlines = 1, control = "all"),
+  paste(as.character(deparse(item, width.cutoff = 500L)),
         collapse = "\n ")
 }
 

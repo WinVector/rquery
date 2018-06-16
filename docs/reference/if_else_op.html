@@ -224,13 +224,13 @@ is a reserved column name for this procedure.</p>
 #&gt;   b,
 #&gt;   edited) %.&gt;%
 #&gt;  extend(.,
-#&gt;   ifebtest_1 := quote((a + b)) &gt; 1) %.&gt;%
+#&gt;   ifebtest_1 := (a + b) &gt; 1) %.&gt;%
 #&gt;  extend(.,
-#&gt;   a := quote(ifelse(ifebtest_1, 0, a)),
-#&gt;   b := quote(ifelse(ifebtest_1, 0, b)),
-#&gt;   edited := quote(ifelse(ifebtest_1, 1, edited))) %.&gt;%
+#&gt;   a := ifelse(ifebtest_1, 0, a),
+#&gt;   b := ifelse(ifebtest_1, 0, b),
+#&gt;   edited := ifelse(ifebtest_1, 1, edited)) %.&gt;%
 #&gt;  extend(.,
-#&gt;   edited := quote(ifelse(!ifebtest_1, 0, edited))) %.&gt;%
+#&gt;   edited := ifelse(!ifebtest_1, 0, edited)) %.&gt;%
 #&gt;  drop_columns(.,
 #&gt;    ifebtest_1)
 #&gt; SELECT

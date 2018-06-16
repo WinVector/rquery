@@ -200,7 +200,7 @@ the calculation prior to it losing narrowing optimizations.</p>
 #&gt;   y,
 #&gt;   z) %.&gt;%
 #&gt;  extend(.,
-#&gt;   quote(v) %:=% quote(ifelse(x &gt; 2, "x", "y"))) %.&gt;%
+#&gt;   v %:=% ifelse(x &gt; 2, "x", "y")) %.&gt;%
 #&gt;  non_sql_node(., rsummary_node(.))
 #&gt; [[1]]
 #&gt; [1] "CREATE  TABLE `sn_23012829786491164338_0000000000`  AS  SELECT\n  `p`,\n  `s`,\n  `w`,\n  `x`,\n  `y`,\n  `z`,\n  ( CASE WHEN ( `x` &gt; 2 ) THEN ( 'x' ) WHEN NOT ( `x` &gt; 2 ) THEN ( 'y' ) ELSE NULL END )  AS `v`\n FROM (\n  SELECT\n   `dRemote`.`p`,\n   `dRemote`.`s`,\n   `dRemote`.`w`,\n   `dRemote`.`x`,\n   `dRemote`.`y`,\n   `dRemote`.`z`\n  FROM\n   `dRemote`\n  ) tsql_26490355639477894239_0000000000\n"

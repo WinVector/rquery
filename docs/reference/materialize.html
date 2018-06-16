@@ -214,9 +214,9 @@ in pipelines.</p>
 #&gt;   AUC,
 #&gt;   R2) %.&gt;%
 #&gt;  extend(.,
-#&gt;   v := quote(AUC) + quote(R2)) %.&gt;%
+#&gt;   v := AUC + R2) %.&gt;%
 #&gt;  extend(.,
-#&gt;   x := quote(pmax(AUC, v)))
+#&gt;   x := pmax(AUC, v))
 #&gt; table('example'; 
 #&gt;   AUC,
 #&gt;   R2,

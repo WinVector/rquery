@@ -164,7 +164,7 @@
 #&gt;   AUC,
 #&gt;   R2) %.&gt;%
 #&gt;  extend(.,
-#&gt;   quote(v) %:=% quote(ifelse(AUC &gt; 0.5, R2, 1))) %.&gt;%
+#&gt;   v %:=% ifelse(AUC &gt; 0.5, R2, 1)) %.&gt;%
 #&gt;  non_sql_node(., quantile_node(.)) %.&gt;%
 #&gt;  natural_join(.,
 #&gt;   table('d'; 
@@ -180,7 +180,7 @@
 #&gt; 
 #&gt; node_1 [ shape = 'folder' , label = 'table(d; \l  AUC,\l  R2)\l']
 #&gt; 
-#&gt; node_2 [ shape = 'tab' , label = 'extend(.,\l  quote(v) %:=% quote(ifelse(AUC &gt; 0.5, R2, 1)))\l']
+#&gt; node_2 [ shape = 'tab' , label = 'extend(.,\l  v %:=% ifelse(AUC &gt; 0.5, R2, 1))\l']
 #&gt; 
 #&gt; node_3 [ shape = 'tab' , label = 'non_sql_node(., quantile_node(.))\l']
 #&gt; 
