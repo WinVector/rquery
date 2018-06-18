@@ -846,7 +846,6 @@ strMapToString <- function(m) {
 #' Please see \code{vignette('DependencySorting', package = 'rquery')} and \code{vignette('joinController', package= 'rquery')} for more details.
 #' @seealso \code{\link{describe_tables}}, \code{\link{build_join_plan}}, \code{\link{inspect_join_plan}}, \code{\link{graph_join_plan}}
 #'
-#' TODO: parameterize the implementation provider (right now hard-coded for \code{dplr}, but at least also direct \code{SQL} is a good extension).
 #'
 #' @param columnJoinPlan columns to join, from \code{\link{build_join_plan}} (and likely altered by user).  Note: no column names must intersect with names of the form \code{table_CLEANEDTABNAME_present}.
 #' @param ... force later arguments to bind by name.

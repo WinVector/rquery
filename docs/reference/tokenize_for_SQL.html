@@ -21,9 +21,11 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
+<!-- sticky kit -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
-<script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
 
 
@@ -32,6 +34,7 @@
 
 <meta property="og:description" content="Cross-parse from an R parse tree into SQL." />
 <meta name="twitter:card" content="summary" />
+
 
 
 <!-- mathjax -->
@@ -163,6 +166,9 @@
 #&gt; $value
 #&gt; [1] "1"
 #&gt; 
+#&gt; $is_zero_argument_call
+#&gt; [1] FALSE
+#&gt; 
 #&gt; attr(,"class")
 #&gt; [1] "pre_sql_token"
 #&gt; 
@@ -173,6 +179,9 @@
 #&gt; $value
 #&gt; [1] "+"
 #&gt; 
+#&gt; $is_zero_argument_call
+#&gt; [1] FALSE
+#&gt; 
 #&gt; attr(,"class")
 #&gt; [1] "pre_sql_token"
 #&gt; 
@@ -182,6 +191,9 @@
 #&gt; 
 #&gt; $value
 #&gt; [1] "2"
+#&gt; 
+#&gt; $is_zero_argument_call
+#&gt; [1] FALSE
 #&gt; 
 #&gt; attr(,"class")
 #&gt; [1] "pre_sql_token"
@@ -208,6 +220,9 @@
 #&gt; $value
 #&gt; [1] "3"
 #&gt; 
+#&gt; $is_zero_argument_call
+#&gt; [1] FALSE
+#&gt; 
 #&gt; attr(,"class")
 #&gt; [1] "pre_sql_token"
 #&gt; 
@@ -232,6 +247,9 @@
 #&gt; 
 #&gt; $value
 #&gt; [1] "3"
+#&gt; 
+#&gt; $is_zero_argument_call
+#&gt; [1] FALSE
 #&gt; 
 #&gt; attr(,"class")
 #&gt; [1] "pre_sql_token"
