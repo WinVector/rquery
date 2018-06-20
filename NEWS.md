@@ -1,4 +1,8 @@
 
+# rquery 0.5.1 2018/06/20
+
+ * Switch to wrapr::pipe_impl() when possible.
+
 # rquery 0.5.0 2018/06/18
 
  * Make DBI suggested.

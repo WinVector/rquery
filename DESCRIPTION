@@ -25,6 +25,7 @@ Depends:
   R (>= 3.4.0)
 Imports:
   wrapr (>= 1.5.0),
+  utils,
   stats
 Suggests:
     DBI,

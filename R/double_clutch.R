@@ -3,7 +3,8 @@
 
 
 
-
+#' @importFrom utils packageVersion
+NULL
 
 
 double_apply_impl <- function(d, ds, ops, env) {
@@ -11,14 +12,16 @@ double_apply_impl <- function(d, ds, ops, env) {
     stop("rquery::`%>>%` left hand side argument must be a data.frame")
   }
 
-  # # # TODO: switch to wrapr::pipe_impl
-  # b <- wrapr::pipe_impl(pipe_left_arg = ds,
-  #                       pipe_right_arg = ops,
-  #                       pipe_environment = env,
-  #                       pipe_string = "%.>%")
-  tmpenv <- new.env(parent = env)
-  assign('.', d, envir = tmpenv)
-  b <- eval(ops, envir = tmpenv, enclos = env)
+  if(packageVersion("wrapr")>='1.5.1') {
+    b <- wrapr::pipe_impl(pipe_left_arg = ds,
+                          pipe_right_arg = ops,
+                          pipe_environment = env,
+                          pipe_string = "%.>%")
+  } else {
+    tmpenv <- new.env(parent = env)
+    assign('.', d, envir = tmpenv)
+    b <- eval(ops, envir = tmpenv, enclos = env)
+  }
 
   if(!("relop" %in% class(b))) {
     stop("rquery::`%>>%` right hand side argument must must evaluate to a relop tree")
