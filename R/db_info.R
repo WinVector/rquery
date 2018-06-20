@@ -70,7 +70,7 @@ rquery_db_info <- function(...,
       if("schema" %in% names(qualifiers)) {
         dbi_id <- DBI::Id(schema = qualifiers$schema, table = as.character(id))
       } else {
-        dbi_id <- DBI::Id(table = as.character(id))
+        dbi_id <- as.character(id) # sparklyr ‘0.8.4’ does not implement DBI::dbQuoteIdentifier for DBI::Id
       }
       as.character(DBI::dbQuoteIdentifier(r$connection, dbi_id))
     }
@@ -156,7 +156,7 @@ quote_table_name <- function(x, id,
     if("schema" %in% names(qualifiers)) {
       dbi_id <- DBI::Id(schema = qualifiers[["schema"]], table = as.character(id))
     } else {
-      dbi_id <- DBI::Id(table = as.character(id))
+      dbi_id <- as.character(id) # sparklyr ‘0.8.4’ does not implement DBI::dbQuoteIdentifier for DBI::Id
     }
     return(as.character(DBI::dbQuoteIdentifier(x, dbi_id)))
   }
