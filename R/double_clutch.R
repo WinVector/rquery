@@ -7,19 +7,18 @@
 NULL
 
 
-double_apply_impl <- function(d, ds, ops, env) {
-  if(!is.data.frame(d)) {
+double_apply_impl <- function(., ops, env) {
+  if(!is.data.frame(.)) {
     stop("rquery::`%>>%` left hand side argument must be a data.frame")
   }
-
+  tmpenv <- new.env(parent = env)
+  assign('.', ., envir = tmpenv)
   if(packageVersion("wrapr")>='1.5.1') {
-    b <- wrapr::pipe_impl(pipe_left_arg = ds,
+    b <- wrapr::pipe_impl(pipe_left_arg = .,
                           pipe_right_arg = ops,
-                          pipe_environment = env,
+                          pipe_environment = tmpenv,
                           pipe_string = "%.>%")
   } else {
-    tmpenv <- new.env(parent = env)
-    assign('.', d, envir = tmpenv)
     b <- eval(ops, envir = tmpenv, enclos = env)
   }
 
@@ -30,7 +29,7 @@ double_apply_impl <- function(d, ds, ops, env) {
   if(length(tabs)!=1) {
     stop("rquery::`%>>%` right hand side argument must use exactly one table")
   }
-  lst <- list(x = d)
+  lst <- list(x = .)
   names(lst) <- tabs
   rquery_apply_to_data_frame(lst,
                              b,
@@ -75,8 +74,7 @@ double_apply_impl <- function(d, ds, ops, env) {
 #'
 #' @export
 `%>>%` <- function(d, ops) {
-  ds <- substitute(d)
   ops <- substitute(ops)
   env <- parent.frame()
-  double_apply_impl(d, ds, ops, env)
+  double_apply_impl(d, ops, env)
 }
