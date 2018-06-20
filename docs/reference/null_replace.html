@@ -178,7 +178,7 @@
   <span class='fu'>cat</span>(<span class='no'>sql</span>)
   <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; table('d1'; 
+}</div><div class='output co'>#&gt; table('`d1`'; 
 #&gt;   A,
 #&gt;   B) %.&gt;%
 #&gt;  null_replace(.; A,
@@ -192,8 +192,8 @@
 #&gt; 
 #&gt; FROM (
 #&gt;  SELECT
-#&gt;   `d1`.`A`,
-#&gt;   `d1`.`B`
+#&gt;   `A`,
+#&gt;   `B`
 #&gt;  FROM
 #&gt;   `d1`
 #&gt; ) tsql_36819026529606894432_0000000000

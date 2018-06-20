@@ -131,9 +131,9 @@ strategy) needed to represent data from a remote table.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>db_td</span>(<span class='no'>db</span>, <span class='no'>table_name</span>)
+    <pre class="usage"><span class='fu'>db_td</span>(<span class='no'>db</span>, <span class='no'>table_name</span>, <span class='no'>...</span>, <span class='kw'>qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
 
-<span class='fu'>dbi_table</span>(<span class='no'>db</span>, <span class='no'>table_name</span>)</pre>
+<span class='fu'>dbi_table</span>(<span class='no'>db</span>, <span class='no'>table_name</span>, <span class='no'>...</span>, <span class='kw'>qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -145,6 +145,14 @@ strategy) needed to represent data from a remote table.</p>
     <tr>
       <th>table_name</th>
       <td><p>name of table</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>not used, force later argument to bind by name</p></td>
+    </tr>
+    <tr>
+      <th>qualifiers</th>
+      <td><p>optional named ordered vector of strings carrying additional db hierarhcy terms, such as schema.</p></td>
     </tr>
     </table>
     
@@ -192,10 +200,10 @@ which builds a reference to a remote table given the table name.</p>
   <span class='fu'>cat</span>(<span class='no'>sql2</span>)
   <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql2</span>))
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; [1] "table('d'; AUC, R2)"
+}</div><div class='output co'>#&gt; [1] "table('`d`'; AUC, R2)"
 #&gt; SELECT
-#&gt;  `d`.`AUC`,
-#&gt;  `d`.`R2`
+#&gt;  `AUC`,
+#&gt;  `R2`
 #&gt; FROM
 #&gt;  `d`
 #&gt;   AUC  R2
@@ -204,7 +212,7 @@ which builds a reference to a remote table given the table name.</p>
 #&gt; [1] "AUC" "R2" 
 #&gt; 
 #&gt; SELECT
-#&gt;  `d`.`AUC`
+#&gt;  `AUC`
 #&gt; FROM
 #&gt;  `d`
 #&gt;   AUC

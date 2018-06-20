@@ -192,7 +192,7 @@
   <span class='co'># cleanup</span>
   <span class='fu'>options</span>(<span class='no'>old_o</span>)
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; table('d'; 
+}</div><div class='output co'>#&gt; table('`d`'; 
 #&gt;   AUC,
 #&gt;   R2,
 #&gt;   delta,
@@ -206,10 +206,10 @@
 #&gt;  cat AS `cat`
 #&gt; FROM (
 #&gt;  SELECT
-#&gt;   `d`.`AUC`,
-#&gt;   `d`.`R2`,
-#&gt;   `d`.`delta`,
-#&gt;   `d`.`cat`
+#&gt;   `AUC`,
+#&gt;   `R2`,
+#&gt;   `delta`,
+#&gt;   `cat`
 #&gt;  FROM
 #&gt;   `d`
 #&gt; ) tsql_28426236547927107171_0000000000
@@ -224,10 +224,10 @@
 #&gt;  cat AS `cat`
 #&gt; FROM (
 #&gt;  SELECT
-#&gt;   `d`.`AUC`,
-#&gt;   `d`.`R2`,
-#&gt;   `d`.`delta`,
-#&gt;   `d`.`cat`
+#&gt;   `AUC`,
+#&gt;   `R2`,
+#&gt;   `delta`,
+#&gt;   `cat`
 #&gt;  FROM
 #&gt;   `d`
 #&gt; ) tsql_19856072411131566096_0000000000
@@ -238,10 +238,10 @@
 #&gt;  cat AS `cat`
 #&gt; FROM (
 #&gt;  SELECT
-#&gt;   `d`.`AUC`,
-#&gt;   `d`.`R2`,
-#&gt;   `d`.`delta`,
-#&gt;   `d`.`cat`
+#&gt;   `AUC`,
+#&gt;   `R2`,
+#&gt;   `delta`,
+#&gt;   `cat`
 #&gt;  FROM
 #&gt;   `d`
 #&gt; ) tsql_02643628456323874007_0000000000</div><div class='input'>

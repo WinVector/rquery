@@ -113,15 +113,22 @@ rq_table_exists <- function(db, table_name) {
   return(FALSE)
 }
 
+
 #' List table column names.
 #'
 #' @param db Connection handle
 #' @param table_name character table name
+#' @param ... not used, force later argument to bind by name
+#' @param qualifiers optional named ordered vector of strings carrying additional db hierarhcy terms, such as schema.
 #' @return character list of column names
 #'
 #' @export
 #'
-rq_colnames <- function(db, table_name) {
+rq_colnames <- function(db, table_name,
+                        ...,
+                        qualifiers = NULL) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::rq_colnames")
   # first shot- see if it is a db info with function overrriden
   connection_options <- NULL
   if("rquery_db_info" %in% class(db)) {

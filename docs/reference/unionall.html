@@ -158,26 +158,26 @@
   <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
 }</div><div class='output co'>#&gt; unionall(.,
-#&gt;   table('d'; 
+#&gt;   table('`d`'; 
 #&gt;   AUC,
 #&gt;   R2),
-#&gt;  table('d'; 
+#&gt;  table('`d`'; 
 #&gt;   AUC,
 #&gt;   R2),
-#&gt;  table('d'; 
+#&gt;  table('`d`'; 
 #&gt;   AUC,
 #&gt;   R2))
 #&gt; SELECT  `AUC`, `R2`  FROM (   SELECT
-#&gt;   `d`.`AUC`,
-#&gt;   `d`.`R2`
+#&gt;   `AUC`,
+#&gt;   `R2`
 #&gt;  FROM
 #&gt;   `d` LIMIT 2 ) tsql_90916064384172044302_0000000000 UNION ALL SELECT  `AUC`, `R2`  FROM (   SELECT
-#&gt;   `d`.`AUC`,
-#&gt;   `d`.`R2`
+#&gt;   `AUC`,
+#&gt;   `R2`
 #&gt;  FROM
 #&gt;   `d` LIMIT 2 ) tsql_90916064384172044302_0000000001 UNION ALL SELECT  `AUC`, `R2`  FROM (   SELECT
-#&gt;   `d`.`AUC`,
-#&gt;   `d`.`R2`
+#&gt;   `AUC`,
+#&gt;   `R2`
 #&gt;  FROM
 #&gt;   `d` LIMIT 2 ) tsql_90916064384172044302_0000000002 LIMIT 2
 #&gt;   AUC  R2

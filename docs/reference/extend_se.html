@@ -194,7 +194,7 @@
   <span class='fu'>cat</span>(<span class='no'>sql2</span>)
 
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; table('d'; 
+}</div><div class='output co'>#&gt; table('`d`'; 
 #&gt;   AUC,
 #&gt;   R2) %.&gt;%
 #&gt;  extend(.,
@@ -213,8 +213,8 @@
 #&gt;   `AUC` + `R2`  AS `v`
 #&gt;  FROM (
 #&gt;   SELECT
-#&gt;    `d`.`AUC`,
-#&gt;    `d`.`R2`
+#&gt;    `AUC`,
+#&gt;    `R2`
 #&gt;   FROM
 #&gt;    `d`
 #&gt;   ) tsql_98564863522039172198_0000000000
@@ -227,8 +227,8 @@
 #&gt;  rank ( ) OVER (  PARTITION BY `AUC` ORDER BY `R2` ) AS `v`
 #&gt; FROM (
 #&gt;  SELECT
-#&gt;   `d`.`AUC`,
-#&gt;   `d`.`R2`
+#&gt;   `AUC`,
+#&gt;   `R2`
 #&gt;  FROM
 #&gt;   `d`
 #&gt;  ) tsql_22643126905802424410_0000000000</div><div class='input'>

@@ -161,7 +161,7 @@
   <span class='fu'>cat</span>(<span class='no'>sql</span>)
   <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; table('d'; 
+}</div><div class='output co'>#&gt; table('`d`'; 
 #&gt;   AUC,
 #&gt;   R2,
 #&gt;   z) %.&gt;%
@@ -174,9 +174,9 @@
 #&gt;  `z` AS `z`
 #&gt; FROM (
 #&gt;  SELECT
-#&gt;   `d`.`AUC`,
-#&gt;   `d`.`R2`,
-#&gt;   `d`.`z`
+#&gt;   `AUC`,
+#&gt;   `R2`,
+#&gt;   `z`
 #&gt;  FROM
 #&gt;   `d`
 #&gt; ) tsql_24776452124575728488_0000000000

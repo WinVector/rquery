@@ -198,7 +198,7 @@ is a reserved column name for this procedure.</p>
   <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>q</span>))
 
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; table('d'; 
+}</div><div class='output co'>#&gt; table('`d`'; 
 #&gt;   i,
 #&gt;   a,
 #&gt;   b,
@@ -231,10 +231,10 @@ is a reserved column name for this procedure.</p>
 #&gt;    `r` &lt; 0.5  AS `ifebtest_1`
 #&gt;   FROM (
 #&gt;    SELECT
-#&gt;     `d`.`i`,
-#&gt;     `d`.`a`,
-#&gt;     `d`.`b`,
-#&gt;     `d`.`r`
+#&gt;     `i`,
+#&gt;     `a`,
+#&gt;     `b`,
+#&gt;     `r`
 #&gt;    FROM
 #&gt;     `d`
 #&gt;    ) tsql_91587258048842465658_0000000000
@@ -252,8 +252,8 @@ is a reserved column name for this procedure.</p>
 #&gt; 9  1 1  9 0.67176682
 #&gt; 10 2 2 10 0.05861411
 #&gt;                     r1                  r2
-#&gt; 1  4357803990409006030 -864650465890084370
-#&gt; 2 -3556453966411332092 4879982744923270807</div><div class='input'>
+#&gt; 1  -711712560616121759 7868890291272535507
+#&gt; 2 -3605214680437460076 1118382833653224581</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

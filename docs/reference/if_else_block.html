@@ -247,7 +247,7 @@ is a reserved column name for this procedure.</p>
 #&gt; $edited
 #&gt; [1] "ifelse( ifebtest_2, 1, edited)"
 #&gt; 
-#&gt; table('d'; 
+#&gt; table('`d`'; 
 #&gt;   i,
 #&gt;   a,
 #&gt;   b,
@@ -279,11 +279,11 @@ is a reserved column name for this procedure.</p>
 #&gt;   `r` &gt;= 0.5  AS `ifebtest_1`
 #&gt;  FROM (
 #&gt;   SELECT
-#&gt;    `d`.`i`,
-#&gt;    `d`.`a`,
-#&gt;    `d`.`b`,
-#&gt;    `d`.`r`,
-#&gt;    `d`.`edited`
+#&gt;    `i`,
+#&gt;    `a`,
+#&gt;    `b`,
+#&gt;    `r`,
+#&gt;    `edited`
 #&gt;   FROM
 #&gt;    `d`
 #&gt;   ) tsql_54094953509695757633_0000000000
@@ -299,9 +299,9 @@ is a reserved column name for this procedure.</p>
 #&gt; 8   8          1          1 0.62279882 0 1      1
 #&gt; 9   9          1          1 0.59481920 0 1      1
 #&gt; 10 10          1          1 0.74301824 0 1      1
-#&gt;                    r1                  r2
-#&gt; 1 -193850873159778773 -217259055736936512
-#&gt; 2 8790866377796682081 2100541333978422113</div><div class='input'>
+#&gt;                    r1                   r2
+#&gt; 1 1635884688052230409 -2503576279557013998
+#&gt; 2 7154361189585946845  1922030507814602938</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

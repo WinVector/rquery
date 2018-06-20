@@ -268,7 +268,7 @@ if(use_spark) {
 }
 ```
 
-To install `rquery` please use `devtools` as follows.
+To install `rquery` please try `install.packages("rquery")` or try `devtools` as follows.
 
 ```{r, eval=FALSE}
 # install.packages("devtools")

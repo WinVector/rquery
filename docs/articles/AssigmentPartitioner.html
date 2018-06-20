@@ -88,7 +88,7 @@
       <h1>Assignment Partitioner</h1>
                         <h4 class="author">John Mount, Win-Vector LLC</h4>
             
-            <h4 class="date">2018-06-18</h4>
+            <h4 class="date">2018-06-20</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery//blob/master/vignettes/AssigmentPartitioner.Rmd"><code>vignettes/AssigmentPartitioner.Rmd</code></a></small>
       <div class="hidden name"><code>AssigmentPartitioner.Rmd</code></div>
@@ -208,7 +208,7 @@ plan &lt;-<span class="st"> </span>d1 <span class="op">%.&gt;%</span>
                     e_<span class="dv">1</span>, e_<span class="dv">2</span>))
 
 <span class="kw">cat</span>(<span class="kw">format</span>(plan))</code></pre></div>
-<pre><code>table('example_table'; 
+<pre><code>table('`example_table`'; 
   id,
   rand_a,
   rand_b,
@@ -282,12 +282,12 @@ FROM (
    `rand_e` &gt;= 0.5  AS `choice_e`
   FROM (
    SELECT
-    `example_table`.`id`,
-    `example_table`.`rand_a`,
-    `example_table`.`rand_b`,
-    `example_table`.`rand_c`,
-    `example_table`.`rand_d`,
-    `example_table`.`rand_e`
+    `id`,
+    `rand_a`,
+    `rand_b`,
+    `rand_c`,
+    `rand_d`,
+    `rand_e`
    FROM
     `example_table`
    ) tsql_53272849086359897594_0000000000
@@ -411,7 +411,7 @@ FROM (
                     e_<span class="dv">1</span>, e_<span class="dv">2</span>))
 
 <span class="kw">cat</span>(<span class="kw">format</span>(plan2))</code></pre></div>
-<pre><code>table('example_table'; 
+<pre><code>table('`example_table`'; 
   id,
   rand_a,
   rand_b,

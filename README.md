@@ -153,7 +153,7 @@ rq_copy_to(my_db, 'd',
             overwrite = TRUE)
 ```
 
-    ## [1] "table('d'; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2)"
+    ## [1] "table('\"d\"'; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2)"
 
 ``` r
 # produce a hande to existing table
@@ -176,7 +176,7 @@ class(my_db)
 print(d)
 ```
 
-    ## [1] "table('d'; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2)"
+    ## [1] "table('\"d\"'; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2)"
 
 ``` r
 d %.>%
@@ -267,19 +267,19 @@ cat(to_sql(dq, my_db, source_limit = 1000))
            exp ( "assessmentTotal" * 0.237 )  AS "probability"
           FROM (
            SELECT
-            "d"."subjectID",
-            "d"."surveyCategory",
-            "d"."assessmentTotal"
+            "subjectID",
+            "surveyCategory",
+            "assessmentTotal"
            FROM
             "d" LIMIT 1000
-           ) tsql_10147663132732343566_0000000000
-          ) tsql_10147663132732343566_0000000001
-         ) tsql_10147663132732343566_0000000002
-       ) tsql_10147663132732343566_0000000003
+           ) tsql_54327128934497560878_0000000000
+          ) tsql_54327128934497560878_0000000001
+         ) tsql_54327128934497560878_0000000002
+       ) tsql_54327128934497560878_0000000003
        WHERE "row_number" <= 1
-      ) tsql_10147663132732343566_0000000004
-     ) tsql_10147663132732343566_0000000005
-    ) tsql_10147663132732343566_0000000006 ORDER BY "subjectID"
+      ) tsql_54327128934497560878_0000000004
+     ) tsql_54327128934497560878_0000000005
+    ) tsql_54327128934497560878_0000000006 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
@@ -312,7 +312,7 @@ The additional record-keeping in the operator nodes allows checking and optimiza
 cat(format(dq))
 ```
 
-    table('d'; 
+    table('"d"'; 
       subjectID,
       surveyCategory,
       assessmentTotal,
@@ -422,7 +422,7 @@ For deeper dives into specific topics, please see also:
 -   [DifferentDBs](https://github.com/WinVector/rquery/blob/master/extras/ExtraDBs.md)
 -   [rqdatatable](https://github.com/WinVector/rqdatatable)
 
-To install `rquery` please use `devtools` as follows.
+To install `rquery` please try `install.packages("rquery")` or try `devtools` as follows.
 
 ``` r
 # install.packages("devtools")

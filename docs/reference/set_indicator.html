@@ -195,7 +195,7 @@
 #&gt; $d
 #&gt; [1] "a" "b" "q"
 #&gt; 
-#&gt; table('d'; 
+#&gt; table('`d`'; 
 #&gt;   a,
 #&gt;   b,
 #&gt;   q) %.&gt;%
@@ -204,9 +204,9 @@
 #&gt; SELECT *, 0 AS `z` FROM (
 #&gt;  SELECT *, `a`  IN (  '1'  ,  '2'  )  AS `one_two` FROM (
 #&gt;   SELECT
-#&gt;    `d`.`a`,
-#&gt;    `d`.`b`,
-#&gt;    `d`.`q`
+#&gt;    `a`,
+#&gt;    `b`,
+#&gt;    `q`
 #&gt;   FROM
 #&gt;    `d`
 #&gt;  ) tsql_74457822805259281866_0000000000

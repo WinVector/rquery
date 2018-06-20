@@ -38,6 +38,12 @@ rquery_db_info <- function(...,
              id,
              indentifier_quote_char)
     },
+    dbqt = function(id, qualifiers = NULL) {
+      paste(paste0(indentifier_quote_char,
+                   c(qualifiers, id),
+                   indentifier_quote_char),
+            collapse = ".")
+    },
     dbqs = function(s) {
       paste0(string_quote_char,
              s,
@@ -56,7 +62,17 @@ rquery_db_info <- function(...,
       stop("rquery::rquery_db_info is_dbi=TRUE requeries DBI package")
     }
     r$quote_identifier <- function(x, id) {
-      DBI::dbQuoteIdentifier(r$connection, as.character(id))
+      as.character(DBI::dbQuoteIdentifier(r$connection, as.character(id)))
+    }
+    r$quote_table_name <- function(x, id, ..., qualifiers) {
+      wrapr::stop_if_dot_args(substitute(list(...)),
+                              "r$quote_table_name")
+      if("schema" %in% names(qualifiers)) {
+        dbi_id <- DBI::Id(schema = qualifiers$schema, table = as.character(id))
+      } else {
+        dbi_id <- DBI::Id(table = as.character(id))
+      }
+      as.character(DBI::dbQuoteIdentifier(r$connection, dbi_id))
     }
     r$quote_string <- function(x, s) {
       DBI::dbQuoteString(r$connection, as.character(s))
@@ -65,7 +81,7 @@ rquery_db_info <- function(...,
       if(is.character(o) || is.factor(o)) {
         return(DBI::dbQuoteString(r$connection, as.character(o)))
       }
-      DBI::dbQuoteLiteral(r$connection, o)
+      as.character(DBI::dbQuoteLiteral(r$connection, o))
     }
   }
   for(ni in names(overrides)) {
@@ -100,7 +116,7 @@ rquery_default_db_info <- rquery_db_info(indentifier_quote_char = '"',
 #'
 #' @export
 #'
-quote_identifier <- function (x, id) {
+quote_identifier <- function(x, id) {
   if("rquery_db_info" %in% class(x)) {
     f <- x$quote_identifier
     if(!is.null(f)) {
@@ -114,6 +130,40 @@ quote_identifier <- function (x, id) {
   rquery_default_db_info$dbqi(id)
 }
 
+#' Quote a table name.
+#'
+#' @param x database handle or rquery_db_info object.
+#' @param id character to quote
+#' @param ... not used, force later arguments to bind by name.
+#' @param qualifiers named ordered vector of strings carrying additional db hierarhcy terms, such as schema.
+#' @return quoted identifier
+#'
+#' @export
+#'
+quote_table_name <- function(x, id,
+                             ...,
+                             qualifiers) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::quote_table_name")
+  if("rquery_db_info" %in% class(x)) {
+    f <- x$quote_table_name
+    if(!is.null(f)) {
+      return(f(x, id, qualifiers = qualifiers))
+    }
+    return(x$dbqt(id, qualifiers = qualifiers))
+  }
+  if(requireNamespace("DBI", quietly = TRUE)) {
+    if("schema" %in% names(qualifiers)) {
+      dbi_id <- DBI::Id(schema = qualifiers[["schema"]], table = as.character(id))
+    } else {
+      dbi_id <- DBI::Id(table = as.character(id))
+    }
+    return(as.character(DBI::dbQuoteIdentifier(x, dbi_id)))
+  }
+  rquery_default_db_info$dbqi(id)
+}
+
+
 #' Quote a string
 #'
 #' @param x database handle or rquery_db_info object.
@@ -122,7 +172,7 @@ quote_identifier <- function (x, id) {
 #'
 #' @export
 #'
-quote_string <- function (x, s) {
+quote_string <- function(x, s) {
   s <- as.character(s)
   if("rquery_db_info" %in% class(x)) {
     f <- x$quote_string
@@ -145,7 +195,7 @@ quote_string <- function (x, s) {
 #'
 #' @export
 #'
-quote_literal <- function (x, o) {
+quote_literal <- function(x, o) {
   if(is.character(o) || is.factor(o)) {
     return(quote_string(x, as.character(o)))
   }

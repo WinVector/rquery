@@ -185,15 +185,15 @@
      <span class='fu'>print</span>(<span class='no'>.</span>)
 
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; table('d'; 
+}</div><div class='output co'>#&gt; table('`d`'; 
 #&gt;   group,
 #&gt;   val) %.&gt;%
 #&gt;  project(., vmax := max(val),
 #&gt;   g= group)
 #&gt; SELECT `group`, max ( `val` ) AS `vmax` FROM (
 #&gt;  SELECT
-#&gt;   `d`.`group`,
-#&gt;   `d`.`val`
+#&gt;   `group`,
+#&gt;   `val`
 #&gt;  FROM
 #&gt;   `d`
 #&gt;  ) tsql_88309723133921418577_0000000000
@@ -202,14 +202,14 @@
 #&gt;   group vmax
 #&gt; 1     a    2
 #&gt; 2     b    4
-#&gt; table('d'; 
+#&gt; table('`d`'; 
 #&gt;   group,
 #&gt;   val) %.&gt;%
 #&gt;  project(., vmax := max(val),
 #&gt;   g= )
 #&gt; SELECT max ( `val` ) AS `vmax` FROM (
 #&gt;  SELECT
-#&gt;   `d`.`val`
+#&gt;   `val`
 #&gt;  FROM
 #&gt;   `d`
 #&gt;  ) tsql_32747083952470729106_0000000000

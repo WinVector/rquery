@@ -129,9 +129,10 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>mk_td</span>(<span class='no'>table_name</span>, <span class='no'>columns</span>)
+    <pre class="usage"><span class='fu'>mk_td</span>(<span class='no'>table_name</span>, <span class='no'>columns</span>, <span class='no'>...</span>, <span class='kw'>qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>q_table_name</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
 
-<span class='fu'>table_source</span>(<span class='no'>table_name</span>, <span class='no'>columns</span>)</pre>
+<span class='fu'>table_source</span>(<span class='no'>table_name</span>, <span class='no'>columns</span>, <span class='no'>...</span>, <span class='kw'>qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>q_table_name</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -143,6 +144,18 @@
     <tr>
       <th>columns</th>
       <td><p>character, column names of table</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>not used, force later argument to bind by name</p></td>
+    </tr>
+    <tr>
+      <th>qualifiers</th>
+      <td><p>optional named ordered vector of strings carrying additional db hierarhcy terms, such as schema.</p></td>
+    </tr>
+    <tr>
+      <th>q_table_name</th>
+      <td><p>optional character, qualified table name, note: has to be re-generated for different DB connections.</p></td>
     </tr>
     </table>
     
@@ -186,8 +199,8 @@ SQL optimizers likely make this zero-cost anyway.</p>
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
 }</div><div class='output co'>#&gt; [1] "table('d'; AUC, R2)"
 #&gt; SELECT
-#&gt;  `d`.`AUC`,
-#&gt;  `d`.`R2`
+#&gt;  `AUC`,
+#&gt;  `R2`
 #&gt; FROM
 #&gt;  `d`
 #&gt;   AUC  R2

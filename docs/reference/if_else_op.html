@@ -221,7 +221,7 @@ is a reserved column name for this procedure.</p>
   <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
 
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; table('d'; 
+}</div><div class='output co'>#&gt; table('`d`'; 
 #&gt;   i,
 #&gt;   a,
 #&gt;   b,
@@ -264,10 +264,10 @@ is a reserved column name for this procedure.</p>
 #&gt;     ( `a` + `b` ) &gt; 1  AS `ifebtest_1`
 #&gt;    FROM (
 #&gt;     SELECT
-#&gt;      `d`.`i`,
-#&gt;      `d`.`a`,
-#&gt;      `d`.`b`,
-#&gt;      `d`.`edited`
+#&gt;      `i`,
+#&gt;      `a`,
+#&gt;      `b`,
+#&gt;      `edited`
 #&gt;     FROM
 #&gt;      `d`
 #&gt;     ) tsql_84197068678211589630_0000000000

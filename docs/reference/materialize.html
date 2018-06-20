@@ -213,23 +213,23 @@ in pipelines.</p>
      <span class='fu'>print</span>(<span class='no'>.</span>)
 
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; table('d'; 
+}</div><div class='output co'>#&gt; table('`d`'; 
 #&gt;   AUC,
 #&gt;   R2) %.&gt;%
 #&gt;  extend(.,
 #&gt;   v := AUC + R2) %.&gt;%
 #&gt;  extend(.,
 #&gt;   x := pmax(AUC, v))
-#&gt; table('example'; 
+#&gt; table('`example`'; 
 #&gt;   AUC,
 #&gt;   R2,
 #&gt;   v,
 #&gt;   x)
 #&gt; SELECT
-#&gt;  `example`.`AUC`,
-#&gt;  `example`.`R2`,
-#&gt;  `example`.`v`,
-#&gt;  `example`.`x`
+#&gt;  `AUC`,
+#&gt;  `R2`,
+#&gt;  `v`,
+#&gt;  `x`
 #&gt; FROM
 #&gt;  `example`
 #&gt;   AUC  R2   v   x

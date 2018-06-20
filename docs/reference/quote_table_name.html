@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Copy local R table to remote data handle. — rq_copy_to • rquery</title>
+<title>Quote a table name. — quote_table_name • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Copy local R table to remote data handle. — rq_copy_to" />
+<meta property="og:title" content="Quote a table name. — quote_table_name" />
 
-<meta property="og:description" content="Copy local R table to remote data handle." />
+<meta property="og:description" content="Quote a table name." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -118,81 +118,45 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Copy local R table to remote data handle.</h1>
-    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/db_ops.R'><code>R/db_ops.R</code></a></small>
-    <div class="hidden name"><code>rq_copy_to.Rd</code></div>
+    <h1>Quote a table name.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/db_info.R'><code>R/db_info.R</code></a></small>
+    <div class="hidden name"><code>quote_table_name.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Copy local R table to remote data handle.</p>
+    <p>Quote a table name.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>rq_copy_to</span>(<span class='no'>db</span>, <span class='no'>table_name</span>, <span class='no'>d</span>, <span class='no'>...</span>, <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>rowidcolumn</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>quote_table_name</span>(<span class='no'>x</span>, <span class='no'>id</span>, <span class='no'>...</span>, <span class='no'>qualifiers</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>db</th>
-      <td><p>database connection handle.</p></td>
+      <th>x</th>
+      <td><p>database handle or rquery_db_info object.</p></td>
     </tr>
     <tr>
-      <th>table_name</th>
-      <td><p>name of table to create.</p></td>
-    </tr>
-    <tr>
-      <th>d</th>
-      <td><p>data.frame to copy to database.</p></td>
+      <th>id</th>
+      <td><p>character to quote</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>force later argument to be by name</p></td>
+      <td><p>not used, force later arguments to bind by name.</p></td>
     </tr>
     <tr>
-      <th>overwrite</th>
-      <td><p>logical, if TRUE try to overwrite existing table.</p></td>
-    </tr>
-    <tr>
-      <th>temporary</th>
-      <td><p>logical, if TRUE try to mark table as temporary.</p></td>
-    </tr>
-    <tr>
-      <th>rowidcolumn</th>
-      <td><p>character, name to land row-ids.</p></td>
+      <th>qualifiers</th>
+      <td><p>named ordered vector of strings carrying additional db hierarhcy terms, such as schema.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a relop representation of the data</p>
-    
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><code><a href='db_td.html'>db_td</a></code>, <code><a href='mk_td.html'>mk_td</a></code>, <code><a href='materialize.html'>materialize</a></code>, <code><a href='execute.html'>execute</a></code>, <code><a href='to_sql.html'>to_sql</a></code></p></div>
+    <p>quoted identifier</p>
     
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-<span class='kw'>if</span> (<span class='fu'>requireNamespace</span>(<span class='st'>"DBI"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>&amp;&amp;</span> <span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
-  <span class='no'>db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
-  <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'>rq_copy_to</span>(<span class='no'>db</span>, <span class='st'>'d'</span>,
-                   <span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>0.6</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>0.2</span>))
-
-  <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>d</span>, <span class='no'>db</span>)
-  <span class='fu'>cat</span>(<span class='no'>sql</span>)
-  <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>db</span>, <span class='st'>"SELECT * FROM d"</span>))
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>db</span>)
-}</div><div class='output co'>#&gt; SELECT
-#&gt;  `AUC`,
-#&gt;  `R2`
-#&gt; FROM
-#&gt;  `d`
-#&gt;   AUC  R2
-#&gt; 1 0.6 0.2</div><div class='input'>
-</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -200,11 +164,7 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-
-      <li><a href="#see-also">See also</a></li>
-      
-      <li><a href="#examples">Examples</a></li>
-    </ul>
+          </ul>
 
   </div>
 </div>

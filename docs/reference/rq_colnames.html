@@ -129,7 +129,7 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>rq_colnames</span>(<span class='no'>db</span>, <span class='no'>table_name</span>)</pre>
+    <pre class="usage"><span class='fu'>rq_colnames</span>(<span class='no'>db</span>, <span class='no'>table_name</span>, <span class='no'>...</span>, <span class='kw'>qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -141,6 +141,14 @@
     <tr>
       <th>table_name</th>
       <td><p>character table name</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>not used, force later argument to bind by name</p></td>
+    </tr>
+    <tr>
+      <th>qualifiers</th>
+      <td><p>optional named ordered vector of strings carrying additional db hierarhcy terms, such as schema.</p></td>
     </tr>
     </table>
     

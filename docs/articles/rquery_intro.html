@@ -88,7 +88,7 @@
       <h1>rquery Introduction</h1>
                         <h4 class="author">John Mount, Win-Vector LLC</h4>
             
-            <h4 class="date">2018-06-18</h4>
+            <h4 class="date">2018-06-20</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery//blob/master/vignettes/rquery_intro.Rmd"><code>vignettes/rquery_intro.Rmd</code></a></small>
       <div class="hidden name"><code>rquery_intro.Rmd</code></div>
@@ -153,7 +153,7 @@ old_o &lt;-<span class="st"> </span><span class="kw">options</span>(<span class=
   <span class="kw">data.frame</span>(<span class="dt">v =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="op">-</span><span class="dv">5</span>, <span class="dv">3</span>)),
   <span class="dt">temporary =</span> <span class="ot">FALSE</span>,
   <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</code></pre></div>
-<pre><code>## [1] "table('d'; v)"</code></pre>
+<pre><code>## [1] "table('`d`'; v)"</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># produce a hande to existing table</span>
 d &lt;-<span class="st"> </span><span class="kw"><a href="../reference/db_td.html">db_td</a></span>(db, <span class="st">"d"</span>)</code></pre></div>
 <p>The table description “<code>d</code>” we have been using in examples was produced as a result of moving data to a database by <a href="https://winvector.github.io/rquery/reference/rq_copy_to.html"><code><a href="../reference/rq_copy_to.html">rq_copy_to()</a></code></a>. However we can also create a description of an existing database table with <a href="https://winvector.github.io/rquery/reference/db_td.html"><code><a href="../reference/db_td.html">db_td()</a></code></a> or even build a description by hand with <a href="https://winvector.github.io/rquery/reference/mk_td.html"><code><a href="../reference/mk_td.html">mk_td()</a></code></a>. Also one can build descriptions of local or in-memory <code>data.frame</code>s with <a href="https://winvector.github.io/rquery/reference/local_td.html"><code><a href="../reference/local_td.html">local_td()</a></code></a>.</p>
@@ -196,10 +196,10 @@ d &lt;-<span class="st"> </span><span class="kw"><a href="../reference/db_td.htm
 ##  ( CASE WHEN ( ( `v` ) IS NULL ) THEN ( 1 ) WHEN NOT ( ( `v` ) IS NULL ) THEN ( 0 ) ELSE NULL END )  AS `was_na`
 ## FROM (
 ##  SELECT
-##   `d`.`v`
+##   `v`
 ##  FROM
 ##   `d`
-##  ) tsql_40951322843657390127_0000000000</code></pre>
+##  ) tsql_13875795699751527655_0000000000</code></pre>
 <p>The exact translation depends on the database (which is why <code><a href="../reference/to_sql.html">to_sql()</a></code> takes a database argument). Some care has to be taken as <code>SQL</code> types are different than <code>R</code> types (in particular for some databases logical types are not numeric).</p>
 <p>With a database that supplies window functions one can quickly work the “logistic scoring by hand” example from<br>
 from <a href="http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/">Let’s Have Some Sympathy For The Part-time R User</a>. This example worked with <code>rquery</code> code that works with both <code>PostgreSQL</code> and <code>Spark</code> can be found <a href="https://github.com/WinVector/rquery/blob/master/README.html">here</a>.</p>
@@ -289,19 +289,19 @@ dq &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mk_td.ht
 ##        exp ( `assessmentTotal` * 0.237 )  AS `probability`
 ##       FROM (
 ##        SELECT
-##         `d3`.`subjectID`,
-##         `d3`.`surveyCategory`,
-##         `d3`.`assessmentTotal`
+##         `subjectID`,
+##         `surveyCategory`,
+##         `assessmentTotal`
 ##        FROM
 ##         `d3`
-##        ) tsql_48098374978378983471_0000000000
-##       ) tsql_48098374978378983471_0000000001
-##      ) tsql_48098374978378983471_0000000002
-##    ) tsql_48098374978378983471_0000000003
+##        ) tsql_75704311293652617136_0000000000
+##       ) tsql_75704311293652617136_0000000001
+##      ) tsql_75704311293652617136_0000000002
+##    ) tsql_75704311293652617136_0000000003
 ##    WHERE `row_number` &lt;= 1
-##   ) tsql_48098374978378983471_0000000004
-##  ) tsql_48098374978378983471_0000000005
-## ) tsql_48098374978378983471_0000000006 ORDER BY `subjectID`</code></pre>
+##   ) tsql_75704311293652617136_0000000004
+##  ) tsql_75704311293652617136_0000000005
+## ) tsql_75704311293652617136_0000000006 ORDER BY `subjectID`</code></pre>
 <p>The above query is long, but actually quite performant.</p>
 <p>To see the query executed, please see <a href="https://github.com/WinVector/rquery/blob/master/README.html">here</a>.</p>
 </div>
@@ -406,14 +406,14 @@ dq &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mk_td.ht
 ##  `a` + `b`  AS `res`
 ## FROM (
 ##  SELECT
-##   `d6`.`a`,
-##   `d6`.`b`,
-##   `d6`.`c`,
-##   `d6`.`d`,
-##   `d6`.`e`
+##   `a`,
+##   `b`,
+##   `c`,
+##   `d`,
+##   `e`
 ##  FROM
 ##   `d6`
-##  ) tsql_23563353440919542333_0000000000</code></pre>
+##  ) tsql_17618645107897070843_0000000000</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># longer pipeline</span>
 wn &lt;-<span class="st"> </span>wp <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/select_columns.html">select_columns</a></span>(., <span class="st">"res"</span>)
@@ -431,12 +431,12 @@ wn &lt;-<span class="st"> </span>wp <span class="op">%.&gt;%</span>
 ##   `a` + `b`  AS `res`
 ##  FROM (
 ##   SELECT
-##    `d6`.`a`,
-##    `d6`.`b`
+##    `a`,
+##    `b`
 ##   FROM
 ##    `d6`
-##   ) tsql_11809792661836479780_0000000000
-## ) tsql_11809792661836479780_0000000001</code></pre>
+##   ) tsql_93398622735223823692_0000000000
+## ) tsql_93398622735223823692_0000000001</code></pre>
 <p>A graph of the the effects of this kind of narrowing (for <code>dplyr</code> by hand as <code>dplyr</code> currently does not have the above type of automatic query analysis/optimization) shows the sensitivity to this optimization.</p>
 <blockquote>
 <p><img src="present-2.png"></p>

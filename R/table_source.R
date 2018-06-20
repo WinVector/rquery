@@ -11,6 +11,9 @@
 #'
 #' @param table_name character, name of table
 #' @param columns character, column names of table
+#' @param ... not used, force later argument to bind by name
+#' @param qualifiers optional named ordered vector of strings carrying additional db hierarhcy terms, such as schema.
+#' @param q_table_name optional character, qualified table name, note: has to be re-generated for different DB connections.
 #' @return a relop representation of the data
 #'
 #' @examples
@@ -35,11 +38,21 @@
 #'
 #' @export
 #'
-mk_td <- function(table_name, columns) {
+mk_td <- function(table_name, columns,
+                  ...,
+                  qualifiers = NULL,
+                  q_table_name = NULL) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::mk_td")
+  if(is.null(q_table_name)) {
+    q_table_name <- table_name
+  }
   r <- list(source = list(),
             table_name = table_name,
+            q_table_name = q_table_name,
             parsed = NULL,
-            columns = columns)
+            columns = columns,
+            qualifiers = qualifiers)
   r <- relop_decorate("relop_table_source", r)
   r
 }
@@ -65,6 +78,8 @@ table_source <- mk_td
 #'
 #' @param db database connection
 #' @param table_name name of table
+#' @param ... not used, force later argument to bind by name
+#' @param qualifiers optional named ordered vector of strings carrying additional db hierarhcy terms, such as schema.
 #' @return a relop representation of the data
 #'
 #' @seealso \code{\link{mk_td}}, \code{\link{rq_copy_to}}, \code{\link{materialize}}, \code{\link{execute}}, \code{\link{to_sql}}
@@ -94,9 +109,14 @@ table_source <- mk_td
 #'
 #' @export
 #'
-db_td <- function(db, table_name) {
+db_td <- function(db, table_name,
+                  ...,
+                  qualifiers = NULL) {
+  q_table_name <- quote_table_name(db, table_name, qualifiers = qualifiers)
   mk_td(table_name = table_name,
-        columns = rq_colnames(db, table_name))
+        columns = rq_colnames(db, table_name, qualifiers = qualifiers),
+        q_table_name = q_table_name,
+        qualifiers = qualifiers)
 }
 
 #' @describeIn db_td old name for db_td
@@ -246,13 +266,12 @@ to_sql.relop_table_source <- function (x,
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::to_sql.relop_table_source")
   prefix <- paste(rep(' ', indent_level), collapse = '')
-  tabnam <- quote_identifier(db,  x$table_name)
+  tabnam <- quote_table_name(db,  x$table_name, qualifiers = x$qualifiers)
   cols <- columns_used_relop_table_source(x, using = using)
   qcols <- vapply(cols,
                   function(ui) {
                     quote_identifier(db, ui)
                   }, character(1))
-  qcols <- paste(quote_identifier(db, x$table_name), qcols, sep = '.')
   qt <- paste(qcols, collapse = paste0(",\n", prefix, " "))
   q <- paste0(prefix,
               "SELECT\n",
@@ -279,7 +298,7 @@ format_node.relop_table_source <- function(node) {
   if(length(cols)>max_cols) {
     cols <- c(cols[seq_len(max_cols)], "...")
   }
-  paste0("table('", node$table_name, "'; \n  ",
+  paste0("table('", node$q_table_name, "'; \n  ",
          paste(cols, collapse = ",\n  "),
          ")\n")
 }
