@@ -466,7 +466,7 @@ rq_connection_name <- function(db) {
   }
   cls <- sort(class(db))
   cls <- paste(cls, collapse = "_")
-  cls <- gsub("[^a-zA-Z]+", "_", cls)
+  cls <- gsub("[^[:alnum:]]+", "_", cls)
   cls
 }
 

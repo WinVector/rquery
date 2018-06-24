@@ -98,7 +98,7 @@ uniqueInOrder <- function(names) {
 makeTableIndMap <- function(tableNameSeq) {
   tableNameSeq <- uniqueInOrder(tableNameSeq)
   tableIndColNames <- paste('table',
-                            gsub("[^a-zA-Z0-9]+", '_', tableNameSeq),
+                            gsub("[^[:alnum:]]+", '_', tableNameSeq),
                             'present', sep= '_')
   names(tableIndColNames) <- tableNameSeq
   tableIndColNames
@@ -798,7 +798,7 @@ build_join_plan <- function(tDesc,
     for(ci in dups) {
       indices <- which(plans$resultColumn==ci)
       for(i in indices) {
-        ti <- gsub("[^a-zA-Z0-9]+", '_', plans$tableName[[i]])
+        ti <- gsub("[^[:alnum:]]+", '_', plans$tableName[[i]])
         rc <- paste(ti, ci, sep= '_')
         plans$resultColumn[[i]] <- rc
       }
