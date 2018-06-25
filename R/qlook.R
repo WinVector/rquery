@@ -3,6 +3,7 @@
 #'
 #' @param my_db DBI database handle
 #' @param tableName name of table to look at
+#' @param ... not used, force later arguments to bind by name
 #' @param displayRows number of rows to sample
 #' @param countRows logical, if TRUE return row count.
 #' @return str view of data
@@ -24,10 +25,17 @@
 #' @export
 #'
 qlook <- function(my_db, tableName,
+                  ...,
                   displayRows = 10,
                   countRows = TRUE) {
   if(!requireNamespace("DBI", quietly = TRUE)) {
-    stop("cdata::qlook requires DBI package")
+    stop("rquery::qlook requires DBI package")
+  }
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery:::qlook")
+
+  if("rquery_db_info" %in% class(my_db)) {
+    my_db <- my_db$connection
   }
   h <- DBI::dbGetQuery(my_db,
                        paste0("SELECT * FROM ",
