@@ -18,21 +18,21 @@
 #'                     data.frame(AUC = 0.6, R2 = 0.2),
 #'                     overwrite = TRUE,
 #'                     temporary = TRUE)
-#'   qlook(my_db, 'd')
+#'   rlook(my_db, 'd')
 #'   DBI::dbDisconnect(my_db)
 #' }
 #'
 #' @export
 #'
-qlook <- function(my_db, tableName,
+rlook <- function(my_db, tableName,
                   ...,
                   displayRows = 10,
                   countRows = TRUE) {
   if(!requireNamespace("DBI", quietly = TRUE)) {
-    stop("rquery::qlook requires DBI package")
+    stop("rquery::rlook requires DBI package")
   }
   wrapr::stop_if_dot_args(substitute(list(...)),
-                          "rquery:::qlook")
+                          "rquery:::rlook")
 
   if("rquery_db_info" %in% class(my_db)) {
     my_db <- my_db$connection
