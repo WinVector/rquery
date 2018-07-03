@@ -1,10 +1,46 @@
 ---
 title: "SparkR Example"
-author: "John Mount, Win-Vector LLC"
+author: "Nina Zumel and John Mount, Win-Vector LLC"
 output: github_document
-date: "06/02/2018"
+date: "07/03/2018"
 always_allow_html: yes
 ---
+
+## The What and Why of `rquery`
+
+`rquery` is a query generator for R. It is based on [Edgar F. Codd’s relational algebra](https://en.wikipedia.org/wiki/Relational_algebra), informed by
+our experience using SQL and R packages such as `dplyr` at big data scale. 
+
+The design represents an attempt to make SQL more teachable by denoting composition by a sequential pipeline notation 
+instead of nested queries or functions. 
+
+A great benefit of Codd's relational algebra is it gives one concepts to decompose complex data transformations into sequences of simpler transformations.
+
+Some reasons SQL seems complicated include:
+
+    SQL's realization of sequencing as nested function composition.
+    SQL uses some relational concepts as steps, others as modifiers and predicates.
+
+A lot of the grace of the Codd theory can be recovered through the usual trick changing function composition notation from g(f(x)) to x . f() . g(). This experiment is asking (and not for the first time): "what if SQL were piped (expressed composition as a left to right flow, instead of a right to left nesting)?"
+
+
+## Design Choices for SQL implementation
+
+Stay close to Cod's definitions. In contrast to other R data manipulation packages, rquery does not rely on db-unsafe annotations such as row number or "group by" annotations. Instead, grouped aggregations are implemented via window functions in SQL. 
+
+
+## How Spark & R developers can benefit from `rquery`
+
+Domain independent query language that runs on Spark in R via either SparkR or sparklyr, as well as on Postgres and other large data systems.
+
+Superior error checking -- verifies column names before going to database
+
+Some query optimization; in particular rquery checks "column liveness" : it checks which columns from a table are involved in a given query, and proactively issues the approprate SELECT statements to narrow the tables being manipulated. Helps with excessively wide tables.
+
+Well-formatted textual as well as graphicl presentation of query plans.
+
+## Example 
+
 
 Connect to a `SparkR` cluster and work a small example.
 
@@ -42,6 +78,7 @@ ses <- SparkR::sparkR.session(master = "local[1]",
                               enableHiveSupport = FALSE)
 ```
 
+Introduce the data here
 
 ```{r build_data, include=FALSE}
 # insert example data, simulating it already being on the remote system.
@@ -49,42 +86,32 @@ ses <- SparkR::sparkR.session(master = "local[1]",
 # From: https://github.com/WinVector/rquery/blob/master/extras/DebugToolsForBigData.md
 set.seed(235235)
 nSubj <- 10
-d_local <- data.frame(subjectID = sort(rep(seq_len(nSubj),2)),
-                 surveyCategory = c(
-                   'withdrawal behavior',
-                   'positive re-framing'),
+d_local <- data.frame(custID = sort(rep(seq_len(nSubj),5)),
+                 restaurantType = c(
+                   'Mexican',
+                   'Italian',
+                   'Chinese',
+                   'Indian',
+                   'American'
+                   ),
                  stringsAsFactors = FALSE)
-d_local$assessmentTotal <- sample.int(10, nrow(d_local), replace = TRUE)
-irrel_col_1 <- paste("irrelevantCol", sprintf("%07g", 1), sep = "_")
-d_local[[irrel_col_1]] <- runif(nrow(d_local))
+d_local$totalOrders <- sample.int(25, nrow(d_local), replace = TRUE)
+
 test_df <- SparkR::createDataFrame(d_local)
 # https://github.com/apache/spark/blob/master/examples/src/main/r/RSparkSQLExample.R
 # SparkR::createOrReplaceTempView(test_df, "table")
 # SparkR::collect(SparkR::sql("SELECT * from table"))
+
+# first, we need a name for the table, so we create a view (hide this)
+SparkR::createOrReplaceTempView(test_df, "survey_table")
+
+knitr::kable(head(d_local))
 ```
 
 [`rquery`](https://winvector.github.io/rquery/) example.
 
 ```{r connect_rquery, include=FALSE}
 # set up SparkR adapter functions, to make interaction simple.
-
-#' Take a SparkR remote handle and build an rquery table description, with a new 
-#' chosen table name.
-#'
-#' The issue is: we don't know how to get or set the name of SparkDataFrame, so
-#' we create a view representation of it, where we can set (and therefore know)
-#' the name of the table.
-#' 
-#' @param df SparkDataFrame remote data handle.
-#' @param nam character, name to use for new rquery remote object handle.
-#' @return rquery table description.
-#'
-sparkr_table <- function(df, 
-                         nam) {
-  SparkR::createOrReplaceTempView(df, nam)
-  cols <- SparkR::colnames(df)
-  mk_td(nam, cols)
-}
 
 # define SparkR cluster adapting handle
 # this overrides all rquery functions need help.
@@ -125,33 +152,45 @@ db_hdl$quote_literal <- function(x, o) {
 }
 ```
 
+Let's assume that we already have the data
+
 ```{r example}
 library("rquery")
 
-print(db_hdl)
-print(test_df)
+print(db_hdl) # rquery handle into Spark
 
-table_description <- sparkr_table(test_df, "survey_table")
+
+survey_f <- SparkR::tableToDF("survey_table")
+print(survey_f)
+
+#
+# create an rquery table description of the SparkDataFrame
+#
+
+# get the table's column names
+cols <- SparkR::colnames(survey_f)
+# create the rquery table description
+table_description <- mk_td("survey_table", cols)
 
 print(table_description)
 print(column_names(table_description))
 
 rquery_pipeline <- table_description %.>%
-  extend_nse(.,
-             assessment_fraction = assessmentTotal)  %.>% 
-  normalize_cols(.,
-                 "assessment_fraction",
-                 partitionby = 'subjectID') %.>%
+  normalize_cols(.,   # normalize the restaurantType counts
+                 "totalOrders",
+                 partitionby = 'custID') %.>%
+  rename_columns(.,  # rename the column
+                 c('fraction_of_orders' = 'totalOrders')) %.>% 
   pick_top_k(.,
              k = 1,
-             partitionby = 'subjectID',
-             orderby = c('assessment_fraction', 'surveyCategory'),
-             reverse = c('assessment_fraction', 'surveyCategory')) %.>% 
-  rename_columns(., c('favorite_category' = 'surveyCategory')) %.>%
-  select_columns(., c('subjectID', 
-                      'favorite_category', 
-                      'assessment_fraction')) %.>%
-  orderby(., cols = 'subjectID')
+             partitionby = 'custID',
+             orderby = c('fraction_of_orders', 'restaurantType'),
+             reverse = c('fraction_of_orders')) %.>% 
+  rename_columns(., c('favorite_cuisine' = 'restaurantType')) %.>%
+  select_columns(., c('custID', 
+                      'favorite_cuisine', 
+                      'fraction_of_orders')) %.>%
+  orderby(., cols = 'custID')
 ```
 
 
