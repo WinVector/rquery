@@ -15,6 +15,7 @@ To install a practice version of `Spark`/`SparkR` v2.3.0 on a stand-alone workst
   * Install `SparkR` from `spark-2.3.0-bin-hadoop2.7/spark-2.3.0-bin-hadoop2.7/R/lib/SparkR`: `install.packages("~/Downloads/spark-2.3.0-bin-hadoop2.7/R/lib/SparkR/", repos = NULL, type = "source")`.
   * Use `SparkR` package to install its own local `Spark`: `SparkR::install.spark()` (based on [sparkr-vignettes.Rmd](https://github.com/apache/spark/blob/master/R/pkg/vignettes/sparkr-vignettes.Rmd)).
 
+TODO: switch to number of times ordering from different restaurants.  Looking for the favorite and fraction of orders from orders from that restaunt (or quisine).  Slow down and define problem and show data, before any work.
 
 
 
@@ -69,16 +70,20 @@ test_df <- SparkR::createDataFrame(d_local)
 
 #' Take a SparkR remote handle and build an rquery table description, with a new 
 #' chosen table name.
+#'
+#' The issue is: we don't know how to get or set the name of SparkDataFrame, so
+#' we create a view representation of it, where we can set (and therefore know)
+#' the name of the table.
 #' 
-#' @param db_hdl rquery representation of a SparkR cluster handle.
-#' @param df SparkR remote data handle.
+#' @param df SparkDataFrame remote data handle.
 #' @param nam character, name to use for new rquery remote object handle.
 #' @return rquery table description.
 #'
-sparkr_table <- function(db_hdl, df, 
-                         nam = wrapr::mk_tmp_name_source("rs")()) {
+sparkr_table <- function(df, 
+                         nam) {
   SparkR::createOrReplaceTempView(df, nam)
-  db_td(db_hdl, nam)
+  cols <- SparkR::colnames(df)
+  mk_td(nam, cols)
 }
 
 # define SparkR cluster adapting handle
@@ -126,34 +131,33 @@ library("rquery")
 print(db_hdl)
 print(test_df)
 
-d_hdl <- sparkr_table(db_hdl, test_df)
+table_description <- sparkr_table(test_df, "survey_table")
 
-print(d_hdl)
-print(column_names(d_hdl))
+print(table_description)
+print(column_names(table_description))
 
-scale <- 0.237
-
-rquery_pipeline <- d_hdl %.>%
+rquery_pipeline <- table_description %.>%
   extend_nse(.,
-             probability :=
-               exp(assessmentTotal * scale))  %.>% 
+             assessment_fraction = assessmentTotal)  %.>% 
   normalize_cols(.,
-                 "probability",
+                 "assessment_fraction",
                  partitionby = 'subjectID') %.>%
   pick_top_k(.,
              k = 1,
              partitionby = 'subjectID',
-             orderby = c('probability', 'surveyCategory'),
-             reverse = c('probability', 'surveyCategory')) %.>% 
-  rename_columns(., c('diagnosis' = 'surveyCategory')) %.>%
+             orderby = c('assessment_fraction', 'surveyCategory'),
+             reverse = c('assessment_fraction', 'surveyCategory')) %.>% 
+  rename_columns(., c('favorite_category' = 'surveyCategory')) %.>%
   select_columns(., c('subjectID', 
-                      'diagnosis', 
-                      'probability')) %.>%
+                      'favorite_category', 
+                      'assessment_fraction')) %.>%
   orderby(., cols = 'subjectID')
 ```
 
 
 ```{r}
+cat(format(rquery_pipeline))
+
 rquery_pipeline %.>%
   op_diagram(.) %.>% 
   DiagrammeR::DiagrammeR(diagram = ., type = "grViz") %.>% 
@@ -163,6 +167,7 @@ rquery_pipeline %.>%
 ```
 
 ![](Sparkr_files/diagram1.png)
+
 ```{r}
 columns_used(rquery_pipeline)
 ```
