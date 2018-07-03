@@ -19,6 +19,8 @@ To install a practice version of `Spark`/`SparkR` v2.3.0 on a stand-alone workst
 
 
 ```{r start_sparkr, include=FALSE}
+# set up connection to Spark via SparkR
+
 # From SparkR package vignette/README
 # https://github.com/apache/spark/blob/master/R/pkg/vignettes/sparkr-vignettes.Rmd
 knitr::opts_hooks$set(eval = function(options) {
@@ -41,6 +43,8 @@ ses <- SparkR::sparkR.session(master = "local[1]",
 
 
 ```{r build_data, include=FALSE}
+# insert example data, simulating it already being on the remote system.
+
 # From: https://github.com/WinVector/rquery/blob/master/extras/DebugToolsForBigData.md
 set.seed(235235)
 nSubj <- 10
@@ -61,15 +65,26 @@ test_df <- SparkR::createDataFrame(d_local)
 [`rquery`](https://winvector.github.io/rquery/) example.
 
 ```{r connect_rquery, include=FALSE}
+# set up SparkR adapter functions, to make interaction simple.
 
-
+#' Take a SparkR remote handle and build an rquery table description, with a new 
+#' chosen table name.
+#' 
+#' @param db_hdl rquery representation of a SparkR cluster handle.
+#' @param df SparkR remote data handle.
+#' @param nam character, name to use for new rquery remote object handle.
+#' @return rquery table description.
+#'
 sparkr_table <- function(db_hdl, df, 
                          nam = wrapr::mk_tmp_name_source("rs")()) {
-  SparkR::createOrReplaceTempView(test_df, nam)
+  SparkR::createOrReplaceTempView(df, nam)
   db_td(db_hdl, nam)
 }
 
-# define SparkR adapting handle
+# define SparkR cluster adapting handle
+# this overrides all rquery functions need help.
+# this would eventually be in an adapter package.
+# SparkR is not DBI- so we supply specific (non-DBI) solutions.
 db_hdl <- rquery::rquery_db_info(
   connection = ses,
   is_dbi = FALSE,
