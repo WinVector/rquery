@@ -17,7 +17,7 @@ Codd's algebra allows most significant data transformations to be decomposed int
 -   Cartesian product (table joins, row binding, set difference)
 -   extend (derived columns)
 
-The earliest, and still most common, implementation of Codd's algebra is SQL. Formally Codd's algebra assumes that all rows in a table are unique; SQL relaxes this restriction to allow multisets.
+The earliest and still most common implementation of Codd's algebra is SQL. Formally Codd's algebra assumes that all rows in a table are unique; SQL relaxes this restriction to allow multisets.
 
 `rquery` is another realization of the Codd algebra that implements the above operators, in addition to several commonly used composite operations.
 
@@ -60,8 +60,6 @@ iris %.>%
     ##      Species
     ## 1: virginica
 
-`rquery` is database-first -- that is, it is designed primarily for use on remote systems -- so when using the local implementation of it (`rqdatatable`) we have to both use `local_td()` to capture the `data.frame` name and description and finish the pipeline with a `ex_data_table(.)` to trigger the execution.
-
 We could also do the same operation using `dplyr`, another R package with Codd-style operators.
 
 In `rquery`, the original table (`iris`) is at the beginning of the query, with successive operations applied to the results of the preceding line. To perform the equivalent operation in SQL, you must write down the operation "backwards":
@@ -75,18 +73,18 @@ In `rquery`, the original table (`iris`) is at the beginning of the query, with 
 
 In SQL, the original table is in the *last* SELECT statement, with successive results nested up from there. In addition, column selection directives are at the beginning of a SELECT statement, while row selection criteria (WHERE, LIMIT) and modifiers (GROUP\_BY, ORDER\_BY) are at the end of the statement, with the table in between. So the data transformation goes from the inside of the query to the outside, which can be hard to read -- not to mention hard to write.
 
-`rquery` represents an attempt to make data transformation in a relational database more intuitive by expressing data transformations in a sequential operator pipeline notation instead of nested queries or functions.
+`rquery` represents an attempt to make data transformation in a relational database more intuitive by expressing data transformations as a sequential operator pipeline instead of nested queries or functions.
 
 `rquery` for Spark/R developers
 -------------------------------
 
 For developers working with Spark and R, `rquery` offers a number of advantages. First, R developers can run analyses and perform data transformations in Spark using an easier to read (and to write) sequential pipeline notation instead of nested SQL queries. As we mentioned above, `dplyr` also supplies this capability, but `dplyr` is not compatible with `SparkR` -- only with `sparklyr`. `rquery` is compatible with both `SparkR` and `sparklyr`, as well as with Postgres and other large data stores. In addition, `dplyr`'s lazy evaluation can complicate the running and debugging of large, complex queries (more on this below).
 
-The design of `rquery` is *database-first*, meaning it was developed specifically to address issues that arise when working with big data in remote data stores via R. `rquery` maintains *complete separation between the query specification and query execution phases*, which allows useful error-checking and some optimization before the query is run. This can be useful when running complex queries on large volumes of data; you don't want to run a long query only to discover that there was an error on the last step.
+The design of `rquery` is *database-first*, meaning it was developed specifically to address issues that arise when working with big data in remote data stores via R. `rquery` maintains *complete separation between the query specification and query execution phases*, which allows useful error-checking and some optimization before the query is run. This can be valuable when running complex queries on large volumes of data; you don't want to run a long query only to discover that there was an error on the last step.
 
-`rquery` checks column names at query specification time to insure that they are available for use, It also checks which columns from a table are involved with a given query, and proactively issues the appropriate SELECT statements to narrow the tables being manipulated. This can help speed up queries that involve excessively wide tables where only a few columns are needed.
+`rquery` checks column names at query specification time to insure that they are available for use. It also keeps track of which columns from a table are involved with a given query, and proactively issues the appropriate SELECT statements to narrow the tables being manipulated. This can help speed up queries that involve excessively wide tables where only a few columns are needed.
 
-`rquery` also offers well-formatted textual as well as graphical presentation of query plans. In addition, you can expect the generated SQL query before execution.
+`rquery` also offers well-formatted textual as well as graphical presentation of query plans. In addition, you can inspect the generated SQL query before execution.
 
 Example
 -------
@@ -95,7 +93,16 @@ Let's imagine that we run a food delivery business, and we are interested in wha
 
 We'll start with a table of orders, which records order id, customer id, and restaurant type.
 
-To work with the data using `rquery`, we need an rquery handle to the Spark cluster. Since `rquery` interfaces with many different types of SQL-dialect data stores, it needs an adapter to translate `rquery` functions into the appropriate SQL dialect. The default handler assumes a DBI-adapted database. Since `SparkR` is not DBI-adapted, we must define the handler explicitly, using the function `rquery::rquery_db_info()`. The code for the adapter is here \[LINK\]. Let's assume that we have created the handler as `db_hdl`.
+| custID  | restaurant\_type |  orderID|
+|:--------|:-----------------|--------:|
+| cust\_1 | Indian           |        1|
+| cust\_1 | Mexican          |        2|
+| cust\_8 | Indian           |        3|
+| cust\_5 | American         |        4|
+| cust\_9 | Mexican          |        5|
+| cust\_9 | Indian           |        6|
+
+To work with the data using `rquery`, we need an `rquery` handle to the Spark cluster. Since `rquery` interfaces with many different types of SQL-dialect data stores, it needs an adapter to translate `rquery` functions into the appropriate SQL dialect. The default handler assumes a DBI-adapted database. Since `SparkR` is not DBI-adapted, we must define the handler explicitly, using the function `rquery::rquery_db_info()`. The code for the adapter is here \[LINK\]. Let's assume that we have created the handler as `db_hdl`.
 
 ``` r
 library("rquery")
@@ -103,9 +110,9 @@ library("rquery")
 print(db_hdl) # rquery handle into Spark
 ```
 
-    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7fcf4649c598>)"
+    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7f8de4189a20>)"
 
-Let's assume that we already have the data in Spark, as `order_table`. To work with the table in `rquery`, we must generate a *table description*, using the function `db_td()`.
+Let's assume that we already have the data in Spark, as `order_table`. To work with the table in `rquery`, we must generate a *table description*, using the function `db_td()`. A table description is a record of the table's name and columns; `db_td()` queries the database to get the description.
 
 ``` r
 table_description = db_td(db_hdl, "order_table")
@@ -127,7 +134,7 @@ Now we can compose the necessary processing pipeline (or *operator tree*), using
 rquery_pipeline <- table_description %.>%
   extend_nse(., one = 1) %.>%  # a column to help count
   project_nse(., groupby=c("custID", "restaurant_type"),
-              total_orders = sum(one)) %.>%
+              total_orders = sum(one)) %.>% # sum the orders of each type, per customer
   normalize_cols(.,   # normalize the total_order counts
                  "total_orders",
                  partitionby = 'custID') %.>%
@@ -176,7 +183,7 @@ cat(format(rquery_pipeline))
     ##    custID, favorite_cuisine, fraction_of_orders) %.>%
     ##  orderby(., custID)
 
-or as a operator diagram (using the package `DiagrammeR`):
+or as a operator diagram (using the package `DiagrammeR`). This is especially useful for complex queries that involve multiple tables.
 
 ``` r
 rquery_pipeline %.>%
@@ -186,7 +193,9 @@ rquery_pipeline %.>%
 
 ![](Sparkr_files/diagram1.png)
 
-Notice that the `normalize_cols` and `pick_top_k` steps were decomposed into more basic Codd operators (for example, the *extend* and *select\_rows* nodes). You can also inspect what tables are used in the pipeline, and which columns in those tables are involved.
+Notice that the `normalize_cols` and `pick_top_k` steps were decomposed into more basic Codd operators (for example, the *extend* and *select\_rows* nodes).
+
+You can also inspect what tables are used in the pipeline, and which columns in those tables are involved.
 
 ``` r
 tables_used(rquery_pipeline)
@@ -284,8 +293,6 @@ Since many R programmers are familiar with `dplyr`, we can compare `dplyr`'s ope
 library(dplyr)
 ```
 
-    ## Warning: package 'dplyr' was built under R version 3.5.1
-
     ## 
     ## Attaching package: 'dplyr'
 
@@ -332,9 +339,11 @@ order_f %>%
 | cust\_8 | Indian            |             0.2903226|
 | cust\_9 | Chinese           |             0.3000000|
 
-As we mentioned above, `rquery` was designed to work with a variety of SQL-backed data stores; you only need an appropriate adapter. As you saw above, we have also adapted the `rquery` grammar for in-memory use, using `datatable` as the back-end implementation. This local implementation is in the package `rqdatatable`. One of the cool features of the `rquery` grammar is that the `rquery` operator trees and pipelines are back-end independent. This means you can use the pipeline that we created above with Spark through either `SparkR` or `sparklyr`, or on another data source like Postgres (assuming the table on Postgress has the same structure). You can also use the pipeline on local copies of the data, with `rqdatatable`, as we show below.
+As previously mentioned, `rquery` can work with a variety of SQL-backed data stores; you only need an appropriate adapter. In an earlier example, we showed `reqdatatable`, an adaptation of the `rquery` grammar for in-memory use, using `datatable` as the back-end implementation.
 
-Note that you MUST use "%.&gt;%" (aka the "dot-arrow" from the `wrapr` package) rather than the magrittr pipe for this next step.
+One of the cool features of the `rquery` grammar is that the `rquery` operator trees and pipelines are back-end independent. This means you can use the pipeline that we created above with Spark through either `SparkR` or `sparklyr`, or on another data source like Postgres (assuming the table on Postgres has the same structure). You can also use the pipeline on local copies of the data, with `rqdatatable`, as we show below.
+
+Note that you MUST use "%.&gt;%" (aka the "dot-arrow" from the `wrapr` package) rather than the `magrittr` pipe for this next step.
 
 ``` r
 library(rqdatatable)  
