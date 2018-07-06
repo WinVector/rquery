@@ -58,7 +58,7 @@ local_td(iris) %.>%
   ex_data_table(.)
 ```
 
-`rquery` is "database" first, which is why when using the local implementation of it (`rqdatatable`) we have to both use `local_td()` to capture the `data.frame` name and description and finish the pipeline with a `ex_data_table(.)` to trigger the execution.
+`rquery` is database-first -- that is, it is designed primarily for use on remote systems -- so when using the local implementation of it (`rqdatatable`) we have to both use `local_td()` to capture the `data.frame` name and description and finish the pipeline with a `ex_data_table(.)` to trigger the execution.
 
 ```{r echo=FALSE, eval=FALSE}
 # this won't work if here because rquery not loaded and inited yet
