@@ -237,8 +237,8 @@
 #&gt; 
 #&gt; $free_symbols
 #&gt; character(0)
-#&gt; </div><div class='input'><span class='fu'>tokenize_for_SQL</span>(<span class='fu'>substitute</span>(<span class='no'>a</span> <span class='kw'>%:=%</span> <span class='fl'>3</span>), <span class='kw'>colnames</span><span class='kw'>=</span> <span class='kw'>NULL</span>)</div><div class='output co'>#&gt; $presentation
-#&gt; [1] "a %:=% 3"
+#&gt; </div><div class='input'><span class='fu'>tokenize_for_SQL</span>(<span class='fu'>substitute</span>(<span class='no'>a</span> <span class='kw'>%:=%</span> ( <span class='fl'>3</span> + <span class='fl'>4</span> )), <span class='kw'>colnames</span><span class='kw'>=</span> <span class='kw'>NULL</span>)</div><div class='output co'>#&gt; $presentation
+#&gt; [1] "a %:=% (3 + 4)"
 #&gt; 
 #&gt; $parsed_toks
 #&gt; [[1]]
@@ -246,7 +246,152 @@
 #&gt; [1] "token"
 #&gt; 
 #&gt; $value
+#&gt; [1] "("
+#&gt; 
+#&gt; $is_zero_argument_call
+#&gt; [1] FALSE
+#&gt; 
+#&gt; attr(,"class")
+#&gt; [1] "pre_sql_token"
+#&gt; 
+#&gt; [[2]]
+#&gt; $token_type
+#&gt; [1] "token"
+#&gt; 
+#&gt; $value
 #&gt; [1] "3"
+#&gt; 
+#&gt; $is_zero_argument_call
+#&gt; [1] FALSE
+#&gt; 
+#&gt; attr(,"class")
+#&gt; [1] "pre_sql_token"
+#&gt; 
+#&gt; [[3]]
+#&gt; $token_type
+#&gt; [1] "token"
+#&gt; 
+#&gt; $value
+#&gt; [1] "+"
+#&gt; 
+#&gt; $is_zero_argument_call
+#&gt; [1] FALSE
+#&gt; 
+#&gt; attr(,"class")
+#&gt; [1] "pre_sql_token"
+#&gt; 
+#&gt; [[4]]
+#&gt; $token_type
+#&gt; [1] "token"
+#&gt; 
+#&gt; $value
+#&gt; [1] "4"
+#&gt; 
+#&gt; $is_zero_argument_call
+#&gt; [1] FALSE
+#&gt; 
+#&gt; attr(,"class")
+#&gt; [1] "pre_sql_token"
+#&gt; 
+#&gt; [[5]]
+#&gt; $token_type
+#&gt; [1] "token"
+#&gt; 
+#&gt; $value
+#&gt; [1] ")"
+#&gt; 
+#&gt; $is_zero_argument_call
+#&gt; [1] FALSE
+#&gt; 
+#&gt; attr(,"class")
+#&gt; [1] "pre_sql_token"
+#&gt; 
+#&gt; attr(,"class")
+#&gt; [1] "pre_sql_expr"
+#&gt; 
+#&gt; $symbols_used
+#&gt; character(0)
+#&gt; 
+#&gt; $symbols_produced
+#&gt; [1] "a"
+#&gt; 
+#&gt; $free_symbols
+#&gt; character(0)
+#&gt; </div><div class='input'><span class='fu'>tokenize_for_SQL</span>(<span class='fu'>substitute</span>(<span class='no'>a</span> <span class='kw'>%:=%</span> <span class='fu'>rank</span>(<span class='fl'>3</span>, <span class='fl'>4</span>)), <span class='kw'>colnames</span><span class='kw'>=</span> <span class='kw'>NULL</span>)</div><div class='output co'>#&gt; $presentation
+#&gt; [1] "a %:=% rank(3, 4)"
+#&gt; 
+#&gt; $parsed_toks
+#&gt; [[1]]
+#&gt; $token_type
+#&gt; [1] "token"
+#&gt; 
+#&gt; $value
+#&gt; [1] "rank"
+#&gt; 
+#&gt; $is_zero_argument_call
+#&gt; [1] FALSE
+#&gt; 
+#&gt; attr(,"class")
+#&gt; [1] "pre_sql_token"
+#&gt; 
+#&gt; [[2]]
+#&gt; $token_type
+#&gt; [1] "token"
+#&gt; 
+#&gt; $value
+#&gt; [1] "("
+#&gt; 
+#&gt; $is_zero_argument_call
+#&gt; [1] FALSE
+#&gt; 
+#&gt; attr(,"class")
+#&gt; [1] "pre_sql_token"
+#&gt; 
+#&gt; [[3]]
+#&gt; $token_type
+#&gt; [1] "token"
+#&gt; 
+#&gt; $value
+#&gt; [1] "3"
+#&gt; 
+#&gt; $is_zero_argument_call
+#&gt; [1] FALSE
+#&gt; 
+#&gt; attr(,"class")
+#&gt; [1] "pre_sql_token"
+#&gt; 
+#&gt; [[4]]
+#&gt; $token_type
+#&gt; [1] "token"
+#&gt; 
+#&gt; $value
+#&gt; [1] ","
+#&gt; 
+#&gt; $is_zero_argument_call
+#&gt; [1] FALSE
+#&gt; 
+#&gt; attr(,"class")
+#&gt; [1] "pre_sql_token"
+#&gt; 
+#&gt; [[5]]
+#&gt; $token_type
+#&gt; [1] "token"
+#&gt; 
+#&gt; $value
+#&gt; [1] "4"
+#&gt; 
+#&gt; $is_zero_argument_call
+#&gt; [1] FALSE
+#&gt; 
+#&gt; attr(,"class")
+#&gt; [1] "pre_sql_token"
+#&gt; 
+#&gt; [[6]]
+#&gt; $token_type
+#&gt; [1] "token"
+#&gt; 
+#&gt; $value
+#&gt; [1] ")"
 #&gt; 
 #&gt; $is_zero_argument_call
 #&gt; [1] FALSE

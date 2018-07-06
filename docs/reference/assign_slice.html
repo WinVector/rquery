@@ -129,7 +129,7 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>assign_slice</span>(<span class='no'>source</span>, <span class='no'>testexpr</span>, <span class='no'>columns</span>, <span class='no'>value</span>)</pre>
+    <pre class="usage"><span class='fu'>assign_slice</span>(<span class='no'>source</span>, <span class='no'>testexpr</span>, <span class='no'>columns</span>, <span class='no'>value</span>, <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -150,6 +150,10 @@
       <th>value</th>
       <td><p>value to set in matching rows and columns (scalar).</p></td>
     </tr>
+    <tr>
+      <th>env</th>
+      <td><p>environment to look to.</p></td>
+    </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
@@ -165,7 +169,6 @@ is a reserved column name for this procedure.</p>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
 <span class='kw'>if</span> (<span class='fu'>requireNamespace</span>(<span class='st'>"DBI"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>&amp;&amp;</span> <span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
-  <span class='co'># Land random selections early to avoid SQLite bug.</span>
   <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
   <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(
     <span class='no'>my_db</span>,
@@ -187,15 +190,6 @@ is a reserved column name for this procedure.</p>
   <span class='fu'>cat</span>(<span class='no'>sql</span>)
 
   <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
-
-  <span class='co'># Why we need to land the random selection early</span>
-  <span class='co'># for SQLIte:</span>
-  <span class='no'>q</span> <span class='kw'>&lt;-</span> <span class='st'>"SELECT r AS r1, r AS r2 FROM (
-          SELECT random() AS r FROM (
-             SELECT * from ( VALUES(1),(2) )
-          ) a
-       ) b"</span>
-  <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>q</span>))
 
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
 }</div><div class='output co'>#&gt; table('`d`'; 
@@ -250,10 +244,7 @@ is a reserved column name for this procedure.</p>
 #&gt; 7  2 2  7 0.40072018
 #&gt; 8  2 2  8 0.21317271
 #&gt; 9  1 1  9 0.67176682
-#&gt; 10 2 2 10 0.05861411
-#&gt;                    r1                   r2
-#&gt; 1 4410381397278162620 -3617562559225498334
-#&gt; 2 4718860221789125254 -7839855565881669007</div><div class='input'>
+#&gt; 10 2 2 10 0.05861411</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

@@ -129,7 +129,7 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>unionall</span>(<span class='no'>sources</span>)</pre>
+    <pre class="usage"><span class='fu'>unionall</span>(<span class='no'>sources</span>, <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -137,6 +137,10 @@
     <tr>
       <th>sources</th>
       <td><p>list of relop trees or list of data.frames</p></td>
+    </tr>
+    <tr>
+      <th>env</th>
+      <td><p>environment to look to.</p></td>
     </tr>
     </table>
     
@@ -171,15 +175,15 @@
 #&gt;   `AUC`,
 #&gt;   `R2`
 #&gt;  FROM
-#&gt;   `d` LIMIT 2 ) tsql_90916064384172044302_0000000000 UNION ALL SELECT  `AUC`, `R2`  FROM (   SELECT
+#&gt;   `d` LIMIT 2 ) tsql_64092152818671025892_0000000000 UNION ALL SELECT  `AUC`, `R2`  FROM (   SELECT
 #&gt;   `AUC`,
 #&gt;   `R2`
 #&gt;  FROM
-#&gt;   `d` LIMIT 2 ) tsql_90916064384172044302_0000000001 UNION ALL SELECT  `AUC`, `R2`  FROM (   SELECT
+#&gt;   `d` LIMIT 2 ) tsql_64092152818671025892_0000000001 UNION ALL SELECT  `AUC`, `R2`  FROM (   SELECT
 #&gt;   `AUC`,
 #&gt;   `R2`
 #&gt;  FROM
-#&gt;   `d` LIMIT 2 ) tsql_90916064384172044302_0000000002 LIMIT 2
+#&gt;   `d` LIMIT 2 ) tsql_64092152818671025892_0000000002 LIMIT 2
 #&gt;   AUC  R2
 #&gt; 1 0.6 0.2
 #&gt; 2 0.6 0.2</div><div class='input'>

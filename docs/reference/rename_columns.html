@@ -129,7 +129,7 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>rename_columns</span>(<span class='no'>source</span>, <span class='no'>cmap</span>)</pre>
+    <pre class="usage"><span class='fu'>rename_columns</span>(<span class='no'>source</span>, <span class='no'>cmap</span>, <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -141,6 +141,10 @@
     <tr>
       <th>cmap</th>
       <td><p>map written as new column names as keys and old column names as values.</p></td>
+    </tr>
+    <tr>
+      <th>env</th>
+      <td><p>environment to look to.</p></td>
     </tr>
     </table>
     
@@ -179,7 +183,7 @@
 #&gt;   `z`
 #&gt;  FROM
 #&gt;   `d`
-#&gt; ) tsql_24776452124575728488_0000000000
+#&gt; ) tsql_26261709003721486707_0000000000
 #&gt;    R2 AUC z
 #&gt; 1 0.6 0.2 3</div><div class='input'>
 </div></pre>

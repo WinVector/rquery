@@ -258,7 +258,7 @@ is a reserved column name for this procedure.</p>
 #&gt;   ifebtest_1 := r &gt;= 0.5) %.&gt;%
 #&gt;  extend(.,
 #&gt;   a := ifelse(ifebtest_2, ifelse(ifebtest_1, 0, a), a),
-#&gt;   b := ifelse(ifebtest_2, ifelse(!ifebtest_1, 0, b), b),
+#&gt;   b := ifelse(ifebtest_2, ifelse(!(ifebtest_1), 0, b), b),
 #&gt;   edited := ifelse(ifebtest_2, 1, edited))
 #&gt; SELECT
 #&gt;  `i`,
@@ -286,22 +286,22 @@ is a reserved column name for this procedure.</p>
 #&gt;    `edited`
 #&gt;   FROM
 #&gt;    `d`
-#&gt;   ) tsql_54094953509695757633_0000000000
-#&gt;  ) tsql_54094953509695757633_0000000001
+#&gt;   ) tsql_19918083069856486352_0000000000
+#&gt;  ) tsql_19918083069856486352_0000000001
 #&gt;     i ifebtest_1 ifebtest_2          r a b edited
-#&gt; 1   1          0          0 0.01776996 0 0      0
-#&gt; 2   2          1          0 0.72817997 0 1      0
-#&gt; 3   3          1          0 0.97084502 1 0      0
-#&gt; 4   4          1          1 0.53521759 0 1      1
-#&gt; 5   5          0          1 0.16649077 1 0      1
-#&gt; 6   6          0          1 0.05817565 1 0      1
-#&gt; 7   7          0          1 0.45913902 1 0      1
-#&gt; 8   8          1          1 0.62279882 0 1      1
-#&gt; 9   9          1          1 0.59481920 0 1      1
-#&gt; 10 10          1          1 0.74301824 0 1      1
+#&gt; 1   1          0          0 0.26123755 0 0      0
+#&gt; 2   2          1          0 0.54383117 0 1      0
+#&gt; 3   3          0          0 0.19900078 1 0      0
+#&gt; 4   4          1          1 0.64505477 0 1      1
+#&gt; 5   5          1          1 0.75023985 0 1      1
+#&gt; 6   6          0          1 0.27097783 1 0      1
+#&gt; 7   7          1          1 0.87562191 0 1      1
+#&gt; 8   8          1          1 0.85174317 0 1      1
+#&gt; 9   9          0          1 0.04584931 1 0      1
+#&gt; 10 10          0          1 0.38105686 1 0      1
 #&gt;                     r1                   r2
-#&gt; 1 -2323930174156421289  3655598491921582646
-#&gt; 2  5581564249411722175 -3970774543581013742</div><div class='input'>
+#&gt; 1  -240591947988719839 -2829242312961161989
+#&gt; 2 -8993621164059071123 -1967145353645658129</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

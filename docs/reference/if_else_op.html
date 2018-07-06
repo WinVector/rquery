@@ -151,7 +151,8 @@ execution either on <code>data.frame</code>s or at a big data scale using
     
     </div>
 
-    <pre class="usage"><span class='fu'>if_else_op</span>(<span class='no'>source</span>, <span class='no'>testexpr</span>, <span class='no'>...</span>, <span class='kw'>thenexprs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>elseexprs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>if_else_op</span>(<span class='no'>source</span>, <span class='no'>testexpr</span>, <span class='no'>...</span>, <span class='kw'>thenexprs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>elseexprs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -175,6 +176,10 @@ execution either on <code>data.frame</code>s or at a big data scale using
     <tr>
       <th>elseexprs</th>
       <td><p>named character else assignments (altering columns, not creating).</p></td>
+    </tr>
+    <tr>
+      <th>env</th>
+      <td><p>environment to look to.</p></td>
     </tr>
     </table>
     
@@ -233,7 +238,7 @@ is a reserved column name for this procedure.</p>
 #&gt;   b := ifelse(ifebtest_1, 0, b),
 #&gt;   edited := ifelse(ifebtest_1, 1, edited)) %.&gt;%
 #&gt;  extend(.,
-#&gt;   edited := ifelse(!ifebtest_1, 0, edited)) %.&gt;%
+#&gt;   edited := ifelse(!(ifebtest_1), 0, edited)) %.&gt;%
 #&gt;  drop_columns(.,
 #&gt;    ifebtest_1)
 #&gt; SELECT
@@ -270,10 +275,10 @@ is a reserved column name for this procedure.</p>
 #&gt;      `edited`
 #&gt;     FROM
 #&gt;      `d`
-#&gt;     ) tsql_84197068678211589630_0000000000
-#&gt;    ) tsql_84197068678211589630_0000000001
-#&gt;   ) tsql_84197068678211589630_0000000002
-#&gt; ) tsql_84197068678211589630_0000000003
+#&gt;     ) tsql_20391721982264312690_0000000000
+#&gt;    ) tsql_20391721982264312690_0000000001
+#&gt;   ) tsql_20391721982264312690_0000000002
+#&gt; ) tsql_20391721982264312690_0000000003
 #&gt;    a b edited  i
 #&gt; 1  0 0      0  1
 #&gt; 2  0 1      0  2

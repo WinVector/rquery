@@ -272,14 +272,14 @@ cat(to_sql(dq, my_db, source_limit = 1000))
             "assessmentTotal"
            FROM
             "d" LIMIT 1000
-           ) tsql_21301554617978230767_0000000000
-          ) tsql_21301554617978230767_0000000001
-         ) tsql_21301554617978230767_0000000002
-       ) tsql_21301554617978230767_0000000003
+           ) tsql_87599994406608759795_0000000000
+          ) tsql_87599994406608759795_0000000001
+         ) tsql_87599994406608759795_0000000002
+       ) tsql_87599994406608759795_0000000003
        WHERE "row_number" <= 1
-      ) tsql_21301554617978230767_0000000004
-     ) tsql_21301554617978230767_0000000005
-    ) tsql_21301554617978230767_0000000006 ORDER BY "subjectID"
+      ) tsql_87599994406608759795_0000000004
+     ) tsql_87599994406608759795_0000000005
+    ) tsql_87599994406608759795_0000000006 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
@@ -319,7 +319,7 @@ cat(format(dq))
       irrelevantCol1,
       irrelevantCol2) %.>%
      extend(.,
-      probability := exp(assessmentTotal * scale)) %.>%
+      probability := exp(assessmentTotal * 0.237)) %.>%
      extend(.,
       probability := probability / sum(probability),
       p= subjectID) %.>%

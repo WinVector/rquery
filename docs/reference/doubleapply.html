@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Double apply pipe to local data frame. — doubleapply • rquery</title>
+<title>Placeholder for old double apply, do not use. — doubleapply • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -30,11 +30,9 @@
 
 
 
-<meta property="og:title" content="Double apply pipe to local data frame. — doubleapply" />
+<meta property="og:title" content="Placeholder for old double apply, do not use. — doubleapply" />
 
-<meta property="og:description" content="Defined as roughly : rquery::rquery_apply_to_data_frame(d %.&amp;gt;% ops).
-Useful for systems like rquery where first appearance of an object
-captures a description and second appearance applies the operation." />
+<meta property="og:description" content="Placeholder for old double apply, do not use." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -120,65 +118,37 @@ captures a description and second appearance applies the operation." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Double apply pipe to local data frame.</h1>
+    <h1>Placeholder for old double apply, do not use.</h1>
     <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/double_clutch.R'><code>R/double_clutch.R</code></a></small>
     <div class="hidden name"><code>doubleapply.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Defined as roughly : <code><a href='rquery_apply_to_data_frame.html'>rquery::rquery_apply_to_data_frame(d %.&gt;% ops)</a></code>.
-Useful for systems like <code>rquery</code> where first appearance of an object
-captures a description and second appearance applies the operation.</p>
+    <p>Placeholder for old double apply, do not use.</p>
     
     </div>
 
-    <pre class="usage"><span class='no'>d</span> <span class='kw'>%&gt;&gt;%</span> <span class='no'>ops</span></pre>
+    <pre class="usage"><span class='no'>pipe_left_arg</span> <span class='kw'>%&gt;&gt;%</span> <span class='no'>pipe_right_arg</span></pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>d</th>
-      <td><p>data.frame.</p></td>
+      <th>pipe_left_arg</th>
+      <td><p>pipe_left_arg</p></td>
     </tr>
     <tr>
-      <th>ops</th>
-      <td><p>free-form op tree.</p></td>
+      <th>pipe_right_arg</th>
+      <td><p>pipe_right_arg</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p><code><a href='rquery_apply_to_data_frame.html'>rquery::rquery_apply_to_data_frame(d %.&gt;% ops)</a></code></p>
-    
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>Note: to make this usefull one must parenthesize the pipeline that are
-piping into to.  This is to work around left to right associativity.
-Please see the example for how this is done.</p>
+    <p><code>d %.&gt;% ops</code></p>
     
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-<span class='co'># WARNING: example tries to change rquery.rquery_db_executor option to RSQLite and back.</span>
-<span class='kw'>if</span> (<span class='fu'>requireNamespace</span>(<span class='st'>"DBI"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>&amp;&amp;</span> <span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
-  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
-  <span class='no'>old_o</span> <span class='kw'>&lt;-</span> <span class='fu'>options</span>(<span class='fu'>list</span>(<span class='st'>"rquery.rquery_db_executor"</span> <span class='kw'>=</span> <span class='fu'>list</span>(<span class='kw'>db</span> <span class='kw'>=</span> <span class='no'>my_db</span>)))
-
-  <span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>0.6</span>, <span class='fl'>0.45</span>), <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>0.2</span>, <span class='fl'>0.01</span>)) <span class='kw'>%&gt;&gt;%</span> (
-    <span class='fu'><a href='extend_se.html'>extend_se</a></span>(<span class='no'>.</span>, <span class='fu'>c</span>(<span class='st'>"v"</span> <span class='kw'>%:=%</span> <span class='st'>"AUC + R2"</span>, <span class='st'>"x"</span> <span class='kw'>%:=%</span> <span class='st'>"pmax(AUC,v)"</span>)) <span class='kw'>%.&gt;%</span>
-    <span class='fu'><a href='select_rows_nse.html'>select_rows_nse</a></span>(<span class='no'>.</span>, <span class='no'>x</span> <span class='kw'>&gt;</span> <span class='fl'>0.5</span>) ) <span class='kw'>%.&gt;%</span>
-    <span class='fu'>print</span>(<span class='no'>.</span>)
-
-  <span class='fu'>options</span>(<span class='no'>old_o</span>)
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt;   AUC  R2   v   x
-#&gt; 1 0.6 0.2 0.8 0.8</div><div class='input'>
-
-
-
-</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -186,11 +156,7 @@ Please see the example for how this is done.</p>
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-
-      <li><a href="#details">Details</a></li>
-      
-      <li><a href="#examples">Examples</a></li>
-    </ul>
+          </ul>
 
   </div>
 </div>

@@ -129,7 +129,7 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>drop_columns</span>(<span class='no'>source</span>, <span class='no'>drops</span>, <span class='no'>...</span>, <span class='kw'>strict</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>drop_columns</span>(<span class='no'>source</span>, <span class='no'>drops</span>, <span class='no'>...</span>, <span class='kw'>strict</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -149,6 +149,10 @@
     <tr>
       <th>strict</th>
       <td><p>logical, if TRUE do check columns to be dropped are actually present.</p></td>
+    </tr>
+    <tr>
+      <th>env</th>
+      <td><p>environment to look to.</p></td>
     </tr>
     </table>
     
@@ -181,7 +185,7 @@
 #&gt;   `R2`
 #&gt;  FROM
 #&gt;   `d`
-#&gt; ) tsql_87311830961519019978_0000000000
+#&gt; ) tsql_90106401926258122084_0000000000
 #&gt;    R2
 #&gt; 1 0.2</div><div class='input'>
 </div></pre>

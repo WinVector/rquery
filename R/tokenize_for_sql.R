@@ -29,18 +29,67 @@ is_inline_expr <- function(lexpr) {
 #' Cross-parse a call from an R parse tree into SQL.
 #'
 #' @param lexpr item from  \code{substitute} with length(lexpr)>0 and is.call(lexpr)
+#' @param colnames column names of table
+#' @param env environment to look for values
 #' @return sql info: list(parsed_toks(list of tokens), symbols_used, symbols_produced, free_symbols)
 #'
 #' @noRd
 #'
-tokenize_call_for_R <- function(lexpr) {
+tokenize_call_for_R <- function(lexpr, colnames, env) {
   if(is_inline_expr(lexpr)) {
     callName <- as.character(lexpr[[1]])
     lhs <- lexpr[[2]]
     rhs <- lexpr[[3]]
-    return(paste(rquery_deparse(lhs), callName, rquery_deparse(rhs)))
+    return(paste(tokenize_call_for_R(lhs, colnames, env), callName, tokenize_call_for_R(rhs, colnames, env)))
   }
-  return(rquery_deparse(lexpr))
+  if(is.character(lexpr)) {
+    return(rquery_deparse(lexpr))
+  }
+  if(is.name(lexpr)) {
+    sym <- as.character(lexpr)
+    if(!(sym %in% colnames)) {
+      if(exists(sym, envir = env)) {
+        v <- get(sym, envir = env)
+        if(!is.function(v)) {
+          return(rquery_deparse(v))
+        }
+      }
+    }
+    return(rquery_deparse(lexpr))
+  }
+  if(as.character(lexpr[[1]])=="(") {
+    sub <- ""
+    if(length(lexpr)>1) {
+      sub <- paste(vapply(lexpr[-1],
+                          function(li) {
+                            tokenize_call_for_R(li, colnames, env)
+                          },
+                          character(1)),
+                   collapse = ", ")
+    }
+    return(paste0("(", sub, ")"))
+  }
+  if(is.call(lexpr)) {
+    sub <- ""
+    if(length(lexpr)>1) {
+      sub <- paste(vapply(lexpr[-1],
+                          function(li) {
+                            tokenize_call_for_R(li, colnames, env)
+                          },
+                          character(1)),
+                   collapse = ", ")
+    }
+    return(paste0(as.character(lexpr[[1]]), "(", sub, ")"))
+  }
+  if(length(lexpr)<=1) {
+    return(rquery_deparse(lexpr))
+  }
+  return(paste(vapply(lexpr,
+                      function(li) {
+                        tokenize_call_for_R(li, colnames, env)
+                      },
+                      character(1)),
+               collapse = " "))
 }
 
 #' Cross-parse a call from an R parse tree into SQL.
@@ -334,7 +383,8 @@ tokenize_for_SQL_r <- function(lexpr,
 #'
 #' tokenize_for_SQL(substitute(1 + 2), colnames= NULL)
 #' tokenize_for_SQL(substitute(a := 3), colnames= NULL)
-#' tokenize_for_SQL(substitute(a %:=% 3), colnames= NULL)
+#' tokenize_for_SQL(substitute(a %:=% ( 3 + 4 )), colnames= NULL)
+#' tokenize_for_SQL(substitute(a %:=% rank(3, 4)), colnames= NULL)
 #'
 #' @export
 #'
@@ -344,7 +394,9 @@ tokenize_for_SQL <- function(lexpr,
   p <- tokenize_for_SQL_r(lexpr = lexpr,
                           colnames = colnames,
                           env = env)
-  presentation <- tokenize_call_for_R(lexpr)
+  presentation <- tokenize_call_for_R(lexpr,
+                                      colnames = colnames,
+                                      env = env)
   p <- c(list(presentation = presentation), p)
   class(p$parsed_toks) <- c("pre_sql_expr")
   p
