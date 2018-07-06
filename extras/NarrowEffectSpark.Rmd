@@ -43,8 +43,8 @@ if(use_spark) {
                           password = '')
 }
 
-nSubj <- 500000
-nIrrelCol <- 50
+nSubj <- 50000
+nIrrelCol <- 500
 dL <- data.frame(subjectID = sort(rep(seq_len(nSubj),2)),
                  surveyCategory = c(
                    'withdrawal behavior',

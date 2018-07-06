@@ -9,7 +9,7 @@ This issue arises because wide tables (200 to 1000 columns) are quite common in 
 
 The idea behind the advice is: working with fewer columns makes for quicker queries.
 
-Let's set up our experiment. The data is a larger version of the problem from ["Let’s Have Some Sympathy For The Part-time R User"](http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/). We have expanded the number of subjects to 500000 and added 50 irrelevant columns to the example. We define a new function that uses `dplyr` and `Sparklyr` to compute the diagnoses. We vary if the table is first limited to columns of interest and if the results are brought back to `R`.
+Let's set up our experiment. The data is a larger version of the problem from ["Let’s Have Some Sympathy For The Part-time R User"](http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/). We have expanded the number of subjects to 50000 and added 500 irrelevant columns to the example. We define a new function that uses `dplyr` and `Sparklyr` to compute the diagnoses. We vary if the table is first limited to columns of interest and if the results are brought back to `R`.
 
 ``` r
 scale <- 0.237
@@ -232,6 +232,8 @@ print(timings)
 ``` r
 autoplot(timings)
 ```
+
+    ## Coordinate system already present. Adding new coordinate system, which will replace the existing one.
 
 ![](NarrowEffectSpark_files/figure-markdown_github/present-1.png)
 
