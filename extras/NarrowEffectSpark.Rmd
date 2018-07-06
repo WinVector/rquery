@@ -44,7 +44,7 @@ if(use_spark) {
 }
 
 nSubj <- 50000
-nIrrelCol <- 50
+nIrrelCol <- 500
 dL <- data.frame(subjectID = sort(rep(seq_len(nSubj),2)),
                  surveyCategory = c(
                    'withdrawal behavior',
@@ -102,20 +102,24 @@ dT %>%
   dbplyr::remote_query(.) %>%
   cat
 
-dplyr_run <- function(narrow) {
+dplyr_run <- function(narrow, compute) {
   dR <- dT
   if(narrow) {
     dR <- dR %>%
       select(subjectID, surveyCategory, assessmentTotal)
   }
-  dR %>%
+  dR <- dR %>%
     group_by(subjectID) %>%
     mutate(probability =
              exp(assessmentTotal * scale)/
              sum(exp(assessmentTotal * scale), na.rm = TRUE)) %>%
     arrange(probability, surveyCategory) %>%
     filter(row_number() == n()) %>%
-    ungroup() %>%
+    ungroup() 
+  if(compute) {
+    dR <- compute(dR)
+  }
+  dR %>%
     rename(diagnosis = surveyCategory) %>%
     select(subjectID, diagnosis, probability) %>%
     arrange(subjectID) %>% 
@@ -125,9 +129,9 @@ dplyr_run <- function(narrow) {
 }
 
 
-dplyr_run(narrow=FALSE)
+dplyr_run(narrow=FALSE, compute=FALSE)
 
-dplyr_run(narrow=TRUE)
+dplyr_run(narrow=TRUE, compute=FALSE)
 ```
 
 ```{r defrquery, cache=TRUE}
@@ -182,8 +186,10 @@ We can get timings for variations of the function:
 ```{r time, cache=TRUE}
 library("microbenchmark")
 
-timings <- microbenchmark(dplyr_run(narrow=FALSE), 
-                          dplyr_run(narrow=TRUE),
+timings <- microbenchmark(dplyr_run(narrow=FALSE, compute=FALSE), 
+                          dplyr_run(narrow=TRUE, compute=FALSE),
+                          dplyr_run(narrow=FALSE, compute=TRUE), 
+                          dplyr_run(narrow=TRUE, compute=TRUE),
                           rquery_run())
 
 dT <- NULL
