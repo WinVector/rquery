@@ -7,43 +7,35 @@ output: github_document
 
 `dplyr` SQL for the [`rquery` example](https://winvector.github.io/rquery/). Notice the irrelevant columns live a few steps into the query sequence.  Also notice the `dplyr` `SQL` does have less nesting than the `rquery` `SQL`.
 
-```{r ex, commment=''}
+```{r ex}
 suppressPackageStartupMessages(library("dplyr"))
 packageVersion("dplyr")
 
 my_db <- sparklyr::spark_connect(version='2.2.0', 
                                  master = "local")
 
+d_local <- wrapr::build_frame(
+   'subjectID', 'surveyCategory'     , 'assessmentTotal', 'irrelevantCol1', 'irrelevantCol2' |
+   1          , 'withdrawal behavior', 5                , 'irrel1'        , 'irrel2'         |
+   1          , 'positive re-framing', 2                , 'irrel1'        , 'irrel2'         |
+   2          , 'withdrawal behavior', 3                , 'irrel1'        , 'irrel2'         |
+   2          , 'positive re-framing', 4                , 'irrel1'        , 'irrel2'         )
+
 d <- dplyr::copy_to(my_db,
-                    data.frame(
-                      subjectID = c(1,
-                                    1,
-                                    2,
-                                    2),
-                      surveyCategory = c(
-                        'withdrawal behavior',
-                        'positive re-framing',
-                        'withdrawal behavior',
-                        'positive re-framing'
-                      ),
-                      assessmentTotal = c(5,
-                                          2,
-                                          3,
-                                          4),
-                      irrelevantCol1 = "irrel1",
-                      irrelevantCol2 = "irrel2",
-                      stringsAsFactors = FALSE),
+                    d_local,
                     name =  'd',
                     temporary = TRUE,
                     overwrite = FALSE)
 
+
+
 scale <- 0.237
 
-dq <- d %>%
+dplyr_pipeline <- d %>%
   group_by(subjectID) %>%
   mutate(probability =
            exp(assessmentTotal * scale)/
-           sum(exp(assessmentTotal * scale))) %>%
+           sum(exp(assessmentTotal * scale), na.rm=TRUE)) %>%
   arrange(probability, surveyCategory) %>%
   filter(row_number() == n()) %>%
   ungroup() %>%
@@ -52,12 +44,44 @@ dq <- d %>%
   arrange(subjectID)
 
 # directly prints, can not easilly and reliable capture SQL
-show_query(dq)
+show_query(dplyr_pipeline)
 
 # directly prints, can not easilly and reliable capture SQL
-explain(dq)
+explain(dplyr_pipeline)
 
-dq
+# the the plan by hand
+dplyr_plan <- DBI::dbGetQuery(my_db, paste("EXPLAIN ", 
+                                           dbplyr::remote_query(dplyr_pipeline))) 
+cat(dplyr_plan[1, 1])
+
+# run
+dplyr_pipeline
+
+
+library("rquery")
+
+scale <- 0.237
+
+rquery_pipeline <- db_td(my_db, "d") %.>%
+  extend_nse(.,
+             probability %:=%
+               exp(assessmentTotal * scale))  %.>% 
+  normalize_cols(.,
+                 "probability",
+                 partitionby = 'subjectID') %.>%
+  pick_top_k(.,
+             partitionby = 'subjectID',
+             orderby = c('probability', 'surveyCategory'),
+             reverse = c('probability')) %.>% 
+  rename_columns(., 'diagnosis' %:=% 'surveyCategory') %.>%
+  select_columns(., c('subjectID', 
+                      'diagnosis', 
+                      'probability')) %.>%
+  orderby(., cols = 'subjectID')
+
+rquery_plan <- DBI::dbGetQuery(my_db, paste("EXPLAIN ",
+                                            to_sql(rquery_pipeline, my_db)))
+cat(rquery_plan[1, 1])
 
 sparklyr::spark_disconnect(my_db)
 ```
