@@ -47,17 +47,18 @@ We can do this in R using `rqdatatable`, an in-memory implementation of `rquery`
 library(rqdatatable)
 data(iris)
 
-iris %>>% {
+local_td(iris) %.>%
   project_nse(., groupby=c('Species'),
               mean_petal_width = mean(Petal.Width)) %.>%
   pick_top_k(.,  
              k = 1,
              orderby = c('mean_petal_width', 'Species'),
              reverse = c('mean_petal_width')) %.>% 
-  select_columns(., 'Species')
-}
-
+  select_columns(., 'Species') %.>%
+  ex_data_table(.)
 ```
+
+`rquery` is database-first -- that is, it is designed primarily for use on remote systems -- so when using the local implementation of it (`rqdatatable`) we have to both use `local_td()` to capture the `data.frame` name and description and finish the pipeline with a `ex_data_table(.)` to trigger the execution.
 
 ```{r echo=FALSE, eval=FALSE}
 # this won't work if here because rquery not loaded and inited yet
