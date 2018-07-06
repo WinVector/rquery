@@ -6,32 +6,134 @@ date: "07/03/2018"
 always_allow_html: yes
 ---
 
-## The What and Why of `rquery`
-
 `rquery` is a query generator for R. It is based on [Edgar F. Codd’s relational algebra](https://en.wikipedia.org/wiki/Relational_algebra), informed by
-our experience using SQL and R packages such as `dplyr` at big data scale. 
+our experience using SQL and R packages such as `dplyr` at big data scale. In this article we
+discuss `rquery`, its advantages relative to SQL, and why its database-first design makes it
+an attractive alternative for working with Spark in R. [FIX THIS]
 
-The design represents an attempt to make SQL more teachable by denoting composition by a sequential pipeline notation 
-instead of nested queries or functions. 
+## Data Transformation and Codd's Relational Algebra
 
-A great benefit of Codd's relational algebra is it gives one concepts to decompose complex data transformations into sequences of simpler transformations.
+Codd's relational algebra is a formal algebra that describes the semantics of data transformations and queries. Earlier, hierarchical, databases required tables to be representations of functions or maps. Codd relaxed this requirement, allowing tables that represent more general relations (allowing, for instance, two-way multimaps). 
 
-Some reasons SQL seems complicated include:
+Codd's algebra allows most significant data transformations to be decomposed into sequences made up from a smaller set of simpler operations: 
 
-    SQL's realization of sequencing as nested function composition.
-    SQL uses some relational concepts as steps, others as modifiers and predicates.
+  * select (row selection)
+  * project (column selection/aggregation)
+  * Cartesian product (table joins, row binding, set difference)
+  * extend (derived columns)
 
-A lot of the grace of the Codd theory can be recovered through the usual trick changing function composition notation from g(f(x)) to x . f() . g(). This experiment is asking (and not for the first time): "what if SQL were piped (expressed composition as a left to right flow, instead of a right to left nesting)?"
+The earliest, and still most common, implementation of Codd's algebra is SQL. Formally Codd's algebra assumes that all rows in a table are unique; SQL relaxes this restriction to allow multisets.
+
+## SQL vs pipelines for data transformation
+
+One issue with SQL, especially for the novice SQL programmer, is that it can be somewhat unintuitive.
+
+  * SQL's realization of sequencing as nested function composition.
+  * SQL uses some relational concepts as steps, others as modifiers and predicates.
+
+
+For example, suppose you have a table of information about irises, and you want to find the species with the widest petal (on average). In R the steps would be as follows:
+
+  1. Group the table into Species
+  2. Calculate the mean petal width for each Species
+  3. Find the widest mean petal width
+  4. Return the appropriate species
+
+We can do this in R using `dplyr`, another data manipulation package with a Codd-style notation:
+
+```{r}
+library(dplyr)
+data(iris)
+
+iris %>%
+  group_by(Species) %>%
+  summarize(mean_petal_width = mean(Petal.Width)) %>%
+  mutate(rank = dense_rank(-mean_petal_width)) %>%
+  filter(rank == 1) %>%
+  select(Species)
+
+```
+
+
+```{r echo=FALSE, eval=FALSE}
+# this won't work if here because rquery not loaded and inited yet
+
+iris_remote <- SparkR::createDataFrame(iris)
+
+# first, we need a name for the table, so we create a view (hide this)
+SparkR::createOrReplaceTempView(iris_remote, "iris")
+iris_description = rquery::db_td(db_hdl, "iris")
+
+library("rquery")
+
+iris_pipeline <- iris_description %.>%
+  project_nse(., groupby=c("Species"),
+              mean_petal_width = mean(Petal_Width)) %.>%
+  pick_top_k(.,  
+             k = 1,
+             orderby = c('mean_petal_width', 'Species'),
+             reverse = c('mean_petal_width')) %.>% 
+  select_columns(., 'Species')
+
+execute(db_hdl, iris_pipeline)
+# get rquery sql
+cat(format(to_sql(iris_pipeline, db_hdl)))
+
+# get dplyr sql (can't run, becase SQLite is weak)
+memdb <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+memdbtbl <- dplyr::copy_to(memdb, iris)
+memdbtbl %>%
+  group_by(Species) %>%
+  summarize(mean_petal_width = mean(Petal.Width, na.rm=TRUE)) %>%
+  mutate(rank = rownumber(-mean_petal_width)) %>%
+  filter(rank == 1) %>%
+  select(Species) %>%
+  dbplyr::remote_query()
+```
+
+In `dplyr`, the original table (`iris`) is at the beginning of the query, with successive operations applied to the results of the preceding line.  To perform the equivalent operation in SQL, you must write down the operation "backwards":
+
+```
+SELECT Species FROM (
+   SELECT Species, mean('Petal.Width') AS mean_petal_width FROM iris
+   GROUP BY Species ) tmp1
+WHERE mean_petal_width = max(mean_petal_width) /* try to get widest species */
+ORDER_BY Species /* To make tiebreaking deterministic */
+LIMIT 1     /* Get only one species back (in case of ties) */
+```
+
+In SQL, the original table is in the *last* SELECT statement, with successive results nested up from there. In addition, column selection directives are at the beginning of a SELECT statement, while row selection criteria (WHERE, LIMIT) and modifiers (GROUP_BY, ORDER_BY) are at the end of the statement, with the table in between. So the data transformation goes from the inside of the query to the outside, which can be hard to read -- not to mention hard to write.
+
+Like `dplyr`, `rquery` represents an attempt to make data transformation in a relational database more intuitive by expressing data transformations in a sequential operator pipeline notation instead of nested queries or functions. 
+
+## `rquery` vs `dplyr`
+
+For developers working with Spark and R, `rquery` offers a number of advantages over `dplyr`. In particular, `dplyr` is not compatible with `SparkR`, only with `sparklyr`. In addition, `rquery` is *database-first*, meaning it was developed specifically to work with big data in remote data stores via R.
+
+
+For example, unlike `dplyr`, `rquery` does not rely on persistent table annotations such as the `group by` annotation. 
+
+problems that these address:
+you don't want to run a long query only to find out the last step is wrong
+
+complete separation between query specification and execution phases
+aggressive column name error checking
+query narrowing (early column filtering)
+higher order operators, yielding shorter pipelines
+
 
 
 ## Design Choices for SQL implementation
 
-Stay close to Cod's definitions. In contrast to other R data manipulation packages, rquery does not rely on db-unsafe annotations such as row number or "group by" annotations. Instead, grouped aggregations are implemented via window functions in SQL. 
+Stay close to Cod's definitions. In contrast to other R data manipulation packages, rquery does not rely on db-unsafe annotations such  or "group by" annotations. Instead, grouped aggregations are implemented via window functions in SQL. 
 
 
 ## How Spark & R developers can benefit from `rquery`
 
 Domain independent query language that runs on Spark in R via either SparkR or sparklyr, as well as on Postgres and other large data systems.
+
+R developers can run analyses and perform data transformations in Spark using an easier to read (and to write) sequential pipeline notation instead
+of nested sql queries.
 
 Superior error checking -- verifies column names before going to database
 
@@ -50,8 +152,6 @@ To install a practice version of `Spark`/`SparkR` v2.3.0 on a stand-alone workst
   * Uncompress this into a directory named `spark-2.3.0-bin-hadoop2.7`.
   * Install `SparkR` from `spark-2.3.0-bin-hadoop2.7/spark-2.3.0-bin-hadoop2.7/R/lib/SparkR`: `install.packages("~/Downloads/spark-2.3.0-bin-hadoop2.7/R/lib/SparkR/", repos = NULL, type = "source")`.
   * Use `SparkR` package to install its own local `Spark`: `SparkR::install.spark()` (based on [sparkr-vignettes.Rmd](https://github.com/apache/spark/blob/master/R/pkg/vignettes/sparkr-vignettes.Rmd)).
-
-TODO: switch to number of times ordering from different restaurants.  Looking for the favorite and fraction of orders from orders from that restaunt (or quisine).  Slow down and define problem and show data, before any work.
 
 
 
@@ -78,24 +178,29 @@ ses <- SparkR::sparkR.session(master = "local[1]",
                               enableHiveSupport = FALSE)
 ```
 
-Introduce the data here
+Let's imagine that we run a food delivery business, and we are interested in what types of cuisines ('Mexican', 'Chinese', etc) our customers prefer. We want to sum up the number of orders of each cuisine type (or `restaurant_type`) by customer and compute which cuisine appears to be their favorite, based on what they order the most. We also want to see how strong that preference is, based on what fraction of their orders is of their favorite cuisine.
+
+We'll start with a table of orders, which records order id, customer id, and restaurant type.
 
 ```{r build_data, include=FALSE}
 # insert example data, simulating it already being on the remote system.
 
 # From: https://github.com/WinVector/rquery/blob/master/extras/DebugToolsForBigData.md
 set.seed(235235)
-nSubj <- 10
-d_local <- data.frame(custID = sort(rep(seq_len(nSubj),5)),
-                 restaurantType = c(
+nSubj <- 9
+
+d_local <- data.frame(custID = paste0("cust_", sample.int(nSubj, 244, replace=TRUE)),
+                      stringsAsFactors = FALSE)
+                        
+d_local$restaurant_type = sample( c(
                    'Mexican',
                    'Italian',
                    'Chinese',
                    'Indian',
                    'American'
-                   ),
-                 stringsAsFactors = FALSE)
-d_local$totalOrders <- sample.int(25, nrow(d_local), replace = TRUE)
+                   ), nrow(d_local), replace=TRUE)
+d_local$orderID = seq_len(nrow(d_local))
+
 
 test_df <- SparkR::createDataFrame(d_local)
 # https://github.com/apache/spark/blob/master/examples/src/main/r/RSparkSQLExample.R
@@ -103,7 +208,7 @@ test_df <- SparkR::createDataFrame(d_local)
 # SparkR::collect(SparkR::sql("SELECT * from table"))
 
 # first, we need a name for the table, so we create a view (hide this)
-SparkR::createOrReplaceTempView(test_df, "survey_table")
+SparkR::createOrReplaceTempView(test_df, "order_table")
 
 knitr::kable(head(d_local))
 ```
@@ -152,51 +257,64 @@ db_hdl$quote_literal <- function(x, o) {
 }
 ```
 
-Let's assume that we already have the data
+To work with the data using `rquery`, we need an rquery handle to the Spark cluster. Since `rquery` interfaces with many different types of SQL-dialect data stores, it needs an adapter to translate `rquery` functions into the appropriate SQL dialect. The default handler assumes a DBI-adapted database. Since `SparkR` is not DBI-adapted, we must define the handler explicitly, using the function `rquery::rquery_db_info()`. The code for the adapter is here [LINK]. Let's assume that we have created the handler as `db_hdl`.
 
 ```{r example}
 library("rquery")
 
 print(db_hdl) # rquery handle into Spark
 
+```
 
-survey_f <- SparkR::tableToDF("survey_table")
-print(survey_f)
+Let's assume that we already have the data in Spark, as `order_table`. To work with the table in `rquery`, we must generate a 
+*table description*, using the function `db_td()`.
 
-#
-# create an rquery table description of the SparkDataFrame
-#
-
-# get the table's column names
-cols <- SparkR::colnames(survey_f)
-# create the rquery table description
-table_description <- mk_td("survey_table", cols)
+```{r}
+table_description = db_td(db_hdl, "order_table")
 
 print(table_description)
 print(column_names(table_description))
+```
 
+Now we can compose the necessary processing pipeline (or *operator tree*), using `rquery`'s Codd-style steps and operators:
+
+```{r}
 rquery_pipeline <- table_description %.>%
-  normalize_cols(.,   # normalize the restaurantType counts
-                 "totalOrders",
+  extend_nse(., one = 1) %.>%  # a column to help count
+  project_nse(., groupby=c("custID", "restaurant_type"),
+              total_orders = sum(one)) %.>%
+  normalize_cols(.,   # normalize the total_order counts
+                 "total_orders",
                  partitionby = 'custID') %.>%
   rename_columns(.,  # rename the column
-                 c('fraction_of_orders' = 'totalOrders')) %.>% 
-  pick_top_k(.,
+                 c('fraction_of_orders' = 'total_orders')) %.>% 
+  pick_top_k(.,  # get the most frequent cuisine type
              k = 1,
              partitionby = 'custID',
-             orderby = c('fraction_of_orders', 'restaurantType'),
+             orderby = c('fraction_of_orders', 'restaurant_type'),
              reverse = c('fraction_of_orders')) %.>% 
-  rename_columns(., c('favorite_cuisine' = 'restaurantType')) %.>%
+  rename_columns(., c('favorite_cuisine' = 'restaurant_type')) %.>%
   select_columns(., c('custID', 
                       'favorite_cuisine', 
                       'fraction_of_orders')) %.>%
   orderby(., cols = 'custID')
 ```
 
+Before executing the pipeline, you can inspect it, either as text:
 
 ```{r}
 cat(format(rquery_pipeline))
+```
 
+or as a operator diagram (using the package `DiagrammeR`):
+
+```{r echo=TRUE, eval=FALSE }
+rquery_pipeline %.>%
+  op_diagram(.) %.>% 
+  DiagrammeR::DiagrammeR(diagram = ., type = "grViz")
+```
+
+```{r echo=FALSE, eval=TRUE}
 rquery_pipeline %.>%
   op_diagram(.) %.>% 
   DiagrammeR::DiagrammeR(diagram = ., type = "grViz") %.>% 
@@ -207,16 +325,67 @@ rquery_pipeline %.>%
 
 ![](Sparkr_files/diagram1.png)
 
+Notice that the `normalize_cols` and `pick_top_k` steps were decomposed into more basic Codd operators (for example, the *extend* and *select_rows* nodes). You can also inspect what tables are used in the pipeline, and which columns in those tables are involved.
+
 ```{r}
+tables_used(rquery_pipeline)
 columns_used(rquery_pipeline)
 ```
 
+You can also inspect the (complex and heavily nested) SQL query that will be executed in the cluster. Notice that the columb `orderID`, which is not involved in this query, is already eliminated in the initial SELECT (tsql_*_0000000000). Winnowing the initial tables down to only the columns used can be a big performance improvement when you are working with excessively wide tables, and using only a few columns.
+
+```{r}
+cat(to_sql(rquery_pipeline, db_hdl))
+```
+
+Finally, we can execute the query in the cluster. Note that this same pipeline could also be executed using a `sparklyr` connection.
 
 ```{r}
 execute(db_hdl, rquery_pipeline) %.>%
   knitr::kable(.)
 ```
 
+Many R programmers are familiar with `dplyr`, another data manipulation package in R, which also uses Codd-style operators. We can compare `dplyr`'s operators to those of `rquery` (and verify that the calculation is correct), by processing a local copy of the data with `dplyr`. 
+
+```{r}
+library(dplyr)
+
+order_f %>% 
+  SparkR::as.data.frame() %>%
+  group_by(custID, restaurant_type) %>%
+  summarize(total_orders = n()) %>%
+  ungroup() %>%
+  group_by(custID) %>%
+  mutate(fraction_of_orders = total_orders/sum(total_orders)) %>%
+  ungroup() %>%
+  group_by(custID) %>%
+  arrange(desc(fraction_of_orders), restaurant_type) %>%
+  mutate(rnk = row_number()) %>%
+  ungroup() %>%
+  filter(rnk == 1) %>%
+  rename(favorite_cuisine = restaurant_type) %>%
+  select(custID, favorite_cuisine, fraction_of_orders) %>%
+  arrange(custID) %>%
+  knitr::kable()
+```
+
+
+As we mentioned above, `rquery` was designed to work with a variety of SQL-backed data stores; you only need an appropriate adapter. We have also adapted the `rquery` grammar for in-memory use, using `datatable` as the back-end implementation. This local implementation is in the package `rqdatatable`. One of the cool features of the `rquery` grammar is that the `rquery` operator trees and pipelines are back-end independent. This means you can use the pipeline that we created above with Spark through either `SparkR` or `sparklyr`, or on another data source like Postgres (assuming the table on Postgress has the same structure). You can also use the pipeline on local copies of the data, with `rqdatatable`, as we show below.
+
+Note you MUST use "%.>%" (aka the "dot-arrow" from the `wrapr` package) rather than the magrittr pipe for this next step.
+
+```{r}
+library(rqdatatable)  
+# this automatically registers rqdatatable as the default executor 
+# for rquery pipelines
+
+SparkR::as.data.frame(order_f) %.>%
+  rquery_pipeline %.>%
+  knitr::kable(.)
+
+```
+
+This feature can be quite useful for "rehearsals" of complex data manipulation/analysis processes, where you'd like to develop and debug the data process quickly, using smaller local versions of the relevant data tables before executing them on the remote system.
 
 ```{r cleanup, include=FALSE}
 SparkR::sparkR.session.stop()
