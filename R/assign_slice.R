@@ -13,6 +13,7 @@
 #' @param testexpr character containing the test expression.
 #' @param columns charactor vector of column names to alter.
 #' @param value value to set in matching rows and columns (scalar).
+#' @param env environment to look to.
 #' @return optree or data.frame.
 #'
 #' @examples
@@ -45,7 +46,8 @@
 #'
 #' @export
 #'
-assign_slice <- function(source, testexpr, columns, value) {
+assign_slice <- function(source, testexpr, columns, value,
+                         env = parent.frame()) {
   if((!is.character(columns)) || (length(columns)<1)) {
     stop("rquery::assign_slice columns should be a non-empty character vector")
   }
@@ -54,5 +56,6 @@ assign_slice <- function(source, testexpr, columns, value) {
   }
   if_else_op(source = source,
              testexpr = testexpr,
-             thenexprs = columns %:=% rep(value, length(columns)))
+             thenexprs = columns %:=% rep(value, length(columns)),
+             env = env)
 }

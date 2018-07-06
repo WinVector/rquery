@@ -1,4 +1,5 @@
 
+
 #' Make an unionall node (not a relational operation).
 #'
 #'
@@ -6,6 +7,7 @@
 #'
 #'
 #' @param sources list of relop trees or list of data.frames
+#' @param env environment to look to.
 #' @return order_by node or altered data.frame.
 #'
 #' @examples
@@ -24,7 +26,8 @@
 #'
 #' @export
 #'
-unionall <- function(sources) {
+unionall <- function(sources,
+                     env = parent.frame()) {
   if((!is.list(sources))||(length(sources)<2)) {
     stop("rquery::unionall sources must be a list of length at least 2")
   }
@@ -53,7 +56,13 @@ unionall <- function(sources) {
                             dnode <- mk_td(tmp_name, cols)
                             dnode
                           })
-    return(unionall(sources_tmp))
+    enode <- unionall(sources_tmp, env = env)
+    src_names <- vapply(sources_tmp,
+                        function(si) {
+                          si$table_name
+                        }, character(1))
+    names(sources) <- src_names
+    rquery_apply_to_data_frame(source, enode, env = env)
   }
   # leave in redundant check to document intent and make invariants obvious
   if(!("relop" %in% class(sources[[1]]))) {

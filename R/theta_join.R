@@ -151,7 +151,9 @@ theta_join_se.data.frame <- function(a, b,
                          jointype = jointype,
                          suffix = suffix,
                          env = env)
-  return(enode)
+  source <- list(a = a, b = b)
+  names(source) <- c(tmp_namea, tmp_nameb)
+  rquery_apply_to_data_frame(source, enode, env = env)
 }
 
 
@@ -254,7 +256,9 @@ theta_join_nse.data.frame <- function(a, b,
                           jointype = jointype,
                           suffix = suffix,
                           env = env)
-  return(enode)
+  source <- list(a = a, b = b)
+  names(source) <- c(tmp_namea, tmp_nameb)
+  rquery_apply_to_data_frame(source, enode, env = env)
 }
 
 

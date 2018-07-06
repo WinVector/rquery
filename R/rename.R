@@ -3,6 +3,7 @@
 #'
 #' @param source source to rename from.
 #' @param cmap map written as new column names as keys and old column names as values.
+#' @param env environment to look to.
 #' @return rename columns node.
 #'
 #' @examples
@@ -21,12 +22,14 @@
 #'
 #' @export
 #'
-rename_columns <- function(source, cmap) {
+rename_columns <- function(source, cmap,
+                           env = parent.frame()) {
   UseMethod("rename_columns", source)
 }
 
 #' @export
-rename_columns.relop <- function(source, cmap) {
+rename_columns.relop <- function(source, cmap,
+                                 env = parent.frame()) {
   if(length(cmap)<=0) {
     stop("rquery::rename_columns must rename at least 1 column")
   }
@@ -54,7 +57,8 @@ rename_columns.relop <- function(source, cmap) {
 }
 
 #' @export
-rename_columns.data.frame <- function(source, cmap) {
+rename_columns.data.frame <- function(source, cmap,
+                                      env = parent.frame()) {
   if(length(cmap)<=0) {
     stop("rquery::rename_columns must rename at least 1 column")
   }
@@ -67,7 +71,7 @@ rename_columns.data.frame <- function(source, cmap) {
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- mk_td(tmp_name, colnames(source))
   enode <- rename_columns(dnode, cmap)
-  return(enode)
+  rquery_apply_to_data_frame(source, enode, env = env)
 }
 
 

@@ -149,6 +149,7 @@ if_else_block <- function(testexpr,
 #' @param ... force later arguments to bind by name.
 #' @param thenexprs named character then assignments (altering columns, not creating).
 #' @param elseexprs named character else assignments (altering columns, not creating).
+#' @param env environment to look to.
 #' @return operator tree or data.frame.
 #'
 #' @seealso \code{\link{if_else_block}}
@@ -191,14 +192,15 @@ if_else_op <- function(source,
                        testexpr,
                        ...,
                        thenexprs = NULL,
-                       elseexprs = NULL) {
+                       elseexprs = NULL,
+                       env = parent.frame()) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::if_else_op")
   steps <- if_else_block(testexpr = testexpr,
                          thenexprs = thenexprs,
                          elseexprs = elseexprs)
   source %.>%
-    extend_se(., steps) %.>%
-    drop_columns(., "ifebtest_1")
+    extend_se(., steps, env = env) %.>%
+    drop_columns(., "ifebtest_1", env = env)
 }
 

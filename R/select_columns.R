@@ -3,6 +3,7 @@
 #'
 #' @param source source to select from.
 #' @param columns list of distinct column names.
+#' @param env environment to look to.
 #' @return select columns node.
 #'
 #' @examples
@@ -21,12 +22,12 @@
 #'
 #' @export
 #'
-select_columns <- function(source, columns) {
+select_columns <- function(source, columns, env = parent.frame()) {
   UseMethod("select_columns", source)
 }
 
 #' @export
-select_columns.relop <- function(source, columns) {
+select_columns.relop <- function(source, columns, env = parent.frame()) {
   if(length(columns)<=0) {
     stop("rquery::select_columns must select at least 1 column")
   }
@@ -41,14 +42,14 @@ select_columns.relop <- function(source, columns) {
 }
 
 #' @export
-select_columns.data.frame <- function(source, columns) {
+select_columns.data.frame <- function(source, columns, env = parent.frame()) {
   if(length(columns)<=0) {
     stop("rquery::select_columns must select at least 1 column")
   }
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- mk_td(tmp_name, colnames(source))
   enode <- select_columns(dnode, columns)
-  return(enode)
+  rquery_apply_to_data_frame(source, enode, env = env)
 }
 
 

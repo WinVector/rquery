@@ -175,7 +175,7 @@ extend_se.data.frame <- function(source, assignments,
                      orderby = orderby,
                      reverse = reverse,
                      env = env)
-  return(enode)
+  rquery_apply_to_data_frame(source, enode, env = env)
 }
 
 
@@ -261,7 +261,7 @@ extend_nse.data.frame <- function(source,
                       orderby = orderby,
                       reverse = reverse,
                       env = env)
-  return(enode)
+  rquery_apply_to_data_frame(source, enode, env = env)
 }
 
 

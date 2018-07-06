@@ -1,6 +1,7 @@
 
-# rquery 0.5.1 2018/06/25
+# rquery 0.5.1 2018/07/05
 
+ * Change to immediate execution.
  * Switch to wrapr::pipe_impl() when possible.
  * Allow schema qualification.
  * Try to improve use of regexps.

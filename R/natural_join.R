@@ -11,6 +11,7 @@
 #' @param ... force later arguments to bind by name
 #' @param by character, set of columns to match.
 #' @param jointype type of join ('INNER', 'LEFT', 'RIGHT', 'FULL').
+#' @param env environment to look to.
 #' @return natural_join node.
 #'
 #' @examples
@@ -57,8 +58,9 @@
 #'
 natural_join <- function(a, b,
                          ...,
+                         by,
                          jointype = 'INNER',
-                         by) {
+                         env = parent.frame()) {
   UseMethod("natural_join", a)
 }
 
@@ -66,7 +68,8 @@ natural_join <- function(a, b,
 natural_join.relop <- function(a, b,
                                ...,
                                by,
-                               jointype = 'INNER') {
+                               jointype = 'INNER',
+                               env = parent.frame()) {
   if(length(list(...))>0) {
     stop("rquery::natural_join unexpected arguments")
   }
@@ -96,7 +99,8 @@ natural_join.relop <- function(a, b,
 natural_join.data.frame <- function(a, b,
                                     ...,
                                     by,
-                                    jointype = 'INNER') {
+                                    jointype = 'INNER',
+                                    env = parent.frame()) {
   if(length(list(...))>0) {
     stop("rquery::natural_join unexpected arguments")
   }
@@ -111,7 +115,9 @@ natural_join.data.frame <- function(a, b,
   enode <- natural_join(dnodea, dnodeb,
                         jointype = jointype,
                         by = by)
-  return(enode)
+  source <- list(a = a, b = b)
+  names(source) <- c(tmp_namea, tmp_nameb)
+  rquery_apply_to_data_frame(source, enode, env = env)
 }
 
 

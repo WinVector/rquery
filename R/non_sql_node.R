@@ -20,6 +20,7 @@
 #' @param pass_using logical, if TRUE (or if f_db is NULL) pass using column calculations through (else assume using all columns).
 #' @param orig_columns logical if TRUE select all original columns.
 #' @param temporary logical, if TRUE mark tables temporary.
+#' @param env environment to look to.
 #' @return sql node.
 #'
 #' @seealso \code{\link{rsummary_node}}, \code{\link{quantile_node}}, \code{\link{materialize_node}}
@@ -36,7 +37,8 @@ non_sql_node <- function(source,
                          display_form,
                          pass_using = FALSE,
                          orig_columns = TRUE,
-                         temporary = TRUE) {
+                         temporary = TRUE,
+                         env = parent.frame()) {
   wrapr::stop_if_dot_args(substitute(list(...)), "non_sql_node")
   UseMethod("non_sql_node", source)
 }
@@ -52,7 +54,8 @@ non_sql_node.relop <- function(source,
                                display_form,
                                pass_using = FALSE,
                                orig_columns = TRUE,
-                               temporary = TRUE) {
+                               temporary = TRUE,
+                               env = parent.frame()) {
   wrapr::stop_if_dot_args(substitute(list(...)), "non_sql_node.relop")
   if(is.null(f_db)) {
     if(incoming_table_name!=outgoing_table_name) {
@@ -90,7 +93,8 @@ non_sql_node.data.frame <- function(source,
                                     display_form,
                                     pass_using = FALSE,
                                     orig_columns = TRUE,
-                                    temporary = TRUE) {
+                                    temporary = TRUE,
+                                    env = parent.frame()) {
   wrapr::stop_if_dot_args(substitute(list(...)), "non_sql_node.data.frame")
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- mk_td(tmp_name, colnames(source))
@@ -104,7 +108,7 @@ non_sql_node.data.frame <- function(source,
                         pass_using = pass_using,
                         orig_columns = orig_columns,
                         temporary = temporary)
-  return(enode)
+  rquery_apply_to_data_frame(source, enode, env = env)
 }
 
 

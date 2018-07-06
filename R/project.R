@@ -103,7 +103,7 @@ project_se.data.frame <- function(source, groupby, assignments,
   dnode <- mk_td(tmp_name, colnames(source))
   enode <- project_se(dnode, groupby, assignments,
                       env = env)
-  return(enode)
+  rquery_apply_to_data_frame(source, enode, env = env)
 }
 
 
@@ -171,7 +171,7 @@ project_nse.data.frame <- function(source, groupby, ...,
   dnode <- mk_td(tmp_name, colnames(source))
   enode <- project_nse(dnode, groupby, ...,
                        env = env)
-  return(enode)
+  rquery_apply_to_data_frame(source, enode, env = env)
 }
 
 

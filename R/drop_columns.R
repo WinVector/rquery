@@ -5,6 +5,7 @@
 #' @param drops list of distinct column names.
 #' @param ... force later arguments to bind by name
 #' @param strict logical, if TRUE do check columns to be dropped are actually present.
+#' @param env environment to look to.
 #' @return drop columns node.
 #'
 #' @examples
@@ -25,14 +26,16 @@
 #'
 drop_columns <- function(source, drops,
                          ...,
-                         strict = TRUE) {
+                         strict = TRUE,
+                         env = parent.frame()) {
   UseMethod("drop_columns", source)
 }
 
 #' @export
 drop_columns.relop <- function(source, drops,
                                ...,
-                               strict = TRUE) {
+                               strict = TRUE,
+                               env = parent.frame()) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::drop_columns.relop")
   if(length(drops)<=0) {
@@ -55,7 +58,8 @@ drop_columns.relop <- function(source, drops,
 #' @export
 drop_columns.data.frame <- function(source, drops,
                                     ...,
-                                    strict = TRUE) {
+                                    strict = TRUE,
+                                    env = parent.frame()) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::drop_columns.data.frame")
   if(length(drops)<=0) {
@@ -64,7 +68,7 @@ drop_columns.data.frame <- function(source, drops,
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- mk_td(tmp_name, colnames(source))
   enode <- drop_columns(dnode, drops, strict = strict)
-  return(enode)
+  rquery_apply_to_data_frame(source, enode, env = env)
 }
 
 

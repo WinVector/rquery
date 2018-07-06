@@ -51,7 +51,7 @@ select_rows_se.data.frame <- function(source, expr,
   dnode <- mk_td(tmp_name, colnames(source))
   enode <- select_rows_se(dnode, expr,
                           env = env)
-  return(enode)
+  rquery_apply_to_data_frame(source, enode, env = env)
 }
 
 
@@ -60,7 +60,7 @@ select_rows_se.data.frame <- function(source, expr,
 #'
 #' @param source source to select from.
 #' @param expr expression to select rows.
-#' @param env environment to look for values in.
+#' @param env environment to look to.
 #' @return select columns node.
 #'
 #' @examples
@@ -112,7 +112,7 @@ select_rows_nse.data.frame <- function(source, expr,
   dnode <- mk_td(tmp_name, colnames(source))
   enode <- select_rows_se(dnode, rquery_deparse(exprq),
                           env = env)
-  return(enode)
+  rquery_apply_to_data_frame(source, enode, env = env)
 }
 
 

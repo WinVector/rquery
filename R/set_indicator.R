@@ -10,6 +10,7 @@
 #' @param rescol name of column to land indicator in.
 #' @param testcol name of column to check.
 #' @param testvalues values to check for.
+#' @param env environment to look to.
 #' @return set_indicator node.
 #'
 #' @examples
@@ -53,7 +54,8 @@
 set_indicator <- function(source,
                           rescol,
                           testcol,
-                          testvalues) {
+                          testvalues,
+                          env = parent.frame()) {
   UseMethod("set_indicator", source)
 }
 
@@ -61,7 +63,8 @@ set_indicator <- function(source,
 set_indicator.relop <- function(source,
                                 rescol,
                                 testcol,
-                                testvalues) {
+                                testvalues,
+                                env = parent.frame()) {
   testvname <- rquery_deparse(substitute(testvalues))
   cols <- column_names(source)
   if(rescol %in% cols) {
@@ -107,14 +110,15 @@ set_indicator.relop <- function(source,
 set_indicator.data.frame <- function(source,
                                      rescol,
                                      testcol,
-                                     testvalues) {
+                                     testvalues,
+                                     env = parent.frame()) {
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- mk_td(tmp_name, colnames(source))
   enode <- set_indicator(source = dnode,
                          rescol = rescol,
                          testcol = testcol,
                          testvalues = testvalues)
-  return(enode)
+  rquery_apply_to_data_frame(source, enode, env = env)
 }
 
 

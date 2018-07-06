@@ -17,6 +17,7 @@
 #' @param ... force later arguments to be bound by name
 #' @param reverse character, which columns to reverse ordering of.
 #' @param limit number limit row count.
+#' @param env environment to look to.
 #' @return order_by node.
 #'
 #' @examples
@@ -36,10 +37,11 @@
 #' @export
 #'
 orderby <- function(source,
-                     cols = NULL,
-                     ...,
-                     reverse = NULL,
-                     limit = NULL) {
+                    cols = NULL,
+                    ...,
+                    reverse = NULL,
+                    limit = NULL,
+                    env = parent.frame()) {
   UseMethod("orderby", source)
 }
 
@@ -48,7 +50,8 @@ orderby.relop <- function(source,
                     cols = NULL,
                     ...,
                     reverse = NULL,
-                    limit = NULL) {
+                    limit = NULL,
+                    env = parent.frame()) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::orderby.relop")
   if(length(setdiff(reverse, cols))>0) {
@@ -71,7 +74,8 @@ orderby.data.frame <- function(source,
                     cols = NULL,
                     ...,
                     reverse = NULL,
-                    limit = NULL) {
+                    limit = NULL,
+                    env = parent.frame()) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::orderby.data.frame")
   if(length(setdiff(reverse, orderby))>0) {
@@ -83,7 +87,7 @@ orderby.data.frame <- function(source,
                    orderby = cols,
                    reverse = reverse,
                    limit = limit)
-  return(enode)
+  rquery_apply_to_data_frame(source, enode, env = env)
 }
 
 

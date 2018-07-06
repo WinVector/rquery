@@ -9,6 +9,7 @@
 #' @param value scalar, value to write.
 #' @param ... force later arguments to bind by name.
 #' @param note_col character, if not NULL record number of columns altered per-row in this column.
+#' @param env environment to look to.
 #' @return null_replace node or data.frame.
 #'
 #' @seealso \code{\link{count_null_cols}}, \code{\link{mark_null_cols}}
@@ -34,7 +35,8 @@ null_replace <- function(src,
                          cols,
                          value,
                          ...,
-                         note_col = NULL) {
+                         note_col = NULL,
+                         env = parent.frame()) {
   UseMethod("null_replace", src)
 }
 
@@ -43,7 +45,8 @@ null_replace.relop <- function(src,
                                cols,
                                value,
                                ...,
-                               note_col = NULL) {
+                               note_col = NULL,
+                               env = parent.frame()) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::null_replace.relop")
   if(length(sort(unique(cols)))!=length(cols)) {
     stop("rquery::null_replace.relop bad cols argument")
@@ -79,7 +82,8 @@ null_replace.data.frame <- function(src,
                                     cols,
                                     value,
                                     ...,
-                                    note_col = NULL) {
+                                    note_col = NULL,
+                                    env = parent.frame()) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::null_replace.data.frame")
   nmgen <- mk_tmp_name_source("rquery_tmp")
   tmp_namea <- nmgen()
@@ -88,7 +92,7 @@ null_replace.data.frame <- function(src,
                         cols = cols,
                         value = value,
                         note_col = note_col)
-  return(enode)
+  rquery_apply_to_data_frame(source, enode, env = env)
 }
 
 
