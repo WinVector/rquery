@@ -44,7 +44,7 @@ if(use_spark) {
 }
 
 nSubj <- 50000
-nIrrelCol <- 500
+nIrrelCol <- 50
 dL <- data.frame(subjectID = sort(rep(seq_len(nSubj),2)),
                  surveyCategory = c(
                    'withdrawal behavior',
@@ -133,16 +133,16 @@ dplyr_run(narrow=TRUE)
 ```{r defrquery, cache=TRUE}
 optree <- dR %.>%
   extend_nse(.,
-             probability :=
+             probability %:=%
                exp(assessmentTotal * scale)/
                sum(exp(assessmentTotal * scale)),
-             count := count(1),
+             count %:=% count(1),
              partitionby = 'subjectID') %.>%
   extend_nse(.,
-             rank := row_number(),
+             rank %:=% row_number(),
              partitionby = 'subjectID',
              orderby = c('probability', 'surveyCategory'))  %.>%
-  rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
+  rename_columns(., 'diagnosis' %:=% 'surveyCategory') %.>%
   select_rows_nse(., rank == count) %.>%
   select_columns(., c('subjectID', 
                       'diagnosis', 
@@ -155,16 +155,16 @@ cat(to_sql(optree, my_db))
 rquery_run <- function() {
   optree <- dR %.>%
     extend_nse(.,
-               probability :=
+               probability %:=%
                  exp(assessmentTotal * scale)/
                  sum(exp(assessmentTotal * scale)),
-               count := count(1),
+               count %:=% count(1),
                partitionby = 'subjectID') %.>%
     extend_nse(.,
-               rank := row_number(),
+               rank %:=% row_number(),
                partitionby = 'subjectID',
                orderby = c('probability', 'surveyCategory'))  %.>%
-    rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
+    rename_columns(., 'diagnosis' %:=% 'surveyCategory') %.>%
     select_rows_nse(., rank == count) %.>%
     select_columns(., c('subjectID', 
                         'diagnosis', 

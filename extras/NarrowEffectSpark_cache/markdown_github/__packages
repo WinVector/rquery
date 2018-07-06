@@ -2,5 +2,4 @@ base
 microbenchmark
 ggplot2
 dplyr
-wrapr
 rquery

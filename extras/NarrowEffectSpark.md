@@ -9,7 +9,7 @@ This issue arises because wide tables (200 to 1000 columns) are quite common in 
 
 The idea behind the advice is: working with fewer columns makes for quicker queries.
 
-Let's set up our experiment. The data is a larger version of the problem from ["Let’s Have Some Sympathy For The Part-time R User"](http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/). We have expanded the number of subjects to 50000 and added 500 irrelevant columns to the example. We define a new function that uses `dplyr` and `Sparklyr` to compute the diagnoses. We vary if the table is first limited to columns of interest and if the results are brought back to `R`.
+Let's set up our experiment. The data is a larger version of the problem from ["Let’s Have Some Sympathy For The Part-time R User"](http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/). We have expanded the number of subjects to 50000 and added 50 irrelevant columns to the example. We define a new function that uses `dplyr` and `Sparklyr` to compute the diagnoses. We vary if the table is first limited to columns of interest and if the results are brought back to `R`.
 
 ``` r
 scale <- 0.237
@@ -39,9 +39,9 @@ dT %>%
     ## FROM (SELECT *
     ## FROM (SELECT `subjectID`, `surveyCategory`, `assessmentTotal`, EXP(`assessmentTotal` * 0.237) / sum(EXP(`assessmentTotal` * 0.237)) OVER (PARTITION BY `subjectID`) AS `probability`
     ## FROM (SELECT `subjectID`, `surveyCategory`, `assessmentTotal`
-    ## FROM `d`) `xqstsesjhs`) `bgmkckvklb`
-    ## ORDER BY `probability`, `surveyCategory`) `wqrzhhivab`) `rzhgpshddt`
-    ## WHERE (`zzz3` = `zzz4`)) `gjleglpkji`) `onlxzmvvfj`
+    ## FROM `d`) `odwamooxsx`) `yqxrmkbccx`
+    ## ORDER BY `probability`, `surveyCategory`) `zpiqsqvwlb`) `qyjzkwqhai`
+    ## WHERE (`zzz3` = `zzz4`)) `edqwymtaht`) `fdyruyyxiu`
     ## ORDER BY `subjectID`
 
 ``` r
@@ -66,9 +66,9 @@ dT %>%
     ## FROM (SELECT `subjectID`, `surveyCategory`, `assessmentTotal`, `irrelevantCol_0000001`, `irrelevantCol_0000002`, `irrelevantCol_0000003`, `irrelevantCol_0000004`, `irrelevantCol_0000005`, `irrelevantCol_0000006`, `irrelevantCol_0000007`, `irrelevantCol_0000008`, `irrelevantCol_0000009`, `irrelevantCol_0000010`, `irrelevantCol_0000011`, `irrelevantCol_0000012`, `irrelevantCol_0000013`, `irrelevantCol_0000014`, `irrelevantCol_0000015`, `irrelevantCol_0000016`, `irrelevantCol_0000017`, `irrelevantCol_0000018`, `irrelevantCol_0000019`, `irrelevantCol_0000020`, `irrelevantCol_0000021`, `irrelevantCol_0000022`, `irrelevantCol_0000023`, `irrelevantCol_0000024`, `irrelevantCol_0000025`, `irrelevantCol_0000026`, `irrelevantCol_0000027`, `irrelevantCol_0000028`, `irrelevantCol_0000029`, `irrelevantCol_0000030`, `irrelevantCol_0000031`, `irrelevantCol_0000032`, `irrelevantCol_0000033`, `irrelevantCol_0000034`, `irrelevantCol_0000035`, `irrelevantCol_0000036`, `irrelevantCol_0000037`, `irrelevantCol_0000038`, `irrelevantCol_0000039`, `irrelevantCol_0000040`, `irrelevantCol_0000041`, `irrelevantCol_0000042`, `irrelevantCol_0000043`, `irrelevantCol_0000044`, `irrelevantCol_0000045`, `irrelevantCol_0000046`, `irrelevantCol_0000047`, `irrelevantCol_0000048`, `irrelevantCol_0000049`, `irrelevantCol_0000050`, `probability`, row_number() OVER (PARTITION BY `subjectID` ORDER BY `probability`, `surveyCategory`) AS `zzz5`, COUNT(*) OVER (PARTITION BY `subjectID`) AS `zzz6`
     ## FROM (SELECT *
     ## FROM (SELECT `subjectID`, `surveyCategory`, `assessmentTotal`, `irrelevantCol_0000001`, `irrelevantCol_0000002`, `irrelevantCol_0000003`, `irrelevantCol_0000004`, `irrelevantCol_0000005`, `irrelevantCol_0000006`, `irrelevantCol_0000007`, `irrelevantCol_0000008`, `irrelevantCol_0000009`, `irrelevantCol_0000010`, `irrelevantCol_0000011`, `irrelevantCol_0000012`, `irrelevantCol_0000013`, `irrelevantCol_0000014`, `irrelevantCol_0000015`, `irrelevantCol_0000016`, `irrelevantCol_0000017`, `irrelevantCol_0000018`, `irrelevantCol_0000019`, `irrelevantCol_0000020`, `irrelevantCol_0000021`, `irrelevantCol_0000022`, `irrelevantCol_0000023`, `irrelevantCol_0000024`, `irrelevantCol_0000025`, `irrelevantCol_0000026`, `irrelevantCol_0000027`, `irrelevantCol_0000028`, `irrelevantCol_0000029`, `irrelevantCol_0000030`, `irrelevantCol_0000031`, `irrelevantCol_0000032`, `irrelevantCol_0000033`, `irrelevantCol_0000034`, `irrelevantCol_0000035`, `irrelevantCol_0000036`, `irrelevantCol_0000037`, `irrelevantCol_0000038`, `irrelevantCol_0000039`, `irrelevantCol_0000040`, `irrelevantCol_0000041`, `irrelevantCol_0000042`, `irrelevantCol_0000043`, `irrelevantCol_0000044`, `irrelevantCol_0000045`, `irrelevantCol_0000046`, `irrelevantCol_0000047`, `irrelevantCol_0000048`, `irrelevantCol_0000049`, `irrelevantCol_0000050`, EXP(`assessmentTotal` * 0.237) / sum(EXP(`assessmentTotal` * 0.237)) OVER (PARTITION BY `subjectID`) AS `probability`
-    ## FROM `d`) `cumpavgucj`
-    ## ORDER BY `probability`, `surveyCategory`) `aoouilopdh`) `hwaohenpqh`
-    ## WHERE (`zzz5` = `zzz6`)) `kqpxfifrrx`) `wcwmoslabv`
+    ## FROM `d`) `iondoatxig`
+    ## ORDER BY `probability`, `surveyCategory`) `aknmugyybv`) `itjgeunowe`
+    ## WHERE (`zzz5` = `zzz6`)) `uasqprqjuo`) `vnvdjgjkjb`
     ## ORDER BY `subjectID`
 
 ``` r
@@ -99,28 +99,28 @@ dplyr_run(narrow=FALSE)
 ```
 
     ##   subjectID           diagnosis probability
-    ## 1         1 withdrawal behavior   0.6706221
+    ## 1         1 positive re-framing   0.5589742
 
 ``` r
 dplyr_run(narrow=TRUE)
 ```
 
     ##   subjectID           diagnosis probability
-    ## 1         1 withdrawal behavior   0.6706221
+    ## 1         1 positive re-framing   0.5589742
 
 ``` r
 optree <- dR %.>%
   extend_nse(.,
-             probability :=
+             probability %:=%
                exp(assessmentTotal * scale)/
                sum(exp(assessmentTotal * scale)),
-             count := count(1),
+             count %:=% count(1),
              partitionby = 'subjectID') %.>%
   extend_nse(.,
-             rank := row_number(),
+             rank %:=% row_number(),
              partitionby = 'subjectID',
              orderby = c('probability', 'surveyCategory'))  %.>%
-  rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
+  rename_columns(., 'diagnosis' %:=% 'surveyCategory') %.>%
   select_rows_nse(., rank == count) %.>%
   select_columns(., c('subjectID', 
                       'diagnosis', 
@@ -159,33 +159,33 @@ cat(to_sql(optree, my_db))
     ##       count ( 1 ) OVER (  PARTITION BY `subjectID` ) AS `count`
     ##      FROM (
     ##       SELECT
-    ##        `d`.`subjectID`,
-    ##        `d`.`surveyCategory`,
-    ##        `d`.`assessmentTotal`
+    ##        `subjectID`,
+    ##        `surveyCategory`,
+    ##        `assessmentTotal`
     ##       FROM
     ##        `d`
-    ##       ) tsql_13105981535105768277_0000000000
-    ##      ) tsql_13105981535105768277_0000000001
-    ##    ) tsql_13105981535105768277_0000000002
-    ##   ) tsql_13105981535105768277_0000000003
+    ##       ) tsql_97922275937295651630_0000000000
+    ##      ) tsql_97922275937295651630_0000000001
+    ##    ) tsql_97922275937295651630_0000000002
+    ##   ) tsql_97922275937295651630_0000000003
     ##   WHERE `rank` = `count`
-    ##  ) tsql_13105981535105768277_0000000004
-    ## ) tsql_13105981535105768277_0000000005 ORDER BY `subjectID`
+    ##  ) tsql_97922275937295651630_0000000004
+    ## ) tsql_97922275937295651630_0000000005 ORDER BY `subjectID`
 
 ``` r
 rquery_run <- function() {
   optree <- dR %.>%
     extend_nse(.,
-               probability :=
+               probability %:=%
                  exp(assessmentTotal * scale)/
                  sum(exp(assessmentTotal * scale)),
-               count := count(1),
+               count %:=% count(1),
                partitionby = 'subjectID') %.>%
     extend_nse(.,
-               rank := row_number(),
+               rank %:=% row_number(),
                partitionby = 'subjectID',
                orderby = c('probability', 'surveyCategory'))  %.>%
-    rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
+    rename_columns(., 'diagnosis' %:=% 'surveyCategory') %.>%
     select_rows_nse(., rank == count) %.>%
     select_columns(., c('subjectID', 
                         'diagnosis', 
@@ -198,7 +198,7 @@ rquery_run()
 ```
 
     ##   subjectID           diagnosis probability
-    ## 1         1 withdrawal behavior   0.6706221
+    ## 1         1 positive re-framing   0.5589742
 
 We can get timings for variations of the function:
 
@@ -219,15 +219,15 @@ And then present the results:
 print(timings)
 ```
 
-    ## Unit: seconds
+    ## Unit: milliseconds
     ##                       expr      min       lq     mean   median       uq
-    ##  dplyr_run(narrow = FALSE) 2.122607 2.179801 2.263346 2.223775 2.307436
-    ##   dplyr_run(narrow = TRUE) 2.090205 2.174569 2.261127 2.211271 2.288308
-    ##               rquery_run() 1.467583 1.516641 1.631944 1.567852 1.640505
-    ##       max neval
-    ##  2.846989   100
-    ##  3.379599   100
-    ##  2.213496   100
+    ##  dplyr_run(narrow = FALSE) 417.1163 465.0160 529.0181 505.5499 574.1059
+    ##   dplyr_run(narrow = TRUE) 389.3304 452.9792 538.1645 502.0420 565.9975
+    ##               rquery_run() 206.4966 227.9025 274.1418 251.5012 286.4384
+    ##        max neval
+    ##   853.0128   100
+    ##  1115.3804   100
+    ##   676.4701   100
 
 ``` r
 autoplot(timings)
