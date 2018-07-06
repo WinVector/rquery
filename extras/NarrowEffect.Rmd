@@ -45,7 +45,7 @@ if(use_spark) {
 }
 
 nSubj <- 500000
-nIrrelCol <- 50
+nIrrelCol <- 500
 dL <- data.frame(subjectID = sort(rep(seq_len(nSubj),2)),
                  surveyCategory = c(
                    'withdrawal behavior',
