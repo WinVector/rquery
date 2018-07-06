@@ -1,7 +1,7 @@
 Ad Hoc Queries
 ================
 John Mount, Win-Vector LLC
-2018-06-05
+2018-07-06
 
 Database Operator Pipelines
 ===========================
@@ -27,7 +27,7 @@ d <- db_td(db, 'd')
 print(d)
 ```
 
-    ## [1] "table('d'; AUC, R2, D, z)"
+    ## [1] "table('`d`'; AUC, R2, D, z)"
 
 ``` r
 DBI::dbGetQuery(db, to_sql(d, db))
@@ -57,7 +57,7 @@ We can print the query/operator pipeline:
 cat(format(q))
 ```
 
-    table('d'; 
+    table('`d`'; 
       AUC,
       R2,
       D,
@@ -109,14 +109,14 @@ cat(sql)
      FROM (
       SELECT * FROM (
        SELECT
-        `d`.`AUC`,
-        `d`.`R2`
+        `AUC`,
+        `R2`
        FROM
         `d`
-      ) tsql_81185871838786487326_0000000000
+      ) tsql_15389734199373316826_0000000000
       WHERE `R2` > 0.14
-      ) tsql_81185871838786487326_0000000001
-    ) tsql_81185871838786487326_0000000002
+      ) tsql_15389734199373316826_0000000001
+    ) tsql_15389734199373316826_0000000002
 
 ``` r
 DBI::dbGetQuery(db, sql) %.>%
@@ -176,16 +176,16 @@ dL %.>%
 |  0.6|  0.2|  0.4472136|
 
 ``` r
-# can use pipelines on the fly with
-# the %>>% double apply operator.
-
-dL %>>% ( select_rows_nse(., R2 > 0.14) %.>%
+dL %.>% 
+  select_rows_nse(., R2 > 0.14) %.>%
   extend_nse(., c = sqrt(R2))  %.>%
-  select_columns(., c("AUC", "R2", "c")) )
+  select_columns(., c("AUC", "R2", "c")) %.>% 
+  knitr::kable(.)
 ```
 
-    ##   AUC  R2         c
-    ## 1 0.6 0.2 0.4472136
+|  AUC|   R2|          c|
+|----:|----:|----------:|
+|  0.6|  0.2|  0.4472136|
 
 Cleanup
 =======

@@ -117,12 +117,12 @@ dL %.>%
   ops %.>% 
   knitr::kable(.)
 
-# can use pipelines on the fly with
-# the %>>% double apply operator.
 
-dL %>>% ( select_rows_nse(., R2 > 0.14) %.>%
+dL %.>% 
+  select_rows_nse(., R2 > 0.14) %.>%
   extend_nse(., c = sqrt(R2))  %.>%
-  select_columns(., c("AUC", "R2", "c")) )
+  select_columns(., c("AUC", "R2", "c")) %.>% 
+  knitr::kable(.)
 ```
 
 
