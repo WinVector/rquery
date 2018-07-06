@@ -18,7 +18,6 @@
 #' @examples
 #'
 #' if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
-#'   # Land random selections early to avoid SQLite bug.
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   d <- rq_copy_to(
 #'     my_db,
@@ -40,15 +39,6 @@
 #'   cat(sql)
 #'
 #'   print(DBI::dbGetQuery(my_db, sql))
-#'
-#'   # Why we need to land the random selection early
-#'   # for SQLIte:
-#'   q <- "SELECT r AS r1, r AS r2 FROM (
-#'           SELECT random() AS r FROM (
-#'              SELECT * from ( VALUES(1),(2) )
-#'           ) a
-#'        ) b"
-#'   print(DBI::dbGetQuery(my_db, q))
 #'
 #'   DBI::dbDisconnect(my_db)
 #' }
