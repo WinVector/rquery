@@ -92,7 +92,7 @@ For developers working with Spark and R, `rquery` offers a number of advantages.
 
 The design of `rquery` is *database-first*, meaning it was developed specifically to address issues that arise when working with big data in remote data stores via R. `rquery` maintains *complete separation between the query specification and query execution phases*, which allows useful error-checking and some optimization before the query is run. This can be valuable when running complex queries on large volumes of data; you don't want to run a long query only to discover that there was an obvious error on the last step.
 
-`rquery` checks column names at query specification time to insure that they are available for use. It also keeps track of which columns from a table are involved with a given query, and proactively issues the appropriate SELECT statements to narrow the tables being manipulated. This can help speed up queries that involve excessively wide tables where only a few columns are needed.
+`rquery` checks column names at query specification time to insure that they are available for use. It also keeps track of which columns from a table are involved with a given query, and proactively issues the appropriate SELECT statements to narrow the tables being manipulated (this is not very important on Spark due to its columnar orientation and lazy evaluation semantics, but can be a key on other data store). This can help speed up queries that involve excessively wide tables where only a few columns are needed.
 
 `rquery` also offers well-formatted textual as well as graphical presentation of query plans. In addition, you can inspect the generated SQL query before execution.
 
@@ -120,7 +120,7 @@ library("rquery")
 print(db_hdl) # rquery handle into Spark
 ```
 
-    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7fda6a20d820>)"
+    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7f8a57ec4420>)"
 
 Let's assume that we already have the data in Spark, as `order_table`. To work with the table in `rquery`, we must generate a *table description*, using the function `db_td()`. A table description is a record of the table's name and columns; `db_td()` queries the database to get the description.
 
@@ -355,9 +355,9 @@ order_f %>%
 
 Notice small sequences of `dplyr` operators are used to implement basic transforms.
 
-As previously mentioned, `rquery` can work with a variety of SQL-backed data stores; you only need an appropriate adapter. In an earlier example, we showed `reqdatatable`, an adaptation of the `rquery` grammar for in-memory use, using `datatable` as the back-end implementation.
+As previously mentioned, `rquery` can work with a variety of SQL-backed data stores; you only need an appropriate adapter. In an earlier example, we showed `rqdatatable`, an adaptation of the `rquery` grammar for in-memory use, using `datatable` as the back-end implementation.
 
-One of the cool features of the `rquery` grammar is that the `rquery` operator trees and pipelines are back-end independent. This means you can use the pipeline that we created above with Spark through either `SparkR` or `sparklyr`, or on another data source like Postgres (assuming the table on Postgres has the same structure). You can also use the pipeline on local copies of the data, with `rqdatatable`, as we show below.
+One of the cool features of the `rquery` grammar is that the `rquery` operator trees and pipelines are back-end independent. This means you can use the pipeline that we created above with Spark through either `SparkR` or `sparklyr`, or on another data source like Postgres (assuming the table on Postgres has the same structure). You can also use the pipeline on local copies of the data with `rqdatatable`, as we show below.
 
 Note that you MUST use "%.&gt;%" (aka the "dot-arrow" from the `wrapr` package) rather than the `magrittr` pipe for this next step (though there are also convenient non-pipe methods for producing the same result):
 
