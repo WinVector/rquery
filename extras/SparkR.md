@@ -103,7 +103,7 @@ library("rquery")
 print(db_hdl) # rquery handle into Spark
 ```
 
-    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7ffbabd16be8>)"
+    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7fcf4649c598>)"
 
 Let's assume that we already have the data in Spark, as `order_table`. To work with the table in `rquery`, we must generate a *table description*, using the function `db_td()`.
 
