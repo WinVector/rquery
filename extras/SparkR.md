@@ -3,7 +3,7 @@
 Nina Zumel and John Mount, Win-Vector LLC
 07/06/2018
 
-In this article we will introduce `rquery`, a powerful query tool that allows R users to implement powerful data transformations using Spark and other big data systems. `rquery` is based on [Edgar F. Codd’s relational algebra](https://en.wikipedia.org/wiki/Relational_algebra), informed by our experiences using SQL and R packages such as `dplyr` at big data scale.
+In this article we will introduce [`rquery`](https://winvector.github.io/rquery/), a powerful query tool that allows [R](https://www.r-project.org) users to implement powerful data transformations using Spark and other big data systems. `rquery` is based on [Edgar F. Codd’s relational algebra](https://en.wikipedia.org/wiki/Relational_algebra), informed by our experiences using SQL and R packages such as `dplyr` at big data scale.
 
 Data Transformation and Codd's Relational Algebra
 -------------------------------------------------
@@ -92,7 +92,7 @@ For developers working with Spark and R, `rquery` offers a number of advantages.
 
 The design of `rquery` is *database-first*, meaning it was developed specifically to address issues that arise when working with big data in remote data stores via R. `rquery` maintains *complete separation between the query specification and query execution phases*, which allows useful error-checking and some optimization before the query is run. This can be valuable when running complex queries on large volumes of data; you don't want to run a long query only to discover that there was an obvious error on the last step.
 
-`rquery` checks column names at query specification time to insure that they are available for use. It also keeps track of which columns from a table are involved with a given query, and proactively issues the appropriate SELECT statements to narrow the tables being manipulated (this is not very important on Spark due to its columnar orientation and lazy evaluation semantics, but can be a key on other data store). This can help speed up queries that involve excessively wide tables where only a few columns are needed.
+`rquery` checks column names at query specification time to insure that they are available for use. It also keeps track of which columns from a table are involved with a given query, and proactively issues the appropriate SELECT statements to narrow the tables being manipulated. This may not seem important on Spark due to its columnar orientation and lazy evaluation semantics, but can be a key on other data store and is [critical on Spark if you have to cache intermediate results](https://github.com/WinVector/rquery/blob/master/extras/NarrowEffectSpark.md) for any reason (such as attempting to break calculation lineage) and is [useful when working traditional row-oriented systems](https://github.com/WinVector/rquery/blob/master/extras/NarrowEffect.md). Also the effect [shows up on even on Spark once we work at scale](https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md). This can help speed up queries that involve excessively wide tables where only a few columns are needed.
 
 `rquery` also offers well-formatted textual as well as graphical presentation of query plans. In addition, you can inspect the generated SQL query before execution.
 
@@ -120,7 +120,7 @@ library("rquery")
 print(db_hdl) # rquery handle into Spark
 ```
 
-    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7f8a57ec4420>)"
+    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7fc2710cce40>)"
 
 Let's assume that we already have the data in Spark, as `order_table`. To work with the table in `rquery`, we must generate a *table description*, using the function `db_td()`. A table description is a record of the table's name and columns; `db_td()` queries the database to get the description.
 
