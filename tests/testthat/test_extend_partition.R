@@ -40,8 +40,6 @@ test_that("test_extend_partition: Works As Expected", {
     expect_equal(data.frame(sum = 2, x = 1, y = 3), tab)
     tab2 <- data.frame(x = 1) %.>% optree
     expect_equal(data.frame(sum = 2, x = 1, y = 3), tab2)
-    tab3 <- data.frame(x = 1) %>>% extend_nse(., sum = x + 1 , y = sum + 1)
-    expect_equal(data.frame(sum = 2, x = 1, y = 3), tab3)
 
     optree <- d %.>%
        extend_nse(., a = 1, b := 2, c %:=% 4)

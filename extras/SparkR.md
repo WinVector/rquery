@@ -47,21 +47,20 @@ library(rqdatatable)
 ``` r
 data(iris)
 
-local_td(iris) %.>%
+iris %.>%
   project_nse(., groupby=c('Species'),
               mean_petal_width = mean(Petal.Width)) %.>%
   pick_top_k(.,  
              k = 1,
              orderby = c('mean_petal_width', 'Species'),
              reverse = c('mean_petal_width')) %.>% 
-  select_columns(., 'Species') %.>%
-  ex_data_table(.)
+  select_columns(., 'Species') 
 ```
 
     ##      Species
     ## 1: virginica
 
-`rquery` is "database" first, which is why when using the local implementation of it (`rqdatatable`) we have to both use `local_td()` to capture the `data.frame` name and description and finish the pipeline with a `ex_data_table(.)` to trigger the execution.
+`rquery` is database-first -- that is, it is designed primarily for use on remote systems -- so when using the local implementation of it (`rqdatatable`) we have to both use `local_td()` to capture the `data.frame` name and description and finish the pipeline with a `ex_data_table(.)` to trigger the execution.
 
 We could also do the same operation using `dplyr`, another R package with Codd-style operators.
 
@@ -104,7 +103,7 @@ library("rquery")
 print(db_hdl) # rquery handle into Spark
 ```
 
-    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7fdec00051f8>)"
+    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7ffbabd16be8>)"
 
 Let's assume that we already have the data in Spark, as `order_table`. To work with the table in `rquery`, we must generate a *table description*, using the function `db_td()`.
 
@@ -284,6 +283,8 @@ Since many R programmers are familiar with `dplyr`, we can compare `dplyr`'s ope
 ``` r
 library(dplyr)
 ```
+
+    ## Warning: package 'dplyr' was built under R version 3.5.1
 
     ## 
     ## Attaching package: 'dplyr'

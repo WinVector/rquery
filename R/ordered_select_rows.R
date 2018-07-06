@@ -69,7 +69,8 @@ pick_top_k <- function(source,
     pipe <- pipe %.>%
       drop_columns(.,
                    drops = order_column,
-                   strict = TRUE)
+                   strict = TRUE,
+                   env = env)
   }
   pipe
 }

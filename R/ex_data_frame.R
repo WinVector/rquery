@@ -37,7 +37,7 @@ is_named_list_of_data_frames <- function(o) {
 #' @param limit integer, if not NULL limit result to no more than this many rows.
 #' @param source_limit numeric if not NULL limit sources to this many rows.
 #' @param allow_executor logical if TRUE allow any executor set as rquery.rquery_executor to be used.
-#' @param env environment to work in.
+#' @param env environment to look to.
 #' @return data.frame result
 #'
 #' @examples
@@ -92,7 +92,6 @@ rquery_apply_to_data_frame <- function(d,
   }
   if(!is.null(executor)) {
     tables <- NULL
-    env <- env
     if(is.data.frame(d)) {
       if(length(tabNames)!=1) {
         stop("rquery::rquery_apply_to_data_frame optree must reference exactly one table a non-list is passed to rquery_executor")
@@ -102,7 +101,7 @@ rquery_apply_to_data_frame <- function(d,
     } else if(is_named_list_of_data_frames(d)) {
       tables <- d
     } else if(is.environment(d)) {
-      env <- d
+      tables <- as.list(d)
     }
     res <- executor$f(optree = optree,
                       tables = tables,
