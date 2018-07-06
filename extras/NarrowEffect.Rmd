@@ -70,6 +70,8 @@ dL <- NULL
 Let's set up our experiment.  The data is a larger version of the problem from ["Let’s Have Some Sympathy For The Part-time R User"](http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/).  We have expanded the number of subjects to `r sprintf("%i",nSubj)` and added `r sprintf("%i",nIrrelCol)` irrelevant columns to the example.  We define a new function that uses `dplyr` and `Sparklyr` to compute the diagnoses.  We vary if the table is first limited to columns of interest and if the results are brought back to `R`.
 
 ```{r defexp, cache=TRUE}
+print(my_db)
+
 scale <- 0.237
 ```
 
