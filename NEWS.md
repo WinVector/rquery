@@ -1,9 +1,9 @@
 
-# rquery 0.5.1 2018/07/06
+# rquery 0.5.1 2018/07/08
 
  * Change to immediate execution.
  * Subtitute in values in presentation layer (rqdatatable depends on this).
- * Switch to wrapr::pipe_impl() when possible.
+ * Get rid of %>>%.
  * Allow schema qualification.
  * Try to improve use of regexps.
  * Add qlook().
