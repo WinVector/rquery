@@ -26,7 +26,7 @@ One of the earliest and still most common implementation of Codd's algebra is SQ
 SQL vs pipelines for data transformation
 ----------------------------------------
 
-Without a pipe-line based operator notation the common ways to control Spark include SQL or sequencing SparkR data transforms. `rquery` is a complimentary approach that can be combined with these other methodologies.
+Without a pipe-line based operator notation the common ways to control Spark include SQL or sequencing SparkR data transforms. `rquery` is a complementary approach that can be combined with these other methodologies.
 
 One issue with SQL, especially for the novice SQL programmer, is that it can be somewhat unintuitive.
 
@@ -120,7 +120,7 @@ library("rquery")
 print(db_hdl) # rquery handle into Spark
 ```
 
-    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7fc2710cce40>)"
+    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7fc2c6e606d0>)"
 
 Let's assume that we already have the data in Spark, as `order_table`. To work with the table in `rquery`, we must generate a *table description*, using the function `db_td()`. A table description is a record of the table's name and columns; `db_td()` queries the database to get the description.
 

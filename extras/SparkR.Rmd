@@ -30,7 +30,7 @@ One of the earliest and still most common implementation of Codd's algebra is SQ
 ## SQL vs pipelines for data transformation
 
 Without a pipe-line based operator notation the common ways to control Spark include SQL or sequencing
-SparkR data transforms.  `rquery` is a complimentary approach that can be combined with these other methodologies.
+SparkR data transforms.  `rquery` is a complementary approach that can be combined with these other methodologies.
 
 One issue with SQL, especially for the novice SQL programmer, is that it can be somewhat unintuitive.
 
