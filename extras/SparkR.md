@@ -120,7 +120,7 @@ library("rquery")
 print(db_hdl) # rquery handle into Spark
 ```
 
-    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7faacbbcb978>)"
+    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7fa0c5c179e8>)"
 
 Let's assume that we already have the data in Spark, as `order_table`. To work with the table in `rquery`, we must generate a *table description*, using the function `db_td()`. A table description is a record of the table's name and columns; `db_td()` queries the database to get the description.
 
@@ -334,7 +334,7 @@ library(dplyr)
 order_f = SparkR::tableToDF("order_table")
 
 order_f %>% 
-  SparkR::as.data.frame() %>%
+  SparkR::as.data.frame() %>% # bring back a local in-memory copy for dplyr (with big data this may not be practical!)
   group_by(custID, restaurant_type) %>%
   summarize(total_orders = n()) %>%
   ungroup() %>%

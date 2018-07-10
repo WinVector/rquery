@@ -63,8 +63,6 @@ iris %.>%
 
 
 ```{r echo=FALSE, eval=FALSE}
-# this won't work if here because rquery not loaded and inited yet
-
 iris_remote <- SparkR::createDataFrame(iris)
 
 # first, we need a name for the table, so we create a view (hide this)
@@ -165,9 +163,9 @@ sparkSessionConfig <- list(spark.driver.extraJavaOptions = tmp_arg,
                            spark.executor.extraJavaOptions = tmp_arg)
 old_java_opt <- Sys.getenv("_JAVA_OPTIONS")
 Sys.setenv("_JAVA_OPTIONS" = paste("-XX:-UsePerfData", old_java_opt, sep = " "))
-ses <- SparkR::sparkR.session(master = "local[1]", 
-                              sparkConfig = sparkSessionConfig, 
-                              enableHiveSupport = FALSE)
+SparkR::sparkR.session(master = "local[1]", 
+                       sparkConfig = sparkSessionConfig, 
+                       enableHiveSupport = FALSE)
 ```
 
 For our next example let's imagine that we run a food delivery business, and we are interested in what types of cuisines ('Mexican', 'Chinese', etc) our customers prefer. We want to sum up the number of orders of each cuisine type (or `restaurant_type`) by customer and compute which cuisine appears to be their favorite, based on what they order the most. We also want to see how strong that preference is, based on what fraction of their orders is of their favorite cuisine.
@@ -217,6 +215,7 @@ test_df <- SparkR::createDataFrame(d_local)
 # this overrides all rquery functions need help.
 # this would eventually be in an adapter package.
 # SparkR is not DBI- so we supply specific (non-DBI) solutions.
+ses <- SparkR::sparkR.session()
 db_hdl <- rquery::rquery_db_info(
   connection = ses,
   is_dbi = FALSE,
@@ -362,7 +361,7 @@ library(dplyr)
 order_f = SparkR::tableToDF("order_table")
 
 order_f %>% 
-  SparkR::as.data.frame() %>%
+  SparkR::as.data.frame() %>% # bring back a local in-memory copy for dplyr (with big data this may not be practical!)
   group_by(custID, restaurant_type) %>%
   summarize(total_orders = n()) %>%
   ungroup() %>%
