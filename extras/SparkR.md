@@ -1,9 +1,9 @@
 `rquery`: Practical Big Data Transforms for R Users (with Spark examples)
 ================
 Nina Zumel and John Mount, Win-Vector LLC
-07/06/2018
+07/10/2018
 
-In this article we will introduce [`rquery`](https://winvector.github.io/rquery/), a powerful query tool that allows [R](https://www.r-project.org) users to implement powerful data transformations using Spark and other big data systems. `rquery` is based on [Edgar F. Codd’s relational algebra](https://en.wikipedia.org/wiki/Relational_algebra), informed by our experiences using SQL and R packages such as `dplyr` at big data scale.
+In [this article](https://github.com/WinVector/rquery/blob/master/extras/SparkR.md) we will introduce [`rquery`](https://winvector.github.io/rquery/), a powerful query tool that allows [R](https://www.r-project.org) users to implement powerful data transformations using Spark and other big data systems. `rquery` is based on [Edgar F. Codd’s relational algebra](https://en.wikipedia.org/wiki/Relational_algebra), informed by our experiences using SQL and R packages such as `dplyr` at big data scale.
 
 Data Transformation and Codd's Relational Algebra
 -------------------------------------------------
@@ -112,7 +112,7 @@ We'll start with a table of orders, which records order id, customer id, and res
 | cust\_9 | Mexican          |        5|
 | cust\_9 | Indian           |        6|
 
-To work with the data using `rquery`, we need an `rquery` handle to the Spark cluster. Since `rquery` interfaces with many different types of SQL-dialect data stores, it needs an adapter to translate `rquery` functions into the appropriate SQL dialect. The default handler assumes a DBI-adapted database. Since `SparkR` is not DBI-adapted, we must define the handler explicitly, using the function `rquery::rquery_db_info()`. The code for the adapter is here \[LINK\]. Let's assume that we have created the handler as `db_hdl`.
+To work with the data using `rquery`, we need an `rquery` handle to the Spark cluster. Since `rquery` interfaces with many different types of SQL-dialect data stores, it needs an adapter to translate `rquery` functions into the appropriate SQL dialect. The default handler assumes a DBI-adapted database. Since `SparkR` is not DBI-adapted, we must define the handler explicitly, using the function `rquery::rquery_db_info()`. The code for the adapter is [here](https://github.com/WinVector/rquery/blob/master/extras/SparkR.Rmd). Let's assume that we have created the handler as `db_hdl`.
 
 ``` r
 library("rquery")
@@ -120,7 +120,7 @@ library("rquery")
 print(db_hdl) # rquery handle into Spark
 ```
 
-    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7fbf05457860>)"
+    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7faacbbcb978>)"
 
 Let's assume that we already have the data in Spark, as `order_table`. To work with the table in `rquery`, we must generate a *table description*, using the function `db_td()`. A table description is a record of the table's name and columns; `db_td()` queries the database to get the description.
 

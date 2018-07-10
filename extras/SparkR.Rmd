@@ -2,11 +2,11 @@
 title: "`rquery`: Practical Big Data Transforms for R Users (with Spark examples)"
 author: "Nina Zumel and John Mount, Win-Vector LLC"
 output: github_document
-date: "07/06/2018"
+date: "07/10/2018"
 always_allow_html: yes
 ---
 
-In this article we will introduce [`rquery`](https://winvector.github.io/rquery/), a powerful query tool that allows [R](https://www.r-project.org) users
+In [this article](https://github.com/WinVector/rquery/blob/master/extras/SparkR.md) we will introduce [`rquery`](https://winvector.github.io/rquery/), a powerful query tool that allows [R](https://www.r-project.org) users
 to implement powerful data transformations using Spark and other big data systems.
 `rquery` is based on [Edgar F. Codd’s relational algebra](https://en.wikipedia.org/wiki/Relational_algebra), informed by our experiences using SQL and R packages such as `dplyr` at big data scale.
 
@@ -252,7 +252,7 @@ db_hdl$quote_literal <- function(x, o) {
 }
 ```
 
-To work with the data using `rquery`, we need an `rquery` handle to the Spark cluster. Since `rquery` interfaces with many different types of SQL-dialect data stores, it needs an adapter to translate `rquery` functions into the appropriate SQL dialect. The default handler assumes a DBI-adapted database. Since `SparkR` is not DBI-adapted, we must define the handler explicitly, using the function `rquery::rquery_db_info()`. The code for the adapter is here [LINK]. Let's assume that we have created the handler as `db_hdl`.
+To work with the data using `rquery`, we need an `rquery` handle to the Spark cluster. Since `rquery` interfaces with many different types of SQL-dialect data stores, it needs an adapter to translate `rquery` functions into the appropriate SQL dialect. The default handler assumes a DBI-adapted database. Since `SparkR` is not DBI-adapted, we must define the handler explicitly, using the function `rquery::rquery_db_info()`. The code for the adapter is [here](https://github.com/WinVector/rquery/blob/master/extras/SparkR.Rmd). Let's assume that we have created the handler as `db_hdl`.
 
 ```{r example}
 library("rquery")
