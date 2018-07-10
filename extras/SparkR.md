@@ -120,11 +120,22 @@ library("rquery")
 print(db_hdl) # rquery handle into Spark
 ```
 
-    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7fc2c6e606d0>)"
+    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7fbf05457860>)"
 
 Let's assume that we already have the data in Spark, as `order_table`. To work with the table in `rquery`, we must generate a *table description*, using the function `db_td()`. A table description is a record of the table's name and columns; `db_td()` queries the database to get the description.
 
 ``` r
+# our data on Spark
+print(test_df)
+```
+
+    ## SparkDataFrame[custID:string, restaurant_type:string, orderID:int]
+
+``` r
+# for SQL need to get at data by name, so we create a view
+SparkR::createOrReplaceTempView(test_df, "order_table")
+
+# inspect view for table names
 table_description = db_td(db_hdl, "order_table")
 
 print(table_description)
