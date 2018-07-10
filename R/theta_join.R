@@ -56,7 +56,7 @@ build_col_name_map <- function(colsa, colsb, suffix) {
 #'
 #' @param a source to select from.
 #' @param b source to select from.
-#' @param expr quoated join condition
+#' @param expr quoted join conditions
 #' @param ... force later arguments to be by name
 #' @param jointype type of join ('INNER', 'LEFT', 'RIGHT', 'FULL').
 #' @param suffix character length 2, suffices to disambiguate columns.
