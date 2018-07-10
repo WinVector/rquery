@@ -38,8 +38,8 @@ build_col_name_map <- function(colsa, colsb, suffix) {
   fixr <- ""
   try_num <- 0
   while(TRUE) {
-    mapa[[overlap]] <- paste0(overlap, suffix[[1]], fixl)
-    mapb[[overlap]] <- paste0(overlap, suffix[[2]], fixr)
+    mapa[overlap] <- paste0(overlap, suffix[[1]], fixl)
+    mapb[overlap] <- paste0(overlap, suffix[[2]], fixr)
     # altered names can collide with other names in either vector
     if(length(unique(c(as.character(mapa), as.character(mapb)))) == n_target) {
       return(list("a" = mapa, "b" = mapb))
