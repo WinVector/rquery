@@ -1,0 +1,39 @@
+---
+title: "NestedJoin"
+output: github_document
+---
+
+```{r sparklyr, error=TRUE}
+library("dplyr")
+library("sparklyr")
+db <- sparklyr::spark_connect(version='2.2.0', 
+                              master = "local")
+
+d <- data.frame(key = 1, 
+                val = "a", 
+                stringsAsFactors = FALSE)
+d1 <- dplyr::copy_to(db, d, "d1", overwrite = TRUE)
+d2 <- dplyr::copy_to(db, d, "d2", overwrite = TRUE)
+d3 <- dplyr::copy_to(db, d, "d3", overwrite = TRUE)
+
+# works
+d1 %>% 
+  left_join(., d2, by = "key", suffix = c("_x", "_y")) %>% 
+  left_join(., d3, by = "key", suffix = c("_x", "_y"))
+
+# bad query
+d1 %>% 
+  left_join(., d2, by = "key") %>% 
+  left_join(., d3, by = "key") %>%
+  dbplyr::remote_query(.)
+
+# fails
+d1 %>% 
+  left_join(., d2, by = "key") %>% 
+  left_join(., d3, by = "key")
+
+sparklyr::spark_disconnect(db)
+```
+
+
+
