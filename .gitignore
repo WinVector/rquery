@@ -4,7 +4,6 @@
 .Ruserdata
 .DS_Store
 *~
-man/
 *.log
 logs/
 df_tmp/
