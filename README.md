@@ -272,14 +272,14 @@ cat(to_sql(dq, my_db, source_limit = 1000))
             "assessmentTotal"
            FROM
             "d" LIMIT 1000
-           ) tsql_87599994406608759795_0000000000
-          ) tsql_87599994406608759795_0000000001
-         ) tsql_87599994406608759795_0000000002
-       ) tsql_87599994406608759795_0000000003
+           ) tsql_85167865417661562957_0000000000
+          ) tsql_85167865417661562957_0000000001
+         ) tsql_85167865417661562957_0000000002
+       ) tsql_85167865417661562957_0000000003
        WHERE "row_number" <= 1
-      ) tsql_87599994406608759795_0000000004
-     ) tsql_87599994406608759795_0000000005
-    ) tsql_87599994406608759795_0000000006 ORDER BY "subjectID"
+      ) tsql_85167865417661562957_0000000004
+     ) tsql_85167865417661562957_0000000005
+    ) tsql_85167865417661562957_0000000006 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
@@ -416,11 +416,11 @@ See also
 
 For deeper dives into specific topics, please see also:
 
--   [Join Controller](https://github.com/WinVector/rquery/blob/master/extras/JoinController.md)
--   [Join Dependency Sorting](https://github.com/WinVector/rquery/blob/master/extras/DependencySorting.md)
--   [Assignment Partitioner](https://github.com/WinVector/rquery/blob/master/extras/AssigmentPartitioner.md)
--   [DifferentDBs](https://github.com/WinVector/rquery/blob/master/extras/ExtraDBs.md)
--   [rqdatatable](https://github.com/WinVector/rqdatatable)
+-   <a href="https://github.com/WinVector/rquery/blob/master/extras/JoinController.md">Join Controller</a>
+-   <a href="https://github.com/WinVector/rquery/blob/master/extras/DependencySorting.md">Join Dependency Sorting</a>
+-   <a href="https://github.com/WinVector/rquery/blob/master/extras/AssigmentPartitioner.md">Assignment Partitioner</a>
+-   <a href="https://github.com/WinVector/rquery/blob/master/extras/ExtraDBs.md">DifferentDBs</a>
+-   <a href="https://github.com/WinVector/rqdatatable">rqdatatable</a>
 
 To install `rquery` please try `install.packages("rquery")` or try `devtools` as follows.
 

@@ -253,11 +253,11 @@ and also [`data.table`](https://CRAN.R-project.org/package=data.table).  The `da
 
 For deeper dives into specific topics, please see also:
 
-  * [Join Controller](https://github.com/WinVector/rquery/blob/master/extras/JoinController.md)
-  * [Join Dependency Sorting](https://github.com/WinVector/rquery/blob/master/extras/DependencySorting.md)
-  * [Assignment Partitioner](https://github.com/WinVector/rquery/blob/master/extras/AssigmentPartitioner.md)
-  * [DifferentDBs](https://github.com/WinVector/rquery/blob/master/extras/ExtraDBs.md)
-  * [rqdatatable](https://github.com/WinVector/rqdatatable)
+  * <a href="https://github.com/WinVector/rquery/blob/master/extras/JoinController.md">Join Controller</a>
+  * <a href="https://github.com/WinVector/rquery/blob/master/extras/DependencySorting.md">Join Dependency Sorting</a>
+  * <a href="https://github.com/WinVector/rquery/blob/master/extras/AssigmentPartitioner.md">Assignment Partitioner</a>
+  * <a href="https://github.com/WinVector/rquery/blob/master/extras/ExtraDBs.md">DifferentDBs</a>
+  * <a href="https://github.com/WinVector/rqdatatable">rqdatatable</a>
 
 
 ```{r cleanup, include=FALSE}
