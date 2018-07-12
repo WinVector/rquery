@@ -14,7 +14,7 @@
     algebra, and on production experience using 'SQL' and 'dplyr' at big data
     scale.  The design represents an attempt to make 'SQL' more teachable by
     denoting composition by a sequential pipeline notation instead of nested
-    queries or functions.   The implementation delivers reliable high
+    queries or functions.   The implementation delivers reliable high 
     performance data processing on large data systems such as 'Spark',
     databases, and 'data.table'. Package features include: data processing trees
     or pipelines as observable objects (able to report both columns
@@ -47,7 +47,7 @@
 <li>
   <a href="index.html">
     <span class="fa fa-home fa-lg"></span>
-
+     
   </a>
 </li>
 <li>
@@ -56,7 +56,7 @@
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     Articles
-
+     
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
@@ -90,13 +90,13 @@
 </div>
 <!--/.navbar -->
 
-
+      
       </header><div class="row">
   <div class="col-md-9 contents">
+    
 
-
-
-
+    
+    
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 <div id="rquery" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
@@ -205,10 +205,10 @@
 use_spark &lt;-<span class="st"> </span><span class="ot">FALSE</span>
 
 <span class="cf">if</span>(use_spark) {
-  my_db &lt;-<span class="st"> </span>sparklyr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/sparklyr/topics/spark-connections">spark_connect</a></span>(<span class="dt">version=</span><span class="st">'2.2.0'</span>,
+  my_db &lt;-<span class="st"> </span>sparklyr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/sparklyr/topics/spark-connections">spark_connect</a></span>(<span class="dt">version=</span><span class="st">'2.2.0'</span>, 
                                    <span class="dt">master =</span> <span class="st">"local"</span>)
   cname &lt;-<span class="st"> </span><span class="kw"><a href="reference/rq_connection_name.html">rq_connection_name</a></span>(my_db)
-  rquery<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/rquery/topics/setDBOption">setDBOption</a></span>(my_db,
+  rquery<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/rquery/topics/setDBOption">setDBOption</a></span>(my_db, 
                       <span class="st">"create_options"</span>,
                       <span class="st">"USING PARQUET OPTIONS ('compression'='snappy')"</span>)
 } <span class="cf">else</span> {
@@ -224,25 +224,25 @@ dbopts &lt;-<span class="st"> </span><span class="kw"><a href="reference/rq_conn
 <span class="kw">print</span>(dbopts)</code></pre></div>
 <pre><code>## $rquery.PostgreSQLConnection.use_DBI_dbListFields
 ## [1] FALSE
-##
+## 
 ## $rquery.PostgreSQLConnection.use_DBI_dbRemoveTable
 ## [1] FALSE
-##
+## 
 ## $rquery.PostgreSQLConnection.use_DBI_dbExecute
 ## [1] TRUE
-##
+## 
 ## $rquery.PostgreSQLConnection.create_temporary
 ## [1] TRUE
-##
+## 
 ## $rquery.PostgreSQLConnection.control_temporary
 ## [1] TRUE
-##
+## 
 ## $rquery.PostgreSQLConnection.control_rownames
 ## [1] TRUE
-##
+## 
 ## $rquery.PostgreSQLConnection.use_DBI_dbExistsTable
 ## [1] FALSE
-##
+## 
 ## $rquery.PostgreSQLConnection.check_logical_column_types
 ## [1] FALSE</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">options</span>(dbopts)
@@ -257,7 +257,7 @@ d_local &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocu
 <span class="st">   </span><span class="dv">2</span>          , <span class="st">"positive re-framing"</span>, <span class="dv">4</span>                , <span class="st">"irrel1"</span>        , <span class="st">"irrel2"</span>         )
 <span class="kw"><a href="reference/rq_copy_to.html">rq_copy_to</a></span>(my_db, <span class="st">'d'</span>,
             d_local,
-            <span class="dt">temporary =</span> <span class="ot">TRUE</span>,
+            <span class="dt">temporary =</span> <span class="ot">TRUE</span>, 
             <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <pre><code>## [1] "table('\"d\"'; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2)"</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># produce a hande to existing table</span>
@@ -327,8 +327,8 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
              <span class="dt">orderby =</span> <span class="kw">c</span>(<span class="st">'probability'</span>, <span class="st">'surveyCategory'</span>),
              <span class="dt">reverse =</span> <span class="kw">c</span>(<span class="st">'probability'</span>)) <span class="op">%.&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw"><a href="reference/rename_columns.html">rename_columns</a></span>(., <span class="st">'diagnosis'</span> <span class="op">:</span><span class="er">=</span><span class="st"> 'surveyCategory'</span>) <span class="op">%.&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="reference/select_columns.html">select_columns</a></span>(., <span class="kw">c</span>(<span class="st">'subjectID'</span>,
-                      <span class="st">'diagnosis'</span>,
+<span class="st">  </span><span class="kw"><a href="reference/select_columns.html">select_columns</a></span>(., <span class="kw">c</span>(<span class="st">'subjectID'</span>, 
+                      <span class="st">'diagnosis'</span>, 
                       <span class="st">'probability'</span>)) <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="reference/orderby.html">orderby</a></span>(., <span class="dt">cols =</span> <span class="st">'subjectID'</span>)</code></pre></div>
 <p>(Note one can also use the named map builder alias <code>%:=%</code> if there is concern of aliasing with <code>data.table</code>’s definition of <code>:=</code>.)</p>
@@ -393,16 +393,16 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
         "assessmentTotal"
        FROM
         "d" LIMIT 1000
-       ) tsql_71781992731123616396_0000000000
-      ) tsql_71781992731123616396_0000000001
-     ) tsql_71781992731123616396_0000000002
-   ) tsql_71781992731123616396_0000000003
+       ) tsql_07565369279640471685_0000000000
+      ) tsql_07565369279640471685_0000000001
+     ) tsql_07565369279640471685_0000000002
+   ) tsql_07565369279640471685_0000000003
    WHERE "row_number" &lt;= 1
-  ) tsql_71781992731123616396_0000000004
- ) tsql_71781992731123616396_0000000005
-) tsql_71781992731123616396_0000000006 ORDER BY "subjectID"</code></pre>
+  ) tsql_07565369279640471685_0000000004
+ ) tsql_07565369279640471685_0000000005
+) tsql_07565369279640471685_0000000006 ORDER BY "subjectID"</code></pre>
 <p>The query is large, but due to its regular structure it should be very amenable to query optimization.</p>
-<p>A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our <a href="https://github.com/WinVector/rquery/blob/master/extras/PerfTest.html">initial experiments</a> show <code>rquery</code> narrowed queries to be twice as fast as un-narrowed <code>dplyr</code> on a synthetic problem simulating large disk-based queries. We think if we connected directly to <code>Spark</code>’s relational operators (avoiding the <code>SQL</code> layer) we may be able to achieve even faster performance.</p>
+<p>A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our <a href="https://github.com/WinVector/rquery/blob/master/extras/PerfTest%2Emd">initial experiments</a> show <code>rquery</code> narrowed queries to be twice as fast as un-narrowed <code>dplyr</code> on a synthetic problem simulating large disk-based queries. We think if we connected directly to <code>Spark</code>’s relational operators (avoiding the <code>SQL</code> layer) we may be able to achieve even faster performance.</p>
 <p>The above optimization is possible because the <code>rquery</code> representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query. For example:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/column_names.html">column_names</a></span>(dq)</code></pre></div>
 <pre><code>## [1] "subjectID"   "diagnosis"   "probability"</code></pre>
@@ -413,7 +413,7 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 ## [1] "subjectID"       "surveyCategory"  "assessmentTotal"</code></pre>
 <p>The additional record-keeping in the operator nodes allows checking and optimization (such as <a href="http://www.win-vector.com/blog/2017/12/how-to-greatly-speed-up-your-spark-queries/">query narrowing</a>). The flow itself is represented as follows:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw">format</span>(dq))</code></pre></div>
-<pre><code>table('"d"';
+<pre><code>table('"d"'; 
   subjectID,
   surveyCategory,
   assessmentTotal,
@@ -488,18 +488,18 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 ## 1 1.5000000 0.70710678                &lt;NA&gt;                &lt;NA&gt;
 ## 2        NA         NA positive re-framing withdrawal behavior
 ## 3 0.6147982 0.07894697                &lt;NA&gt;                &lt;NA&gt;</code></pre>
-<p>We have found most big-data projects either require joining very many tables (something <code>rquery</code> join planners help with, please see <a href="https://github.com/WinVector/rquery/blob/master/extras/JoinController.html">here</a> and <a href="https://github.com/WinVector/rquery/blob/master/extras/JoinController.html">here</a>) or they require working with wide data-marts (where <code>rquery</code> query narrowing helps, please see <a href="https://github.com/WinVector/rquery/blob/master/extras/PerfTest.html">here</a>).</p>
-<p>We can also stand <code>rquery</code> up on non-<code>DBI</code> sources such as <a href="https://github.com/WinVector/rquery/blob/master/extras/SparkR.html"><code>SparkR</code></a> and also <a href="https://CRAN.R-project.org/package=data.table"><code>data.table</code></a>. The <code>data.table</code> adapter is being developed in the <a href="https://github.com/WinVector/rqdatatable"><code>rqdatatable</code></a> package, and can be <a href="http://www.win-vector.com/blog/2018/06/rqdatatable-rquery-powered-by-data-table/">quite fast</a>. Notice the examples in this mode all essentially use the same query pipeline, the user can choose where to apply it: in memory (<code>data.table</code>), in a <code>DBI</code> database (<code>PostgreSQL</code>, <code>Sparklyr</code>), and with even non-DBI systems (<code>SparkR</code>).</p>
+<p>We have found most big-data projects either require joining very many tables (something <code>rquery</code> join planners help with, please see <a href="https://github.com/WinVector/rquery/blob/master/extras/JoinController%2Emd">here</a> and <a href="https://github.com/WinVector/rquery/blob/master/extras/JoinController%2Emd">here</a>) or they require working with wide data-marts (where <code>rquery</code> query narrowing helps, please see <a href="https://github.com/WinVector/rquery/blob/master/extras/PerfTest%2Emd">here</a>).</p>
+<p>We can also stand <code>rquery</code> up on non-<code>DBI</code> sources such as <a href="https://github.com/WinVector/rquery/blob/master/extras/SparkR%2Emd"><code>SparkR</code></a> and also <a href="https://CRAN.R-project.org/package=data.table"><code>data.table</code></a>. The <code>data.table</code> adapter is being developed in the <a href="https://github.com/WinVector/rqdatatable"><code>rqdatatable</code></a> package, and can be <a href="http://www.win-vector.com/blog/2018/06/rqdatatable-rquery-powered-by-data-table/">quite fast</a>. Notice the examples in this mode all essentially use the same query pipeline, the user can choose where to apply it: in memory (<code>data.table</code>), in a <code>DBI</code> database (<code>PostgreSQL</code>, <code>Sparklyr</code>), and with even non-DBI systems (<code>SparkR</code>).</p>
 </div>
 <div id="see-also" class="section level1">
 <h1 class="hasAnchor">
 <a href="#see-also" class="anchor"></a>See also</h1>
 <p>For deeper dives into specific topics, please see also:</p>
 <ul>
-<li><a href="https://github.com/WinVector/rquery/blob/master/extras/JoinController.md">Join Controller</a></li>
-<li><a href="https://github.com/WinVector/rquery/blob/master/extras/DependencySorting.md">Join Dependency Sorting</a></li>
-<li><a href="https://github.com/WinVector/rquery/blob/master/extras/AssigmentPartitioner.md">Assignment Partitioner</a></li>
-<li><a href="https://github.com/WinVector/rquery/blob/master/extras/ExtraDBs.md">DifferentDBs</a></li>
+<li><a href="https://github.com/WinVector/rquery/blob/master/extras/JoinController%2Emd">Join Controller</a></li>
+<li><a href="https://github.com/WinVector/rquery/blob/master/extras/DependencySorting%2Emd">Join Dependency Sorting</a></li>
+<li><a href="https://github.com/WinVector/rquery/blob/master/extras/AssigmentPartitioner%2Emd">Assignment Partitioner</a></li>
+<li><a href="https://github.com/WinVector/rquery/blob/master/extras/ExtraDBs%2Emd">DifferentDBs</a></li>
 <li><a href="https://github.com/WinVector/rqdatatable">rqdatatable</a></li>
 </ul>
 <p>To install <code>rquery</code> please try <code>install.packages("rquery")</code> or try <code>devtools</code> as follows.</p>
@@ -512,9 +512,9 @@ devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocument
     <div class="links">
 <h2>Links</h2>
 <ul class="list-unstyled">
-<li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=rquery">https://cloud.r-project.org/package=rquery</a>
+<li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=rquery">https://​cloud.r-project.org/​package=rquery</a>
 </li>
-<li>Browse source code at <br><a href="https://github.com/WinVector/rquery/">https://github.com/WinVector/rquery/</a>
+<li>Browse source code at <br><a href="https://github.com/WinVector/rquery/">https://​github.com/​WinVector/​rquery/​</a>
 </li>
 <li>Report a bug at <br><a href="NA">NA</a>
 </li>
@@ -550,7 +550,7 @@ devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocument
       </footer>
 </div>
 
-
+  
 
   </body>
 </html>

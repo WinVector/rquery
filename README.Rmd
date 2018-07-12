@@ -199,7 +199,7 @@ cat(to_sql(dq, my_db, source_limit = 1000))
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
-A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our [initial experiments](https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md) show `rquery` narrowed queries to be twice as fast as un-narrowed `dplyr` on a synthetic problem simulating large disk-based queries.  We think if we connected directly to `Spark`'s relational operators (avoiding the `SQL` layer) we may be able to achieve even faster performance.
+A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our [initial experiments](https://github.com/WinVector/rquery/blob/master/extras/PerfTest%2Emd) show `rquery` narrowed queries to be twice as fast as un-narrowed `dplyr` on a synthetic problem simulating large disk-based queries.  We think if we connected directly to `Spark`'s relational operators (avoiding the `SQL` layer) we may be able to achieve even faster performance.
 
 The above optimization is possible because the `rquery` representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query.  For example:
 
@@ -241,10 +241,10 @@ dq %.>%
   execute(my_db, .)
 ```
 
-We have found most big-data projects either require joining very many tables (something `rquery` join planners help with, please see [here](https://github.com/WinVector/rquery/blob/master/extras/JoinController.md) and [here](https://github.com/WinVector/rquery/blob/master/extras/JoinController.md)) or they require working with wide data-marts (where `rquery` query narrowing helps, please see [here](https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md)).
+We have found most big-data projects either require joining very many tables (something `rquery` join planners help with, please see [here](https://github.com/WinVector/rquery/blob/master/extras/JoinController%2Emd) and [here](https://github.com/WinVector/rquery/blob/master/extras/JoinController%2Emd)) or they require working with wide data-marts (where `rquery` query narrowing helps, please see [here](https://github.com/WinVector/rquery/blob/master/extras/PerfTest%2Emd)).
 
 
-We can also stand `rquery` up on non-`DBI` sources such as [`SparkR`](https://github.com/WinVector/rquery/blob/master/extras/SparkR.md)
+We can also stand `rquery` up on non-`DBI` sources such as [`SparkR`](https://github.com/WinVector/rquery/blob/master/extras/SparkR%2Emd)
 and also [`data.table`](https://CRAN.R-project.org/package=data.table).  The `data.table` adapter is being developed in the [`rqdatatable`](https://github.com/WinVector/rqdatatable) package, and can be [quite fast](http://www.win-vector.com/blog/2018/06/rqdatatable-rquery-powered-by-data-table/).  Notice the examples in this mode all essentially use the same query pipeline, the user can choose where to apply it: in memory (`data.table`), in a `DBI` database (`PostgreSQL`, `Sparklyr`), and with even non-DBI systems (`SparkR`).
 
 
@@ -253,10 +253,10 @@ and also [`data.table`](https://CRAN.R-project.org/package=data.table).  The `da
 
 For deeper dives into specific topics, please see also:
 
-  * <a href="https://github.com/WinVector/rquery/blob/master/extras/JoinController.md">Join Controller</a>
-  * <a href="https://github.com/WinVector/rquery/blob/master/extras/DependencySorting.md">Join Dependency Sorting</a>
-  * <a href="https://github.com/WinVector/rquery/blob/master/extras/AssigmentPartitioner.md">Assignment Partitioner</a>
-  * <a href="https://github.com/WinVector/rquery/blob/master/extras/ExtraDBs.md">DifferentDBs</a>
+  * <a href="https://github.com/WinVector/rquery/blob/master/extras/JoinController%2Emd">Join Controller</a>
+  * <a href="https://github.com/WinVector/rquery/blob/master/extras/DependencySorting%2Emd">Join Dependency Sorting</a>
+  * <a href="https://github.com/WinVector/rquery/blob/master/extras/AssigmentPartitioner%2Emd">Assignment Partitioner</a>
+  * <a href="https://github.com/WinVector/rquery/blob/master/extras/ExtraDBs%2Emd">DifferentDBs</a>
   * <a href="https://github.com/WinVector/rqdatatable">rqdatatable</a>
 
 

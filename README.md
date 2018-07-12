@@ -272,18 +272,18 @@ cat(to_sql(dq, my_db, source_limit = 1000))
             "assessmentTotal"
            FROM
             "d" LIMIT 1000
-           ) tsql_85167865417661562957_0000000000
-          ) tsql_85167865417661562957_0000000001
-         ) tsql_85167865417661562957_0000000002
-       ) tsql_85167865417661562957_0000000003
+           ) tsql_19071860702312127216_0000000000
+          ) tsql_19071860702312127216_0000000001
+         ) tsql_19071860702312127216_0000000002
+       ) tsql_19071860702312127216_0000000003
        WHERE "row_number" <= 1
-      ) tsql_85167865417661562957_0000000004
-     ) tsql_85167865417661562957_0000000005
-    ) tsql_85167865417661562957_0000000006 ORDER BY "subjectID"
+      ) tsql_19071860702312127216_0000000004
+     ) tsql_19071860702312127216_0000000005
+    ) tsql_19071860702312127216_0000000006 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
-A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our [initial experiments](https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md) show `rquery` narrowed queries to be twice as fast as un-narrowed `dplyr` on a synthetic problem simulating large disk-based queries. We think if we connected directly to `Spark`'s relational operators (avoiding the `SQL` layer) we may be able to achieve even faster performance.
+A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our [initial experiments](https://github.com/WinVector/rquery/blob/master/extras/PerfTest%2Emd) show `rquery` narrowed queries to be twice as fast as un-narrowed `dplyr` on a synthetic problem simulating large disk-based queries. We think if we connected directly to `Spark`'s relational operators (avoiding the `SQL` layer) we may be able to achieve even faster performance.
 
 The above optimization is possible because the `rquery` representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query. For example:
 
@@ -407,19 +407,19 @@ dq %.>%
     ## 2        NA         NA positive re-framing withdrawal behavior
     ## 3 0.6147982 0.07894697                <NA>                <NA>
 
-We have found most big-data projects either require joining very many tables (something `rquery` join planners help with, please see [here](https://github.com/WinVector/rquery/blob/master/extras/JoinController.md) and [here](https://github.com/WinVector/rquery/blob/master/extras/JoinController.md)) or they require working with wide data-marts (where `rquery` query narrowing helps, please see [here](https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md)).
+We have found most big-data projects either require joining very many tables (something `rquery` join planners help with, please see [here](https://github.com/WinVector/rquery/blob/master/extras/JoinController%2Emd) and [here](https://github.com/WinVector/rquery/blob/master/extras/JoinController%2Emd)) or they require working with wide data-marts (where `rquery` query narrowing helps, please see [here](https://github.com/WinVector/rquery/blob/master/extras/PerfTest%2Emd)).
 
-We can also stand `rquery` up on non-`DBI` sources such as [`SparkR`](https://github.com/WinVector/rquery/blob/master/extras/SparkR.md) and also [`data.table`](https://CRAN.R-project.org/package=data.table). The `data.table` adapter is being developed in the [`rqdatatable`](https://github.com/WinVector/rqdatatable) package, and can be [quite fast](http://www.win-vector.com/blog/2018/06/rqdatatable-rquery-powered-by-data-table/). Notice the examples in this mode all essentially use the same query pipeline, the user can choose where to apply it: in memory (`data.table`), in a `DBI` database (`PostgreSQL`, `Sparklyr`), and with even non-DBI systems (`SparkR`).
+We can also stand `rquery` up on non-`DBI` sources such as [`SparkR`](https://github.com/WinVector/rquery/blob/master/extras/SparkR%2Emd) and also [`data.table`](https://CRAN.R-project.org/package=data.table). The `data.table` adapter is being developed in the [`rqdatatable`](https://github.com/WinVector/rqdatatable) package, and can be [quite fast](http://www.win-vector.com/blog/2018/06/rqdatatable-rquery-powered-by-data-table/). Notice the examples in this mode all essentially use the same query pipeline, the user can choose where to apply it: in memory (`data.table`), in a `DBI` database (`PostgreSQL`, `Sparklyr`), and with even non-DBI systems (`SparkR`).
 
 See also
 ========
 
 For deeper dives into specific topics, please see also:
 
--   <a href="https://github.com/WinVector/rquery/blob/master/extras/JoinController.md">Join Controller</a>
--   <a href="https://github.com/WinVector/rquery/blob/master/extras/DependencySorting.md">Join Dependency Sorting</a>
--   <a href="https://github.com/WinVector/rquery/blob/master/extras/AssigmentPartitioner.md">Assignment Partitioner</a>
--   <a href="https://github.com/WinVector/rquery/blob/master/extras/ExtraDBs.md">DifferentDBs</a>
+-   <a href="https://github.com/WinVector/rquery/blob/master/extras/JoinController%2Emd">Join Controller</a>
+-   <a href="https://github.com/WinVector/rquery/blob/master/extras/DependencySorting%2Emd">Join Dependency Sorting</a>
+-   <a href="https://github.com/WinVector/rquery/blob/master/extras/AssigmentPartitioner%2Emd">Assignment Partitioner</a>
+-   <a href="https://github.com/WinVector/rquery/blob/master/extras/ExtraDBs%2Emd">DifferentDBs</a>
 -   <a href="https://github.com/WinVector/rqdatatable">rqdatatable</a>
 
 To install `rquery` please try `install.packages("rquery")` or try `devtools` as follows.
