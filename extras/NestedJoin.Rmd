@@ -62,11 +62,14 @@ col_table <- lapply(
   list(d1d, d2d, d3d),
   function(di) {
     data.frame(table = di$table_name,
-             cols = setdiff(column_names(di), key),
+             cols = column_names(di),
              stringsAsFactors = FALSE)
   })
 col_table <- do.call(rbind, col_table)
-col_table$new_cols <- make.names(col_table$cols, unique = TRUE)
+col_table$is_key <- col_table$cols %in% key
+col_table$new_cols <- col_table$cols
+col_table$new_cols[!col_table$is_key] <- make.names(col_table$cols[!col_table$is_key], 
+                                          unique = TRUE)
 col_table$new_cols <- gsub(".", "_", col_table$new_cols, fixed = TRUE)
 knitr::kable(col_table)
 

@@ -72,7 +72,7 @@ d1 %>%
   left_join(., d3, by = "key")
 ```
 
-    ## Error: org.apache.spark.sql.AnalysisException: cannot resolve '`TBL_LEFT.val.x`' given input columns: [val.y, key, key, val.x, val]; line 1 pos 34;
+    ## Error: org.apache.spark.sql.AnalysisException: cannot resolve '`TBL_LEFT.val.x`' given input columns: [val, key, val.x, val.y, key]; line 1 pos 34;
     ## 'Project [key#273 AS key#276, 'TBL_LEFT.val.x AS val.x#277, 'TBL_LEFT.val.y AS val.y#278, val#159 AS val#279]
     ## +- Join LeftOuter, (key#273 = key#158)
     ##    :- SubqueryAlias TBL_LEFT
@@ -214,20 +214,26 @@ col_table <- lapply(
   list(d1d, d2d, d3d),
   function(di) {
     data.frame(table = di$table_name,
-             cols = setdiff(column_names(di), key),
+             cols = column_names(di),
              stringsAsFactors = FALSE)
   })
 col_table <- do.call(rbind, col_table)
-col_table$new_cols <- make.names(col_table$cols, unique = TRUE)
+col_table$is_key <- col_table$cols %in% key
+col_table$new_cols <- col_table$cols
+col_table$new_cols[!col_table$is_key] <- make.names(col_table$cols[!col_table$is_key], 
+                                          unique = TRUE)
 col_table$new_cols <- gsub(".", "_", col_table$new_cols, fixed = TRUE)
 knitr::kable(col_table)
 ```
 
-| table | cols | new\_cols |
-|:------|:-----|:----------|
-| d1    | val  | val       |
-| d2    | val  | val\_1    |
-| d3    | val  | val\_2    |
+| table | cols | is\_key | new\_cols |
+|:------|:-----|:--------|:----------|
+| d1    | key  | TRUE    | key       |
+| d1    | val  | FALSE   | val       |
+| d2    | key  | TRUE    | key       |
+| d2    | val  | FALSE   | val\_1    |
+| d3    | key  | TRUE    | key       |
+| d3    | val  | FALSE   | val\_2    |
 
 ``` r
 rename_it <- function(dd, col_table) {
@@ -266,22 +272,22 @@ cat(to_sql(optree, db))
 ```
 
     ## SELECT
-    ##  COALESCE(`tsql_11048149003998289066_0000000004`.`key`, `tsql_11048149003998289066_0000000005`.`key`) AS `key`,
-    ##  `tsql_11048149003998289066_0000000004`.`val` AS `val`,
-    ##  `tsql_11048149003998289066_0000000004`.`val_1` AS `val_1`,
-    ##  `tsql_11048149003998289066_0000000005`.`val_2` AS `val_2`
+    ##  COALESCE(`tsql_97843980444552200041_0000000004`.`key`, `tsql_97843980444552200041_0000000005`.`key`) AS `key`,
+    ##  `tsql_97843980444552200041_0000000004`.`val` AS `val`,
+    ##  `tsql_97843980444552200041_0000000004`.`val_1` AS `val_1`,
+    ##  `tsql_97843980444552200041_0000000005`.`val_2` AS `val_2`
     ## FROM (
     ##  SELECT
-    ##   COALESCE(`tsql_11048149003998289066_0000000001`.`key`, `tsql_11048149003998289066_0000000002`.`key`) AS `key`,
-    ##   `tsql_11048149003998289066_0000000001`.`val` AS `val`,
-    ##   `tsql_11048149003998289066_0000000002`.`val_1` AS `val_1`
+    ##   COALESCE(`tsql_97843980444552200041_0000000001`.`key`, `tsql_97843980444552200041_0000000002`.`key`) AS `key`,
+    ##   `tsql_97843980444552200041_0000000001`.`val` AS `val`,
+    ##   `tsql_97843980444552200041_0000000002`.`val_1` AS `val_1`
     ##  FROM (
     ##   SELECT
     ##    `key`,
     ##    `val`
     ##   FROM
     ##    `d1`
-    ##  ) `tsql_11048149003998289066_0000000001`
+    ##  ) `tsql_97843980444552200041_0000000001`
     ##  INNER JOIN (
     ##   SELECT
     ##    `key` AS `key`,
@@ -292,11 +298,11 @@ cat(to_sql(optree, db))
     ##     `val`
     ##    FROM
     ##     `d2`
-    ##   ) tsql_11048149003998289066_0000000000
-    ##  ) `tsql_11048149003998289066_0000000002`
+    ##   ) tsql_97843980444552200041_0000000000
+    ##  ) `tsql_97843980444552200041_0000000002`
     ##  ON
-    ##   `tsql_11048149003998289066_0000000001`.`key` = `tsql_11048149003998289066_0000000002`.`key`
-    ## ) `tsql_11048149003998289066_0000000004`
+    ##   `tsql_97843980444552200041_0000000001`.`key` = `tsql_97843980444552200041_0000000002`.`key`
+    ## ) `tsql_97843980444552200041_0000000004`
     ## INNER JOIN (
     ##  SELECT
     ##   `key` AS `key`,
@@ -307,10 +313,10 @@ cat(to_sql(optree, db))
     ##    `val`
     ##   FROM
     ##    `d3`
-    ##  ) tsql_11048149003998289066_0000000003
-    ## ) `tsql_11048149003998289066_0000000005`
+    ##  ) tsql_97843980444552200041_0000000003
+    ## ) `tsql_97843980444552200041_0000000005`
     ## ON
-    ##  `tsql_11048149003998289066_0000000004`.`key` = `tsql_11048149003998289066_0000000005`.`key`
+    ##  `tsql_97843980444552200041_0000000004`.`key` = `tsql_97843980444552200041_0000000005`.`key`
 
 ``` r
 execute(db, optree) %.>%
