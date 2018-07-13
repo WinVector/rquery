@@ -1,6 +1,8 @@
 NestedJoin
 ================
 
+Connect to the `Apache Spark` cluster and copy in 3 tables.
+
 ``` r
 library("dplyr")
 ```
@@ -29,7 +31,11 @@ d <- data.frame(key = 1,
 d1 <- dplyr::copy_to(db, d, "d1", overwrite = TRUE)
 d2 <- dplyr::copy_to(db, d, "d2", overwrite = TRUE)
 d3 <- dplyr::copy_to(db, d, "d3", overwrite = TRUE)
+```
 
+Try to use `sparklyr`/`dplyr` to join the tables. Dies due to poor naming of dupicate columns.
+
+``` r
 # works
 d1 %>% 
   left_join(., d2, by = "key", suffix = c("_x", "_y")) %>% 
@@ -66,7 +72,7 @@ d1 %>%
   left_join(., d3, by = "key")
 ```
 
-    ## Error: org.apache.spark.sql.AnalysisException: cannot resolve '`TBL_LEFT.val.x`' given input columns: [val.x, key, val, val.y, key]; line 1 pos 34;
+    ## Error: org.apache.spark.sql.AnalysisException: cannot resolve '`TBL_LEFT.val.x`' given input columns: [val.y, key, key, val.x, val]; line 1 pos 34;
     ## 'Project [key#273 AS key#276, 'TBL_LEFT.val.x AS val.x#277, 'TBL_LEFT.val.y AS val.y#278, val#159 AS val#279]
     ## +- Join LeftOuter, (key#273 = key#158)
     ##    :- SubqueryAlias TBL_LEFT
@@ -152,6 +158,170 @@ d1 %>%
     ##  at io.netty.util.concurrent.SingleThreadEventExecutor$2.run(SingleThreadEventExecutor.java:131)
     ##  at io.netty.util.concurrent.DefaultThreadFactory$DefaultRunnableDecorator.run(DefaultThreadFactory.java:144)
     ##  at java.lang.Thread.run(Thread.java:745)
+
+Similar task with `rquery`. Note `rquery` natural join does not rename (it coalesces), so we need a helper function.
+
+``` r
+library("rquery")
+
+dbopts <- rq_connection_tests(db)
+print(dbopts)
+```
+
+    ## $rquery.DBIConnection_spark_connection_spark_shell_connection.use_DBI_dbListFields
+    ## [1] FALSE
+    ## 
+    ## $rquery.DBIConnection_spark_connection_spark_shell_connection.use_DBI_dbRemoveTable
+    ## [1] FALSE
+    ## 
+    ## $rquery.DBIConnection_spark_connection_spark_shell_connection.use_DBI_dbExecute
+    ## [1] TRUE
+    ## 
+    ## $rquery.DBIConnection_spark_connection_spark_shell_connection.create_temporary
+    ## [1] FALSE
+    ## 
+    ## $rquery.DBIConnection_spark_connection_spark_shell_connection.control_temporary
+    ## [1] TRUE
+    ## 
+    ## $rquery.DBIConnection_spark_connection_spark_shell_connection.control_rownames
+    ## [1] FALSE
+    ## 
+    ## $rquery.DBIConnection_spark_connection_spark_shell_connection.use_DBI_dbExistsTable
+    ## [1] TRUE
+    ## 
+    ## $rquery.DBIConnection_spark_connection_spark_shell_connection.check_logical_column_types
+    ## [1] FALSE
+    ## 
+    ## $rquery.DBIConnection_spark_connection_spark_shell_connection.zero_arg_fn_map
+    ## random 
+    ## "rand"
+
+``` r
+options(dbopts)
+print(getDBOption(db, "control_rownames"))
+```
+
+    ## [1] FALSE
+
+``` r
+d1d <- db_td(db, "d1")
+d2d <- db_td(db, "d2")
+d3d <- db_td(db, "d3")
+
+# disambiguate columns
+key <- "key"
+col_table <- lapply(
+  list(d1d, d2d, d3d),
+  function(di) {
+    data.frame(table = di$table_name,
+             cols = setdiff(column_names(di), key),
+             stringsAsFactors = FALSE)
+  })
+col_table <- do.call(rbind, col_table)
+col_table$new_cols <- make.names(col_table$cols, unique = TRUE)
+col_table$new_cols <- gsub(".", "_", col_table$new_cols, fixed = TRUE)
+knitr::kable(col_table)
+```
+
+| table | cols | new\_cols |
+|:------|:-----|:----------|
+| d1    | val  | val       |
+| d2    | val  | val\_1    |
+| d3    | val  | val\_2    |
+
+``` r
+rename_it <- function(dd, col_table) {
+  ct <- col_table[(col_table$table==dd$table_name) & 
+                    (col_table$cols != col_table$new_cols), , drop = FALSE]
+  if(nrow(ct)<=0) {
+    return(dd)
+  }
+  mp <- ct$cols
+  names(mp) <- ct$new_cols
+  rename_columns(dd, mp)
+}
+
+d1r <- rename_it(d1d, col_table)
+d2r <- rename_it(d2d, col_table)
+d3r <- rename_it(d3d, col_table)
+
+optree <- d1r %.>% 
+  natural_join(., d2r, by = key) %.>% 
+  natural_join(., d3r, by = key) 
+
+# cat(format(optree))
+
+optree %.>%
+  op_diagram(.) %.>% 
+  DiagrammeR::DiagrammeR(diagram = ., type = "grViz") %.>% 
+  DiagrammeRsvg::export_svg(.) %.>% 
+  charToRaw(.) %.>%
+  rsvg::rsvg_png(., file = "NestedJoin_diagram.png")
+```
+
+![](NestedJoin_diagram.png)
+
+``` r
+cat(to_sql(optree, db))
+```
+
+    ## SELECT
+    ##  COALESCE(`tsql_11048149003998289066_0000000004`.`key`, `tsql_11048149003998289066_0000000005`.`key`) AS `key`,
+    ##  `tsql_11048149003998289066_0000000004`.`val` AS `val`,
+    ##  `tsql_11048149003998289066_0000000004`.`val_1` AS `val_1`,
+    ##  `tsql_11048149003998289066_0000000005`.`val_2` AS `val_2`
+    ## FROM (
+    ##  SELECT
+    ##   COALESCE(`tsql_11048149003998289066_0000000001`.`key`, `tsql_11048149003998289066_0000000002`.`key`) AS `key`,
+    ##   `tsql_11048149003998289066_0000000001`.`val` AS `val`,
+    ##   `tsql_11048149003998289066_0000000002`.`val_1` AS `val_1`
+    ##  FROM (
+    ##   SELECT
+    ##    `key`,
+    ##    `val`
+    ##   FROM
+    ##    `d1`
+    ##  ) `tsql_11048149003998289066_0000000001`
+    ##  INNER JOIN (
+    ##   SELECT
+    ##    `key` AS `key`,
+    ##    `val` AS `val_1`
+    ##   FROM (
+    ##    SELECT
+    ##     `key`,
+    ##     `val`
+    ##    FROM
+    ##     `d2`
+    ##   ) tsql_11048149003998289066_0000000000
+    ##  ) `tsql_11048149003998289066_0000000002`
+    ##  ON
+    ##   `tsql_11048149003998289066_0000000001`.`key` = `tsql_11048149003998289066_0000000002`.`key`
+    ## ) `tsql_11048149003998289066_0000000004`
+    ## INNER JOIN (
+    ##  SELECT
+    ##   `key` AS `key`,
+    ##   `val` AS `val_2`
+    ##  FROM (
+    ##   SELECT
+    ##    `key`,
+    ##    `val`
+    ##   FROM
+    ##    `d3`
+    ##  ) tsql_11048149003998289066_0000000003
+    ## ) `tsql_11048149003998289066_0000000005`
+    ## ON
+    ##  `tsql_11048149003998289066_0000000004`.`key` = `tsql_11048149003998289066_0000000005`.`key`
+
+``` r
+execute(db, optree) %.>%
+  knitr::kable(.)
+```
+
+|  key| val | val\_1 | val\_2 |
+|----:|:----|:-------|:-------|
+|    1| a   | a      | a      |
+
+Clean up.
 
 ``` r
 sparklyr::spark_disconnect(db)
