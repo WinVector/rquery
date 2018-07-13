@@ -89,8 +89,8 @@ d2r <- rename_it(d2d, col_table)
 d3r <- rename_it(d3d, col_table)
 
 optree <- d1r %.>% 
-  natural_join(., d2r, by = key) %.>% 
-  natural_join(., d3r, by = key) 
+  natural_join(., d2r, by = key, jointype = "LEFT") %.>% 
+  natural_join(., d3r, by = key, jointype = "LEFT") 
 
 # cat(format(optree))
 
