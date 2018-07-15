@@ -16,11 +16,11 @@ quantile_cols(db, incoming_table_name, ..., probs = seq(0, 1, 0.25),
 
 \item{...}{force later arguments to bind by name}
 
-\item{probs}{numeric, probabilites to compute quantiles of}
+\item{probs}{numeric, probabilities to compute quantiles of}
 
 \item{probs_name}{character name for probability column}
 
-\item{cols}{charancter, columns to compute quantiles of}
+\item{cols}{character, columns to compute quantiles of}
 }
 \value{
 data.frame of quantiles

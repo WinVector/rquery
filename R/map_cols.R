@@ -1,7 +1,7 @@
 
 #' Remap values in a set of columns.
 #'
-#' @param source optree relnode or data.frame.
+#' @param source optree relop node or data.frame.
 #' @param colmap data.frame with columns column_name, old_value, new_value.
 #' @param ... force later arguments to bind by name.
 #' @param null_default logical, if TRUE map non-matching values to NULL (else they map to self).

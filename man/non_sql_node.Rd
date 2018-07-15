@@ -23,7 +23,7 @@ non_sql_node(source, ..., f_db, f_df = NULL, incoming_table_name,
 
 \item{columns_produced}{character, names of additional columns produced}
 
-\item{display_form}{chacter, how to print node}
+\item{display_form}{character, how to print node}
 
 \item{pass_using}{logical, if TRUE (or if f_db is NULL) pass using column calculations through (else assume using all columns).}
 

@@ -1,7 +1,7 @@
 
 
 
-#' Make an set indicator node.
+#' Make a set indicator node.
 #'
 #' Create a new column indicating the membership of another column in a given set.
 #'

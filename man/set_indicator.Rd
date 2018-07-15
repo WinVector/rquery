@@ -2,7 +2,7 @@
 % Please edit documentation in R/set_indicator.R
 \name{set_indicator}
 \alias{set_indicator}
-\title{Make an set indicator node.}
+\title{Make a set indicator node.}
 \usage{
 set_indicator(source, rescol, testcol, testvalues, env = parent.frame())
 }

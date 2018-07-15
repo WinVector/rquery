@@ -1,7 +1,7 @@
 
 #' Quick look at remote data
 #'
-#' @param my_db DBI database handle
+#' @param my_db database handle
 #' @param tableName name of table to look at
 #' @param ... not used, force later arguments to bind by name
 #' @param displayRows number of rows to sample

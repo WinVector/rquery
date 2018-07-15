@@ -13,7 +13,7 @@ describe_tables(db, tablenames, ..., keyInspector = key_inspector_all_cols)
 
 \item{...}{force later arguments to bind by name.}
 
-\item{keyInspector}{function that determines prefered primary key set for tables.}
+\item{keyInspector}{function that determines preferred primary key set for tables.}
 }
 \value{
 table describing the data.

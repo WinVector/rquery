@@ -13,7 +13,7 @@ rq_connection_advice(db)
 named list of options
 }
 \description{
-These settings are set by the package mainteners based on experience with
+These settings are set by the package maintainers based on experience with
 specific databases.
 }
 \examples{

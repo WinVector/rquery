@@ -89,7 +89,7 @@ count_null_cols <- function(source, cols, count) {
 
 #' Indicate NULLs per row for given column set.
 #'
-#' Build a query that creates NULL indicators for nulls in slected columns.
+#' Build a query that creates NULL indicators for nulls in selected columns.
 #'
 #' @param source incoming rel_op tree or data.frame.
 #' @param cols named character, values are columns to track, names are where to land indicators.

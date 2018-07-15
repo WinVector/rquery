@@ -10,7 +10,7 @@ format_node(node)
 \item{node}{node of operator tree to be formatted}
 }
 \value{
-character disply form of the node
+character display form of the node
 }
 \description{
 Format a single node for printing.

@@ -13,7 +13,7 @@ dbi_colnames(db, table_name, ..., qualifiers = NULL)
 
 \item{...}{not used, force later argument to bind by name}
 
-\item{qualifiers}{optional named ordered vector of strings carrying additional db hierarhcy terms, such as schema.}
+\item{qualifiers}{optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.}
 }
 \value{
 character list of column names

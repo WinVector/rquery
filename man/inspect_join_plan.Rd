@@ -2,7 +2,7 @@
 % Please edit documentation in R/join_controller.R
 \name{inspect_join_plan}
 \alias{inspect_join_plan}
-\title{check that a join plan is consistent with table descriptions}
+\title{check that a join plan is consistent with table descriptions.}
 \usage{
 inspect_join_plan(tDesc, columnJoinPlan, ..., checkColClasses = FALSE)
 }

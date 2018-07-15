@@ -2,7 +2,7 @@
 % Please edit documentation in R/db_ops.R
 \name{getDBOption}
 \alias{getDBOption}
-\title{Set a database connection option.}
+\title{Get a database connection option.}
 \usage{
 getDBOption(db, optname, default, connection_options = list())
 }
@@ -19,7 +19,7 @@ getDBOption(db, optname, default, connection_options = list())
 option value
 }
 \description{
-Set a database connection option.
+Get a database connection option.
 }
 \examples{
 

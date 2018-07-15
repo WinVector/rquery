@@ -21,7 +21,7 @@ materialize_sql(db, sql, table_name = mk_tmp_name_source("rqms")(), ...,
 \item{temporary}{logical if TRUE try to create a temporary table.}
 }
 \value{
-table handle
+table description
 }
 \description{
 Run the data query with a CREATE TABLE AS .

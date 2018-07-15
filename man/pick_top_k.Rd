@@ -2,7 +2,7 @@
 % Please edit documentation in R/ordered_select_rows.R
 \name{pick_top_k}
 \alias{pick_top_k}
-\title{Build a optree pipeline that selects up to the top k rows from each group in the given order.}
+\title{Build an optree pipeline that selects up to the top k rows from each group in the given order.}
 \usage{
 pick_top_k(source, ..., partitionby = NULL, orderby = NULL,
   reverse = NULL, k = 1L, order_expression = "row_number()",
@@ -31,7 +31,7 @@ pick_top_k(source, ..., partitionby = NULL, orderby = NULL,
 \item{env}{environment to look for values in.}
 }
 \description{
-This is an example of building up a desired pre-prepared pipleline fragment from relop nodes.
+This is an example of building up a desired pre-prepared pipeline fragment from relop nodes.
 }
 \examples{
 

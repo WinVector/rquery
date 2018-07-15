@@ -7,7 +7,7 @@
 map_column_values(source, colmap, ..., null_default = FALSE)
 }
 \arguments{
-\item{source}{optree relnode or data.frame.}
+\item{source}{optree relop node or data.frame.}
 
 \item{colmap}{data.frame with columns column_name, old_value, new_value.}
 

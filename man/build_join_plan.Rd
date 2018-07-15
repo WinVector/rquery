@@ -2,7 +2,7 @@
 % Please edit documentation in R/join_controller.R
 \name{build_join_plan}
 \alias{build_join_plan}
-\title{Build a join plan}
+\title{Build a join plan.}
 \usage{
 build_join_plan(tDesc, ..., check = TRUE)
 }
@@ -11,7 +11,7 @@ build_join_plan(tDesc, ..., check = TRUE)
 
 \item{...}{force later arguments to bind by name.}
 
-\item{check}{logical, if TRUE check the join plan for consistnecy.}
+\item{check}{logical, if TRUE check the join plan for consistency.}
 }
 \value{
 detailed column join plan (appropriate for editing)

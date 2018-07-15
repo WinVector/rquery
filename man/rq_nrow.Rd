@@ -7,7 +7,7 @@
 rq_nrow(db, table_name)
 }
 \arguments{
-\item{db}{database connetion}
+\item{db}{database connection}
 
 \item{table_name}{character, name of table}
 }

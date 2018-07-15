@@ -12,7 +12,7 @@
 #' @param table_name character, name of table
 #' @param columns character, column names of table
 #' @param ... not used, force later argument to bind by name
-#' @param qualifiers optional named ordered vector of strings carrying additional db hierarhcy terms, such as schema.
+#' @param qualifiers optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.
 #' @param q_table_name optional character, qualified table name, note: has to be re-generated for different DB connections.
 #' @return a relop representation of the data
 #'
@@ -64,7 +64,7 @@ table_source <- mk_td
 
 
 
-#' Make a table description from a database source.
+#' Construct a table description from a database source.
 #'
 #' Build structures (table name, column names, and quoting
 #' strategy) needed to represent data from a remote table.
@@ -79,7 +79,7 @@ table_source <- mk_td
 #' @param db database connection
 #' @param table_name name of table
 #' @param ... not used, force later argument to bind by name
-#' @param qualifiers optional named ordered vector of strings carrying additional db hierarhcy terms, such as schema.
+#' @param qualifiers optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.
 #' @return a relop representation of the data
 #'
 #' @seealso \code{\link{mk_td}}, \code{\link{rq_copy_to}}, \code{\link{materialize}}, \code{\link{execute}}, \code{\link{to_sql}}
@@ -125,7 +125,7 @@ dbi_table <- db_td
 
 
 
-#' Make a table description of a local data.frame.
+#' Construct a table description of a local data.frame.
 #'
 #' @param d data.frame or name of data.frame to use as a data source.
 #' @param ... not used, force later arguments to be optional.

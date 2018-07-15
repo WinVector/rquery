@@ -2,7 +2,7 @@
 % Please edit documentation in R/db_ops.R
 \name{rq_get_query}
 \alias{rq_get_query}
-\title{Execute a get query, typcially a non-update that is supposed to return results.}
+\title{Execute a get query, typically a non-update that is supposed to return results.}
 \usage{
 rq_get_query(db, q)
 }
@@ -15,7 +15,7 @@ rq_get_query(db, q)
 nothing
 }
 \description{
-Execute a get query, typcially a non-update that is supposed to return results.
+Execute a get query, typically a non-update that is supposed to return results.
 }
 \seealso{
 \code{\link{db_td}}

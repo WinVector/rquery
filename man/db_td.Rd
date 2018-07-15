@@ -3,7 +3,7 @@
 \name{db_td}
 \alias{db_td}
 \alias{dbi_table}
-\title{Make a table description from a database source.}
+\title{Construct a table description from a database source.}
 \usage{
 db_td(db, table_name, ..., qualifiers = NULL)
 
@@ -16,7 +16,7 @@ dbi_table(db, table_name, ..., qualifiers = NULL)
 
 \item{...}{not used, force later argument to bind by name}
 
-\item{qualifiers}{optional named ordered vector of strings carrying additional db hierarhcy terms, such as schema.}
+\item{qualifiers}{optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.}
 }
 \value{
 a relop representation of the data

@@ -13,7 +13,7 @@ quote_table_name(x, id, ..., qualifiers)
 
 \item{...}{not used, force later arguments to bind by name.}
 
-\item{qualifiers}{named ordered vector of strings carrying additional db hierarhcy terms, such as schema.}
+\item{qualifiers}{named ordered vector of strings carrying additional db hierarchy terms, such as schema.}
 }
 \value{
 quoted identifier

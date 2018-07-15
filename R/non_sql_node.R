@@ -16,7 +16,7 @@
 #' @param incoming_table_name character, name of incoming table
 #' @param outgoing_table_name character, name of produced table
 #' @param columns_produced character, names of additional columns produced
-#' @param display_form chacter, how to print node
+#' @param display_form character, how to print node
 #' @param pass_using logical, if TRUE (or if f_db is NULL) pass using column calculations through (else assume using all columns).
 #' @param orig_columns logical if TRUE select all original columns.
 #' @param temporary logical, if TRUE mark tables temporary.

@@ -1,5 +1,5 @@
 
-# rquery 0.5.1 2018/07/11
+# rquery 0.5.1 2018/07/15
 
  * Change to immediate execution.
  * Subtitute in values in presentation layer (rqdatatable depends on this).
@@ -8,6 +8,7 @@
  * Allow schema qualification.
  * Try to improve use of regexps.
  * Add qlook().
+ * Documentation fixes.
 
 # rquery 0.5.0 2018/06/18
 

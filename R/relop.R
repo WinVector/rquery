@@ -213,7 +213,7 @@ dim.relop <- function(x) {
 #' Format a single node for printing.
 #'
 #' @param node node of operator tree to be formatted
-#' @return character disply form of the node
+#' @return character display form of the node
 #'
 #' @export
 format_node <- function(node) {

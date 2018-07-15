@@ -15,7 +15,7 @@ mark_null_cols(source, cols)
 rel_op node or data.frame (depending on input).
 }
 \description{
-Build a query that creates NULL indicators for nulls in slected columns.
+Build a query that creates NULL indicators for nulls in selected columns.
 }
 \examples{
 

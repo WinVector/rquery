@@ -4,7 +4,7 @@
 #' @param ... force all arguments to be by name.
 #' @param connection connection handle to database or Spark.
 #' @param is_dbi if TRUE the database connection can be used with DBI.
-#' @param indentifier_quote_char character, quote to put around identifiers.
+#' @param identifier_quote_char character, quote to put around identifiers.
 #' @param string_quote_char character, quote to put around strings.
 #' @param overrides named list of functions to place in info.
 #' @param note character note to add to display form.
@@ -16,7 +16,7 @@
 rquery_db_info <- function(...,
                            connection = NULL,
                            is_dbi = FALSE,
-                           indentifier_quote_char = NULL,
+                           identifier_quote_char = NULL,
                            string_quote_char = NULL,
                            overrides = NULL,
                            note = "",
@@ -29,19 +29,19 @@ rquery_db_info <- function(...,
   r <- list(
     connection = connection,
     is_dbi = is_dbi,
-    indentifier_quote_char = indentifier_quote_char,
+    identifier_quote_char = identifier_quote_char,
     string_quote_char = string_quote_char,
     note = note,
     connection_options = connection_options,
     dbqi = function(id) {
-      paste0(indentifier_quote_char,
+      paste0(identifier_quote_char,
              id,
-             indentifier_quote_char)
+             identifier_quote_char)
     },
     dbqt = function(id, qualifiers = NULL) {
-      paste(paste0(indentifier_quote_char,
+      paste(paste0(identifier_quote_char,
                    c(qualifiers, id),
-                   indentifier_quote_char),
+                   identifier_quote_char),
             collapse = ".")
     },
     dbqs = function(s) {
@@ -104,7 +104,7 @@ print.rquery_db_info <- function(x, ...) {
 }
 
 
-rquery_default_db_info <- rquery_db_info(indentifier_quote_char = '"',
+rquery_default_db_info <- rquery_db_info(identifier_quote_char = '"',
                                          string_quote_char = "'",
                                          is_dbi = FALSE)
 
@@ -135,7 +135,7 @@ quote_identifier <- function(x, id) {
 #' @param x database handle or rquery_db_info object.
 #' @param id character to quote
 #' @param ... not used, force later arguments to bind by name.
-#' @param qualifiers named ordered vector of strings carrying additional db hierarhcy terms, such as schema.
+#' @param qualifiers named ordered vector of strings carrying additional db hierarchy terms, such as schema.
 #' @return quoted identifier
 #'
 #' @export

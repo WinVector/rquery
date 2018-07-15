@@ -22,7 +22,7 @@
 #' @param ... force later arguments to bind by name.
 #' @param thenexprs named character then assignments (altering columns, not creating).
 #' @param elseexprs named character else assignments (altering columns, not creating).
-#' @return sequence of statemens for extend_se().
+#' @return sequence of statements for extend_se().
 #'
 #' @seealso \code{\link{if_else_op}}
 #'

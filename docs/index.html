@@ -171,11 +171,11 @@
 <li>
 <a href="https://winvector.github.io/rquery/reference/pick_top_k.html"><code><a href="reference/pick_top_k.html">pick_top_k()</a></code></a>. Pick top <code>k</code> rows per group given a row ordering.</li>
 <li>
-<a href="https://winvector.github.io/rquery/reference/assign_slice.html"><code><a href="reference/assign_slice.html">assign_slice()</a></code></a>. Conditionaly assign sets of rows and columns a scalar value.</li>
+<a href="https://winvector.github.io/rquery/reference/assign_slice.html"><code><a href="reference/assign_slice.html">assign_slice()</a></code></a>. Conditionally assign sets of rows and columns a scalar value.</li>
 <li>
-<a href="https://winvector.github.io/rquery/reference/if_else_op.html"><code><a href="reference/if_else_op.html">if_else_op()</a></code></a>. Simulate simultaneous if/else assigments.</li>
+<a href="https://winvector.github.io/rquery/reference/if_else_op.html"><code><a href="reference/if_else_op.html">if_else_op()</a></code></a>. Simulate simultaneous if/else assignments.</li>
 </ul>
-<p><code>rquery</code> also has impelementation helpers for building both <code>SQL</code>-nodes (nodes that are just <code>SQL</code> expressions) and non-<code>SQL</code>-nodes (nodes that are general functions of their input data values).</p>
+<p><code>rquery</code> also has implementation helpers for building both <code>SQL</code>-nodes (nodes that are just <code>SQL</code> expressions) and non-<code>SQL</code>-nodes (nodes that are general functions of their input data values).</p>
 <ul>
 <li><a href="https://winvector.github.io/rquery/reference/sql_node.html"><code><a href="reference/sql_node.html">sql_node()</a></code></a></li>
 <li><a href="https://winvector.github.io/rquery/reference/sql_expr_set.html"><code><a href="reference/sql_expr_set.html">sql_expr_set()</a></code></a></li>
@@ -189,7 +189,7 @@
 <li>Direct set difference, anti-join.</li>
 <li>Division.</li>
 </ul>
-<p>One of the prinples of <code>rquery</code> is to prefer expressive nodes, and not depend on complicated in-node expressions.</p>
+<p>One of the principles of <code>rquery</code> is to prefer expressive nodes, and not depend on complicated in-node expressions.</p>
 <p>A great benefit of Codd’s relational algebra is it gives one concepts to decompose complex data transformations into sequences of simpler transformations.</p>
 <p>Some reasons <code>SQL</code> seems complicated include:</p>
 <ul>
@@ -393,14 +393,14 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
         "assessmentTotal"
        FROM
         "d" LIMIT 1000
-       ) tsql_07565369279640471685_0000000000
-      ) tsql_07565369279640471685_0000000001
-     ) tsql_07565369279640471685_0000000002
-   ) tsql_07565369279640471685_0000000003
+       ) tsql_49983453587121582807_0000000000
+      ) tsql_49983453587121582807_0000000001
+     ) tsql_49983453587121582807_0000000002
+   ) tsql_49983453587121582807_0000000003
    WHERE "row_number" &lt;= 1
-  ) tsql_07565369279640471685_0000000004
- ) tsql_07565369279640471685_0000000005
-) tsql_07565369279640471685_0000000006 ORDER BY "subjectID"</code></pre>
+  ) tsql_49983453587121582807_0000000004
+ ) tsql_49983453587121582807_0000000005
+) tsql_49983453587121582807_0000000006 ORDER BY "subjectID"</code></pre>
 <p>The query is large, but due to its regular structure it should be very amenable to query optimization.</p>
 <p>A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our <a href="https://github.com/WinVector/rquery/blob/master/extras/PerfTest%2Emd">initial experiments</a> show <code>rquery</code> narrowed queries to be twice as fast as un-narrowed <code>dplyr</code> on a synthetic problem simulating large disk-based queries. We think if we connected directly to <code>Spark</code>’s relational operators (avoiding the <code>SQL</code> layer) we may be able to achieve even faster performance.</p>
 <p>The above optimization is possible because the <code>rquery</code> representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query. For example:</p>

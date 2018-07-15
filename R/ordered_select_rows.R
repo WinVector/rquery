@@ -1,8 +1,8 @@
 
 
-#' Build a optree pipeline that selects up to the top k rows from each group in the given order.
+#' Build an optree pipeline that selects up to the top k rows from each group in the given order.
 #'
-#' This is an example of building up a desired pre-prepared pipleline fragment from relop nodes.
+#' This is an example of building up a desired pre-prepared pipeline fragment from relop nodes.
 #'
 #' @param source relop tree or data.frame source.
 #' @param ... force later arguments to bind by name.

@@ -7,7 +7,7 @@
 rlook(my_db, tableName, ..., displayRows = 10, countRows = TRUE)
 }
 \arguments{
-\item{my_db}{DBI database handle}
+\item{my_db}{database handle}
 
 \item{tableName}{name of table to look at}
 

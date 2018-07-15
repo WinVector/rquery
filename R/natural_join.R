@@ -4,7 +4,7 @@
 #' Natural join is a join by identity on all common columns specified in the \code{by}
 #' argument.
 #' Any common columns not specified in the \code{by} argument
-#' are coalesced into a single column prefering the first or "a" table.
+#' are coalesced into a single column preferring the first or "a" table.
 #'
 #' @param a source to select from.
 #' @param b source to select from.

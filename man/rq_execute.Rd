@@ -2,7 +2,7 @@
 % Please edit documentation in R/db_ops.R
 \name{rq_execute}
 \alias{rq_execute}
-\title{Execute a query, typcially an update that is not supposed to return results.}
+\title{Execute a query, typically an update that is not supposed to return results.}
 \usage{
 rq_execute(db, q)
 }
@@ -15,7 +15,7 @@ rq_execute(db, q)
 nothing
 }
 \description{
-Execute a query, typcially an update that is not supposed to return results.
+Execute a query, typically an update that is not supposed to return results.
 }
 \seealso{
 \code{\link{db_td}}

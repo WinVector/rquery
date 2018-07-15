@@ -16,7 +16,7 @@ if_else_block(testexpr, ..., thenexprs = NULL, elseexprs = NULL)
 \item{elseexprs}{named character else assignments (altering columns, not creating).}
 }
 \value{
-sequence of statemens for extend_se().
+sequence of statements for extend_se().
 }
 \description{
 This device uses expression-\code{ifelse(,,)} to simulate the

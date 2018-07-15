@@ -4,7 +4,7 @@
 #' Extend data by adding more columns.
 #'
 #' partitionby and orderby can only be used with a database that supports window-functions
-#' (such as PostgreSQL).
+#' (such as PostgreSQL, Spark, and so on).
 #'
 #' @param source source to select from.
 #' @param parsed parsed assignment expressions.
@@ -52,7 +52,7 @@ extend_impl <- function(source, parsed,
 #' Extend data by adding more columns list mode (can create multiple nodes)
 #'
 #' partitionby and orderby can only be used with a database that supports window-functions
-#' (such as PostgreSQL).
+#' (such as PostgreSQL, Spark and so on).
 #'
 #' @param source source to select from.
 #' @param parsed parsed assignment expressions.
@@ -92,7 +92,7 @@ extend_impl_list <- function(source, parsed,
 #' Create a node similar to a Codd extend relational operator (add derived columns).
 #'
 #' Partitionby and orderby can only be used with a database that supports window-functions
-#' (such as PostgreSQL).
+#' (such as PostgreSQL, Spark and so on).
 #'
 #' @param source source to select from.
 #' @param assignments new column assignment expressions.
@@ -185,7 +185,7 @@ extend_se.data.frame <- function(source, assignments,
 #' Create a node similar to a Codd extend relational operator (add derived columns).
 #'
 #' Partitionby and orderby can only be used with a database that supports window-functions
-#' (such as PostgreSQL).
+#' (such as PostgreSQL, Spark, and so on).
 #'
 #' @param source source to select from.
 #' @param ... new column assignment expressions.

@@ -27,7 +27,7 @@ is_named_list_of_data_frames <- function(o) {
   return(TRUE)
 }
 
-#' Execture optree in an enviroment where d is the only data.
+#' Execute optree in an environment where d is the only data.
 #'
 #' Default DB uses RSQLite (so some functions are not supported).
 #'

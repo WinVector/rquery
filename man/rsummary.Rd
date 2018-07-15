@@ -27,7 +27,7 @@ data.frame summary of columns.
 Compute per-column summaries and return as a \code{data.frame}.  Warning: can be an expensive operation.
 }
 \details{
-For numeric columns includes \code{NaN} in \code{nna} count (as is typcial for \code{R}, e.g.,
+For numeric columns includes \code{NaN} in \code{nna} count (as is typical for \code{R}, e.g.,
 \code{is.na(NaN)}).
 }
 \examples{

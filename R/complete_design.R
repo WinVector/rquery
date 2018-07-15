@@ -51,7 +51,7 @@ expand_grid <- function(db,
   res
 }
 
-#' Complete an experimental design
+#' Complete an experimental design.
 #'
 #' @param design_table optree or for experimental design.
 #' @param data_table optree for data.

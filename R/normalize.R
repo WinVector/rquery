@@ -1,7 +1,7 @@
 
-#' Build a optree pipeline that normalizes a set of columns so each column sums to one in each partition.
+#' Build an optree pipeline that normalizes a set of columns so each column sums to one in each partition.
 #'
-#' This is an example of building up a desired pre-prepared pipleline fragment from relop nodes.
+#' This is an example of building up a desired pre-prepared pipeline fragment from relop nodes.
 #'
 #' @param source relop tree or data.frame source.
 #' @param columns character, columns to normalize.

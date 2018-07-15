@@ -3,7 +3,7 @@
 # wrap database or data system (Spark) adapters
 
 
-#' Execute a get query, typcially a non-update that is supposed to return results.
+#' Execute a get query, typically a non-update that is supposed to return results.
 #'
 #' @param db database connection handle
 #' @param q character query
@@ -30,7 +30,7 @@ rq_get_query <- function(db, q) {
 }
 
 
-#' Execute a query, typcially an update that is not supposed to return results.
+#' Execute a query, typically an update that is not supposed to return results.
 #'
 #' @param db database connection handle
 #' @param q character query
@@ -119,7 +119,7 @@ rq_table_exists <- function(db, table_name) {
 #' @param db Connection handle
 #' @param table_name character table name
 #' @param ... not used, force later argument to bind by name
-#' @param qualifiers optional named ordered vector of strings carrying additional db hierarhcy terms, such as schema.
+#' @param qualifiers optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.
 #' @return character list of column names
 #'
 #' @export
@@ -158,11 +158,11 @@ rq_colnames <- function(db, table_name,
 
 #' Get column types by example values as a data.frame.
 #'
-#' Example values not necissarily all from same row.  Taking values from different rows is
+#' Example values not necessarily all from same row.  Taking values from different rows is
 #' to try to work around NA not carrying type/class info in many cases.
 #'
 #' @param db Connection handle.
-#' @param table_name character table name refering to a non-empty table.
+#' @param table_name character table name referring to a non-empty table.
 #' @param ... force later arguments to bind by name.
 #' @param prefer_not_NA logical, if TRUE try to find an non-NA example for all columns (FALSE just for logical columns).
 #' @param force_check logical, if TRUE perform checks regardless of check_logical_column_types option setting.
@@ -413,7 +413,7 @@ rq_copy_to <- function(db, table_name, d,
 
 #' Count rows and return as numeric
 #'
-#' @param db database connetion
+#' @param db database connection
 #' @param table_name character, name of table
 #' @return numeric row count
 #'
@@ -445,7 +445,7 @@ rq_nrow <- function(db, table_name) {
 }
 
 
-#' Build a cannonical name for a db connection class.
+#' Build a canonical name for a db connection class.
 #'
 #' @param db Database connection handle.
 #' @return character, key version of handle for option lookups.
@@ -474,7 +474,7 @@ rq_connection_name <- function(db) {
 
 #' Get advice for a DB connection (beyond tests).
 #'
-#' These settings are set by the package mainteners based on experience with
+#' These settings are set by the package maintainers based on experience with
 #' specific databases.
 #'
 #' @param db database connection handle
@@ -530,7 +530,7 @@ brute_rm_table <- function(db, table_name) {
 #' @param db database connection handle.
 #' @param ... force later arguments to bind by name.
 #' @param overrides named character vector or list, options (just name, not DB qualification) to force
-#' @param use_advice logical if TRUE incorpeate hard-coded advice.
+#' @param use_advice logical if TRUE incorporate hard-coded advice.
 #' @return named list of options
 #'
 #' @seealso \code{\link{rq_connection_advice}}
@@ -714,7 +714,7 @@ rq_connection_tests <- function(db,
   opts
 }
 
-#' Set a database connection option.
+#' Get a database connection option.
 #'
 #' @param db database connection handle.
 #' @param optname character, single option name.

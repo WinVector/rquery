@@ -49,7 +49,7 @@ summarize_columns <- function(db, tableName,
 #'
 #' Compute per-column summaries and return as a \code{data.frame}.  Warning: can be an expensive operation.
 #'
-#' For numeric columns includes \code{NaN} in \code{nna} count (as is typcial for \code{R}, e.g.,
+#' For numeric columns includes \code{NaN} in \code{nna} count (as is typical for \code{R}, e.g.,
 #' \code{is.na(NaN)}).
 #'
 #' @param db database connection.

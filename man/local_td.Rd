@@ -2,7 +2,7 @@
 % Please edit documentation in R/table_source.R
 \name{local_td}
 \alias{local_td}
-\title{Make a table description of a local data.frame.}
+\title{Construct a table description of a local data.frame.}
 \usage{
 local_td(d, ..., name = NULL,
   name_source = wrapr::mk_tmp_name_source("rqltd"), env = parent.frame())
@@ -22,7 +22,7 @@ local_td(d, ..., name = NULL,
 a relop representation of the data
 }
 \description{
-Make a table description of a local data.frame.
+Construct a table description of a local data.frame.
 }
 \examples{
 

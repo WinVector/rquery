@@ -24,7 +24,7 @@ commencify(source, optree, ..., limit = NULL, source_limit = NULL,
 
 \item{temporary}{logical if TRUE try to create a temporary table.}
 
-\item{precheck}{logical if TRUE precheck existance of table and columns.}
+\item{precheck}{logical if TRUE precheck existence of table and columns.}
 
 \item{allow_executor}{logical if TRUE allow any executor set as rquery.rquery_executor to be used.}
 

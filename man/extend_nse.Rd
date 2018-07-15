@@ -28,7 +28,7 @@ Create a node similar to a Codd extend relational operator (add derived columns)
 }
 \details{
 Partitionby and orderby can only be used with a database that supports window-functions
-(such as PostgreSQL).
+(such as PostgreSQL, Spark, and so on).
 }
 \examples{
 

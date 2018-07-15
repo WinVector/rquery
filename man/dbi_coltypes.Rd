@@ -10,7 +10,7 @@ dbi_coltypes(db, table_name, ..., prefer_not_NA = FALSE,
 \arguments{
 \item{db}{Connection handle.}
 
-\item{table_name}{character table name refering to a non-empty table.}
+\item{table_name}{character table name referring to a non-empty table.}
 
 \item{...}{force later arguments to bind by name.}
 

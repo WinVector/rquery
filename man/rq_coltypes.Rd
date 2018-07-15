@@ -9,7 +9,7 @@ rq_coltypes(db, table_name, ..., prefer_not_NA = FALSE, force_check = FALSE)
 \arguments{
 \item{db}{Connection handle.}
 
-\item{table_name}{character table name refering to a non-empty table.}
+\item{table_name}{character table name referring to a non-empty table.}
 
 \item{...}{force later arguments to bind by name.}
 
@@ -21,7 +21,7 @@ rq_coltypes(db, table_name, ..., prefer_not_NA = FALSE, force_check = FALSE)
 single row data.frame with example values, not all values necessarily from same database row.
 }
 \description{
-Example values not necissarily all from same row.  Taking values from different rows is
+Example values not necessarily all from same row.  Taking values from different rows is
 to try to work around NA not carrying type/class info in many cases.
 }
 \examples{

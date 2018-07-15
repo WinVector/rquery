@@ -53,10 +53,10 @@ The primary non-relational (traditional `SQL`) operators are:
 And `rquery` supports higher-order (written in terms of other operators, both package supplied and user supplied):
 
 -   [`pick_top_k()`](https://winvector.github.io/rquery/reference/pick_top_k.html). Pick top `k` rows per group given a row ordering.
--   [`assign_slice()`](https://winvector.github.io/rquery/reference/assign_slice.html). Conditionaly assign sets of rows and columns a scalar value.
--   [`if_else_op()`](https://winvector.github.io/rquery/reference/if_else_op.html). Simulate simultaneous if/else assigments.
+-   [`assign_slice()`](https://winvector.github.io/rquery/reference/assign_slice.html). Conditionally assign sets of rows and columns a scalar value.
+-   [`if_else_op()`](https://winvector.github.io/rquery/reference/if_else_op.html). Simulate simultaneous if/else assignments.
 
-`rquery` also has impelementation helpers for building both `SQL`-nodes (nodes that are just `SQL` expressions) and non-`SQL`-nodes (nodes that are general functions of their input data values).
+`rquery` also has implementation helpers for building both `SQL`-nodes (nodes that are just `SQL` expressions) and non-`SQL`-nodes (nodes that are general functions of their input data values).
 
 -   [`sql_node()`](https://winvector.github.io/rquery/reference/sql_node.html)
 -   [`sql_expr_set()`](https://winvector.github.io/rquery/reference/sql_expr_set.html)
@@ -70,7 +70,7 @@ The primary missing relational operators are:
 -   Direct set difference, anti-join.
 -   Division.
 
-One of the prinples of `rquery` is to prefer expressive nodes, and not depend on complicated in-node expressions.
+One of the principles of `rquery` is to prefer expressive nodes, and not depend on complicated in-node expressions.
 
 A great benefit of Codd's relational algebra is it gives one concepts to decompose complex data transformations into sequences of simpler transformations.
 
@@ -272,14 +272,14 @@ cat(to_sql(dq, my_db, source_limit = 1000))
             "assessmentTotal"
            FROM
             "d" LIMIT 1000
-           ) tsql_19071860702312127216_0000000000
-          ) tsql_19071860702312127216_0000000001
-         ) tsql_19071860702312127216_0000000002
-       ) tsql_19071860702312127216_0000000003
+           ) tsql_94476700058108951947_0000000000
+          ) tsql_94476700058108951947_0000000001
+         ) tsql_94476700058108951947_0000000002
+       ) tsql_94476700058108951947_0000000003
        WHERE "row_number" <= 1
-      ) tsql_19071860702312127216_0000000004
-     ) tsql_19071860702312127216_0000000005
-    ) tsql_19071860702312127216_0000000006 ORDER BY "subjectID"
+      ) tsql_94476700058108951947_0000000004
+     ) tsql_94476700058108951947_0000000005
+    ) tsql_94476700058108951947_0000000006 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 

@@ -13,7 +13,7 @@ rq_connection_tests(db, ..., overrides = NULL, use_advice = TRUE)
 
 \item{overrides}{named character vector or list, options (just name, not DB qualification) to force}
 
-\item{use_advice}{logical if TRUE incorpeate hard-coded advice.}
+\item{use_advice}{logical if TRUE incorporate hard-coded advice.}
 }
 \value{
 named list of options

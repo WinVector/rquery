@@ -32,7 +32,7 @@ Note: this is a relational operator in that it takes a table that
 is a relation (has unique rows) to a table that is still a relation.
 However, most relational systems do not preserve row order in storage or between
 operations.  So without the limit set this is not a useful operator except
-as a last step prior ot pulling data to an in-memory \code{data.frame} (
+as a last step prior to pulling data to an in-memory \code{data.frame} (
 which does preserve row order).
 }
 \examples{

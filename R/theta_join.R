@@ -1,5 +1,5 @@
 
-#' build a map of original column names to unambigous column names.
+#' build a map of original column names to unambiguous column names.
 #'
 #' Principles: non-colliding columns keep their original names.
 #' Initially colliding columns are not to collide with anything else.
@@ -165,7 +165,7 @@ theta_join_se.data.frame <- function(a, b,
 #'
 #' @param a source to select from.
 #' @param b source to select from.
-#' @param expr unquoated join condition
+#' @param expr unquoted join condition
 #' @param ... force later arguments to be by name
 #' @param jointype type of join ('INNER', 'LEFT', 'RIGHT', 'FULL').
 #' @param suffix character length 2, suffices to disambiguate columns.

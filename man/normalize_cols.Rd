@@ -2,7 +2,7 @@
 % Please edit documentation in R/normalize.R
 \name{normalize_cols}
 \alias{normalize_cols}
-\title{Build a optree pipeline that normalizes a set of columns so each column sums to one in each partition.}
+\title{Build an optree pipeline that normalizes a set of columns so each column sums to one in each partition.}
 \usage{
 normalize_cols(source, columns, ..., partitionby = NULL,
   env = parent.frame())
@@ -19,7 +19,7 @@ normalize_cols(source, columns, ..., partitionby = NULL,
 \item{env}{environment to look for values in.}
 }
 \description{
-This is an example of building up a desired pre-prepared pipleline fragment from relop nodes.
+This is an example of building up a desired pre-prepared pipeline fragment from relop nodes.
 }
 \examples{
 

@@ -105,7 +105,7 @@ makeTableIndMap <- function(tableNameSeq) {
 }
 
 
-#' Return all columns as guess at preferred primary keys.
+#' Return all columns as guess of preferred primary keys.
 #'
 #' @seealso \code{describe_tables}
 #'
@@ -225,7 +225,7 @@ key_inspector_postgresql <- function(db, tablename) {
 #' @param db database handle
 #' @param tablenames character, names of tables to describe.
 #' @param ... force later arguments to bind by name.
-#' @param keyInspector function that determines prefered primary key set for tables.
+#' @param keyInspector function that determines preferred primary key set for tables.
 #' @return table describing the data.
 #'
 #' @examples
@@ -471,7 +471,7 @@ topo_sort_tables <- function(columnJoinPlan, leftTableName,
        tableOrder= tableOrder)
 }
 
-#' Build a drawable specification of the join diagram
+#' Build a draw-able specification of the join diagram
 #'
 #' Please see \code{vignette('DependencySorting', package = 'rquery')} and \code{vignette('joinController', package= 'rquery')} for more details.
 #'
@@ -614,7 +614,7 @@ graph_join_plan <- function(columnJoinPlan, ...,
 
 
 
-#' check that a join plan is consistent with table descriptions
+#' check that a join plan is consistent with table descriptions.
 #'
 #' Please see \code{vignette('DependencySorting', package = 'rquery')} and \code{vignette('joinController', package= 'rquery')} for more details.
 #' @seealso \code{\link{describe_tables}}, \code{\link{build_join_plan}}, \code{\link{graph_join_plan}}, \code{\link{actualize_join_plan}}
@@ -703,14 +703,14 @@ inspect_join_plan <- function(tDesc, columnJoinPlan,
 
 
 
-#' Build a join plan
+#' Build a join plan.
 #'
 #' Please see \code{vignette('DependencySorting', package = 'rquery')} and \code{vignette('joinController', package= 'rquery')} for more details.
 #' @seealso \code{\link{describe_tables}}, \code{\link{inspect_join_plan}}, \code{\link{graph_join_plan}}, \code{\link{actualize_join_plan}}
 #'
 #' @param tDesc description of tables from \code{\link{describe_tables}} (and likely altered by user). Note: no column names must intersect with names of the form \code{table_CLEANEDTABNAME_present}.
 #' @param ... force later arguments to bind by name.
-#' @param check logical, if TRUE check the join plan for consistnecy.
+#' @param check logical, if TRUE check the join plan for consistency.
 #' @return detailed column join plan (appropriate for editing)
 #'
 #' @examples

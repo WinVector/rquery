@@ -69,9 +69,9 @@ quantile_col_d <- function(d, probs, ci) {
 #' @param db database connection
 #' @param incoming_table_name name of table to compute quantiles of
 #' @param ... force later arguments to bind by name
-#' @param probs numeric, probabilites to compute quantiles of
+#' @param probs numeric, probabilities to compute quantiles of
 #' @param probs_name character name for probability column
-#' @param cols charancter, columns to compute quantiles of
+#' @param cols character, columns to compute quantiles of
 #' @return data.frame of quantiles
 #'
 #' @seealso \code{\link{quantile_node}}, \code{\link{rsummary}}

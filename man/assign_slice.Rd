@@ -11,7 +11,7 @@ assign_slice(source, testexpr, columns, value, env = parent.frame())
 
 \item{testexpr}{character containing the test expression.}
 
-\item{columns}{charactor vector of column names to alter.}
+\item{columns}{character vector of column names to alter.}
 
 \item{value}{value to set in matching rows and columns (scalar).}
 

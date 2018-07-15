@@ -2,7 +2,7 @@
 % Please edit documentation in R/complete_design.R
 \name{complete_design}
 \alias{complete_design}
-\title{Complete an experimental design}
+\title{Complete an experimental design.}
 \usage{
 complete_design(design_table, data_table)
 }
@@ -15,7 +15,7 @@ complete_design(design_table, data_table)
 joined and annotated table optree.
 }
 \description{
-Complete an experimental design
+Complete an experimental design.
 }
 \examples{
 

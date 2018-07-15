@@ -2,7 +2,7 @@
 % Please edit documentation in R/db_ops.R
 \name{rq_connection_name}
 \alias{rq_connection_name}
-\title{Build a cannonical name for a db connection class.}
+\title{Build a canonical name for a db connection class.}
 \usage{
 rq_connection_name(db)
 }
@@ -13,7 +13,7 @@ rq_connection_name(db)
 character, key version of handle for option lookups.
 }
 \description{
-Build a cannonical name for a db connection class.
+Build a canonical name for a db connection class.
 }
 \examples{
 

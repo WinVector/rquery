@@ -5,7 +5,7 @@
 \title{Build a db information stand-in}
 \usage{
 rquery_db_info(..., connection = NULL, is_dbi = FALSE,
-  indentifier_quote_char = NULL, string_quote_char = NULL,
+  identifier_quote_char = NULL, string_quote_char = NULL,
   overrides = NULL, note = "", connection_options = list())
 }
 \arguments{
@@ -15,7 +15,7 @@ rquery_db_info(..., connection = NULL, is_dbi = FALSE,
 
 \item{is_dbi}{if TRUE the database connection can be used with DBI.}
 
-\item{indentifier_quote_char}{character, quote to put around identifiers.}
+\item{identifier_quote_char}{character, quote to put around identifiers.}
 
 \item{string_quote_char}{character, quote to put around strings.}
 

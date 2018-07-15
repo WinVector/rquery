@@ -1,7 +1,7 @@
 
 #' Create materialize statement.
 #'
-#' @param db DBI connecton.
+#' @param db database connection.
 #' @param sql character single SQL statement.
 #' @param table_name character, name of table to create.
 #' @param ... force later arguments to bind by name.
@@ -61,13 +61,13 @@ materialize_sql_statement <- function(db, sql, table_name,
 #' @param optree relop operation tree.
 #' @param table_name character, name of table to create.
 #' @param ... force later arguments to bind by name.
-#' @param limit numeric if not NULL result limit (to use this, last statment must not have a limit).
+#' @param limit numeric if not NULL result limit (to use this, last statement must not have a limit).
 #' @param source_limit numeric if not NULL limit sources to this many rows.
 #' @param overwrite logical if TRUE drop an previous table.
 #' @param temporary logical if TRUE try to create a temporary table.
-#' @param precheck logical if TRUE precheck existance of table and columns.
+#' @param precheck logical if TRUE precheck existence of table and columns.
 #' @param sql character, pre-rendered SQL matching optree and options- should not be set by user code.
-#' @return table handle
+#' @return table description
 #'
 #' @seealso \code{\link{db_td}}, \code{\link{execute}}, \code{\link{to_sql}}, \code{\link{rq_copy_to}}, \code{\link{mk_td}}
 #'
@@ -283,12 +283,12 @@ materialize_impl <- function(db,
 #' @param optree relop operation tree.
 #' @param table_name character, name of table to create.
 #' @param ... force later arguments to bind by name.
-#' @param limit numeric if not NULL result limit (to use this, last statment must not have a limit).
+#' @param limit numeric if not NULL result limit (to use this, last statement must not have a limit).
 #' @param source_limit numeric if not NULL limit sources to this many rows.
 #' @param overwrite logical if TRUE drop an previous table.
 #' @param temporary logical if TRUE try to create a temporary table.
-#' @param precheck logical if TRUE precheck existance of table and columns.
-#' @return table handle
+#' @param precheck logical if TRUE precheck existence of table and columns.
+#' @return table description
 #'
 #' @seealso \code{\link{db_td}}, \code{\link{execute}}, \code{\link{to_sql}}, \code{\link{rq_copy_to}}, \code{\link{mk_td}}
 #'
@@ -354,7 +354,7 @@ materialize <- function(db,
 #' @param ... force later arguments to bind by name.
 #' @param overwrite logical if TRUE drop an previous table.
 #' @param temporary logical if TRUE try to create a temporary table.
-#' @return table handle
+#' @return table description
 #'
 #' @seealso \code{\link{db_td}}, \code{\link{materialize}}, \code{\link{to_sql}}, \code{\link{rq_copy_to}}, \code{\link{mk_td}}
 #'
@@ -402,7 +402,7 @@ materialize_sql <- function(db,
 
 
 
-#' Execute a operator tree, bringing back the result to memory.
+#' Execute an operator tree, bringing back the result to memory.
 #'
 #' Run the data query.
 #'
@@ -413,7 +413,7 @@ materialize_sql <- function(db,
 #' @param source_limit numeric if not NULL limit sources to this many rows.
 #' @param overwrite logical if TRUE drop an previous table.
 #' @param temporary logical if TRUE try to create a temporary table.
-#' @param precheck logical if TRUE precheck existance of table and columns.
+#' @param precheck logical if TRUE precheck existence of table and columns.
 #' @param allow_executor logical if TRUE allow any executor set as rquery.rquery_executor to be used.
 #' @param temp_source temporary name generator.
 #' @param env environment to work in.

@@ -17,7 +17,7 @@ table_source(table_name, columns, ..., qualifiers = NULL,
 
 \item{...}{not used, force later argument to bind by name}
 
-\item{qualifiers}{optional named ordered vector of strings carrying additional db hierarhcy terms, such as schema.}
+\item{qualifiers}{optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.}
 
 \item{q_table_name}{optional character, qualified table name, note: has to be re-generated for different DB connections.}
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/join_controller.R
 \name{key_inspector_all_cols}
 \alias{key_inspector_all_cols}
-\title{Return all columns as guess at preferred primary keys.}
+\title{Return all columns as guess of preferred primary keys.}
 \usage{
 key_inspector_all_cols(db, tablename)
 }
@@ -15,7 +15,7 @@ key_inspector_all_cols(db, tablename)
 map of keys to keys
 }
 \description{
-Return all columns as guess at preferred primary keys.
+Return all columns as guess of preferred primary keys.
 }
 \examples{
 

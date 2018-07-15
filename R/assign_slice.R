@@ -11,7 +11,7 @@
 #'
 #' @param source optree relop node or data.frame.
 #' @param testexpr character containing the test expression.
-#' @param columns charactor vector of column names to alter.
+#' @param columns character vector of column names to alter.
 #' @param value value to set in matching rows and columns (scalar).
 #' @param env environment to look to.
 #' @return optree or data.frame.
