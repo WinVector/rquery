@@ -120,7 +120,7 @@ library("rquery")
 print(db_hdl) # rquery handle into Spark
 ```
 
-    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7fa0c5c179e8>)"
+    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7fd4e311eb70>)"
 
 Let's assume that we already have the data in Spark, as `order_table`. To work with the table in `rquery`, we must generate a *table description*, using the function `db_td()`. A table description is a record of the table's name and columns; `db_td()` queries the database to get the description.
 
@@ -216,6 +216,10 @@ rquery_pipeline %.>%
 
 Notice that the `normalize_cols` and `pick_top_k` steps were decomposed into more basic Codd operators (for example, the *extend* and *select\_rows* nodes).
 
+We can also look at Spark’s query plan through the DataBricks user interface.
+
+![](Sparkr_files/SparkRPlan.png)
+
 You can also inspect what tables are used in the pipeline, and which columns in those tables are involved.
 
 ``` r
@@ -310,62 +314,6 @@ execute(db_hdl, rquery_pipeline) %.>%
 
 `execute()` brings results from Spark to R, and the related command `materialize()` lands results in Spark without transporting data to R.
 
-Since many R programmers are familiar with `dplyr`, we can compare `dplyr`'s operators to those of `rquery` (and verify that the calculation is correct), by processing a local copy of the data with `dplyr`.
-
-``` r
-library(dplyr)
-```
-
-    ## Warning: package 'dplyr' was built under R version 3.5.1
-
-    ## 
-    ## Attaching package: 'dplyr'
-
-    ## The following objects are masked from 'package:stats':
-    ## 
-    ##     filter, lag
-
-    ## The following objects are masked from 'package:base':
-    ## 
-    ##     intersect, setdiff, setequal, union
-
-``` r
-# get the SparkDataFrame by name
-order_f = SparkR::tableToDF("order_table")
-
-order_f %>% 
-  SparkR::as.data.frame() %>% # bring back a local in-memory copy for dplyr (with big data this may not be practical!)
-  group_by(custID, restaurant_type) %>%
-  summarize(total_orders = n()) %>%
-  ungroup() %>%
-  group_by(custID) %>%
-  mutate(fraction_of_orders = total_orders/sum(total_orders)) %>%
-  ungroup() %>%
-  group_by(custID) %>%
-  arrange(desc(fraction_of_orders), restaurant_type) %>%
-  mutate(rnk = row_number()) %>%
-  ungroup() %>%
-  filter(rnk == 1) %>%
-  rename(favorite_cuisine = restaurant_type) %>%
-  select(custID, favorite_cuisine, fraction_of_orders) %>%
-  arrange(custID) %>%
-  knitr::kable()
-```
-
-| custID  | favorite\_cuisine |  fraction\_of\_orders|
-|:--------|:------------------|---------------------:|
-| cust\_1 | Italian           |             0.3225806|
-| cust\_2 | Italian           |             0.3125000|
-| cust\_3 | Indian            |             0.2857143|
-| cust\_4 | American          |             0.2916667|
-| cust\_5 | American          |             0.2857143|
-| cust\_6 | Italian           |             0.2800000|
-| cust\_7 | American          |             0.2400000|
-| cust\_8 | Indian            |             0.2903226|
-| cust\_9 | Chinese           |             0.3000000|
-
-Notice small sequences of `dplyr` operators are used to implement basic transforms.
-
 As previously mentioned, `rquery` can work with a variety of SQL-backed data stores; you only need an appropriate adapter. In an earlier example, we showed `rqdatatable`, an adaptation of the `rquery` grammar for in-memory use, using `datatable` as the back-end implementation.
 
 One of the cool features of the `rquery` grammar is that the `rquery` operator trees and pipelines are back-end independent. This means you can use the pipeline that we created above with Spark through either `SparkR` or `sparklyr`, or on another data source like Postgres (assuming the table on Postgres has the same structure). You can also use the pipeline on local copies of the data with `rqdatatable`, as we show below.
@@ -378,7 +326,8 @@ library(rqdatatable)
 # for rquery pipelines
 
 # simulate taking a rehearsal subset of data
-local_copy <- SparkR::as.data.frame(SparkR::head(order_f, n = 10000))
+
+local_copy <- SparkR::as.data.frame(SparkR::head(SparkR::tableToDF("order_table"), n = 10000))
 class(local_copy)
 ```
 
