@@ -351,7 +351,7 @@ to_sql.relop_extend <- function (x,
   re_quoted <- redo_parse_quoting(x$parsed, db)
   re_assignments <- unpack_assignments(x$source[[1]], re_quoted)
   # work on query
-  using <- calc_used_relop_extend(x,
+  using_incoming <- calc_used_relop_extend(x,
                                   using = using)
   qlimit = limit
   if(!getDBOption(db, "use_pass_limit", TRUE)) {
@@ -364,9 +364,12 @@ to_sql.relop_extend <- function (x,
                         indent_level = indent_level + 1,
                         tnum = tnum,
                         append_cr = FALSE,
-                        using = using)
+                        using = using_incoming)
   subsql <- subsql_list[[length(subsql_list)]]
-  cols1 <- intersect(column_names(x$source[[1]]), using)
+  cols1 <- column_names(x$source[[1]])
+  if(length(using)>0) {
+    cols1 <- intersect(cols1, using)
+  }
   cols1 <- setdiff(cols1, names(re_assignments)) # allow simple name re-use
   cols <- NULL
   if(length(cols1)>0) {

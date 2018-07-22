@@ -1,7 +1,6 @@
 library("rquery")
+
 context("partitioning")
-
-
 
 test_that("test_extend_partition: Works As Expected", {
   if (requireNamespace("RSQLite", quietly = TRUE)) {
@@ -25,9 +24,9 @@ test_that("test_extend_partition: Works As Expected", {
                     a_1 %:=% 'control',
                     a_2 %:=% 'treatment')))
     txt <- format(dQ)
-    expect_true(length(grep("!", txt, fixed = TRUE))>0)
+    testthat::expect_true(length(grep("!", txt, fixed = TRUE))>0)
     sql <- to_sql(dQ, my_db)
-    expect_true(length(grep("e_2", sql, fixed = TRUE))>0)
+    testthat::expect_true(length(grep("e_2", sql, fixed = TRUE))>0)
 
 
     d <- rq_copy_to(my_db, "ds",
@@ -37,7 +36,7 @@ test_that("test_extend_partition: Works As Expected", {
       extend_nse(., sum = x + 1 , y = sum + 1)
     tab <- execute(my_db, optree)
     tab <- tab[, c("sum", "x", "y")]
-    expect_equal(data.frame(sum = 2, x = 1, y = 3), tab)
+    testthat::expect_equal(data.frame(sum = 2, x = 1, y = 3), tab)
     tab2 <- data.frame(x = 1) %.>% optree
     expect_equal(data.frame(sum = 2, x = 1, y = 3), tab2)
 

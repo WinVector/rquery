@@ -11,7 +11,7 @@
 
 ## R CMD check results
 
-    R CMD check --as-cran rquery_0.5.1.tar.gz 
+    R CMD check --as-cran rquery_0.6.0.tar.gz 
     * using session charset: UTF-8
     * using option ‘--as-cran’
     * checking for file ‘rquery/DESCRIPTION’ ... OK
