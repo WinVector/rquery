@@ -120,7 +120,7 @@ library("rquery")
 print(db_hdl) # rquery handle into Spark
 ```
 
-    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7fd4e311eb70>)"
+    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7fe24ac838a8>)"
 
 Let's assume that we already have the data in Spark, as `order_table`. To work with the table in `rquery`, we must generate a *table description*, using the function `db_td()`. A table description is a record of the table's name and columns; `db_td()` queries the database to get the description.
 
@@ -357,3 +357,8 @@ Conclusion
 ----------
 
 `rquery` is a powerful "database first" piped query generator. It includes a number of useful documentation, debugging, and optimization features. It makes working with big data much easier and works with many systems including SparkR, sparklyr, and PostgreSQL; meaning `rquery` does not usurp your design decisions or choice of platform.
+
+Links
+-----
+
+This example was featured on the [DataBricks blog](https://databricks.com/blog/2018/07/26/rquery-practical-big-data-transforms-for-r-spark-users.html) and is available as a [Databricks Community](https://databricks.com/try) notebook [here](https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/3208320140103456/1810586888854627/6945696802502720/latest.html) and as a (static) RMarkdown workbook [here](https://github.com/WinVector/rquery/blob/master/extras/SparkR.md) (full source [here](https://github.com/WinVector/rquery/blob/master/extras/SparkR.Rmd)).
