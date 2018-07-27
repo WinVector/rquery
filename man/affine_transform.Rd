@@ -33,11 +33,11 @@ if (requireNamespace("DBI", quietly = TRUE) &&
                        d,
                        overwrite = TRUE,
                        temporary = TRUE)
-  linear_transform <- matrix(c(1 ,1, 2, -1), nrow = 2)
+  linear_transform <- matrix(c(1 ,1, 2, -1, 1, 0, 0, 0), nrow = 2)
   rownames(linear_transform) <- c("AUC", "R2")
-  colnames(linear_transform) <- c("res1", "res2")
-  offset <- c(5, 7)
-  names(offset) <- c("res1", "res2")
+  colnames(linear_transform) <- c("res1", "res2", "res3", "res4")
+  offset <- c(5, 7, 1, 0)
+  names(offset) <- colnames(linear_transform)
 
   optree <- affine_transform(source, linear_transform, offset)
   cat(format(optree))

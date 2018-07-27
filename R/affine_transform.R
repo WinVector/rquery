@@ -18,11 +18,11 @@
 #'                        d,
 #'                        overwrite = TRUE,
 #'                        temporary = TRUE)
-#'   linear_transform <- matrix(c(1 ,1, 2, -1), nrow = 2)
+#'   linear_transform <- matrix(c(1 ,1, 2, -1, 1, 0, 0, 0), nrow = 2)
 #'   rownames(linear_transform) <- c("AUC", "R2")
-#'   colnames(linear_transform) <- c("res1", "res2")
-#'   offset <- c(5, 7)
-#'   names(offset) <- c("res1", "res2")
+#'   colnames(linear_transform) <- c("res1", "res2", "res3", "res4")
+#'   offset <- c(5, 7, 1, 0)
+#'   names(offset) <- colnames(linear_transform)
 #'
 #'   optree <- affine_transform(source, linear_transform, offset)
 #'   cat(format(optree))
@@ -70,9 +70,14 @@ affine_transform <- function(source, linear_transform, offset,
   terms <- vapply(seq_len(length(producing)),
                   function(j) {
                     ri <- linear_transform[, j, drop = TRUE]
-                    vi <- paste0("(", as.numeric(ri), ")")
-                    expri <- paste(paste(names(ri), vi, sep = "*"), collapse = " + ")
-                    expri <- paste(expri, offset[[colnames(linear_transform)[[j]]]], sep = " + ")
+                    nz <- ri!=0
+                    if(any(nz)) {
+                      vi <- paste0("(", as.numeric(ri)[nz], ")")
+                      expri <- paste(paste(names(ri)[nz], vi, sep = "*"), collapse = " + ")
+                      expri <- paste(expri, offset[[colnames(linear_transform)[[j]]]], sep = " + ")
+                    } else {
+                      expri <- as.character(offset[[colnames(linear_transform)[[j]]]])
+                    }
                     expri
                   }, character(1))
   names(terms) <- colnames(linear_transform)
