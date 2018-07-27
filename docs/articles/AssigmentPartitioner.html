@@ -88,7 +88,7 @@
       <h1>Assignment Partitioner</h1>
                         <h4 class="author">John Mount, Win-Vector LLC</h4>
             
-            <h4 class="date">2018-07-15</h4>
+            <h4 class="date">2018-07-27</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery//blob/master/vignettes/AssigmentPartitioner.Rmd"><code>vignettes/AssigmentPartitioner.Rmd</code></a></small>
       <div class="hidden name"><code>AssigmentPartitioner.Rmd</code></div>
@@ -251,11 +251,6 @@ plan &lt;-<span class="st"> </span>d1 <span class="op">%.&gt;%</span>
  `e_2`
 FROM (
  SELECT
-  `choice_a`,
-  `choice_b`,
-  `choice_c`,
-  `choice_d`,
-  `choice_e`,
   `id`,
   ( CASE WHEN ( `choice_a` ) THEN ( 'T' ) WHEN NOT ( `choice_a` ) THEN ( 'C' ) ELSE NULL END )  AS `a_1`,
   ( CASE WHEN ( `choice_a` ) THEN ( 'C' ) WHEN NOT ( `choice_a` ) THEN ( 'T' ) ELSE NULL END )  AS `a_2`,
@@ -270,11 +265,6 @@ FROM (
  FROM (
   SELECT
    `id`,
-   `rand_a`,
-   `rand_b`,
-   `rand_c`,
-   `rand_d`,
-   `rand_e`,
    `rand_a` &gt;= 0.5  AS `choice_a`,
    `rand_b` &gt;= 0.5  AS `choice_b`,
    `rand_c` &gt;= 0.5  AS `choice_c`,

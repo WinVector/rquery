@@ -1,5 +1,5 @@
 
-# rquery 0.6.0 2018/07/22
+# rquery 0.6.0 2018/07/27
 
  * Change to immediate execution.
  * Subtitute in values in presentation layer (rqdatatable depends on this).
@@ -9,6 +9,7 @@
  * Try to improve use of regexps.
  * Improve select narrowing.
  * Add qlook().
+ * Add affine_transform().
  * Documentation fixes.
 
 # rquery 0.5.0 2018/06/18

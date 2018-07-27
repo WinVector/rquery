@@ -5,7 +5,7 @@
 \title{Extend data by adding more columns.}
 \usage{
 extend_se(source, assignments, ..., partitionby = NULL, orderby = NULL,
-  reverse = NULL, env = parent.frame())
+  reverse = NULL, display_form = NULL, env = parent.frame())
 }
 \arguments{
 \item{source}{source to select from.}
@@ -19,6 +19,8 @@ extend_se(source, assignments, ..., partitionby = NULL, orderby = NULL,
 \item{orderby}{ordering (in window function) terms.}
 
 \item{reverse}{reverse ordering (in window function) terms.}
+
+\item{display_form}{chacter presentation form}
 
 \item{env}{environment to look for values in.}
 }

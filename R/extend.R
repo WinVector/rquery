@@ -12,6 +12,7 @@
 #' @param partitionby partitioning (window function) terms.
 #' @param orderby ordering (in window function) terms.
 #' @param reverse reverse order (in window function)
+#' @param display_form chacter presentation form
 #' @return extend node.
 #'
 #'
@@ -21,7 +22,8 @@ extend_impl <- function(source, parsed,
                         ...,
                         partitionby = NULL,
                         orderby = NULL,
-                        reverse = NULL) {
+                        reverse = NULL,
+                        display_form = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery:::extend_impl")
   if(length(setdiff(reverse, orderby))>0) {
@@ -44,7 +46,8 @@ extend_impl <- function(source, parsed,
             reverse = reverse,
             assignments = assignments,
             required_cols = required_cols,
-            columns = names(assignments))
+            columns = names(assignments),
+            display_form = display_form)
   r <- relop_decorate("relop_extend", r)
   r
 }
@@ -60,6 +63,7 @@ extend_impl <- function(source, parsed,
 #' @param partitionby partitioning (window function) terms.
 #' @param orderby ordering (in window function) terms.
 #' @param reverse reverse ordering (in window function) terms.
+#' @param display_form chacter presentation form
 #' @return extend node.
 #'
 #'
@@ -69,7 +73,8 @@ extend_impl_list <- function(source, parsed,
                              ...,
                              partitionby = NULL,
                              orderby = NULL,
-                             reverse = NULL) {
+                             reverse = NULL,
+                             display_form = NULL) {
   if(length(setdiff(reverse, orderby))>0) {
     stop("rquery::extend_impl_list all reverse columns must also be orderby columns")
   }
@@ -80,7 +85,8 @@ extend_impl_list <- function(source, parsed,
     ndchain <- extend_impl(ndchain, parsedi,
                            partitionby = partitionby,
                            orderby = orderby,
-                           reverse = reverse)
+                           reverse = reverse,
+                           display_form = display_form)
   }
   ndchain
 }
@@ -100,6 +106,7 @@ extend_impl_list <- function(source, parsed,
 #' @param partitionby partitioning (window function) terms.
 #' @param orderby ordering (in window function) terms.
 #' @param reverse reverse ordering (in window function) terms.
+#' @param display_form chacter presentation form
 #' @param env environment to look for values in.
 #' @return extend node.
 #'
@@ -131,6 +138,7 @@ extend_se <- function(source, assignments,
                       partitionby = NULL,
                       orderby = NULL,
                       reverse = NULL,
+                      display_form = NULL,
                       env = parent.frame()) {
   UseMethod("extend_se", source)
 }
@@ -141,6 +149,7 @@ extend_se.relop <- function(source, assignments,
                             partitionby = NULL,
                             orderby = NULL,
                             reverse = NULL,
+                            display_form = NULL,
                             env = parent.frame()) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::extend_se.relop")
@@ -152,7 +161,8 @@ extend_se.relop <- function(source, assignments,
                    parsed = parsed,
                    partitionby = partitionby,
                    orderby = orderby,
-                   reverse = reverse)
+                   reverse = reverse,
+                   display_form = display_form)
 }
 
 #' @export
@@ -161,6 +171,7 @@ extend_se.data.frame <- function(source, assignments,
                                  partitionby = NULL,
                                  orderby = NULL,
                                  reverse = NULL,
+                                 display_form = NULL,
                                  env = parent.frame()) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::extend_se.data.frame")
@@ -174,6 +185,7 @@ extend_se.data.frame <- function(source, assignments,
                      partitionby = partitionby,
                      orderby = orderby,
                      reverse = reverse,
+                     display_form = display_form,
                      env = env)
   rquery_apply_to_data_frame(source, enode, env = env)
 }
@@ -192,6 +204,7 @@ extend_se.data.frame <- function(source, assignments,
 #' @param partitionby partitioning (window function) terms.
 #' @param orderby ordering (in window function) terms.
 #' @param reverse reverse ordering (in window function) terms.
+#' @param display_form chacter presentation form
 #' @param env environment to look for values in.
 #' @return extend node.
 #'
@@ -216,6 +229,7 @@ extend_nse <- function(source,
                        partitionby = NULL,
                        orderby = NULL,
                        reverse = NULL,
+                       display_form = NULL,
                        env = parent.frame()) {
   UseMethod("extend_nse", source)
 }
@@ -227,6 +241,7 @@ extend_nse.relop <- function(source,
                              partitionby = NULL,
                              orderby = NULL,
                              reverse = NULL,
+                             display_form = NULL,
                              env = parent.frame()) {
   # Recommend way to caputre ... unevalauted from
   # http://adv-r.had.co.nz/Computing-on-the-language.html#substitute "Capturing unevaluated ..."
@@ -239,7 +254,8 @@ extend_nse.relop <- function(source,
                    parsed = parsed,
                    partitionby = partitionby,
                    orderby = orderby,
-                   reverse = reverse)
+                   reverse = reverse,
+                   display_form = display_form)
 }
 
 #' @export
@@ -249,6 +265,7 @@ extend_nse.data.frame <- function(source,
                                   partitionby = NULL,
                                   orderby = NULL,
                                   reverse = NULL,
+                                  display_form = NULL,
                                   env = parent.frame()) {
   if(length(setdiff(reverse, orderby))>0) {
     stop("rquery::extend_nse.data.frame all reverse columns must also be orderby columns")
@@ -260,6 +277,7 @@ extend_nse.data.frame <- function(source,
                       partitionby = partitionby,
                       orderby = orderby,
                       reverse = reverse,
+                      display_form = display_form,
                       env = env)
   rquery_apply_to_data_frame(source, enode, env = env)
 }
@@ -275,6 +293,9 @@ column_names.relop_extend <- function (x, ...) {
 
 #' @export
 format_node.relop_extend <- function(node) {
+  if(!is.null(node$display_form)) {
+    return(node$display_form)
+  }
   pterms <- ""
   if(length(node$partitionby)>0) {
     pterms <- paste0(",\n  p= ",
