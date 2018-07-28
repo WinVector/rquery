@@ -171,11 +171,11 @@
                        <span class='no'>d</span>,
                        <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
                        <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
-  <span class='no'>linear_transform</span> <span class='kw'>&lt;-</span> <span class='fu'>matrix</span>(<span class='fu'>c</span>(<span class='fl'>1</span> ,<span class='fl'>1</span>, <span class='fl'>2</span>, -<span class='fl'>1</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='fl'>2</span>)
+  <span class='no'>linear_transform</span> <span class='kw'>&lt;-</span> <span class='fu'>matrix</span>(<span class='fu'>c</span>(<span class='fl'>1</span> ,<span class='fl'>1</span>, <span class='fl'>2</span>, -<span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>0</span>, <span class='fl'>0</span>, <span class='fl'>0</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='fl'>2</span>)
   <span class='fu'>rownames</span>(<span class='no'>linear_transform</span>) <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='st'>"AUC"</span>, <span class='st'>"R2"</span>)
-  <span class='fu'>colnames</span>(<span class='no'>linear_transform</span>) <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='st'>"res1"</span>, <span class='st'>"res2"</span>)
-  <span class='no'>offset</span> <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='fl'>5</span>, <span class='fl'>7</span>)
-  <span class='fu'>names</span>(<span class='no'>offset</span>) <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='st'>"res1"</span>, <span class='st'>"res2"</span>)
+  <span class='fu'>colnames</span>(<span class='no'>linear_transform</span>) <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='st'>"res1"</span>, <span class='st'>"res2"</span>, <span class='st'>"res3"</span>, <span class='st'>"res4"</span>)
+  <span class='no'>offset</span> <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='fl'>5</span>, <span class='fl'>7</span>, <span class='fl'>1</span>, <span class='fl'>0</span>)
+  <span class='fu'>names</span>(<span class='no'>offset</span>) <span class='kw'>&lt;-</span> <span class='fu'>colnames</span>(<span class='no'>linear_transform</span>)
 
   <span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='fu'>affine_transform</span>(<span class='no'>source</span>, <span class='no'>linear_transform</span>, <span class='no'>offset</span>)
   <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>optree</span>))
@@ -195,7 +195,9 @@
 #&gt;  `AUC`,
 #&gt;  `R2`,
 #&gt;  `AUC` * ( 1 ) + `R2` * ( 1 ) + 5  AS `res1`,
-#&gt;  `AUC` * ( 2 ) + `R2` * ( - ( 1 ) ) + 7  AS `res2`
+#&gt;  `AUC` * ( 2 ) + `R2` * ( - ( 1 ) ) + 7  AS `res2`,
+#&gt;  `AUC` * ( 1 ) + 1  AS `res3`,
+#&gt;  0  AS `res4`
 #&gt; FROM (
 #&gt;  SELECT
 #&gt;   `AUC`,
@@ -203,10 +205,10 @@
 #&gt;  FROM
 #&gt;   `d`
 #&gt;  ) tsql_26719705660236447912_0000000000
-#&gt;   AUC  R2 res1 res2
-#&gt; 1 0.6 0.2  5.8    8
-#&gt;      res1 res2
-#&gt; [1,]  5.8    8</div><div class='input'>
+#&gt;   AUC  R2 res1 res2 res3 res4
+#&gt; 1 0.6 0.2  5.8    8  1.6    0
+#&gt;      res1 res2 res3 res4
+#&gt; [1,]  5.8    8  1.6    0</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

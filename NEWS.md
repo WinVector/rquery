@@ -1,9 +1,10 @@
 
-# rquery 0.6.0 2018/07/27
+# rquery 0.6.0 2018/07/28
 
  * Change to immediate execution.
  * Subtitute in values in presentation layer (rqdatatable depends on this).
  * Fix name disambiguation.
+ * Better column dependency calculation.
  * Get rid of %>>% and old dbi fn-names.
  * Allow schema qualification.
  * Try to improve use of regexps.

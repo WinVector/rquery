@@ -328,19 +328,21 @@ format_node.relop_extend <- function(node) {
 
 
 
-calc_used_relop_extend <- function (x,
-                                    using = NULL) {
-  cols <- column_names(x)
-  if(length(using)>0) {
-    cols <- using
+calc_used_relop_extend <- function(x,
+                                   using = NULL) {
+  source_cols <- column_names(x$source[[1]])
+  if(length(using)<=0) {
+    return(source_cols)
   }
-  producing <- merge_fld(x$parsed, "symbols_produced")
-  expressions <- x$parsed
-  # TODO: test and instantiante this
-  #   expressions <- x$parsed[producing %in% cols]
-  cols <- setdiff(cols, producing)
+  want_expr <- vapply(x$parsed,
+                      function(pi) {
+                        length(intersect(pi$symbols_produced, using))>0
+                      }, logical(1))
+  expressions <- x$parsed[want_expr]
+  producing <- merge_fld(expressions, "symbols_produced")
   consuming <- merge_fld(expressions, "symbols_used")
-  subusing <- unique(c(cols, consuming, x$partitionby, x$orderby))
+  direct_from_source <- setdiff(intersect(using, source_cols), producing)
+  subusing <- unique(c(direct_from_source, consuming, x$partitionby, x$orderby))
   subusing
 }
 
@@ -369,7 +371,15 @@ to_sql.relop_extend <- function (x,
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::to_sql.relop_extend")
   # re-quote expr
-  re_quoted <- redo_parse_quoting(x$parsed, db)
+  parsed <- x$parsed
+  if(length(using)>0) {
+    want_expr <- vapply(x$parsed,
+                        function(pi) {
+                          length(intersect(pi$symbols_produced, using))>0
+                        }, logical(1))
+    parsed <- x$parsed[want_expr]
+  }
+  re_quoted <- redo_parse_quoting(parsed, db)
   re_assignments <- unpack_assignments(x$source[[1]], re_quoted)
   # work on query
   using_incoming <- calc_used_relop_extend(x,
