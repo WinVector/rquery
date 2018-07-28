@@ -201,17 +201,16 @@ format_node.relop_project <- function(node) {
 
 calc_used_relop_project <- function (x,
                                      using = NULL) {
-  cols <- column_names(x)
-  if(length(using)>0) {
-    cols <- using
-  }
-  producing <- merge_fld(x$parsed, "symbols_produced")
   expressions <- x$parsed
-  # TODO: test and instantiate this
-  # expressions <- x$parsed[producing %in% cols]
-  cols <- setdiff(cols, producing)
+  if(length(using)>0) {
+    want_expr <- vapply(x$parsed,
+                        function(pi) {
+                          length(intersect(pi$symbols_produced, using))>0
+                        }, logical(1))
+    expressions <- x$parsed[want_expr]
+  }
   consuming <- merge_fld(expressions, "symbols_used")
-  subusing <- unique(c(cols, consuming, x$groupby, x$orderby))
+  subusing <- unique(c(consuming, x$groupby, x$orderby))
   subusing
 }
 
@@ -242,10 +241,18 @@ to_sql.relop_project <- function (x,
     stop("unexpected arguments")
   }
   # re-quote expr
-  re_quoted <- redo_parse_quoting(x$parsed, db)
+  parsed <- x$parsed
+  if(length(using)>0) {
+    want_expr <- vapply(x$parsed,
+                        function(pi) {
+                          length(intersect(pi$symbols_produced, using))>0
+                        }, logical(1))
+    parsed <- x$parsed[want_expr]
+  }
+  re_quoted <- redo_parse_quoting(parsed, db)
   re_assignments <- unpack_assignments(x$source[[1]], re_quoted)
   # work on query
-  using <- calc_used_relop_project(x,
+  using_incoming <- calc_used_relop_project(x,
                                    using = using)
   subsql_list <- to_sql(x$source[[1]],
                         db = db,
@@ -253,15 +260,24 @@ to_sql.relop_project <- function (x,
                         indent_level = indent_level + 1,
                         tnum = tnum,
                         append_cr = FALSE,
-                        using = using)
+                        using = using_incoming)
   subsql <- subsql_list[[length(subsql_list)]]
-  cols1 <- x$groupby
-  cols <- NULL
-  if(length(cols1)>0) {
-    cols <- vapply(cols1,
-                   function(ci) {
-                     quote_identifier(db, ci)
-                   }, character(1))
+  grouping_cols <- x$groupby
+  if(length(x$groupby)>0) {
+    grouping_cols <- vapply(x$groupby,
+                            function(ci) {
+                              quote_identifier(db, ci)
+                            }, character(1))
+  }
+  extra_cols <- x$groupby
+  if(length(using)>0) {
+    extra_cols <- intersect(x$groupby, using)
+  }
+  if(length(extra_cols)>0) {
+    extra_cols <- vapply(extra_cols,
+                         function(ci) {
+                           quote_identifier(db, ci)
+                         }, character(1))
   }
   derived <- NULL
   if(length(re_assignments)>0) {
@@ -274,15 +290,15 @@ to_sql.relop_project <- function (x,
   tab <- tnum()
   prefix <- paste(rep(' ', indent_level), collapse = '')
   q <- paste0(prefix, "SELECT ",
-              paste(c(cols, derived), collapse = ", "),
+              paste(c(extra_cols, derived), collapse = ", "),
               " FROM (\n",
               subsql, "\n",
               prefix, " ) ", tab)
-  if(length(cols)>0) {
+  if(length(grouping_cols)>0) {
     q <- paste0(q,
                 "\n",
                 prefix, "GROUP BY\n",
-                prefix, " ", paste(cols, collapse = ", "))
+                prefix, " ", paste(grouping_cols, collapse = ", "))
   }
   if(!is.null(limit)) {
     q <- paste(q, "LIMIT",

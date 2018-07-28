@@ -118,7 +118,7 @@ rquery_apply_to_data_frame <- function(d,
     my_db <- rquery.rquery_db_executor$db
   }
   if(is.null(my_db)) {
-    stop("rquery::rquery_apply_to_data_frame no database")
+    stop("rquery::rquery_apply_to_data_frame no default executor or database (please try library('rqdatatable'))")
   }
   if(length(tabNames)!=1) {
     stop("rquery::rquery_apply_to_data_frame optree must reference exactly one table when rquery.rquery_executor option is not set")
