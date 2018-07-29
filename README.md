@@ -153,7 +153,7 @@ rq_copy_to(my_db, 'd',
             overwrite = TRUE)
 ```
 
-    ## [1] "table('\"d\"'; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2)"
+    ## [1] "table(\"d\"; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2)"
 
 ``` r
 # produce a hande to existing table
@@ -176,7 +176,7 @@ class(my_db)
 print(d)
 ```
 
-    ## [1] "table('\"d\"'; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2)"
+    ## [1] "table(\"d\"; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2)"
 
 ``` r
 d %.>%
@@ -271,14 +271,14 @@ cat(to_sql(dq, my_db, source_limit = 1000))
             "assessmentTotal"
            FROM
             "d" LIMIT 1000
-           ) tsql_39881714373003890977_0000000000
-          ) tsql_39881714373003890977_0000000001
-         ) tsql_39881714373003890977_0000000002
-       ) tsql_39881714373003890977_0000000003
+           ) tsql_58979123132740300094_0000000000
+          ) tsql_58979123132740300094_0000000001
+         ) tsql_58979123132740300094_0000000002
+       ) tsql_58979123132740300094_0000000003
        WHERE "row_number" <= 1
-      ) tsql_39881714373003890977_0000000004
-     ) tsql_39881714373003890977_0000000005
-    ) tsql_39881714373003890977_0000000006 ORDER BY "subjectID"
+      ) tsql_58979123132740300094_0000000004
+     ) tsql_58979123132740300094_0000000005
+    ) tsql_58979123132740300094_0000000006 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
@@ -311,7 +311,7 @@ The additional record-keeping in the operator nodes allows checking and optimiza
 cat(format(dq))
 ```
 
-    table('"d"'; 
+    table("d"; 
       subjectID,
       surveyCategory,
       assessmentTotal,

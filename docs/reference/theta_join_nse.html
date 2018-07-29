@@ -184,11 +184,11 @@
   <span class='fu'>cat</span>(<span class='no'>sql</span>)
   <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; table('`d1`'; 
+}</div><div class='output co'>#&gt; table(`d1`; 
 #&gt;   AUC,
 #&gt;   R2) %.&gt;%
 #&gt;  theta_join(.,
-#&gt;   table('`d2`'; 
+#&gt;   table(`d2`; 
 #&gt;     AUC2,
 #&gt;     R2),
 #&gt;   j= INNER; on= AUC &gt;= AUC2)

@@ -88,7 +88,7 @@
       <h1>Pipeable SQL</h1>
                         <h4 class="author">John Mount</h4>
             
-            <h4 class="date">2018-07-28</h4>
+            <h4 class="date">2018-07-29</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery//blob/master/vignettes/PipeableSQL.Rmd"><code>vignettes/PipeableSQL.Rmd</code></a></small>
       <div class="hidden name"><code>PipeableSQL.Rmd</code></div>
@@ -152,7 +152,7 @@ dbopts &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rq_c
   <span class="kw">data.frame</span>(<span class="dt">v =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="op">-</span><span class="dv">5</span>, <span class="dv">3</span>)),
   <span class="dt">temporary =</span> <span class="ot">FALSE</span>,
   <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</code></pre></div>
-<pre><code>## [1] "table('`d`'; v)"</code></pre>
+<pre><code>## [1] "table(`d`; v)"</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># produce a hande to existing table</span>
 d &lt;-<span class="st"> </span><span class="kw"><a href="../reference/db_td.html">db_td</a></span>(db, <span class="st">"d"</span>)</code></pre></div>
 <p><code>d</code> is a “table description” which is just the name of a table and the names of expected columns. <code>d</code> does not store data or a database reference (making it safe to serialize/de-serialize). All <code>rquery</code> operation trees or pipelines must start either with a table description or a <code>data.frame</code>. We will discuss table descriptions later.</p>
@@ -219,8 +219,8 @@ FROM (
    `v`
   FROM
    `d`
- ) tsql_70545707651240472415_0000000000
-) tsql_70545707651240472415_0000000001</code></pre>
+ ) tsql_99627598008833752104_0000000000
+) tsql_99627598008833752104_0000000001</code></pre>
 <p>Notice the above translations did not add identifier quotes to our use of “<code>v</code>” in “<code>ABS(v)</code>”. This is because the <code>SQL</code> expression is not parsed in <code>R</code>. If we want to identify terms as variables we can wrap them with <code>as.name()</code> or <code>quote()</code> to get the quoting (and other variable oriented features). The extra <code>SELECT</code> step to pull data from the inner table is used by <code>rquery</code> for important column narrowing steps, and can actually improve query performance.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">op_tree &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(., <span class="st">"absv"</span> <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">list</span>(<span class="kw">list</span>(<span class="st">"ABS("</span>, <span class="kw">quote</span>(v), <span class="st">")"</span>))) <span class="op">%.&gt;%</span>
@@ -239,12 +239,12 @@ FROM (
    `v`
   FROM
    `d`
- ) tsql_72682378033099683424_0000000000
-) tsql_72682378033099683424_0000000001</code></pre>
+ ) tsql_67991943189802934604_0000000000
+) tsql_67991943189802934604_0000000001</code></pre>
 <p>The <code>list(list())</code> notation is how we say in <code>R</code> that we have a single element list (i.e. one expression) that is built up as a list of terms. The marking notation is cumbersome, but is not needed when we move on to relation nodes, which are parsed in <code>R</code> and can spot identifiers without additional help.</p>
 <p><code>op_tree</code> itself is a an object with its own presentation format:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw">format</span>(op_tree))</code></pre></div>
-<pre><code>## table('`d`'; 
+<pre><code>## table(`d`; 
 ##   v) %.&gt;%
 ##  sql_node(.,
 ##           absv %:=% ABS( v ),
@@ -268,7 +268,7 @@ FROM (
 <span class="st">  </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(., <span class="st">"prod"</span> <span class="op">:</span><span class="er">=</span><span class="st"> "absv * delta"</span>)
 
 <span class="kw">cat</span>(<span class="kw">format</span>(op_tree))</code></pre></div>
-<pre><code>## table('`d`'; 
+<pre><code>## table(`d`; 
 ##   v) %.&gt;%
 ##  sql_node(.,
 ##           absv %:=% ABS( v ),
@@ -324,7 +324,7 @@ expr &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">li
 op_tree_count_null &lt;-<span class="st"> </span>d2 <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(., <span class="st">"num_missing"</span> <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">list</span>(expr))
 <span class="kw">cat</span>(<span class="kw">format</span>(op_tree_count_null))</code></pre></div>
-<pre><code>## table('`d2`'; 
+<pre><code>## table(`d2`; 
 ##   v1,
 ##   v2,
 ##   v3) %.&gt;%
@@ -346,7 +346,7 @@ sql &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.
 ##   `v3`
 ##  FROM
 ##   `d2`
-## ) tsql_46196005251956925515_0000000000</code></pre>
+## ) tsql_46130582705602378067_0000000000</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># execute</span>
 <span class="kw"><a href="../reference/execute.html">execute</a></span>(db, op_tree_count_null)</code></pre></div>
 <pre><code>##   v3 num_missing v1   v2
@@ -395,7 +395,7 @@ s_tree &lt;-<span class="st"> </span>d2 <span class="op">%.&gt;%</span>
 ##   `v3`
 ##  FROM
 ##   `d2`
-## ) tsql_64115437124243860724_0000000000</code></pre>
+## ) tsql_76046544458253382344_0000000000</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/execute.html">execute</a></span>(db, s_tree)</code></pre></div>
 <pre><code>##   v1   v2 v3 v1_isNA v2_isNA v3_isNA
 ## 1  1 &lt;NA&gt; NA       0       1       1
