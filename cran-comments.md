@@ -12,16 +12,15 @@
 ## R CMD check results
 
     R CMD check --as-cran rquery_0.6.0.tar.gz 
-    * using session charset: UTF-8
+
     * using option ‘--as-cran’
     * checking for file ‘rquery/DESCRIPTION’ ... OK
     * checking extension type ... Package
-    * this is package ‘rquery’ version ‘0.5.1’
+    * this is package ‘rquery’ version ‘0.6.0’
     * package encoding: UTF-8
-    * checking CRAN incoming feasibility ... NOTE
-    Maintainer: ‘John Mount <jmount@win-vector.com>’
-    Number of updates in past 6 months: 8
-    Status: 1 NOTE
+    * checking CRAN incoming feasibility ... Note_to_CRAN_maintainers
+
+    Status: OK
 
 ## Reverse dependencies
 
@@ -31,6 +30,3 @@
      Checked vtreat     : 0 errors | 0 warnings | 0 notes
      
 Note: "Edgar F. Codd", "SQL", and "observable" are all spelled correctly.
-
-
-

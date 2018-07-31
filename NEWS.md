@@ -1,5 +1,5 @@
 
-# rquery 0.6.0 2018/07/30
+# rquery 0.6.0 2018/07/31
 
  * Change to immediate execution.
  * Subtitute in values in presentation layer (rqdatatable depends on this).
