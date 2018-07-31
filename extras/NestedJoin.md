@@ -72,7 +72,7 @@ d1 %>%
   left_join(., d3, by = "key")
 ```
 
-    ## Error: org.apache.spark.sql.AnalysisException: cannot resolve '`TBL_LEFT.val.x`' given input columns: [key, val, val.x, val.y, key]; line 1 pos 34;
+    ## Error: org.apache.spark.sql.AnalysisException: cannot resolve '`TBL_LEFT.val.x`' given input columns: [val.y, key, val, val.x, key]; line 1 pos 34;
     ## 'Project [key#273 AS key#276, 'TBL_LEFT.val.x AS val.x#277, 'TBL_LEFT.val.y AS val.y#278, val#159 AS val#279]
     ## +- Join LeftOuter, (key#273 = key#158)
     ##    :- SubqueryAlias TBL_LEFT
@@ -192,6 +192,10 @@ print(dbopts)
     ## $rquery.DBIConnection_spark_connection_spark_shell_connection.check_logical_column_types
     ## [1] FALSE
     ## 
+    ## $rquery.DBIConnection_spark_connection_spark_shell_connection.fn_name_map
+    ##  mean 
+    ## "avg" 
+    ## 
     ## $rquery.DBIConnection_spark_connection_spark_shell_connection.zero_arg_fn_map
     ## random 
     ## "rand"
@@ -272,22 +276,22 @@ cat(to_sql(optree, db))
 ```
 
     ## SELECT
-    ##  COALESCE(`tsql_28751504393860215639_0000000004`.`key`, `tsql_28751504393860215639_0000000005`.`key`) AS `key`,
-    ##  `tsql_28751504393860215639_0000000004`.`val` AS `val`,
-    ##  `tsql_28751504393860215639_0000000004`.`val_1` AS `val_1`,
-    ##  `tsql_28751504393860215639_0000000005`.`val_2` AS `val_2`
+    ##  COALESCE(`tsql_31891855505549758549_0000000004`.`key`, `tsql_31891855505549758549_0000000005`.`key`) AS `key`,
+    ##  `tsql_31891855505549758549_0000000004`.`val` AS `val`,
+    ##  `tsql_31891855505549758549_0000000004`.`val_1` AS `val_1`,
+    ##  `tsql_31891855505549758549_0000000005`.`val_2` AS `val_2`
     ## FROM (
     ##  SELECT
-    ##   COALESCE(`tsql_28751504393860215639_0000000001`.`key`, `tsql_28751504393860215639_0000000002`.`key`) AS `key`,
-    ##   `tsql_28751504393860215639_0000000001`.`val` AS `val`,
-    ##   `tsql_28751504393860215639_0000000002`.`val_1` AS `val_1`
+    ##   COALESCE(`tsql_31891855505549758549_0000000001`.`key`, `tsql_31891855505549758549_0000000002`.`key`) AS `key`,
+    ##   `tsql_31891855505549758549_0000000001`.`val` AS `val`,
+    ##   `tsql_31891855505549758549_0000000002`.`val_1` AS `val_1`
     ##  FROM (
     ##   SELECT
     ##    `key`,
     ##    `val`
     ##   FROM
     ##    `d1`
-    ##  ) `tsql_28751504393860215639_0000000001`
+    ##  ) `tsql_31891855505549758549_0000000001`
     ##  LEFT JOIN (
     ##   SELECT
     ##    `key` AS `key`,
@@ -298,11 +302,11 @@ cat(to_sql(optree, db))
     ##     `val`
     ##    FROM
     ##     `d2`
-    ##   ) tsql_28751504393860215639_0000000000
-    ##  ) `tsql_28751504393860215639_0000000002`
+    ##   ) tsql_31891855505549758549_0000000000
+    ##  ) `tsql_31891855505549758549_0000000002`
     ##  ON
-    ##   `tsql_28751504393860215639_0000000001`.`key` = `tsql_28751504393860215639_0000000002`.`key`
-    ## ) `tsql_28751504393860215639_0000000004`
+    ##   `tsql_31891855505549758549_0000000001`.`key` = `tsql_31891855505549758549_0000000002`.`key`
+    ## ) `tsql_31891855505549758549_0000000004`
     ## LEFT JOIN (
     ##  SELECT
     ##   `key` AS `key`,
@@ -313,10 +317,10 @@ cat(to_sql(optree, db))
     ##    `val`
     ##   FROM
     ##    `d3`
-    ##  ) tsql_28751504393860215639_0000000003
-    ## ) `tsql_28751504393860215639_0000000005`
+    ##  ) tsql_31891855505549758549_0000000003
+    ## ) `tsql_31891855505549758549_0000000005`
     ## ON
-    ##  `tsql_28751504393860215639_0000000004`.`key` = `tsql_28751504393860215639_0000000005`.`key`
+    ##  `tsql_31891855505549758549_0000000004`.`key` = `tsql_31891855505549758549_0000000005`.`key`
 
 ``` r
 execute(db, optree) %.>%
