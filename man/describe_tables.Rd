@@ -4,7 +4,8 @@
 \alias{describe_tables}
 \title{Build a nice description of a table.}
 \usage{
-describe_tables(db, tablenames, ..., keyInspector = key_inspector_all_cols)
+describe_tables(db, tablenames, ...,
+  keyInspector = key_inspector_all_cols)
 }
 \arguments{
 \item{db}{database handle}

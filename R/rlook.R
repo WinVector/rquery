@@ -24,18 +24,26 @@
 #'
 #' @export
 #'
-rlook <- function(my_db, tableName,
-                  ...,
-                  displayRows = 10,
-                  countRows = TRUE) {
+rstr <- function(my_db, tableName,
+                 ...,
+                 displayRows = 10,
+                 countRows = TRUE) {
   if(!requireNamespace("DBI", quietly = TRUE)) {
-    stop("rquery::rlook requires DBI package")
+    stop("rquery::rstr requires DBI package")
   }
   wrapr::stop_if_dot_args(substitute(list(...)),
-                          "rquery:::rlook")
-
+                          "rquery:::rstr")
   if("rquery_db_info" %in% class(my_db)) {
     my_db <- my_db$connection
+  }
+  if("relop_table_source" %in% class(tableName)) {
+    tableName <- tableName$table_name
+  }
+  if(!is.character(tableName)) {
+    stop("rquery::rstr tableName must be scalar string or relop_table_source")
+  }
+  if(length(tableName)!=1) {
+    stop("rquery::rstr tableName must be scalar string or relop_table_source")
   }
   h <- DBI::dbGetQuery(my_db,
                        paste0("SELECT * FROM ",
@@ -60,3 +68,7 @@ rlook <- function(my_db, tableName,
   utils::str(h, list.len = length(h))
   invisible(NULL)
 }
+
+#' @rdname rstr
+#' @export
+rlook <- rstr

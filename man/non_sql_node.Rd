@@ -5,8 +5,9 @@
 \title{Wrap a non-SQL node.}
 \usage{
 non_sql_node(source, ..., f_db, f_df = NULL, incoming_table_name,
-  outgoing_table_name, columns_produced, display_form, pass_using = FALSE,
-  orig_columns = TRUE, temporary = TRUE, env = parent.frame())
+  outgoing_table_name, columns_produced, display_form,
+  pass_using = FALSE, orig_columns = TRUE, temporary = TRUE,
+  env = parent.frame())
 }
 \arguments{
 \item{source}{source to work from (data.frame or relop node)}

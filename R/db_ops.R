@@ -496,6 +496,8 @@ rq_connection_name <- function(db) {
 rq_connection_advice <- function(db) {
   cname <- rq_connection_name(db)
   opts <- list()
+  opts[[paste(c("rquery", cname, "fn_name_map"), collapse = ".")]] <-
+    c("mean" = "avg")
   if(connection_is_sparklyr(db)) {
     opts[[paste(c("rquery", cname, "create_temporary"), collapse = ".")]] <- FALSE
     opts[[paste(c("rquery", cname, "control_rownames"), collapse = ".")]] <- FALSE
@@ -737,9 +739,19 @@ getDBOption <- function(db, optname, default,
   cname <- rq_connection_name(db)
   key <- paste(c("rquery", cname, optname), collapse = ".")
   val <- connection_options[[key]]
-  if(is.null(val)) {
-    val <- getOption(key, default = default)
+  if(!is.null(val)) {
+    return(val)
   }
+  if("rquery_db_info" %in% class(db)) {
+    co <- db$connection_options
+    if(!is.null(co)) {
+      val <- co[[key]]
+    }
+  }
+  if(!is.null(val)) {
+    return(val)
+  }
+  val <- getOption(key, default = default)
   val
 }
 

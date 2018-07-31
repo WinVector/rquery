@@ -94,7 +94,7 @@ rquery_db_info <- function(...,
 #' @export
 format.rquery_db_info <- function(x, ...) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::format.rquery_db_info")
-  paste0("rquery_db_info(is_dbi=", x$is_dbi, ", ", x$note, ", ", format(x$connection) , ")")
+  paste0("rquery_db_info(",rq_connection_name(x), ", is_dbi=", x$is_dbi, ", note=\"", x$note, "\")")
 }
 
 #' @export

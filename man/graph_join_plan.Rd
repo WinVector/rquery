@@ -4,7 +4,8 @@
 \alias{graph_join_plan}
 \title{Build a draw-able specification of the join diagram}
 \usage{
-graph_join_plan(columnJoinPlan, ..., groupByKeys = TRUE, graphOpts = NULL)
+graph_join_plan(columnJoinPlan, ..., groupByKeys = TRUE,
+  graphOpts = NULL)
 }
 \arguments{
 \item{columnJoinPlan}{join plan}

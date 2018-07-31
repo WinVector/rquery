@@ -129,8 +129,9 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>to_sql</span>(<span class='no'>x</span>, <span class='no'>db</span>, <span class='no'>...</span>, <span class='kw'>limit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>source_limit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>indent_level</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>tnum</span> <span class='kw'>=</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/wrapr/topics/mk_tmp_name_source'>mk_tmp_name_source</a></span>(<span class='st'>"tsql"</span>), <span class='kw'>append_cr</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>using</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>to_sql</span>(<span class='no'>x</span>, <span class='no'>db</span>, <span class='no'>...</span>, <span class='kw'>limit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>source_limit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>indent_level</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>tnum</span> <span class='kw'>=</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/wrapr/topics/mk_tmp_name_source'>mk_tmp_name_source</a></span>(<span class='st'>"tsql"</span>),
+  <span class='kw'>append_cr</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>using</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -202,7 +203,7 @@
 #&gt;     AUC,
 #&gt;     D),
 #&gt;   j= INNER, by= AUC)
-#&gt; [1] "SELECT\n COALESCE(`tsql_92580631348306354205_0000000000`.`AUC`, `tsql_92580631348306354205_0000000001`.`AUC`) AS `AUC`,\n `tsql_92580631348306354205_0000000000`.`R2` AS `R2`,\n `tsql_92580631348306354205_0000000001`.`D` AS `D`\nFROM (\n SELECT\n  `AUC`,\n  `R2`\n FROM\n  `d1`\n) `tsql_92580631348306354205_0000000000`\nINNER JOIN (\n SELECT\n  `AUC`,\n  `D`\n FROM\n  `d2`\n) `tsql_92580631348306354205_0000000001`\nON\n `tsql_92580631348306354205_0000000000`.`AUC` = `tsql_92580631348306354205_0000000001`.`AUC`\n"</div><div class='input'>
+#&gt; [1] "SELECT\n COALESCE(`tsql_23234694194842116457_0000000000`.`AUC`, `tsql_23234694194842116457_0000000001`.`AUC`) AS `AUC`,\n `tsql_23234694194842116457_0000000000`.`R2` AS `R2`,\n `tsql_23234694194842116457_0000000001`.`D` AS `D`\nFROM (\n SELECT\n  `AUC`,\n  `R2`\n FROM\n  `d1`\n) `tsql_23234694194842116457_0000000000`\nINNER JOIN (\n SELECT\n  `AUC`,\n  `D`\n FROM\n  `d2`\n) `tsql_23234694194842116457_0000000001`\nON\n `tsql_23234694194842116457_0000000000`.`AUC` = `tsql_23234694194842116457_0000000001`.`AUC`\n"</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

@@ -4,8 +4,9 @@
 \alias{to_sql}
 \title{Return SQL implementation of operation tree.}
 \usage{
-to_sql(x, db, ..., limit = NULL, source_limit = NULL, indent_level = 0,
-  tnum = mk_tmp_name_source("tsql"), append_cr = TRUE, using = NULL)
+to_sql(x, db, ..., limit = NULL, source_limit = NULL,
+  indent_level = 0, tnum = mk_tmp_name_source("tsql"),
+  append_cr = TRUE, using = NULL)
 }
 \arguments{
 \item{x}{rquery operation tree.}

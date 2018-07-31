@@ -120,7 +120,7 @@ library("rquery")
 print(db_hdl) # rquery handle into Spark
 ```
 
-    ## [1] "rquery_db_info(is_dbi=FALSE, SparkR, <environment: 0x7f99e271f150>)"
+    ## [1] "rquery_db_info(jobj, is_dbi=FALSE, note=\"SparkR\")"
 
 Let's assume that we already have the data in Spark, as `order_table`. To work with the table in `rquery`, we must generate a *table description*, using the function `db_td()`. A table description is a record of the table's name and columns; `db_td()` queries the database to get the description.
 
@@ -141,7 +141,7 @@ table_description = db_td(db_hdl, "order_table")
 print(table_description)
 ```
 
-    ## [1] "table('`order_table`'; custID, restaurant_type, orderID)"
+    ## [1] "table(`order_table`; custID, restaurant_type, orderID)"
 
 ``` r
 print(column_names(table_description))
@@ -179,7 +179,7 @@ Before executing the pipeline, you can inspect it, either as text:
 cat(format(rquery_pipeline))
 ```
 
-    ## table('`order_table`'; 
+    ## table(`order_table`; 
     ##   custID,
     ##   restaurant_type,
     ##   orderID) %.>%

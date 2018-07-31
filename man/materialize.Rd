@@ -4,8 +4,8 @@
 \alias{materialize}
 \title{Materialize an optree as a table.}
 \usage{
-materialize(db, optree, table_name = mk_tmp_name_source("rquery_mat")(), ...,
-  limit = NULL, source_limit = NULL, overwrite = TRUE,
+materialize(db, optree, table_name = mk_tmp_name_source("rquery_mat")(),
+  ..., limit = NULL, source_limit = NULL, overwrite = TRUE,
   temporary = FALSE, precheck = FALSE)
 }
 \arguments{

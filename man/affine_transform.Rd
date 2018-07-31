@@ -4,7 +4,8 @@
 \alias{affine_transform}
 \title{Implement an affine transformaton}
 \usage{
-affine_transform(source, linear_transform, offset, ..., env = parent.frame())
+affine_transform(source, linear_transform, offset, ...,
+  env = parent.frame())
 }
 \arguments{
 \item{source}{relop source (or data.frame source)}

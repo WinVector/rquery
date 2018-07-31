@@ -1,14 +1,15 @@
 
-# rquery 0.6.0 2018/07/29
+# rquery 0.6.0 2018/07/30
 
  * Change to immediate execution.
  * Subtitute in values in presentation layer (rqdatatable depends on this).
  * Fix name disambiguation.
  * Better column dependency calculation.
+ * Re-map function names.
+ * Improve extend narrowing.
+ * Start on schema qualification.
  * Get rid of %>>% and old dbi fn-names.
- * Allow schema qualification.
  * Try to improve use of regexps.
- * Improve select narrowing.
  * Add qlook().
  * Add affine_transform().
  * Documentation fixes.

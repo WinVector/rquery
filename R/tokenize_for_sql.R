@@ -267,7 +267,7 @@ tokenize_call_for_SQL <- function(lexpr,
     return(res)
   }
   # default
-  res$parsed_toks <- c(ltok(callName),
+  res$parsed_toks <- c(list(pre_sql_fn(callName)),
                        ltok("("), subseq, ltok(")"))
   return(res)
 }

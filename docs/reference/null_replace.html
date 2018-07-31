@@ -129,7 +129,8 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>null_replace</span>(<span class='no'>src</span>, <span class='no'>cols</span>, <span class='no'>value</span>, <span class='no'>...</span>, <span class='kw'>note_col</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
+    <pre class="usage"><span class='fu'>null_replace</span>(<span class='no'>src</span>, <span class='no'>cols</span>, <span class='no'>value</span>, <span class='no'>...</span>, <span class='kw'>note_col</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -188,11 +189,11 @@
 #&gt;  null_replace(.; A,
 #&gt;   B: 0;  alterations)
 #&gt; SELECT
-#&gt;  CASE WHEN `tsql_57261411398261364781_0000000000`.`A` IS NULL THEN 0 ELSE `tsql_57261411398261364781_0000000000`.`A` END AS `A`,
-#&gt;  CASE WHEN `tsql_57261411398261364781_0000000000`.`B` IS NULL THEN 0 ELSE `tsql_57261411398261364781_0000000000`.`B` END AS `B`,
+#&gt;  CASE WHEN `tsql_93171283001079942400_0000000000`.`A` IS NULL THEN 0 ELSE `tsql_93171283001079942400_0000000000`.`A` END AS `A`,
+#&gt;  CASE WHEN `tsql_93171283001079942400_0000000000`.`B` IS NULL THEN 0 ELSE `tsql_93171283001079942400_0000000000`.`B` END AS `B`,
 #&gt;  0 + 
-#&gt;  ( CASE WHEN `tsql_57261411398261364781_0000000000`.`A` IS NULL THEN 1 ELSE 0 END ) + 
-#&gt;  ( CASE WHEN `tsql_57261411398261364781_0000000000`.`B` IS NULL THEN 1 ELSE 0 END ) AS `alterations`
+#&gt;  ( CASE WHEN `tsql_93171283001079942400_0000000000`.`A` IS NULL THEN 1 ELSE 0 END ) + 
+#&gt;  ( CASE WHEN `tsql_93171283001079942400_0000000000`.`B` IS NULL THEN 1 ELSE 0 END ) AS `alterations`
 #&gt; 
 #&gt; FROM (
 #&gt;  SELECT
@@ -200,7 +201,7 @@
 #&gt;   `B`
 #&gt;  FROM
 #&gt;   `d1`
-#&gt; ) tsql_57261411398261364781_0000000000
+#&gt; ) tsql_93171283001079942400_0000000000
 #&gt;   A B alterations
 #&gt; 1 0 3           1
 #&gt; 2 2 0           1

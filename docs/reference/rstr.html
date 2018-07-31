@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>project data by grouping, and adding aggregate columns. — project_se • rquery</title>
+<title>Quick look at remote data — rstr • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="project data by grouping, and adding aggregate columns. — project_se" />
+<meta property="og:title" content="Quick look at remote data — rstr" />
 
-<meta property="og:description" content="project data by grouping, and adding aggregate columns." />
+<meta property="og:description" content="Quick look at remote data" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -118,103 +118,68 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>project data by grouping, and adding aggregate columns.</h1>
-    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/project.R'><code>R/project.R</code></a></small>
-    <div class="hidden name"><code>project_se.Rd</code></div>
+    <h1>Quick look at remote data</h1>
+    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/rlook.R'><code>R/rlook.R</code></a></small>
+    <div class="hidden name"><code>rstr.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>project data by grouping, and adding aggregate columns.</p>
+    <p>Quick look at remote data</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>project_se</span>(<span class='no'>source</span>, <span class='no'>groupby</span>, <span class='no'>assignments</span>, <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
+    <pre class="usage"><span class='fu'>rstr</span>(<span class='no'>my_db</span>, <span class='no'>tableName</span>, <span class='no'>...</span>, <span class='kw'>displayRows</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>countRows</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+
+<span class='fu'>rlook</span>(<span class='no'>my_db</span>, <span class='no'>tableName</span>, <span class='no'>...</span>, <span class='kw'>displayRows</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>countRows</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>source</th>
-      <td><p>source to select from.</p></td>
+      <th>my_db</th>
+      <td><p>database handle</p></td>
     </tr>
     <tr>
-      <th>groupby</th>
-      <td><p>grouping columns.</p></td>
+      <th>tableName</th>
+      <td><p>name of table to look at</p></td>
     </tr>
     <tr>
-      <th>assignments</th>
-      <td><p>new column assignment expressions.</p></td>
+      <th>...</th>
+      <td><p>not used, force later arguments to bind by name</p></td>
     </tr>
     <tr>
-      <th>env</th>
-      <td><p>environment to look for values in.</p></td>
+      <th>displayRows</th>
+      <td><p>number of rows to sample</p></td>
+    </tr>
+    <tr>
+      <th>countRows</th>
+      <td><p>logical, if TRUE return row count.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>project node.</p>
+    <p>str view of data</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='kw'>if</span> (<span class='fu'>requireNamespace</span>(<span class='st'>"DBI"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>&amp;&amp;</span> <span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
-  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(),
-                          <span class='st'>":memory:"</span>)
-  <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(
-    <span class='no'>my_db</span>, <span class='st'>'d'</span>,
-    <span class='fu'>data.frame</span>(<span class='kw'>group</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>'a'</span>, <span class='st'>'a'</span>, <span class='st'>'b'</span>, <span class='st'>'b'</span>),
-               <span class='kw'>val</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>4</span>,
-               <span class='kw'>stringsAsFactors</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>))
-
-  <span class='no'>op_tree</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span>
-    <span class='fu'>project_se</span>(<span class='no'>.</span>, <span class='kw'>groupby</span> <span class='kw'>=</span> <span class='st'>"group"</span>, <span class='st'>"vmax"</span> <span class='kw'>%:=%</span> <span class='st'>"max(val)"</span>)
-  <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>op_tree</span>))
-  <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>op_tree</span>, <span class='no'>my_db</span>)
-  <span class='fu'>cat</span>(<span class='no'>sql</span>)
-  <span class='fu'><a href='execute.html'>execute</a></span>(<span class='no'>my_db</span>, <span class='no'>op_tree</span>) <span class='kw'>%.&gt;%</span>
-     <span class='fu'>print</span>(<span class='no'>.</span>)
-
-  <span class='no'>op_tree</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span>
-    <span class='fu'>project_se</span>(<span class='no'>.</span>, <span class='kw'>groupby</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='st'>"vmax"</span> <span class='kw'>%:=%</span> <span class='st'>"max(val)"</span>)
-  <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>op_tree</span>))
-  <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>op_tree</span>, <span class='no'>my_db</span>)
-  <span class='fu'>cat</span>(<span class='no'>sql</span>)
-  <span class='fu'><a href='execute.html'>execute</a></span>(<span class='no'>my_db</span>, <span class='no'>op_tree</span>) <span class='kw'>%.&gt;%</span>
-     <span class='fu'>print</span>(<span class='no'>.</span>)
-
+<span class='kw'>if</span> ( <span class='fu'>requireNamespace</span>(<span class='st'>"DBI"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>&amp;&amp;</span>
+  <span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
+  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
+  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbWriteTable'>dbWriteTable</a></span>(<span class='no'>my_db</span>,
+                    <span class='st'>'d'</span>,
+                    <span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>0.6</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>0.2</span>),
+                    <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+                    <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+  <span class='fu'>rlook</span>(<span class='no'>my_db</span>, <span class='st'>'d'</span>)
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; table(`d`; 
-#&gt;   group,
-#&gt;   val) %.&gt;%
-#&gt;  project(., vmax := max(val),
-#&gt;   g= group)
-#&gt; SELECT `group`, max ( `val` ) AS `vmax` FROM (
-#&gt;  SELECT
-#&gt;   `group`,
-#&gt;   `val`
-#&gt;  FROM
-#&gt;   `d`
-#&gt;  ) tsql_26261709003721486707_0000000000
-#&gt; GROUP BY
-#&gt;  `group`
-#&gt;   group vmax
-#&gt; 1     a    2
-#&gt; 2     b    4
-#&gt; table(`d`; 
-#&gt;   group,
-#&gt;   val) %.&gt;%
-#&gt;  project(., vmax := max(val),
-#&gt;   g= )
-#&gt; SELECT max ( `val` ) AS `vmax` FROM (
-#&gt;  SELECT
-#&gt;   `val`
-#&gt;  FROM
-#&gt;   `d`
-#&gt;  ) tsql_56313605363713693399_0000000000
-#&gt;   vmax
-#&gt; 1    4</div><div class='input'>
+}</div><div class='output co'>#&gt; table `d` SQLiteConnection 
+#&gt;  nrow: 1 
+#&gt; 'data.frame':	1 obs. of  2 variables:
+#&gt;  $ AUC: num 0.6
+#&gt;  $ R2 : num 0.2</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

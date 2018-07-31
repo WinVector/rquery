@@ -4,8 +4,8 @@
 \alias{theta_join_nse}
 \title{Make a theta_join node.}
 \usage{
-theta_join_nse(a, b, expr, ..., jointype = "INNER", suffix = c("_a", "_b"),
-  env = parent.frame())
+theta_join_nse(a, b, expr, ..., jointype = "INNER", suffix = c("_a",
+  "_b"), env = parent.frame())
 }
 \arguments{
 \item{a}{source to select from.}

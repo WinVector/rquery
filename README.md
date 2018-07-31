@@ -131,6 +131,10 @@ print(dbopts)
     ## 
     ## $rquery.PostgreSQLConnection.check_logical_column_types
     ## [1] FALSE
+    ## 
+    ## $rquery.PostgreSQLConnection.fn_name_map
+    ##  mean 
+    ## "avg"
 
 ``` r
 options(dbopts)
@@ -271,14 +275,14 @@ cat(to_sql(dq, my_db, source_limit = 1000))
             "assessmentTotal"
            FROM
             "d" LIMIT 1000
-           ) tsql_58979123132740300094_0000000000
-          ) tsql_58979123132740300094_0000000001
-         ) tsql_58979123132740300094_0000000002
-       ) tsql_58979123132740300094_0000000003
+           ) tsql_67722842880434687584_0000000000
+          ) tsql_67722842880434687584_0000000001
+         ) tsql_67722842880434687584_0000000002
+       ) tsql_67722842880434687584_0000000003
        WHERE "row_number" <= 1
-      ) tsql_58979123132740300094_0000000004
-     ) tsql_58979123132740300094_0000000005
-    ) tsql_58979123132740300094_0000000006 ORDER BY "subjectID"
+      ) tsql_67722842880434687584_0000000004
+     ) tsql_67722842880434687584_0000000005
+    ) tsql_67722842880434687584_0000000006 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 

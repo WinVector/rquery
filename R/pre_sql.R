@@ -43,8 +43,24 @@ pre_sql_string <- function(value) {
 
 #' pre_sql_token
 #'
-#' represents a string constant
-#'   value character string
+#' function name token
+#'
+#' @param value character, token string
+#' @return pre_sql_token class
+#'
+#' @noRd
+#'
+pre_sql_fn <- function(value) {
+  t <- list(token_type = "function_name",
+            value = value,
+            is_zero_argument_call = FALSE)
+  class(t) <- "pre_sql_token"
+  t
+}
+
+#' pre_sql_token
+#'
+#' general token
 #'
 #' @param value character, token string
 #' @return pre_sql_token class
@@ -134,9 +150,11 @@ to_query.pre_sql_token <- function (x,
     val <- paste(as.character(x$value), collapse = " ")
     zero_arg_fn_map <- getDBOption(db_info, "zero_arg_fn_map")
     if(!is.null(zero_arg_fn_map)) {
-      xlation <- zero_arg_fn_map[[val]]
-      if(!is.null(xlation)) {
-        val <- xlation
+      if(val %in% names(zero_arg_fn_map)) {
+        xlation <- zero_arg_fn_map[[val]]
+        if(!is.null(xlation)) {
+          val <- xlation
+        }
       }
     }
     return(val)
@@ -152,6 +170,18 @@ to_query.pre_sql_token <- function (x,
   }
   if(x$token_type == "string") {
     return(quote_string(db_info, paste(as.character(x$value), collapse = " ")))
+  }
+  if(x$token_type == "function_name") {
+    fn_name_map <- getDBOption(db_info, "fn_name_map")
+    if(!is.null(fn_name_map)) {
+      nm <- paste(as.character(x$value), collapse = " ")
+      if(nm %in% names(fn_name_map)) {
+        rp <- fn_name_map[[nm]]
+        if(!is.null(rp)) {
+          return(rp)
+        }
+      }
+    }
   }
   paste(as.character(x$value), collapse = " ")
 }

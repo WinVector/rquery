@@ -5,8 +5,8 @@
 \title{Compute quantiles over non-NULL values
 (without interpolation, needs a database with window functions).}
 \usage{
-quantile_node(source, cols = NULL, ..., probs_name = "quantile_probability",
-  probs = seq(0, 1, 0.25),
+quantile_node(source, cols = NULL, ...,
+  probs_name = "quantile_probability", probs = seq(0, 1, 0.25),
   tmp_name_source = wrapr::mk_tmp_name_source("qn"), temporary = TRUE)
 }
 \arguments{
