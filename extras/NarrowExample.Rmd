@@ -1,7 +1,6 @@
 ---
 title: "NarrowExample"
 author: "Win-Vector LLC"
-date: "12/18/2017"
 output: github_document
 ---
 

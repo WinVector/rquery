@@ -1,7 +1,6 @@
 NarrowExample
 ================
 Win-Vector LLC
-12/18/2017
 
 <!-- NarrowExample.md is generated from NarrowExample.Rmd. Please edit that file -->
 Let's take a quick look at what we are calling query narrowing. For our example let's set up a database connection and copy a small table into the database.
@@ -42,7 +41,7 @@ cat(to_sql(op1, db))
     ##   `c`
     ##  FROM
     ##   `d`
-    ##  ) tsql_61500338684554681865_0000000000
+    ##  ) tsql_34549653817125379831_0000000000
 
 Notice the above `SQL` has a trivial extra inner select step. `rquery` reserves this `SQL` for extra effects such as query narrowing and it is presumed that such selects are easily removed by downstream query optimizers. The way `rquery` uses this stage is shown as follows. Suppose we later declare we are only going to use the new column "`e`"" as our our result.
 
@@ -62,8 +61,8 @@ cat(to_sql(op2, db))
     ##    `a`
     ##   FROM
     ##    `d`
-    ##   ) tsql_07326160712435490622_0000000000
-    ## ) tsql_07326160712435490622_0000000001
+    ##   ) tsql_57818437873018594276_0000000000
+    ## ) tsql_57818437873018594276_0000000001
 
 `rquery` propagated the columns used all the way to the inner query. This makes the data processing thinner and in fact [often faster](https://github.com/WinVector/rquery/blob/master/extras/NarrowEffectSpark.md) as even with "lazy evaluation" there is significant cost associated with processing the additional columns (and this is not always eliminated by the query optimizers). The narrowing effect can be critical if one caches or stores an intermediate result. `rquery` did introduce some trivial outer `SQL` to represent the outer select step, but we again assume this is the sort of thing that is easy for query optimizers to remove.
 
