@@ -9,6 +9,8 @@
  
     * Windows ( win-builder.r-project.org uses --as-cran )
     * devtools::build_win()
+    * using R Under development (unstable) (2018-07-31 r75040)
+    * using platform: x86_64-w64-mingw32 (64-bit)
 
 
 ## R CMD check results
