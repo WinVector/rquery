@@ -14,18 +14,31 @@ td <- rquery::rq_copy_to(db,
                          data.frame(a = 1:3, b = 4:6, c = 7:9),
                          temporary = TRUE,
                          overwrite = TRUE)
+
 print(td)
 ```
 
     ## [1] "table(`d`; a, b, c)"
 
+``` r
+rquery::rstr(db, td$table_name)
+```
+
+    ## table `d` SQLiteConnection 
+    ##  nrow: 3 
+    ## 'data.frame':    3 obs. of  3 variables:
+    ##  $ a: int  1 2 3
+    ##  $ b: int  4 5 6
+    ##  $ c: int  7 8 9
+
 For our first example we will user [`rquery`](https://github.com/WinVector/rquery) to generate some `SQL`.
 
 ``` r
 library("rquery")
+library("wrapr")
 
 op1 <- td %.>% 
-  extend_nse(., e %:=% a + 1)
+  extend_nse(., e := a + 1)
 cat(to_sql(op1, db))
 ```
 
@@ -41,13 +54,14 @@ cat(to_sql(op1, db))
     ##   `c`
     ##  FROM
     ##   `d`
-    ##  ) tsql_34549653817125379831_0000000000
+    ##  ) tsql_81423970329809720180_0000000000
 
-Notice the above `SQL` has a trivial extra inner select step. `rquery` reserves this `SQL` for extra effects such as query narrowing and it is presumed that such selects are easily removed by downstream query optimizers. The way `rquery` uses this stage is shown as follows. Suppose we later declare we are only going to use the new column "`e`"" as our our result.
+Notice the above `SQL` has a trivial extra inner select step. `rquery` reserves this `SQL` for extra effects such as query narrowing and it is presumed that such selects are easily removed by downstream query optimizers. The way `rquery` uses this stage is shown as follows. Suppose we later declare we are only going to use the new column "`e`" as our our result.
 
 ``` r
 op2 <- op1 %.>% 
   select_columns(., "e")
+
 cat(to_sql(op2, db))
 ```
 
@@ -61,8 +75,17 @@ cat(to_sql(op2, db))
     ##    `a`
     ##   FROM
     ##    `d`
-    ##   ) tsql_57818437873018594276_0000000000
-    ## ) tsql_57818437873018594276_0000000001
+    ##   ) tsql_86754331028676664512_0000000000
+    ## ) tsql_86754331028676664512_0000000001
+
+``` r
+db %.>% op2
+```
+
+    ##   e
+    ## 1 2
+    ## 2 3
+    ## 3 4
 
 `rquery` propagated the columns used all the way to the inner query. This makes the data processing thinner and in fact [often faster](https://github.com/WinVector/rquery/blob/master/extras/NarrowEffectSpark.md) as even with "lazy evaluation" there is significant cost associated with processing the additional columns (and this is not always eliminated by the query optimizers). The narrowing effect can be critical if one caches or stores an intermediate result. `rquery` did introduce some trivial outer `SQL` to represent the outer select step, but we again assume this is the sort of thing that is easy for query optimizers to remove.
 
@@ -76,6 +99,10 @@ library("dplyr")
 
     ## 
     ## Attaching package: 'dplyr'
+
+    ## The following object is masked from 'package:wrapr':
+    ## 
+    ##     coalesce
 
     ## The following objects are masked from 'package:stats':
     ## 
@@ -118,6 +145,8 @@ hdl %>%
     ## <SQL> SELECT `e`
     ## FROM (SELECT `a`, `b`, `c`, `a` + 1.0 AS `e`
     ## FROM `d`)
+
+Notice `dplyr`/`dbplyr` does not propagate the column narrowing in.
 
 ``` r
 DBI::dbDisconnect(db)
