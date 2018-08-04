@@ -1,4 +1,8 @@
 
+# rquery 0.6.2 2018/08/04
+
+ * aggregate aliases.
+
 # rquery 0.6.1 2018/08/01
 
  * Change to immediate execution.

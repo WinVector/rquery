@@ -2,9 +2,12 @@
 % Please edit documentation in R/project.R
 \name{project_se}
 \alias{project_se}
+\alias{aggregate_se}
 \title{project data by grouping, and adding aggregate columns.}
 \usage{
 project_se(source, groupby, assignments, env = parent.frame())
+
+aggregate_se(source, groupby, assignments, env = parent.frame())
 }
 \arguments{
 \item{source}{source to select from.}

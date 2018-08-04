@@ -90,6 +90,10 @@ project_se <- function(source, groupby, assignments,
 }
 
 #' @export
+#' @rdname project_se
+aggregate_se <- project_se
+
+#' @export
 project_se.relop <- function(source, groupby, assignments,
                              env = parent.frame()) {
   parsed <- parse_se(source, assignments, env = env)
@@ -153,6 +157,10 @@ project_nse <- function(source, groupby, ...,
                         env = parent.frame()) {
   UseMethod("project_nse", source)
 }
+
+#' @export
+#' @rdname project_nse
+aggregate_nse <- project_nse
 
 #' @export
 project_nse.relop <- function(source, groupby, ...,
