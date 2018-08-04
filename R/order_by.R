@@ -78,13 +78,13 @@ orderby.data.frame <- function(source,
                     env = parent.frame()) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::orderby.data.frame")
-  if(length(setdiff(reverse, orderby))>0) {
+  if(length(setdiff(reverse, cols))>0) {
     stop("rquery::orderby.data.frame all reverse columns must also be orderby columns")
   }
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- mk_td(tmp_name, colnames(source))
   enode <- orderby(dnode,
-                   orderby = cols,
+                   cols = cols,
                    reverse = reverse,
                    limit = limit)
   rquery_apply_to_data_frame(source, enode, env = env)
