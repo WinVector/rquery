@@ -1,0 +1,122 @@
+---
+title: "Collecting Expressions"
+output: github_document
+---
+
+An example showing the advantage of being able to collect many expressions and pack them into a single `extend_se()` node.  This example may seem extreme or unnatural. However we have seen once you expose a system to enough users you see a lot more extreme use cases than you would at first expect.  We have actually seen large tens of columns added to a mart in a large irregular block (so not the same transform for each columns) by building up long pipelines, so this simplified example is in fact relevant to production deployments.
+
+First set up our packages, database connection, and remote table.
+
+```{r confconnect}
+library("dplyr")
+library("rquery")
+library("microbenchmark")
+library("ggplot2")
+library("WVPlots")
+library("rqdatatable")
+library("cdata")
+
+# connect
+con <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
+                      host = 'localhost',
+                      port = 5432,
+                      user = 'johnmount',
+                      password = '')
+
+# configure rquery connection options
+dbopts <- rq_connection_tests(con)
+db_hdl <- rquery_db_info(
+  connection = con,
+  is_dbi = TRUE,
+  connection_options = dbopts)
+
+td <- rq_copy_to(db_hdl, 
+                 "d",
+                 data.frame(x = 1:5),
+                 overwrite = TRUE,
+                 temporary = TRUE)
+
+tbl <- dplyr::tbl(con, "d")
+
+ncol <- 100
+```
+
+[`rquery`](https://CRAN.R-project.org/package=rquery) torture function: add `r ncol` columns.
+
+```{r rqueryfn}
+rquery_fn <- function(db_hdl, td, ncol) {
+  expressions <- character(0)
+  for(i in seq_len(ncol)) {
+    expri <- paste0("x_", i) %:=% paste0("x + ", i)
+    expressions <- c(expressions, expri)
+  }
+  ops <- td %.>%
+    extend_se(., expressions)
+  db_hdl %.>% ops
+}
+
+rquery_fn(db_hdl, td, 5)
+```
+
+Same torture for [`dplyr`](https://CRAN.R-project.org/package=dplyr).
+
+```{r dplyrfn}
+dplyr_fn <- function(tbl, ncol) {
+  pipeline <- tbl
+  xvar <- rlang::sym("x")
+  for(i in seq_len(ncol)) {
+    res_i <- rlang::sym(paste0("x_", i))
+    pipeline <- pipeline %>%
+      mutate(., !!res_i := !!xvar + i)
+  }
+  pipeline %>% collect(.)
+}
+
+dplyr_fn(tbl, 5)
+```
+
+Time the functions.
+
+```{r timing}
+timings <- microbenchmark(
+  rquery = rquery_fn(db_hdl, td, ncol),
+  dplyr = dplyr_fn(tbl, ncol),
+  times = 10L)
+
+saveRDS(timings, "CollectExprs_timings.RDS")
+```
+
+Present the results.
+
+```{r present}
+print(timings)
+#autoplot(timings)
+
+timings <- as.data.frame(timings)
+timings$seconds <- timings$time/10^9
+timings$method <- factor(timings$expr)
+timings$method <- reorder(timings$method, timings$seconds)
+WVPlots::ScatterBoxPlotH(timings, "seconds", "method", "task time by method")
+
+tratio <- timings %.>%
+  project_nse(., 
+              groupby = "method", 
+              mean_seconds = mean(seconds)) %.>%
+  pivot_to_rowrecs(., 
+                   columnToTakeKeysFrom = "method", 
+                   columnToTakeValuesFrom = "mean_seconds", 
+                   rowKeyColumns = NULL) %.>%
+  extend_nse(.,
+             ratio = dplyr/rquery)[]
+
+tratio
+
+ratio_str <- sprintf("%.2g", tratio$ratio)
+```
+
+`rquery` is about `r ratio_str` times faster than `dplyr` for this task.
+
+
+```{r cleanup}
+DBI::dbDisconnect(con)
+```
