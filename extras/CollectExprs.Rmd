@@ -110,12 +110,37 @@ cat(dplyr_fn(tbl, 5, return_sql = TRUE))
 dplyr_fn(tbl, 5)
 ```
 
+We can also collect expressions efficiently using [`seplyr`](https://CRAN.R-project.org/package=seplyr) (`seplyr` is a thin wrapper over `dplyr`, so `seplyr`'s method [`mutate_se()`](https://winvector.github.io/seplyr/reference/mutate_se.html) is essentially instructions how to do the same thing using `rlang`).
+
+```{r seplyrfn}
+seplyr_fn <- function(tbl, ncol, return_sql = FALSE) {
+  expressions <- character(0)
+  for(i in seq_len(ncol)) {
+    expri <- paste0("x_", i) %:=% paste0("x + ", i)
+    expressions <- c(expressions, expri)
+  }
+  pipeline <- tbl %>%
+    seplyr::mutate_se(., expressions) %>%
+    filter(., x == 3)
+  if(return_sql) {
+    return(dbplyr::remote_query(pipeline))
+  }
+  # force execution
+  pipeline %>% collect(.)
+}
+
+cat(seplyr_fn(tbl, 5, return_sql = TRUE))
+
+seplyr_fn(tbl, 5)
+```
+
 Time the functions.  Timing is not going to be certain given issues such as cluster state and query caching.
 
 ```{r timing}
 timings <- microbenchmark(
   rquery = rquery_fn(db_hdl, td, ncol),
   dplyr = dplyr_fn(tbl, ncol),
+  seplyr = seplyr_fn(tbl, ncol),
   times = 10L)
 
 saveRDS(timings, "CollectExprs_timings.RDS")

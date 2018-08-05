@@ -112,8 +112,8 @@ cat(rquery_fn(db_hdl, td, 5, return_sql = TRUE))
     ##    `x`
     ##   FROM
     ##    `d`
-    ##   ) tsql_52759624129854702053_0000000000
-    ## ) tsql_52759624129854702053_0000000001
+    ##   ) tsql_97238965696940256963_0000000000
+    ## ) tsql_97238965696940256963_0000000001
     ## WHERE `x` = 3
 
 ``` r
@@ -154,7 +154,7 @@ cat(dplyr_fn(tbl, 5, return_sql = TRUE))
     ## FROM (SELECT `x`, `x_1`, `x_2`, `x` + 3 AS `x_3`
     ## FROM (SELECT `x`, `x_1`, `x` + 2 AS `x_2`
     ## FROM (SELECT `x`, `x` + 1 AS `x_1`
-    ## FROM `d`) `mhxrlspolu`) `isdaovyqlr`) `djoikiprqj`) `nnwosegdrz`) `mbwgtjrlfg`
+    ## FROM `d`) `tyiyhhxjag`) `gshhunpiup`) `teowzjcshb`) `hdrfwlzycc`) `lsniejpwft`
     ## WHERE (`x` = 3.0)
 
 ``` r
@@ -166,12 +166,49 @@ dplyr_fn(tbl, 5)
     ##   <int> <int> <int> <int> <int> <int>
     ## 1     3     4     5     6     7     8
 
+We can also collect expressions efficiently using [`seplyr`](https://CRAN.R-project.org/package=seplyr) (`seplyr` is a thin wrapper over `dplyr`, so `seplyr`'s method [`mutate_se()`](https://winvector.github.io/seplyr/reference/mutate_se.html) is essentially instructions how to do the same thing using `rlang`).
+
+``` r
+seplyr_fn <- function(tbl, ncol, return_sql = FALSE) {
+  expressions <- character(0)
+  for(i in seq_len(ncol)) {
+    expri <- paste0("x_", i) %:=% paste0("x + ", i)
+    expressions <- c(expressions, expri)
+  }
+  pipeline <- tbl %>%
+    seplyr::mutate_se(., expressions) %>%
+    filter(., x == 3)
+  if(return_sql) {
+    return(dbplyr::remote_query(pipeline))
+  }
+  # force execution
+  pipeline %>% collect(.)
+}
+
+cat(seplyr_fn(tbl, 5, return_sql = TRUE))
+```
+
+    ## SELECT *
+    ## FROM (SELECT `x`, `x` + 1.0 AS `x_1`, `x` + 2.0 AS `x_2`, `x` + 3.0 AS `x_3`, `x` + 4.0 AS `x_4`, `x` + 5.0 AS `x_5`
+    ## FROM `d`) `gaktzzkzxq`
+    ## WHERE (`x` = 3.0)
+
+``` r
+seplyr_fn(tbl, 5)
+```
+
+    ## # A tibble: 1 x 6
+    ##       x   x_1   x_2   x_3   x_4   x_5
+    ##   <int> <dbl> <dbl> <dbl> <dbl> <dbl>
+    ## 1     3     4     5     6     7     8
+
 Time the functions. Timing is not going to be certain given issues such as cluster state and query caching.
 
 ``` r
 timings <- microbenchmark(
   rquery = rquery_fn(db_hdl, td, ncol),
   dplyr = dplyr_fn(tbl, ncol),
+  seplyr = seplyr_fn(tbl, ncol),
   times = 10L)
 
 saveRDS(timings, "CollectExprs_timings.RDS")
@@ -184,9 +221,10 @@ print(timings)
 ```
 
     ## Unit: milliseconds
-    ##    expr       min       lq    mean    median       uq      max neval
-    ##  rquery  922.4429  958.151 1012.98  987.8187 1001.329 1285.531    10
-    ##   dplyr 2088.2091 2246.560 2480.32 2312.3805 2413.692 4093.165    10
+    ##    expr      min       lq     mean   median       uq      max neval
+    ##  rquery  995.955 1018.481 1153.364 1065.092 1281.715 1502.717    10
+    ##   dplyr 2156.264 2219.900 2899.534 2473.929 3791.673 4714.063    10
+    ##  seplyr 1074.775 1180.591 1453.980 1273.424 1598.804 2398.883    10
 
 ``` r
 #autoplot(timings)
@@ -215,14 +253,14 @@ tratio <- timings %.>%
 tratio[]
 ```
 
-    ##      dplyr  rquery    ratio
-    ## 1: 2.48032 1.01298 2.448538
+    ##       dplyr   rquery  seplyr    ratio
+    ## 1: 2.899534 1.153364 1.45398 2.513979
 
 ``` r
 ratio_str <- sprintf("%.2g", tratio$ratio)
 ```
 
-`rquery` is about 2.4 times faster than `dplyr` for this task at this scale for this data implementation and configuration (we have also seen an over 8 times difference for this example on `PostgreSQL`).
+`rquery` is about 2.5 times faster than `dplyr` for this task at this scale for this data implementation and configuration (we have also seen an over 8 times difference for this example on `PostgreSQL`).
 
 ``` r
 if(use_spark) {
