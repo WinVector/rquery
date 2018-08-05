@@ -16,12 +16,28 @@ library("WVPlots")
 library("rqdatatable")
 library("cdata")
 
+use_spark <- TRUE
 # connect
-con <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
-                      host = 'localhost',
-                      port = 5432,
-                      user = 'johnmount',
-                      password = '')
+if(use_spark) {
+  conf <- sparklyr::spark_config()
+  conf$spark.yarn.am.cores <- 2
+  conf$spark.executor.cores <- 2
+  mem_size <- "4G"
+  conf$spark.executor.memory <- mem_size
+  conf$spark.yarn.am.memory <- mem_size 
+  conf$`sparklyr.shell.driver-memory` <- mem_size
+  conf$`sparklyr.shell.executor-memory` <- mem_size
+  conf$`spark.yarn.executor.memoryOverhead` <- mem_size
+  con <- sparklyr::spark_connect(version='2.2.0', 
+                                 master = "local",
+                                 config = conf)
+} else {
+  con <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
+                        host = 'localhost',
+                        port = 5432,
+                        user = 'johnmount',
+                        password = '')
+}
 
 # configure rquery connection options
 dbopts <- rq_connection_tests(con)
@@ -29,6 +45,7 @@ db_hdl <- rquery_db_info(
   connection = con,
   is_dbi = TRUE,
   connection_options = dbopts)
+print(db_hdl)
 
 nrow <- 1000000
 td <- rq_copy_to(db_hdl, 
@@ -93,7 +110,7 @@ cat(dplyr_fn(tbl, 5, return_sql = TRUE))
 dplyr_fn(tbl, 5)
 ```
 
-Time the functions.
+Time the functions.  Timing is not going to be certain given issues such as cluster state and query caching.
 
 ```{r timing}
 timings <- microbenchmark(
@@ -132,9 +149,13 @@ tratio
 ratio_str <- sprintf("%.2g", tratio$ratio)
 ```
 
-`rquery` is about `r ratio_str` times faster than `dplyr` for this task at this scale.
+`rquery` is about `r ratio_str` times faster than `dplyr` for this task at this scale for this data implementation and configuration.
 
 
 ```{r cleanup}
-DBI::dbDisconnect(con)
+if(use_spark) {
+  sparklyr::spark_disconnect(con)
+} else {
+  DBI::dbDisconnect(con)
+}
 ```

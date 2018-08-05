@@ -30,12 +30,28 @@ library("WVPlots")
 library("rqdatatable")
 library("cdata")
 
+use_spark <- TRUE
 # connect
-con <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
-                      host = 'localhost',
-                      port = 5432,
-                      user = 'johnmount',
-                      password = '')
+if(use_spark) {
+  conf <- sparklyr::spark_config()
+  conf$spark.yarn.am.cores <- 2
+  conf$spark.executor.cores <- 2
+  mem_size <- "4G"
+  conf$spark.executor.memory <- mem_size
+  conf$spark.yarn.am.memory <- mem_size 
+  conf$`sparklyr.shell.driver-memory` <- mem_size
+  conf$`sparklyr.shell.executor-memory` <- mem_size
+  conf$`spark.yarn.executor.memoryOverhead` <- mem_size
+  con <- sparklyr::spark_connect(version='2.2.0', 
+                                 master = "local",
+                                 config = conf)
+} else {
+  con <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
+                        host = 'localhost',
+                        port = 5432,
+                        user = 'johnmount',
+                        password = '')
+}
 
 # configure rquery connection options
 dbopts <- rq_connection_tests(con)
@@ -43,7 +59,12 @@ db_hdl <- rquery_db_info(
   connection = con,
   is_dbi = TRUE,
   connection_options = dbopts)
+print(db_hdl)
+```
 
+    ## [1] "rquery_db_info(DBIConnection_spark_connection_spark_shell_connection, is_dbi=TRUE, note=\"\")"
+
+``` r
 nrow <- 1000000
 td <- rq_copy_to(db_hdl, 
                  "d",
@@ -80,20 +101,20 @@ cat(rquery_fn(db_hdl, td, 5, return_sql = TRUE))
 
     ## SELECT * FROM (
     ##  SELECT
-    ##   "x",
-    ##   "x" + 1  AS "x_1",
-    ##   "x" + 2  AS "x_2",
-    ##   "x" + 3  AS "x_3",
-    ##   "x" + 4  AS "x_4",
-    ##   "x" + 5  AS "x_5"
+    ##   `x`,
+    ##   `x` + 1  AS `x_1`,
+    ##   `x` + 2  AS `x_2`,
+    ##   `x` + 3  AS `x_3`,
+    ##   `x` + 4  AS `x_4`,
+    ##   `x` + 5  AS `x_5`
     ##  FROM (
     ##   SELECT
-    ##    "x"
+    ##    `x`
     ##   FROM
-    ##    "d"
-    ##   ) tsql_77774864536840498052_0000000000
-    ## ) tsql_77774864536840498052_0000000001
-    ## WHERE "x" = 3
+    ##    `d`
+    ##   ) tsql_30561800826795864419_0000000000
+    ## ) tsql_30561800826795864419_0000000001
+    ## WHERE `x` = 3
 
 ``` r
 rquery_fn(db_hdl, td, 5)
@@ -128,13 +149,13 @@ cat(dplyr_fn(tbl, 5, return_sql = TRUE))
 ```
 
     ## SELECT *
-    ## FROM (SELECT "x", "x_1", "x_2", "x_3", "x_4", "x" + 5 AS "x_5"
-    ## FROM (SELECT "x", "x_1", "x_2", "x_3", "x" + 4 AS "x_4"
-    ## FROM (SELECT "x", "x_1", "x_2", "x" + 3 AS "x_3"
-    ## FROM (SELECT "x", "x_1", "x" + 2 AS "x_2"
-    ## FROM (SELECT "x", "x" + 1 AS "x_1"
-    ## FROM "d") "urgsxtdwta") "ymucuytolh") "jthbtpwxwd") "wrwjbybnrl") "iyktqjhihg"
-    ## WHERE ("x" = 3.0)
+    ## FROM (SELECT `x`, `x_1`, `x_2`, `x_3`, `x_4`, `x` + 5 AS `x_5`
+    ## FROM (SELECT `x`, `x_1`, `x_2`, `x_3`, `x` + 4 AS `x_4`
+    ## FROM (SELECT `x`, `x_1`, `x_2`, `x` + 3 AS `x_3`
+    ## FROM (SELECT `x`, `x_1`, `x` + 2 AS `x_2`
+    ## FROM (SELECT `x`, `x` + 1 AS `x_1`
+    ## FROM `d`) `jeojyvnlck`) `pntdhfwhjl`) `zsnthagzkp`) `ykomjegpmn`) `tliqkfiprq`
+    ## WHERE (`x` = 3.0)
 
 ``` r
 dplyr_fn(tbl, 5)
@@ -142,10 +163,10 @@ dplyr_fn(tbl, 5)
 
     ## # A tibble: 1 x 6
     ##       x   x_1   x_2   x_3   x_4   x_5
-    ## * <int> <int> <int> <int> <int> <int>
+    ##   <int> <int> <int> <int> <int> <int>
     ## 1     3     4     5     6     7     8
 
-Time the functions.
+Time the functions. Timing is not going to be certain given issues such as cluster state and query caching.
 
 ``` r
 timings <- microbenchmark(
@@ -163,9 +184,9 @@ print(timings)
 ```
 
     ## Unit: milliseconds
-    ##    expr      min        lq      mean   median        uq       max neval
-    ##  rquery  177.194  181.2475  187.8301  185.206  189.2457  216.4919    10
-    ##   dplyr 1627.519 1635.3129 1675.6221 1653.072 1687.8441 1796.4718    10
+    ##    expr       min        lq     mean    median       uq      max neval
+    ##  rquery  936.2429  941.6893 1015.397  995.7225 1036.589 1252.483    10
+    ##   dplyr 2126.1926 2197.8208 2423.650 2349.6158 2530.083 3344.034    10
 
 ``` r
 #autoplot(timings)
@@ -194,17 +215,19 @@ tratio <- timings %.>%
 tratio
 ```
 
-    ##       dplyr    rquery    ratio
-    ## 1: 1.675622 0.1878301 8.920946
+    ##      dplyr   rquery    ratio
+    ## 1: 2.42365 1.015397 2.386899
 
 ``` r
 ratio_str <- sprintf("%.2g", tratio$ratio)
 ```
 
-`rquery` is about 8.9 times faster than `dplyr` for this task at this scale.
+`rquery` is about 2.4 times faster than `dplyr` for this task at this scale for this data implementation and configuration.
 
 ``` r
-DBI::dbDisconnect(con)
+if(use_spark) {
+  sparklyr::spark_disconnect(con)
+} else {
+  DBI::dbDisconnect(con)
+}
 ```
-
-    ## [1] TRUE
