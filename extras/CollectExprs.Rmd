@@ -149,7 +149,7 @@ tratio
 ratio_str <- sprintf("%.2g", tratio$ratio)
 ```
 
-`rquery` is about `r ratio_str` times faster than `dplyr` for this task at this scale for this data implementation and configuration.
+`rquery` is about `r ratio_str` times faster than `dplyr` for this task at this scale for this data implementation and configuration (we have also seen an over 8 times difference for this example on `PostgreSQL`).
 
 
 ```{r cleanup}

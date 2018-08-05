@@ -112,8 +112,8 @@ cat(rquery_fn(db_hdl, td, 5, return_sql = TRUE))
     ##    `x`
     ##   FROM
     ##    `d`
-    ##   ) tsql_30561800826795864419_0000000000
-    ## ) tsql_30561800826795864419_0000000001
+    ##   ) tsql_91692124251263855825_0000000000
+    ## ) tsql_91692124251263855825_0000000001
     ## WHERE `x` = 3
 
 ``` r
@@ -154,7 +154,7 @@ cat(dplyr_fn(tbl, 5, return_sql = TRUE))
     ## FROM (SELECT `x`, `x_1`, `x_2`, `x` + 3 AS `x_3`
     ## FROM (SELECT `x`, `x_1`, `x` + 2 AS `x_2`
     ## FROM (SELECT `x`, `x` + 1 AS `x_1`
-    ## FROM `d`) `jeojyvnlck`) `pntdhfwhjl`) `zsnthagzkp`) `ykomjegpmn`) `tliqkfiprq`
+    ## FROM `d`) `rgzzvarrzy`) `tuokhmxxbd`) `fuqnwdqkdb`) `esfdyhudlb`) `epbexzsgoz`
     ## WHERE (`x` = 3.0)
 
 ``` r
@@ -184,9 +184,9 @@ print(timings)
 ```
 
     ## Unit: milliseconds
-    ##    expr       min        lq     mean    median       uq      max neval
-    ##  rquery  936.2429  941.6893 1015.397  995.7225 1036.589 1252.483    10
-    ##   dplyr 2126.1926 2197.8208 2423.650 2349.6158 2530.083 3344.034    10
+    ##    expr       min        lq     mean   median       uq      max neval
+    ##  rquery  900.7302  927.3525 1060.446 1049.554 1122.019 1414.294    10
+    ##   dplyr 2030.9117 2120.6182 2290.519 2145.611 2286.826 3053.333    10
 
 ``` r
 #autoplot(timings)
@@ -215,14 +215,14 @@ tratio <- timings %.>%
 tratio
 ```
 
-    ##      dplyr   rquery    ratio
-    ## 1: 2.42365 1.015397 2.386899
+    ##       dplyr   rquery    ratio
+    ## 1: 2.290519 1.060446 2.159959
 
 ``` r
 ratio_str <- sprintf("%.2g", tratio$ratio)
 ```
 
-`rquery` is about 2.4 times faster than `dplyr` for this task at this scale for this data implementation and configuration.
+`rquery` is about 2.2 times faster than `dplyr` for this task at this scale for this data implementation and configuration (we have also seen an over 8 times difference for this example on `PostgreSQL`).
 
 ``` r
 if(use_spark) {
