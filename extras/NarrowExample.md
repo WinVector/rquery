@@ -54,7 +54,7 @@ cat(to_sql(op1, db))
     ##   `c`
     ##  FROM
     ##   `d`
-    ##  ) tsql_89611427030397865118_0000000000
+    ##  ) tsql_30228218124473308630_0000000000
 
 Notice the above `SQL` has a trivial extra inner select step. `rquery` reserves this `SQL` for extra effects such as query narrowing and it is presumed that such selects are easily removed by downstream query optimizers. The way `rquery` uses this stage is shown as follows. Suppose we later declare we are only going to use the new column "`e`" as our our result.
 
@@ -75,8 +75,8 @@ cat(to_sql(op2, db))
     ##    `a`
     ##   FROM
     ##    `d`
-    ##   ) tsql_51462576200674966266_0000000000
-    ## ) tsql_51462576200674966266_0000000001
+    ##   ) tsql_16807721345884970846_0000000000
+    ## ) tsql_16807721345884970846_0000000001
 
 ``` r
 db %.>% op2
@@ -146,7 +146,7 @@ hdl %>%
     ## FROM (SELECT `a`, `b`, `c`, `a` + 1.0 AS `e`
     ## FROM `d`)
 
-Notice `dplyr`/`dbplyr` does not propagate the column narrowing in.
+Notice `dplyr`/`dbplyr` does not propagate the column narrowing back to earlier expressions.
 
 ``` r
 DBI::dbDisconnect(db)

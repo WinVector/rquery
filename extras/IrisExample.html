@@ -208,12 +208,12 @@ print(table_description)</code></pre>
 <pre class="r"><code>ops %.&gt;%
   op_diagram(.) %.&gt;% 
   DiagrammeR::DiagrammeR(diagram = ., type = &quot;grViz&quot;)</code></pre>
-<div id="htmlwidget-ec4e4b2b42304ff78564" style="width:672px;height:480px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-ec4e4b2b42304ff78564">{"x":{"diagram":"\ndigraph rquery_optree {\n  graph [ layout = dot, rankdir = TB, overlap = prism, compound = true, nodesep = .5, ranksep = .25]\n  edge [decorate = true, arrowhead = normal]\n  node [style=filled, fillcolor=lightgrey]\n\nnode_1 [ shape = \"folder\" , label = \"table(iris; \\l  Sepal.Length,\\l  Sepal.Width,\\l  Petal.Length,\\l  Petal.Width,\\l  Species)\\l\"]\n\nnode_2 [ shape = \"tab\" , label = \"project(., mean_petal_width := mean(Petal.Width),\\l  g= Species)\\l\"]\n\nnode_3 [ shape = \"tab\" , label = \"extend(.,\\l  row_number := row_number(),\\l  o= mean_petal_width DESC, Species DESC)\\l\"]\n\nnode_4 [ shape = \"tab\" , label = \"select_rows(.,\\l   row_number <= 1)\\l\"]\n\nnode_5 [ shape = \"tab\" , label = \"select_columns(.,\\l   Species, mean_petal_width)\\l\"]\nnode_1 -> node_2 [ label = \".\"]\nnode_2 -> node_3 [ label = \".\"]\nnode_3 -> node_4 [ label = \".\"]\nnode_4 -> node_5 [ label = \".\"]\n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-e618520db6d1cdb588c6" style="width:672px;height:480px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-e618520db6d1cdb588c6">{"x":{"diagram":"\ndigraph rquery_optree {\n  graph [ layout = dot, rankdir = TB, overlap = prism, compound = true, nodesep = .5, ranksep = .25]\n  edge [decorate = true, arrowhead = normal]\n  node [style=filled, fillcolor=lightgrey]\n\nnode_1 [ shape = \"folder\" , label = \"table(iris; \\l  Sepal.Length,\\l  Sepal.Width,\\l  Petal.Length,\\l  Petal.Width,\\l  Species)\\l\"]\n\nnode_2 [ shape = \"tab\" , label = \"project(., mean_petal_width := mean(Petal.Width),\\l  g= Species)\\l\"]\n\nnode_3 [ shape = \"tab\" , label = \"extend(.,\\l  row_number := row_number(),\\l  o= mean_petal_width DESC, Species DESC)\\l\"]\n\nnode_4 [ shape = \"tab\" , label = \"select_rows(.,\\l   row_number <= 1)\\l\"]\n\nnode_5 [ shape = \"tab\" , label = \"select_columns(.,\\l   Species, mean_petal_width)\\l\"]\nnode_1 -> node_2 [ label = \".\"]\nnode_2 -> node_3 [ label = \".\"]\nnode_3 -> node_4 [ label = \".\"]\nnode_4 -> node_5 [ label = \".\"]\n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 <p>The preferred method of using <code>rquery</code> on databases is through the <code>materialize()</code> command. This takes inputs from the database and writes the result into the database without ever moving data into <code>R</code>. This is essential when working with big data.</p>
 <pre class="r"><code>res_table_description &lt;- materialize(db_info, ops)
 rstr(db_info, res_table_description$table_name)</code></pre>
-<pre><code>## table &quot;rquery_mat_87829201605637091089_0000000000&quot; PostgreSQLConnection 
+<pre><code>## table &quot;rquery_mat_03125186669070964167_0000000000&quot; PostgreSQLConnection 
 ##  nrow: 1 
 ## 'data.frame':    1 obs. of  2 variables:
 ##  $ Species         : chr &quot;virginica&quot;
@@ -243,13 +243,13 @@ rstr(db_info, res_table_description$table_name)</code></pre>
 ##      &quot;Species&quot;
 ##     FROM
 ##      &quot;iris&quot;
-##     ) tsql_57454974634940507236_0000000000
+##     ) tsql_95898858752954886005_0000000000
 ##    GROUP BY
 ##     &quot;Species&quot;
-##    ) tsql_57454974634940507236_0000000001
-##  ) tsql_57454974634940507236_0000000002
+##    ) tsql_95898858752954886005_0000000001
+##  ) tsql_95898858752954886005_0000000002
 ##  WHERE &quot;row_number&quot; &lt;= 1
-## ) tsql_57454974634940507236_0000000003</code></pre>
+## ) tsql_95898858752954886005_0000000003</code></pre>
 <p>The exact same operator tree can be used on different databases, or even on in-memory data.</p>
 <pre class="r"><code>iris %.&gt;% ops</code></pre>
 <pre><code>##      Species mean_petal_width
@@ -286,9 +286,9 @@ table_handle %&gt;%
 ## FROM (SELECT *
 ## FROM (SELECT &quot;Species&quot;, AVG(&quot;Petal.Width&quot;) AS &quot;mean_petal_width&quot;
 ## FROM &quot;iris&quot;
-## GROUP BY &quot;Species&quot;) &quot;octcrbtpek&quot;
-## ORDER BY &quot;mean_petal_width&quot; DESC, &quot;Species&quot; DESC) &quot;ckdocfbpxe&quot;) &quot;syhlyoeiju&quot;
-## WHERE (&quot;zzz3&quot; = 1.0)) &quot;cvrzbuhfvb&quot;</code></pre>
+## GROUP BY &quot;Species&quot;) &quot;rsktwdnkgm&quot;
+## ORDER BY &quot;mean_petal_width&quot; DESC, &quot;Species&quot; DESC) &quot;cdclkgofnq&quot;) &quot;bypbdhkwst&quot;
+## WHERE (&quot;zzz3&quot; = 1.0)) &quot;lfysjlcxae&quot;</code></pre>
 <p>In contrast <code>rquery</code> separates specification and execution. <code>rquery</code> also moves a number of checks and optimization into the specification phase. This means some errors, such as misspelling a column late in a pipeline, are cheap to find with <code>rquery</code> and potentially expensive to find with <code>dplyr</code>.</p>
 <pre class="r"><code>DBI::dbDisconnect(db)</code></pre>
 <pre><code>## [1] TRUE</code></pre>
