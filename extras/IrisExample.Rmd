@@ -1,0 +1,155 @@
+---
+title: "Iris Example"
+output: html_document
+---
+
+Example adapted from: [https://github.com/WinVector/rquery/blob/master/extras/SparkR.md](https://github.com/WinVector/rquery/blob/master/extras/SparkR.md).
+
+First let's take a look at some example data.
+
+```{r data}
+data(iris)
+
+head(iris)
+```
+
+Our notional task: find the species with the largest mean petal width.  This is
+easy to write as a pipeline of Codd-style relational operators using the [`rqdatatable`](https://github.com/WinVector/rqdatatable) implementation of the [`rquery`](https://github.com/WinVector/rquery) data wrangling grammar.
+
+```{r rqdatatable}
+library("rqdatatable")
+
+iris %.>%
+  project_nse(., groupby=c('Species'),
+              mean_petal_width = mean(Petal.Width)) %.>%
+  pick_top_k(.,  
+             k = 1,
+             orderby = c('mean_petal_width', 'Species'),
+             reverse = c('mean_petal_width', 'Species')) %.>% 
+  select_columns(., c('Species', 'mean_petal_width'))
+```
+
+The in-memory implementation is supplied by [`data.table`](http://r-datatable.com), so operations tend to be correct and very fast.  Directly piping data into operator constructors (instead of first building an operator tree object) is a convenience, and we do suggest `rquery`/`rqdatatable` consider piping data into already assembled pipelines as a best practice for production work (please see [here](https://github.com/WinVector/rqdatatable/blob/master/extras/ImmediateIssue.md) for notes on the issue).
+
+One can achieve a similar effect with [`dplyr`](https://CRAN.R-project.org/package=dplyr). However, notice we have to know the canonical `dplyr` tricks to achieve a projection (3 statements) and window functions (2 statements).
+
+```{r dplyr}
+library("dplyr")
+
+iris %>%
+  group_by(., Species) %>%                               # 1 canonical way to aggregate in dplyr
+  summarize(., mean_petal_width = mean(Petal.Width)) %>% # 1
+  ungroup(.) %>%                                         # 1
+  arrange(., desc(mean_petal_width), desc(Species)) %>% # 2 window function in dplyr
+  filter(., row_number()==1) %>%                        # 2
+  select(., Species, mean_petal_width)
+```
+
+`rquery` itself is "database first", or optimized to work with remote (and possibly large) databases such as `PostgreSQL` and `Apache Spark`.  Let's set up a database example.
+
+```{r db}
+db <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
+                     host = 'localhost',
+                     port = 5432,
+                     user = 'johnmount',
+                     password = '')
+dbopts <- rq_connection_tests(db)
+db_info <- rquery_db_info(connection = db, 
+                          is_dbi = TRUE,
+                          connection_options = dbopts)
+print(db_info)
+```
+
+To use `rquery` on a database table, start the pipeline with a table description instead of an actual `data.frame`.
+
+```{r rquery1}
+table_description <- rquery::rq_copy_to(db_info, "iris", iris,
+                                        overwrite = TRUE, 
+                                        temporary = TRUE)
+print(table_description)
+```
+
+The table description is just the name of the table and column names assumed to be in the table.  It does not contain a database handle or any sort of reference to the database.  With the table description we build a optree or operator pipeline as follows.
+
+```{r rquery2}
+ops <- table_description %.>%
+  project_nse(., groupby=c('Species'),
+              mean_petal_width = mean(Petal.Width)) %.>%
+  pick_top_k(.,  
+             k = 1,
+             orderby = c('mean_petal_width', 'Species'),
+             reverse = c('mean_petal_width', 'Species')) %.>% 
+  select_columns(., c('Species', 'mean_petal_width'))
+
+```
+
+For database operations `rquery` operator specification and execution are completely separate.  `ops` is the tree of operators, not a result or a result handle.  We can examine ops (as we show below) or even add more stages.
+
+```{r dbops}
+ops %.>%
+  op_diagram(.) %.>% 
+  DiagrammeR::DiagrammeR(diagram = ., type = "grViz")
+```
+
+The preferred method of using `rquery` on databases is through the `materialize()` command.  This takes inputs from the database and writes the result into the database without ever moving data into `R`.  This is essential when working with big data.  
+
+```{r rqueryex}
+res_table_description <- materialize(db_info, ops)
+rstr(db_info, res_table_description$table_name)
+```
+
+Results can be brought back directly using `execute()` or just by piping our database connection into the operator tree.
+
+```{r exdb}
+execute(db_info, ops)
+
+db_info %.>% ops
+```
+
+In the database case `rquery` transforms are implemented using one or more `SQL` statements.  The `SQL` to implement the above transformations is shown here.  Notice how `SQL` represents composition by nesting, so everything must be read backwards.
+
+```{r rqueryp}
+cat(to_sql(ops, db_info))
+```
+
+The exact same operator tree can be used on different databases, or even on in-memory data.
+
+```{r reuse}
+iris %.>% ops
+```
+
+The above is what we mean by piping data to a pre-built tree. This is the preferred way to use `rquery`/`rqdatatable` as it avoids expensive re-copying of intermediate results.
+
+`dplyr` can also be used on databases, via the `dbplyr` package.  `dplyr` uses a remote table handle instead of a table description (i.e. the table representation holds a database reference). 
+```{r dbplyr}
+table_handle <- dplyr::tbl(db, "iris")
+
+table_handle %>%
+  group_by(., Species) %>%
+  summarize(., mean_petal_width = mean(Petal.Width, na.rm = TRUE)) %>%
+  ungroup(.) %>%
+  arrange(., desc(mean_petal_width), desc(Species)) %>%
+  filter(., row_number()==1) %>%
+  select(., Species, mean_petal_width)
+```
+
+`dplyr` separates operator specification and execution through lazy evaluation.  Until something forces a results (say a `print()` or a `dplyr::compute()`) no calculation is performed.  The implicit printing found in `R` triggered the above calculation.  Whereas below only the query is printed and no data processing occurs.
+
+
+```{r dbplyrq}
+table_handle %>%
+  group_by(., Species) %>%
+  summarize(., mean_petal_width = mean(Petal.Width, na.rm = TRUE)) %>%
+  ungroup(.) %>%
+  arrange(., desc(mean_petal_width), desc(Species)) %>%
+  filter(., row_number()==1) %>%
+  select(., Species, mean_petal_width) %>% 
+  dbplyr::remote_query(.)
+```
+
+In contrast `rquery` separates specification and execution.  `rquery` also moves a number of checks and optimization into the specification phase.  This means some errors, such as misspelling a column late in a pipeline, are cheap to find with `rquery` and potentially expensive to find with `dplyr`.
+
+
+```{r cleanup}
+DBI::dbDisconnect(db)
+```
