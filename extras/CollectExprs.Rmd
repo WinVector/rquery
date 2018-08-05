@@ -30,9 +30,10 @@ db_hdl <- rquery_db_info(
   is_dbi = TRUE,
   connection_options = dbopts)
 
+nrow <- 1000000
 td <- rq_copy_to(db_hdl, 
                  "d",
-                 data.frame(x = 1:5),
+                 data.frame(x = seq_len(nrow)),
                  overwrite = TRUE,
                  temporary = TRUE)
 
@@ -41,27 +42,36 @@ tbl <- dplyr::tbl(con, "d")
 ncol <- 100
 ```
 
-[`rquery`](https://CRAN.R-project.org/package=rquery) torture function: add `r ncol` columns.
+[`rquery`](https://CRAN.R-project.org/package=rquery) torture function: add `r sprintf("%d", ncol)` columns to a `r sprintf("%d", nrow)` row table.
 
 ```{r rqueryfn}
-rquery_fn <- function(db_hdl, td, ncol) {
+rquery_fn <- function(db_hdl, td, ncol, return_sql = FALSE) {
   expressions <- character(0)
   for(i in seq_len(ncol)) {
     expri <- paste0("x_", i) %:=% paste0("x + ", i)
     expressions <- c(expressions, expri)
   }
   ops <- td %.>%
-    extend_se(., expressions)
+    extend_se(., expressions) %.>%
+    select_rows_nse(., x == 3)
+  if(return_sql) {
+    return(to_sql(ops, db_hdl))
+  }
+  # force execution
   db_hdl %.>% ops
 }
+
+cat(rquery_fn(db_hdl, td, 5, return_sql = TRUE))
 
 rquery_fn(db_hdl, td, 5)
 ```
 
+The row-selection step is cut down on the in-memory cost of bringing the result back to `R`. Obviously we could optimize the example away by pivoting the filter to earlier in the example pipeline.  We ask the reader to take this example as a stand-in for a more complicated (though nasty) real-world example where such optimizations are not available.
+
 Same torture for [`dplyr`](https://CRAN.R-project.org/package=dplyr).
 
 ```{r dplyrfn}
-dplyr_fn <- function(tbl, ncol) {
+dplyr_fn <- function(tbl, ncol, return_sql = FALSE) {
   pipeline <- tbl
   xvar <- rlang::sym("x")
   for(i in seq_len(ncol)) {
@@ -69,8 +79,16 @@ dplyr_fn <- function(tbl, ncol) {
     pipeline <- pipeline %>%
       mutate(., !!res_i := !!xvar + i)
   }
+  pipeline <- pipeline %>%
+    filter(., x == 3)
+  if(return_sql) {
+    return(dbplyr::remote_query(pipeline))
+  }
+  # force execution
   pipeline %>% collect(.)
 }
+
+cat(dplyr_fn(tbl, 5, return_sql = TRUE))
 
 dplyr_fn(tbl, 5)
 ```
@@ -114,7 +132,7 @@ tratio
 ratio_str <- sprintf("%.2g", tratio$ratio)
 ```
 
-`rquery` is about `r ratio_str` times faster than `dplyr` for this task.
+`rquery` is about `r ratio_str` times faster than `dplyr` for this task at this scale.
 
 
 ```{r cleanup}

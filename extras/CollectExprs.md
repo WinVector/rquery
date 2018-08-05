@@ -44,9 +44,10 @@ db_hdl <- rquery_db_info(
   is_dbi = TRUE,
   connection_options = dbopts)
 
+nrow <- 1000000
 td <- rq_copy_to(db_hdl, 
                  "d",
-                 data.frame(x = 1:5),
+                 data.frame(x = seq_len(nrow)),
                  overwrite = TRUE,
                  temporary = TRUE)
 
@@ -55,34 +56,58 @@ tbl <- dplyr::tbl(con, "d")
 ncol <- 100
 ```
 
-[`rquery`](https://CRAN.R-project.org/package=rquery) torture function: add 100 columns.
+[`rquery`](https://CRAN.R-project.org/package=rquery) torture function: add 100 columns to a 1000000 row table.
 
 ``` r
-rquery_fn <- function(db_hdl, td, ncol) {
+rquery_fn <- function(db_hdl, td, ncol, return_sql = FALSE) {
   expressions <- character(0)
   for(i in seq_len(ncol)) {
     expri <- paste0("x_", i) %:=% paste0("x + ", i)
     expressions <- c(expressions, expri)
   }
   ops <- td %.>%
-    extend_se(., expressions)
+    extend_se(., expressions) %.>%
+    select_rows_nse(., x == 3)
+  if(return_sql) {
+    return(to_sql(ops, db_hdl))
+  }
+  # force execution
   db_hdl %.>% ops
 }
 
+cat(rquery_fn(db_hdl, td, 5, return_sql = TRUE))
+```
+
+    ## SELECT * FROM (
+    ##  SELECT
+    ##   "x",
+    ##   "x" + 1  AS "x_1",
+    ##   "x" + 2  AS "x_2",
+    ##   "x" + 3  AS "x_3",
+    ##   "x" + 4  AS "x_4",
+    ##   "x" + 5  AS "x_5"
+    ##  FROM (
+    ##   SELECT
+    ##    "x"
+    ##   FROM
+    ##    "d"
+    ##   ) tsql_77774864536840498052_0000000000
+    ## ) tsql_77774864536840498052_0000000001
+    ## WHERE "x" = 3
+
+``` r
 rquery_fn(db_hdl, td, 5)
 ```
 
     ##   x x_1 x_2 x_3 x_4 x_5
-    ## 1 1   2   3   4   5   6
-    ## 2 2   3   4   5   6   7
-    ## 3 3   4   5   6   7   8
-    ## 4 4   5   6   7   8   9
-    ## 5 5   6   7   8   9  10
+    ## 1 3   4   5   6   7   8
+
+The row-selection step is cut down on the in-memory cost of bringing the result back to `R`. Obviously we could optimize the example away by pivoting the filter to earlier in the example pipeline. We ask the reader to take this example as a stand-in for a more complicated (though nasty) real-world example where such optimizations are not available.
 
 Same torture for [`dplyr`](https://CRAN.R-project.org/package=dplyr).
 
 ``` r
-dplyr_fn <- function(tbl, ncol) {
+dplyr_fn <- function(tbl, ncol, return_sql = FALSE) {
   pipeline <- tbl
   xvar <- rlang::sym("x")
   for(i in seq_len(ncol)) {
@@ -90,20 +115,35 @@ dplyr_fn <- function(tbl, ncol) {
     pipeline <- pipeline %>%
       mutate(., !!res_i := !!xvar + i)
   }
+  pipeline <- pipeline %>%
+    filter(., x == 3)
+  if(return_sql) {
+    return(dbplyr::remote_query(pipeline))
+  }
+  # force execution
   pipeline %>% collect(.)
 }
 
+cat(dplyr_fn(tbl, 5, return_sql = TRUE))
+```
+
+    ## SELECT *
+    ## FROM (SELECT "x", "x_1", "x_2", "x_3", "x_4", "x" + 5 AS "x_5"
+    ## FROM (SELECT "x", "x_1", "x_2", "x_3", "x" + 4 AS "x_4"
+    ## FROM (SELECT "x", "x_1", "x_2", "x" + 3 AS "x_3"
+    ## FROM (SELECT "x", "x_1", "x" + 2 AS "x_2"
+    ## FROM (SELECT "x", "x" + 1 AS "x_1"
+    ## FROM "d") "urgsxtdwta") "ymucuytolh") "jthbtpwxwd") "wrwjbybnrl") "iyktqjhihg"
+    ## WHERE ("x" = 3.0)
+
+``` r
 dplyr_fn(tbl, 5)
 ```
 
-    ## # A tibble: 5 x 6
+    ## # A tibble: 1 x 6
     ##       x   x_1   x_2   x_3   x_4   x_5
     ## * <int> <int> <int> <int> <int> <int>
-    ## 1     1     2     3     4     5     6
-    ## 2     2     3     4     5     6     7
-    ## 3     3     4     5     6     7     8
-    ## 4     4     5     6     7     8     9
-    ## 5     5     6     7     8     9    10
+    ## 1     3     4     5     6     7     8
 
 Time the functions.
 
@@ -123,9 +163,9 @@ print(timings)
 ```
 
     ## Unit: milliseconds
-    ##    expr       min        lq     mean    median        uq       max neval
-    ##  rquery  128.3562  132.5843  141.671  135.3425  155.7883  172.7109    10
-    ##   dplyr 1503.8006 1549.2284 1581.519 1572.8269 1604.8545 1697.8595    10
+    ##    expr      min        lq      mean   median        uq       max neval
+    ##  rquery  177.194  181.2475  187.8301  185.206  189.2457  216.4919    10
+    ##   dplyr 1627.519 1635.3129 1675.6221 1653.072 1687.8441 1796.4718    10
 
 ``` r
 #autoplot(timings)
@@ -154,14 +194,14 @@ tratio <- timings %.>%
 tratio
 ```
 
-    ##       dplyr   rquery    ratio
-    ## 1: 1.581519 0.141671 11.16332
+    ##       dplyr    rquery    ratio
+    ## 1: 1.675622 0.1878301 8.920946
 
 ``` r
 ratio_str <- sprintf("%.2g", tratio$ratio)
 ```
 
-`rquery` is about 11 times faster than `dplyr` for this task.
+`rquery` is about 8.9 times faster than `dplyr` for this task at this scale.
 
 ``` r
 DBI::dbDisconnect(con)
