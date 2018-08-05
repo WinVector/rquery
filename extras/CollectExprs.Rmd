@@ -142,9 +142,9 @@ tratio <- timings %.>%
                    columnToTakeValuesFrom = "mean_seconds", 
                    rowKeyColumns = NULL) %.>%
   extend_nse(.,
-             ratio = dplyr/rquery)[]
+             ratio = dplyr/rquery)
 
-tratio
+tratio[]
 
 ratio_str <- sprintf("%.2g", tratio$ratio)
 ```

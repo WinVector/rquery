@@ -112,8 +112,8 @@ cat(rquery_fn(db_hdl, td, 5, return_sql = TRUE))
     ##    `x`
     ##   FROM
     ##    `d`
-    ##   ) tsql_91692124251263855825_0000000000
-    ## ) tsql_91692124251263855825_0000000001
+    ##   ) tsql_52759624129854702053_0000000000
+    ## ) tsql_52759624129854702053_0000000001
     ## WHERE `x` = 3
 
 ``` r
@@ -154,7 +154,7 @@ cat(dplyr_fn(tbl, 5, return_sql = TRUE))
     ## FROM (SELECT `x`, `x_1`, `x_2`, `x` + 3 AS `x_3`
     ## FROM (SELECT `x`, `x_1`, `x` + 2 AS `x_2`
     ## FROM (SELECT `x`, `x` + 1 AS `x_1`
-    ## FROM `d`) `rgzzvarrzy`) `tuokhmxxbd`) `fuqnwdqkdb`) `esfdyhudlb`) `epbexzsgoz`
+    ## FROM `d`) `mhxrlspolu`) `isdaovyqlr`) `djoikiprqj`) `nnwosegdrz`) `mbwgtjrlfg`
     ## WHERE (`x` = 3.0)
 
 ``` r
@@ -184,9 +184,9 @@ print(timings)
 ```
 
     ## Unit: milliseconds
-    ##    expr       min        lq     mean   median       uq      max neval
-    ##  rquery  900.7302  927.3525 1060.446 1049.554 1122.019 1414.294    10
-    ##   dplyr 2030.9117 2120.6182 2290.519 2145.611 2286.826 3053.333    10
+    ##    expr       min       lq    mean    median       uq      max neval
+    ##  rquery  922.4429  958.151 1012.98  987.8187 1001.329 1285.531    10
+    ##   dplyr 2088.2091 2246.560 2480.32 2312.3805 2413.692 4093.165    10
 
 ``` r
 #autoplot(timings)
@@ -210,19 +210,19 @@ tratio <- timings %.>%
                    columnToTakeValuesFrom = "mean_seconds", 
                    rowKeyColumns = NULL) %.>%
   extend_nse(.,
-             ratio = dplyr/rquery)[]
+             ratio = dplyr/rquery)
 
-tratio
+tratio[]
 ```
 
-    ##       dplyr   rquery    ratio
-    ## 1: 2.290519 1.060446 2.159959
+    ##      dplyr  rquery    ratio
+    ## 1: 2.48032 1.01298 2.448538
 
 ``` r
 ratio_str <- sprintf("%.2g", tratio$ratio)
 ```
 
-`rquery` is about 2.2 times faster than `dplyr` for this task at this scale for this data implementation and configuration (we have also seen an over 8 times difference for this example on `PostgreSQL`).
+`rquery` is about 2.4 times faster than `dplyr` for this task at this scale for this data implementation and configuration (we have also seen an over 8 times difference for this example on `PostgreSQL`).
 
 ``` r
 if(use_spark) {
