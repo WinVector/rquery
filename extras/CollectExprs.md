@@ -123,7 +123,7 @@ rquery_fn(db_hdl, td, 5)
     ##   x x_1 x_2 x_3 x_4 x_5
     ## 1 3   4   5   6   7   8
 
-The row-selection step is cut down on the in-memory cost of bringing the result back to `R`. Obviously we could optimize the example away by pivoting the filter to earlier in the example pipeline. We ask the reader to take this example as a stand-in for a more complicated (though nasty) real-world example where such optimizations are not available.
+The row-selection step is to cut down on the in-memory cost of bringing the result back to `R`. Obviously we could optimize the example away by pivoting the filter to earlier in the example pipeline. We ask the reader to take this example as a stand-in for a more complicated (though nasty) real-world example where such optimizations are not available.
 
 Same torture for [`dplyr`](https://CRAN.R-project.org/package=dplyr).
 
