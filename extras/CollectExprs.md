@@ -109,8 +109,8 @@ cat(rquery_fn(db_hdl, td, 5, return_sql = TRUE))
     ##    `x`
     ##   FROM
     ##    `d`
-    ##   ) tsql_48003247019956305257_0000000000
-    ## ) tsql_48003247019956305257_0000000001
+    ##   ) tsql_80184071866445657617_0000000000
+    ## ) tsql_80184071866445657617_0000000001
     ## WHERE `x` = 3
 
 ``` r
@@ -151,7 +151,7 @@ cat(dplyr_fn(tbl, 5, return_sql = TRUE))
     ## FROM (SELECT `x`, `x_1`, `x_2`, `x` + 3 AS `x_3`
     ## FROM (SELECT `x`, `x_1`, `x` + 2 AS `x_2`
     ## FROM (SELECT `x`, `x` + 1 AS `x_1`
-    ## FROM `d`) `jmbvcmgybs`) `tfqjorlpgj`) `twglelbusb`) `xglgzcngft`) `xwchesghyr`
+    ## FROM `d`) `fywbgjqyxx`) `zgnzxnptgz`) `suuiazzvrl`) `tszvnkqdni`) `jriehbjxyh`
     ## WHERE (`x` = 3.0)
 
 ``` r
@@ -184,7 +184,7 @@ cat(seplyr_fn(tbl, 5, return_sql = TRUE))
 
     ## SELECT *
     ## FROM (SELECT `x`, `x` + 1.0 AS `x_1`, `x` + 2.0 AS `x_2`, `x` + 3.0 AS `x_3`, `x` + 4.0 AS `x_4`, `x` + 5.0 AS `x_5`
-    ## FROM `d`) `iiqklhweew`
+    ## FROM `d`) `cylnizqjyg`
     ## WHERE (`x` = 3.0)
 
 ``` r
@@ -215,10 +215,10 @@ print(timings)
 ```
 
     ## Unit: milliseconds
-    ##    expr       min        lq      mean    median        uq      max neval
-    ##  rquery  864.9295  898.8187  936.8322  932.1334  945.4801 1087.215    10
-    ##   dplyr 2036.4713 2263.1920 2734.3049 2577.4369 3208.9644 4307.562    10
-    ##  seplyr 1023.4619 1025.6719 1294.2411 1114.0940 1454.5736 2189.686    10
+    ##    expr       min        lq     mean    median        uq      max neval
+    ##  rquery  881.5176  912.6531  978.369  944.1307  989.8789 1264.777    10
+    ##   dplyr 2012.7348 2066.7436 2284.674 2161.7553 2287.7735 3124.415    10
+    ##  seplyr 1018.7017 1079.3265 1177.520 1116.4967 1183.9266 1690.291    10
 
 ``` r
 #autoplot(timings)
@@ -247,14 +247,14 @@ tratio <- timings %.>%
 tratio[]
 ```
 
-    ##       dplyr    rquery   seplyr    ratio
-    ## 1: 2.734305 0.9368322 1.294241 2.918671
+    ##       dplyr   rquery  seplyr    ratio
+    ## 1: 2.284674 0.978369 1.17752 2.335186
 
 ``` r
 ratio_str <- sprintf("%.2g", tratio$ratio)
 ```
 
-`rquery` is about 2.9 times faster than `dplyr` for this task at this scale for this data implementation and configuration (we have also seen an over 8 times difference for this example on `PostgreSQL`).
+`rquery` is about 2.3 times faster than `dplyr` for this task at this scale for this data implementation and configuration (we have also seen an over 8 times difference for this example on `PostgreSQL`).
 
 ``` r
 if(use_spark) {
