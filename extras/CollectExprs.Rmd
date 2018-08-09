@@ -63,11 +63,8 @@ ncol <- 100
 
 ```{r rqueryfn}
 rquery_fn <- function(db_hdl, td, ncol, return_sql = FALSE) {
-  expressions <- character(0)
-  for(i in seq_len(ncol)) {
-    expri <- paste0("x_", i) %:=% paste0("x + ", i)
-    expressions <- c(expressions, expri)
-  }
+  expressions <- paste0("x + ", seq_len(ncol))
+  names(expressions) <- paste0("x_", seq_len(ncol))
   ops <- td %.>%
     extend_se(., expressions) %.>%
     select_rows_nse(., x == 3)
@@ -114,11 +111,8 @@ We can also collect expressions efficiently using [`seplyr`](https://CRAN.R-proj
 
 ```{r seplyrfn}
 seplyr_fn <- function(tbl, ncol, return_sql = FALSE) {
-  expressions <- character(0)
-  for(i in seq_len(ncol)) {
-    expri <- paste0("x_", i) %:=% paste0("x + ", i)
-    expressions <- c(expressions, expri)
-  }
+  expressions <- paste0("x + ", seq_len(ncol))
+  names(expressions) <- paste0("x_", seq_len(ncol))
   pipeline <- tbl %>%
     seplyr::mutate_se(., expressions) %>%
     filter(., x == 3)

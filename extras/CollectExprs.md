@@ -81,11 +81,8 @@ ncol <- 100
 
 ``` r
 rquery_fn <- function(db_hdl, td, ncol, return_sql = FALSE) {
-  expressions <- character(0)
-  for(i in seq_len(ncol)) {
-    expri <- paste0("x_", i) %:=% paste0("x + ", i)
-    expressions <- c(expressions, expri)
-  }
+  expressions <- paste0("x + ", seq_len(ncol))
+  names(expressions) <- paste0("x_", seq_len(ncol))
   ops <- td %.>%
     extend_se(., expressions) %.>%
     select_rows_nse(., x == 3)
@@ -112,8 +109,8 @@ cat(rquery_fn(db_hdl, td, 5, return_sql = TRUE))
     ##    `x`
     ##   FROM
     ##    `d`
-    ##   ) tsql_97238965696940256963_0000000000
-    ## ) tsql_97238965696940256963_0000000001
+    ##   ) tsql_48003247019956305257_0000000000
+    ## ) tsql_48003247019956305257_0000000001
     ## WHERE `x` = 3
 
 ``` r
@@ -154,7 +151,7 @@ cat(dplyr_fn(tbl, 5, return_sql = TRUE))
     ## FROM (SELECT `x`, `x_1`, `x_2`, `x` + 3 AS `x_3`
     ## FROM (SELECT `x`, `x_1`, `x` + 2 AS `x_2`
     ## FROM (SELECT `x`, `x` + 1 AS `x_1`
-    ## FROM `d`) `tyiyhhxjag`) `gshhunpiup`) `teowzjcshb`) `hdrfwlzycc`) `lsniejpwft`
+    ## FROM `d`) `jmbvcmgybs`) `tfqjorlpgj`) `twglelbusb`) `xglgzcngft`) `xwchesghyr`
     ## WHERE (`x` = 3.0)
 
 ``` r
@@ -170,11 +167,8 @@ We can also collect expressions efficiently using [`seplyr`](https://CRAN.R-proj
 
 ``` r
 seplyr_fn <- function(tbl, ncol, return_sql = FALSE) {
-  expressions <- character(0)
-  for(i in seq_len(ncol)) {
-    expri <- paste0("x_", i) %:=% paste0("x + ", i)
-    expressions <- c(expressions, expri)
-  }
+  expressions <- paste0("x + ", seq_len(ncol))
+  names(expressions) <- paste0("x_", seq_len(ncol))
   pipeline <- tbl %>%
     seplyr::mutate_se(., expressions) %>%
     filter(., x == 3)
@@ -190,7 +184,7 @@ cat(seplyr_fn(tbl, 5, return_sql = TRUE))
 
     ## SELECT *
     ## FROM (SELECT `x`, `x` + 1.0 AS `x_1`, `x` + 2.0 AS `x_2`, `x` + 3.0 AS `x_3`, `x` + 4.0 AS `x_4`, `x` + 5.0 AS `x_5`
-    ## FROM `d`) `gaktzzkzxq`
+    ## FROM `d`) `iiqklhweew`
     ## WHERE (`x` = 3.0)
 
 ``` r
@@ -221,10 +215,10 @@ print(timings)
 ```
 
     ## Unit: milliseconds
-    ##    expr      min       lq     mean   median       uq      max neval
-    ##  rquery  995.955 1018.481 1153.364 1065.092 1281.715 1502.717    10
-    ##   dplyr 2156.264 2219.900 2899.534 2473.929 3791.673 4714.063    10
-    ##  seplyr 1074.775 1180.591 1453.980 1273.424 1598.804 2398.883    10
+    ##    expr       min        lq      mean    median        uq      max neval
+    ##  rquery  864.9295  898.8187  936.8322  932.1334  945.4801 1087.215    10
+    ##   dplyr 2036.4713 2263.1920 2734.3049 2577.4369 3208.9644 4307.562    10
+    ##  seplyr 1023.4619 1025.6719 1294.2411 1114.0940 1454.5736 2189.686    10
 
 ``` r
 #autoplot(timings)
@@ -253,14 +247,14 @@ tratio <- timings %.>%
 tratio[]
 ```
 
-    ##       dplyr   rquery  seplyr    ratio
-    ## 1: 2.899534 1.153364 1.45398 2.513979
+    ##       dplyr    rquery   seplyr    ratio
+    ## 1: 2.734305 0.9368322 1.294241 2.918671
 
 ``` r
 ratio_str <- sprintf("%.2g", tratio$ratio)
 ```
 
-`rquery` is about 2.5 times faster than `dplyr` for this task at this scale for this data implementation and configuration (we have also seen an over 8 times difference for this example on `PostgreSQL`).
+`rquery` is about 2.9 times faster than `dplyr` for this task at this scale for this data implementation and configuration (we have also seen an over 8 times difference for this example on `PostgreSQL`).
 
 ``` r
 if(use_spark) {
