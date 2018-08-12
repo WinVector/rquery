@@ -7,7 +7,7 @@
 materialize_node(source, table_name, ..., temporary = TRUE)
 }
 \arguments{
-\item{source}{source to work from (data.frame or relop node)}
+\item{source}{source to work from (relop node)}
 
 \item{table_name}{character, name of caching table}
 

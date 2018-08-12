@@ -210,7 +210,7 @@ print.rquery_non_sql_step <- function(x, ...) {
 #' Cache results to a named table inside a pipeline.
 #'
 #'
-#' @param source source to work from (data.frame or relop node)
+#' @param source source to work from (relop node)
 #' @param table_name character, name of caching table
 #' @param ... force later arguments to bind by name
 #' @param temporary logical, if TRUE mark tables temporary.
@@ -225,6 +225,9 @@ materialize_node <- function(source,
                              ...,
                              temporary = TRUE) {
   wrapr::stop_if_dot_args(substitute(list(...)), "materialize_node")
+  if(!("relop" %in% class(source))) {
+    stop("rquery::materialize_node requires source be of class relop")
+  }
   non_sql_node(source = source,
                f_db = NULL,
                f_df = function(x) { x },

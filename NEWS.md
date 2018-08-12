@@ -1,8 +1,9 @@
 
-# rquery 0.6.2 2018/08/04
+# rquery 0.6.2 2018/08/12
 
  * fix in-memory order_by!
  * aggregate aliases.
+ * try to clean up immediate mode hooks a bit.
 
 # rquery 0.6.1 2018/08/01
 
