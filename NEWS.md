@@ -1,5 +1,5 @@
 
-# rquery 0.6.2 2018/08/12
+# rquery 0.6.2 2018/08/14
 
  * fix in-memory order_by!
  * aggregate aliases.
