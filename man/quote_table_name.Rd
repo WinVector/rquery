@@ -4,7 +4,7 @@
 \alias{quote_table_name}
 \title{Quote a table name.}
 \usage{
-quote_table_name(x, id, ..., qualifiers)
+quote_table_name(x, id, ..., qualifiers = character(0))
 }
 \arguments{
 \item{x}{database handle or rquery_db_info object.}

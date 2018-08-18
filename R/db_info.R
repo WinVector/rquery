@@ -142,7 +142,7 @@ quote_identifier <- function(x, id) {
 #'
 quote_table_name <- function(x, id,
                              ...,
-                             qualifiers) {
+                             qualifiers = character(0)) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::quote_table_name")
   if("rquery_db_info" %in% class(x)) {

@@ -1,4 +1,8 @@
 
+# rquery 0.6.3 2018/08/18
+
+ * Fix key_inspector_postgresql quoting issue. 
+
 # rquery 0.6.2 2018/08/14
 
  * fix in-memory order_by!

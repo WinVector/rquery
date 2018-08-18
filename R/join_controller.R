@@ -198,7 +198,7 @@ key_inspector_postgresql <- function(db, tablename) {
     FROM   pg_index i
     JOIN   pg_attribute a ON a.attrelid = i.indrelid
     AND a.attnum = ANY(i.indkey)
-    WHERE  i.indrelid = ", quote_identifier(db, tablename), "::regclass
+    WHERE  i.indrelid = ", quote_string(db, quote_identifier(db, tablename)), "::regclass
     AND    i.indisprimary;
     "
   )

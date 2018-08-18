@@ -1,8 +1,8 @@
 Package: rquery
 Type: Package
 Title: Relational Query Generator for Data Manipulation at Scale
-Version: 0.6.2
-Date: 2018-08-14
+Version: 0.6.3
+Date: 2018-08-18
 Authors@R: c(
     person("John", "Mount", email = "jmount@win-vector.com", role = c("aut", "cre")),
     person(family = "Win-Vector LLC", role = c("cph"))
