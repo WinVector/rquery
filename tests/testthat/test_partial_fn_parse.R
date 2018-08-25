@@ -15,8 +15,10 @@ test_that("test_partial_fn_parse.R", {
 
   mean2 <- function(x) (mean(x, na.rm = TRUE))
 
-  local_td(d) %.>%
+  ops <- local_td(d) %.>%
     project_nse(.,
                 x = mean2(x),
                 groupby = c())
+  sql <- to_sql(ops, rquery_default_db_info)
+  # cat(format(sql))
 })
