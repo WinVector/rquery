@@ -298,7 +298,7 @@ tokenize_for_SQL_r <- function(lexpr,
   # left-hand sides of lists/calls are represented as keys
   nms <- names(lexpr)
   if(length(nms)>0) {
-    stop("rquery::tokenize_for_SQL_r saw named items")
+    stop("rquery::tokenize_for_SQL_r saw named items (rquery does not allow assignment of function arguments by name)")
   }
   # special cases
   if(is.call(lexpr)) {
