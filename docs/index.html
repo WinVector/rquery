@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">rquery</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.6.3</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">1.0.0</span>
       </span>
     </div>
 
@@ -396,14 +396,14 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
         "assessmentTotal"
        FROM
         "d" LIMIT 1000
-       ) tsql_10305240335805051184_0000000000
-      ) tsql_10305240335805051184_0000000001
-     ) tsql_10305240335805051184_0000000002
-   ) tsql_10305240335805051184_0000000003
+       ) tsql_48839528069683683750_0000000000
+      ) tsql_48839528069683683750_0000000001
+     ) tsql_48839528069683683750_0000000002
+   ) tsql_48839528069683683750_0000000003
    WHERE "row_number" &lt;= 1
-  ) tsql_10305240335805051184_0000000004
- ) tsql_10305240335805051184_0000000005
-) tsql_10305240335805051184_0000000006 ORDER BY "subjectID"</code></pre>
+  ) tsql_48839528069683683750_0000000004
+ ) tsql_48839528069683683750_0000000005
+) tsql_48839528069683683750_0000000006 ORDER BY "subjectID"</code></pre>
 <p>The query is large, but due to its regular structure it should be very amenable to query optimization.</p>
 <p>A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our <a href="https://github.com/WinVector/rquery/blob/master/extras/PerfTest%2Emd">initial experiments</a> show <code>rquery</code> narrowed queries to be twice as fast as un-narrowed <code>dplyr</code> on a synthetic problem simulating large disk-based queries. We think if we connected directly to <code>Spark</code>’s relational operators (avoiding the <code>SQL</code> layer) we may be able to achieve even faster performance.</p>
 <p>The above optimization is possible because the <code>rquery</code> representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query. For example:</p>
