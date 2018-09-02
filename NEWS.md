@@ -1,9 +1,10 @@
 
-# rquery 0.6.3 2018/08/25
+# rquery 0.6.3 2018/09/02
 
  * Fix key_inspector_postgresql quoting issue. 
  * More tests.
  * Export a default database description.
+ * Check more on project and extend interfaces.
 
 # rquery 0.6.2 2018/08/14
 

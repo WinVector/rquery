@@ -26,6 +26,15 @@ extend_impl <- function(source, parsed,
                         display_form = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery:::extend_impl")
+  if(length(partitionby)!=length(unique(partitionby))) {
+    stop("rquery:::extend_impl duplicatge partitionby columns")
+  }
+  if(length(reverse)!=length(unique(reverse))) {
+    stop("rquery:::extend_impl duplicatge reverse columns")
+  }
+  if(length(orderby)!=length(unique(orderby))) {
+    stop("rquery:::extend_impl duplicatge orderby columns")
+  }
   if(length(setdiff(reverse, orderby))>0) {
     stop("rquery::extend_imp all reverse columns must also be orderby columns")
   }
