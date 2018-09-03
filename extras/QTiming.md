@@ -1,33 +1,22 @@
 QTiming
 ================
 Win-Vector LLC
-1/16/2018
+9/2/2018
 
 Let's time [`rquery`](https://winvector.github.io/rquery/), [`dplyr`](https://CRAN.R-project.org/package=dplyr), and [`data.table`](https://CRAN.R-project.org/package=data.table) on a non-trivial example.
 
-These timings are on an late 2014 Mac Mini with 8GB of RAM running OSX 10.12.6, version 3.4.3 (2017-11-30) -- "Kite-Eating Tree", and the current (2018-01-07) CRAN versions of all packages (except `rquery`, which is not yet up on CRAN). We are getting database services from PostgreSQL version `9.6.1` in a docker container.
+These timings are on an late 2014 Mac Mini with 8GB of RAM running OSX everything current as of run-date.
 
 First let's load our packages, establish a database connection, and declare an [`rquery` ad hoc execution service](https://winvector.github.io/rquery/articles/AdHocQueries.html) (the "`winvector_temp_db_handle`").
 
 ``` r
 library("data.table")
 library("rquery")
-```
-
-    ## Loading required package: wrapr
-
-    ## 
-    ## Attaching package: 'wrapr'
-
-    ## The following object is masked from 'package:data.table':
-    ## 
-    ##     :=
-
-    ## Loading required package: cdata
-
-``` r
+library("rqdatatable")
 library("dplyr")
 ```
+
+    ## Warning: package 'dplyr' was built under R version 3.5.1
 
     ## 
     ## Attaching package: 'dplyr'
@@ -51,57 +40,53 @@ library("ggplot2")
 db <- DBI::dbConnect(RPostgres::Postgres(),
                      host = 'localhost',
                      port = 5432,
-                     user = 'postgres',
-                     password = 'pg')
-winvector_temp_db_handle <- list(db = db)
+                     user = 'johnmount',
+                     password = '')
+# db <- DBI::dbConnect(MonetDBLite::MonetDBLite())
+dbopts <- rq_connection_tests(db)
+db_hdl <- rquery_db_info(connection = db,
+                         is_dbi = TRUE,
+                         connection_options = dbopts)
+print(db_hdl)
+```
 
+    ## [1] "rquery_db_info(PqConnection, is_dbi=TRUE, note=\"\")"
+
+``` r
 packageVersion("rquery")
 ```
 
-    ## [1] '0.2.0'
+    ## [1] '1.0.0'
 
 ``` r
 packageVersion("dplyr")
 ```
 
-    ## [1] '0.7.4'
+    ## [1] '0.7.6'
 
 ``` r
 packageVersion("dbplyr")
 ```
 
-    ## [1] '1.2.0'
+    ## [1] '1.2.2'
 
 ``` r
 packageVersion("DBI")
 ```
 
-    ## [1] '0.7'
+    ## [1] '1.0.0'
 
 ``` r
 packageVersion("data.table")
 ```
 
-    ## [1] '1.10.4.3'
+    ## [1] '1.11.4'
 
 ``` r
 packageVersion("RPostgres")
 ```
 
-    ## [1] '1.0.4'
-
-``` r
-print(db)
-```
-
-    ## <PqConnection> postgres@localhost:5432
-
-``` r
-DBI::dbGetQuery(db, "SELECT version()")
-```
-
-    ##                                                                                    version
-    ## 1 PostgreSQL 9.6.1 on x86_64-pc-linux-gnu, compiled by gcc (Debian 4.9.2-10) 4.9.2, 64-bit
+    ## [1] '1.1.1'
 
 ``` r
 R.Version()
@@ -126,28 +111,28 @@ R.Version()
     ## [1] "3"
     ## 
     ## $minor
-    ## [1] "4.3"
+    ## [1] "5.0"
     ## 
     ## $year
-    ## [1] "2017"
+    ## [1] "2018"
     ## 
     ## $month
-    ## [1] "11"
+    ## [1] "04"
     ## 
     ## $day
-    ## [1] "30"
+    ## [1] "23"
     ## 
     ## $`svn rev`
-    ## [1] "73796"
+    ## [1] "74626"
     ## 
     ## $language
     ## [1] "R"
     ## 
     ## $version.string
-    ## [1] "R version 3.4.3 (2017-11-30)"
+    ## [1] "R version 3.5.0 (2018-04-23)"
     ## 
     ## $nickname
-    ## [1] "Kite-Eating Tree"
+    ## [1] "Joy in Playing"
 
 We now build and extended version of the example from [Let’s Have Some Sympathy For The Part-time R User](http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/).
 
@@ -188,7 +173,7 @@ head(dLocal)
     ## 6       1_1 positive re-framing               2
 
 ``` r
-dR <- rquery::dbi_copy_to(db, 'dR',
+dR <- rquery::rq_copy_to(db, 'dR',
                           dLocal,
                           temporary = TRUE, 
                           overwrite = TRUE)
@@ -208,7 +193,7 @@ dTbl <- dplyr::tbl(db, dR$table_name)
 dplyr::glimpse(dTbl)
 ```
 
-    ## Observations: NA
+    ## Observations: ??
     ## Variables: 3
     ## $ subjectID       <chr> "0_1", "0_1", "0_2", "0_2", "1_1", "1_1", "1_2...
     ## $ surveyCategory  <chr> "withdrawal behavior", "positive re-framing", ...
@@ -221,58 +206,47 @@ scale <- 0.237
 
 # this is a function, 
 # so body not evaluated until used
-rquery_pipeline <- function(.) {
+rquery_pipeline <- dR %.>%
   extend_nse(.,
-             probability :=
-               exp(assessmentTotal * scale)/
-               sum(exp(assessmentTotal * scale)),
-             count := count(1),
-             partitionby = 'subjectID') %.>%
-    extend_nse(.,
-               rank := rank(),
-               partitionby = 'subjectID',
-               orderby = c('probability', 'surveyCategory'))  %.>%
-    rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
-    select_rows_nse(., rank == count) %.>%
-    select_columns(., c('subjectID', 
-                        'diagnosis', 
-                        'probability')) %.>%
-    orderby(., 'subjectID') 
+             probability %:=%
+               exp(assessmentTotal * scale))  %.>% 
+  normalize_cols(.,
+                 "probability",
+                 partitionby = 'subjectID') %.>%
+  pick_top_k(.,
+             partitionby = 'subjectID',
+             orderby = c('probability', 'surveyCategory'),
+             reverse = c('probability')) %.>% 
+  rename_columns(., 'diagnosis' %:=% 'surveyCategory') %.>%
+  select_columns(., c('subjectID', 
+                      'diagnosis', 
+                      'probability')) %.>%
+  orderby(., cols = 'subjectID')
+
+rqdatatable <- function() {
+  dLocal %.>% rquery_pipeline
 }
 
-
-rquery_local <- function() {
-  dLocal %.>% 
-    rquery_pipeline(.) %.>%
-    as.data.frame(.) # force execution
+rquery_database_roundtrip <- function() {
+  dRT <- rquery::rq_copy_to(db, 'dR',
+                          dLocal,
+                          temporary = TRUE, 
+                          overwrite = TRUE)
+  rquery::execute(db_hdl, rquery_pipeline)
 }
+
 
 rquery_database_pull <- function() {
-  dR %.>% 
-    rquery_pipeline(.) %.>% 
-    to_sql(., db) %.>% 
-    DBI::dbGetQuery(db, .) %.>%
-    as.data.frame(.) # shouldn't be needed
+  rquery::execute(db_hdl, rquery_pipeline)
 }
 
 rquery_database_land <- function() {
   tabName <- "rquery_tmpx"
-  sqlc <- dR %.>% 
-    rquery_pipeline(.) %.>% 
-    to_sql(., db)
-  DBI::dbExecute(db, paste("CREATE TABLE", tabName, "AS", sqlc))
-  DBI::dbExecute(db, paste("DROP TABLE", tabName))
+  rquery::materialize(db_hdl, rquery_pipeline, table_name = tabName,
+                      overwrite = TRUE, temporary = TRUE)
   NULL
 }
 
-rquery_database_count <- function() {
-  dR %.>% 
-    rquery_pipeline(.) %.>% 
-    sql_node(., "n" := "COUNT(1)") %.>% 
-    to_sql(., db) %.>% 
-    DBI::dbGetQuery(db, .) %.>%
-    as.data.frame(.) # shouldn't be needed
-}
 
 # this is a function, 
 # so body not evaluated until used
@@ -325,7 +299,7 @@ dplyr_tbl <- function() {
 
 dplyr_round_trip <- function() {
   dTmp <- dplyr::copy_to(db, dLocal, "dplyr_tmp",
-                         # overwrite = TRUE,
+                         overwrite = TRUE,
                          temporary = TRUE
   )
   res <- dTmp %>% 
@@ -350,13 +324,6 @@ dplyr_database_land <- function() {
   NULL
 }
 
-dplyr_database_count <- function() {
-  dTbl %>% 
-    dplyr_pipeline %>%
-    tally() %>%
-    collect()
-}
-
 .datatable.aware <- TRUE
 
 # improved code from:
@@ -376,7 +343,19 @@ data.table_local <- function() {
 Let's inspect the functions.
 
 ``` r
-head(rquery_local())
+head(rqdatatable())
+```
+
+    ##    subjectID           diagnosis probability
+    ## 1:       0_1 withdrawal behavior   0.6706221
+    ## 2:       0_2 positive re-framing   0.5589742
+    ## 3:    1000_1 withdrawal behavior   0.6706221
+    ## 4:    1000_2 positive re-framing   0.5589742
+    ## 5:    1001_1 withdrawal behavior   0.6706221
+    ## 6:    1001_2 positive re-framing   0.5589742
+
+``` r
+head(rquery_database_roundtrip())
 ```
 
     ##   subjectID           diagnosis probability
@@ -384,8 +363,8 @@ head(rquery_local())
     ## 2       0_2 positive re-framing   0.5589742
     ## 3    1000_1 withdrawal behavior   0.6706221
     ## 4    1000_2 positive re-framing   0.5589742
-    ## 5     100_1 withdrawal behavior   0.6706221
-    ## 6    1001_1 withdrawal behavior   0.6706221
+    ## 5    1001_1 withdrawal behavior   0.6706221
+    ## 6    1001_2 positive re-framing   0.5589742
 
 ``` r
 rquery_database_land()
@@ -402,15 +381,8 @@ head(rquery_database_pull())
     ## 2       0_2 positive re-framing   0.5589742
     ## 3    1000_1 withdrawal behavior   0.6706221
     ## 4    1000_2 positive re-framing   0.5589742
-    ## 5     100_1 withdrawal behavior   0.6706221
-    ## 6    1001_1 withdrawal behavior   0.6706221
-
-``` r
-rquery_database_count()
-```
-
-    ##       n
-    ## 1 20000
+    ## 5    1001_1 withdrawal behavior   0.6706221
+    ## 6    1001_2 positive re-framing   0.5589742
 
 ``` r
 head(dplyr_local())
@@ -471,17 +443,8 @@ head(dplyr_database_pull())
     ## 2 0_2       positive re-framing       0.559
     ## 3 1000_1    withdrawal behavior       0.671
     ## 4 1000_2    positive re-framing       0.559
-    ## 5 100_1     withdrawal behavior       0.671
-    ## 6 1001_1    withdrawal behavior       0.671
-
-``` r
-dplyr_database_count()
-```
-
-    ## # A tibble: 1 x 1
-    ##   n              
-    ##   <S3: integer64>
-    ## 1 20000
+    ## 5 1001_1    withdrawal behavior       0.671
+    ## 6 1001_2    positive re-framing       0.559
 
 ``` r
 head(dplyr_round_trip())
@@ -494,8 +457,8 @@ head(dplyr_round_trip())
     ## 2 0_2       positive re-framing       0.559
     ## 3 1000_1    withdrawal behavior       0.671
     ## 4 1000_2    positive re-framing       0.559
-    ## 5 100_1     withdrawal behavior       0.671
-    ## 6 1001_1    withdrawal behavior       0.671
+    ## 5 1001_1    withdrawal behavior       0.671
+    ## 6 1001_2    positive re-framing       0.559
 
 ``` r
 head(data.table_local())
@@ -513,16 +476,15 @@ Now let's measure the speeds with `microbenchmark`.
 
 ``` r
 tm <- microbenchmark(
-  "rquery in memory" = nrow(rquery_local()),
+  "rqdatatable" = nrow(rqdatatable()),
+  "rquery database roundtrip" = nrow(rquery_database_roundtrip()),
   "rquery from db to memory" = nrow(rquery_database_pull()),
-  "rquery database count" = rquery_database_count(),
   "rquery database land" = rquery_database_land(),
   "dplyr in memory" = nrow(dplyr_local()),
   "dplyr tbl in memory" = nrow(dplyr_tbl()),
   "dplyr in memory no grouped filter" = nrow(dplyr_local_no_grouped_filter()),
   "dplyr from memory to db and back" = nrow(dplyr_round_trip()),
   "dplyr from db to memory" = nrow(dplyr_database_pull()),
-  "dplyr database count" = dplyr_database_count(),
   "dplyr database land" = dplyr_database_land(),
   "data.table in memory" = nrow(data.table_local())
 )
@@ -531,36 +493,36 @@ print(tm)
 ```
 
     ## Unit: milliseconds
-    ##                               expr       min         lq       mean
-    ##                   rquery in memory  331.1481  339.70475  368.73137
-    ##           rquery from db to memory  227.5671  236.38861  245.76324
-    ##              rquery database count  197.9027  203.53253  220.77405
-    ##               rquery database land  217.3059  222.45132  241.63163
-    ##                    dplyr in memory 1170.3002 1205.02615 1274.89690
-    ##                dplyr tbl in memory 1172.2231 1204.95762 1259.71581
-    ##  dplyr in memory no grouped filter  801.5207  828.98199  869.17229
-    ##   dplyr from memory to db and back  577.4491  593.47428  630.04918
-    ##            dplyr from db to memory  376.1548  388.82214  423.56023
-    ##               dplyr database count  362.0931  372.82307  389.89221
-    ##                dplyr database land  409.8194  421.51907  446.92628
-    ##               data.table in memory   58.9573   65.47642   76.00341
-    ##      median         uq       max neval
-    ##   348.68603  387.00349  536.9070   100
-    ##   238.95166  245.93533  321.7778   100
-    ##   207.14355  223.10563  376.4466   100
-    ##   227.05600  249.73893  466.2631   100
-    ##  1231.85948 1289.23797 1991.6406   100
-    ##  1233.97733 1297.75145 1660.2237   100
-    ##   847.72725  893.80326 1232.6215   100
-    ##   606.20566  658.66738  809.4304   100
-    ##   394.35024  429.16525 1023.7962   100
-    ##   377.40662  394.76364  752.7342   100
-    ##   428.51148  459.61294  635.2797   100
-    ##    69.97359   76.76492  186.0538   100
+    ##                               expr        min         lq       mean
+    ##                        rqdatatable   70.77334   73.20129   79.14639
+    ##          rquery database roundtrip  736.52685  830.08294  848.06077
+    ##           rquery from db to memory  642.01160  728.18040  737.62455
+    ##               rquery database land  649.08938  742.14278  754.49151
+    ##                    dplyr in memory 1129.96133 1171.07291 1201.49031
+    ##                dplyr tbl in memory 1126.14372 1175.52373 1213.71515
+    ##  dplyr in memory no grouped filter  783.20897  803.76274  835.98151
+    ##   dplyr from memory to db and back 1372.55581 1533.31120 1548.73857
+    ##            dplyr from db to memory  938.74446 1059.54369 1073.19727
+    ##                dplyr database land  971.26286 1101.80752 1116.63241
+    ##               data.table in memory   70.47491   76.65464   85.45156
+    ##      median         uq       max neval     cld
+    ##    77.21041   80.03941  185.1339   100 a      
+    ##   844.27562  868.63970  967.3601   100   c    
+    ##   738.37703  749.93326  813.9729   100  b     
+    ##   751.47924  768.10678  836.0420   100  b     
+    ##  1189.31987 1221.10367 1465.4911   100      f 
+    ##  1203.47292 1245.88814 1360.0681   100      f 
+    ##   820.88013  863.67755 1017.0145   100   c    
+    ##  1546.99201 1565.88040 1649.0785   100       g
+    ##  1071.93852 1091.92242 1230.6090   100    d   
+    ##  1118.96104 1136.74233 1227.2759   100     e  
+    ##    82.18142   89.18355  128.5811   100 a
 
 ``` r
 autoplot(tm)
 ```
+
+    ## Coordinate system already present. Adding new coordinate system, which will replace the existing one.
 
 ![](QTiming_files/figure-markdown_github/timings-1.png)
 
@@ -570,13 +532,13 @@ autoplot(tm)
 sessionInfo()
 ```
 
-    ## R version 3.4.3 (2017-11-30)
+    ## R version 3.5.0 (2018-04-23)
     ## Platform: x86_64-apple-darwin15.6.0 (64-bit)
-    ## Running under: macOS Sierra 10.12.6
+    ## Running under: macOS High Sierra 10.13.6
     ## 
     ## Matrix products: default
-    ## BLAS: /Library/Frameworks/R.framework/Versions/3.4/Resources/lib/libRblas.0.dylib
-    ## LAPACK: /Library/Frameworks/R.framework/Versions/3.4/Resources/lib/libRlapack.dylib
+    ## BLAS: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRblas.0.dylib
+    ## LAPACK: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRlapack.dylib
     ## 
     ## locale:
     ## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
@@ -585,24 +547,27 @@ sessionInfo()
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ## [1] bindrcpp_0.2         ggplot2_2.2.1        microbenchmark_1.4-3
-    ## [4] dplyr_0.7.4          rquery_0.2.0         cdata_0.5.1         
-    ## [7] wrapr_1.1.1          data.table_1.10.4-3 
+    ## [1] bindrcpp_0.2.2       ggplot2_3.0.0        microbenchmark_1.4-4
+    ## [4] dplyr_0.7.6          rqdatatable_1.0.0    rquery_1.0.0        
+    ## [7] data.table_1.11.4   
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] Rcpp_0.12.14.2   dbplyr_1.2.0     pillar_1.0.1     compiler_3.4.3  
-    ##  [5] plyr_1.8.4       bindr_0.1        tools_3.4.3      RPostgres_1.0-4 
-    ##  [9] digest_0.6.13    bit_1.1-12       evaluate_0.10.1  tibble_1.4.1    
-    ## [13] gtable_0.2.0     pkgconfig_2.0.1  rlang_0.1.6      cli_1.0.0       
-    ## [17] DBI_0.7          yaml_2.1.16      withr_2.1.1      stringr_1.2.0   
-    ## [21] knitr_1.18       hms_0.4.0        tidyselect_0.2.3 rprojroot_1.3-2 
-    ## [25] bit64_0.9-7      grid_3.4.3       glue_1.2.0       R6_2.2.2        
-    ## [29] rmarkdown_1.8    purrr_0.2.4      blob_1.1.0       magrittr_1.5    
-    ## [33] backports_1.1.2  scales_0.5.0     htmltools_0.3.6  assertthat_0.2.0
-    ## [37] colorspace_1.3-2 utf8_1.1.3       stringi_1.1.6    lazyeval_0.2.1  
-    ## [41] munsell_0.4.3    crayon_1.3.4
+    ##  [1] zoo_1.8-3        tidyselect_0.2.4 purrr_0.2.5      splines_3.5.0   
+    ##  [5] lattice_0.20-35  colorspace_1.3-2 htmltools_0.3.6  yaml_2.2.0      
+    ##  [9] utf8_1.1.4       blob_1.1.1       survival_2.42-6  rlang_0.2.2.9000
+    ## [13] pillar_1.3.0     glue_1.3.0       withr_2.1.2      DBI_1.0.0       
+    ## [17] bit64_0.9-7      dbplyr_1.2.2     multcomp_1.4-8   bindr_0.1.1     
+    ## [21] plyr_1.8.4       stringr_1.3.1    munsell_0.5.0    gtable_0.2.0    
+    ## [25] mvtnorm_1.0-8    codetools_0.2-15 evaluate_0.11    knitr_1.20      
+    ## [29] parallel_3.5.0   fansi_0.3.0      TH.data_1.0-9    Rcpp_0.12.18    
+    ## [33] scales_1.0.0     backports_1.1.2  cdata_1.0.0      bit_1.1-14      
+    ## [37] hms_0.4.2        digest_0.6.16    stringi_1.2.4    grid_3.5.0      
+    ## [41] rprojroot_1.3-2  cli_1.0.0        tools_3.5.0      sandwich_2.5-0  
+    ## [45] magrittr_1.5     lazyeval_0.2.1   tibble_1.4.2     crayon_1.3.4    
+    ## [49] wrapr_1.6.1      pkgconfig_2.0.2  MASS_7.3-50      Matrix_1.2-14   
+    ## [53] assertthat_0.2.0 rmarkdown_1.10   RPostgres_1.1.1  R6_2.2.2        
+    ## [57] compiler_3.5.0
 
 ``` r
-winvector_temp_db_handle <- NULL
-DBI::dbDisconnect(db)
+DBI::dbDisconnect(db_hdl$connection)
 ```

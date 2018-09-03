@@ -1,12 +1,10 @@
 ---
 title: "Plotting example"
 author: "Nina Zumel"
-date: "January 8, 2018"
 output: github_document
 ---
 
 ```{r setup}
-knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 library(ggplot2)
 library(wrapr)
@@ -29,14 +27,12 @@ greycolor = "darkgrey"
 
 
 runs <- c("data.table in memory", 
-          "rquery in memory",
+          "rqdatatable",
           "dplyr tbl in memory",
-          "dplyr in memory no grouped filter",
-          "dplyr from memory to db and back")
+          "dplyr in memory no grouped filter")
 colormap = runs := c(highlightcolor,
                      highlightcolor,
-                     highlightcolor,
-                     highlightcolor,
+                     backgroundcolor,
                      backgroundcolor)
 
 tr <- timings[timings$expr %in% runs, , drop=FALSE]
@@ -48,19 +44,17 @@ plotbenchmark(tr, colormap,
 
 
 runs <- c("data.table in memory", 
-          "rquery in memory",
-          "rquery database count",
+          "rqdatatable",
+          "rquery database roundtrip",
           "rquery database land",
           "dplyr tbl in memory",
           "dplyr in memory no grouped filter",
           "dplyr from memory to db and back",
-          "dplyr database count",
           "dplyr database land")
 colormap = runs := c(greycolor,
                      greycolor,
                      highlightcolor,
                      highlightcolor,
-                     greycolor,
                      greycolor,
                      greycolor,
                      highlightcolor,
@@ -71,27 +65,5 @@ tr$expr <- factor(tr$expr, levels = rev(runs))
 plotbenchmark(tr, colormap, 
               title = "Pure Database Task Runtimes by Implementation",
               subtitle = "In-memory task runtimes included for comparison")
-
-
-
-followups <- c("rquery in memory",
-               "rquery from db to memory", 
-               "rquery database land", 
-               "rquery database count", 
-               "dplyr from memory to db and back",
-               "dplyr from db to memory",
-               "dplyr database land",
-               "dplyr database count")
-colormap = followups := c(greycolor,
-                          backgroundcolor,
-                          highlightcolor,
-                          reruncolor,
-                          greycolor,
-                          backgroundcolor,
-                          highlightcolor,
-                          reruncolor)
-tf <- timings[timings$expr %in% followups, , drop=FALSE]
-tf$expr <- factor(tf$expr, levels = rev(followups))
-plotbenchmark(tf, colormap, "Breakdown of Database Transport Costs")
 
 ```

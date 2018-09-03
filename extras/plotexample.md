@@ -1,12 +1,12 @@
 Plotting example
 ================
 Nina Zumel
-January 8, 2018
 
 ``` r
-knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 ```
+
+    ## Warning: package 'dplyr' was built under R version 3.5.1
 
     ## 
     ## Attaching package: 'dplyr'
@@ -22,7 +22,16 @@ library(dplyr)
 ``` r
 library(ggplot2)
 library(wrapr)
+```
 
+    ## 
+    ## Attaching package: 'wrapr'
+
+    ## The following object is masked from 'package:dplyr':
+    ## 
+    ##     coalesce
+
+``` r
 source("plotbenchmark.R")
 
 timings = readRDS("qtimings.RDS")
@@ -37,14 +46,12 @@ greycolor = "darkgrey"
 
 ``` r
 runs <- c("data.table in memory", 
-          "rquery in memory",
+          "rqdatatable",
           "dplyr tbl in memory",
-          "dplyr in memory no grouped filter",
-          "dplyr from memory to db and back")
+          "dplyr in memory no grouped filter")
 colormap = runs := c(highlightcolor,
                      highlightcolor,
-                     highlightcolor,
-                     highlightcolor,
+                     backgroundcolor,
                      backgroundcolor)
 
 tr <- timings[timings$expr %in% runs, , drop=FALSE]
@@ -58,19 +65,17 @@ plotbenchmark(tr, colormap,
 
 ``` r
 runs <- c("data.table in memory", 
-          "rquery in memory",
-          "rquery database count",
+          "rqdatatable",
+          "rquery database roundtrip",
           "rquery database land",
           "dplyr tbl in memory",
           "dplyr in memory no grouped filter",
           "dplyr from memory to db and back",
-          "dplyr database count",
           "dplyr database land")
 colormap = runs := c(greycolor,
                      greycolor,
                      highlightcolor,
                      highlightcolor,
-                     greycolor,
                      greycolor,
                      greycolor,
                      highlightcolor,
@@ -84,27 +89,3 @@ plotbenchmark(tr, colormap,
 ```
 
 ![](plotexample_files/figure-markdown_github/unnamed-chunk-1-2.png)
-
-``` r
-followups <- c("rquery in memory",
-               "rquery from db to memory", 
-               "rquery database land", 
-               "rquery database count", 
-               "dplyr from memory to db and back",
-               "dplyr from db to memory",
-               "dplyr database land",
-               "dplyr database count")
-colormap = followups := c(greycolor,
-                          backgroundcolor,
-                          highlightcolor,
-                          reruncolor,
-                          greycolor,
-                          backgroundcolor,
-                          highlightcolor,
-                          reruncolor)
-tf <- timings[timings$expr %in% followups, , drop=FALSE]
-tf$expr <- factor(tf$expr, levels = rev(followups))
-plotbenchmark(tf, colormap, "Breakdown of Database Transport Costs")
-```
-
-![](plotexample_files/figure-markdown_github/unnamed-chunk-1-3.png)
