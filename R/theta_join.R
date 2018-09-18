@@ -87,6 +87,7 @@ theta_join_se <- function(a, b,
                           jointype = 'INNER',
                           suffix = c("_a", "_b"),
                           env = parent.frame()) {
+  force(env)
   UseMethod("theta_join_se", a)
 }
 
@@ -97,6 +98,7 @@ theta_join_se.relop <- function(a, b,
                                 jointype = 'INNER',
                                 suffix = c("_a", "_b"),
                                 env = parent.frame()) {
+  force(env)
   if(length(list(...))>0) {
     stop("rquery::theta_join_se unexpected arguments")
   }
@@ -135,6 +137,7 @@ theta_join_se.data.frame <- function(a, b,
                                      jointype = 'INNER',
                                      suffix = c("_a", "_b"),
                                      env = parent.frame()) {
+  force(env)
   if(length(list(...))>0) {
     stop("rquery::theta_join_se unexpected arguments")
   }
@@ -196,6 +199,7 @@ theta_join_nse <- function(a, b,
                            jointype = 'INNER',
                            suffix = c("_a", "_b"),
                            env = parent.frame()) {
+  force(env)
   UseMethod("theta_join_nse", a)
 }
 
@@ -207,6 +211,7 @@ theta_join_nse.relop <- function(a, b,
                                  jointype = 'INNER',
                                  suffix = c("_a", "_b"),
                                  env = parent.frame()) {
+  force(env)
   exprq <- substitute(expr)
   if(!("relop" %in% class(b))) {
     stop("rquery::theta_join_nse.relop b must also be of class relop")
@@ -242,6 +247,7 @@ theta_join_nse.data.frame <- function(a, b,
                                       jointype = 'INNER',
                                       suffix = c("_a", "_b"),
                                       env = parent.frame()) {
+  force(env)
   exprq <- substitute(expr)
   if(!is.data.frame(b)) {
     stop("rquery::theta_join_nse.data.frame b must also be a data.frame")

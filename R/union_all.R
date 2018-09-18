@@ -28,6 +28,7 @@
 #'
 unionall <- function(sources,
                      env = parent.frame()) {
+  force(env)
   if((!is.list(sources))||(length(sources)<2)) {
     stop("rquery::unionall sources must be a list of length at least 2")
   }

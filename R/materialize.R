@@ -458,6 +458,7 @@ execute <- function(source,
                     allow_executor = TRUE,
                     temp_source = mk_tmp_name_source('rquery_ex'),
                     env = parent.frame()) {
+  force(env)
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::execute")
   if(!("relop" %in% class(optree))) {
     stop("rquery::execute expect optree to be of class relop")

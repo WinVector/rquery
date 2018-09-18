@@ -41,6 +41,7 @@
 affine_transform <- function(source, linear_transform, offset,
                              ...,
                              env = parent.frame()) {
+  force(env)
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::affine_transform")
   linear_transform_name <- substitute(linear_transform)

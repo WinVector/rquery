@@ -86,6 +86,7 @@ sql_node <- function(source, exprs,
                      mods = NULL,
                      orig_columns = TRUE,
                      env = parent.frame()) {
+  force(env)
   wrapr::stop_if_dot_args(substitute(list(...)), "sql_node")
   UseMethod("sql_node", source)
 }
@@ -96,6 +97,7 @@ sql_node.relop <- function(source, exprs,
                            mods = NULL,
                            orig_columns = TRUE,
                            env = parent.frame()) {
+  force(env)
   wrapr::stop_if_dot_args(substitute(list(...)), "sql_node.relop")
   names_used <- Filter(is.name, unlist(exprs,
                                        recursive = TRUE,
@@ -132,6 +134,7 @@ sql_node.data.frame <- function(source, exprs,
                                 mods = NULL,
                                 orig_columns = TRUE,
                                 env = parent.frame()) {
+  force(env)
   wrapr::stop_if_dot_args(substitute(list(...)), "sql_node.data.frame")
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- mk_td(tmp_name, colnames(source))

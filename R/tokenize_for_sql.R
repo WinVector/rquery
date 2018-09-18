@@ -391,6 +391,7 @@ tokenize_for_SQL_r <- function(lexpr,
 tokenize_for_SQL <- function(lexpr,
                              colnames,
                              env = parent.frame()) {
+  force(env)
   p <- tokenize_for_SQL_r(lexpr = lexpr,
                           colnames = colnames,
                           env = env)

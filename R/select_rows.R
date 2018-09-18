@@ -23,12 +23,14 @@
 #'
 select_rows_se <- function(source, expr,
                            env = parent.frame()) {
+  force(env)
   UseMethod("select_rows_se", source)
 }
 
 #' @export
 select_rows_se.relop <- function(source, expr,
                                  env = parent.frame()) {
+  force(env)
   have <- column_names(source)
   parsed <- parse_se(source, expr, env = env,
                      check_names = FALSE)
@@ -47,6 +49,7 @@ select_rows_se.relop <- function(source, expr,
 #' @export
 select_rows_se.data.frame <- function(source, expr,
                                       env = parent.frame()) {
+  force(env)
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- mk_td(tmp_name, colnames(source))
   enode <- select_rows_se(dnode, expr,
@@ -82,12 +85,14 @@ select_rows_se.data.frame <- function(source, expr,
 #'
 select_rows_nse <- function(source, expr,
                             env = parent.frame()) {
+  force(env)
   UseMethod("select_rows_nse", source)
 }
 
 #' @export
 select_rows_nse.relop <- function(source, expr,
                             env = parent.frame()) {
+  force(env)
   exprq <- substitute(expr)
   have <- column_names(source)
   parsed <- parse_nse(source, list(exprq), env = env,
@@ -107,6 +112,7 @@ select_rows_nse.relop <- function(source, expr,
 #' @export
 select_rows_nse.data.frame <- function(source, expr,
                             env = parent.frame()) {
+  force(env)
   exprq <- substitute(expr)
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- mk_td(tmp_name, colnames(source))

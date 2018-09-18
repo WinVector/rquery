@@ -78,6 +78,7 @@ rquery_apply_to_data_frame <- function(d,
                                        source_limit = NULL,
                                        allow_executor = TRUE,
                                        env = parent.frame()) {
+  force(env)
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::rquery_apply_to_data_frame")
   if(!("relop" %in% class(optree))) {
     stop("rquery::rquery_apply_to_data_frame expect optree to be of class relop")

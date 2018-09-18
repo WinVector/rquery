@@ -40,6 +40,7 @@ non_sql_node <- function(source,
                          temporary = TRUE,
                          env = parent.frame()) {
   wrapr::stop_if_dot_args(substitute(list(...)), "non_sql_node")
+  force(env)
   UseMethod("non_sql_node", source)
 }
 
@@ -57,6 +58,7 @@ non_sql_node.relop <- function(source,
                                temporary = TRUE,
                                env = parent.frame()) {
   wrapr::stop_if_dot_args(substitute(list(...)), "non_sql_node.relop")
+  force(env)
   if(is.null(f_db)) {
     if(incoming_table_name!=outgoing_table_name) {
       stop("non_sql_node.relop: must have incoming_table_name==outgoing_table_name when f_db is NULL")
@@ -96,6 +98,7 @@ non_sql_node.data.frame <- function(source,
                                     temporary = TRUE,
                                     env = parent.frame()) {
   wrapr::stop_if_dot_args(substitute(list(...)), "non_sql_node.data.frame")
+  force(env)
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- mk_td(tmp_name, colnames(source))
   enode <- non_sql_node(source,

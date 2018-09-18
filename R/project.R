@@ -89,6 +89,7 @@ project_impl <- function(source, ...,
 #'
 project_se <- function(source, groupby, assignments,
                        env = parent.frame()) {
+  force(env)
   UseMethod("project_se", source)
 }
 
@@ -99,6 +100,7 @@ aggregate_se <- project_se
 #' @export
 project_se.relop <- function(source, groupby, assignments,
                              env = parent.frame()) {
+  force(env)
   parsed <- parse_se(source, assignments, env = env)
   project_impl(source, groupby = groupby, parsed = parsed)
 }
@@ -106,6 +108,7 @@ project_se.relop <- function(source, groupby, assignments,
 #' @export
 project_se.data.frame <- function(source, groupby, assignments,
                                   env = parent.frame()) {
+  force(env)
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- mk_td(tmp_name, colnames(source))
   enode <- project_se(dnode, groupby, assignments,
@@ -158,6 +161,7 @@ project_se.data.frame <- function(source, groupby, assignments,
 #'
 project_nse <- function(source, groupby, ...,
                         env = parent.frame()) {
+  force(env)
   UseMethod("project_nse", source)
 }
 
@@ -168,6 +172,7 @@ aggregate_nse <- project_nse
 #' @export
 project_nse.relop <- function(source, groupby, ...,
                               env = parent.frame()) {
+  force(env)
   # Recommend way to caputre ... unevalauted from
   # http://adv-r.had.co.nz/Computing-on-the-language.html#substitute "Capturing unevaluated ..."
   exprs <-  eval(substitute(alist(...)))
@@ -178,6 +183,7 @@ project_nse.relop <- function(source, groupby, ...,
 #' @export
 project_nse.data.frame <- function(source, groupby, ...,
                                    env = parent.frame()) {
+  force(env)
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- mk_td(tmp_name, colnames(source))
   enode <- project_nse(dnode, groupby, ...,

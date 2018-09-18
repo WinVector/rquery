@@ -149,6 +149,7 @@ extend_se <- function(source, assignments,
                       reverse = NULL,
                       display_form = NULL,
                       env = parent.frame()) {
+  force(env)
   UseMethod("extend_se", source)
 }
 
@@ -160,6 +161,7 @@ extend_se.relop <- function(source, assignments,
                             reverse = NULL,
                             display_form = NULL,
                             env = parent.frame()) {
+  force(env)
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::extend_se.relop")
   if(length(setdiff(reverse, orderby))>0) {
@@ -182,6 +184,7 @@ extend_se.data.frame <- function(source, assignments,
                                  reverse = NULL,
                                  display_form = NULL,
                                  env = parent.frame()) {
+  force(env)
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::extend_se.data.frame")
   if(length(setdiff(reverse, orderby))>0) {
@@ -240,6 +243,7 @@ extend_nse <- function(source,
                        reverse = NULL,
                        display_form = NULL,
                        env = parent.frame()) {
+  force(env)
   UseMethod("extend_nse", source)
 }
 
@@ -252,6 +256,7 @@ extend_nse.relop <- function(source,
                              reverse = NULL,
                              display_form = NULL,
                              env = parent.frame()) {
+  force(env)
   # Recommend way to caputre ... unevalauted from
   # http://adv-r.had.co.nz/Computing-on-the-language.html#substitute "Capturing unevaluated ..."
   exprs <-  eval(substitute(alist(...)))
@@ -276,6 +281,7 @@ extend_nse.data.frame <- function(source,
                                   reverse = NULL,
                                   display_form = NULL,
                                   env = parent.frame()) {
+  force(env)
   if(length(setdiff(reverse, orderby))>0) {
     stop("rquery::extend_nse.data.frame all reverse columns must also be orderby columns")
   }

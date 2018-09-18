@@ -194,6 +194,7 @@ if_else_op <- function(source,
                        thenexprs = NULL,
                        elseexprs = NULL,
                        env = parent.frame()) {
+  force(env)
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::if_else_op")
   steps <- if_else_block(testexpr = testexpr,

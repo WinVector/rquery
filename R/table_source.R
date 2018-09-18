@@ -150,6 +150,7 @@ local_td <- function(d,
                      name = NULL,
                      name_source = wrapr::mk_tmp_name_source("rqltd"),
                      env = parent.frame()) {
+  force(env)
   UseMethod("local_td")
 }
 
@@ -159,6 +160,7 @@ local_td.data.frame <- function(d,
                                 name = NULL,
                                 name_source = wrapr::mk_tmp_name_source("rqltd"),
                                 env = parent.frame()) {
+  force(env)
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::local_td.data.frame")
   table_name <- name
@@ -179,6 +181,7 @@ local_td.character <- function(d,
                                ...,
                                name_source = wrapr::mk_tmp_name_source("rqltd"),
                                env = parent.frame()) {
+  force(env)
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::local_td.character")
   table_name <- d
@@ -196,6 +199,7 @@ local_td.name <- function(d,
                           ...,
                           name_source = wrapr::mk_tmp_name_source("rqltd"),
                           env = parent.frame()) {
+  force(env)
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::local_td.name")
   table_name <- as.character(d)

@@ -42,6 +42,7 @@ orderby <- function(source,
                     reverse = NULL,
                     limit = NULL,
                     env = parent.frame()) {
+  force(env)
   UseMethod("orderby", source)
 }
 
@@ -52,6 +53,7 @@ orderby.relop <- function(source,
                     reverse = NULL,
                     limit = NULL,
                     env = parent.frame()) {
+  force(env)
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::orderby.relop")
   if(length(setdiff(reverse, cols))>0) {
@@ -76,6 +78,7 @@ orderby.data.frame <- function(source,
                     reverse = NULL,
                     limit = NULL,
                     env = parent.frame()) {
+  force(env)
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::orderby.data.frame")
   if(length(setdiff(reverse, cols))>0) {

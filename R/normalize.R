@@ -40,6 +40,7 @@ normalize_cols <- function(source,
                            ...,
                            partitionby = NULL,
                            env = parent.frame()) {
+  force(env)
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::normalize_cols")
   assignments <- lapply(columns,

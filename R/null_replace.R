@@ -37,6 +37,7 @@ null_replace <- function(src,
                          ...,
                          note_col = NULL,
                          env = parent.frame()) {
+  force(env)
   UseMethod("null_replace", src)
 }
 
@@ -47,6 +48,7 @@ null_replace.relop <- function(src,
                                ...,
                                note_col = NULL,
                                env = parent.frame()) {
+  force(env)
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::null_replace.relop")
   if(length(sort(unique(cols)))!=length(cols)) {
     stop("rquery::null_replace.relop bad cols argument")
@@ -84,6 +86,7 @@ null_replace.data.frame <- function(src,
                                     ...,
                                     note_col = NULL,
                                     env = parent.frame()) {
+  force(env)
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::null_replace.data.frame")
   nmgen <- mk_tmp_name_source("rquery_tmp")
   tmp_namea <- nmgen()

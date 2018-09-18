@@ -48,6 +48,7 @@
 #'
 assign_slice <- function(source, testexpr, columns, value,
                          env = parent.frame()) {
+  force(env)
   if((!is.character(columns)) || (length(columns)<1)) {
     stop("rquery::assign_slice columns should be a non-empty character vector")
   }

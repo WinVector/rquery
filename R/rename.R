@@ -24,12 +24,14 @@
 #'
 rename_columns <- function(source, cmap,
                            env = parent.frame()) {
+  force(env)
   UseMethod("rename_columns", source)
 }
 
 #' @export
 rename_columns.relop <- function(source, cmap,
                                  env = parent.frame()) {
+  force(env)
   if(length(cmap)<=0) {
     stop("rquery::rename_columns must rename at least 1 column")
   }
@@ -59,6 +61,7 @@ rename_columns.relop <- function(source, cmap,
 #' @export
 rename_columns.data.frame <- function(source, cmap,
                                       env = parent.frame()) {
+  force(env)
   if(length(cmap)<=0) {
     stop("rquery::rename_columns must rename at least 1 column")
   }

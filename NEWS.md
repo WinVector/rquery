@@ -1,4 +1,8 @@
 
+# rquery 1.0.1 2018/09/18
+
+ * Force parent.frame()
+
 # rquery 1.0.0 2018/09/10
 
  * Fix key_inspector_postgresql quoting issue. 

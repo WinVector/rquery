@@ -51,6 +51,7 @@ pick_top_k <- function(source,
                        order_column = "row_number",
                        keep_order_column = TRUE,
                        env = parent.frame()) {
+  force(env)
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::pick_top_k")
   if(length(setdiff(reverse, orderby))>0) {
