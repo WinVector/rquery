@@ -128,12 +128,11 @@ column_pick <- function(source,
                      f_df = f_df,
                      incoming_table_name = incoming_table_name,
                      outgoing_table_name = outgoing_table_name,
-                     columns_produced = c(src_cols, result),
+                     columns_produced = result,
                      display_form = paste0("column_pick(.; ",
                                            pick,
                                            ", ", result,
                                            ")"),
-                     pass_using = TRUE,
                      orig_columns = TRUE,
                      temporary = temporary)
   nd

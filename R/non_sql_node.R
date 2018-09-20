@@ -17,7 +17,6 @@
 #' @param outgoing_table_name character, name of produced table
 #' @param columns_produced character, names of additional columns produced
 #' @param display_form character, how to print node
-#' @param pass_using logical, if TRUE (or if f_db is NULL) pass using column calculations through (else assume using all columns).
 #' @param orig_columns logical if TRUE select all original columns.
 #' @param temporary logical, if TRUE mark tables temporary.
 #' @param env environment to look to.
@@ -35,7 +34,6 @@ non_sql_node <- function(source,
                          outgoing_table_name,
                          columns_produced,
                          display_form,
-                         pass_using = FALSE,
                          orig_columns = TRUE,
                          temporary = TRUE,
                          env = parent.frame()) {
@@ -53,7 +51,6 @@ non_sql_node.relop <- function(source,
                                outgoing_table_name,
                                columns_produced,
                                display_form,
-                               pass_using = FALSE,
                                orig_columns = TRUE,
                                temporary = TRUE,
                                env = parent.frame()) {
@@ -68,17 +65,18 @@ non_sql_node.relop <- function(source,
       stop("non_sql_node.relop: must have incoming_table_name!=outgoing_table_name when f_db is not NULL")
     }
   }
+  src_cols <- column_names(source)
   r <- list(source = list(source),
             table_name = outgoing_table_name,
             f_db = f_db,
             f_df = f_df,
-            pass_using = pass_using || is.null(f_db),
             incoming_table_name = incoming_table_name,
             outgoing_table_name = outgoing_table_name,
             columns_produced = columns_produced,
             display_form = display_form,
             orig_columns = orig_columns,
             overwrite = TRUE,
+            src_cols = src_cols,
             temporary = temporary)
   r <- relop_decorate("relop_non_sql", r)
   r
@@ -93,7 +91,6 @@ non_sql_node.data.frame <- function(source,
                                     outgoing_table_name,
                                     columns_produced,
                                     display_form,
-                                    pass_using = FALSE,
                                     orig_columns = TRUE,
                                     temporary = TRUE,
                                     env = parent.frame()) {
@@ -108,7 +105,6 @@ non_sql_node.data.frame <- function(source,
                         outgoing_table_name = outgoing_table_name,
                         columns_produced = columns_produced,
                         display_form = display_form,
-                        pass_using = pass_using,
                         orig_columns = orig_columns,
                         temporary = temporary,
                         env = env)
@@ -140,12 +136,7 @@ format_node.relop_non_sql <- function(node) {
 #' @export
 columns_used.relop_non_sql <- function (x, ...,
                                         using = NULL) {
-  usingQ <- NULL
-  if(x$pass_using) {
-    usingQ <- using
-  }
-  return(columns_used(x$source[[1]],
-                      using = usingQ))
+  column_names(x$source[[1]])
 }
 
 
@@ -159,17 +150,13 @@ to_sql.relop_non_sql <- function (x,
                                   tnum = mk_tmp_name_source('tsql'),
                                   append_cr = TRUE,
                                   using = NULL) {
-  usingQ <- NULL
-  if(x$pass_using) {
-    usingQ <- using
-  }
   subsql <- to_sql(x$source[[1]],
                     db = db,
                     source_limit = source_limit,
                     indent_level = indent_level + 1,
                     tnum = tnum,
                     append_cr = append_cr,
-                    using = usingQ)
+                    using = NULL)
   nsubsql <- length(subsql)
   # non-SQL nodes must always be surrounded by SQL on both sides
   step1 <- materialize_sql_statement(db,
@@ -194,7 +181,7 @@ to_sql.relop_non_sql <- function (x,
                        indent_level = indent_level + 1,
                        tnum = tnum,
                        append_cr = append_cr,
-                       using = usingQ))
+                       using = NULL))
   c(subsql[-length(subsql)], step1, step2, step3)
 }
 

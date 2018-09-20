@@ -139,8 +139,7 @@ so can be expensive and should be used sparingly.</p>
 
     <pre class="usage"><span class='fu'>non_sql_node</span>(<span class='no'>source</span>, <span class='no'>...</span>, <span class='no'>f_db</span>, <span class='kw'>f_df</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>incoming_table_name</span>,
   <span class='no'>outgoing_table_name</span>, <span class='no'>columns_produced</span>, <span class='no'>display_form</span>,
-  <span class='kw'>pass_using</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>orig_columns</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
+  <span class='kw'>orig_columns</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -176,10 +175,6 @@ so can be expensive and should be used sparingly.</p>
     <tr>
       <th>display_form</th>
       <td><p>character, how to print node</p></td>
-    </tr>
-    <tr>
-      <th>pass_using</th>
-      <td><p>logical, if TRUE (or if f_db is NULL) pass using column calculations through (else assume using all columns).</p></td>
     </tr>
     <tr>
       <th>orig_columns</th>
