@@ -20,7 +20,7 @@
 #'
 #' # library("rqdatatable")
 #' # df %.>%
-#' #   column_pick(., "choice", "derived")
+#' #   lookup_by_column(., "choice", "derived")
 #'
 #' if (requireNamespace("DBI", quietly = TRUE) &&
 #'     requireNamespace("RSQLite", quietly = TRUE)) {
@@ -32,7 +32,7 @@
 #'                    temporary = TRUE)
 #'
 #'   ops <- dr %.>%
-#'     column_pick(., "choice", "derived")
+#'     lookup_by_column(., "choice", "derived")
 #'   cat(format(ops))
 #'
 #'   execute(db, ops) %.>%
@@ -44,25 +44,25 @@
 #'
 #' @export
 #'
-column_pick <- function(source,
+lookup_by_column <- function(source,
                         pick,
                         result,
                         ...,
                         tmp_name_source = wrapr::mk_tmp_name_source("qn"),
                         temporary = TRUE) {
-  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::column_pick.relop")
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::lookup_by_column.relop")
   src_cols <- column_names(source)
   if((!is.character(pick)) || (length(pick)!=1)) {
-    stop("rquery::column_pick pick must a string")
+    stop("rquery::lookup_by_column pick must a string")
   }
   if(!(pick %in% src_cols)) {
-    stop("rquery::column_pick pick must be a source column")
+    stop("rquery::lookup_by_column pick must be a source column")
   }
   if((!is.character(result)) || (length(result)!=1)) {
-    stop("rquery::column_pick result must a string")
+    stop("rquery::lookup_by_column result must a string")
   }
   if(result %in% src_cols) {
-    stop("rquery::column_pick result must not be a source column")
+    stop("rquery::lookup_by_column result must not be a source column")
   }
   force(temporary)
   incoming_table_name = tmp_name_source()
@@ -129,7 +129,7 @@ column_pick <- function(source,
                      incoming_table_name = incoming_table_name,
                      outgoing_table_name = outgoing_table_name,
                      columns_produced = result,
-                     display_form = paste0("column_pick(.; ",
+                     display_form = paste0("lookup_by_column(.; ",
                                            pick,
                                            ", ", result,
                                            ")"),

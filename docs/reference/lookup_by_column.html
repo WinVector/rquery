@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Use one column to pick values from other columns. — column_pick • rquery</title>
+<title>Use one column to pick values from other columns. — lookup_by_column • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -30,7 +30,7 @@
 
 
 
-<meta property="og:title" content="Use one column to pick values from other columns. — column_pick" />
+<meta property="og:title" content="Use one column to pick values from other columns. — lookup_by_column" />
 
 <meta property="og:description" content="The pick column selects values from the columns it names (per-row)." />
 <meta name="twitter:card" content="summary" />
@@ -119,8 +119,8 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Use one column to pick values from other columns.</h1>
-    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/column_pick.R'><code>R/column_pick.R</code></a></small>
-    <div class="hidden name"><code>column_pick.Rd</code></div>
+    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/lookup_by_column.R'><code>R/lookup_by_column.R</code></a></small>
+    <div class="hidden name"><code>lookup_by_column.Rd</code></div>
     </div>
 
     <div class="ref-description">
@@ -129,7 +129,7 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>column_pick</span>(<span class='no'>source</span>, <span class='no'>pick</span>, <span class='no'>result</span>, <span class='no'>...</span>,
+    <pre class="usage"><span class='fu'>lookup_by_column</span>(<span class='no'>source</span>, <span class='no'>pick</span>, <span class='no'>result</span>, <span class='no'>...</span>,
   <span class='kw'>tmp_name_source</span> <span class='kw'>=</span> <span class='kw pkg'>wrapr</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/wrapr/topics/mk_tmp_name_source'>mk_tmp_name_source</a></span>(<span class='st'>"qn"</span>), <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -175,7 +175,7 @@
 
 <span class='co'># library("rqdatatable")</span>
 <span class='co'># df %.&gt;%</span>
-<span class='co'>#   column_pick(., "choice", "derived")</span>
+<span class='co'>#   lookup_by_column(., "choice", "derived")</span>
 
 <span class='kw'>if</span> (<span class='fu'>requireNamespace</span>(<span class='st'>"DBI"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>&amp;&amp;</span>
     <span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
@@ -187,7 +187,7 @@
                    <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 
   <span class='no'>ops</span> <span class='kw'>&lt;-</span> <span class='no'>dr</span> <span class='kw'>%.&gt;%</span>
-    <span class='fu'>column_pick</span>(<span class='no'>.</span>, <span class='st'>"choice"</span>, <span class='st'>"derived"</span>)
+    <span class='fu'>lookup_by_column</span>(<span class='no'>.</span>, <span class='st'>"choice"</span>, <span class='st'>"derived"</span>)
   <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>ops</span>))
 
   <span class='fu'><a href='execute.html'>execute</a></span>(<span class='no'>db</span>, <span class='no'>ops</span>) <span class='kw'>%.&gt;%</span>
@@ -198,7 +198,7 @@
 #&gt;   x,
 #&gt;   y,
 #&gt;   choice) %.&gt;%
-#&gt;  non_sql_node(., column_pick(.; choice, derived))
+#&gt;  non_sql_node(., lookup_by_column(.; choice, derived))
 #&gt;   derived x y choice
 #&gt; 1       1 1 5      x
 #&gt; 2       6 2 6      y
