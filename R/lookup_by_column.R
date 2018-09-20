@@ -8,8 +8,8 @@
 #' @param result character scalar, name of column to place values in.
 #' @param ... force later arguments to be bound by name
 #' @param tmp_name_source wrapr::mk_tmp_name_source(), temporary name generator.
-#' @param temporary logical, if TRUE use temporary tables
-#' @return derived column result
+#' @param temporary logical, if TRUE use temporary tables.
+#' @param f_dt_factory optional signature f_dt_factory(pick, result) returns function with signature f_dt(d) where d is a data.table.  The point is the function must come from a data.table enabled package. Please see \code{rqdatatable::make_dt_lookup_by_column} for an example.
 #'
 #' @examples
 #'
@@ -45,11 +45,12 @@
 #' @export
 #'
 lookup_by_column <- function(source,
-                        pick,
-                        result,
-                        ...,
-                        tmp_name_source = wrapr::mk_tmp_name_source("qn"),
-                        temporary = TRUE) {
+                             pick,
+                             result,
+                             ...,
+                             tmp_name_source = wrapr::mk_tmp_name_source("qn"),
+                             temporary = TRUE,
+                             f_dt_factory = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::lookup_by_column.relop")
   src_cols <- column_names(source)
   if((!is.character(pick)) || (length(pick)!=1)) {
@@ -65,6 +66,10 @@ lookup_by_column <- function(source,
     stop("rquery::lookup_by_column result must not be a source column")
   }
   force(temporary)
+  f_dt <- NULL
+  if(!is.null(f_dt_factory)) {
+    f_dt <- f_dt_factory(pick, result)
+  }
   incoming_table_name = tmp_name_source()
   outgoing_table_name = tmp_name_source()
   f_db <- function(db,
@@ -126,6 +131,7 @@ lookup_by_column <- function(source,
   nd <- non_sql_node(source,
                      f_db = f_db,
                      f_df = f_df,
+                     f_dt = f_dt,
                      incoming_table_name = incoming_table_name,
                      outgoing_table_name = outgoing_table_name,
                      columns_produced = result,

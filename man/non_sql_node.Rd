@@ -4,8 +4,8 @@
 \alias{non_sql_node}
 \title{Wrap a non-SQL node.}
 \usage{
-non_sql_node(source, ..., f_db, f_df = NULL, incoming_table_name,
-  outgoing_table_name, columns_produced, display_form,
+non_sql_node(source, ..., f_db, f_df = NULL, f_dt = NULL,
+  incoming_table_name, outgoing_table_name, columns_produced, display_form,
   orig_columns = TRUE, temporary = TRUE, env = parent.frame())
 }
 \arguments{
@@ -16,6 +16,8 @@ non_sql_node(source, ..., f_db, f_df = NULL, incoming_table_name,
 \item{f_db}{database implementation signature: f_db(db, incoming_table_name, outgoing_table_name) (db being a database handle)}
 
 \item{f_df}{data.frame implementation signature: f_df(data.frame) (NULL defaults to taking from database).}
+
+\item{f_dt}{data.table implementation signature: f_dt(data.table) (NULL defaults f_df).}
 
 \item{incoming_table_name}{character, name of incoming table}
 

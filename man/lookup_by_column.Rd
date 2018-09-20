@@ -5,7 +5,8 @@
 \title{Use one column to pick values from other columns.}
 \usage{
 lookup_by_column(source, pick, result, ...,
-  tmp_name_source = wrapr::mk_tmp_name_source("qn"), temporary = TRUE)
+  tmp_name_source = wrapr::mk_tmp_name_source("qn"), temporary = TRUE,
+  f_dt_factory = NULL)
 }
 \arguments{
 \item{source}{source to select from (relop or data.frame).}
@@ -18,10 +19,9 @@ lookup_by_column(source, pick, result, ...,
 
 \item{tmp_name_source}{wrapr::mk_tmp_name_source(), temporary name generator.}
 
-\item{temporary}{logical, if TRUE use temporary tables}
-}
-\value{
-derived column result
+\item{temporary}{logical, if TRUE use temporary tables.}
+
+\item{f_dt_factory}{optional signature f_dt_factory(pick, result) returns function with signature f_dt(d) where d is a data.table.  The point is the function must come from a data.table enabled package. Please see \code{rqdatatable::make_dt_lookup_by_column} for an example.}
 }
 \description{
 The \code{pick} column selects values from the columns it names (per-row).
