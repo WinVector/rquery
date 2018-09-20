@@ -21,7 +21,7 @@
 #' @param orig_columns logical if TRUE select all original columns.
 #' @param temporary logical, if TRUE mark tables temporary.
 #' @param env environment to look to.
-#' @return sql node.
+#' @return non-sql node.
 #'
 #' @seealso \code{\link{rsummary_node}}, \code{\link{quantile_node}}, \code{\link{materialize_node}}
 #'
@@ -101,7 +101,7 @@ non_sql_node.data.frame <- function(source,
   force(env)
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- mk_td(tmp_name, colnames(source))
-  enode <- non_sql_node(source,
+  enode <- non_sql_node(dnode,
                         f_db = f_db,
                         f_df = f_df,
                         incoming_table_name = incoming_table_name,
@@ -123,7 +123,7 @@ column_names.relop_non_sql <- function (x, ...) {
   wrapr::stop_if_dot_args(substitute(list(...)), "column_names.relop_non_sql")
   nms <- x$columns_produced
   if(x$orig_columns) {
-    nms <- c(nms, column_names(x$source[[1]]))
+    nms <- c(nms, setdiff(column_names(x$source[[1]]), nms))
   }
   nms
 }

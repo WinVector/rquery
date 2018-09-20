@@ -62,7 +62,8 @@ summarize_columns <- function(db, tableName,
 #'
 #' @examples
 #'
-#' if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
+#' if (requireNamespace("DBI", quietly = TRUE) &&
+#'   requireNamespace("RSQLite", quietly = TRUE)) {
 #'   d <- data.frame(p= c(TRUE, FALSE, NA),
 #'                   s= NA,
 #'                   w= 1:3,

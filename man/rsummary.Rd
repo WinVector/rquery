@@ -32,7 +32,8 @@ For numeric columns includes \code{NaN} in \code{nna} count (as is typical for \
 }
 \examples{
 
-if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
+if (requireNamespace("DBI", quietly = TRUE) &&
+  requireNamespace("RSQLite", quietly = TRUE)) {
   d <- data.frame(p= c(TRUE, FALSE, NA),
                   s= NA,
                   w= 1:3,

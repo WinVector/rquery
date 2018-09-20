@@ -35,7 +35,7 @@ non_sql_node(source, ..., f_db, f_df = NULL, incoming_table_name,
 \item{env}{environment to look to.}
 }
 \value{
-sql node.
+non-sql node.
 }
 \description{
 Note: non-SQL nodes are allowed to delete/overwrite both
