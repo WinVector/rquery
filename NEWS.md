@@ -1,7 +1,9 @@
 
-# rquery 1.0.1 2018/09/19
+# rquery 1.1.0 2018/09/20
 
- * Force parent.frame()
+ * Altrenate data.table implementation path.
+ * lookup_by_column().
+ * Force parent.frame().
 
 # rquery 1.0.0 2018/09/10
 
