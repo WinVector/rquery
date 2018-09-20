@@ -113,7 +113,9 @@ column_pick <- function(source,
   }
   f_df <- function(d) {
     d <- as.data.frame(d)
-    dtmp <- d[, unique(d[[pick]]), drop = FALSE]
+    dtmp <- d[,
+              intersect(colnames(d), unique(d[[pick]])),
+              drop = FALSE]
     d[[result]] <-
       dtmp[cbind(
         seq_len(nrow(dtmp)),
