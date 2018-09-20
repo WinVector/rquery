@@ -136,7 +136,8 @@ format_node.relop_non_sql <- function(node) {
 #' @export
 columns_used.relop_non_sql <- function (x, ...,
                                         using = NULL) {
-  column_names(x$source[[1]])
+  columns_used(x$source[[1]],
+               using = NULL)
 }
 
 
