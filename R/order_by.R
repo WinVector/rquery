@@ -89,7 +89,8 @@ orderby.data.frame <- function(source,
   enode <- orderby(dnode,
                    cols = cols,
                    reverse = reverse,
-                   limit = limit)
+                   limit = limit,
+                   env = env)
   rquery_apply_to_data_frame(source, enode, env = env)
 }
 

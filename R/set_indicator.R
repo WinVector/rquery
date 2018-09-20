@@ -120,7 +120,8 @@ set_indicator.data.frame <- function(source,
   enode <- set_indicator(source = dnode,
                          rescol = rescol,
                          testcol = testcol,
-                         testvalues = testvalues)
+                         testvalues = testvalues,
+                         env = env)
   rquery_apply_to_data_frame(source, enode, env = env)
 }
 

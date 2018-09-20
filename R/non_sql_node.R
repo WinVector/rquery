@@ -110,7 +110,8 @@ non_sql_node.data.frame <- function(source,
                         display_form = display_form,
                         pass_using = pass_using,
                         orig_columns = orig_columns,
-                        temporary = temporary)
+                        temporary = temporary,
+                        env = env)
   rquery_apply_to_data_frame(source, enode, env = env)
 }
 

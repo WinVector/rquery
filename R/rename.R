@@ -73,7 +73,7 @@ rename_columns.data.frame <- function(source, cmap,
   }
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- mk_td(tmp_name, colnames(source))
-  enode <- rename_columns(dnode, cmap)
+  enode <- rename_columns(dnode, cmap, env = env)
   rquery_apply_to_data_frame(source, enode, env = env)
 }
 

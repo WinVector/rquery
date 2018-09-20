@@ -117,7 +117,8 @@ natural_join.data.frame <- function(a, b,
   dnodeb <- mk_td(tmp_namea, colnames(b))
   enode <- natural_join(dnodea, dnodeb,
                         jointype = jointype,
-                        by = by)
+                        by = by,
+                        env = env)
   source <- list(a = a, b = b)
   names(source) <- c(tmp_namea, tmp_nameb)
   rquery_apply_to_data_frame(source, enode, env = env)

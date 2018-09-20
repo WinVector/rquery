@@ -140,7 +140,8 @@ sql_node.data.frame <- function(source, exprs,
   dnode <- mk_td(tmp_name, colnames(source))
   enode <- sql_node(dnode, exprs = exprs,
                     mods = mods,
-                    orig_columns = orig_columns)
+                    orig_columns = orig_columns,
+                    env = env)
   rquery_apply_to_data_frame(source, enode, env = env)
 }
 

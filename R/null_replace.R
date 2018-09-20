@@ -94,7 +94,8 @@ null_replace.data.frame <- function(src,
   enode <- null_replace(dnodea,
                         cols = cols,
                         value = value,
-                        note_col = note_col)
+                        note_col = note_col,
+                        env = env)
   rquery_apply_to_data_frame(source, enode, env = env)
 }
 

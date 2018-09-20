@@ -51,7 +51,7 @@ select_columns.data.frame <- function(source, columns, env = parent.frame()) {
   }
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- mk_td(tmp_name, colnames(source))
-  enode <- select_columns(dnode, columns)
+  enode <- select_columns(dnode, columns, env = env)
   rquery_apply_to_data_frame(source, enode, env = env)
 }
 
