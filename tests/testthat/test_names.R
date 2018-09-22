@@ -56,7 +56,7 @@ test_that("test_names: Works As Expected", {
   p <- hdl %.>%
     extend_nse(.,
                d2 = mpg)
-  expect_equal(qc(am, carb, cyl, d2, disp, drat, gear, hp, mpg, qsec, vs, wt),
-               column_names(p))
+  expect_equal(sort(qc(am, carb, cyl, d2, disp, drat, gear, hp, mpg, qsec, vs, wt)),
+               sort(column_names(p)))
   DBI::dbDisconnect(db)
 })

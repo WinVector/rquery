@@ -1,4 +1,8 @@
 
+# rquery 1.1.1 2018/09/21
+
+ * Start breaking up some recursive calls.
+
 # rquery 1.1.0 2018/09/20
 
  * Altrenate data.table implementation path.

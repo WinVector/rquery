@@ -38,14 +38,14 @@ extend_impl <- function(source, parsed,
   if(length(setdiff(reverse, orderby))>0) {
     stop("rquery::extend_imp all reverse columns must also be orderby columns")
   }
-  have <- column_names(source)
+  src_columns <- column_names(source)
   required_cols <- sort(unique(c(
     merge_fld(parsed, "symbols_used"),
     merge_fld(parsed, "free_symbols"),
     partitionby,
     orderby
   )))
-  check_have_cols(have, required_cols, "rquery::extend")
+  check_have_cols(src_columns, required_cols, "rquery::extend")
   assignments <- unpack_assignments(source, parsed)
   r <- list(source = list(source),
             table_name = NULL,
@@ -55,7 +55,8 @@ extend_impl <- function(source, parsed,
             reverse = reverse,
             assignments = assignments,
             required_cols = required_cols,
-            columns = names(assignments),
+            columns_produced = names(assignments),
+            src_columns = src_columns,
             display_form = display_form)
   r <- relop_decorate("relop_extend", r)
   r
@@ -302,7 +303,9 @@ extend_nse.data.frame <- function(source,
 column_names.relop_extend <- function (x, ...) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::column_names.relop_extend")
-  sort(unique(c(column_names(x$source[[1]]), x$columns)))
+  # cols <- sort(unique(c(column_names(x$source[[1]]), x$columns_produced)))
+  cols2 <- c(x$src_columns, setdiff(x$columns_produced, x$src_columns))
+  cols2
 }
 
 
