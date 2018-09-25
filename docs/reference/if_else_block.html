@@ -72,7 +72,7 @@ RPostgreSQL or sparklyr." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">1.1.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">1.1.1</span>
       </span>
     </div>
 
@@ -232,21 +232,16 @@ is a reserved column name for this procedure.</p>
   <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>q</span>))
 
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; $ifebtest_2
-#&gt; [1] "(a + b) &gt; 1"
-#&gt; 
-#&gt; $ifebtest_1
-#&gt; [1] "r &gt;= 0.5"
-#&gt; 
-#&gt; $a
-#&gt; [1] "ifelse( ifebtest_2, ifelse( ifebtest_1, 0, a), a)"
-#&gt; 
-#&gt; $b
-#&gt; [1] "ifelse( ifebtest_2, ifelse( !  ifebtest_1, 0, b), b)"
-#&gt; 
-#&gt; $edited
-#&gt; [1] "ifelse( ifebtest_2, 1, edited)"
-#&gt; 
+}</div><div class='output co'>#&gt;                                             ifebtest_2 
+#&gt;                                          "(a + b) &gt; 1" 
+#&gt;                                             ifebtest_1 
+#&gt;                                             "r &gt;= 0.5" 
+#&gt;                                                      a 
+#&gt;    "ifelse( ifebtest_2, ifelse( ifebtest_1, 0, a), a)" 
+#&gt;                                                      b 
+#&gt; "ifelse( ifebtest_2, ifelse( !  ifebtest_1, 0, b), b)" 
+#&gt;                                                 edited 
+#&gt;                       "ifelse( ifebtest_2, 1, edited)" 
 #&gt; table(`d`; 
 #&gt;   i,
 #&gt;   a,
@@ -262,9 +257,9 @@ is a reserved column name for this procedure.</p>
 #&gt;   edited := ifelse(ifebtest_2, 1, edited))
 #&gt; SELECT
 #&gt;  `i`,
-#&gt;  `ifebtest_1`,
-#&gt;  `ifebtest_2`,
 #&gt;  `r`,
+#&gt;  `ifebtest_2`,
+#&gt;  `ifebtest_1`,
 #&gt;  ( CASE WHEN ( `ifebtest_2` ) THEN ( ( CASE WHEN ( `ifebtest_1` ) THEN ( 0 ) WHEN NOT ( `ifebtest_1` ) THEN ( `a` ) ELSE NULL END ) ) WHEN NOT ( `ifebtest_2` ) THEN ( `a` ) ELSE NULL END )  AS `a`,
 #&gt;  ( CASE WHEN ( `ifebtest_2` ) THEN ( ( CASE WHEN ( ( NOT ( `ifebtest_1` ) ) ) THEN ( 0 ) WHEN NOT ( ( NOT ( `ifebtest_1` ) ) ) THEN ( `b` ) ELSE NULL END ) ) WHEN NOT ( `ifebtest_2` ) THEN ( `b` ) ELSE NULL END )  AS `b`,
 #&gt;  ( CASE WHEN ( `ifebtest_2` ) THEN ( 1 ) WHEN NOT ( `ifebtest_2` ) THEN ( `edited` ) ELSE NULL END )  AS `edited`
@@ -288,20 +283,20 @@ is a reserved column name for this procedure.</p>
 #&gt;    `d`
 #&gt;   ) tsql_84197068678211589630_0000000000
 #&gt;  ) tsql_84197068678211589630_0000000001
-#&gt;     i ifebtest_1 ifebtest_2         r a b edited
-#&gt; 1   1          1          0 0.9697919 0 0      0
-#&gt; 2   2          1          0 0.6485013 0 1      0
-#&gt; 3   3          1          0 0.9845655 1 0      0
-#&gt; 4   4          1          1 0.5361333 0 1      1
-#&gt; 5   5          1          1 0.7610594 0 1      1
-#&gt; 6   6          1          1 0.5643857 0 1      1
-#&gt; 7   7          1          1 0.7784543 0 1      1
-#&gt; 8   8          1          1 0.6390610 0 1      1
-#&gt; 9   9          0          1 0.3789607 1 0      1
-#&gt; 10 10          0          1 0.3595307 1 0      1
-#&gt;                    r1                  r2
-#&gt; 1 1495513697189937546 5352466951592212732
-#&gt; 2 4642571952473320095 3574510268273487895</div><div class='input'>
+#&gt;     i         r ifebtest_2 ifebtest_1 a b edited
+#&gt; 1   1 0.9697919          0          1 0 0      0
+#&gt; 2   2 0.6485013          0          1 0 1      0
+#&gt; 3   3 0.9845655          0          1 1 0      0
+#&gt; 4   4 0.5361333          1          1 0 1      1
+#&gt; 5   5 0.7610594          1          1 0 1      1
+#&gt; 6   6 0.5643857          1          1 0 1      1
+#&gt; 7   7 0.7784543          1          1 0 1      1
+#&gt; 8   8 0.6390610          1          1 0 1      1
+#&gt; 9   9 0.3789607          1          0 1 0      1
+#&gt; 10 10 0.3595307          1          0 1 0      1
+#&gt;                     r1                   r2
+#&gt; 1  -956241903461684043 -1413209699540939605
+#&gt; 2 -2486748765054030344  -462890478797380868</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

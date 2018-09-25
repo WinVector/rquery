@@ -61,7 +61,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">1.1.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">1.1.1</span>
       </span>
     </div>
 
@@ -205,9 +205,9 @@ is a reserved column name for this procedure.</p>
 #&gt;  drop_columns(.,
 #&gt;    ifebtest_1)
 #&gt; SELECT
+#&gt;  `i`,
 #&gt;  `a`,
 #&gt;  `b`,
-#&gt;  `i`,
 #&gt;  `r`
 #&gt; FROM (
 #&gt;  SELECT
@@ -233,17 +233,17 @@ is a reserved column name for this procedure.</p>
 #&gt;    ) tsql_78089537568529824711_0000000000
 #&gt;   ) tsql_78089537568529824711_0000000001
 #&gt; ) tsql_78089537568529824711_0000000002
-#&gt;    a b  i         r
-#&gt; 1  0 0  1 0.8056800
-#&gt; 2  0 1  2 0.8140513
-#&gt; 3  2 2  3 0.4039110
-#&gt; 4  2 2  4 0.2184310
-#&gt; 5  2 2  5 0.4183614
-#&gt; 6  1 1  6 0.6688707
-#&gt; 7  1 1  7 0.5076503
-#&gt; 8  1 1  8 0.6603593
-#&gt; 9  1 1  9 0.5117913
-#&gt; 10 1 1 10 0.8355524</div><div class='input'>
+#&gt;     i a b         r
+#&gt; 1   1 0 0 0.8056800
+#&gt; 2   2 0 1 0.8140513
+#&gt; 3   3 2 2 0.4039110
+#&gt; 4   4 2 2 0.2184310
+#&gt; 5   5 2 2 0.4183614
+#&gt; 6   6 1 1 0.6688707
+#&gt; 7   7 1 1 0.5076503
+#&gt; 8   8 1 1 0.6603593
+#&gt; 9   9 1 1 0.5117913
+#&gt; 10 10 1 1 0.8355524</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

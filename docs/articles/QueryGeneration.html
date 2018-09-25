@@ -29,7 +29,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">1.1.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">1.1.1</span>
       </span>
     </div>
 
@@ -88,7 +88,7 @@
       <h1>Query Generation</h1>
                         <h4 class="author">John Mount</h4>
             
-            <h4 class="date">2018-09-20</h4>
+            <h4 class="date">2018-09-25</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery//blob/master/vignettes/QueryGeneration.Rmd"><code>vignettes/QueryGeneration.Rmd</code></a></small>
       <div class="hidden name"><code>QueryGeneration.Rmd</code></div>
@@ -158,17 +158,17 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
    FROM (
     SELECT * FROM (
      SELECT
-      `count` AS `count`,
-      `probability` AS `probability`,
-      `rank` AS `rank`,
       `subjectID` AS `subjectID`,
-      `surveyCategory` AS `diagnosis`
+      `surveyCategory` AS `diagnosis`,
+      `probability` AS `probability`,
+      `count` AS `count`,
+      `rank` AS `rank`
      FROM (
       SELECT
-       `count`,
-       `probability`,
        `subjectID`,
        `surveyCategory`,
+       `probability`,
+       `count`,
        rank ( ) OVER (  PARTITION BY `subjectID` ORDER BY `probability`, `surveyCategory` ) AS `rank`
       FROM (
        SELECT
@@ -183,13 +183,13 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
          `assessmentTotal`
         FROM
          `d` LIMIT 1000
-        ) tsql_63285443675228368997_0000000000
-       ) tsql_63285443675228368997_0000000001
-     ) tsql_63285443675228368997_0000000002
-    ) tsql_63285443675228368997_0000000003
+        ) tsql_66778762260977900173_0000000000
+       ) tsql_66778762260977900173_0000000001
+     ) tsql_66778762260977900173_0000000002
+    ) tsql_66778762260977900173_0000000003
     WHERE `rank` = `count`
-   ) tsql_63285443675228368997_0000000004
-  ) tsql_63285443675228368997_0000000005 ORDER BY `subjectID`</code></pre>
+   ) tsql_66778762260977900173_0000000004
+  ) tsql_66778762260977900173_0000000005 ORDER BY `subjectID`</code></pre>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

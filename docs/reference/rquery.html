@@ -33,7 +33,7 @@
 <meta property="og:title" content="<code>rquery</code>: Relational Query Generator for Data Manipulation — rquery" />
 
 <meta property="og:description" content="rquery supplies a piped query generator based on Edgar F. Codd's relational
-algebra and operator names (plus experience using SQL at big data
+algebra and operator names (plus experience using SQL and dplyr at big data
 scale).  The design represents an attempt to make SQL more teachable by
 denoting composition a sequential pipeline notation instead of nested
 queries or functions.  Package features include: data processing trees
@@ -69,7 +69,7 @@ trees to in-memory data.frames." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">1.1.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">1.1.1</span>
       </span>
     </div>
 
@@ -134,7 +134,7 @@ trees to in-memory data.frames." />
     <div class="ref-description">
     
     <p><code>rquery</code> supplies a piped query generator based on Edgar F. Codd's relational
-algebra and operator names (plus experience using <code>SQL</code> at big data
+algebra and operator names (plus experience using <code>SQL</code> and <code>dplyr</code> at big data
 scale).  The design represents an attempt to make <code>SQL</code> more teachable by
 denoting composition a sequential pipeline notation instead of nested
 queries or functions.  Package features include: data processing trees
@@ -146,12 +146,25 @@ trees to in-memory data.frames.</p>
     </div>
 
         
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>Note: <code>rquery</code> is a "database first" design.  This means choices are made that
+favor database implementation. These include: capturing the entire calculation prior
+to doing any work (and using recursive methods to inspect this object, which can limit
+the calculation depth to under 1000 steps at a time), preferring "tame column names"
+(which isn't a bad idea in `R` anyway as columns and variables are often seen as cousins),
+ and not preserving row or column order (or supporting numeric column indexing).  Also,
+ <code>rquery</code> does have a fast in-memory implementation: <code>rqdatatable</code>
+ (thanks to the <code>data.table</code>, so one can in fact use `rquery` without a database.</p>
+    
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-                </ul>
+      
+      <li><a href="#details">Details</a></li>
+          </ul>
 
   </div>
 </div>

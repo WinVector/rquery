@@ -1,5 +1,5 @@
 
-# rquery 1.1.1 2018/09/21
+# rquery 1.1.1 2018/09/25
 
  * Start breaking up some recursive calls.
 

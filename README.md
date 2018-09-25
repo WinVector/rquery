@@ -11,6 +11,8 @@ To install: `devtools::install_github("WinVector/rquery")` or `install.packages(
 
 A good place to start is the [`rquery` introductory vignette](https://winvector.github.io/rquery/articles/rquery_intro.html).
 
+Note `rquery` is a "database first" design. This means choices are made that favor database implementation. These include: capturing the entire calculation prior to doing any work (and using recursive methods to inspect this object, which can limit the calculation depth to under 1000 steps at a time), preferring "tame column names" (which isn't a bad idea in `R` anyway as columns and variables are often seen as cousins), and not preserving row or column order (or supporting numeric column indexing). Also, `rquery` does have a fast in-memory implementation: [`rqdatatable`](https://CRAN.R-project.org/package=rqdatatable) (thanks to the [`data.table` package](https://CRAN.R-project.org/package=data.table)), so one can in fact use `rquery` without a database.
+
 ![](https://github.com/WinVector/rquery/raw/master/tools/rquery.jpg)
 
 Discussion
@@ -248,15 +250,15 @@ cat(to_sql(dq, my_db, source_limit = 1000))
       "probability"
      FROM (
       SELECT
-       "probability" AS "probability",
        "subjectID" AS "subjectID",
-       "surveyCategory" AS "diagnosis"
+       "surveyCategory" AS "diagnosis",
+       "probability" AS "probability"
       FROM (
        SELECT * FROM (
         SELECT
-         "probability",
          "subjectID",
          "surveyCategory",
+         "probability",
          row_number ( ) OVER (  PARTITION BY "subjectID" ORDER BY "probability" DESC, "surveyCategory" ) AS "row_number"
         FROM (
          SELECT
@@ -275,14 +277,14 @@ cat(to_sql(dq, my_db, source_limit = 1000))
             "assessmentTotal"
            FROM
             "d" LIMIT 1000
-           ) tsql_11530297854260830006_0000000000
-          ) tsql_11530297854260830006_0000000001
-         ) tsql_11530297854260830006_0000000002
-       ) tsql_11530297854260830006_0000000003
+           ) tsql_29642365520511444233_0000000000
+          ) tsql_29642365520511444233_0000000001
+         ) tsql_29642365520511444233_0000000002
+       ) tsql_29642365520511444233_0000000003
        WHERE "row_number" <= 1
-      ) tsql_11530297854260830006_0000000004
-     ) tsql_11530297854260830006_0000000005
-    ) tsql_11530297854260830006_0000000006 ORDER BY "subjectID"
+      ) tsql_29642365520511444233_0000000004
+     ) tsql_29642365520511444233_0000000005
+    ) tsql_29642365520511444233_0000000006 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
@@ -424,6 +426,9 @@ For deeper dives into specific topics, please see also:
 -   <a href="https://github.com/WinVector/rquery/blob/master/extras/AssigmentPartitioner%2Emd">Assignment Partitioner</a>
 -   <a href="https://github.com/WinVector/rquery/blob/master/extras/ExtraDBs%2Emd">DifferentDBs</a>
 -   <a href="https://github.com/WinVector/rqdatatable">rqdatatable</a>
+
+Installing
+==========
 
 To install `rquery` please try `install.packages("rquery")` or try `devtools` as follows.
 

@@ -14,6 +14,8 @@ To install: `devtools::install_github("WinVector/rquery")` or `install.packages(
 
 A good place to start is the [`rquery` introductory vignette](https://winvector.github.io/rquery/articles/rquery_intro.html).
 
+Note: `rquery` is a "database first" design.  This means choices are made that favor database implementation. These include: capturing the entire calculation prior to doing any work (and using recursive methods to inspect this object, which can limit the calculation depth to under 1000 steps at a time), preferring "tame column names" (which isn't a bad idea in `R` anyway as columns and variables are often seen as cousins), and not preserving row or column order (or supporting numeric column indexing).  Also, `rquery` does have a fast in-memory implementation: [`rqdatatable`](https://CRAN.R-project.org/package=rqdatatable) (thanks to the [`data.table` package](https://CRAN.R-project.org/package=data.table)), so one can in fact use `rquery` without a database.
+
 ![](https://github.com/WinVector/rquery/raw/master/tools/rquery.jpg)
 
 # Discussion
@@ -267,6 +269,8 @@ if(use_spark) {
   DBI::dbDisconnect(my_db)
 }
 ```
+
+# Installing
 
 To install `rquery` please try `install.packages("rquery")` or try `devtools` as follows.
 

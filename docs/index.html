@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">rquery</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">1.1.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">1.1.1</span>
       </span>
     </div>
 
@@ -106,6 +106,7 @@
 <p><code>rquery</code> is currently recommended for user with <code>Spark</code> and <code>PostgreSQL</code> (and with non-window functionality with <code>RSQLite</code>).</p>
 <p>To install: <code><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">devtools::install_github("WinVector/rquery")</a></code> or <code>install.packages("rquery")</code>.</p>
 <p>A good place to start is the <a href="https://winvector.github.io/rquery/articles/rquery_intro.html"><code>rquery</code> introductory vignette</a>.</p>
+<p>Note: <code>rquery</code> is a “database first” design. This means choices are made that favor database implementation. These include: capturing the entire calculation prior to doing any work (and using recursive methods to inspect this object, which can limit the calculation depth to under 1000 steps at a time), preferring “tame column names” (which isn’t a bad idea in <code>R</code> anyway as columns and variables are often seen as cousins), and not preserving row or column order (or supporting numeric column indexing). Also, <code>rquery</code> does have a fast in-memory implementation: <a href="https://CRAN.R-project.org/package=rqdatatable"><code>rqdatatable</code></a> (thanks to the <a href="https://CRAN.R-project.org/package=data.table"><code>data.table</code> package</a>), so one can in fact use <code>rquery</code> without a database.</p>
 <div class="figure">
 <img src="https://github.com/WinVector/rquery/raw/master/tools/rquery.jpg">
 </div>
@@ -369,15 +370,15 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
   "probability"
  FROM (
   SELECT
-   "probability" AS "probability",
    "subjectID" AS "subjectID",
-   "surveyCategory" AS "diagnosis"
+   "surveyCategory" AS "diagnosis",
+   "probability" AS "probability"
   FROM (
    SELECT * FROM (
     SELECT
-     "probability",
      "subjectID",
      "surveyCategory",
+     "probability",
      row_number ( ) OVER (  PARTITION BY "subjectID" ORDER BY "probability" DESC, "surveyCategory" ) AS "row_number"
     FROM (
      SELECT
@@ -396,14 +397,14 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
         "assessmentTotal"
        FROM
         "d" LIMIT 1000
-       ) tsql_56842006778556738839_0000000000
-      ) tsql_56842006778556738839_0000000001
-     ) tsql_56842006778556738839_0000000002
-   ) tsql_56842006778556738839_0000000003
+       ) tsql_24668799959422046856_0000000000
+      ) tsql_24668799959422046856_0000000001
+     ) tsql_24668799959422046856_0000000002
+   ) tsql_24668799959422046856_0000000003
    WHERE "row_number" &lt;= 1
-  ) tsql_56842006778556738839_0000000004
- ) tsql_56842006778556738839_0000000005
-) tsql_56842006778556738839_0000000006 ORDER BY "subjectID"</code></pre>
+  ) tsql_24668799959422046856_0000000004
+ ) tsql_24668799959422046856_0000000005
+) tsql_24668799959422046856_0000000006 ORDER BY "subjectID"</code></pre>
 <p>The query is large, but due to its regular structure it should be very amenable to query optimization.</p>
 <p>A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our <a href="https://github.com/WinVector/rquery/blob/master/extras/PerfTest%2Emd">initial experiments</a> show <code>rquery</code> narrowed queries to be twice as fast as un-narrowed <code>dplyr</code> on a synthetic problem simulating large disk-based queries. We think if we connected directly to <code>Spark</code>’s relational operators (avoiding the <code>SQL</code> layer) we may be able to achieve even faster performance.</p>
 <p>The above optimization is possible because the <code>rquery</code> representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query. For example:</p>
@@ -505,6 +506,10 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <li><a href="https://github.com/WinVector/rquery/blob/master/extras/ExtraDBs%2Emd">DifferentDBs</a></li>
 <li><a href="https://github.com/WinVector/rqdatatable">rqdatatable</a></li>
 </ul>
+</div>
+<div id="installing" class="section level1">
+<h1 class="hasAnchor">
+<a href="#installing" class="anchor"></a>Installing</h1>
 <p>To install <code>rquery</code> please try <code>install.packages("rquery")</code> or try <code>devtools</code> as follows.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># install.packages("devtools")</span>
 devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">install_github</a></span>(<span class="st">"WinVector/rquery"</span>)</code></pre></div>
