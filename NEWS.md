@@ -5,7 +5,7 @@
 
 # rquery 1.1.0 2018/09/20
 
- * Altrenate data.table implementation path.
+ * Alternate data.table implementation path.
  * lookup_by_column().
  * Force parent.frame().
 
