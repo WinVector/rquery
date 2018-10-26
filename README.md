@@ -11,7 +11,7 @@ To install: `devtools::install_github("WinVector/rquery")` or `install.packages(
 
 A good place to start is the [`rquery` introductory vignette](https://winvector.github.io/rquery/articles/rquery_intro.html).
 
-Note `rquery` is a "database first" design. This means choices are made that favor database implementation. These include: capturing the entire calculation prior to doing any work (and using recursive methods to inspect this object, which can limit the calculation depth to under 1000 steps at a time), preferring "tame column names" (which isn't a bad idea in `R` anyway as columns and variables are often seen as cousins), and not preserving row or column order (or supporting numeric column indexing). Also, `rquery` does have a fast in-memory implementation: [`rqdatatable`](https://CRAN.R-project.org/package=rqdatatable) (thanks to the [`data.table` package](https://CRAN.R-project.org/package=data.table)), so one can in fact use `rquery` without a database.
+Note: `rquery` is a "database first" design. This means choices are made that favor database implementation. These include: capturing the entire calculation prior to doing any work (and using recursive methods to inspect this object, which can limit the calculation depth to under 1000 steps at a time), preferring "tame column names" (which isn't a bad idea in `R` anyway as columns and variables are often seen as cousins), and not preserving row or column order (or supporting numeric column indexing). Also, `rquery` does have a fast in-memory implementation: [`rqdatatable`](https://CRAN.R-project.org/package=rqdatatable) (thanks to the [`data.table` package](https://CRAN.R-project.org/package=data.table)), so one can in fact use `rquery` without a database.
 
 ![](https://github.com/WinVector/rquery/raw/master/tools/rquery.jpg)
 
@@ -277,14 +277,14 @@ cat(to_sql(dq, my_db, source_limit = 1000))
             "assessmentTotal"
            FROM
             "d" LIMIT 1000
-           ) tsql_29642365520511444233_0000000000
-          ) tsql_29642365520511444233_0000000001
-         ) tsql_29642365520511444233_0000000002
-       ) tsql_29642365520511444233_0000000003
+           ) tsql_80638370550899646157_0000000000
+          ) tsql_80638370550899646157_0000000001
+         ) tsql_80638370550899646157_0000000002
+       ) tsql_80638370550899646157_0000000003
        WHERE "row_number" <= 1
-      ) tsql_29642365520511444233_0000000004
-     ) tsql_29642365520511444233_0000000005
-    ) tsql_29642365520511444233_0000000006 ORDER BY "subjectID"
+      ) tsql_80638370550899646157_0000000004
+     ) tsql_80638370550899646157_0000000005
+    ) tsql_80638370550899646157_0000000006 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 

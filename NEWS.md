@@ -1,5 +1,5 @@
 
-# rquery 1.1.1 2018/10/25
+# rquery 1.1.1 2018/10/26
 
  * Allow a bit more flexibility on ordering in extend.
  * Start breaking up some recursive calls.

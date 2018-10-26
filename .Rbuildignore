@@ -7,3 +7,4 @@
 ^extras$
 ^cran-comments\.md$
 ^_pkgdown\.yml$
+^revdep$

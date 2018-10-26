@@ -3,9 +3,14 @@ library("rquery")
 context("partitioning")
 
 test_that("test_extend_partition: Works As Expected", {
-  if (requireNamespace("RSQLite", quietly = TRUE)) {
-    my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-    old_o <- options(list("rquery.rquery_db_executor" = list(db = my_db)))
+  if (requireNamespace("RSQLite", quietly = TRUE) &&
+      requireNamespace("DBI", quietly = TRUE)) {
+    raw_connection <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+    dbopts <- rq_connection_tests(raw_connection)
+    db_handle <- rquery_db_info(connection = raw_connection,
+                                is_dbi = TRUE,
+                                connection_options = dbopts)
+    old_o <- options(list("rquery.rquery_db_executor" = list(db = db_handle)))
 
     d <- mk_td("d",
                c("rowNum",
@@ -25,16 +30,16 @@ test_that("test_extend_partition: Works As Expected", {
                     a_2 %:=% 'treatment')))
     txt <- format(dQ)
     testthat::expect_true(length(grep("!", txt, fixed = TRUE))>0)
-    sql <- to_sql(dQ, my_db)
+    sql <- to_sql(dQ, db_handle)
     testthat::expect_true(length(grep("e_2", sql, fixed = TRUE))>0)
 
 
-    d <- rq_copy_to(my_db, "ds",
+    d <- rq_copy_to(db_handle, "ds",
                      data.frame(x = 1))
     sum <- 7
     optree <- d %.>%
       extend_nse(., sum = x + 1 , y = sum + 1)
-    tab <- execute(my_db, optree)
+    tab <- execute(db_handle, optree)
     tab <- tab[, c("sum", "x", "y")]
     testthat::expect_equal(data.frame(sum = 2, x = 1, y = 3), tab[ , c("sum", "x", "y"), drop = FALSE])
     tab2 <- data.frame(x = 1) %.>% optree
@@ -42,10 +47,10 @@ test_that("test_extend_partition: Works As Expected", {
 
     optree <- d %.>%
        extend_nse(., a = 1, b := 2, c %:=% 4)
-    tab3 <- execute(my_db, optree)
-    expect_equal(data.frame(x = 1, a = 1, b = 2, c = 4), tab3[ , c("x", "a", "b", "c"), drop = FALSE])
+    tab3 <- execute(db_handle, optree)
+    testthat::expect_equal(data.frame(x = 1, a = 1, b = 2, c = 4), tab3[ , c("x", "a", "b", "c"), drop = FALSE])
 
     options(old_o)
-    DBI::dbDisconnect(my_db)
+    DBI::dbDisconnect(raw_connection)
   }
 })
