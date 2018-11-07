@@ -19,7 +19,7 @@ test_that("test_translation: Works As Expected", {
       overwrite = TRUE)
 
     op1 <- d %.>%
-      extend_nse(., na_count %:=% ifelse(is.na(x), 1, 0) +
+      extend(., na_count %:=% ifelse(is.na(x), 1, 0) +
                    ifelse(is.na(y), 1, 0))
     txt1 <- format(op1)
     # cat(txt1)
@@ -32,7 +32,7 @@ test_that("test_translation: Works As Expected", {
     expect_equal(c(0, 1, 1, 0, 2), res1$na_count)
 
     op2 <- d %.>%
-      extend_nse(., mx %:=% pmax(x, y))
+      extend(., mx %:=% pmax(x, y))
     txt2 <- format(op2)
     # cat(txt2)
 

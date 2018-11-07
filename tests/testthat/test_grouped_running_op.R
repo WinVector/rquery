@@ -22,7 +22,7 @@ test_that("test_grouped_running.R", {
           0  , 0   |
           1  , 1   ))
 
-    ops1 <- extend_nse(data,
+    ops1 <- extend(data,
                       running_y_sum = cumsum(y),
                       partitionby = "x",
                       orderby = "y",
@@ -30,7 +30,7 @@ test_that("test_grouped_running.R", {
     sql1 <- to_sql(ops1, db_handle)
     # res1 <- execute(db_handle, ops1) # can't run on SQLite
 
-    ops2 <- extend_nse(data,
+    ops2 <- extend(data,
                        running_y_sum = cumsum(y),
                        partitionby = "x",
                        orderby = "y",

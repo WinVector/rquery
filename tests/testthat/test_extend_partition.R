@@ -38,7 +38,7 @@ test_that("test_extend_partition: Works As Expected", {
                      data.frame(x = 1))
     sum <- 7
     optree <- d %.>%
-      extend_nse(., sum = x + 1 , y = sum + 1)
+      extend(., sum = x + 1 , y = sum + 1)
     tab <- execute(db_handle, optree)
     tab <- tab[, c("sum", "x", "y")]
     testthat::expect_equal(data.frame(sum = 2, x = 1, y = 3), tab[ , c("sum", "x", "y"), drop = FALSE])
@@ -46,7 +46,7 @@ test_that("test_extend_partition: Works As Expected", {
     expect_equal(data.frame(sum = 2, x = 1, y = 3), tab2[ , c("sum", "x", "y"), drop = FALSE])
 
     optree <- d %.>%
-       extend_nse(., a = 1, b := 2, c %:=% 4)
+       extend(., a = 1, b := 2, c %:=% 4)
     tab3 <- execute(db_handle, optree)
     testthat::expect_equal(data.frame(x = 1, a = 1, b = 2, c = 4), tab3[ , c("x", "a", "b", "c"), drop = FALSE])
 

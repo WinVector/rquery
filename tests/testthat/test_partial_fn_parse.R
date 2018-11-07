@@ -8,7 +8,7 @@ test_that("test_partial_fn_parse.R", {
 
   testthat::expect_error(
     d %.>%
-      project_nse(.,
+      project(.,
                   x = mean(x, na.rm = TRUE),
                   groupby = c())
   )
@@ -16,7 +16,7 @@ test_that("test_partial_fn_parse.R", {
   mean2 <- function(x) (mean(x, na.rm = TRUE))
 
   ops <- local_td(d) %.>%
-    project_nse(.,
+    project(.,
                 x = mean2(x),
                 groupby = c())
   sql <- to_sql(ops, rquery_default_db_info)

@@ -15,12 +15,12 @@ test_that("test_names: Works As Expected", {
     # check values don't look unbound
     x <- "xval"
     optree <- hdl %.>%
-      extend_nse(.,
+      extend(.,
                  xcol = x)
 
     # check a few ops
     optree <- hdl %.>%
-      project_nse(.,
+      project(.,
                   mean_mpg = avg(mpg),
                   groupby = "cyl")
     expect_equal(qc(cyl, mpg),
@@ -32,7 +32,7 @@ test_that("test_names: Works As Expected", {
     # detect unbound column reference
     expect_error(
       badtree <- hdl %.>%
-        project_nse(.,
+        project(.,
                     delay = avg(dep_time),
                     groupby = "mpg")
     )
@@ -40,7 +40,7 @@ test_that("test_names: Works As Expected", {
     # detect failure to assign
     expect_error(
       badtree <- hdl %.>%
-        extend_nse(.,
+        extend(.,
                    mpg + 1)
     )
 
@@ -48,7 +48,7 @@ test_that("test_names: Works As Expected", {
     v <- c(1, 2)
     expect_error(
       badtree <- hdl %.>%
-        extend_nse(.,
+        extend(.,
                    d2 = mpg + v)
     )
 
@@ -56,7 +56,7 @@ test_that("test_names: Works As Expected", {
     d2 <- "zz"
     mpg <- "zz"
     p <- hdl %.>%
-      extend_nse(.,
+      extend(.,
                  d2 = mpg)
     expect_equal(sort(qc(am, carb, cyl, d2, disp, drat, gear, hp, mpg, qsec, vs, wt)),
                  sort(column_names(p)))

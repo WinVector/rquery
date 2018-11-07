@@ -9,7 +9,7 @@ test_that("test_q: Works As Expected", {
   v <- "NEWVAR"
   AUC <- "NEWVAR"
   R2 <- "NEWVAR"
-  optree <- extend_nse(d, v %:=% R2 + 1)
+  optree <- extend(d, v %:=% R2 + 1)
   str <- format(optree)
   testthat::expect_equal(0, length(grep("NEWVAR", str, fixed = TRUE)))
   sql <- to_sql(optree, my_db)
@@ -20,7 +20,7 @@ test_that("test_q: Works As Expected", {
     d <- table_source("d", c("AUC", "R2", "z"))
     TARGETCOL = as.name("AUC")
     VALUE = 0.5
-    optree <- select_rows_nse(d, TARGETCOL >= VALUE)
+    optree <- select_rows(d, TARGETCOL >= VALUE)
   }, ".*")
   # str <- format(optree)
   # testthat::expect(length(grep("TARGETCOL", str, fixed = TRUE))>0, "saw TARGETCOL")
@@ -31,7 +31,7 @@ test_that("test_q: Works As Expected", {
   d <- table_source("d", c("AUC", "R2", "z"))
   TARGETCOL = as.name("AUC")
   VALUE = 0.5
-  optree <- select_rows_nse(d, .(TARGETCOL) >= VALUE)
+  optree <- select_rows(d, .(TARGETCOL) >= VALUE)
   str <- format(optree)
   testthat::expect(length(grep("TARGETCOL", str, fixed = TRUE))==0, "saw TARGETCOL")
   testthat::expect(length(grep("VALUE", str, fixed = TRUE))==0, "saw VALUE")
@@ -43,7 +43,7 @@ test_that("test_q: Works As Expected", {
   testthat::expect_error({
     d <- table_source("d", c("AUC", "R2", "z"))
     TARGETCOL = as.name("AUC")
-    optree <- extend_nse(d, AUC = TARGETCOL)
+    optree <- extend(d, AUC = TARGETCOL)
   }, ".*")
   # str <- format(optree)
   # testthat::expect(length(grep("TARGETCOL", str, fixed = TRUE))>0, "saw TARGETCOL")

@@ -6,7 +6,7 @@ test_that("test_select_narrowing.R: Works As Expected", {
   db <- rquery_db_info(identifier_quote_char = "`", string_quote_char = '"')
   x <- data.frame(a = 1:3, b = 4:6, c = 7:9)
 
-  op1 <- local_td(x) %.>% extend_nse(., e %:=% a + 1)
+  op1 <- local_td(x) %.>% extend(., e %:=% a + 1)
   # cat(to_sql(op1, db))
   testthat::expect_equal(sort(column_names(op1)), c("a", "b", "c", "e"))
 
@@ -18,7 +18,7 @@ test_that("test_select_narrowing.R: Works As Expected", {
   # cat(to_sql(op3, db))
   testthat::expect_equal(sort(column_names(op3)), c("b"))
 
-  op4 <- local_td(x) %.>% extend_nse(., a %:=% a + 1)
+  op4 <- local_td(x) %.>% extend(., a %:=% a + 1)
   # cat(to_sql(op4, db))
   testthat::expect_equal(sort(column_names(op4)), c("a", "b", "c"))
 

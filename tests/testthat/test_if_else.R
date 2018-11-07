@@ -26,7 +26,7 @@ test_that("test_extend_partition: Works As Expected", {
     d_remote <- rq_copy_to(my_db, "d_remote", d)
 
     optree <- d_remote %.>%
-      extend_nse(.,
+      extend(.,
                  res = ifelse(x == 1, 'one', 'not one')) %.>%
       orderby(., "id")
 
