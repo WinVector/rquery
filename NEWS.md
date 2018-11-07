@@ -1,4 +1,9 @@
 
+# rquery 1.2.0 2018/11/06
+
+ * fix name lookup issue.
+ * confirm DBI on tests.
+
 # rquery 1.1.1 2018/10/26
 
  * Allow a bit more flexibility on ordering in extend.

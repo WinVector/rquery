@@ -39,8 +39,13 @@ tokenize_call_for_R <- function(lexpr, colnames, env) {
   if(is_inline_expr(lexpr)) {
     callName <- as.character(lexpr[[1]])
     lhs <- lexpr[[2]]
+    if(callName %in% c("=", ":=", "%:=%")) {
+      lhs <- as.character(lhs)[[1]]
+    } else {
+      lhs <- tokenize_call_for_R(lhs, colnames, env)
+    }
     rhs <- lexpr[[3]]
-    return(paste(tokenize_call_for_R(lhs, colnames, env), callName, tokenize_call_for_R(rhs, colnames, env)))
+    return(paste(lhs, callName, tokenize_call_for_R(rhs, colnames, env)))
   }
   if(is.character(lexpr)) {
     return(rquery_deparse(lexpr))
