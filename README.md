@@ -91,61 +91,26 @@ library("wrapr")
 use_spark <- FALSE
 
 if(use_spark) {
-  my_db <- sparklyr::spark_connect(version='2.2.0', 
+  raw_connection <- sparklyr::spark_connect(version='2.2.0', 
                                    master = "local")
-  cname <- rq_connection_name(my_db)
-  rquery::setDBOption(my_db, 
+  cname <- rq_connection_name(raw_connection)
+  rquery::setDBOption(raw_connection, 
                       "create_options",
                       "USING PARQUET OPTIONS ('compression'='snappy')")
 } else {
   driver <- RPostgreSQL::PostgreSQL()
-  my_db <- DBI::dbConnect(driver,
+  raw_connection <- DBI::dbConnect(driver,
                           host = 'localhost',
                           port = 5432,
                           user = 'johnmount',
                           password = '')
 }
 
-dbopts <- rq_connection_tests(my_db)
-print(dbopts)
-```
+dbopts <- rq_connection_tests(raw_connection)
+db <- rquery_db_info(connection = raw_connection,
+                     is_dbi = TRUE,
+                     connection_options = dbopts)
 
-    ## $rquery.PostgreSQLConnection.use_DBI_dbListFields
-    ## [1] FALSE
-    ## 
-    ## $rquery.PostgreSQLConnection.use_DBI_dbRemoveTable
-    ## [1] FALSE
-    ## 
-    ## $rquery.PostgreSQLConnection.use_DBI_dbExecute
-    ## [1] TRUE
-    ## 
-    ## $rquery.PostgreSQLConnection.create_temporary
-    ## [1] TRUE
-    ## 
-    ## $rquery.PostgreSQLConnection.control_temporary
-    ## [1] TRUE
-    ## 
-    ## $rquery.PostgreSQLConnection.control_rownames
-    ## [1] TRUE
-    ## 
-    ## $rquery.PostgreSQLConnection.use_DBI_dbExistsTable
-    ## [1] FALSE
-    ## 
-    ## $rquery.PostgreSQLConnection.check_logical_column_types
-    ## [1] FALSE
-    ## 
-    ## $rquery.PostgreSQLConnection.fn_name_map
-    ##  mean 
-    ## "avg"
-
-``` r
-options(dbopts)
-print(getDBOption(my_db, "control_rownames"))
-```
-
-    ## [1] TRUE
-
-``` r
 # copy data in so we have an example
 d_local <- build_frame(
    "subjectID", "surveyCategory"     , "assessmentTotal", "irrelevantCol1", "irrelevantCol2" |
@@ -153,7 +118,7 @@ d_local <- build_frame(
    1          , "positive re-framing", 2                , "irrel1"        , "irrel2"         |
    2          , "withdrawal behavior", 3                , "irrel1"        , "irrel2"         |
    2          , "positive re-framing", 4                , "irrel1"        , "irrel2"         )
-rq_copy_to(my_db, 'd',
+rq_copy_to(db, 'd',
             d_local,
             temporary = TRUE, 
             overwrite = TRUE)
@@ -163,7 +128,7 @@ rq_copy_to(my_db, 'd',
 
 ``` r
 # produce a hande to existing table
-d <- db_td(my_db, "d")
+d <- db_td(db, "d")
 ```
 
 Note: in examples we use `rq_copy_to()` to create data. This is only for the purpose of having easy portable examples. With big data the data is usually already in the remote database or Spark system. The task is almost always to connect and work with this pre-existing remote data and the method to do this is [`db_td()`](https://winvector.github.io/rquery/reference/db_td.html), which builds a reference to a remote table given the table name. The suggested pattern for working with remote tables is to get inputs via [`db_td()`](https://winvector.github.io/rquery/reference/db_td.html) and land remote results with [`materialze()`](https://winvector.github.io/rquery/reference/materialize.html). To work with local data one can copy data from memory to the database with [`rq_copy_to()`](https://winvector.github.io/rquery/reference/rq_copy_to.html) and bring back results with [`execute()`](https://winvector.github.io/rquery/reference/execute.html) (though be aware operation on remote non-memory data is `rquery`'s primary intent).
@@ -171,12 +136,10 @@ Note: in examples we use `rq_copy_to()` to create data. This is only for the pur
 First we show the Spark/database version of the original example data:
 
 ``` r
-class(my_db)
+class(db)
 ```
 
-    ## [1] "PostgreSQLConnection"
-    ## attr(,"package")
-    ## [1] "RPostgreSQL"
+    ## [1] "rquery_db_info"
 
 ``` r
 print(d)
@@ -186,7 +149,7 @@ print(d)
 
 ``` r
 d %.>%
-  execute(my_db, .) %.>%
+  execute(db, .) %.>%
   knitr::kable(.)
 ```
 
@@ -226,7 +189,7 @@ We then generate our result:
 
 ``` r
 dq %.>%
-  execute(my_db, .) %.>%
+  execute(db, .) %.>%
   knitr::kable(.)
 ```
 
@@ -240,7 +203,7 @@ We see we have quickly reproduced the original result using the new database ope
 The actual `SQL` query that produces the result is, in fact, quite involved:
 
 ``` r
-cat(to_sql(dq, my_db, source_limit = 1000))
+cat(to_sql(dq, db, source_limit = 1000))
 ```
 
     SELECT * FROM (
@@ -277,14 +240,14 @@ cat(to_sql(dq, my_db, source_limit = 1000))
             "assessmentTotal"
            FROM
             "d" LIMIT 1000
-           ) tsql_19208696020192323861_0000000000
-          ) tsql_19208696020192323861_0000000001
-         ) tsql_19208696020192323861_0000000002
-       ) tsql_19208696020192323861_0000000003
+           ) tsql_02527702899371135775_0000000000
+          ) tsql_02527702899371135775_0000000001
+         ) tsql_02527702899371135775_0000000002
+       ) tsql_02527702899371135775_0000000003
        WHERE "row_number" <= 1
-      ) tsql_19208696020192323861_0000000004
-     ) tsql_19208696020192323861_0000000005
-    ) tsql_19208696020192323861_0000000006 ORDER BY "subjectID"
+      ) tsql_02527702899371135775_0000000004
+     ) tsql_02527702899371135775_0000000005
+    ) tsql_02527702899371135775_0000000006 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
@@ -351,7 +314,7 @@ dq %.>%
 `rquery` also includes a number of useful utilities (both as nodes and as functions).
 
 ``` r
-quantile_cols(my_db, "d")
+quantile_cols(db, "d")
 ```
 
     ##   quantile_probability subjectID      surveyCategory assessmentTotal
@@ -368,7 +331,7 @@ quantile_cols(my_db, "d")
     ## 5         irrel1         irrel2
 
 ``` r
-rsummary(my_db, "d")
+rsummary(db, "d")
 ```
 
     ##            column index     class nrows nna nunique min max mean        sd
@@ -387,7 +350,7 @@ rsummary(my_db, "d")
 ``` r
 dq %.>% 
   quantile_node(.) %.>%
-  execute(my_db, .)
+  execute(db, .)
 ```
 
     ##   quantile_probability subjectID           diagnosis probability
@@ -400,7 +363,7 @@ dq %.>%
 ``` r
 dq %.>% 
   rsummary_node(.) %.>%
-  execute(my_db, .)
+  execute(db, .)
 ```
 
     ##        column index     class nrows nna nunique       min       max

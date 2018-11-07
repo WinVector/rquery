@@ -98,14 +98,14 @@ Same example in a database.
 
 ``` r
 # connect to a database
-raw_conn <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
+raw_connection <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
                            host = 'localhost',
                            port = 5432,
                            user = 'johnmount',
                            password = '')
 # build a representation of the database connection
-dbopts <- rq_connection_tests(raw_conn)
-db <- rquery_db_info(connection = raw_conn,
+dbopts <- rq_connection_tests(raw_connection)
+db <- rquery_db_info(connection = raw_connection,
                      is_dbi = TRUE,
                      connection_options = dbopts)
 print(db)
@@ -126,7 +126,7 @@ print(tr)
 ``` r
 # materialize result remotely (without passing through R)
 res <- materialize(db, ops)
-DBI::dbReadTable(raw_conn, res$table_name)
+DBI::dbReadTable(raw_connection, res$table_name)
 ```
 
     ##   am mean_hp_per_cyl group_count
@@ -160,19 +160,19 @@ cat(sql)
     ##     "cyl"
     ##    FROM
     ##     "mtcars"
-    ##    ) tsql_91820150618118725347_0000000000
-    ##   ) tsql_91820150618118725347_0000000001
+    ##    ) tsql_58024815186737431810_0000000000
+    ##   ) tsql_58024815186737431810_0000000001
     ##  GROUP BY
     ##   "am"
-    ## ) tsql_91820150618118725347_0000000002 ORDER BY "am"
+    ## ) tsql_58024815186737431810_0000000002 ORDER BY "am"
 
 ``` r
 # disconnect
-DBI::dbDisconnect(raw_conn)
+DBI::dbDisconnect(raw_connection)
 ```
 
     ## [1] TRUE
 
 ``` r
-rm(list = c("raw_conn", "db"))
+rm(list = c("raw_connection", "db"))
 ```
