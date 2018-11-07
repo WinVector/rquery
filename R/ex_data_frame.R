@@ -49,7 +49,7 @@ is_named_list_of_data_frames <- function(o) {
 #'   old_o <- options(list("rquery.rquery_db_executor" = list(db = db)))
 #'
 #'   optree <- mk_td("d", c("AUC", "R2", "D")) %.>%
-#'   	extend_nse(., c %:=% sqrt(R2)) %.>%
+#'   	extend(., c %:=% sqrt(R2)) %.>%
 #'     orderby(., cols = "R2", reverse = "R2")
 #'
 #'   d <- data.frame(AUC = 0.6, R2 = c(0.1, 0.2), D = NA, z = 2)
@@ -208,7 +208,7 @@ as.character.relop <- function (x, ...) {
 #'
 #'   # operations pipeline/tree
 #'   optree <- mk_td("d", "x") %.>%
-#'     extend_nse(., y = x*x)
+#'     extend(., y = x*x)
 #'
 #'   # wrapr dot pipe apply_right dispatch
 #'   # causes this statment to apply optree

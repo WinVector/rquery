@@ -28,7 +28,7 @@ scale <- 0.237
 d <- mk_td("survey_table",
                   c("subjectID", "surveyCategory", "assessmentTotal"))
 optree <- d \%.>\%
-  extend_nse(.,
+  extend(.,
              probability \%:=\%
                exp(assessmentTotal * scale))  \%.>\%
   normalize_cols(.,

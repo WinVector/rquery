@@ -44,7 +44,7 @@ if(requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietl
                    overwrite = TRUE,
                    temporary = TRUE)
   res <- d \%.>\%
-    extend_nse(.,
+    extend(.,
                wc \%:=\% ifelse(w>1, "x", "y"),
                wn \%:=\% ifelse(w>1, 1, 2),
                xc \%:=\% ifelse(x>1, "x", "y"),

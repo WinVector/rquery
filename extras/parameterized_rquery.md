@@ -25,12 +25,12 @@ Immediate mode example.
 ``` r
 # apply a parameterized pipeline using bquote
 mtcars %.>%
-  extend_nse(., 
-             .(derived_nm) := .(num_nm)/.(den_nm)) %.>%
-  project_nse(., 
-              .(mean_nm) := mean(.(derived_nm)),
-              .(count_nm) := length(.(derived_nm)),
-              groupby = group_nm) %.>%
+  extend(., 
+         .(derived_nm) := .(num_nm)/.(den_nm)) %.>%
+  project(., 
+          .(mean_nm) := mean(.(derived_nm)),
+          .(count_nm) := length(.(derived_nm)),
+          groupby = group_nm) %.>%
   orderby(., 
           group_nm)
 ```
@@ -51,12 +51,12 @@ count <- function(v) { length(v) }
 
 # capture the operator pipeline
 ops <- td %.>%
-  extend_nse(., 
-             .(derived_nm) := .(num_nm)/.(den_nm)) %.>%
-  project_nse(., 
-              .(mean_nm) := mean(.(derived_nm)),
-              .(count_nm) := count(.(derived_nm)),
-              groupby = group_nm) %.>%
+  extend(., 
+         .(derived_nm) := .(num_nm)/.(den_nm)) %.>%
+  project(., 
+          .(mean_nm) := mean(.(derived_nm)),
+          .(count_nm) := count(.(derived_nm)),
+          groupby = group_nm) %.>%
   orderby(., 
           group_nm)
 
@@ -160,11 +160,11 @@ cat(sql)
     ##     "cyl"
     ##    FROM
     ##     "mtcars"
-    ##    ) tsql_20932246710150252879_0000000000
-    ##   ) tsql_20932246710150252879_0000000001
+    ##    ) tsql_33279743848656164628_0000000000
+    ##   ) tsql_33279743848656164628_0000000001
     ##  GROUP BY
     ##   "am"
-    ## ) tsql_20932246710150252879_0000000002 ORDER BY "am"
+    ## ) tsql_33279743848656164628_0000000002 ORDER BY "am"
 
 ``` r
 # disconnect

@@ -29,7 +29,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">1.2.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">1.2.1</span>
       </span>
     </div>
 
@@ -88,7 +88,7 @@
       <h1>rquery Introduction</h1>
                         <h4 class="author">John Mount, Win-Vector LLC</h4>
             
-            <h4 class="date">2018-11-06</h4>
+            <h4 class="date">2018-11-07</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery//blob/master/vignettes/rquery_intro.Rmd"><code>vignettes/rquery_intro.Rmd</code></a></small>
       <div class="hidden name"><code>rquery_intro.Rmd</code></div>
@@ -170,15 +170,15 @@ d &lt;-<span class="st"> </span><span class="kw"><a href="../reference/db_td.htm
 <p>The primary relational operators include:</p>
 <ul>
 <li>
-<a href="https://winvector.github.io/rquery/reference/extend_nse.html"><code><a href="../reference/extend_nse.html">extend_nse()</a></code></a>/<a href="https://winvector.github.io/rquery/reference/extend_se.html"><code><a href="../reference/extend_se.html">extend_se()</a></code></a>. Extend adds derived columns to a relation table. With a sufficiently powerful <code>SQL</code> provider this includes ordered and partitioned window functions. This operator also includes built-in <a href="https://winvector.github.io/seplyr/"><code>seplyr</code></a>-style <a href="https://winvector.github.io/seplyr/articles/MutatePartitioner.html">assignment partitioning</a>.</li>
+<a href="https://winvector.github.io/rquery/reference/extend.html"><code><a href="../reference/extend.html">extend()</a></code></a>/<a href="https://winvector.github.io/rquery/reference/extend_se.html"><code><a href="../reference/extend_se.html">extend_se()</a></code></a>. Extend adds derived columns to a relation table. With a sufficiently powerful <code>SQL</code> provider this includes ordered and partitioned window functions. This operator also includes built-in <a href="https://winvector.github.io/seplyr/"><code>seplyr</code></a>-style <a href="https://winvector.github.io/seplyr/articles/MutatePartitioner.html">assignment partitioning</a>.</li>
 <li>
-<a href="https://winvector.github.io/rquery/reference/project_nse.html"><code>project()</code></a>. Project is usually <em>portrayed</em> as the equivalent to column selection, though the original definition includes aggregation. In our opinion the original relational nature of the operator is best captured by moving <code>SQL</code>’s “<code>GROUP BY</code>” aggregation functionality.</li>
+<a href="https://winvector.github.io/rquery/reference/project.html"><code><a href="../reference/project.html">project()</a></code></a>. Project is usually <em>portrayed</em> as the equivalent to column selection, though the original definition includes aggregation. In our opinion the original relational nature of the operator is best captured by moving <code>SQL</code>’s “<code>GROUP BY</code>” aggregation functionality.</li>
 <li>
 <a href="https://winvector.github.io/rquery/reference/natural_join.html"><code><a href="../reference/natural_join.html">natural_join()</a></code></a>. This a specialized relational join operator, using all common columns as an equi-join condition.</li>
 <li>
-<a href="https://winvector.github.io/rquery/reference/theta_join_nse.html"><code>theta_join()</code></a>. This is the relational join operator allowing an arbitrary predicate.</li>
+<a href="https://winvector.github.io/rquery/reference/theta_join.html"><code><a href="../reference/theta_join.html">theta_join()</a></code></a>. This is the relational join operator allowing an arbitrary predicate.</li>
 <li>
-<a href="https://winvector.github.io/rquery/reference/theta_join_nse.html"><code>select_rows()</code></a>. This is Codd’s relational row selection. Obviously <code>select</code> alone is an over-used and now ambiguous term (for example: it is already used as the “doit” verb in <code>SQL</code> and the <em>column</em> selector in <code>dplyr</code>).</li>
+<a href="https://winvector.github.io/rquery/reference/theta_join.html"><code><a href="../reference/select_rows.html">select_rows()</a></code></a>. This is Codd’s relational row selection. Obviously <code>select</code> alone is an over-used and now ambiguous term (for example: it is already used as the “doit” verb in <code>SQL</code> and the <em>column</em> selector in <code>dplyr</code>).</li>
 <li>
 <a href="https://winvector.github.io/rquery/reference/rename_columns.html"><code><a href="../reference/rename_columns.html">rename_columns()</a></code></a>. This operator renames sets of columns.</li>
 </ul>
@@ -192,7 +192,7 @@ d &lt;-<span class="st"> </span><span class="kw"><a href="../reference/db_td.htm
 <p>The above list (and especially naming) are chosen to first match Codd’s relational concepts (<code>project</code>, <code>select</code>, <code>rename</code>, <code>join</code>, aggregation), <code>SQL</code> naming conventions. Notice this covers the <a href="http://dplyr.tidyverse.org">primary <code>dplyr</code> operators</a> <code>mutate()</code> (Codd’s <code>extend</code>), <code>select()</code> (not relational), <code>filter()</code> (Codd’s <code>select</code>, represented in <code>SQL</code> by “<code>WHERE</code>”), <code>summarise()</code> (Codd’s <code>project</code> or aggregate concepts, triggered in <code>SQL</code> by “<code>GROUP BY</code>”), <code>arrange()</code> (not a relational concept, implemented in <code>SQL</code> by “ORDER BY”). This correspondence is due to Codd’s ideas and <code>SQL</code> driving data engineering thinking for almost the last 50 years (both with and without credit or citation).</p>
 <p>With relational operators the user can work fast and work further away from syntactic details. For example some <code>R</code> operators (such as <code>is.na</code>) are translated to <code>SQL</code> analogues (in this case <code>IS NULL</code>).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">d <span class="op">%.&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw"><a href="../reference/extend_nse.html">extend_nse</a></span>(., was_na <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">ifelse</span>(<span class="kw">is.na</span>(v), <span class="dv">1</span>, <span class="dv">0</span>)) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/extend.html">extend</a></span>(., was_na <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">ifelse</span>(<span class="kw">is.na</span>(v), <span class="dv">1</span>, <span class="dv">0</span>)) <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(., db) <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw">cat</span>(.)</code></pre></div>
 <pre><code>## SELECT
@@ -203,7 +203,7 @@ d &lt;-<span class="st"> </span><span class="kw"><a href="../reference/db_td.htm
 ##   `v`
 ##  FROM
 ##   `d`
-##  ) tsql_69907018052531696240_0000000000</code></pre>
+##  ) tsql_72608522350837896733_0000000000</code></pre>
 <p>The exact translation depends on the database (which is why <code><a href="../reference/to_sql.html">to_sql()</a></code> takes a database argument). Some care has to be taken as <code>SQL</code> types are different than <code>R</code> types (in particular for some databases logical types are not numeric).</p>
 <p>With a database that supplies window functions one can quickly work the “logistic scoring by hand” example from<br>
 from <a href="http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/">Let’s Have Some Sympathy For The Part-time R User</a>. This example worked with <code>rquery</code> code that works with both <code>PostgreSQL</code> and <code>Spark</code> can be found <a href="https://github.com/WinVector/rquery/blob/master/README.html">here</a>.</p>
@@ -214,7 +214,7 @@ dq &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mk_td.ht
                    <span class="dt">columns =</span> <span class="kw"><a href="http://www.rdocumentation.org/packages/wrapr/topics/qc">qc</a></span>(subjectID, 
                                 surveyCategory, 
                                 assessmentTotal)) <span class="op">%.&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="../reference/extend_nse.html">extend_nse</a></span>(.,
+<span class="st">  </span><span class="kw"><a href="../reference/extend.html">extend</a></span>(.,
              probability <span class="op">:</span><span class="er">=</span>
 <span class="st">               </span><span class="kw">exp</span>(assessmentTotal <span class="op">*</span><span class="st"> </span>scale))  <span class="op">%.&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw"><a href="../reference/normalize_cols.html">normalize_cols</a></span>(.,
@@ -260,7 +260,7 @@ dq &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mk_td.ht
 ##  select_columns(.,
 ##    subjectID, diagnosis, probability) %.&gt;%
 ##  orderby(., subjectID)</code></pre>
-<p>Notice the returned presentation is not exactly the set of nodes we specified. This is because of the nodes we used (<code><a href="../reference/normalize_cols.html">normalize_cols()</a></code> and <code><a href="../reference/pick_top_k.html">pick_top_k()</a></code>) are actually higher-order nodes (implemented in terms of nodes). Also <code>extend()</code> nodes are re-factored to be unambiguous in their use and re-use of column names.</p>
+<p>Notice the returned presentation is not exactly the set of nodes we specified. This is because of the nodes we used (<code><a href="../reference/normalize_cols.html">normalize_cols()</a></code> and <code><a href="../reference/pick_top_k.html">pick_top_k()</a></code>) are actually higher-order nodes (implemented in terms of nodes). Also <code><a href="../reference/extend.html">extend()</a></code> nodes are re-factored to be unambiguous in their use and re-use of column names.</p>
 <p>We can also exhibit the <code>SQL</code> this operations tree renders, to (though the <code>SQLite</code> database we are using in vignettes does not have the required window-functions to execute it; we suggest using <code>PostgreSQL</code>).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(dq, db))</code></pre></div>
 <pre><code>## SELECT * FROM (
@@ -297,14 +297,14 @@ dq &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mk_td.ht
 ##         `assessmentTotal`
 ##        FROM
 ##         `d3`
-##        ) tsql_05832673665238718101_0000000000
-##       ) tsql_05832673665238718101_0000000001
-##      ) tsql_05832673665238718101_0000000002
-##    ) tsql_05832673665238718101_0000000003
+##        ) tsql_19894836535278511005_0000000000
+##       ) tsql_19894836535278511005_0000000001
+##      ) tsql_19894836535278511005_0000000002
+##    ) tsql_19894836535278511005_0000000003
 ##    WHERE `row_number` &lt;= 1
-##   ) tsql_05832673665238718101_0000000004
-##  ) tsql_05832673665238718101_0000000005
-## ) tsql_05832673665238718101_0000000006 ORDER BY `subjectID`</code></pre>
+##   ) tsql_19894836535278511005_0000000004
+##  ) tsql_19894836535278511005_0000000005
+## ) tsql_19894836535278511005_0000000006 ORDER BY `subjectID`</code></pre>
 <p>The above query is long, but actually quite performant.</p>
 <p>To see the query executed, please see <a href="https://github.com/WinVector/rquery/blob/master/README.html">here</a>.</p>
 </div>
@@ -334,7 +334,7 @@ dq &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mk_td.ht
 <p>Here is an example.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ot &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mk_td.html">mk_td</a></span>(<span class="st">'d4'</span>,
                    <span class="dt">columns =</span> <span class="kw"><a href="http://www.rdocumentation.org/packages/wrapr/topics/qc">qc</a></span>(<span class="st">'a'</span>, <span class="st">'b'</span>, <span class="st">'c'</span>, <span class="st">'d'</span>)) <span class="op">%.&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="../reference/extend_nse.html">extend_nse</a></span>(., 
+<span class="st">  </span><span class="kw"><a href="../reference/extend.html">extend</a></span>(., 
              <span class="dt">x =</span> a <span class="op">+</span><span class="st"> </span><span class="dv">1</span>,
              <span class="dt">y =</span> x <span class="op">+</span><span class="st"> </span><span class="dv">1</span>,
              <span class="dt">u =</span> b <span class="op">+</span><span class="st"> </span><span class="dv">1</span>,
@@ -386,7 +386,7 @@ dq &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mk_td.ht
 <div id="performance" class="section level1">
 <h1 class="hasAnchor">
 <a href="#performance" class="anchor"></a>Performance</h1>
-<p>As <code>rquery</code> pipelines are factored into stages similar to the common relational operators they tend to be very compatible with downstream query optimizers. We think some of the advantage is the fact that <code>rquery</code> deliberately does not have a <code>group_by</code> operator, but instead considers this as the <code>partitionby</code> attribute of a <a href="https://winvector.github.io/rquery/reference/project_nse.html"><code>project()</code> node</a> (non-trivial example <a href="https://github.com/WinVector/rquery/blob/master/README.html">here</a>).</p>
+<p>As <code>rquery</code> pipelines are factored into stages similar to the common relational operators they tend to be very compatible with downstream query optimizers. We think some of the advantage is the fact that <code>rquery</code> deliberately does not have a <code>group_by</code> operator, but instead considers this as the <code>partitionby</code> attribute of a <a href="https://winvector.github.io/rquery/reference/project.html"><code><a href="../reference/project.html">project()</a></code> node</a> (non-trivial example <a href="https://github.com/WinVector/rquery/blob/master/README.html">here</a>).</p>
 <p>We have seen database based <code>rquery</code> outperform both in-memory <code>dplyr</code> and database based <code>dplyr</code></p>
 <blockquote>
 <p><img src="runtimes_1.png"></p>
@@ -396,7 +396,7 @@ dq &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mk_td.ht
 <p>From a coding point of view the automatic narrowing effect looks like this.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">wp &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mk_td.html">mk_td</a></span>(<span class="dt">table =</span> <span class="st">'d6'</span>,
                    <span class="dt">columns =</span> letters[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>]) <span class="op">%.&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="../reference/extend_nse.html">extend_nse</a></span>(., res <span class="op">:</span><span class="er">=</span><span class="st"> </span>a <span class="op">+</span><span class="st"> </span>b)
+<span class="st">  </span><span class="kw"><a href="../reference/extend.html">extend</a></span>(., res <span class="op">:</span><span class="er">=</span><span class="st"> </span>a <span class="op">+</span><span class="st"> </span>b)
 
 <span class="co"># full query</span>
 <span class="kw">cat</span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(wp, db))</code></pre></div>
@@ -416,7 +416,7 @@ dq &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mk_td.ht
 ##   `e`
 ##  FROM
 ##   `d6`
-##  ) tsql_22520511774449130215_0000000000</code></pre>
+##  ) tsql_19766795494092525304_0000000000</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># longer pipeline</span>
 wn &lt;-<span class="st"> </span>wp <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/select_columns.html">select_columns</a></span>(., <span class="st">"res"</span>)
@@ -436,8 +436,8 @@ wn &lt;-<span class="st"> </span>wp <span class="op">%.&gt;%</span>
 ##    `b`
 ##   FROM
 ##    `d6`
-##   ) tsql_13791547682884954304_0000000000
-## ) tsql_13791547682884954304_0000000001</code></pre>
+##   ) tsql_29462959565159622955_0000000000
+## ) tsql_29462959565159622955_0000000001</code></pre>
 <p>A graph of the the effects of this kind of narrowing (for <code>dplyr</code> by hand as <code>dplyr</code> currently does not have the above type of automatic query analysis/optimization) shows the sensitivity to this optimization.</p>
 <blockquote>
 <p><img src="present-2.png"></p>

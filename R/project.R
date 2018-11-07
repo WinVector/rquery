@@ -121,7 +121,7 @@ project_se.data.frame <- function(source, groupby, assignments,
 
 #' project data by grouping, and adding aggregate columns.
 #'
-#' project_nse() uses bquote() .()-style escaping.
+#' project() uses bquote() .()-style escaping.
 #'
 #' @param source source to select from.
 #' @param groupby grouping columns.
@@ -141,7 +141,7 @@ project_se.data.frame <- function(source, groupby, assignments,
 #'                stringsAsFactors = FALSE))
 #'
 #'   op_tree <- d %.>%
-#'     project_nse(., groupby = "group", vmax %:=% max(val))
+#'     project(., groupby = "group", vmax %:=% max(val))
 #'   cat(format(op_tree))
 #'   sql <- to_sql(op_tree, my_db)
 #'   cat(sql)
@@ -149,7 +149,7 @@ project_se.data.frame <- function(source, groupby, assignments,
 #'      print(.)
 #'
 #'   op_tree <- d %.>%
-#'     project_nse(., groupby = NULL, vmax %:=% max(val))
+#'     project(., groupby = NULL, vmax %:=% max(val))
 #'   cat(format(op_tree))
 #'   sql <- to_sql(op_tree, my_db)
 #'   cat(sql)
@@ -161,18 +161,24 @@ project_se.data.frame <- function(source, groupby, assignments,
 #'
 #' @export
 #'
-project_nse <- function(source, groupby, ...,
+project <- function(source, groupby, ...,
                         env = parent.frame()) {
   force(env)
-  UseMethod("project_nse", source)
+  UseMethod("project", source)
 }
 
+#' @rdname project
 #' @export
-#' @rdname project_nse
-aggregate_nse <- project_nse
+#'
+project_nse <- project
+
 
 #' @export
-project_nse.relop <- function(source, groupby, ...,
+#' @rdname project
+aggregate_nse <- project
+
+#' @export
+project.relop <- function(source, groupby, ...,
                               env = parent.frame()) {
   force(env)
   # Recommend way to caputre ... unevalauted from
@@ -184,12 +190,12 @@ project_nse.relop <- function(source, groupby, ...,
 }
 
 #' @export
-project_nse.data.frame <- function(source, groupby, ...,
+project.data.frame <- function(source, groupby, ...,
                                    env = parent.frame()) {
   force(env)
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- mk_td(tmp_name, colnames(source))
-  enode <- project_nse(dnode, groupby, ...,
+  enode <- project(dnode, groupby, ...,
                        env = env)
   rquery_apply_to_data_frame(source, enode, env = env)
 }

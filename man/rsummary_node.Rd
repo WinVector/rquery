@@ -42,7 +42,7 @@ if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quiet
               temporary = TRUE)
 
   ops <- db_td(db, "dRemote") \%.>\%
-    extend_nse(., v \%:=\% ifelse(x>2, "x", "y")) \%.>\%
+    extend(., v \%:=\% ifelse(x>2, "x", "y")) \%.>\%
     rsummary_node(.)
   cat(format(ops))
 

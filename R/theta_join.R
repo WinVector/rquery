@@ -183,7 +183,7 @@ theta_join_se.data.frame <- function(a, b,
 #'                     data.frame(AUC = 0.6, R2 = 0.2))
 #'   d2 <- rq_copy_to(my_db, 'd2',
 #'                     data.frame(AUC2 = 0.4, R2 = 0.3))
-#'   optree <- theta_join_nse(d1, d2, AUC >= AUC2)
+#'   optree <- theta_join(d1, d2, AUC >= AUC2)
 #'   cat(format(optree))
 #'   sql <- to_sql(optree, my_db)
 #'   cat(sql)
@@ -193,19 +193,23 @@ theta_join_se.data.frame <- function(a, b,
 #'
 #' @export
 #'
-theta_join_nse <- function(a, b,
+theta_join <- function(a, b,
                            expr,
                            ...,
                            jointype = 'INNER',
                            suffix = c("_a", "_b"),
                            env = parent.frame()) {
   force(env)
-  UseMethod("theta_join_nse", a)
+  UseMethod("theta_join", a)
 }
 
+#' @rdname theta_join
+#' @export
+#'
+theta_join_nse <- theta_join
 
 #' @export
-theta_join_nse.relop <- function(a, b,
+theta_join.relop <- function(a, b,
                                  expr,
                                  ...,
                                  jointype = 'INNER',
@@ -214,7 +218,7 @@ theta_join_nse.relop <- function(a, b,
   force(env)
   exprq <- substitute(expr)
   if(!("relop" %in% class(b))) {
-    stop("rquery::theta_join_nse.relop b must also be of class relop")
+    stop("rquery::theta_join.relop b must also be of class relop")
   }
   usesa <- column_names(a)
   usesb <- column_names(b)
@@ -241,7 +245,7 @@ theta_join_nse.relop <- function(a, b,
 }
 
 #' @export
-theta_join_nse.data.frame <- function(a, b,
+theta_join.data.frame <- function(a, b,
                                       expr,
                                       ...,
                                       jointype = 'INNER',
@@ -249,15 +253,16 @@ theta_join_nse.data.frame <- function(a, b,
                                       env = parent.frame()) {
   force(env)
   exprq <- substitute(expr)
+  exprq <- lapply_bquote_to_langauge_list(list(exprq), env)[[1]]
   if(!is.data.frame(b)) {
-    stop("rquery::theta_join_nse.data.frame b must also be a data.frame")
+    stop("rquery::theta_join.data.frame b must also be a data.frame")
   }
   nmgen <- mk_tmp_name_source("rquery_tmp")
   tmp_namea <- nmgen()
   dnodea <- mk_td(tmp_namea, colnames(a))
   tmp_nameb <- nmgen()
   dnodeb <- mk_td(tmp_namea, colnames(b))
-  enode <- theta_join_nse(dnodea, dnodeb,
+  enode <- theta_join(dnodea, dnodeb,
                           rquery_deparse(exprq),
                           jointype = jointype,
                           suffix = suffix,

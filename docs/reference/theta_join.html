@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Extend data by adding more columns. — extend_nse • rquery</title>
+<title>Make a theta_join node. — theta_join • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Extend data by adding more columns. — extend_nse" />
+<meta property="og:title" content="Make a theta_join node. — theta_join" />
 
-<meta property="og:description" content="Create a node similar to a Codd extend relational operator (add derived columns)." />
+<meta property="og:description" content="Theta join is a join on an arbitrary predicate." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -61,7 +61,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">1.2.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">1.2.1</span>
       </span>
     </div>
 
@@ -118,46 +118,49 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Extend data by adding more columns.</h1>
-    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/extend.R'><code>R/extend.R</code></a></small>
-    <div class="hidden name"><code>extend_nse.Rd</code></div>
+    <h1>Make a theta_join node.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/theta_join.R'><code>R/theta_join.R</code></a></small>
+    <div class="hidden name"><code>theta_join.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Create a node similar to a Codd extend relational operator (add derived columns).</p>
+    <p>Theta join is a join on an arbitrary predicate.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>extend_nse</span>(<span class='no'>source</span>, <span class='no'>...</span>, <span class='kw'>partitionby</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>orderby</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>reverse</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>display_form</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
+    <pre class="usage"><span class='fu'>theta_join</span>(<span class='no'>a</span>, <span class='no'>b</span>, <span class='no'>expr</span>, <span class='no'>...</span>, <span class='kw'>jointype</span> <span class='kw'>=</span> <span class='st'>"INNER"</span>, <span class='kw'>suffix</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"_a"</span>, <span class='st'>"_b"</span>),
+  <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())
+
+<span class='fu'>theta_join_nse</span>(<span class='no'>a</span>, <span class='no'>b</span>, <span class='no'>expr</span>, <span class='no'>...</span>, <span class='kw'>jointype</span> <span class='kw'>=</span> <span class='st'>"INNER"</span>, <span class='kw'>suffix</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"_a"</span>,
+  <span class='st'>"_b"</span>), <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>source</th>
+      <th>a</th>
       <td><p>source to select from.</p></td>
     </tr>
     <tr>
+      <th>b</th>
+      <td><p>source to select from.</p></td>
+    </tr>
+    <tr>
+      <th>expr</th>
+      <td><p>unquoted join condition</p></td>
+    </tr>
+    <tr>
       <th>...</th>
-      <td><p>new column assignment expressions.</p></td>
+      <td><p>force later arguments to be by name</p></td>
     </tr>
     <tr>
-      <th>partitionby</th>
-      <td><p>partitioning (window function) terms.</p></td>
+      <th>jointype</th>
+      <td><p>type of join ('INNER', 'LEFT', 'RIGHT', 'FULL').</p></td>
     </tr>
     <tr>
-      <th>orderby</th>
-      <td><p>ordering (in window function) terms.</p></td>
-    </tr>
-    <tr>
-      <th>reverse</th>
-      <td><p>reverse ordering (in window function) terms.</p></td>
-    </tr>
-    <tr>
-      <th>display_form</th>
-      <td><p>chacter presentation form</p></td>
+      <th>suffix</th>
+      <td><p>character length 2, suffices to disambiguate columns.</p></td>
     </tr>
     <tr>
       <th>env</th>
@@ -167,48 +170,52 @@
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>extend node.</p>
-    
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>Partitionby and orderby can only be used with a database that supports window-functions
-(such as PostgreSQL, Spark, and so on).  extend_nse() used bquote() .()-style abstraction.</p>
+    <p>theta_join node.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
 <span class='kw'>if</span> (<span class='fu'>requireNamespace</span>(<span class='st'>"DBI"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>&amp;&amp;</span> <span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
   <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
-  <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(<span class='no'>my_db</span>, <span class='st'>'d'</span>,
-                   <span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>0.6</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>0.2</span>))
-  <span class='no'>NEWCOL</span> <span class='kw'>&lt;-</span> <span class='fu'>as.name</span>(<span class='st'>"v"</span>)
-  <span class='no'>NEWVALUE</span> <span class='kw'>=</span> <span class='st'>"zz"</span>
-  <span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='fu'>extend_nse</span>(<span class='no'>d</span>, <span class='fu'>.</span>(<span class='no'>NEWCOL</span>) <span class='kw'>%:=%</span> <span class='fu'>ifelse</span>(<span class='no'>AUC</span><span class='kw'>&gt;</span><span class='fl'>0.5</span>, <span class='no'>R2</span>, <span class='fl'>1.0</span>), <span class='fu'>.</span>(<span class='no'>NEWVALUE</span>) <span class='kw'>%:=%</span> <span class='fl'>6</span>)
+  <span class='no'>d1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(<span class='no'>my_db</span>, <span class='st'>'d1'</span>,
+                    <span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>0.6</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>0.2</span>))
+  <span class='no'>d2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(<span class='no'>my_db</span>, <span class='st'>'d2'</span>,
+                    <span class='fu'>data.frame</span>(<span class='kw'>AUC2</span> <span class='kw'>=</span> <span class='fl'>0.4</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>0.3</span>))
+  <span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='fu'>theta_join</span>(<span class='no'>d1</span>, <span class='no'>d2</span>, <span class='no'>AUC</span> <span class='kw'>&gt;=</span> <span class='no'>AUC2</span>)
   <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>optree</span>))
   <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>optree</span>, <span class='no'>my_db</span>)
   <span class='fu'>cat</span>(<span class='no'>sql</span>)
   <span class='fu'>print</span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; table(`d`; 
+}</div><div class='output co'>#&gt; table(`d1`; 
 #&gt;   AUC,
 #&gt;   R2) %.&gt;%
-#&gt;  extend(.,
-#&gt;   v %:=% ifelse(AUC &gt; 0.5, R2, 1),
-#&gt;   zz %:=% 6)
+#&gt;  theta_join(.,
+#&gt;   table(`d2`; 
+#&gt;     AUC2,
+#&gt;     R2),
+#&gt;   j= INNER; on= AUC &gt;= AUC2)
 #&gt; SELECT
-#&gt;  `AUC`,
-#&gt;  `R2`,
-#&gt;  ( CASE WHEN ( `AUC` &gt; 0.5 ) THEN ( `R2` ) WHEN NOT ( `AUC` &gt; 0.5 ) THEN ( 1 ) ELSE NULL END )  AS `v`,
-#&gt;  6  AS `zz`
+#&gt;  `tsql_23234694194842116457_0000000000`.`AUC` AS `AUC`,
+#&gt;  `tsql_23234694194842116457_0000000000`.`R2` AS `R2_a`,
+#&gt;  `tsql_23234694194842116457_0000000001`.`R2` AS `R2_b`,
+#&gt;  `tsql_23234694194842116457_0000000001`.`AUC2` AS `AUC2`
 #&gt; FROM (
 #&gt;  SELECT
 #&gt;   `AUC`,
 #&gt;   `R2`
 #&gt;  FROM
-#&gt;   `d`
-#&gt;  ) tsql_98564863522039172198_0000000000
-#&gt;   AUC  R2   v zz
-#&gt; 1 0.6 0.2 0.2  6</div><div class='input'>
+#&gt;   `d1`
+#&gt; ) `tsql_23234694194842116457_0000000000`
+#&gt; INNER JOIN (
+#&gt;  SELECT
+#&gt;   `AUC2`,
+#&gt;   `R2`
+#&gt;  FROM
+#&gt;   `d2`
+#&gt; ) `tsql_23234694194842116457_0000000001` ON "AUC" &gt;= "AUC2"
+#&gt;   AUC R2_a R2_b AUC2
+#&gt; 1 0.6  0.2  0.3  0.4</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -217,8 +224,6 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-
-      <li><a href="#details">Details</a></li>
       
       <li><a href="#examples">Examples</a></li>
     </ul>

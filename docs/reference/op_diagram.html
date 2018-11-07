@@ -61,7 +61,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">1.2.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">1.2.1</span>
       </span>
     </div>
 
@@ -158,7 +158,7 @@
 <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='mk_td.html'>mk_td</a></span>(<span class='st'>'d'</span>,
              <span class='kw'>columns</span> <span class='kw'>=</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/wrapr/topics/qc'>qc</a></span>(<span class='no'>AUC</span>, <span class='no'>R2</span>))
 <span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span>
-  <span class='fu'><a href='extend_nse.html'>extend_nse</a></span>(<span class='no'>.</span>, <span class='no'>v</span> <span class='kw'>%:=%</span> <span class='fu'>ifelse</span>(<span class='no'>AUC</span><span class='kw'>&gt;</span><span class='fl'>0.5</span>, <span class='no'>R2</span>, <span class='fl'>1.0</span>)) <span class='kw'>%.&gt;%</span>
+  <span class='fu'><a href='extend.html'>extend</a></span>(<span class='no'>.</span>, <span class='no'>v</span> <span class='kw'>%:=%</span> <span class='fu'>ifelse</span>(<span class='no'>AUC</span><span class='kw'>&gt;</span><span class='fl'>0.5</span>, <span class='no'>R2</span>, <span class='fl'>1.0</span>)) <span class='kw'>%.&gt;%</span>
   <span class='fu'><a href='quantile_node.html'>quantile_node</a></span>(<span class='no'>.</span>) <span class='kw'>%.&gt;%</span>
   <span class='fu'><a href='natural_join.html'>natural_join</a></span>(<span class='no'>.</span>, <span class='no'>d</span>, <span class='kw'>jointype</span> <span class='kw'>=</span> <span class='st'>"LEFT"</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='st'>"AUC"</span>) <span class='kw'>%.&gt;%</span>
   <span class='fu'><a href='orderby.html'>orderby</a></span>(<span class='no'>.</span>, <span class='st'>"AUC"</span>)

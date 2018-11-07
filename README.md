@@ -37,11 +37,11 @@ There are many prior relational algebra inspired specialized query languages. Ju
 
 The primary relational operators include:
 
--   [`extend()`](https://winvector.github.io/rquery/reference/extend_nse.html). Extend adds derived columns to a relation table. With a sufficiently powerful `SQL` provider this includes ordered and partitioned window functions. This operator also includes built-in [`seplyr`](https://winvector.github.io/seplyr/)-style [assignment partitioning](https://winvector.github.io/seplyr/articles/MutatePartitioner.html). `extend()` can also alter existing columns, though we note this is not always a relational operation (it can lose row uniqueness).
--   [`project()`](https://winvector.github.io/rquery/reference/project_nse.html). Project is usually *portrayed* as the equivalent to column selection, though the original definition includes aggregation. In our opinion the original relational nature of the operator is best captured by moving `SQL`'s "`GROUP BY`" aggregation functionality.
+-   [`extend()`](https://winvector.github.io/rquery/reference/extend.html). Extend adds derived columns to a relation table. With a sufficiently powerful `SQL` provider this includes ordered and partitioned window functions. This operator also includes built-in [`seplyr`](https://winvector.github.io/seplyr/)-style [assignment partitioning](https://winvector.github.io/seplyr/articles/MutatePartitioner.html). `extend()` can also alter existing columns, though we note this is not always a relational operation (it can lose row uniqueness).
+-   [`project()`](https://winvector.github.io/rquery/reference/project.html). Project is usually *portrayed* as the equivalent to column selection, though the original definition includes aggregation. In our opinion the original relational nature of the operator is best captured by moving `SQL`'s "`GROUP BY`" aggregation functionality.
 -   [`natural_join()`](https://winvector.github.io/rquery/reference/natural_join.html). This a specialized relational join operator, using all common columns as an equi-join condition.
--   [`theta_join()`](https://winvector.github.io/rquery/reference/theta_join_nse.html). This is the relational join operator allowing an arbitrary matching predicate.
--   [`select_rows()`](https://winvector.github.io/rquery/reference/theta_join_nse.html). This is Codd's relational row selection. Obviously `select` alone is an over-used and now ambiguous term (for example: it is already used as the "doit" verb in `SQL` and the *column* selector in `dplyr`).
+-   [`theta_join()`](https://winvector.github.io/rquery/reference/theta_join.html). This is the relational join operator allowing an arbitrary matching predicate.
+-   [`select_rows()`](https://winvector.github.io/rquery/reference/theta_join.html). This is Codd's relational row selection. Obviously `select` alone is an over-used and now ambiguous term (for example: it is already used as the "doit" verb in `SQL` and the *column* selector in `dplyr`).
 -   [`rename_columns()`](https://winvector.github.io/rquery/reference/rename_columns.html). This operator renames sets of columns.
 -   [`set_indicator()`](https://winvector.github.io/rquery/reference/set_indicator.html). This operator produces a new column indicating set membership of a named column.
 
@@ -166,9 +166,9 @@ Now we re-write the original calculation in terms of the `rquery` SQL generating
 scale <- 0.237
 
 dq <- d %.>%
-  extend_nse(.,
-             probability :=
-               exp(assessmentTotal * scale))  %.>% 
+  extend(.,
+         probability :=
+           exp(assessmentTotal * scale))  %.>% 
   normalize_cols(.,
                  "probability",
                  partitionby = 'subjectID') %.>%
@@ -240,14 +240,14 @@ cat(to_sql(dq, db, source_limit = 1000))
             "assessmentTotal"
            FROM
             "d" LIMIT 1000
-           ) tsql_02527702899371135775_0000000000
-          ) tsql_02527702899371135775_0000000001
-         ) tsql_02527702899371135775_0000000002
-       ) tsql_02527702899371135775_0000000003
+           ) tsql_63858070051758258936_0000000000
+          ) tsql_63858070051758258936_0000000001
+         ) tsql_63858070051758258936_0000000002
+       ) tsql_63858070051758258936_0000000003
        WHERE "row_number" <= 1
-      ) tsql_02527702899371135775_0000000004
-     ) tsql_02527702899371135775_0000000005
-    ) tsql_02527702899371135775_0000000006 ORDER BY "subjectID"
+      ) tsql_63858070051758258936_0000000004
+     ) tsql_63858070051758258936_0000000005
+    ) tsql_63858070051758258936_0000000006 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 

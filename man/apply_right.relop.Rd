@@ -41,7 +41,7 @@ if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quiet
 
   # operations pipeline/tree
   optree <- mk_td("d", "x") \%.>\%
-    extend_nse(., y = x*x)
+    extend(., y = x*x)
 
   # wrapr dot pipe apply_right dispatch
   # causes this statment to apply optree

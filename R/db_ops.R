@@ -187,7 +187,7 @@ rq_colnames <- function(db, table_name,
 #'                    overwrite = TRUE,
 #'                    temporary = TRUE)
 #'   res <- d %.>%
-#'     extend_nse(.,
+#'     extend(.,
 #'                wc %:=% ifelse(w>1, "x", "y"),
 #'                wn %:=% ifelse(w>1, 1, 2),
 #'                xc %:=% ifelse(x>1, "x", "y"),
@@ -683,14 +683,14 @@ rq_connection_tests <- function(db,
   yc  <- NULL # don't appear unbound
   yn <- NULL # don't appear unbound
   local_sample <- d %.>%
-    extend_nse(.,
+    extend(.,
                wc %:=% ifelse(w>1, "x", "y"),
                wn %:=% ifelse(w>1, 1, 2),
                xc %:=% ifelse(x>1, "x", "y"),
                xn %:=% ifelse(x>1, 1, 2),
                yc %:=% ifelse(y=="a", "x", "y"),
                yn %:=% ifelse(y=="a", "x", "y")) %.>%
-    select_rows_nse(.,
+    select_rows(.,
                     want == 1) %.>%
     execute(db, .)
   logical_col <- vapply(colnames(local_sample),

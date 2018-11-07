@@ -29,7 +29,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">1.2.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">1.2.1</span>
       </span>
     </div>
 
@@ -88,7 +88,7 @@
       <h1>Query Generation</h1>
                         <h4 class="author">John Mount</h4>
             
-            <h4 class="date">2018-11-06</h4>
+            <h4 class="date">2018-11-07</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery//blob/master/vignettes/QueryGeneration.Rmd"><code>vignettes/QueryGeneration.Rmd</code></a></small>
       <div class="hidden name"><code>QueryGeneration.Rmd</code></div>
@@ -106,18 +106,18 @@ d &lt;-<span class="st"> </span><span class="kw"><a href="../reference/db_td.htm
 scale &lt;-<span class="st"> </span><span class="fl">0.237</span>
 
 dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="../reference/extend_nse.html">extend_nse</a></span>(.,
-             probability <span class="op">:</span><span class="er">=</span>
-<span class="st">               </span><span class="kw">exp</span>(assessmentTotal <span class="op">*</span><span class="st"> </span>scale)<span class="op">/</span>
-<span class="st">               </span><span class="kw">sum</span>(<span class="kw">exp</span>(assessmentTotal <span class="op">*</span><span class="st"> </span>scale)),
-             count <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">count</span>(<span class="dv">1</span>),
-             <span class="dt">partitionby =</span> <span class="st">'subjectID'</span>) <span class="op">%.&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="../reference/extend_nse.html">extend_nse</a></span>(.,
-             rank <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">rank</span>(),
-             <span class="dt">partitionby =</span> <span class="st">'subjectID'</span>,
-             <span class="dt">orderby =</span> <span class="kw">c</span>(<span class="st">'probability'</span>, <span class="st">'surveyCategory'</span>))  <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/extend.html">extend</a></span>(.,
+         probability <span class="op">:</span><span class="er">=</span>
+<span class="st">           </span><span class="kw">exp</span>(assessmentTotal <span class="op">*</span><span class="st"> </span>scale)<span class="op">/</span>
+<span class="st">           </span><span class="kw">sum</span>(<span class="kw">exp</span>(assessmentTotal <span class="op">*</span><span class="st"> </span>scale)),
+         count <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">count</span>(<span class="dv">1</span>),
+         <span class="dt">partitionby =</span> <span class="st">'subjectID'</span>) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/extend.html">extend</a></span>(.,
+         rank <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">rank</span>(),
+         <span class="dt">partitionby =</span> <span class="st">'subjectID'</span>,
+         <span class="dt">orderby =</span> <span class="kw">c</span>(<span class="st">'probability'</span>, <span class="st">'surveyCategory'</span>))  <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/rename_columns.html">rename_columns</a></span>(., <span class="st">'diagnosis'</span> <span class="op">:</span><span class="er">=</span><span class="st"> 'surveyCategory'</span>) <span class="op">%.&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="../reference/select_rows_nse.html">select_rows_nse</a></span>(., rank <span class="op">==</span><span class="st"> </span>count) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/select_rows.html">select_rows</a></span>(., rank <span class="op">==</span><span class="st"> </span>count) <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/select_columns.html">select_columns</a></span>(., <span class="kw">c</span>(<span class="st">'subjectID'</span>, 
                       <span class="st">'diagnosis'</span>, 
                       <span class="st">'probability'</span>)) <span class="op">%.&gt;%</span>
@@ -183,13 +183,13 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
          `assessmentTotal`
         FROM
          `d` LIMIT 1000
-        ) tsql_94073148444865190556_0000000000
-       ) tsql_94073148444865190556_0000000001
-     ) tsql_94073148444865190556_0000000002
-    ) tsql_94073148444865190556_0000000003
+        ) tsql_20146347901461458704_0000000000
+       ) tsql_20146347901461458704_0000000001
+     ) tsql_20146347901461458704_0000000002
+    ) tsql_20146347901461458704_0000000003
     WHERE `rank` = `count`
-   ) tsql_94073148444865190556_0000000004
-  ) tsql_94073148444865190556_0000000005 ORDER BY `subjectID`</code></pre>
+   ) tsql_20146347901461458704_0000000004
+  ) tsql_20146347901461458704_0000000005 ORDER BY `subjectID`</code></pre>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

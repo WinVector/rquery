@@ -1,4 +1,9 @@
 
+# rquery 1.2.1 2018/11/07
+
+ * versions without _nse() suffix.
+ * update docs.
+
 # rquery 1.2.0 2018/11/06
 
  * fix name lookup issue.

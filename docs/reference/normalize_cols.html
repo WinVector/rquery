@@ -61,7 +61,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">1.2.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">1.2.1</span>
       </span>
     </div>
 
@@ -165,7 +165,7 @@
 <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='mk_td.html'>mk_td</a></span>(<span class='st'>"survey_table"</span>,
                   <span class='fu'>c</span>(<span class='st'>"subjectID"</span>, <span class='st'>"surveyCategory"</span>, <span class='st'>"assessmentTotal"</span>))
 <span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span>
-  <span class='fu'><a href='extend_nse.html'>extend_nse</a></span>(<span class='no'>.</span>,
+  <span class='fu'><a href='extend.html'>extend</a></span>(<span class='no'>.</span>,
              <span class='no'>probability</span> <span class='kw'>%:=%</span>
                <span class='fu'>exp</span>(<span class='no'>assessmentTotal</span> * <span class='no'>scale</span>))  <span class='kw'>%.&gt;%</span>
   <span class='fu'>normalize_cols</span>(<span class='no'>.</span>,

@@ -62,7 +62,7 @@ the calculation prior to it losing narrowing optimizations." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">1.2.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">1.2.1</span>
       </span>
     </div>
 
@@ -185,7 +185,7 @@ the calculation prior to it losing narrowing optimizations.</p>
               <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 
   <span class='no'>ops</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='db_td.html'>db_td</a></span>(<span class='no'>db</span>, <span class='st'>"dRemote"</span>) <span class='kw'>%.&gt;%</span>
-    <span class='fu'><a href='extend_nse.html'>extend_nse</a></span>(<span class='no'>.</span>, <span class='no'>v</span> <span class='kw'>%:=%</span> <span class='fu'>ifelse</span>(<span class='no'>x</span><span class='kw'>&gt;</span><span class='fl'>2</span>, <span class='st'>"x"</span>, <span class='st'>"y"</span>)) <span class='kw'>%.&gt;%</span>
+    <span class='fu'><a href='extend.html'>extend</a></span>(<span class='no'>.</span>, <span class='no'>v</span> <span class='kw'>%:=%</span> <span class='fu'>ifelse</span>(<span class='no'>x</span><span class='kw'>&gt;</span><span class='fl'>2</span>, <span class='st'>"x"</span>, <span class='st'>"y"</span>)) <span class='kw'>%.&gt;%</span>
     <span class='fu'>rsummary_node</span>(<span class='no'>.</span>)
   <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>ops</span>))
 

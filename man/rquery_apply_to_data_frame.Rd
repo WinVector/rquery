@@ -37,7 +37,7 @@ if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quiet
   old_o <- options(list("rquery.rquery_db_executor" = list(db = db)))
 
   optree <- mk_td("d", c("AUC", "R2", "D")) \%.>\%
-  	extend_nse(., c \%:=\% sqrt(R2)) \%.>\%
+  	extend(., c \%:=\% sqrt(R2)) \%.>\%
     orderby(., cols = "R2", reverse = "R2")
 
   d <- data.frame(AUC = 0.6, R2 = c(0.1, 0.2), D = NA, z = 2)

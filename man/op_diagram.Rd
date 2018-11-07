@@ -24,7 +24,7 @@ Build a diagram of a optree pipeline.
 d <- mk_td('d',
              columns = qc(AUC, R2))
 optree <- d \%.>\%
-  extend_nse(., v \%:=\% ifelse(AUC>0.5, R2, 1.0)) \%.>\%
+  extend(., v \%:=\% ifelse(AUC>0.5, R2, 1.0)) \%.>\%
   quantile_node(.) \%.>\%
   natural_join(., d, jointype = "LEFT", by = "AUC") \%.>\%
   orderby(., "AUC")

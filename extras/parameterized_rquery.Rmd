@@ -27,12 +27,12 @@ Immediate mode example.
 ```{r}
 # apply a parameterized pipeline using bquote
 mtcars %.>%
-  extend_nse(., 
-             .(derived_nm) := .(num_nm)/.(den_nm)) %.>%
-  project_nse(., 
-              .(mean_nm) := mean(.(derived_nm)),
-              .(count_nm) := length(.(derived_nm)),
-              groupby = group_nm) %.>%
+  extend(., 
+         .(derived_nm) := .(num_nm)/.(den_nm)) %.>%
+  project(., 
+          .(mean_nm) := mean(.(derived_nm)),
+          .(count_nm) := length(.(derived_nm)),
+          groupby = group_nm) %.>%
   orderby(., 
           group_nm)
 ```
@@ -49,12 +49,12 @@ count <- function(v) { length(v) }
 
 # capture the operator pipeline
 ops <- td %.>%
-  extend_nse(., 
-             .(derived_nm) := .(num_nm)/.(den_nm)) %.>%
-  project_nse(., 
-              .(mean_nm) := mean(.(derived_nm)),
-              .(count_nm) := count(.(derived_nm)),
-              groupby = group_nm) %.>%
+  extend(., 
+         .(derived_nm) := .(num_nm)/.(den_nm)) %.>%
+  project(., 
+          .(mean_nm) := mean(.(derived_nm)),
+          .(count_nm) := count(.(derived_nm)),
+          groupby = group_nm) %.>%
   orderby(., 
           group_nm)
 

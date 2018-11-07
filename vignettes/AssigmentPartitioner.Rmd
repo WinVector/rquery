@@ -9,7 +9,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-`rquery::extend_se()` and `rquery::extend_nse()` each automatically partition a sequence of assignments so that no statement is using any value created in the same partition element or group.  This is to eliminate potentially dangerous ambiguity in statements.
+`rquery::extend_se()` and `rquery::extend()` each automatically partition a sequence of assignments so that no statement is using any value created in the same partition element or group.  This is to eliminate potentially dangerous ambiguity in statements.
 
 For such a partition: the evaluation result does not depend on the order of execution of the statements in each group (as they are all independent of each other's left-hand-sides).  A no-dependency small number of groups partition is *very* helpful when executing expressions on `SQL` based data interfaces (such as `Apache Spark`).
 
@@ -43,7 +43,7 @@ d1 %.>%
 
 # design the experiment 
 plan <- d1 %.>%
-  extend_nse(.,
+  extend(.,
    choice_a = rand_a>=0.5, 
     a_1 = ifelse(choice_a, 
                   'T', 
@@ -107,7 +107,7 @@ Note: re-using variable variable names does limit the planner's ability to effic
 
 ```{r reuse, comment="", eval=run_vignette}
 plan2 <- d1 %.>%
-  extend_nse(.,
+  extend(.,
    choice = rand_a>=0.5, 
     a_1 = ifelse(choice, 
                   'T', 

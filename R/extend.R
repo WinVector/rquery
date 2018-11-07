@@ -210,7 +210,7 @@ extend_se.data.frame <- function(source, assignments,
 #' Create a node similar to a Codd extend relational operator (add derived columns).
 #'
 #' Partitionby and orderby can only be used with a database that supports window-functions
-#' (such as PostgreSQL, Spark, and so on).  extend_nse() used bquote() .()-style abstraction.
+#' (such as PostgreSQL, Spark, and so on).  extend() used bquote() .()-style abstraction.
 #'
 #' @param source source to select from.
 #' @param ... new column assignment expressions.
@@ -229,7 +229,7 @@ extend_se.data.frame <- function(source, assignments,
 #'                    data.frame(AUC = 0.6, R2 = 0.2))
 #'   NEWCOL <- as.name("v")
 #'   NEWVALUE = "zz"
-#'   optree <- extend_nse(d, .(NEWCOL) %:=% ifelse(AUC>0.5, R2, 1.0), .(NEWVALUE) %:=% 6)
+#'   optree <- extend(d, .(NEWCOL) %:=% ifelse(AUC>0.5, R2, 1.0), .(NEWVALUE) %:=% 6)
 #'   cat(format(optree))
 #'   sql <- to_sql(optree, my_db)
 #'   cat(sql)
@@ -239,20 +239,25 @@ extend_se.data.frame <- function(source, assignments,
 #'
 #' @export
 #'
-extend_nse <- function(source,
-                       ...,
-                       partitionby = NULL,
-                       orderby = NULL,
-                       reverse = NULL,
-                       display_form = NULL,
-                       env = parent.frame()) {
+extend <- function(source,
+                   ...,
+                   partitionby = NULL,
+                   orderby = NULL,
+                   reverse = NULL,
+                   display_form = NULL,
+                   env = parent.frame()) {
   force(env)
-  UseMethod("extend_nse", source)
+  UseMethod("extend", source)
 }
+
+#' @rdname extend
+#' @export
+#'
+extend_nse <- extend
 
 #' @export
 #'
-extend_nse.relop <- function(source,
+extend.relop <- function(source,
                              ...,
                              partitionby = NULL,
                              orderby = NULL,
@@ -265,7 +270,7 @@ extend_nse.relop <- function(source,
   exprs <-  eval(substitute(alist(...)))
   exprs <- lapply_bquote_to_langauge_list(exprs, env)
   if(length(setdiff(reverse, c(orderby, partitionby)))>0) {
-    stop("rquery::extend_nse.relop all reverse columns must also be orderby or partitionby columns")
+    stop("rquery::extend.relop all reverse columns must also be orderby or partitionby columns")
   }
   parsed <- parse_nse(source, exprs, env = env)
   extend_impl_list(source = source,
@@ -278,7 +283,7 @@ extend_nse.relop <- function(source,
 
 #' @export
 #'
-extend_nse.data.frame <- function(source,
+extend.data.frame <- function(source,
                                   ...,
                                   partitionby = NULL,
                                   orderby = NULL,
@@ -287,11 +292,11 @@ extend_nse.data.frame <- function(source,
                                   env = parent.frame()) {
   force(env)
   if(length(setdiff(reverse, c(partitionby, orderby)))>0) {
-    stop("rquery::extend_nse.data.frame all reverse columns must also be orderby or partitionby columns")
+    stop("rquery::extend.data.frame all reverse columns must also be orderby or partitionby columns")
   }
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- mk_td(tmp_name, colnames(source))
-  enode <- extend_nse(dnode,
+  enode <- extend(dnode,
                       ...,
                       partitionby = partitionby,
                       orderby = orderby,

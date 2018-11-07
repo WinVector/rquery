@@ -29,7 +29,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">1.2.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">1.2.1</span>
       </span>
     </div>
 
@@ -88,7 +88,7 @@
       <h1>Assignment Partitioner</h1>
                         <h4 class="author">John Mount, Win-Vector LLC</h4>
             
-            <h4 class="date">2018-11-06</h4>
+            <h4 class="date">2018-11-07</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery//blob/master/vignettes/AssigmentPartitioner.Rmd"><code>vignettes/AssigmentPartitioner.Rmd</code></a></small>
       <div class="hidden name"><code>AssigmentPartitioner.Rmd</code></div>
@@ -97,7 +97,7 @@
 
     
     
-<p><code><a href="../reference/extend_se.html">rquery::extend_se()</a></code> and <code><a href="../reference/extend_nse.html">rquery::extend_nse()</a></code> each automatically partition a sequence of assignments so that no statement is using any value created in the same partition element or group. This is to eliminate potentially dangerous ambiguity in statements.</p>
+<p><code><a href="../reference/extend_se.html">rquery::extend_se()</a></code> and <code><a href="../reference/extend.html">rquery::extend()</a></code> each automatically partition a sequence of assignments so that no statement is using any value created in the same partition element or group. This is to eliminate potentially dangerous ambiguity in statements.</p>
 <p>For such a partition: the evaluation result does not depend on the order of execution of the statements in each group (as they are all independent of each other’s left-hand-sides). A no-dependency small number of groups partition is <em>very</em> helpful when executing expressions on <code>SQL</code> based data interfaces (such as <code>Apache Spark</code>).</p>
 <p>The method used to partition expressions is to scan the remaining expressions in order taking any that: have all their values available from earlier groups, do not use a value formed in the current group, and do not overwrite a value formed in the current group.</p>
 <p>This partitioning method ensures safe and correct results, and can lead to far fewer groups (and much more efficient queries) than the straightforward method of breaking up the sequence of expressions at each new-value use.</p>
@@ -164,7 +164,7 @@ d1 <span class="op">%.&gt;%</span>
 </table>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># design the experiment </span>
 plan &lt;-<span class="st"> </span>d1 <span class="op">%.&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="../reference/extend_nse.html">extend_nse</a></span>(.,
+<span class="st">  </span><span class="kw"><a href="../reference/extend.html">extend</a></span>(.,
    <span class="dt">choice_a =</span> rand_a<span class="op">&gt;=</span><span class="fl">0.5</span>, 
     <span class="dt">a_1 =</span> <span class="kw">ifelse</span>(choice_a, 
                   <span class="st">'T'</span>, 
@@ -357,7 +357,7 @@ FROM (
 <p>A straightforward method (with no statement re-ordering) of splitting into non-dependent groups would have to split the mutate at each first use of a new value: yielding more mutate stages. For why a low number of execution stages is important please see <a href="http://winvector.github.io/FluidData/partition_mutate.html">here</a>.</p>
 <p>Note: re-using variable variable names does limit the planner’s ability to efficiently partition the the statement. The planner still emits safe and correct code, but unless it were to be allowed to introduce new variable names it must break sequences in more places. We show this effect below:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">plan2 &lt;-<span class="st"> </span>d1 <span class="op">%.&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="../reference/extend_nse.html">extend_nse</a></span>(.,
+<span class="st">  </span><span class="kw"><a href="../reference/extend.html">extend</a></span>(.,
    <span class="dt">choice =</span> rand_a<span class="op">&gt;=</span><span class="fl">0.5</span>, 
     <span class="dt">a_1 =</span> <span class="kw">ifelse</span>(choice, 
                   <span class="st">'T'</span>, 

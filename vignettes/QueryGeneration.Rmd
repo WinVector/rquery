@@ -60,18 +60,18 @@ d <- db_td(my_db, "d")
 scale <- 0.237
 
 dq <- d %.>%
-  extend_nse(.,
-             probability :=
-               exp(assessmentTotal * scale)/
-               sum(exp(assessmentTotal * scale)),
-             count := count(1),
-             partitionby = 'subjectID') %.>%
-  extend_nse(.,
-             rank := rank(),
-             partitionby = 'subjectID',
-             orderby = c('probability', 'surveyCategory'))  %.>%
+  extend(.,
+         probability :=
+           exp(assessmentTotal * scale)/
+           sum(exp(assessmentTotal * scale)),
+         count := count(1),
+         partitionby = 'subjectID') %.>%
+  extend(.,
+         rank := rank(),
+         partitionby = 'subjectID',
+         orderby = c('probability', 'surveyCategory'))  %.>%
   rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
-  select_rows_nse(., rank == count) %.>%
+  select_rows(., rank == count) %.>%
   select_columns(., c('subjectID', 
                       'diagnosis', 
                       'probability')) %.>%
