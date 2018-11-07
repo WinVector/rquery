@@ -2,6 +2,8 @@
 # rquery 1.2.0 2018/11/06
 
  * fix name lookup issue.
+ * add bquote() abstraction to extend_nse(), project_nse(), and select_rows_nse().
+ * fix column check on select_rows*
  * confirm DBI on tests.
 
 # rquery 1.1.1 2018/10/26

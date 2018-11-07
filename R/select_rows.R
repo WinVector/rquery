@@ -34,6 +34,12 @@ select_rows_se.relop <- function(source, expr,
   have <- column_names(source)
   parsed <- parse_se(source, expr, env = env,
                      check_names = FALSE)
+  src_columns <- column_names(source)
+  required_cols <- sort(unique(c(
+    merge_fld(parsed, "symbols_used"),
+    merge_fld(parsed, "free_symbols")
+  )))
+  check_have_cols(src_columns, required_cols, "rquery::select_rows_se.relop")
   assignments <- unpack_assignments(source, parsed,
                                     check_is_assignment = FALSE)
   parsed[[1]]$symbols_produced <- character(0)
@@ -61,6 +67,8 @@ select_rows_se.data.frame <- function(source, expr,
 
 #' Make a select rows node.
 #'
+#' select_rows_nse() uses bquote() .()-style escaping.
+#'
 #' @param source source to select from.
 #' @param expr expression to select rows.
 #' @param env environment to look to.
@@ -72,7 +80,8 @@ select_rows_se.data.frame <- function(source, expr,
 #'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 #'   d <- rq_copy_to(my_db, 'd',
 #'                    data.frame(AUC = 0.6, R2 = 0.2, z = 3))
-#'   optree <- select_rows_nse(d, AUC >= 0.5) %.>%
+#'   TARGETCOL = as.name("AUC")
+#'   optree <- select_rows_nse(d, .(TARGETCOL) >= 0.5) %.>%
 #'     select_columns(., "R2")
 #'   cat(format(optree))
 #'   sql <- to_sql(optree, my_db)
@@ -94,9 +103,16 @@ select_rows_nse.relop <- function(source, expr,
                             env = parent.frame()) {
   force(env)
   exprq <- substitute(expr)
+  exprq <- lapply_bquote_to_langauge_list(list(exprq), env)[[1]]
   have <- column_names(source)
   parsed <- parse_nse(source, list(exprq), env = env,
                       check_names = FALSE)
+  src_columns <- column_names(source)
+  required_cols <- sort(unique(c(
+    merge_fld(parsed, "symbols_used"),
+    merge_fld(parsed, "free_symbols")
+  )))
+  check_have_cols(src_columns, required_cols, "rquery::select_rows_nse.relop")
   assignments <- unpack_assignments(source, parsed,
                                     check_is_assignment = FALSE)
   parsed[[1]]$symbols_produced <- character(0)

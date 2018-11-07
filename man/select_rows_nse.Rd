@@ -17,7 +17,7 @@ select_rows_nse(source, expr, env = parent.frame())
 select columns node.
 }
 \description{
-Make a select rows node.
+select_rows_nse() uses bquote() .()-style escaping.
 }
 \examples{
 
@@ -25,7 +25,8 @@ if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quiet
   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
   d <- rq_copy_to(my_db, 'd',
                    data.frame(AUC = 0.6, R2 = 0.2, z = 3))
-  optree <- select_rows_nse(d, AUC >= 0.5) \%.>\%
+  TARGETCOL = as.name("AUC")
+  optree <- select_rows_nse(d, .(TARGETCOL) >= 0.5) \%.>\%
     select_columns(., "R2")
   cat(format(optree))
   sql <- to_sql(optree, my_db)

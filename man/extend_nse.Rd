@@ -30,7 +30,7 @@ Create a node similar to a Codd extend relational operator (add derived columns)
 }
 \details{
 Partitionby and orderby can only be used with a database that supports window-functions
-(such as PostgreSQL, Spark, and so on).
+(such as PostgreSQL, Spark, and so on).  extend_nse() used bquote() .()-style abstraction.
 }
 \examples{
 
@@ -38,7 +38,9 @@ if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quiet
   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
   d <- rq_copy_to(my_db, 'd',
                    data.frame(AUC = 0.6, R2 = 0.2))
-  optree <- extend_nse(d, v \%:=\% ifelse(AUC>0.5, R2, 1.0))
+  NEWCOL <- as.name("v")
+  NEWVALUE = "zz"
+  optree <- extend_nse(d, .(NEWCOL) \%:=\% ifelse(AUC>0.5, R2, 1.0), .(NEWVALUE) \%:=\% 6)
   cat(format(optree))
   sql <- to_sql(optree, my_db)
   cat(sql)

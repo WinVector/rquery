@@ -121,6 +121,8 @@ project_se.data.frame <- function(source, groupby, assignments,
 
 #' project data by grouping, and adding aggregate columns.
 #'
+#' project_nse() uses bquote() .()-style escaping.
+#'
 #' @param source source to select from.
 #' @param groupby grouping columns.
 #' @param ... new column assignment expressions.
@@ -176,6 +178,7 @@ project_nse.relop <- function(source, groupby, ...,
   # Recommend way to caputre ... unevalauted from
   # http://adv-r.had.co.nz/Computing-on-the-language.html#substitute "Capturing unevaluated ..."
   exprs <-  eval(substitute(alist(...)))
+  exprs <- lapply_bquote_to_langauge_list(exprs, env)
   parsed <- parse_nse(source, exprs, env = env)
   project_impl(source, groupby = groupby, parsed = parsed)
 }

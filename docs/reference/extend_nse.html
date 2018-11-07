@@ -61,7 +61,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">1.1.1</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">1.2.0</span>
       </span>
     </div>
 
@@ -172,7 +172,7 @@
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>Partitionby and orderby can only be used with a database that supports window-functions
-(such as PostgreSQL, Spark, and so on).</p>
+(such as PostgreSQL, Spark, and so on).  extend_nse() used bquote() .()-style abstraction.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -181,7 +181,9 @@
   <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
   <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(<span class='no'>my_db</span>, <span class='st'>'d'</span>,
                    <span class='fu'>data.frame</span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>0.6</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>0.2</span>))
-  <span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='fu'>extend_nse</span>(<span class='no'>d</span>, <span class='no'>v</span> <span class='kw'>%:=%</span> <span class='fu'>ifelse</span>(<span class='no'>AUC</span><span class='kw'>&gt;</span><span class='fl'>0.5</span>, <span class='no'>R2</span>, <span class='fl'>1.0</span>))
+  <span class='no'>NEWCOL</span> <span class='kw'>&lt;-</span> <span class='fu'>as.name</span>(<span class='st'>"v"</span>)
+  <span class='no'>NEWVALUE</span> <span class='kw'>=</span> <span class='st'>"zz"</span>
+  <span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='fu'>extend_nse</span>(<span class='no'>d</span>, <span class='fu'>.</span>(<span class='no'>NEWCOL</span>) <span class='kw'>%:=%</span> <span class='fu'>ifelse</span>(<span class='no'>AUC</span><span class='kw'>&gt;</span><span class='fl'>0.5</span>, <span class='no'>R2</span>, <span class='fl'>1.0</span>), <span class='fu'>.</span>(<span class='no'>NEWVALUE</span>) <span class='kw'>%:=%</span> <span class='fl'>6</span>)
   <span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>optree</span>))
   <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>optree</span>, <span class='no'>my_db</span>)
   <span class='fu'>cat</span>(<span class='no'>sql</span>)
@@ -191,11 +193,13 @@
 #&gt;   AUC,
 #&gt;   R2) %.&gt;%
 #&gt;  extend(.,
-#&gt;   v %:=% ifelse(AUC &gt; 0.5, R2, 1))
+#&gt;   v %:=% ifelse(AUC &gt; 0.5, R2, 1),
+#&gt;   zz %:=% 6)
 #&gt; SELECT
 #&gt;  `AUC`,
 #&gt;  `R2`,
-#&gt;  ( CASE WHEN ( `AUC` &gt; 0.5 ) THEN ( `R2` ) WHEN NOT ( `AUC` &gt; 0.5 ) THEN ( 1 ) ELSE NULL END )  AS `v`
+#&gt;  ( CASE WHEN ( `AUC` &gt; 0.5 ) THEN ( `R2` ) WHEN NOT ( `AUC` &gt; 0.5 ) THEN ( 1 ) ELSE NULL END )  AS `v`,
+#&gt;  6  AS `zz`
 #&gt; FROM (
 #&gt;  SELECT
 #&gt;   `AUC`,
@@ -203,8 +207,8 @@
 #&gt;  FROM
 #&gt;   `d`
 #&gt;  ) tsql_98564863522039172198_0000000000
-#&gt;   AUC  R2   v
-#&gt; 1 0.6 0.2 0.2</div><div class='input'>
+#&gt;   AUC  R2   v zz
+#&gt; 1 0.6 0.2 0.2  6</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

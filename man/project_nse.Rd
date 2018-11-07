@@ -22,7 +22,7 @@ aggregate_nse(source, groupby, ..., env = parent.frame())
 project node.
 }
 \description{
-project data by grouping, and adding aggregate columns.
+project_nse() uses bquote() .()-style escaping.
 }
 \examples{
 
