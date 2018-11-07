@@ -1,4 +1,4 @@
-Paramaterized Rquery
+Parameterized Rquery
 ================
 
 [`rquery`](https://CRAN.R-project.org/package=rquery) `1.2.0` now incorporates [`bquote()`](https://www.rdocumentation.org/packages/base/versions/3.5.1/topics/bquote) [quasi-quotation](https://en.wikipedia.org/wiki/Quasi-quotation).
@@ -160,11 +160,11 @@ cat(sql)
     ##     "cyl"
     ##    FROM
     ##     "mtcars"
-    ##    ) tsql_58024815186737431810_0000000000
-    ##   ) tsql_58024815186737431810_0000000001
+    ##    ) tsql_52910201388564836785_0000000000
+    ##   ) tsql_52910201388564836785_0000000001
     ##  GROUP BY
     ##   "am"
-    ## ) tsql_58024815186737431810_0000000002 ORDER BY "am"
+    ## ) tsql_52910201388564836785_0000000002 ORDER BY "am"
 
 ``` r
 # disconnect
