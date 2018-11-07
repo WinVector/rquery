@@ -20,7 +20,7 @@ mean_nm <- as.name(paste0("mean_", derived_nm))
 count_nm <- as.name("group_count")
 ```
 
-Immediate mode example.
+Immediate mode example (note we are using newer `rquery` `1.2.1` notation "`extend()`" instead of `extend_nse()`).
 
 ``` r
 # apply a parameterized pipeline using bquote
@@ -160,11 +160,11 @@ cat(sql)
     ##     "cyl"
     ##    FROM
     ##     "mtcars"
-    ##    ) tsql_33279743848656164628_0000000000
-    ##   ) tsql_33279743848656164628_0000000001
+    ##    ) tsql_67780433375057887169_0000000000
+    ##   ) tsql_67780433375057887169_0000000001
     ##  GROUP BY
     ##   "am"
-    ## ) tsql_33279743848656164628_0000000002 ORDER BY "am"
+    ## ) tsql_67780433375057887169_0000000002 ORDER BY "am"
 
 ``` r
 # disconnect

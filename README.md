@@ -45,6 +45,8 @@ The primary relational operators include:
 -   [`rename_columns()`](https://winvector.github.io/rquery/reference/rename_columns.html). This operator renames sets of columns.
 -   [`set_indicator()`](https://winvector.github.io/rquery/reference/set_indicator.html). This operator produces a new column indicating set membership of a named column.
 
+(Note `rquery` prior to version `1.2.1` used a `_nse()` suffix yielding commands such as `extend_nse()` instead of the newer `extend()` shown here).
+
 The primary non-relational (traditional `SQL`) operators are:
 
 -   [`select_columns()`](https://winvector.github.io/rquery/reference/select_columns.html). This allows choice of columns (central to `SQL`), but is not a relational operator as it can damage row-uniqueness.
@@ -240,14 +242,14 @@ cat(to_sql(dq, db, source_limit = 1000))
             "assessmentTotal"
            FROM
             "d" LIMIT 1000
-           ) tsql_63858070051758258936_0000000000
-          ) tsql_63858070051758258936_0000000001
-         ) tsql_63858070051758258936_0000000002
-       ) tsql_63858070051758258936_0000000003
+           ) tsql_54039385994557723468_0000000000
+          ) tsql_54039385994557723468_0000000001
+         ) tsql_54039385994557723468_0000000002
+       ) tsql_54039385994557723468_0000000003
        WHERE "row_number" <= 1
-      ) tsql_63858070051758258936_0000000004
-     ) tsql_63858070051758258936_0000000005
-    ) tsql_63858070051758258936_0000000006 ORDER BY "subjectID"
+      ) tsql_54039385994557723468_0000000004
+     ) tsql_54039385994557723468_0000000005
+    ) tsql_54039385994557723468_0000000006 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 

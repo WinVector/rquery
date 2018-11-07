@@ -22,7 +22,7 @@ mean_nm <- as.name(paste0("mean_", derived_nm))
 count_nm <- as.name("group_count")
 ```
 
-Immediate mode example.
+Immediate mode example (note we are using newer `rquery` `1.2.1` notation "`extend()`" instead of `extend_nse()`).
 
 ```{r}
 # apply a parameterized pipeline using bquote
