@@ -12,8 +12,6 @@ output: github_document
 
 To install: `devtools::install_github("WinVector/rquery")` or `install.packages("rquery")`.
 
-A good place to start is the [`rquery` introductory vignette](https://winvector.github.io/rquery/articles/rquery_intro.html).
-
 Note: `rquery` is a "database first" design.  This means choices are made that favor database implementation. These include: capturing the entire calculation prior to doing any work (and using recursive methods to inspect this object, which can limit the calculation depth to under 1000 steps at a time), preferring "tame column names" (which isn't a bad idea in `R` anyway as columns and variables are often seen as cousins), and not preserving row or column order (or supporting numeric column indexing).  Also, `rquery` does have a fast in-memory implementation: [`rqdatatable`](https://CRAN.R-project.org/package=rqdatatable) (thanks to the [`data.table` package](https://CRAN.R-project.org/package=data.table)), so one can in fact use `rquery` without a database.
 
 ![](https://github.com/WinVector/rquery/raw/master/tools/rquery.jpg)
@@ -150,10 +148,17 @@ operation on remote non-memory data is `rquery`'s primary intent).
 
 First we show the Spark/database version of the original example data:
 
-```{r dbdat}
+```{r dbdat, warning=FALSE, message=FALSE}
 class(db)
+print(db)
+
+class(d)
 print(d)
 
+# remote structure inspection
+rstr(db, d$table_name)
+
+# or execute the table representation to bring back data
 d %.>%
   execute(db, .) %.>%
   knitr::kable(.)
@@ -161,7 +166,7 @@ d %.>%
 
 Now we re-write the original calculation in terms of the `rquery` SQL generating operators.
 
-```{r calc}
+```{r calc, warning=FALSE, message=FALSE}
 scale <- 0.237
 
 dq <- d %.>%
@@ -186,15 +191,31 @@ dq <- d %.>%
 
 We then generate our result:
 
-```{r res}
-dq %.>%
-  execute(db, .) %.>%
+```{r res, warning=FALSE, message=FALSE}
+result <- materialize(db, dq)
+
+class(result)
+result
+
+DBI::dbReadTable(db$connection, result$table_name) %.>%
   knitr::kable(.)
 ```
 
 We see we have quickly reproduced the original result using the new database operators.  This means such a calculation could easily be performed at a "big data" scale (using a database or `Spark`; in this case we would not take the results back, but instead use `CREATE TABLE tname AS` to build a remote materialized view of the results).
 
-The actual `SQL` query that produces the result is, in fact, quite involved:
+A bonus is, thanks to `data.table` and the `rqdatatable` packages we can run the exact same operator pipeline on local data.
+
+```{r localrun, warning=FALSE, message=FALSE}
+library("rqdatatable")
+
+d_local %.>% 
+  dq %.>%
+  knitr::kable(.)
+```
+
+Notice we applied the pipeline by piping data into it.  This ability is a feature of the [dot arrow pipe](https://journal.r-project.org/archive/2018/RJ-2018-042/index.html) we are using here.
+
+The actual `SQL` query that produces the database result is, in fact, quite involved:
 
 ```{r q, comment=''}
 cat(to_sql(dq, db, source_limit = 1000))

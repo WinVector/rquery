@@ -9,8 +9,6 @@
 
 To install: `devtools::install_github("WinVector/rquery")` or `install.packages("rquery")`.
 
-A good place to start is the [`rquery` introductory vignette](https://winvector.github.io/rquery/articles/rquery_intro.html).
-
 Note: `rquery` is a "database first" design. This means choices are made that favor database implementation. These include: capturing the entire calculation prior to doing any work (and using recursive methods to inspect this object, which can limit the calculation depth to under 1000 steps at a time), preferring "tame column names" (which isn't a bad idea in `R` anyway as columns and variables are often seen as cousins), and not preserving row or column order (or supporting numeric column indexing). Also, `rquery` does have a fast in-memory implementation: [`rqdatatable`](https://CRAN.R-project.org/package=rqdatatable) (thanks to the [`data.table` package](https://CRAN.R-project.org/package=data.table)), so one can in fact use `rquery` without a database.
 
 ![](https://github.com/WinVector/rquery/raw/master/tools/rquery.jpg)
@@ -144,12 +142,39 @@ class(db)
     ## [1] "rquery_db_info"
 
 ``` r
+print(db)
+```
+
+    ## [1] "rquery_db_info(PostgreSQLConnection, is_dbi=TRUE, note=\"\")"
+
+``` r
+class(d)
+```
+
+    ## [1] "relop_table_source" "relop"
+
+``` r
 print(d)
 ```
 
     ## [1] "table(\"d\"; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2)"
 
 ``` r
+# remote structure inspection
+rstr(db, d$table_name)
+```
+
+    ## table "d" PostgreSQLConnection 
+    ##  nrow: 4 
+    ## 'data.frame':    4 obs. of  5 variables:
+    ##  $ subjectID      : num  1 1 2 2
+    ##  $ surveyCategory : chr  "withdrawal behavior" "positive re-framing" "withdrawal behavior" "positive re-framing"
+    ##  $ assessmentTotal: num  5 2 3 4
+    ##  $ irrelevantCol1 : chr  "irrel1" "irrel1" "irrel1" "irrel1"
+    ##  $ irrelevantCol2 : chr  "irrel2" "irrel2" "irrel2" "irrel2"
+
+``` r
+# or execute the table representation to bring back data
 d %.>%
   execute(db, .) %.>%
   knitr::kable(.)
@@ -190,8 +215,21 @@ dq <- d %.>%
 We then generate our result:
 
 ``` r
-dq %.>%
-  execute(db, .) %.>%
+result <- materialize(db, dq)
+
+class(result)
+```
+
+    ## [1] "relop_table_source" "relop"
+
+``` r
+result
+```
+
+    ## [1] "table(\"rquery_mat_14467020240891414500_0000000000\"; subjectID, diagnosis, probability)"
+
+``` r
+DBI::dbReadTable(db$connection, result$table_name) %.>%
   knitr::kable(.)
 ```
 
@@ -202,7 +240,24 @@ dq %.>%
 
 We see we have quickly reproduced the original result using the new database operators. This means such a calculation could easily be performed at a "big data" scale (using a database or `Spark`; in this case we would not take the results back, but instead use `CREATE TABLE tname AS` to build a remote materialized view of the results).
 
-The actual `SQL` query that produces the result is, in fact, quite involved:
+A bonus is, thanks to `data.table` and the `rqdatatable` packages we can run the exact same operator pipeline on local data.
+
+``` r
+library("rqdatatable")
+
+d_local %.>% 
+  dq %.>%
+  knitr::kable(.)
+```
+
+|  subjectID| diagnosis           |  probability|
+|----------:|:--------------------|------------:|
+|          1| withdrawal behavior |    0.6706221|
+|          2| positive re-framing |    0.5589742|
+
+Notice we applied the pipeline by piping data into it. This ability is a feature of the [dot arrow pipe](https://journal.r-project.org/archive/2018/RJ-2018-042/index.html) we are using here.
+
+The actual `SQL` query that produces the database result is, in fact, quite involved:
 
 ``` r
 cat(to_sql(dq, db, source_limit = 1000))
@@ -242,14 +297,14 @@ cat(to_sql(dq, db, source_limit = 1000))
             "assessmentTotal"
            FROM
             "d" LIMIT 1000
-           ) tsql_54039385994557723468_0000000000
-          ) tsql_54039385994557723468_0000000001
-         ) tsql_54039385994557723468_0000000002
-       ) tsql_54039385994557723468_0000000003
+           ) tsql_25926911662634976811_0000000000
+          ) tsql_25926911662634976811_0000000001
+         ) tsql_25926911662634976811_0000000002
+       ) tsql_25926911662634976811_0000000003
        WHERE "row_number" <= 1
-      ) tsql_54039385994557723468_0000000004
-     ) tsql_54039385994557723468_0000000005
-    ) tsql_54039385994557723468_0000000006 ORDER BY "subjectID"
+      ) tsql_25926911662634976811_0000000004
+     ) tsql_25926911662634976811_0000000005
+    ) tsql_25926911662634976811_0000000006 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
