@@ -1,0 +1,142 @@
+---
+title: "Parameterized rquery"
+author: "John Mount, Win-Vector LLC"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Parameterized rquery}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+[`rquery`](https://CRAN.R-project.org/package=rquery) `1.2.0` now incorporates [`bquote()`](https://www.rdocumentation.org/packages/base/versions/3.5.1/topics/bquote) [quasi-quotation](https://en.wikipedia.org/wiki/Quasi-quotation).
+
+In fact this is enough to allow `rqdatatable` to directly work the indirect column names example from our `bquote()` articles ([1](http://www.win-vector.com/blog/2018/09/parameterizing-with-bquote/), [2](http://www.win-vector.com/blog/2018/10/quasiquotation-in-r-via-bquote/)).
+
+
+First let's check what packages we have available for these examples.
+
+```{r pkgs, message=FALSE, warning=FALSE}
+have_rqdatatable <- FALSE
+if (requireNamespace("rqdatatable", quietly = TRUE)) {
+  library("rqdatatable")
+  have_rqdatatable <- TRUE
+}
+have_db <- FALSE
+if (requireNamespace("RSQLite", quietly = TRUE) &&
+    requireNamespace("DBI", quietly = TRUE)) {
+  have_db <- TRUE
+}
+```
+
+
+```{r}
+library("rquery")
+
+# define our parameters
+# pretend these come from far away
+# or as function arguments.
+group_nm <- "am"
+num_nm <- as.name("hp")
+den_nm <- as.name("cyl")
+derived_nm <- as.name(paste0(num_nm, "_per_", den_nm))
+mean_nm <- as.name(paste0("mean_", derived_nm))
+count_nm <- as.name("group_count")
+```
+
+Immediate mode example (note we are using newer `rquery` `1.2.1` notation "`extend()`" instead of `extend_nse()`).
+
+```{r, eval = have_rqdatatable}
+# apply a parameterized pipeline using bquote
+mtcars %.>%
+  extend(., 
+         .(derived_nm) := .(num_nm)/.(den_nm)) %.>%
+  project(., 
+          .(mean_nm) := mean(.(derived_nm)),
+          .(count_nm) := length(.(derived_nm)),
+          groupby = group_nm) %.>%
+  orderby(., 
+          group_nm)
+```
+
+Stored operator tree examples.
+
+```{r}
+# make an abstract description of the table to start with
+td <- mk_td("mtcars",
+            as.character(list(group_nm, num_nm, den_nm)))
+
+# helper function to adapt to later database environemnt
+count <- function(v) { length(v) }
+
+# capture the operator pipeline
+ops <- td %.>%
+  extend(., 
+         .(derived_nm) := .(num_nm)/.(den_nm)) %.>%
+  project(., 
+          .(mean_nm) := mean(.(derived_nm)),
+          .(count_nm) := count(.(derived_nm)),
+          groupby = group_nm) %.>%
+  orderby(., 
+          group_nm)
+
+```
+
+```{r localexec, eval=have_rqdatatable, message=FALSE, warning=FALSE}
+# apply it to data
+mtcars %.>% ops
+```
+
+We can display the pipeline in various forms.
+
+```{r message=FALSE, warning=FALSE}
+# print the operator sequence
+cat(format(ops))
+```
+
+```{r eval=FALSE, message=FALSE, warning=FALSE}
+# draw the pipeline
+ops %.>%
+  op_diagram(.) %.>% 
+  DiagrammeR::grViz(.)
+```
+
+![](parameterized_rquery.png)
+
+The same example in a database.
+
+
+```{r dbex, eval=have_db, message=FALSE, warning=FALSE}
+# connect to a database
+raw_connection <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+
+# build a representation of the database connection
+dbopts <- rq_connection_tests(raw_connection)
+db <- rquery_db_info(connection = raw_connection,
+                     is_dbi = TRUE,
+                     connection_options = dbopts)
+print(db)
+
+# copy data to db
+tr <- rquery::rq_copy_to(db, "mtcars", mtcars, 
+                         temporary = TRUE, 
+                         overwrite = TRUE)
+print(tr)
+
+# materialize result remotely (without passing through R)
+res <- materialize(db, ops)
+DBI::dbReadTable(raw_connection, res$table_name)
+
+# or execute and pull results back
+execute(db, ops)
+
+# print the derived sql
+sql <- to_sql(ops, db)
+cat(sql)
+
+# disconnect
+DBI::dbDisconnect(raw_connection)
+rm(list = c("raw_connection", "db"))
+```
+
+

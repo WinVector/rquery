@@ -30,6 +30,7 @@ Imports:
 Suggests:
     DBI,
     RSQLite,
+    rqdatatable,
     igraph,
     DiagrammeR,
     DiagrammeRsvg,

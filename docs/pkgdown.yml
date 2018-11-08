@@ -3,6 +3,7 @@ pkgdown: 1.1.0
 pkgdown_sha: ~
 articles:
   AssigmentPartitioner: AssigmentPartitioner.html
+  Parameterized_rquery: Parameterized_rquery.html
   PipeableSQL: PipeableSQL.html
   QueryGeneration: QueryGeneration.html
   rquery_intro: rquery_intro.html
