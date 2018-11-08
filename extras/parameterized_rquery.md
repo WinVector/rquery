@@ -5,9 +5,23 @@ Parameterized Rquery
 
 In fact this is enough to allow `rqdatatable` to directly work the indirect column names example from our `bquote()` articles ([1](http://www.win-vector.com/blog/2018/09/parameterizing-with-bquote/), [2](http://www.win-vector.com/blog/2018/10/quasiquotation-in-r-via-bquote/)).
 
+First let's check what packages we have available for these examples.
+
+``` r
+have_rqdatatable <- FALSE
+if (requireNamespace("rqdatatable", quietly = TRUE)) {
+  library("rqdatatable")
+  have_rqdatatable <- TRUE
+}
+have_db <- FALSE
+if (requireNamespace("RSQLite", quietly = TRUE) &&
+    requireNamespace("DBI", quietly = TRUE)) {
+  have_db <- TRUE
+}
+```
+
 ``` r
 library("rquery")
-library("rqdatatable")
 
 # define our parameters
 # pretend these come from far away
@@ -59,7 +73,9 @@ ops <- td %.>%
           groupby = group_nm) %.>%
   orderby(., 
           group_nm)
+```
 
+``` r
 # apply it to data
 mtcars %.>% ops
 ```
@@ -94,15 +110,12 @@ ops %.>%
 
 ![](parameterized_rquery.png)
 
-Same example in a database.
+The same example in a database.
 
 ``` r
 # connect to a database
-raw_connection <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
-                           host = 'localhost',
-                           port = 5432,
-                           user = 'johnmount',
-                           password = '')
+raw_connection <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+
 # build a representation of the database connection
 dbopts <- rq_connection_tests(raw_connection)
 db <- rquery_db_info(connection = raw_connection,
@@ -111,7 +124,7 @@ db <- rquery_db_info(connection = raw_connection,
 print(db)
 ```
 
-    ## [1] "rquery_db_info(PostgreSQLConnection, is_dbi=TRUE, note=\"\")"
+    ## [1] "rquery_db_info(SQLiteConnection, is_dbi=TRUE, note=\"\")"
 
 ``` r
 # copy data to db
@@ -121,7 +134,7 @@ tr <- rquery::rq_copy_to(db, "mtcars", mtcars,
 print(tr)
 ```
 
-    ## [1] "table(\"mtcars\"; mpg, cyl, disp, hp, drat, wt, qsec, vs, am, gear, carb)"
+    ## [1] "table(`mtcars`; mpg, cyl, disp, hp, drat, wt, qsec, vs, am, gear, carb)"
 
 ``` r
 # materialize result remotely (without passing through R)
@@ -149,30 +162,25 @@ cat(sql)
 ```
 
     ## SELECT * FROM (
-    ##  SELECT "am", avg ( "hp_per_cyl" ) AS "mean_hp_per_cyl", count ( "hp_per_cyl" ) AS "group_count" FROM (
+    ##  SELECT `am`, avg ( `hp_per_cyl` ) AS `mean_hp_per_cyl`, count ( `hp_per_cyl` ) AS `group_count` FROM (
     ##   SELECT
-    ##    "am",
-    ##    "hp" / "cyl"  AS "hp_per_cyl"
+    ##    `am`,
+    ##    `hp` / `cyl`  AS `hp_per_cyl`
     ##   FROM (
     ##    SELECT
-    ##     "am",
-    ##     "hp",
-    ##     "cyl"
+    ##     `am`,
+    ##     `hp`,
+    ##     `cyl`
     ##    FROM
-    ##     "mtcars"
-    ##    ) tsql_67780433375057887169_0000000000
-    ##   ) tsql_67780433375057887169_0000000001
+    ##     `mtcars`
+    ##    ) tsql_62062368892722948232_0000000000
+    ##   ) tsql_62062368892722948232_0000000001
     ##  GROUP BY
-    ##   "am"
-    ## ) tsql_67780433375057887169_0000000002 ORDER BY "am"
+    ##   `am`
+    ## ) tsql_62062368892722948232_0000000002 ORDER BY `am`
 
 ``` r
 # disconnect
 DBI::dbDisconnect(raw_connection)
-```
-
-    ## [1] TRUE
-
-``` r
 rm(list = c("raw_connection", "db"))
 ```

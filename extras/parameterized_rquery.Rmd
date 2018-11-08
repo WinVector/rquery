@@ -7,9 +7,25 @@ output: github_document
 
 In fact this is enough to allow `rqdatatable` to directly work the indirect column names example from our `bquote()` articles ([1](http://www.win-vector.com/blog/2018/09/parameterizing-with-bquote/), [2](http://www.win-vector.com/blog/2018/10/quasiquotation-in-r-via-bquote/)).
 
+
+First let's check what packages we have available for these examples.
+
+```{r pkgs, message=FALSE, warning=FALSE}
+have_rqdatatable <- FALSE
+if (requireNamespace("rqdatatable", quietly = TRUE)) {
+  library("rqdatatable")
+  have_rqdatatable <- TRUE
+}
+have_db <- FALSE
+if (requireNamespace("RSQLite", quietly = TRUE) &&
+    requireNamespace("DBI", quietly = TRUE)) {
+  have_db <- TRUE
+}
+```
+
+
 ```{r}
 library("rquery")
-library("rqdatatable")
 
 # define our parameters
 # pretend these come from far away
@@ -24,7 +40,7 @@ count_nm <- as.name("group_count")
 
 Immediate mode example (note we are using newer `rquery` `1.2.1` notation "`extend()`" instead of `extend_nse()`).
 
-```{r}
+```{r, eval = have_rqdatatable}
 # apply a parameterized pipeline using bquote
 mtcars %.>%
   extend(., 
@@ -58,6 +74,9 @@ ops <- td %.>%
   orderby(., 
           group_nm)
 
+```
+
+```{r localexec, eval=have_rqdatatable, message=FALSE, warning=FALSE}
 # apply it to data
 mtcars %.>% ops
 ```
@@ -78,15 +97,13 @@ ops %.>%
 
 ![](parameterized_rquery.png)
 
-Same example in a database.
+The same example in a database.
 
-```{r, message=FALSE, warning=FALSE}
+
+```{r dbex, eval=have_db, message=FALSE, warning=FALSE}
 # connect to a database
-raw_connection <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
-                           host = 'localhost',
-                           port = 5432,
-                           user = 'johnmount',
-                           password = '')
+raw_connection <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+
 # build a representation of the database connection
 dbopts <- rq_connection_tests(raw_connection)
 db <- rquery_db_info(connection = raw_connection,
