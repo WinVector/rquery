@@ -15,6 +15,7 @@ is_inline_expr <- function(lexpr) {
   inlineops <- c(":=", "==", "!=", ">=", "<=", "=",
                  "<", ">",
                  "+", "-", "*", "/",
+                 "^",
                  "&&", "||",
                  "&", "|")
   if(callName %in% inlineops) {
@@ -200,6 +201,15 @@ tokenize_call_for_SQL <- function(lexpr,
   }
   # ifelse back in place.
   if(is_inline_expr(lexpr)) {
+    if(callName=="^") {
+      res$parsed_toks <- c(ltok("POWER"),
+                           ltok("("),
+                           args[[1]]$parsed_toks,
+                           ltok(","),
+                           args[[2]]$parsed_toks,
+                           ltok(")"))
+      return(res)
+    }
     lhs <- args[[1]]
     rhs <- args[[2]]
     if(callName %in% c("=", ":=", "%:=%")) { # assignment special case
