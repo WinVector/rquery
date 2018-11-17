@@ -1,8 +1,9 @@
 
-# rquery 1.2.1 2018/11/15
+# rquery 1.2.1 2018/11/17
 
  * versions without _nse() suffix.
  * parse ^ power.
+ * Narrow suggets.
  * update docs.
 
 # rquery 1.2.0 2018/11/06
