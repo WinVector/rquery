@@ -3,7 +3,7 @@
 
  * versions without _nse() suffix.
  * parse ^ power.
- * Narrow suggets.
+ * Narrow suggests.
  * update docs.
 
 # rquery 1.2.0 2018/11/06
