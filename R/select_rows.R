@@ -4,7 +4,7 @@
 #' @param source source to select from.
 #' @param expr expression to select rows.
 #' @param env environment to look for values in.
-#' @return select columns node.
+#' @return select rows node.
 #'
 #' @examples
 #'
@@ -72,7 +72,7 @@ select_rows_se.data.frame <- function(source, expr,
 #' @param source source to select from.
 #' @param expr expression to select rows.
 #' @param env environment to look to.
-#' @return select columns node.
+#' @return select rows node.
 #'
 #' @examples
 #'
