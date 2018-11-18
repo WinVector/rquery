@@ -209,13 +209,13 @@ the calculation prior to it losing narrowing optimizations.</p>
 #&gt;   v %:=% ifelse(x &gt; 2, "x", "y")) %.&gt;%
 #&gt;  non_sql_node(., rsummary_node(.))
 #&gt; [[1]]
-#&gt; [1] "CREATE TEMPORARY  TABLE `sn_56746092371016672756_0000000000`  AS  SELECT\n  `p`,\n  `s`,\n  `w`,\n  `x`,\n  `y`,\n  `z`,\n  ( CASE WHEN ( `x` &gt; 2 ) THEN ( 'x' ) WHEN NOT ( `x` &gt; 2 ) THEN ( 'y' ) ELSE NULL END )  AS `v`\n FROM (\n  SELECT\n   `p`,\n   `s`,\n   `w`,\n   `x`,\n   `y`,\n   `z`\n  FROM\n   `dRemote`\n  ) tsql_11090134104390167605_0000000000\n"
+#&gt; [1] "CREATE TEMPORARY  TABLE `sn_87088771131844733382_0000000000`  AS  SELECT\n  `p`,\n  `s`,\n  `w`,\n  `x`,\n  `y`,\n  `z`,\n  ( CASE WHEN ( `x` &gt; 2 ) THEN ( 'x' ) WHEN NOT ( `x` &gt; 2 ) THEN ( 'y' ) ELSE NULL END )  AS `v`\n FROM (\n  SELECT\n   `p`,\n   `s`,\n   `w`,\n   `x`,\n   `y`,\n   `z`\n  FROM\n   `dRemote`\n  ) tsql_44161963891516023171_0000000000\n"
 #&gt; 
 #&gt; [[2]]
 #&gt; [1] "non SQL step:  rsummary_node(.)"
 #&gt; 
 #&gt; [[3]]
-#&gt; [1] " SELECT\n  `column`,\n  `index`,\n  `class`,\n  `nrows`,\n  `nna`,\n  `nunique`,\n  `min`,\n  `max`,\n  `mean`,\n  `sd`,\n  `lexmin`,\n  `lexmax`\n FROM\n  `sn_56746092371016672756_0000000001`\n"
+#&gt; [1] " SELECT\n  `column`,\n  `index`,\n  `class`,\n  `nrows`,\n  `nna`,\n  `nunique`,\n  `min`,\n  `max`,\n  `mean`,\n  `sd`,\n  `lexmin`,\n  `lexmax`\n FROM\n  `sn_87088771131844733382_0000000001`\n"
 #&gt; 
 #&gt;   column index     class nrows nna nunique min max mean        sd lexmin lexmax
 #&gt; 1      p     1   integer     3   1      NA   0   1  0.5 0.7071068   &lt;NA&gt;   &lt;NA&gt;

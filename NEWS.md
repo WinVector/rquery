@@ -1,10 +1,11 @@
 
-# rquery 1.2.1 2018/11/17
+# rquery 1.2.1 2018/11/18
 
  * versions without _nse() suffix.
  * parse ^ power.
  * Narrow suggests.
  * update docs.
+ * add order_expr.
 
 # rquery 1.2.0 2018/11/06
 

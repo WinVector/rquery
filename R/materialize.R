@@ -502,7 +502,8 @@ execute <- function(source,
   res <- ref
   # if last step is order we have to re-do that
   # as order is not well define in materialized tables
-  if("relop_orderby" %in% class(optree)) {
+  if(length(intersect(c("relop_orderby", "relop_order_expr"),
+                       class(optree)))>0) {
     ref <- ref  %.>%
       orderby(.,
               cols = optree$orderby,
