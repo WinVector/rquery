@@ -91,7 +91,7 @@
       <h1>Pipeable SQL</h1>
                         <h4 class="author">John Mount</h4>
             
-            <h4 class="date">2018-11-18</h4>
+            <h4 class="date">2018-11-19</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery//blob/master/vignettes/PipeableSQL.Rmd"><code>vignettes/PipeableSQL.Rmd</code></a></small>
       <div class="hidden name"><code>PipeableSQL.Rmd</code></div>
@@ -226,8 +226,8 @@ FROM (
    `v`
   FROM
    `d`
- ) tsql_12756446576321970428_0000000000
-) tsql_12756446576321970428_0000000001</code></pre>
+ ) tsql_55134725581951938945_0000000000
+) tsql_55134725581951938945_0000000001</code></pre>
 <p>Notice the above translations did not add identifier quotes to our use of “<code>v</code>” in “<code>ABS(v)</code>”. This is because the <code>SQL</code> expression is not parsed in <code>R</code>. If we want to identify terms as variables we can wrap them with <code>as.name()</code> or <code>quote()</code> to get the quoting (and other variable oriented features). The extra <code>SELECT</code> step to pull data from the inner table is used by <code>rquery</code> for important column narrowing steps, and can actually improve query performance.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">op_tree &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(., <span class="st">"absv"</span> <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">list</span>(<span class="kw">list</span>(<span class="st">"ABS("</span>, <span class="kw">quote</span>(v), <span class="st">")"</span>))) <span class="op">%.&gt;%</span>
@@ -246,8 +246,8 @@ FROM (
    `v`
   FROM
    `d`
- ) tsql_05888974193001680527_0000000000
-) tsql_05888974193001680527_0000000001</code></pre>
+ ) tsql_70065890917378526782_0000000000
+) tsql_70065890917378526782_0000000001</code></pre>
 <p>The <code>list(list())</code> notation is how we say in <code>R</code> that we have a single element list (i.e. one expression) that is built up as a list of terms. The marking notation is cumbersome, but is not needed when we move on to relation nodes, which are parsed in <code>R</code> and can spot identifiers without additional help.</p>
 <p><code>op_tree</code> itself is a an object with its own presentation format:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw">format</span>(op_tree))</code></pre></div>
@@ -271,10 +271,26 @@ FROM (
 <h3 class="hasAnchor">
 <a href="#composing-nodes" class="anchor"></a>Composing nodes</h3>
 <p>We can add nodes to an <code>op_tree</code> to build larger operator trees (or pipelines).</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">op_tree &lt;-<span class="st"> </span>op_tree <span class="op">%.&gt;%</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">op_tree2 &lt;-<span class="st"> </span>op_tree <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(., <span class="st">"prod"</span> <span class="op">:</span><span class="er">=</span><span class="st"> "absv * delta"</span>)
 
-<span class="kw">cat</span>(<span class="kw">format</span>(op_tree))</code></pre></div>
+<span class="kw">cat</span>(<span class="kw">format</span>(op_tree2))</code></pre></div>
+<pre><code>## table(`d`; 
+##   v) %.&gt;%
+##  sql_node(.,
+##           absv %:=% ABS( v ),
+##              *=TRUE) %.&gt;%
+##  sql_node(.,
+##           delta %:=% absv - v,
+##              *=TRUE) %.&gt;%
+##  sql_node(.,
+##           prod %:=% absv * delta,
+##              *=TRUE)</code></pre>
+<p>However one does not have to use the string notation, <a href="https://github.com/WinVector/wrapr"><code>wrapr</code></a> supplies the helper functions <code><a href="http://www.rdocumentation.org/packages/wrapr/topics/qe">qe()</a></code> (quote expression), <code><a href="http://www.rdocumentation.org/packages/wrapr/topics/qae">qae()</a></code> (quote assignment expressions), and <code><a href="http://www.rdocumentation.org/packages/wrapr/topics/qc">qc()</a></code> (quoting concatenate).</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">op_tree3 &lt;-<span class="st"> </span>op_tree <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(., <span class="kw"><a href="http://www.rdocumentation.org/packages/wrapr/topics/qae">qae</a></span>(<span class="dt">prod =</span> absv <span class="op">*</span><span class="st"> </span>delta))
+
+<span class="kw">cat</span>(<span class="kw">format</span>(op_tree3))</code></pre></div>
 <pre><code>## table(`d`; 
 ##   v) %.&gt;%
 ##  sql_node(.,
@@ -287,9 +303,12 @@ FROM (
 ##           prod %:=% absv * delta,
 ##              *=TRUE)</code></pre>
 <p>And, the <code>op_tree</code> record keeping can be used to catch potential errors early in pipeline construction. For example if we try to refer to a non-existent variable when adding an operator we get an thrown exception (note: a <code><a href="../reference/sql_node.html">sql_node()</a></code> being added must have its variables marked as above for pre-checking to occur, relational nodes will get this checking automatically).</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">op_tree &lt;-<span class="st"> </span>op_tree <span class="op">%.&gt;%</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">op_tree4 &lt;-<span class="st"> </span>op_tree <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(., <span class="st">"z"</span> <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">list</span>(<span class="kw">list</span>(<span class="st">"1 + "</span>, <span class="kw">quote</span>(z))))</code></pre></div>
 <pre><code>## Error in sql_node.relop(., `:=`("z", list(list("1 + ", quote(z))))): rquery::sql_node.relop undefined columns: z</code></pre>
+<p>However, early error checking is not currently available with the <code><a href="http://www.rdocumentation.org/packages/wrapr/topics/qae">qae()</a></code> notation.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">op_tree4 &lt;-<span class="st"> </span>op_tree <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(., <span class="kw"><a href="http://www.rdocumentation.org/packages/wrapr/topics/qae">qae</a></span>(<span class="dt">z =</span> <span class="dv">1</span> <span class="op">+</span><span class="st"> </span>z))</code></pre></div>
 </div>
 <div id="a-non-trivial-example" class="section level3">
 <h3 class="hasAnchor">
@@ -353,7 +372,7 @@ sql &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.
 ##   `v3`
 ##  FROM
 ##   `d2`
-## ) tsql_72560199995822876849_0000000000</code></pre>
+## ) tsql_19526751051814673881_0000000000</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># execute</span>
 <span class="kw"><a href="../reference/execute.html">execute</a></span>(db, op_tree_count_null)</code></pre></div>
 <pre><code>##   v3 num_missing v1   v2
@@ -376,7 +395,7 @@ d2 <span class="op">%.&gt;%</span>
 <div id="working-with-sets-of-columns" class="section level2">
 <h2 class="hasAnchor">
 <a href="#working-with-sets-of-columns" class="anchor"></a>Working with sets of columns</h2>
-<p>There is a method to apply a parameterized <code>SQL</code> expression to a set of columns.</p>
+<p>There are some helper methods to apply a parameterized <code>SQL</code> expression to a set of columns.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># vector of columns we want to work on</span>
 colset &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/wrapr/topics/qc">qc</a></span>(v1, v2, v3)
 <span class="co"># build new names we want as results</span>
@@ -402,7 +421,7 @@ s_tree &lt;-<span class="st"> </span>d2 <span class="op">%.&gt;%</span>
 ##   `v3`
 ##  FROM
 ##   `d2`
-## ) tsql_96854385861054218996_0000000000</code></pre>
+## ) tsql_75528847659194396156_0000000000</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/execute.html">execute</a></span>(db, s_tree)</code></pre></div>
 <pre><code>##   v1   v2 v3 v1_isNA v2_isNA v3_isNA
 ## 1  1 &lt;NA&gt; NA       0       1       1
@@ -426,20 +445,20 @@ s_tree &lt;-<span class="st"> </span>d2 <span class="op">%.&gt;%</span>
 
 <span class="kw">data.frame</span>(<span class="dt">v =</span> <span class="op">-</span><span class="dv">2</span><span class="op">:</span><span class="dv">2</span>) <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/execute.html">execute</a></span>(., op_tree)</code></pre></div>
-<pre><code>##    v prod absv delta
-## 1 -2    8    2     4
-## 2 -1    2    1     2
-## 3  0    0    0     0
-## 4  1    0    1     0
-## 5  2    0    2     0</code></pre>
+<pre><code>##   absv delta  v
+## 1    2     4 -2
+## 2    1     2 -1
+## 3    0     0  0
+## 4    1     0  1
+## 5    2     0  2</code></pre>
 <p>When using the <code>wrapr</code> dot pipe the above can be abbreviated as:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data.frame</span>(<span class="dt">v =</span> <span class="op">-</span><span class="dv">2</span><span class="op">:</span><span class="dv">2</span>) <span class="op">%.&gt;%</span><span class="st"> </span>op_tree</code></pre></div>
-<pre><code>##    v prod absv delta
-## 1 -2    8    2     4
-## 2 -1    2    1     2
-## 3  0    0    0     0
-## 4  1    0    1     0
-## 5  2    0    2     0</code></pre>
+<pre><code>##   absv delta  v
+## 1    2     4 -2
+## 2    1     2 -1
+## 3    0     0  0
+## 4    1     0  1
+## 5    2     0  2</code></pre>
 <p>The above calculation is managed by <a href="https://github.com/WinVector/wrapr/blob/master/extras/wrapr_pipe.pdf"><code>wrapr</code> dot pipe <code>S3</code> <code>wrapr_function</code></a> extensions.</p>
 <p><code>rquery</code> operators can be used directly (without any table description nodes) when working with in-memory <code>data.frame</code>s.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data.frame</span>(<span class="dt">x =</span> <span class="dv">5</span>) <span class="op">%.&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(., <span class="st">"z"</span> <span class="op">:</span><span class="er">=</span><span class="st"> "sqrt(x)"</span>)</code></pre></div>

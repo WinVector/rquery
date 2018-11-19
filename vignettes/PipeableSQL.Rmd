@@ -205,10 +205,19 @@ columns_used(op_tree)
 We can add nodes to an `op_tree` to build larger operator trees (or pipelines).
 
 ```{r addop, eval=run_vignette}
-op_tree <- op_tree %.>%
+op_tree2 <- op_tree %.>%
   sql_node(., "prod" := "absv * delta")
 
-cat(format(op_tree))
+cat(format(op_tree2))
+```
+
+However one does not have to use the string notation, [`wrapr`](https://github.com/WinVector/wrapr) supplies the helper functions `qe()` (quote expression), `qae()` (quote assignment expressions), and `qc()` (quoting concatenate).
+
+```{r addopq, eval=run_vignette}
+op_tree3 <- op_tree %.>%
+  sql_node(., qae(prod = absv * delta))
+
+cat(format(op_tree3))
 ```
 
 And, the `op_tree` record keeping can be used to catch potential errors
@@ -218,9 +227,17 @@ being added must have its variables marked as above for pre-checking to occur,
 relational nodes will get this checking automatically).
 
 ```{r addoperror, error=TRUE, eval=run_vignette}
-op_tree <- op_tree %.>%
+op_tree4 <- op_tree %.>%
   sql_node(., "z" := list(list("1 + ", quote(z))))
 ```
+
+However, early error checking is not currently available with the `qae()` notation.
+
+```{r addoperror2, error=TRUE, eval=run_vignette}
+op_tree4 <- op_tree %.>%
+  sql_node(., qae(z = 1 + z))
+```
+
 
 ### A non-trivial example
 
@@ -282,7 +299,7 @@ d2 %.>%
 
 ## Working with sets of columns
 
-There is a method to apply a parameterized `SQL` expression to a set
+There are some helper methods to apply a parameterized `SQL` expression to a set
 of columns.
 
 ```{r psql, eval=run_vignette}
