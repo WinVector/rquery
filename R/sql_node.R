@@ -140,14 +140,21 @@ sql_node.relop <- function(source, exprs,
   exprs <- as.list(exprs)
   if(expand_braces) {
     # TODO: switch to wrapr version
-    #exprs <- wrapr::split_at_brace_pairs(exprs, open_symbol = ".[", close_symbol = "]")
     exprs <- split_at_brace_pairs_rq(exprs, open_symbol = ".[", close_symbol = "]")
     exprs <- lapply(exprs, promote_brace_to_var, open_symbol = ".[", close_symbol = "]")
+    mods <- split_at_brace_pairs_rq(mods, open_symbol = ".[", close_symbol = "]")
+    mods <- promote_brace_to_var(mods, open_symbol = ".[", close_symbol = "]")
   }
   # look for names used
-  names_used <- Filter(is.name, unlist(exprs,
-                                       recursive = TRUE,
-                                       use.names = FALSE))
+  names_used <- Filter(
+    is.name,
+    c(unlist(exprs,
+             recursive = TRUE,
+             use.names = FALSE),
+      unlist(mods,
+             recursive = TRUE,
+             use.names = FALSE)))
+
   names_used <- sort(unique(as.character(names_used)))
   undef <- setdiff(names_used, column_names(source))
   if(length(undef)>0) {
@@ -219,8 +226,9 @@ format_node.relop_sql <- function(node) {
   assignments <- paste(names(node$exprs), "%:=%", exprtxt)
   modsstr <- ""
   indent_sep <- "\n             "
-  if(!is.null(node$mods)) {
-    modsstr <- paste(";\n          ", node$mods)
+  if(length(node$mods)>0) {
+    modsql <- prep_sql_toks(rquery_default_db_info, node$mods)
+    modsstr <- paste(";\n          ", modsql)
   }
   paste0("sql_node(.,\n",
          "          ", paste(assignments, collapse = indent_sep),
@@ -320,8 +328,9 @@ to_sql.relop_sql <- function (x,
               subsql, "\n",
               prefix, ") ",
               tab)
-  if(!is.null(x$mods)) {
-    q <- paste(q, x$mods)
+  if(length(x$mods)>0) {
+    modsql <- prep_sql_toks(db, x$mods)
+    q <- paste(q, modsql)
   }
   if(!is.null(limit)) {
     q <- paste(q, "LIMIT",
