@@ -371,6 +371,7 @@ of any of `print()`, `as.data.frame()` and `head()`.  Remote tables need
 an `execute()` or `materialize()` step to specify the database connection.
 
 
+
 # Table descriptions
 
 `rquery` table descriptions are simple objects that store only 
@@ -388,6 +389,105 @@ even build a description by hand with
 Also one can build descriptions of local or in-memory `data.frame`s with
 [`local_td()`](https://winvector.github.io/rquery/reference/local_td.html).
 
+# Helper functions and notation
+
+Using [`wrapr::qae()`](https://winvector.github.io/wrapr/reference/qae.html), [`wrapr::qe()`](https://winvector.github.io/wrapr/reference/qe.html), the `bquote()-.()` notation, and a new `rquery-.[]` notation
+can make working with [`sql_node()](https://winvector.github.io/rquery/reference/sql_node.html)`s much easier (though for many applications I prefer to work
+with the relational nodes such as [`extend()`](https://winvector.github.io/rquery/reference/extend.html), [`project()`](https://winvector.github.io/rquery/reference/project.html), and so on).
+
+The ideas include:
+
+  * `qe()` and `qae()` are quoting operators, they capture the text written in them.
+  * `.()` is `R`'s `bquote()` notation for substitution (turning off quoting).
+  * `.[]` is a new notation meaning: "the thing inside the `.[]` is supposed to be a column name" (this is the role `quote()` or `as.name()`/`as.symbol()` were serving in the earlier list based expression examples).
+  
+This allows for the following.
+
+```{r qex}
+library("rquery")
+
+date_cutoff <- '2017-04-02'
+
+td <- mk_td("df", 
+            c("cust",
+              "trans_date",
+              "sales"))
+
+# misspelling not caught (argh!)
+tryCatch({
+  ops <- td %.>%
+  select_rows_se(
+    ., 
+    qe(trans_date <=  str_to_date(.(date_cutoff), '%Y-%m-%d'))) %.>%
+  sql_node(
+    .,
+    qae(max_date = max(trans_datez)),  # trans_date misspelled
+    mods = "GROUP BY cust",
+    orig_columns = F)
+  },
+  error = function(e) { print(e) })
+
+
+# misspelling caught
+tryCatch({
+  ops <- td %.>%
+  select_rows_se(
+    ., 
+    qe(trans_date <=  str_to_date(.(date_cutoff), '%Y-%m-%d'))) %.>%
+  sql_node(
+    .,
+    qae(max_date = max(.[trans_datez])),  # trans_date misspelled
+    mods = "GROUP BY cust",
+    orig_columns = F)
+  },
+  error = function(e) { print(e) })
+
+ops <- td %.>%
+  select_rows_se(
+    ., 
+    qe(trans_date <=  str_to_date(.(date_cutoff), '%Y-%m-%d'))) %.>%
+  sql_node(
+    .,
+    qae(max_date = max(.[trans_date])),
+    mods = "GROUP BY cust",
+    orig_columns = F)
+
+cat(to_sql(ops, rquery::rquery_default_db_info))
+```
+
+The `.[]`-notation is just signalling to `rquery` which symbols are column names (without
+requiring `rquery` to fully parse the `SQL` fragments).  The `rquery` relational nodes
+get this sort of checking without any additional notation as they do fully parse the `R`
+expressions prior to any `SQL` translation.
+
+We can combine `.()` and `.[]` for even more powerful expressions such as the following.
+
+```{r q2ex}
+library("rquery")
+
+date_cutoff <- '2017-04-02'
+
+td <- mk_td("df", 
+            c("cust",
+              "trans_date",
+              "sales"))
+
+COL_TO_MAX = as.name("trans_date")
+NEW_COL = paste0("max_", COL_TO_MAX)
+GROUP_COL = "cust"
+
+ops <- td %.>%
+  select_rows_se(
+    ., 
+    qe(trans_date <=  str_to_date(.(date_cutoff), '%Y-%m-%d'))) %.>%
+  sql_node(
+    .,
+    qae(.(NEW_COL) := max(.[.(COL_TO_MAX)])),
+    mods = paste("GROUP BY", GROUP_COL),
+    orig_columns = F)
+
+cat(to_sql(ops, rquery::rquery_default_db_info))
+```
 
 # Conclusion
 

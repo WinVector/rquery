@@ -3,7 +3,7 @@
 
  * versions without _nse() suffix.
  * parse ^ power.
- * Add {}-variable decleration notation.
+ * Add .[]-variable decleration notation.
  * Narrow suggests.
  * update docs.
  * add order_expr.

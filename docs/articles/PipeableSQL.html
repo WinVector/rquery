@@ -226,8 +226,8 @@ FROM (
    `v`
   FROM
    `d`
- ) tsql_77176051629503961747_0000000000
-) tsql_77176051629503961747_0000000001</code></pre>
+ ) tsql_47643764560735901188_0000000000
+) tsql_47643764560735901188_0000000001</code></pre>
 <p>Notice the above translations did not add identifier quotes to our use of “<code>v</code>” in “<code>ABS(v)</code>”. This is because the <code>SQL</code> expression is not parsed in <code>R</code>. If we want to identify terms as variables we can wrap them with <code>as.name()</code> or <code>quote()</code> to get the quoting (and other variable oriented features). The extra <code>SELECT</code> step to pull data from the inner table is used by <code>rquery</code> for important column narrowing steps, and can actually improve query performance.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">op_tree &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(., <span class="st">"absv"</span> <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">list</span>(<span class="kw">list</span>(<span class="st">"ABS("</span>, <span class="kw">quote</span>(v), <span class="st">")"</span>))) <span class="op">%.&gt;%</span>
@@ -246,8 +246,8 @@ FROM (
    `v`
   FROM
    `d`
- ) tsql_70842288945562229918_0000000000
-) tsql_70842288945562229918_0000000001</code></pre>
+ ) tsql_51439579018400864699_0000000000
+) tsql_51439579018400864699_0000000001</code></pre>
 <p>The <code>list(list())</code> notation is how we say in <code>R</code> that we have a single element list (i.e. one expression) that is built up as a list of terms. The marking notation is cumbersome, but is not needed when we move on to relation nodes, which are parsed in <code>R</code> and can spot identifiers without additional help.</p>
 <p><code>op_tree</code> itself is a an object with its own presentation format:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw">format</span>(op_tree))</code></pre></div>
@@ -373,7 +373,7 @@ sql &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.
 ##   `v3`
 ##  FROM
 ##   `d2`
-## ) tsql_85289131921801479253_0000000000</code></pre>
+## ) tsql_46116485358810440438_0000000000</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># execute</span>
 <span class="kw"><a href="../reference/execute.html">execute</a></span>(db, op_tree_count_null)</code></pre></div>
 <pre><code>##   v3 num_missing v1   v2
@@ -422,7 +422,7 @@ s_tree &lt;-<span class="st"> </span>d2 <span class="op">%.&gt;%</span>
 ##   `v3`
 ##  FROM
 ##   `d2`
-## ) tsql_96551355642785759169_0000000000</code></pre>
+## ) tsql_65191132279573206578_0000000000</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/execute.html">execute</a></span>(db, s_tree)</code></pre></div>
 <pre><code>##   v1   v2 v3 v1_isNA v2_isNA v3_isNA
 ## 1  1 &lt;NA&gt; NA       0       1       1
@@ -473,6 +473,122 @@ s_tree &lt;-<span class="st"> </span>d2 <span class="op">%.&gt;%</span>
 <p><code>rquery</code> table descriptions are simple objects that store only the name of a table and expected columns. Any local data or database table that has at least the set of columns named in the table description can be used in a given <code>rquery</code> pipeline.</p>
 <p>The table description “<code>d</code>” we have been using in examples was produced as a result of moving data to a database by <a href="https://winvector.github.io/rquery/reference/rq_copy_to.html"><code><a href="../reference/rq_copy_to.html">rq_copy_to()</a></code></a>. However we can also create a description of an existing database table with <a href="https://winvector.github.io/rquery/reference/db_td.html"><code><a href="../reference/db_td.html">db_td()</a></code></a> or even build a description by hand with <a href="https://winvector.github.io/rquery/reference/mk_td.html"><code><a href="../reference/mk_td.html">mk_td()</a></code></a>. Also one can build descriptions of local or in-memory <code>data.frame</code>s with <a href="https://winvector.github.io/rquery/reference/local_td.html"><code><a href="../reference/local_td.html">local_td()</a></code></a>.</p>
 </div>
+<div id="helper-functions-and-notation" class="section level1">
+<h1 class="hasAnchor">
+<a href="#helper-functions-and-notation" class="anchor"></a>Helper functions and notation</h1>
+<p>Using <a href="https://winvector.github.io/wrapr/reference/qae.html"><code><a href="http://www.rdocumentation.org/packages/wrapr/topics/qae">wrapr::qae()</a></code></a>, <a href="https://winvector.github.io/wrapr/reference/qe.html"><code><a href="http://www.rdocumentation.org/packages/wrapr/topics/qe">wrapr::qe()</a></code></a>, the <code>bquote()-.()</code> notation, and a new <code>rquery-.[]</code> notation can make working with [<code>sql_node()](https://winvector.github.io/rquery/reference/sql_node.html)</code>s much easier (though for many applications I prefer to work with the relational nodes such as <a href="https://winvector.github.io/rquery/reference/extend.html"><code><a href="../reference/extend.html">extend()</a></code></a>, <a href="https://winvector.github.io/rquery/reference/project.html"><code><a href="../reference/project.html">project()</a></code></a>, and so on).</p>
+<p>The ideas include:</p>
+<ul>
+<li>
+<code><a href="http://www.rdocumentation.org/packages/wrapr/topics/qe">qe()</a></code> and <code><a href="http://www.rdocumentation.org/packages/wrapr/topics/qae">qae()</a></code> are quoting operators, they capture the text written in them.</li>
+<li>
+<code>.()</code> is <code>R</code>’s <code>bquote()</code> notation for substitution (turning off quoting).</li>
+<li>
+<code>.[]</code> is a new notation meaning: “the thing inside the <code>.[]</code> is supposed to be a column name” (this is the role <code>quote()</code> or <code>as.name()</code>/<code>as.symbol()</code> were serving in the earlier list based expression examples).</li>
+</ul>
+<p>This allows for the following.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">"rquery"</span>)
+
+date_cutoff &lt;-<span class="st"> '2017-04-02'</span>
+
+td &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mk_td.html">mk_td</a></span>(<span class="st">"df"</span>, 
+            <span class="kw">c</span>(<span class="st">"cust"</span>,
+              <span class="st">"trans_date"</span>,
+              <span class="st">"sales"</span>))
+
+<span class="co"># misspelling not caught (argh!)</span>
+<span class="kw">tryCatch</span>({
+  ops &lt;-<span class="st"> </span>td <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/select_rows_se.html">select_rows_se</a></span>(
+    ., 
+    <span class="kw"><a href="http://www.rdocumentation.org/packages/wrapr/topics/qe">qe</a></span>(trans_date <span class="op">&lt;=</span><span class="st">  </span><span class="kw">str_to_date</span>(.(date_cutoff), <span class="st">'%Y-%m-%d'</span>))) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(
+    .,
+    <span class="kw"><a href="http://www.rdocumentation.org/packages/wrapr/topics/qae">qae</a></span>(<span class="dt">max_date =</span> <span class="kw">max</span>(trans_datez)),  <span class="co"># trans_date misspelled</span>
+    <span class="dt">mods =</span> <span class="st">"GROUP BY cust"</span>,
+    <span class="dt">orig_columns =</span> F)
+  },
+  <span class="dt">error =</span> <span class="cf">function</span>(e) { <span class="kw">print</span>(e) })
+
+
+<span class="co"># misspelling caught</span>
+<span class="kw">tryCatch</span>({
+  ops &lt;-<span class="st"> </span>td <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/select_rows_se.html">select_rows_se</a></span>(
+    ., 
+    <span class="kw"><a href="http://www.rdocumentation.org/packages/wrapr/topics/qe">qe</a></span>(trans_date <span class="op">&lt;=</span><span class="st">  </span><span class="kw">str_to_date</span>(.(date_cutoff), <span class="st">'%Y-%m-%d'</span>))) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(
+    .,
+    <span class="kw"><a href="http://www.rdocumentation.org/packages/wrapr/topics/qae">qae</a></span>(<span class="dt">max_date =</span> <span class="kw">max</span>(.[trans_datez])),  <span class="co"># trans_date misspelled</span>
+    <span class="dt">mods =</span> <span class="st">"GROUP BY cust"</span>,
+    <span class="dt">orig_columns =</span> F)
+  },
+  <span class="dt">error =</span> <span class="cf">function</span>(e) { <span class="kw">print</span>(e) })</code></pre></div>
+<pre><code>## &lt;simpleError in sql_node.relop(., qae(max_date = max(.[trans_datez])), mods = "GROUP BY cust",     orig_columns = F): rquery::sql_node.relop undefined columns: trans_datez&gt;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ops &lt;-<span class="st"> </span>td <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/select_rows_se.html">select_rows_se</a></span>(
+    ., 
+    <span class="kw"><a href="http://www.rdocumentation.org/packages/wrapr/topics/qe">qe</a></span>(trans_date <span class="op">&lt;=</span><span class="st">  </span><span class="kw">str_to_date</span>(.(date_cutoff), <span class="st">'%Y-%m-%d'</span>))) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(
+    .,
+    <span class="kw"><a href="http://www.rdocumentation.org/packages/wrapr/topics/qae">qae</a></span>(<span class="dt">max_date =</span> <span class="kw">max</span>(.[trans_date])),
+    <span class="dt">mods =</span> <span class="st">"GROUP BY cust"</span>,
+    <span class="dt">orig_columns =</span> F)
+
+<span class="kw">cat</span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(ops, rquery<span class="op">::</span>rquery_default_db_info))</code></pre></div>
+<pre><code>## SELECT
+##  max( "trans_date" ) AS "max_date"
+## FROM (
+##  SELECT * FROM (
+##   SELECT
+##    "cust",
+##    "trans_date",
+##    "sales"
+##   FROM
+##    "df"
+##  ) tsql_30309680378506668864_0000000000
+##  WHERE "trans_date" &lt;= str_to_date ( '2017-04-02' , '%Y-%m-%d' )
+## ) tsql_30309680378506668864_0000000001 GROUP BY cust</code></pre>
+<p>The <code>.[]</code>-notation is just signalling to <code>rquery</code> which symbols are column names (without requiring <code>rquery</code> to fully parse the <code>SQL</code> fragments). The <code>rquery</code> relational nodes get this sort of checking without any additional notation as they do fully parse the <code>R</code> expressions prior to any <code>SQL</code> translation.</p>
+<p>We can combine <code>.()</code> and <code>.[]</code> for even more powerful expressions such as the following.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">"rquery"</span>)
+
+date_cutoff &lt;-<span class="st"> '2017-04-02'</span>
+
+td &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mk_td.html">mk_td</a></span>(<span class="st">"df"</span>, 
+            <span class="kw">c</span>(<span class="st">"cust"</span>,
+              <span class="st">"trans_date"</span>,
+              <span class="st">"sales"</span>))
+
+COL_TO_MAX =<span class="st"> </span><span class="kw">as.name</span>(<span class="st">"trans_date"</span>)
+NEW_COL =<span class="st"> </span><span class="kw">paste0</span>(<span class="st">"max_"</span>, COL_TO_MAX)
+GROUP_COL =<span class="st"> "cust"</span>
+
+ops &lt;-<span class="st"> </span>td <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/select_rows_se.html">select_rows_se</a></span>(
+    ., 
+    <span class="kw"><a href="http://www.rdocumentation.org/packages/wrapr/topics/qe">qe</a></span>(trans_date <span class="op">&lt;=</span><span class="st">  </span><span class="kw">str_to_date</span>(.(date_cutoff), <span class="st">'%Y-%m-%d'</span>))) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(
+    .,
+    <span class="kw"><a href="http://www.rdocumentation.org/packages/wrapr/topics/qae">qae</a></span>(.(NEW_COL) <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">max</span>(.[.(COL_TO_MAX)])),
+    <span class="dt">mods =</span> <span class="kw">paste</span>(<span class="st">"GROUP BY"</span>, GROUP_COL),
+    <span class="dt">orig_columns =</span> F)
+
+<span class="kw">cat</span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(ops, rquery<span class="op">::</span>rquery_default_db_info))</code></pre></div>
+<pre><code>## SELECT
+##  max( "trans_date" ) AS "max_trans_date"
+## FROM (
+##  SELECT * FROM (
+##   SELECT
+##    "cust",
+##    "trans_date",
+##    "sales"
+##   FROM
+##    "df"
+##  ) tsql_48857024227990969500_0000000000
+##  WHERE "trans_date" &lt;= str_to_date ( '2017-04-02' , '%Y-%m-%d' )
+## ) tsql_48857024227990969500_0000000001 GROUP BY cust</code></pre>
+</div>
 <div id="conclusion" class="section level1">
 <h1 class="hasAnchor">
 <a href="#conclusion" class="anchor"></a>Conclusion</h1>
@@ -516,6 +632,7 @@ DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation
       <li><a href="#sql-first"><code>SQL</code> first</a></li>
       <li><a href="#ad-hoc-mode">Ad-hoc mode</a></li>
       <li><a href="#table-descriptions">Table descriptions</a></li>
+      <li><a href="#helper-functions-and-notation">Helper functions and notation</a></li>
       <li><a href="#conclusion">Conclusion</a></li>
       <li><a href="#see-also">See also</a></li>
       <li><a href="#appendix-always-clean-up-on-the-way-out">Appendix: Always clean up on the way out</a></li>
