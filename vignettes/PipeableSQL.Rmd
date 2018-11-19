@@ -231,13 +231,15 @@ op_tree4 <- op_tree %.>%
   sql_node(., "z" := list(list("1 + ", quote(z))))
 ```
 
-However, early error checking is not currently available with the `qae()` notation.
+However, early error checking is not currently available with the `qae()` notation, which parts of the
+expression are values (versus operators or function names) is not marked in the input.
 
 ```{r addoperror2, error=TRUE, eval=run_vignette}
 op_tree4 <- op_tree %.>%
   sql_node(., qae(z = 1 + z))
 ```
 
+`rquery 
 
 ### A non-trivial example
 

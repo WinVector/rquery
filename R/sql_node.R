@@ -20,6 +20,7 @@ order_names <- function(old_names, new_names) {
 #' @param ... force later arguments to bind by name
 #' @param mods SQL modifiers (GROUP BY, ORDER BY, and so on)
 #' @param orig_columns logical if TRUE select all original columns.
+#' @param expand_braces logical if TRUE use {col} notation to ensure {col} is a column name.
 #' @param env environment to look to.
 #' @return sql node.
 #'
@@ -76,6 +77,18 @@ order_names <- function(old_names, new_names) {
 #'   execute(my_db, op_tree2) %.>%
 #'     print(.)
 #'
+#'   # sql_node also allows marking variable in quoted expressions
+#'   ops <- d %.>%
+#'      sql_node(., qae(sqrt_v1 = sqrt(.[v1])))
+#'   execute(my_db, ops) %.>%
+#'      print(.)
+#'   # marking variables allows for error-checking of column names
+#'   tryCatch({
+#'     ops <- d %.>%
+#'       sql_node(., qae(sqrt_v1 = sqrt(.[v1_misspellled])))
+#'     },
+#'     error = function(e) {print(e)})
+#'
 #'   DBI::dbDisconnect(my_db)
 #' }
 #'
@@ -85,20 +98,53 @@ sql_node <- function(source, exprs,
                      ...,
                      mods = NULL,
                      orig_columns = TRUE,
+                     expand_braces = TRUE,
                      env = parent.frame()) {
   force(env)
   wrapr::stop_if_dot_args(substitute(list(...)), "sql_node")
   UseMethod("sql_node", source)
 }
 
+promote_brace_to_var <- function(s, open_symbol = "{", close_symbol = "}") {
+  brace_positions <- vapply(
+    s,
+    function(si) {
+      is.character(si) && (nchar(si)>0) && (substr(si, 1, nchar(open_symbol))==open_symbol)
+    }, logical(1))
+  if(!isTRUE(any(brace_positions))) {
+    return(s)
+  }
+  s <- as.list(s)
+  s[brace_positions] <-
+    lapply(s[brace_positions],
+           function(sij) {
+             sij <- gsub(open_symbol, "", sij, fixed = TRUE)
+             sij <- gsub(close_symbol, "", sij, fixed = TRUE)
+             sij <- trimws(sij, which = "both")
+             as.name(sij)
+           })
+  s
+}
+
+
 #' @export
 sql_node.relop <- function(source, exprs,
                            ...,
                            mods = NULL,
                            orig_columns = TRUE,
+                           expand_braces = TRUE,
                            env = parent.frame()) {
   force(env)
   wrapr::stop_if_dot_args(substitute(list(...)), "sql_node.relop")
+  # translate {Q} into as.name("Q")
+  exprs <- as.list(exprs)
+  if(expand_braces) {
+    # TODO: switch to wrapr version
+    #exprs <- wrapr::split_at_brace_pairs(exprs, open_symbol = ".[", close_symbol = "]")
+    exprs <- split_at_brace_pairs_rq(exprs, open_symbol = ".[", close_symbol = "]")
+    exprs <- lapply(exprs, promote_brace_to_var, open_symbol = ".[", close_symbol = "]")
+  }
+  # look for names used
   names_used <- Filter(is.name, unlist(exprs,
                                        recursive = TRUE,
                                        use.names = FALSE))
@@ -133,6 +179,7 @@ sql_node.data.frame <- function(source, exprs,
                                 ...,
                                 mods = NULL,
                                 orig_columns = TRUE,
+                                expand_braces = TRUE,
                                 env = parent.frame()) {
   force(env)
   wrapr::stop_if_dot_args(substitute(list(...)), "sql_node.data.frame")
@@ -141,6 +188,7 @@ sql_node.data.frame <- function(source, exprs,
   enode <- sql_node(dnode, exprs = exprs,
                     mods = mods,
                     orig_columns = orig_columns,
+                    expand_braces = expand_braces,
                     env = env)
   rquery_apply_to_data_frame(source, enode, env = env)
 }

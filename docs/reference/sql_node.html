@@ -133,7 +133,7 @@
     </div>
 
     <pre class="usage"><span class='fu'>sql_node</span>(<span class='no'>source</span>, <span class='no'>exprs</span>, <span class='no'>...</span>, <span class='kw'>mods</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>orig_columns</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
+  <span class='kw'>expand_braces</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -157,6 +157,10 @@
     <tr>
       <th>orig_columns</th>
       <td><p>logical if TRUE select all original columns.</p></td>
+    </tr>
+    <tr>
+      <th>expand_braces</th>
+      <td><p>logical if TRUE use col notation to ensure col is a column name.</p></td>
     </tr>
     <tr>
       <th>env</th>
@@ -222,6 +226,18 @@
   <span class='fu'><a href='execute.html'>execute</a></span>(<span class='no'>my_db</span>, <span class='no'>op_tree2</span>) <span class='kw'>%.&gt;%</span>
     <span class='fu'>print</span>(<span class='no'>.</span>)
 
+  <span class='co'># sql_node also allows marking variable in quoted expressions</span>
+  <span class='no'>ops</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span>
+     <span class='fu'>sql_node</span>(<span class='no'>.</span>, <span class='fu'><a href='http://www.rdocumentation.org/packages/wrapr/topics/qae'>qae</a></span>(<span class='kw'>sqrt_v1</span> <span class='kw'>=</span> <span class='fu'>sqrt</span>(<span class='no'>.</span>[<span class='no'>v1</span>])))
+  <span class='fu'><a href='execute.html'>execute</a></span>(<span class='no'>my_db</span>, <span class='no'>ops</span>) <span class='kw'>%.&gt;%</span>
+     <span class='fu'>print</span>(<span class='no'>.</span>)
+  <span class='co'># marking variables allows for error-checking of column names</span>
+  <span class='fu'>tryCatch</span>({
+    <span class='no'>ops</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span>
+      <span class='fu'>sql_node</span>(<span class='no'>.</span>, <span class='fu'><a href='http://www.rdocumentation.org/packages/wrapr/topics/qae'>qae</a></span>(<span class='kw'>sqrt_v1</span> <span class='kw'>=</span> <span class='fu'>sqrt</span>(<span class='no'>.</span>[<span class='no'>v1_misspellled</span>])))
+    },
+    <span class='kw'>error</span> <span class='kw'>=</span> <span class='kw'>function</span>(<span class='no'>e</span>) {<span class='fu'>print</span>(<span class='no'>e</span>)})
+
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
 }</div><div class='output co'>#&gt; [1] "v1" "v2" "v3"
 #&gt; 0 + (CASE WHEN ( v1 IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( v2 IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( v3 IS NULL ) THEN 1.0 ELSE 0.0 END)table(`d`; 
@@ -253,7 +269,13 @@
 #&gt; 1 NA     2  1 &lt;NA&gt;
 #&gt; 2 NA     1  2    b
 #&gt; 3  7     2 NA &lt;NA&gt;
-#&gt; 4  8     0  3    c</div><div class='input'>
+#&gt; 4  8     0  3    c
+#&gt;   v3  sqrt_v1 v1   v2
+#&gt; 1 NA 1.000000  1 &lt;NA&gt;
+#&gt; 2 NA 1.414214  2    b
+#&gt; 3  7       NA NA &lt;NA&gt;
+#&gt; 4  8 1.732051  3    c
+#&gt; &lt;simpleError in sql_node.relop(., qae(sqrt_v1 = sqrt(.[v1_misspellled]))): rquery::sql_node.relop undefined columns: v1_misspellled&gt;</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
