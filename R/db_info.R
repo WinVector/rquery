@@ -46,11 +46,11 @@ rquery_db_info <- function(...,
     },
     dbqs = function(s) {
       paste0(string_quote_char,
-             s,
+             gsub(string_quote_char, paste0('\\', string_quote_char), s, fixed=TRUE),
              string_quote_char)
     },
     dbql = function(o) {
-      if(is.character(o) || is.factor(o)) {
+      if(is.character(o) || is.factor(o) || is.name(o)) {
         return(paste0(string_quote_char,
                       as.character(o),
                       string_quote_char))

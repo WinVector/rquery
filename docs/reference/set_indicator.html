@@ -135,7 +135,8 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>set_indicator</span>(<span class='no'>source</span>, <span class='no'>rescol</span>, <span class='no'>testcol</span>, <span class='no'>testvalues</span>, <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
+    <pre class="usage"><span class='fu'>set_indicator</span>(<span class='no'>source</span>, <span class='no'>rescol</span>, <span class='no'>testcol</span>, <span class='no'>testvalues</span>, <span class='no'>...</span>,
+  <span class='kw'>translate_quotes</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -155,6 +156,14 @@
     <tr>
       <th>testvalues</th>
       <td><p>values to check for.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>force later arguments to bind by name</p></td>
+    </tr>
+    <tr>
+      <th>translate_quotes</th>
+      <td><p>logical if TRUE translate quotes to SQL choice (simple replacement, no escaping).</p></td>
     </tr>
     <tr>
       <th>env</th>

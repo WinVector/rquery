@@ -106,8 +106,6 @@
 <p><code>rquery</code> does not parse expression of the <code>SQL</code> node. Thus it does not know which tokens are string-literals, and which are column names. To assist with this user can annotate column names with <code>.[]</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">"rquery"</span>)
 
-
-
 date_cutoff &lt;-<span class="st"> '2017-04-02'</span>
 
 td &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mk_td.html">mk_td</a></span>(<span class="st">"df"</span>, 
@@ -121,7 +119,9 @@ ops &lt;-<span class="st"> </span>td <span class="op">%.&gt;%</span>
     <span class="kw"><a href="http://www.rdocumentation.org/packages/wrapr/topics/qe">qe</a></span>(trans_date <span class="op">&lt;=</span><span class="st">  </span><span class="kw">str_to_date</span>(.(date_cutoff), <span class="st">'%Y-%m-%d'</span>))) <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(
     .,
-    <span class="kw"><a href="http://www.rdocumentation.org/packages/wrapr/topics/qae">qae</a></span>(<span class="dt">max_date =</span> <span class="kw">max</span>(.[trans_date])),
+    <span class="kw"><a href="http://www.rdocumentation.org/packages/wrapr/topics/qae">qae</a></span>(<span class="dt">max_date =</span> <span class="kw">max</span>(.[trans_date]),
+        <span class="dt">const_col1 =</span> <span class="st">"a'"</span>,
+        <span class="dt">const_col2 =</span> <span class="st">'a"'</span>),
     <span class="dt">mods =</span> <span class="st">"GROUP BY .[cust]"</span>,
     <span class="dt">orig_columns =</span> <span class="ot">FALSE</span>)
 
@@ -133,7 +133,9 @@ ops &lt;-<span class="st"> </span>td <span class="op">%.&gt;%</span>
 ##  select_rows(.,
 ##    trans_date &lt;= str_to_date("2017-04-02", "%Y-%m-%d")) %.&gt;%
 ##  sql_node(.,
-##           max_date %:=% max( trans_date );
+##           max_date %:=% max( trans_date )
+##              const_col1 %:=% "a'"
+##              const_col2 %:=% "a\"";
 ##            GROUP BY  "cust",
 ##              *=FALSE)</code></pre>
 <p>Notice how this renders into different <code>SQL</code> for each of our two database descriptions.</p>
@@ -143,7 +145,9 @@ ops &lt;-<span class="st"> </span>td <span class="op">%.&gt;%</span>
 
 <span class="kw">cat</span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(ops, db1))</code></pre></div>
 <pre><code>## SELECT
-##  max( 'trans_date' ) AS 'max_date'
+##  max( 'trans_date' ) AS 'max_date',
+##  "a'" AS 'const_col1',
+##  "a\"" AS 'const_col2'
 ## FROM (
 ##  SELECT * FROM (
 ##   SELECT
@@ -152,16 +156,18 @@ ops &lt;-<span class="st"> </span>td <span class="op">%.&gt;%</span>
 ##    'sales'
 ##   FROM
 ##    'df'
-##  ) tsql_89439052179721151838_0000000000
+##  ) tsql_97971535042841625864_0000000000
 ##  WHERE 'trans_date' &lt;= str_to_date ( "2017-04-02" , "%Y-%m-%d" )
-## ) tsql_89439052179721151838_0000000001 GROUP BY  'cust'</code></pre>
+## ) tsql_97971535042841625864_0000000001 GROUP BY  'cust'</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">db2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rquery_db_info.html">rquery_db_info</a></span>(
   <span class="dt">identifier_quote_char =</span> <span class="st">'"'</span>,
   <span class="dt">string_quote_char =</span> <span class="st">"'"</span>)
   
 <span class="kw">cat</span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(ops, db2))</code></pre></div>
 <pre><code>## SELECT
-##  max( "trans_date" ) AS "max_date"
+##  max( "trans_date" ) AS "max_date",
+##  'a'' AS "const_col1",
+##  'a\'' AS "const_col2"
 ## FROM (
 ##  SELECT * FROM (
 ##   SELECT
@@ -170,9 +176,70 @@ ops &lt;-<span class="st"> </span>td <span class="op">%.&gt;%</span>
 ##    "sales"
 ##   FROM
 ##    "df"
-##  ) tsql_22640523491725429770_0000000000
+##  ) tsql_28124782736259876249_0000000000
 ##  WHERE "trans_date" &lt;= str_to_date ( '2017-04-02' , '%Y-%m-%d' )
-## ) tsql_22640523491725429770_0000000001 GROUP BY  "cust"</code></pre>
+## ) tsql_28124782736259876249_0000000001 GROUP BY  "cust"</code></pre>
+<p>Notice our included quote characters were translated. This is an unwanted side-effect of using the <code><a href="http://www.rdocumentation.org/packages/wrapr/topics/qae">qae()</a></code> shortcut which does not tokenize, so it does not know which quotes are in which roles in the expression.</p>
+<p>To override quote translation in the <code><a href="../reference/sql_node.html">sql_node()</a></code> (which is simple string substitution without quote context or escaping) you must use the clunkier “build up a string as a list of tokens” (where sub-listed items are string literals and names are column names).</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ops &lt;-<span class="st"> </span>td <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/select_rows_se.html">select_rows_se</a></span>(
+    ., 
+    <span class="kw"><a href="http://www.rdocumentation.org/packages/wrapr/topics/qe">qe</a></span>(trans_date <span class="op">&lt;=</span><span class="st">  </span><span class="kw">str_to_date</span>(.(date_cutoff), <span class="st">'%Y-%m-%d'</span>))) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(
+    .,
+    <span class="kw">list</span>(
+      <span class="st">"max_date"</span> <span class="op">%:=%</span><span class="st"> "max(.[trans_date])"</span>,
+      <span class="st">"const_col1"</span> =<span class="st"> </span><span class="kw">list</span>(<span class="kw">list</span>(<span class="st">"a'"</span>)),
+      <span class="st">"const_col2"</span> =<span class="st"> </span><span class="kw">list</span>(<span class="kw">list</span>(<span class="st">'b"'</span>))),
+    <span class="dt">mods =</span> <span class="st">"GROUP BY .[cust]"</span>,
+    <span class="dt">orig_columns =</span> <span class="ot">FALSE</span>)
+
+<span class="kw">cat</span>(<span class="kw">format</span>(ops))</code></pre></div>
+<pre><code>## table(df; 
+##   cust,
+##   trans_date,
+##   sales) %.&gt;%
+##  select_rows(.,
+##    trans_date &lt;= str_to_date("2017-04-02", "%Y-%m-%d")) %.&gt;%
+##  sql_node(.,
+##            %:=% max( trans_date )
+##              const_col1 %:=% list("a'")
+##              const_col2 %:=% list("b\"");
+##            GROUP BY  "cust",
+##              *=FALSE)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(ops, db1))</code></pre></div>
+<pre><code>## SELECT
+##  NA,
+##  "a'" AS 'const_col1',
+##  "b\"" AS 'const_col2'
+## FROM (
+##  SELECT * FROM (
+##   SELECT
+##    'cust',
+##    'trans_date',
+##    'sales'
+##   FROM
+##    'df'
+##  ) tsql_79652767351551817410_0000000000
+##  WHERE 'trans_date' &lt;= str_to_date ( "2017-04-02" , "%Y-%m-%d" )
+## ) tsql_79652767351551817410_0000000001 GROUP BY  'cust'</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(ops, db2))</code></pre></div>
+<pre><code>## SELECT
+##  NA,
+##  'a\'' AS "const_col1",
+##  'b"' AS "const_col2"
+## FROM (
+##  SELECT * FROM (
+##   SELECT
+##    "cust",
+##    "trans_date",
+##    "sales"
+##   FROM
+##    "df"
+##  ) tsql_08145051641740875414_0000000000
+##  WHERE "trans_date" &lt;= str_to_date ( '2017-04-02' , '%Y-%m-%d' )
+## ) tsql_08145051641740875414_0000000001 GROUP BY  "cust"</code></pre>
+<p>Quotes within string literals are going to be a nightmare moving from db to db, so our advice is to try to avoid them.</p>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

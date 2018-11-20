@@ -21,6 +21,7 @@ order_names <- function(old_names, new_names) {
 #' @param mods SQL modifiers (GROUP BY, ORDER BY, and so on)
 #' @param orig_columns logical if TRUE select all original columns.
 #' @param expand_braces logical if TRUE use {col} notation to ensure {col} is a column name.
+#' @param translate_quotes logical if TRUE translate quotes to SQL choice (simple replacement, no escaping).
 #' @param env environment to look to.
 #' @return sql node.
 #'
@@ -99,6 +100,7 @@ sql_node <- function(source, exprs,
                      mods = NULL,
                      orig_columns = TRUE,
                      expand_braces = TRUE,
+                     translate_quotes = TRUE,
                      env = parent.frame()) {
   force(env)
   wrapr::stop_if_dot_args(substitute(list(...)), "sql_node")
@@ -133,6 +135,7 @@ sql_node.relop <- function(source, exprs,
                            mods = NULL,
                            orig_columns = TRUE,
                            expand_braces = TRUE,
+                           translate_quotes = TRUE,
                            env = parent.frame()) {
   force(env)
   wrapr::stop_if_dot_args(substitute(list(...)), "sql_node.relop")
@@ -176,7 +179,9 @@ sql_node.relop <- function(source, exprs,
             exprs = exprs,
             mods = mods,
             cols = cols,
-            orig_columns = orig_columns)
+            orig_columns = orig_columns,
+            expand_braces = expand_braces,
+            translate_quotes = translate_quotes)
   r <- relop_decorate("relop_sql", r)
   r
 }
@@ -187,6 +192,7 @@ sql_node.data.frame <- function(source, exprs,
                                 mods = NULL,
                                 orig_columns = TRUE,
                                 expand_braces = TRUE,
+                                translate_quotes = TRUE,
                                 env = parent.frame()) {
   force(env)
   wrapr::stop_if_dot_args(substitute(list(...)), "sql_node.data.frame")
@@ -196,6 +202,7 @@ sql_node.data.frame <- function(source, exprs,
                     mods = mods,
                     orig_columns = orig_columns,
                     expand_braces = expand_braces,
+                    translate_quotes = translate_quotes,
                     env = env)
   rquery_apply_to_data_frame(source, enode, env = env)
 }
@@ -227,7 +234,8 @@ format_node.relop_sql <- function(node) {
   modsstr <- ""
   indent_sep <- "\n             "
   if(length(node$mods)>0) {
-    modsql <- prep_sql_toks(rquery_default_db_info, node$mods)
+    modsql <- prep_sql_toks(rquery_default_db_info, node$mods,
+                            translate_quotes = FALSE, qsym = '"')
     modsstr <- paste(";\n          ", modsql)
   }
   paste0("sql_node(.,\n",
@@ -252,7 +260,7 @@ columns_used.relop_sql <- function (x, ...,
 # assemble SQL from list of strings (treated as is),
 # names (treated as SQL column names), and
 # lists (first value used, if character treated as SQL constant).
-prep_sql_toks <- function(db, ei) {
+prep_sql_toks <- function(db, ei, translate_quotes, qsym) {
   eiq <- vapply(ei,
                 function(eij) {
                   if(is.list(eij)) {
@@ -265,7 +273,11 @@ prep_sql_toks <- function(db, ei) {
                   if(is.name(eij)) {
                     return(quote_identifier(db, as.character(eij)))
                   }
-                  return(as.character(eij))
+                  v <- as.character(eij)
+                  if(translate_quotes) {
+                    v <- gsub('"', qsym, v, fixed = TRUE)
+                  }
+                  return(v)
                 }, character(1))
   paste(eiq, collapse = " ")
 }
@@ -285,9 +297,14 @@ to_sql.relop_sql <- function (x,
                   function(ci) {
                     quote_identifier(db, ci)
                   }, character(1))
+  qexample = quote_string(db, "a")
+  qlen = as.numeric(regexec("a", qexample, fixed = TRUE)) - 1
+  qsym = substr(qexample, 1, qlen)
   sqlexprs <- vapply(x$exprs,
                      function(ei) {
-                       prep_sql_toks(db, ei)
+                       prep_sql_toks(db, ei,
+                                     translate_quotes = x$translate_quotes,
+                                     qsym = qsym)
                      }, character(1))
   cols <- paste(sqlexprs, "AS", colsA)
   names(cols) <- names(x$exprs)
@@ -329,7 +346,9 @@ to_sql.relop_sql <- function (x,
               prefix, ") ",
               tab)
   if(length(x$mods)>0) {
-    modsql <- prep_sql_toks(db, x$mods)
+    modsql <- prep_sql_toks(db, x$mods,
+                            translate_quotes = x$translate_quotes,
+                            qsym = qsym)
     q <- paste(q, modsql)
   }
   if(!is.null(limit)) {

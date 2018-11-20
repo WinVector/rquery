@@ -4,7 +4,8 @@
 \alias{set_indicator}
 \title{Make a set indicator node.}
 \usage{
-set_indicator(source, rescol, testcol, testvalues, env = parent.frame())
+set_indicator(source, rescol, testcol, testvalues, ...,
+  translate_quotes = FALSE, env = parent.frame())
 }
 \arguments{
 \item{source}{source to select from.}
@@ -14,6 +15,10 @@ set_indicator(source, rescol, testcol, testvalues, env = parent.frame())
 \item{testcol}{name of column to check.}
 
 \item{testvalues}{values to check for.}
+
+\item{...}{force later arguments to bind by name}
+
+\item{translate_quotes}{logical if TRUE translate quotes to SQL choice (simple replacement, no escaping).}
 
 \item{env}{environment to look to.}
 }

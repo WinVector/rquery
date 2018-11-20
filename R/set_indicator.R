@@ -10,6 +10,8 @@
 #' @param rescol name of column to land indicator in.
 #' @param testcol name of column to check.
 #' @param testvalues values to check for.
+#' @param ... force later arguments to bind by name
+#' @param translate_quotes logical if TRUE translate quotes to SQL choice (simple replacement, no escaping).
 #' @param env environment to look to.
 #' @return set_indicator node.
 #'
@@ -55,8 +57,11 @@ set_indicator <- function(source,
                           rescol,
                           testcol,
                           testvalues,
+                          ...,
+                          translate_quotes = FALSE,
                           env = parent.frame()) {
   force(env)
+  wrapr::stop_if_dot_args(substitute(list(...)), "set_indicator")
   UseMethod("set_indicator", source)
 }
 
@@ -65,8 +70,11 @@ set_indicator.relop <- function(source,
                                 rescol,
                                 testcol,
                                 testvalues,
+                                ...,
+                                translate_quotes = FALSE,
                                 env = parent.frame()) {
   force(env)
+  wrapr::stop_if_dot_args(substitute(list(...)), "set_indicator")
   testvname <- rquery_deparse(substitute(testvalues))
   cols <- column_names(source)
   if(rescol %in% cols) {
@@ -103,7 +111,8 @@ set_indicator.relop <- function(source,
             testcol = testcol,
             testvalues = testvalues,
             display_form = display_form,
-            terms = terms)
+            terms = terms,
+            translate_quotes = translate_quotes)
   r <- relop_decorate("relop_set_indicator", r)
   r
 }
@@ -113,8 +122,11 @@ set_indicator.data.frame <- function(source,
                                      rescol,
                                      testcol,
                                      testvalues,
+                                     ...,
+                                     translate_quotes = FALSE,
                                      env = parent.frame()) {
   force(env)
+  wrapr::stop_if_dot_args(substitute(list(...)), "set_indicator")
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- mk_td(tmp_name, colnames(source))
   enode <- set_indicator(source = dnode,
@@ -192,9 +204,14 @@ to_sql.relop_set_indicator <- function (x,
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::to_sql.relop_set_indicator")
   cols1 <- column_names(x$source[[1]])
+  qexample = quote_string(db, "a")
+  qlen = as.numeric(regexec("a", qexample, fixed = TRUE)) - 1
+  qsym = substr(qexample, 1, qlen)
   sqlexprs <- vapply(x$terms,
                      function(ei) {
-                       prep_sql_toks(db, ei)
+                       prep_sql_toks(db, ei,
+                                     translate_quotes = x$translate_quotes,
+                                     qsym = qsym)
                      }, character(1))
   if(length(sqlexprs)!=1) {
     stop("rquery::to_sql.relop_set_indicator expected indicator calculation to be length 1")

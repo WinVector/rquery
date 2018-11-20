@@ -5,7 +5,8 @@
 \title{Make a general SQL node.}
 \usage{
 sql_node(source, exprs, ..., mods = NULL, orig_columns = TRUE,
-  expand_braces = TRUE, env = parent.frame())
+  expand_braces = TRUE, translate_quotes = TRUE,
+  env = parent.frame())
 }
 \arguments{
 \item{source}{source to work from.}
@@ -19,6 +20,8 @@ sql_node(source, exprs, ..., mods = NULL, orig_columns = TRUE,
 \item{orig_columns}{logical if TRUE select all original columns.}
 
 \item{expand_braces}{logical if TRUE use {col} notation to ensure {col} is a column name.}
+
+\item{translate_quotes}{logical if TRUE translate quotes to SQL choice (simple replacement, no escaping).}
 
 \item{env}{environment to look to.}
 }
