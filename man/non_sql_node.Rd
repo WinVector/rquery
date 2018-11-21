@@ -7,7 +7,8 @@
 non_sql_node(source, ..., f_db = NULL, f_df = NULL, f_dt = NULL,
   incoming_table_name, outgoing_table_name, columns_produced,
   display_form = "non_sql_node", orig_columns = TRUE,
-  temporary = TRUE, env = parent.frame())
+  temporary = TRUE, check_result_details = TRUE,
+  env = parent.frame())
 }
 \arguments{
 \item{source}{source to work from (data.frame or relop node)}
@@ -31,6 +32,8 @@ non_sql_node(source, ..., f_db = NULL, f_df = NULL, f_dt = NULL,
 \item{orig_columns}{logical if TRUE select all original columns.}
 
 \item{temporary}{logical, if TRUE mark tables temporary.}
+
+\item{check_result_details}{logical, if TRUE enforce result type and columns.}
 
 \item{env}{environment to look to.}
 }
