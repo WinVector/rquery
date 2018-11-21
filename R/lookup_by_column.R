@@ -9,7 +9,7 @@
 #' @param ... force later arguments to be bound by name
 #' @param tmp_name_source wrapr::mk_tmp_name_source(), temporary name generator.
 #' @param temporary logical, if TRUE use temporary tables.
-#' @param f_dt_factory optional signature f_dt_factory(pick, result) returns function with signature f_dt(d) where d is a data.table.  The point is the function must come from a data.table enabled package. Please see \code{rqdatatable::make_dt_lookup_by_column} for an example.
+#' @param f_dt_factory optional signature f_dt_factory(pick, result) returns function with signature f_dt(d, nd) where d is a data.table.  The point is the function must come from a data.table enabled package. Please see \code{rqdatatable::make_dt_lookup_by_column} for an example.
 #'
 #' @examples
 #'

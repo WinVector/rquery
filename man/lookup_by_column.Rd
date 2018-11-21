@@ -21,7 +21,7 @@ lookup_by_column(source, pick, result, ...,
 
 \item{temporary}{logical, if TRUE use temporary tables.}
 
-\item{f_dt_factory}{optional signature f_dt_factory(pick, result) returns function with signature f_dt(d) where d is a data.table.  The point is the function must come from a data.table enabled package. Please see \code{rqdatatable::make_dt_lookup_by_column} for an example.}
+\item{f_dt_factory}{optional signature f_dt_factory(pick, result) returns function with signature f_dt(d, nd) where d is a data.table.  The point is the function must come from a data.table enabled package. Please see \code{rqdatatable::make_dt_lookup_by_column} for an example.}
 }
 \description{
 The \code{pick} column selects values from the columns it names (per-row).
