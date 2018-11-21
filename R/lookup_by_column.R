@@ -74,7 +74,8 @@ lookup_by_column <- function(source,
   outgoing_table_name = tmp_name_source()
   f_db <- function(db,
                    incoming_table_name,
-                   outgoing_table_name) {
+                   outgoing_table_name,
+                   nd) {
     # get list of possible values
     q <- paste0("
      SELECT
@@ -116,7 +117,7 @@ lookup_by_column <- function(source,
     rq_execute(db, qm)
     db_td(db, outgoing_table_name)
   }
-  f_df <- function(d) {
+  f_df <- function(d, nd) {
     d <- as.data.frame(d)
     dtmp <- d[,
               intersect(colnames(d), unique(d[[pick]])),

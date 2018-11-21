@@ -1,8 +1,9 @@
 
-# rquery 1.2.1 2018/11/19
+# rquery 1.2.1 2018/11/21
 
  * versions without _nse() suffix.
  * parse ^ power.
+ * reflexive arguments to non-sql nodes.
  * Add .[]-variable decleration notation.
  * Narrow suggests.
  * update docs.

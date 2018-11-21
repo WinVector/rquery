@@ -159,7 +159,8 @@ quantile_node <- function(source,
   outgoing_table_name = tmp_name_source()
   f_db <- function(db,
                    incoming_table_name,
-                   outgoing_table_name) {
+                   outgoing_table_name,
+                   nd) {
     qtable <- quantile_cols(db, incoming_table_name,
                             probs = probs,
                             probs_name = probs_name,
@@ -170,7 +171,7 @@ quantile_node <- function(source,
                overwrite = TRUE,
                temporary = temporary)
   }
-  f_df <- function(d) {
+  f_df <- function(d, nd) {
     quantile_cols_d(d,
                     probs = probs,
                     probs_name = probs_name,
@@ -179,6 +180,7 @@ quantile_node <- function(source,
   nd <- non_sql_node(source,
                      f_db = f_db,
                      f_df = f_df,
+                     f_dt = f_df,
                      incoming_table_name = incoming_table_name,
                      outgoing_table_name = outgoing_table_name,
                      columns_produced = c(probs_name, cols),

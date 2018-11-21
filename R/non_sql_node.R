@@ -11,9 +11,9 @@
 #'
 #' @param source source to work from (data.frame or relop node)
 #' @param ... force later arguments to bind by name
-#' @param f_db database implementation signature: f_db(db, incoming_table_name, outgoing_table_name) (db being a database handle)
-#' @param f_df data.frame implementation signature: f_df(data.frame) (NULL defaults to taking from database).
-#' @param f_dt data.table implementation signature: f_dt(data.table) (NULL defaults f_df).
+#' @param f_db database implementation signature: f_db(db, incoming_table_name, outgoing_table_name, nd) (db being a database handle)
+#' @param f_df data.frame implementation signature: f_df(data.frame, nd) (NULL defaults to taking from database).
+#' @param f_dt data.table implementation signature: f_dt(data.table, nd) (NULL defaults f_df).
 #' @param incoming_table_name character, name of incoming table
 #' @param outgoing_table_name character, name of produced table
 #' @param columns_produced character, names of additional columns produced
@@ -29,13 +29,13 @@
 #'
 non_sql_node <- function(source,
                          ...,
-                         f_db,
+                         f_db = NULL,
                          f_df = NULL,
                          f_dt = NULL,
                          incoming_table_name,
                          outgoing_table_name,
                          columns_produced,
-                         display_form,
+                         display_form = 'non_sql_node',
                          orig_columns = TRUE,
                          temporary = TRUE,
                          env = parent.frame()) {
@@ -47,13 +47,13 @@ non_sql_node <- function(source,
 #' @export
 non_sql_node.relop <- function(source,
                                ...,
-                               f_db,
+                               f_db = NULL,
                                f_df = NULL,
                                f_dt = NULL,
                                incoming_table_name,
                                outgoing_table_name,
                                columns_produced,
-                               display_form,
+                               display_form = 'non_sql_node',
                                orig_columns = TRUE,
                                temporary = TRUE,
                                env = parent.frame()) {
@@ -89,13 +89,13 @@ non_sql_node.relop <- function(source,
 #' @export
 non_sql_node.data.frame <- function(source,
                                     ...,
-                                    f_db,
+                                    f_db = NULL,
                                     f_df = NULL,
                                     f_dt = NULL,
                                     incoming_table_name,
                                     outgoing_table_name,
                                     columns_produced,
-                                    display_form,
+                                    display_form = 'non_sql_node',
                                     orig_columns = TRUE,
                                     temporary = TRUE,
                                     env = parent.frame()) {
@@ -228,8 +228,8 @@ materialize_node <- function(source,
   }
   non_sql_node(source = source,
                f_db = NULL,
-               f_df = function(x) { x },
-               f_dt = function(x) { x },
+               f_df = function(x, nd) { x },
+               f_dt = function(x, nd) { x },
                incoming_table_name = table_name,
                outgoing_table_name = table_name,
                columns_produced = NULL,
