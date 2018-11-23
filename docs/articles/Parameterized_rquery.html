@@ -107,67 +107,67 @@
 <p><a href="https://CRAN.R-project.org/package=rquery"><code>rquery</code></a> <code>1.2.0</code> now incorporates <a href="https://www.rdocumentation.org/packages/base/versions/3.5.1/topics/bquote"><code><a href="https://www.rdocumentation.org/packages/base/topics/bquote">bquote()</a></code></a> <a href="https://en.wikipedia.org/wiki/Quasi-quotation">quasi-quotation</a>.</p>
 <p>In fact this is enough to allow <code>rqdatatable</code> to directly work the indirect column names example from our <code><a href="https://www.rdocumentation.org/packages/base/topics/bquote">bquote()</a></code> articles (<a href="http://www.win-vector.com/blog/2018/09/parameterizing-with-bquote/">1</a>, <a href="http://www.win-vector.com/blog/2018/10/quasiquotation-in-r-via-bquote/">2</a>).</p>
 <p>First let’s check what packages we have available for these examples.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">have_rqdatatable &lt;-<span class="st"> </span><span class="ot">FALSE</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="cf">if</span> (<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ns-load">requireNamespace</a></span>(<span class="st">"rqdatatable"</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>)) {</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">  <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"rqdatatable"</span>)</a>
-<a class="sourceLine" id="cb1-4" data-line-number="4">  have_rqdatatable &lt;-<span class="st"> </span><span class="ot">TRUE</span></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5">}</a>
-<a class="sourceLine" id="cb1-6" data-line-number="6">have_db &lt;-<span class="st"> </span><span class="ot">FALSE</span></a>
-<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="cf">if</span> (<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ns-load">requireNamespace</a></span>(<span class="st">"RSQLite"</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>) <span class="op">&amp;&amp;</span></a>
-<a class="sourceLine" id="cb1-8" data-line-number="8"><span class="st">    </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ns-load">requireNamespace</a></span>(<span class="st">"DBI"</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>)) {</a>
-<a class="sourceLine" id="cb1-9" data-line-number="9">  have_db &lt;-<span class="st"> </span><span class="ot">TRUE</span></a>
-<a class="sourceLine" id="cb1-10" data-line-number="10">}</a></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"rquery"</span>)</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="co"># define our parameters</span></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="co"># pretend these come from far away</span></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="co"># or as function arguments.</span></a>
-<a class="sourceLine" id="cb2-6" data-line-number="6">group_nm &lt;-<span class="st"> "am"</span></a>
-<a class="sourceLine" id="cb2-7" data-line-number="7">num_nm &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/name">as.name</a></span>(<span class="st">"hp"</span>)</a>
-<a class="sourceLine" id="cb2-8" data-line-number="8">den_nm &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/name">as.name</a></span>(<span class="st">"cyl"</span>)</a>
-<a class="sourceLine" id="cb2-9" data-line-number="9">derived_nm &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/name">as.name</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/paste">paste0</a></span>(num_nm, <span class="st">"_per_"</span>, den_nm))</a>
-<a class="sourceLine" id="cb2-10" data-line-number="10">mean_nm &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/name">as.name</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/paste">paste0</a></span>(<span class="st">"mean_"</span>, derived_nm))</a>
-<a class="sourceLine" id="cb2-11" data-line-number="11">count_nm &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/name">as.name</a></span>(<span class="st">"group_count"</span>)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">have_rqdatatable &lt;-<span class="st"> </span><span class="ot">FALSE</span>
+<span class="cf">if</span> (<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ns-load">requireNamespace</a></span>(<span class="st">"rqdatatable"</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>)) {
+  <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"rqdatatable"</span>)
+  have_rqdatatable &lt;-<span class="st"> </span><span class="ot">TRUE</span>
+}
+have_db &lt;-<span class="st"> </span><span class="ot">FALSE</span>
+<span class="cf">if</span> (<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ns-load">requireNamespace</a></span>(<span class="st">"RSQLite"</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>) <span class="op">&amp;&amp;</span>
+<span class="st">    </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ns-load">requireNamespace</a></span>(<span class="st">"DBI"</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>)) {
+  have_db &lt;-<span class="st"> </span><span class="ot">TRUE</span>
+}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"rquery"</span>)
+
+<span class="co"># define our parameters</span>
+<span class="co"># pretend these come from far away</span>
+<span class="co"># or as function arguments.</span>
+group_nm &lt;-<span class="st"> "am"</span>
+num_nm &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/name">as.name</a></span>(<span class="st">"hp"</span>)
+den_nm &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/name">as.name</a></span>(<span class="st">"cyl"</span>)
+derived_nm &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/name">as.name</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/paste">paste0</a></span>(num_nm, <span class="st">"_per_"</span>, den_nm))
+mean_nm &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/name">as.name</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/paste">paste0</a></span>(<span class="st">"mean_"</span>, derived_nm))
+count_nm &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/name">as.name</a></span>(<span class="st">"group_count"</span>)</code></pre></div>
 <p>Immediate mode example (note we are using newer <code>rquery</code> <code>1.2.1</code> notation “<code><a href="../reference/extend.html">extend()</a></code>” instead of <code><a href="../reference/extend.html">extend_nse()</a></code>).</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># apply a parameterized pipeline using bquote</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2">mtcars <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/extend.html">extend</a></span>(., </a>
-<a class="sourceLine" id="cb3-4" data-line-number="4">         .(derived_nm) <span class="op">:</span><span class="er">=</span><span class="st"> </span>.(num_nm)<span class="op">/</span>.(den_nm)) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="st">  </span><span class="kw"><a href="../reference/project.html">project</a></span>(., </a>
-<a class="sourceLine" id="cb3-6" data-line-number="6">          .(mean_nm) <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/mean">mean</a></span>(.(derived_nm)),</a>
-<a class="sourceLine" id="cb3-7" data-line-number="7">          .(count_nm) <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/length">length</a></span>(.(derived_nm)),</a>
-<a class="sourceLine" id="cb3-8" data-line-number="8">          <span class="dt">groupby =</span> group_nm) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb3-9" data-line-number="9"><span class="st">  </span><span class="kw"><a href="../reference/orderby.html">orderby</a></span>(., </a>
-<a class="sourceLine" id="cb3-10" data-line-number="10">          group_nm)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># apply a parameterized pipeline using bquote</span>
+mtcars <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/extend.html">extend</a></span>(., 
+         .(derived_nm) <span class="op">:</span><span class="er">=</span><span class="st"> </span>.(num_nm)<span class="op">/</span>.(den_nm)) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/project.html">project</a></span>(., 
+          .(mean_nm) <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/mean">mean</a></span>(.(derived_nm)),
+          .(count_nm) <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/length">length</a></span>(.(derived_nm)),
+          <span class="dt">groupby =</span> group_nm) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/orderby.html">orderby</a></span>(., 
+          group_nm)</code></pre></div>
 <pre><code>##    am mean_hp_per_cyl group_count
 ## 1:  0        22.71491          19
 ## 2:  1        23.41987          13</code></pre>
 <p>Stored operator tree examples.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co"># make an abstract description of the table to start with</span></a>
-<a class="sourceLine" id="cb5-2" data-line-number="2">td &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mk_td.html">mk_td</a></span>(<span class="st">"mtcars"</span>,</a>
-<a class="sourceLine" id="cb5-3" data-line-number="3">            <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/character">as.character</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(group_nm, num_nm, den_nm)))</a>
-<a class="sourceLine" id="cb5-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb5-5" data-line-number="5"><span class="co"># helper function to adapt to later database environemnt</span></a>
-<a class="sourceLine" id="cb5-6" data-line-number="6">count &lt;-<span class="st"> </span><span class="cf">function</span>(v) { <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/length">length</a></span>(v) }</a>
-<a class="sourceLine" id="cb5-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb5-8" data-line-number="8"><span class="co"># capture the operator pipeline</span></a>
-<a class="sourceLine" id="cb5-9" data-line-number="9">ops &lt;-<span class="st"> </span>td <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb5-10" data-line-number="10"><span class="st">  </span><span class="kw"><a href="../reference/extend.html">extend</a></span>(., </a>
-<a class="sourceLine" id="cb5-11" data-line-number="11">         .(derived_nm) <span class="op">:</span><span class="er">=</span><span class="st"> </span>.(num_nm)<span class="op">/</span>.(den_nm)) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb5-12" data-line-number="12"><span class="st">  </span><span class="kw"><a href="../reference/project.html">project</a></span>(., </a>
-<a class="sourceLine" id="cb5-13" data-line-number="13">          .(mean_nm) <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/mean">mean</a></span>(.(derived_nm)),</a>
-<a class="sourceLine" id="cb5-14" data-line-number="14">          .(count_nm) <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">count</span>(.(derived_nm)),</a>
-<a class="sourceLine" id="cb5-15" data-line-number="15">          <span class="dt">groupby =</span> group_nm) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb5-16" data-line-number="16"><span class="st">  </span><span class="kw"><a href="../reference/orderby.html">orderby</a></span>(., </a>
-<a class="sourceLine" id="cb5-17" data-line-number="17">          group_nm)</a></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="co"># apply it to data</span></a>
-<a class="sourceLine" id="cb6-2" data-line-number="2">mtcars <span class="op">%.&gt;%</span><span class="st"> </span>ops</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># make an abstract description of the table to start with</span>
+td &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mk_td.html">mk_td</a></span>(<span class="st">"mtcars"</span>,
+            <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/character">as.character</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(group_nm, num_nm, den_nm)))
+
+<span class="co"># helper function to adapt to later database environemnt</span>
+count &lt;-<span class="st"> </span><span class="cf">function</span>(v) { <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/length">length</a></span>(v) }
+
+<span class="co"># capture the operator pipeline</span>
+ops &lt;-<span class="st"> </span>td <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/extend.html">extend</a></span>(., 
+         .(derived_nm) <span class="op">:</span><span class="er">=</span><span class="st"> </span>.(num_nm)<span class="op">/</span>.(den_nm)) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/project.html">project</a></span>(., 
+          .(mean_nm) <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/mean">mean</a></span>(.(derived_nm)),
+          .(count_nm) <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">count</span>(.(derived_nm)),
+          <span class="dt">groupby =</span> group_nm) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/orderby.html">orderby</a></span>(., 
+          group_nm)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># apply it to data</span>
+mtcars <span class="op">%.&gt;%</span><span class="st"> </span>ops</code></pre></div>
 <pre><code>##    am mean_hp_per_cyl group_count
 ## 1:  0        22.71491          19
 ## 2:  1        23.41987          13</code></pre>
 <p>We can display the pipeline in various forms.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="co"># print the operator sequence</span></a>
-<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/format">format</a></span>(ops))</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># print the operator sequence</span>
+<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/format">format</a></span>(ops))</code></pre></div>
 <pre><code>## table(mtcars; 
 ##   am,
 ##   hp,
@@ -177,42 +177,44 @@
 ##  project(., mean_hp_per_cyl := mean(hp_per_cyl), group_count := count(hp_per_cyl),
 ##   g= am) %.&gt;%
 ##  orderby(., am)</code></pre>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="co"># draw the pipeline</span></a>
-<a class="sourceLine" id="cb10-2" data-line-number="2">ops <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb10-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/op_diagram.html">op_diagram</a></span>(.) <span class="op">%.&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb10-4" data-line-number="4"><span class="st">  </span>DiagrammeR<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DiagrammeR/topics/grViz">grViz</a></span>(.)</a></code></pre></div>
-<p><img src="parameterized_rquery.png"></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># draw the pipeline</span>
+ops <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/op_diagram.html">op_diagram</a></span>(.) <span class="op">%.&gt;%</span><span class="st"> </span>
+<span class="st">  </span>DiagrammeR<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DiagrammeR/topics/grViz">grViz</a></span>(.)</code></pre></div>
+<div class="figure">
+<img src="parameterized_rquery.png">
+</div>
 <p>The same example in a database.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="co"># connect to a database</span></a>
-<a class="sourceLine" id="cb11-2" data-line-number="2">raw_connection &lt;-<span class="st"> </span>DBI<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DBI/topics/dbConnect">dbConnect</a></span>(RSQLite<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/RSQLite/topics/SQLite">SQLite</a></span>(), <span class="st">":memory:"</span>)</a>
-<a class="sourceLine" id="cb11-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb11-4" data-line-number="4"><span class="co"># build a representation of the database connection</span></a>
-<a class="sourceLine" id="cb11-5" data-line-number="5">dbopts &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rq_connection_tests.html">rq_connection_tests</a></span>(raw_connection)</a>
-<a class="sourceLine" id="cb11-6" data-line-number="6">db &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rquery_db_info.html">rquery_db_info</a></span>(<span class="dt">connection =</span> raw_connection,</a>
-<a class="sourceLine" id="cb11-7" data-line-number="7">                     <span class="dt">is_dbi =</span> <span class="ot">TRUE</span>,</a>
-<a class="sourceLine" id="cb11-8" data-line-number="8">                     <span class="dt">connection_options =</span> dbopts)</a>
-<a class="sourceLine" id="cb11-9" data-line-number="9"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(db)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># connect to a database</span>
+raw_connection &lt;-<span class="st"> </span>DBI<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DBI/topics/dbConnect">dbConnect</a></span>(RSQLite<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/RSQLite/topics/SQLite">SQLite</a></span>(), <span class="st">":memory:"</span>)
+
+<span class="co"># build a representation of the database connection</span>
+dbopts &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rq_connection_tests.html">rq_connection_tests</a></span>(raw_connection)
+db &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rquery_db_info.html">rquery_db_info</a></span>(<span class="dt">connection =</span> raw_connection,
+                     <span class="dt">is_dbi =</span> <span class="ot">TRUE</span>,
+                     <span class="dt">connection_options =</span> dbopts)
+<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(db)</code></pre></div>
 <pre><code>## [1] "rquery_db_info(SQLiteConnection, is_dbi=TRUE, note=\"\")"</code></pre>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="co"># copy data to db</span></a>
-<a class="sourceLine" id="cb13-2" data-line-number="2">tr &lt;-<span class="st"> </span>rquery<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/rquery/topics/rq_copy_to">rq_copy_to</a></span>(db, <span class="st">"mtcars"</span>, mtcars, </a>
-<a class="sourceLine" id="cb13-3" data-line-number="3">                         <span class="dt">temporary =</span> <span class="ot">TRUE</span>, </a>
-<a class="sourceLine" id="cb13-4" data-line-number="4">                         <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb13-5" data-line-number="5"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(tr)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># copy data to db</span>
+tr &lt;-<span class="st"> </span>rquery<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/rquery/topics/rq_copy_to">rq_copy_to</a></span>(db, <span class="st">"mtcars"</span>, mtcars, 
+                         <span class="dt">temporary =</span> <span class="ot">TRUE</span>, 
+                         <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)
+<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(tr)</code></pre></div>
 <pre><code>## [1] "table(`mtcars`; mpg, cyl, disp, hp, drat, wt, qsec, vs, am, gear, carb)"</code></pre>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="co"># materialize result remotely (without passing through R)</span></a>
-<a class="sourceLine" id="cb15-2" data-line-number="2">res &lt;-<span class="st"> </span><span class="kw"><a href="../reference/materialize.html">materialize</a></span>(db, ops)</a>
-<a class="sourceLine" id="cb15-3" data-line-number="3">DBI<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DBI/topics/dbReadTable">dbReadTable</a></span>(raw_connection, res<span class="op">$</span>table_name)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># materialize result remotely (without passing through R)</span>
+res &lt;-<span class="st"> </span><span class="kw"><a href="../reference/materialize.html">materialize</a></span>(db, ops)
+DBI<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DBI/topics/dbReadTable">dbReadTable</a></span>(raw_connection, res<span class="op">$</span>table_name)</code></pre></div>
 <pre><code>##   am mean_hp_per_cyl group_count
 ## 1  0        22.71491          19
 ## 2  1        23.41987          13</code></pre>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="co"># or execute and pull results back</span></a>
-<a class="sourceLine" id="cb17-2" data-line-number="2"><span class="kw"><a href="../reference/execute.html">execute</a></span>(db, ops)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># or execute and pull results back</span>
+<span class="kw"><a href="../reference/execute.html">execute</a></span>(db, ops)</code></pre></div>
 <pre><code>##   am mean_hp_per_cyl group_count
 ## 1  0        22.71491          19
 ## 2  1        23.41987          13</code></pre>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="co"># print the derived sql</span></a>
-<a class="sourceLine" id="cb19-2" data-line-number="2">sql &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(ops, db)</a>
-<a class="sourceLine" id="cb19-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(sql)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># print the derived sql</span>
+sql &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(ops, db)
+<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(sql)</code></pre></div>
 <pre><code>## SELECT * FROM (
 ##  SELECT `am`, avg ( `hp_per_cyl` ) AS `mean_hp_per_cyl`, count ( `hp_per_cyl` ) AS `group_count` FROM (
 ##   SELECT
@@ -225,14 +227,14 @@
 ##     `cyl`
 ##    FROM
 ##     `mtcars`
-##    ) tsql_65766448262506321038_0000000000
-##   ) tsql_65766448262506321038_0000000001
+##    ) tsql_07814718255617046965_0000000000
+##   ) tsql_07814718255617046965_0000000001
 ##  GROUP BY
 ##   `am`
-## ) tsql_65766448262506321038_0000000002 ORDER BY `am`</code></pre>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1"><span class="co"># disconnect</span></a>
-<a class="sourceLine" id="cb21-2" data-line-number="2">DBI<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DBI/topics/dbDisconnect">dbDisconnect</a></span>(raw_connection)</a>
-<a class="sourceLine" id="cb21-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/rm">rm</a></span>(<span class="dt">list =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"raw_connection"</span>, <span class="st">"db"</span>))</a></code></pre></div>
+## ) tsql_07814718255617046965_0000000002 ORDER BY `am`</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># disconnect</span>
+DBI<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DBI/topics/dbDisconnect">dbDisconnect</a></span>(raw_connection)
+<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/rm">rm</a></span>(<span class="dt">list =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"raw_connection"</span>, <span class="st">"db"</span>))</code></pre></div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

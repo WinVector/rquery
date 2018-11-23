@@ -540,7 +540,7 @@ rsummary_node <- function(source,
                overwrite = TRUE,
                temporary = temporary)
   }
-  f_df <- function(d, nd) {
+  f_df <- function(d, nd = NULL) {
     rsummary_d(d,
                quartiles = quartiles)
   }

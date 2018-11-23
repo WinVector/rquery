@@ -234,7 +234,7 @@ materialize_node <- function(source,
   }
   non_sql_node(source = source,
                f_db = NULL,
-               f_df = function(x, nd) { x },
+               f_df = function(x, nd = NULL) { x },
                f_dt = NULL,
                incoming_table_name = table_name,
                outgoing_table_name = table_name,

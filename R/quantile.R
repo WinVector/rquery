@@ -171,7 +171,7 @@ quantile_node <- function(source,
                overwrite = TRUE,
                temporary = temporary)
   }
-  f_df <- function(d, nd) {
+  f_df <- function(d, nd = NULL) {
     quantile_cols_d(d,
                     probs = probs,
                     probs_name = probs_name,

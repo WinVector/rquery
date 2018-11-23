@@ -105,28 +105,28 @@
     
     
 <p><code>rquery</code> does not parse expression of the <code>SQL</code> node. Thus it does not know which tokens are string-literals, and which are column names. To assist with this user can annotate column names with <code>.[]</code>.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"rquery"</span>)</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">date_cutoff &lt;-<span class="st"> '2017-04-02'</span></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5">td &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mk_td.html">mk_td</a></span>(<span class="st">"df"</span>, </a>
-<a class="sourceLine" id="cb1-6" data-line-number="6">            <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"cust"</span>,</a>
-<a class="sourceLine" id="cb1-7" data-line-number="7">              <span class="st">"trans_date"</span>,</a>
-<a class="sourceLine" id="cb1-8" data-line-number="8">              <span class="st">"sales"</span>))</a>
-<a class="sourceLine" id="cb1-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb1-10" data-line-number="10">ops &lt;-<span class="st"> </span>td <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb1-11" data-line-number="11"><span class="st">  </span><span class="kw"><a href="../reference/select_rows_se.html">select_rows_se</a></span>(</a>
-<a class="sourceLine" id="cb1-12" data-line-number="12">    ., </a>
-<a class="sourceLine" id="cb1-13" data-line-number="13">    <span class="kw"><a href="https://www.rdocumentation.org/packages/wrapr/topics/qe">qe</a></span>(trans_date <span class="op">&lt;=</span><span class="st">  </span><span class="kw">str_to_date</span>(.(date_cutoff), <span class="st">'%Y-%m-%d'</span>))) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb1-14" data-line-number="14"><span class="st">  </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(</a>
-<a class="sourceLine" id="cb1-15" data-line-number="15">    .,</a>
-<a class="sourceLine" id="cb1-16" data-line-number="16">    <span class="kw"><a href="https://www.rdocumentation.org/packages/wrapr/topics/qae">qae</a></span>(<span class="dt">max_date =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Extremes">max</a></span>(.[trans_date]),</a>
-<a class="sourceLine" id="cb1-17" data-line-number="17">        <span class="dt">const_col1 =</span> <span class="st">"a'"</span>,</a>
-<a class="sourceLine" id="cb1-18" data-line-number="18">        <span class="dt">const_col2 =</span> <span class="st">'a"'</span>),</a>
-<a class="sourceLine" id="cb1-19" data-line-number="19">    <span class="dt">mods =</span> <span class="st">"GROUP BY .[cust]"</span>,</a>
-<a class="sourceLine" id="cb1-20" data-line-number="20">    <span class="dt">orig_columns =</span> <span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb1-21" data-line-number="21"></a>
-<a class="sourceLine" id="cb1-22" data-line-number="22"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/format">format</a></span>(ops))</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"rquery"</span>)
+
+date_cutoff &lt;-<span class="st"> '2017-04-02'</span>
+
+td &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mk_td.html">mk_td</a></span>(<span class="st">"df"</span>, 
+            <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"cust"</span>,
+              <span class="st">"trans_date"</span>,
+              <span class="st">"sales"</span>))
+
+ops &lt;-<span class="st"> </span>td <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/select_rows_se.html">select_rows_se</a></span>(
+    ., 
+    <span class="kw"><a href="https://www.rdocumentation.org/packages/wrapr/topics/qe">qe</a></span>(trans_date <span class="op">&lt;=</span><span class="st">  </span><span class="kw">str_to_date</span>(.(date_cutoff), <span class="st">'%Y-%m-%d'</span>))) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(
+    .,
+    <span class="kw"><a href="https://www.rdocumentation.org/packages/wrapr/topics/qae">qae</a></span>(<span class="dt">max_date =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Extremes">max</a></span>(.[trans_date]),
+        <span class="dt">const_col1 =</span> <span class="st">"a'"</span>,
+        <span class="dt">const_col2 =</span> <span class="st">'a"'</span>),
+    <span class="dt">mods =</span> <span class="st">"GROUP BY .[cust]"</span>,
+    <span class="dt">orig_columns =</span> <span class="ot">FALSE</span>)
+
+<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/format">format</a></span>(ops))</code></pre></div>
 <pre><code>## table(df; 
 ##   cust,
 ##   trans_date,
@@ -140,11 +140,11 @@
 ##            GROUP BY  "cust",
 ##              *=FALSE)</code></pre>
 <p>Notice how this renders into different <code>SQL</code> for each of our two database descriptions.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">db1 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rquery_db_info.html">rquery_db_info</a></span>(</a>
-<a class="sourceLine" id="cb3-2" data-line-number="2">  <span class="dt">identifier_quote_char =</span> <span class="st">"'"</span>,</a>
-<a class="sourceLine" id="cb3-3" data-line-number="3">  <span class="dt">string_quote_char =</span> <span class="st">'"'</span>)</a>
-<a class="sourceLine" id="cb3-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(ops, db1))</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">db1 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rquery_db_info.html">rquery_db_info</a></span>(
+  <span class="dt">identifier_quote_char =</span> <span class="st">"'"</span>,
+  <span class="dt">string_quote_char =</span> <span class="st">'"'</span>)
+
+<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(ops, db1))</code></pre></div>
 <pre><code>## SELECT
 ##  max( 'trans_date' ) AS 'max_date',
 ##  "a'" AS 'const_col1',
@@ -157,14 +157,14 @@
 ##    'sales'
 ##   FROM
 ##    'df'
-##  ) tsql_58438702443746340587_0000000000
+##  ) tsql_15491205136171029441_0000000000
 ##  WHERE 'trans_date' &lt;= str_to_date ( "2017-04-02" , "%Y-%m-%d" )
-## ) tsql_58438702443746340587_0000000001 GROUP BY  'cust'</code></pre>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">db2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rquery_db_info.html">rquery_db_info</a></span>(</a>
-<a class="sourceLine" id="cb5-2" data-line-number="2">  <span class="dt">identifier_quote_char =</span> <span class="st">'"'</span>,</a>
-<a class="sourceLine" id="cb5-3" data-line-number="3">  <span class="dt">string_quote_char =</span> <span class="st">"'"</span>)</a>
-<a class="sourceLine" id="cb5-4" data-line-number="4">  </a>
-<a class="sourceLine" id="cb5-5" data-line-number="5"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(ops, db2))</a></code></pre></div>
+## ) tsql_15491205136171029441_0000000001 GROUP BY  'cust'</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">db2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rquery_db_info.html">rquery_db_info</a></span>(
+  <span class="dt">identifier_quote_char =</span> <span class="st">'"'</span>,
+  <span class="dt">string_quote_char =</span> <span class="st">"'"</span>)
+  
+<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(ops, db2))</code></pre></div>
 <pre><code>## SELECT
 ##  max( "trans_date" ) AS "max_date",
 ##  'a'' AS "const_col1",
@@ -177,25 +177,25 @@
 ##    "sales"
 ##   FROM
 ##    "df"
-##  ) tsql_18706971994201219907_0000000000
+##  ) tsql_19950436392145130688_0000000000
 ##  WHERE "trans_date" &lt;= str_to_date ( '2017-04-02' , '%Y-%m-%d' )
-## ) tsql_18706971994201219907_0000000001 GROUP BY  "cust"</code></pre>
+## ) tsql_19950436392145130688_0000000001 GROUP BY  "cust"</code></pre>
 <p>Notice our included quote characters were translated. This is an unwanted side-effect of using the <code><a href="https://www.rdocumentation.org/packages/wrapr/topics/qae">qae()</a></code> shortcut which does not tokenize, so it does not know which quotes are in which roles in the expression.</p>
 <p>To override quote translation in the <code><a href="../reference/sql_node.html">sql_node()</a></code> (which is simple string substitution without quote context or escaping) you must use the clunkier “build up a string as a list of tokens” (where sub-listed items are string literals and names are column names).</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">ops &lt;-<span class="st"> </span>td <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/select_rows_se.html">select_rows_se</a></span>(</a>
-<a class="sourceLine" id="cb7-3" data-line-number="3">    ., </a>
-<a class="sourceLine" id="cb7-4" data-line-number="4">    <span class="kw"><a href="https://www.rdocumentation.org/packages/wrapr/topics/qe">qe</a></span>(trans_date <span class="op">&lt;=</span><span class="st">  </span><span class="kw">str_to_date</span>(.(date_cutoff), <span class="st">'%Y-%m-%d'</span>))) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb7-5" data-line-number="5"><span class="st">  </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(</a>
-<a class="sourceLine" id="cb7-6" data-line-number="6">    .,</a>
-<a class="sourceLine" id="cb7-7" data-line-number="7">    <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(</a>
-<a class="sourceLine" id="cb7-8" data-line-number="8">      <span class="st">"max_date"</span> <span class="op">%:=%</span><span class="st"> "max(.[trans_date])"</span>,</a>
-<a class="sourceLine" id="cb7-9" data-line-number="9">      <span class="st">"const_col1"</span> =<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="st">"a'"</span>)),</a>
-<a class="sourceLine" id="cb7-10" data-line-number="10">      <span class="st">"const_col2"</span> =<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="st">'b"'</span>))),</a>
-<a class="sourceLine" id="cb7-11" data-line-number="11">    <span class="dt">mods =</span> <span class="st">"GROUP BY .[cust]"</span>,</a>
-<a class="sourceLine" id="cb7-12" data-line-number="12">    <span class="dt">orig_columns =</span> <span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb7-13" data-line-number="13"></a>
-<a class="sourceLine" id="cb7-14" data-line-number="14"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/format">format</a></span>(ops))</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ops &lt;-<span class="st"> </span>td <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/select_rows_se.html">select_rows_se</a></span>(
+    ., 
+    <span class="kw"><a href="https://www.rdocumentation.org/packages/wrapr/topics/qe">qe</a></span>(trans_date <span class="op">&lt;=</span><span class="st">  </span><span class="kw">str_to_date</span>(.(date_cutoff), <span class="st">'%Y-%m-%d'</span>))) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(
+    .,
+    <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(
+      <span class="st">"max_date"</span> <span class="op">%:=%</span><span class="st"> "max(.[trans_date])"</span>,
+      <span class="st">"const_col1"</span> =<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="st">"a'"</span>)),
+      <span class="st">"const_col2"</span> =<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="st">'b"'</span>))),
+    <span class="dt">mods =</span> <span class="st">"GROUP BY .[cust]"</span>,
+    <span class="dt">orig_columns =</span> <span class="ot">FALSE</span>)
+
+<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/format">format</a></span>(ops))</code></pre></div>
 <pre><code>## table(df; 
 ##   cust,
 ##   trans_date,
@@ -208,7 +208,7 @@
 ##              const_col2 %:=% list("b\"");
 ##            GROUP BY  "cust",
 ##              *=FALSE)</code></pre>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(ops, db1))</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(ops, db1))</code></pre></div>
 <pre><code>## SELECT
 ##  NA,
 ##  "a'" AS 'const_col1',
@@ -221,10 +221,10 @@
 ##    'sales'
 ##   FROM
 ##    'df'
-##  ) tsql_70979186220528212158_0000000000
+##  ) tsql_32845731379078996626_0000000000
 ##  WHERE 'trans_date' &lt;= str_to_date ( "2017-04-02" , "%Y-%m-%d" )
-## ) tsql_70979186220528212158_0000000001 GROUP BY  'cust'</code></pre>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(ops, db2))</a></code></pre></div>
+## ) tsql_32845731379078996626_0000000001 GROUP BY  'cust'</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(ops, db2))</code></pre></div>
 <pre><code>## SELECT
 ##  NA,
 ##  'a\'' AS "const_col1",
@@ -237,9 +237,9 @@
 ##    "sales"
 ##   FROM
 ##    "df"
-##  ) tsql_05329540380985419830_0000000000
+##  ) tsql_20782721276137570609_0000000000
 ##  WHERE "trans_date" &lt;= str_to_date ( '2017-04-02' , '%Y-%m-%d' )
-## ) tsql_05329540380985419830_0000000001 GROUP BY  "cust"</code></pre>
+## ) tsql_20782721276137570609_0000000001 GROUP BY  "cust"</code></pre>
 <p>Quotes within string literals are going to be a nightmare moving from db to db, so our advice is to try to avoid them.</p>
   </div>
 

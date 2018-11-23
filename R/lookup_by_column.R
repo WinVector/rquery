@@ -117,7 +117,7 @@ lookup_by_column <- function(source,
     rq_execute(db, qm)
     db_td(db, outgoing_table_name)
   }
-  f_df <- function(d, nd) {
+  f_df <- function(d, nd = NULL) {
     d <- as.data.frame(d)
     dtmp <- d[,
               intersect(colnames(d), unique(d[[pick]])),
