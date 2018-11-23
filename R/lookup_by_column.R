@@ -75,7 +75,7 @@ lookup_by_column <- function(source,
   f_db <- function(db,
                    incoming_table_name,
                    outgoing_table_name,
-                   nd) {
+                   nd = NULL) {
     # get list of possible values
     q <- paste0("
      SELECT

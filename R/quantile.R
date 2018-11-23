@@ -160,7 +160,7 @@ quantile_node <- function(source,
   f_db <- function(db,
                    incoming_table_name,
                    outgoing_table_name,
-                   nd) {
+                   nd = NULL) {
     qtable <- quantile_cols(db, incoming_table_name,
                             probs = probs,
                             probs_name = probs_name,

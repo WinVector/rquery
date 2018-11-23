@@ -223,9 +223,17 @@ materialize_impl <- function(db,
           notes$node[[ii]] <- sqli$display_form
           notes$incoming_table_name[[ii]] <- sqli$incoming_table_name
           notes$outgoing_table_name[[ii]] <- sqli$outgoing_table_name
-          sqli$f(db,
-                 sqli$incoming_table_name,
-                 sqli$outgoing_table_name)
+          if(length(formals(sqli$f))>=4) {
+            sqli$f(db,
+                   sqli$incoming_table_name,
+                   sqli$outgoing_table_name,
+                   sqli)
+          } else {
+            # legacy signature
+            sqli$f(db,
+                   sqli$incoming_table_name,
+                   sqli$outgoing_table_name)
+          }
           rq_remove_table(db, sqli$incoming_table_name)
           if((!is.null(to_clear)) &&
              (to_clear!=sqli$outgoing_table_name)) {

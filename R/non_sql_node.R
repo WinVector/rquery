@@ -180,6 +180,7 @@ to_sql.relop_non_sql <- function (x,
                     incoming_table_name = x$incoming_table_name,
                     outgoing_table_name = x$outgoing_table_name,
                     temporary = x$temporary,
+                    node = x,
                     f = x$f_db)
   class(nsql_step) <- "rquery_non_sql_step"
   step2 <- list(nsql_step)
