@@ -1,7 +1,6 @@
 Package: rquery
 Type: Package
 Title: Relational Query Generator for Data Manipulation at Scale
-Priority: recommended
 Version: 1.2.1
 Date: 2018-11-21
 Authors@R: c(
