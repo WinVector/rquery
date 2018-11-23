@@ -295,9 +295,4 @@ rm(list = c("raw_connection", "db"))
 
 # Installing
 
-To install `rquery` please try `install.packages("rquery")` or try `devtools` as follows.
-
-```{r, eval=FALSE}
-# install.packages("devtools")
-devtools::install_github("WinVector/rquery")
-```
+To install `rquery` please try `install.packages("rquery")`.
