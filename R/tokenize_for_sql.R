@@ -16,6 +16,7 @@ is_inline_expr <- function(lexpr) {
                  "<", ">",
                  "+", "-", "*", "/",
                  "^",
+                 ":",
                  "&&", "||",
                  "&", "|")
   if(callName %in% inlineops) {
