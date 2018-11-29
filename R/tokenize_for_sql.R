@@ -12,7 +12,7 @@ is_inline_expr <- function(lexpr) {
     return(FALSE)
   }
   callName <- trimws(as.character(lexpr[[1]]), which = "both")
-  inlineops <- c(":=", "==", "!=", ">=", "<=", "=",
+  inlineops <- c("%:=%", ":=", "==", "!=", ">=", "<=", "=",
                  "<", ">",
                  "+", "-", "*", "/",
                  "^",
@@ -28,6 +28,18 @@ is_inline_expr <- function(lexpr) {
   return(FALSE)
 }
 
+check_for_forbidden_forms <- function(lexpr) {
+  if(is.call(lexpr) && is_inline_expr(lexpr)) {
+    call_text = as.character(lexpr[[1]])
+    if(call_text %in% c("%in%", "in")) {
+      stop(paste("rquery forbidden construction: ",
+                 call_text,
+                 "(please gry a test_set_indicator() node instead)"))
+    }
+  }
+}
+
+
 #' Cross-parse a call from an R parse tree into SQL.
 #'
 #' @param lexpr item from  \code{substitute} with length(lexpr)>0 and is.call(lexpr)
@@ -38,6 +50,7 @@ is_inline_expr <- function(lexpr) {
 #' @noRd
 #'
 tokenize_call_for_R <- function(lexpr, colnames, env) {
+  check_for_forbidden_forms(lexpr)
   if(is_inline_expr(lexpr)) {
     callName <- as.character(lexpr[[1]])
     lhs <- lexpr[[2]]
@@ -99,6 +112,7 @@ tokenize_call_for_R <- function(lexpr, colnames, env) {
                collapse = " "))
 }
 
+
 #' Cross-parse a call from an R parse tree into SQL.
 #'
 #' @param lexpr item from  \code{substitute} with length(lexpr)>0 and is.call(lexpr)
@@ -115,6 +129,7 @@ tokenize_call_for_SQL <- function(lexpr,
   if((n<=0) || (!is.call(lexpr))) {
     stop("rquery::tokenize_call_for_SQL called on non-call")
   }
+  check_for_forbidden_forms(lexpr)
   res <- list(parsed_toks = list(),
               symbols_used = character(0),
               symbols_produced = character(0),
@@ -302,6 +317,7 @@ tokenize_call_for_SQL <- function(lexpr,
 tokenize_for_SQL_r <- function(lexpr,
                           colnames,
                           env) {
+  check_for_forbidden_forms(lexpr)
   n <- length(lexpr)
   res <- list(parsed_toks = list(),
               symbols_used = character(0),
