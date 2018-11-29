@@ -62,5 +62,5 @@ if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quiet
 
 }
 \seealso{
-\code{\link{mk_td}}, \code{\link{rq_copy_to}}, \code{\link{materialize}}, \code{\link{execute}}, \code{\link{to_sql}}
+\code{\link{mk_td}}, \code{\link{local_td}}, \code{\link{rq_copy_to}}, \code{\link{materialize}}, \code{\link{execute}}, \code{\link{to_sql}}
 }

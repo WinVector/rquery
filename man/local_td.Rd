@@ -35,3 +35,6 @@ local_td(data.frame(x = 1))
 d \%.>\% local_td # needs wrapr 1.5.0 or newer to capture name
 
 }
+\seealso{
+\code{\link{db_td}}, \code{\link{mk_td}}
+}

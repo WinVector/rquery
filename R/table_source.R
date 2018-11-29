@@ -16,6 +16,8 @@
 #' @param q_table_name optional character, qualified table name, note: has to be re-generated for different DB connections.
 #' @return a relop representation of the data
 #'
+#' @seealso \code{\link{db_td}}, \code{\link{local_td}}
+#'
 #' @examples
 #'
 #' if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
@@ -34,7 +36,7 @@
 #'   DBI::dbDisconnect(my_db)
 #' }
 #'
-#' @seealso \code{\link{db_td}}, \code{\link{rq_copy_to}}, \code{\link{materialize}}, \code{\link{execute}}, \code{\link{to_sql}}
+#' @seealso \code{\link{db_td}}, \code{\link{local_td}}, \code{\link{rq_copy_to}}, \code{\link{materialize}}, \code{\link{execute}}, \code{\link{to_sql}}
 #'
 #' @export
 #'
@@ -82,7 +84,7 @@ table_source <- mk_td
 #' @param qualifiers optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.
 #' @return a relop representation of the data
 #'
-#' @seealso \code{\link{mk_td}}, \code{\link{rq_copy_to}}, \code{\link{materialize}}, \code{\link{execute}}, \code{\link{to_sql}}
+#' @seealso \code{\link{mk_td}}, \code{\link{local_td}}, \code{\link{rq_copy_to}}, \code{\link{materialize}}, \code{\link{execute}}, \code{\link{to_sql}}
 #'
 #' @examples
 #'
@@ -133,6 +135,8 @@ dbi_table <- db_td
 #' @param name_source temporary name source.
 #' @param env environment to work in.
 #' @return a relop representation of the data
+#'
+#' @seealso \code{\link{db_td}}, \code{\link{mk_td}}
 #'
 #' @examples
 #'
