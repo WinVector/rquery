@@ -214,7 +214,7 @@ as.character.relop <- function (x, ...) {
 #' be copied into database.
 #'
 #' @param pipe_left_arg left argument.
-#' @param pipe_right_arg substitute(pipe_right_arg) argument.
+#' @param pipe_right_arg pipe_right_arg argument.
 #' @param pipe_environment environment to evaluate in.
 #' @param left_arg_name name, if not NULL name of left argument.
 #' @param pipe_string character, name of pipe operator.
@@ -267,6 +267,7 @@ apply_right.relop <- function(pipe_left_arg,
                               left_arg_name,
                               pipe_string,
                               right_arg_name) {
+  force(pipe_environment)
   if(!("relop" %in% class(pipe_right_arg))) {
     stop("rquery::apply_right.relop expect pipe_right_arg to be of class relop")
   }
@@ -286,3 +287,5 @@ apply_right.relop <- function(pipe_left_arg,
   # dispatch to executor
   execute(pipe_left_arg, pipe_right_arg, env = pipe_environment)
 }
+
+
