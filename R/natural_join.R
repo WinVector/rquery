@@ -65,6 +65,30 @@ natural_join <- function(a, b,
   UseMethod("natural_join", a)
 }
 
+
+# check left/right table consistency (name implies table)
+tables_are_consistent <- function(a, b = NULL) {
+  tabs <- find_all_tables(a)
+  if(!is.null(b)) {
+    tabs <- c(tabs, find_all_tables(b))
+  }
+  if(length(tabs)<=1) {
+    return(TRUE)
+  }
+  seen <- list()
+  for(ti in tabs) {
+    prev <- seen[[ti$table_name]]
+    if(is.null(prev)) {
+      seen[ti$table_name] <- list(ti)
+    } else {
+      if(!isTRUE(all.equal(column_names(ti), column_names(prev)))) {
+        return(FALSE)
+      }
+    }
+  }
+  return(TRUE)
+}
+
 #' @export
 natural_join.relop <- function(a, b,
                                ...,
@@ -75,8 +99,14 @@ natural_join.relop <- function(a, b,
   if(length(list(...))>0) {
     stop("rquery::natural_join unexpected arguments")
   }
+  if(!("relop" %in% class(a))) {
+    stop("rquery::natural_join.relop a must be of class relop")
+  }
   if(!("relop" %in% class(b))) {
     stop("rquery::natural_join.relop b must also be of class relop")
+  }
+  if(!tables_are_consistent(a, b)) {
+    stop("rquery::natural_join.relop all tables with matching names must be identical")
   }
   usesa <- column_names(a)
   usesb <- column_names(b)

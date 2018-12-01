@@ -102,8 +102,14 @@ theta_join_se.relop <- function(a, b,
   if(length(list(...))>0) {
     stop("rquery::theta_join_se unexpected arguments")
   }
+  if(!("relop" %in% class(a))) {
+    stop("rquery::theta_join_se.relop b must be of class relop")
+  }
   if(!("relop" %in% class(b))) {
     stop("rquery::theta_join_se.relop b must also be of class relop")
+  }
+  if(!tables_are_consistent(a, b)) {
+    stop("rquery::theta_join_se.relop all tables with matching names must be identical")
   }
   usesa <- column_names(a)
   usesb <- column_names(b)
@@ -217,8 +223,14 @@ theta_join.relop <- function(a, b,
                                  env = parent.frame()) {
   force(env)
   exprq <- substitute(expr)
+  if(!("relop" %in% class(a))) {
+    stop("rquery::theta_join.relop a must be of class relop")
+  }
   if(!("relop" %in% class(b))) {
     stop("rquery::theta_join.relop b must also be of class relop")
+  }
+  if(!tables_are_consistent(a, b)) {
+    stop("theta_join.relop all tables with matching names must be identical")
   }
   usesa <- column_names(a)
   usesb <- column_names(b)

@@ -1,5 +1,33 @@
 
 
+find_all_tables <- function(op_tree) {
+  if("relop_table_source" %in% class(op_tree)) {
+    return(list(op_tree))
+  }
+  found <- list()
+  for(si in op_tree$source) {
+    found <- c(found, find_all_tables(si))
+  }
+  found
+}
+
+replace_all_table_sources <- function(op_tree, repl) {
+  if("relop_table_source" %in% class(op_tree)) {
+    missing <- setdiff(column_names(op_tree), column_names(repl))
+    if(length(missing)>0) {
+      stop(paste("rquery node replacement must include columns:",
+                 paste(missing, collapse = ", ")))
+    }
+    return(repl)
+  }
+  for(i in seq_len(length(op_tree$source))) {
+    op_tree$source[[i]] <- replace_all_table_sources(op_tree$source[[i]],
+                                                     repl)
+  }
+  op_tree
+}
+
+
 re_write_table_names <- function(op_tree, new_name) {
   if(!is.null(op_tree$table_name)) {
     op_tree$table_name <- new_name
@@ -248,8 +276,13 @@ apply_right.relop <- function(pipe_left_arg,
                                       env = pipe_environment))
   }
   if("relop" %in% class(pipe_left_arg)) {
-    stop("rquery::apply_right.relop left argument can not be an already defined relop pipeline")
+    # compose pipelines
+    if(length(tables_used(pipe_right_arg))!=1) {
+      stop("to compose rquery pipelines the right pipeline must be a function of exactly one table")
+    }
+    res <- replace_all_table_sources(pipe_right_arg, pipe_left_arg)
+    return(res)
   }
-  # assume pipe_left_arg is a DB connection, execute and bring back result
+  # dispatch to executor
   execute(pipe_left_arg, pipe_right_arg, env = pipe_environment)
 }
