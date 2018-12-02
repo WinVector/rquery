@@ -47,3 +47,6 @@ DBI::dbGetQuery(raw_connection, to_sql(ops, db))
 
 DBI::dbDisconnect(raw_connection)
 ```
+
+`data.table` methodology here: https://stackoverflow.com/questions/26291988/how-to-create-a-lag-variable-within-each-group
+

@@ -65,8 +65,8 @@ ops %.>%
     ##    "product"
     ##   FROM
     ##    "rh"
-    ##   ) tsql_81075785891594545865_0000000000
-    ## ) tsql_81075785891594545865_0000000001 ORDER BY "product", "purchase_date"
+    ##   ) tsql_53227794457970594125_0000000000
+    ## ) tsql_53227794457970594125_0000000001 ORDER BY "product", "purchase_date"
 
 ``` r
 DBI::dbGetQuery(raw_connection, to_sql(ops, db))
@@ -88,3 +88,5 @@ DBI::dbDisconnect(raw_connection)
 ```
 
     ## [1] TRUE
+
+`data.table` methodology here: <https://stackoverflow.com/questions/26291988/how-to-create-a-lag-variable-within-each-group>
