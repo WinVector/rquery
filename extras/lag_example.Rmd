@@ -1,0 +1,49 @@
+---
+title: "Lag Example"
+output: github_document
+---
+
+```{r}
+# From: https://community.rstudio.com/t/dplyr-mutate-gives-na-values/19170/2
+library("rquery")
+
+dat <- wrapr::build_frame(
+    "purchase_date", "product" |
+    "2017-12-17"   , "apple"   |
+    "2017-12-22"   , "banana"  |
+    "2017-12-21"   , "banana"  |
+    "2017-12-21"   , "carrot"  |
+    "2017-11-29"   , "banana"  |
+    "2017-12-18"   , "carrot"  |
+    "2017-12-05"   , "apple"   |
+    "2017-12-20"   , "banana"  |
+    "2017-12-19"   , "carrot"  )
+
+raw_connection <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
+                                 host = 'localhost',
+                                 port = 5432,
+                                 user = 'johnmount',
+                                 password = '')
+
+dbopts <- rquery::rq_connection_tests(raw_connection)
+db <- rquery::rquery_db_info(connection = raw_connection,
+                             is_dbi = TRUE,
+                             connection_options = dbopts)
+
+rh <- rquery::rq_copy_to(db, "rh", dat,
+                         overwrite = TRUE, temporary = TRUE)
+
+
+ops <- rh %.>%
+  extend(., partitionby = "product", orderby = "purchase_date",
+         z = LAG(purchase_date, 1, NULL)) %.>%
+  orderby(., c("product", "purchase_date"))
+cat(format(ops))
+ops %.>%
+  to_sql(., db) %.>%
+  cat(.)
+
+DBI::dbGetQuery(raw_connection, to_sql(ops, db))
+
+DBI::dbDisconnect(raw_connection)
+```
