@@ -1,5 +1,5 @@
 
-# rquery 1.2.1 2018/12/02
+# rquery 1.2.1 2018/12/04
 
  * versions without _nse() suffix.
  * parse ^ power.
