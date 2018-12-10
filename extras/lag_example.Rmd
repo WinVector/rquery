@@ -48,5 +48,23 @@ DBI::dbGetQuery(raw_connection, to_sql(ops, db))
 DBI::dbDisconnect(raw_connection)
 ```
 
-`data.table` methodology here: https://stackoverflow.com/questions/26291988/how-to-create-a-lag-variable-within-each-group
+
+```{r}
+library("rqdatatable")
+library("wrapr")
+
+
+ops <- local_td(dat) %.>%
+  orderby(., c("product", "purchase_date")) %.>%
+  rqdatatable::rq_ufn(
+    .,
+    wrapr::srcfn(
+      '.[, z := c(NA, purchase_date[-.N]), by="product"][]'),
+    use_data_table = TRUE)
+
+as.data.table(dat) %.>% ops
+```
+
+
+`data.table` methodology from here: https://stackoverflow.com/questions/26291988/how-to-create-a-lag-variable-within-each-group
 

@@ -65,8 +65,8 @@ ops %.>%
     ##    "product"
     ##   FROM
     ##    "rh"
-    ##   ) tsql_53227794457970594125_0000000000
-    ## ) tsql_53227794457970594125_0000000001 ORDER BY "product", "purchase_date"
+    ##   ) tsql_62116361853437748290_0000000000
+    ## ) tsql_62116361853437748290_0000000001 ORDER BY "product", "purchase_date"
 
 ``` r
 DBI::dbGetQuery(raw_connection, to_sql(ops, db))
@@ -89,4 +89,32 @@ DBI::dbDisconnect(raw_connection)
 
     ## [1] TRUE
 
-`data.table` methodology here: <https://stackoverflow.com/questions/26291988/how-to-create-a-lag-variable-within-each-group>
+``` r
+library("rqdatatable")
+library("wrapr")
+
+
+ops <- local_td(dat) %.>%
+  orderby(., c("product", "purchase_date")) %.>%
+  rqdatatable::rq_ufn(
+    .,
+    wrapr::srcfn(
+      '.[, z := c(NA, purchase_date[-.N]), by="product"][]'),
+    use_data_table = TRUE)
+
+as.data.table(dat) %.>% ops
+```
+
+    ##    purchase_date product          z
+    ## 1:    2017-12-05   apple       <NA>
+    ## 2:    2017-12-17   apple 2017-12-05
+    ## 3:    2017-11-29  banana       <NA>
+    ## 4:    2017-12-20  banana 2017-11-29
+    ## 5:    2017-12-21  banana 2017-12-20
+    ## 6:    2017-12-22  banana 2017-12-21
+    ## 7:    2017-12-18  carrot       <NA>
+    ## 8:    2017-12-19  carrot 2017-12-18
+    ## 9:    2017-12-21  carrot 2017-12-19
+
+`data.table` methodology from here:
+<https://stackoverflow.com/questions/26291988/how-to-create-a-lag-variable-within-each-group>
