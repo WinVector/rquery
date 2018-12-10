@@ -289,3 +289,42 @@ apply_right.relop <- function(pipe_left_arg,
 }
 
 
+
+setOldClass("rquery_db_info")
+
+
+
+#' Apply pipeline to a database.
+#'
+#' Apply pipeline to a database with relop %.>% db notation.
+#'
+#' @param pipe_left_arg relop operation tree
+#' @param pipe_right_arg rquery_db_info
+#' @param pipe_environment environment to evaluate in.
+#' @param left_arg_name name, if not NULL name of left argument.
+#' @param pipe_string character, name of pipe operator.
+#' @param right_arg_name name, if not NULL name of right argument.
+#' @return result
+#'
+#' @importMethodsFrom wrapr ApplyTo apply_right_S4
+#' @export
+setMethod(
+  "apply_right_S4",
+  signature(pipe_left_arg = "ANY", pipe_right_arg = "rquery_db_info"),
+  function(pipe_left_arg,
+           pipe_right_arg,
+           pipe_environment,
+           left_arg_name,
+           pipe_string,
+           right_arg_name) {
+    force(pipe_environment)
+    if(!("relop" %in% class(pipe_left_arg))) {
+      stop("rquery::apply_right_S4('ANY', 'rquery_db_info') pipe_left_arg must be of call relop")
+    }
+    if(!("rquery_db_info" %in% class(pipe_right_arg))) {
+      stop("rquery::apply_right_S4('ANY', 'rquery_db_info') pipe_right_arg must be of call rquery_db_info")
+    }
+    rquery::execute(pipe_right_arg, pipe_left_arg, env = pipe_environment)
+  })
+
+
