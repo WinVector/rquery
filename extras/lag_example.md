@@ -65,8 +65,8 @@ ops %.>%
     ##    "product"
     ##   FROM
     ##    "rh"
-    ##   ) tsql_62116361853437748290_0000000000
-    ## ) tsql_62116361853437748290_0000000001 ORDER BY "product", "purchase_date"
+    ##   ) tsql_77530524688149509383_0000000000
+    ## ) tsql_77530524688149509383_0000000001 ORDER BY "product", "purchase_date"
 
 ``` r
 DBI::dbGetQuery(raw_connection, to_sql(ops, db))
@@ -99,8 +99,7 @@ ops <- local_td(dat) %.>%
   rqdatatable::rq_ufn(
     .,
     wrapr::srcfn(
-      '.[, z := c(NA, purchase_date[-.N]), by="product"][]'),
-    use_data_table = TRUE)
+      '.[, z := c(NA, purchase_date[-.N]), by="product"][]'))
 
 as.data.table(dat) %.>% ops
 ```

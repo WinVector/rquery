@@ -59,8 +59,7 @@ ops <- local_td(dat) %.>%
   rqdatatable::rq_ufn(
     .,
     wrapr::srcfn(
-      '.[, z := c(NA, purchase_date[-.N]), by="product"][]'),
-    use_data_table = TRUE)
+      '.[, z := c(NA, purchase_date[-.N]), by="product"][]'))
 
 as.data.table(dat) %.>% ops
 ```
