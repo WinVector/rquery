@@ -65,8 +65,8 @@ ops %.>%
     ##    "product"
     ##   FROM
     ##    "dat"
-    ##   ) tsql_32157945310702322943_0000000000
-    ## ) tsql_32157945310702322943_0000000001 ORDER BY "product", "purchase_date"
+    ##   ) tsql_24483175587002579552_0000000000
+    ## ) tsql_24483175587002579552_0000000001 ORDER BY "product", "purchase_date"
 
 ``` r
 #DBI::dbGetQuery(raw_connection, to_sql(ops, db))
