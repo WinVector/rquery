@@ -28,7 +28,7 @@ db <- rquery::rquery_db_info(connection = raw_connection,
                              is_dbi = TRUE,
                              connection_options = dbopts)
 
-rh <- rquery::rq_copy_to(db, "rh", dat,
+rh <- rquery::rq_copy_to(db, "dat", dat,
                          overwrite = TRUE, temporary = TRUE)
 
 
@@ -39,7 +39,7 @@ ops <- rh %.>%
 cat(format(ops))
 ```
 
-    ## table("rh"; 
+    ## table("dat"; 
     ##   purchase_date,
     ##   product) %.>%
     ##  extend(.,
@@ -64,12 +64,88 @@ ops %.>%
     ##    "purchase_date",
     ##    "product"
     ##   FROM
-    ##    "rh"
-    ##   ) tsql_77530524688149509383_0000000000
-    ## ) tsql_77530524688149509383_0000000001 ORDER BY "product", "purchase_date"
+    ##    "dat"
+    ##   ) tsql_32157945310702322943_0000000000
+    ## ) tsql_32157945310702322943_0000000001 ORDER BY "product", "purchase_date"
 
 ``` r
-DBI::dbGetQuery(raw_connection, to_sql(ops, db))
+#DBI::dbGetQuery(raw_connection, to_sql(ops, db))
+
+db %.>% ops
+```
+
+    ##   purchase_date product          z
+    ## 1    2017-12-05   apple       <NA>
+    ## 2    2017-12-17   apple 2017-12-05
+    ## 3    2017-11-29  banana       <NA>
+    ## 4    2017-12-20  banana 2017-11-29
+    ## 5    2017-12-21  banana 2017-12-20
+    ## 6    2017-12-22  banana 2017-12-21
+    ## 7    2017-12-18  carrot       <NA>
+    ## 8    2017-12-19  carrot 2017-12-18
+    ## 9    2017-12-21  carrot 2017-12-19
+
+``` r
+ops %.>% db
+```
+
+    ##   purchase_date product          z
+    ## 1    2017-12-05   apple       <NA>
+    ## 2    2017-12-17   apple 2017-12-05
+    ## 3    2017-11-29  banana       <NA>
+    ## 4    2017-12-20  banana 2017-11-29
+    ## 5    2017-12-21  banana 2017-12-20
+    ## 6    2017-12-22  banana 2017-12-21
+    ## 7    2017-12-18  carrot       <NA>
+    ## 8    2017-12-19  carrot 2017-12-18
+    ## 9    2017-12-21  carrot 2017-12-19
+
+``` r
+library("rqdatatable")
+library("wrapr")
+
+
+
+ops2 <- local_td(dat) %.>%
+  orderby(., c("product", "purchase_date")) %.>%
+  rqdatatable::rq_ufn(
+    .,
+    wrapr::srcfn(
+      '.[, z := c(NA, purchase_date[-.N]), by="product"][]'),
+    f_db =  function(db, incoming_table_name, outgoing_table_name, nd)  {
+      if("rquery_db_info" %in% class(db)) {
+        con <- db$connection
+      } else {
+        con <- db
+      }
+      DBI::dbExecute(
+        con,
+        paste(
+          "CREATE TABLE ", outgoing_table_name, " AS ",
+          "SELECT *, ",
+          'LAG ( "purchase_date" , 1 , NULL ) OVER (  PARTITION BY "product" ORDER BY "purchase_date" ) AS "z"',
+          " FROM ",
+          incoming_table_name
+        ))
+    },
+    columns_produced = c(colnames(dat), "z"))
+
+as.data.table(dat) %.>% ops2
+```
+
+    ##    purchase_date product          z
+    ## 1:    2017-12-05   apple       <NA>
+    ## 2:    2017-12-17   apple 2017-12-05
+    ## 3:    2017-11-29  banana       <NA>
+    ## 4:    2017-12-20  banana 2017-11-29
+    ## 5:    2017-12-21  banana 2017-12-20
+    ## 6:    2017-12-22  banana 2017-12-21
+    ## 7:    2017-12-18  carrot       <NA>
+    ## 8:    2017-12-19  carrot 2017-12-18
+    ## 9:    2017-12-21  carrot 2017-12-19
+
+``` r
+db %.>% ops2
 ```
 
     ##   purchase_date product          z
@@ -89,31 +165,7 @@ DBI::dbDisconnect(raw_connection)
 
     ## [1] TRUE
 
-``` r
-library("rqdatatable")
-library("wrapr")
-
-
-ops <- local_td(dat) %.>%
-  orderby(., c("product", "purchase_date")) %.>%
-  rqdatatable::rq_ufn(
-    .,
-    wrapr::srcfn(
-      '.[, z := c(NA, purchase_date[-.N]), by="product"][]'))
-
-as.data.table(dat) %.>% ops
-```
-
-    ##    purchase_date product          z
-    ## 1:    2017-12-05   apple       <NA>
-    ## 2:    2017-12-17   apple 2017-12-05
-    ## 3:    2017-11-29  banana       <NA>
-    ## 4:    2017-12-20  banana 2017-11-29
-    ## 5:    2017-12-21  banana 2017-12-20
-    ## 6:    2017-12-22  banana 2017-12-21
-    ## 7:    2017-12-18  carrot       <NA>
-    ## 8:    2017-12-19  carrot 2017-12-18
-    ## 9:    2017-12-21  carrot 2017-12-19
-
 `data.table` methodology from here:
 <https://stackoverflow.com/questions/26291988/how-to-create-a-lag-variable-within-each-group>
+
+Maybe a Janus\_node solution.

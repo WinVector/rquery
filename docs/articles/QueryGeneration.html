@@ -95,7 +95,7 @@
       <h1>Query Generation</h1>
                         <h4 class="author">John Mount</h4>
             
-            <h4 class="date">2018-11-23</h4>
+            <h4 class="date">2018-12-10</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery/blob/master/vignettes/QueryGeneration.Rmd"><code>vignettes/QueryGeneration.Rmd</code></a></small>
       <div class="hidden name"><code>QueryGeneration.Rmd</code></div>
@@ -107,33 +107,33 @@
 <p>This is a very brief place-holder example (not executed, as <code>SQLite</code> does not have the needed window functions). For more details please see the fuller note: <a href="https://winvector.github.io/rquery/index.html"><code>rquery README</code></a>.</p>
 <p>The primary purpose of <code>rquery</code> is <code>SQL</code> query generation. We demonstrate this below.</p>
 <p>Note: in examples we use <code><a href="../reference/rq_copy_to.html">rq_copy_to()</a></code> to create data. This is only for the purpose of having easy portable examples. With big data the data is usually already in the remote database or Spark system. The task is almost always to connect and work with this pre-existing remote data and the method to do this is <a href="https://winvector.github.io/rquery/reference/db_td.html"><code><a href="../reference/db_td.html">db_td()</a></code></a>, which builds a reference to a remote table given the table name.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># produce a hande to existing table</span>
-d &lt;-<span class="st"> </span><span class="kw"><a href="../reference/db_td.html">db_td</a></span>(my_db, <span class="st">"d"</span>)
-
-scale &lt;-<span class="st"> </span><span class="fl">0.237</span>
-
-dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="../reference/extend.html">extend</a></span>(.,
-         probability <span class="op">:</span><span class="er">=</span>
-<span class="st">           </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">exp</a></span>(assessmentTotal <span class="op">*</span><span class="st"> </span>scale)<span class="op">/</span>
-<span class="st">           </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sum">sum</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">exp</a></span>(assessmentTotal <span class="op">*</span><span class="st"> </span>scale)),
-         count <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">count</span>(<span class="dv">1</span>),
-         <span class="dt">partitionby =</span> <span class="st">'subjectID'</span>) <span class="op">%.&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="../reference/extend.html">extend</a></span>(.,
-         rank <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/rank">rank</a></span>(),
-         <span class="dt">partitionby =</span> <span class="st">'subjectID'</span>,
-         <span class="dt">orderby =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">'probability'</span>, <span class="st">'surveyCategory'</span>))  <span class="op">%.&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="../reference/rename_columns.html">rename_columns</a></span>(., <span class="st">'diagnosis'</span> <span class="op">:</span><span class="er">=</span><span class="st"> 'surveyCategory'</span>) <span class="op">%.&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="../reference/select_rows.html">select_rows</a></span>(., rank <span class="op">==</span><span class="st"> </span>count) <span class="op">%.&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="../reference/select_columns.html">select_columns</a></span>(., <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">'subjectID'</span>, 
-                      <span class="st">'diagnosis'</span>, 
-                      <span class="st">'probability'</span>)) <span class="op">%.&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="../reference/orderby.html">orderby</a></span>(., <span class="st">'subjectID'</span>)
-
-<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/class">class</a></span>(my_db)
-<span class="co">#&gt; [1] "SQLiteConnection"</span>
-<span class="co">#&gt; attr(,"package")</span>
-<span class="co">#&gt; [1] "RSQLite"</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># produce a hande to existing table</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">d &lt;-<span class="st"> </span><span class="kw"><a href="../reference/db_td.html">db_td</a></span>(my_db, <span class="st">"d"</span>)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4">scale &lt;-<span class="st"> </span><span class="fl">0.237</span></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="st">  </span><span class="kw"><a href="../reference/extend.html">extend</a></span>(.,</a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">         probability <span class="op">:</span><span class="er">=</span></a>
+<a class="sourceLine" id="cb1-9" data-line-number="9"><span class="st">           </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">exp</a></span>(assessmentTotal <span class="op">*</span><span class="st"> </span>scale)<span class="op">/</span></a>
+<a class="sourceLine" id="cb1-10" data-line-number="10"><span class="st">           </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sum">sum</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">exp</a></span>(assessmentTotal <span class="op">*</span><span class="st"> </span>scale)),</a>
+<a class="sourceLine" id="cb1-11" data-line-number="11">         count <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">count</span>(<span class="dv">1</span>),</a>
+<a class="sourceLine" id="cb1-12" data-line-number="12">         <span class="dt">partitionby =</span> <span class="st">'subjectID'</span>) <span class="op">%.&gt;%</span></a>
+<a class="sourceLine" id="cb1-13" data-line-number="13"><span class="st">  </span><span class="kw"><a href="../reference/extend.html">extend</a></span>(.,</a>
+<a class="sourceLine" id="cb1-14" data-line-number="14">         rank <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/rank">rank</a></span>(),</a>
+<a class="sourceLine" id="cb1-15" data-line-number="15">         <span class="dt">partitionby =</span> <span class="st">'subjectID'</span>,</a>
+<a class="sourceLine" id="cb1-16" data-line-number="16">         <span class="dt">orderby =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">'probability'</span>, <span class="st">'surveyCategory'</span>))  <span class="op">%.&gt;%</span></a>
+<a class="sourceLine" id="cb1-17" data-line-number="17"><span class="st">  </span><span class="kw"><a href="../reference/rename_columns.html">rename_columns</a></span>(., <span class="st">'diagnosis'</span> <span class="op">:</span><span class="er">=</span><span class="st"> 'surveyCategory'</span>) <span class="op">%.&gt;%</span></a>
+<a class="sourceLine" id="cb1-18" data-line-number="18"><span class="st">  </span><span class="kw"><a href="../reference/select_rows.html">select_rows</a></span>(., rank <span class="op">==</span><span class="st"> </span>count) <span class="op">%.&gt;%</span></a>
+<a class="sourceLine" id="cb1-19" data-line-number="19"><span class="st">  </span><span class="kw"><a href="../reference/select_columns.html">select_columns</a></span>(., <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">'subjectID'</span>, </a>
+<a class="sourceLine" id="cb1-20" data-line-number="20">                      <span class="st">'diagnosis'</span>, </a>
+<a class="sourceLine" id="cb1-21" data-line-number="21">                      <span class="st">'probability'</span>)) <span class="op">%.&gt;%</span></a>
+<a class="sourceLine" id="cb1-22" data-line-number="22"><span class="st">  </span><span class="kw"><a href="../reference/orderby.html">orderby</a></span>(., <span class="st">'subjectID'</span>)</a>
+<a class="sourceLine" id="cb1-23" data-line-number="23"></a>
+<a class="sourceLine" id="cb1-24" data-line-number="24"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/class">class</a></span>(my_db)</a>
+<a class="sourceLine" id="cb1-25" data-line-number="25"><span class="co">#&gt; [1] "SQLiteConnection"</span></a>
+<a class="sourceLine" id="cb1-26" data-line-number="26"><span class="co">#&gt; attr(,"package")</span></a>
+<a class="sourceLine" id="cb1-27" data-line-number="27"><span class="co">#&gt; [1] "RSQLite"</span></a></code></pre></div>
 <p>Presentation format (see also <a href="https://winvector.github.io/rquery/reference/op_diagram.html"><code><a href="../reference/op_diagram.html">op_diagram()</a></code></a>):</p>
 <pre><code>  table(`d`; 
     subjectID,
@@ -190,13 +190,13 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
          `assessmentTotal`
         FROM
          `d` LIMIT 1000
-        ) tsql_15753494810249291369_0000000000
-       ) tsql_15753494810249291369_0000000001
-     ) tsql_15753494810249291369_0000000002
-    ) tsql_15753494810249291369_0000000003
+        ) tsql_42889229321307902941_0000000000
+       ) tsql_42889229321307902941_0000000001
+     ) tsql_42889229321307902941_0000000002
+    ) tsql_42889229321307902941_0000000003
     WHERE `rank` = `count`
-   ) tsql_15753494810249291369_0000000004
-  ) tsql_15753494810249291369_0000000005 ORDER BY `subjectID`</code></pre>
+   ) tsql_42889229321307902941_0000000004
+  ) tsql_42889229321307902941_0000000005 ORDER BY `subjectID`</code></pre>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -210,7 +210,7 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
 </div>
       </footer>
 </div>

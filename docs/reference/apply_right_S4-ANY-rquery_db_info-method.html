@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Make an unionall node (not a relational operation). — unionall • rquery</title>
+<title>Apply pipeline to a database. — apply_right_S4,ANY,rquery_db_info-method • rquery</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Make an unionall node (not a relational operation). — unionall" />
+<meta property="og:title" content="Apply pipeline to a database. — apply_right_S4,ANY,rquery_db_info-method" />
 
-<meta property="og:description" content="Concatenate tables by rows." />
+<meta property="og:description" content="Apply pipeline to a database with relop " />
 <meta name="twitter:card" content="summary" />
 
 
@@ -126,76 +126,56 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Make an unionall node (not a relational operation).</h1>
-    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery/blob/master/R/union_all.R'><code>R/union_all.R</code></a></small>
-    <div class="hidden name"><code>unionall.Rd</code></div>
+    <h1>Apply pipeline to a database.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery/blob/master/R/ex_data_frame.R'><code>R/ex_data_frame.R</code></a></small>
+    <div class="hidden name"><code>apply_right_S4-ANY-rquery_db_info-method.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Concatenate tables by rows.</p>
+    <p>Apply pipeline to a database with relop <!-- %.&gt;% db notation. --></p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>unionall</span>(<span class='no'>sources</span>, <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sys.parent'>parent.frame</a></span>())</pre>
+    <pre class="usage"><span class='co'># S4 method for ANY,rquery_db_info</span>
+<span class='fu'>apply_right_S4</span>(<span class='no'>pipe_left_arg</span>,
+  <span class='no'>pipe_right_arg</span>, <span class='no'>pipe_environment</span>, <span class='no'>left_arg_name</span>, <span class='no'>pipe_string</span>,
+  <span class='no'>right_arg_name</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>sources</th>
-      <td><p>list of relop trees or list of data.frames</p></td>
+      <th>pipe_left_arg</th>
+      <td><p>relop operation tree</p></td>
     </tr>
     <tr>
-      <th>env</th>
-      <td><p>environment to look to.</p></td>
+      <th>pipe_right_arg</th>
+      <td><p>rquery_db_info</p></td>
+    </tr>
+    <tr>
+      <th>pipe_environment</th>
+      <td><p>environment to evaluate in.</p></td>
+    </tr>
+    <tr>
+      <th>left_arg_name</th>
+      <td><p>name, if not NULL name of left argument.</p></td>
+    </tr>
+    <tr>
+      <th>pipe_string</th>
+      <td><p>character, name of pipe operator.</p></td>
+    </tr>
+    <tr>
+      <th>right_arg_name</th>
+      <td><p>name, if not NULL name of right argument.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>order_by node or altered data.frame.</p>
+    <p>result</p>
     
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-<span class='kw'>if</span> (<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/ns-load'>requireNamespace</a></span>(<span class='st'>"DBI"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>&amp;&amp;</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/ns-load'>requireNamespace</a></span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
-  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
-  <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(<span class='no'>my_db</span>, <span class='st'>'d'</span>,
-                   <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/data.frame'>data.frame</a></span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>0.6</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>0.2</span>))
-  <span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='fu'>unionall</span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='no'>d</span>, <span class='no'>d</span>, <span class='no'>d</span>))
-  <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cat'>cat</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/format'>format</a></span>(<span class='no'>optree</span>))
-  <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>optree</span>, <span class='no'>my_db</span>, <span class='kw'>limit</span> <span class='kw'>=</span> <span class='fl'>2</span>)
-  <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cat'>cat</a></span>(<span class='no'>sql</span>)
-  <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; unionall(.,
-#&gt;   table(`d`; 
-#&gt;   AUC,
-#&gt;   R2),
-#&gt;  table(`d`; 
-#&gt;   AUC,
-#&gt;   R2),
-#&gt;  table(`d`; 
-#&gt;   AUC,
-#&gt;   R2))
-#&gt; SELECT  `AUC`, `R2`  FROM (   SELECT
-#&gt;   `AUC`,
-#&gt;   `R2`
-#&gt;  FROM
-#&gt;   `d` LIMIT 2 ) tsql_69948551691250572652_0000000000 UNION ALL SELECT  `AUC`, `R2`  FROM (   SELECT
-#&gt;   `AUC`,
-#&gt;   `R2`
-#&gt;  FROM
-#&gt;   `d` LIMIT 2 ) tsql_69948551691250572652_0000000001 UNION ALL SELECT  `AUC`, `R2`  FROM (   SELECT
-#&gt;   `AUC`,
-#&gt;   `R2`
-#&gt;  FROM
-#&gt;   `d` LIMIT 2 ) tsql_69948551691250572652_0000000002 LIMIT 2
-#&gt;   AUC  R2
-#&gt; 1 0.6 0.2
-#&gt; 2 0.6 0.2</div><div class='input'>
-</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -203,9 +183,7 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-      
-      <li><a href="#examples">Examples</a></li>
-    </ul>
+          </ul>
 
   </div>
 </div>

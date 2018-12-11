@@ -90,7 +90,7 @@ rq_table_exists <- function(db, table_name) {
     stop("rquery this function currently requires the DBI package")
   }
   # Would like to just return DBI::dbExistsTable(db, table_name)
-  if(getDBOption(db, "use_DBI_dbExistsTable", TRUE, connection_options)) {
+  if(getDBOption(db, "use_DBI_dbExistsTable", FALSE, connection_options)) {
     return(DBI::dbExistsTable(db, table_name))
   }
   q <- paste0("SELECT * FROM ",

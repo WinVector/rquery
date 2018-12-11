@@ -30,7 +30,7 @@ db <- rquery::rquery_db_info(connection = raw_connection,
                              is_dbi = TRUE,
                              connection_options = dbopts)
 
-rh <- rquery::rq_copy_to(db, "rh", dat,
+rh <- rquery::rq_copy_to(db, "dat", dat,
                          overwrite = TRUE, temporary = TRUE)
 
 
@@ -43,9 +43,11 @@ ops %.>%
   to_sql(., db) %.>%
   cat(.)
 
-DBI::dbGetQuery(raw_connection, to_sql(ops, db))
+#DBI::dbGetQuery(raw_connection, to_sql(ops, db))
 
-DBI::dbDisconnect(raw_connection)
+db %.>% ops
+
+ops %.>% db
 ```
 
 
@@ -54,16 +56,43 @@ library("rqdatatable")
 library("wrapr")
 
 
-ops <- local_td(dat) %.>%
+
+ops2 <- local_td(dat) %.>%
   orderby(., c("product", "purchase_date")) %.>%
   rqdatatable::rq_ufn(
     .,
     wrapr::srcfn(
-      '.[, z := c(NA, purchase_date[-.N]), by="product"][]'))
+      '.[, z := c(NA, purchase_date[-.N]), by="product"][]'),
+    f_db =  function(db, incoming_table_name, outgoing_table_name, nd)  {
+      if("rquery_db_info" %in% class(db)) {
+        con <- db$connection
+      } else {
+        con <- db
+      }
+      DBI::dbExecute(
+        con,
+        paste(
+          "CREATE TABLE ", outgoing_table_name, " AS ",
+          "SELECT *, ",
+          'LAG ( "purchase_date" , 1 , NULL ) OVER (  PARTITION BY "product" ORDER BY "purchase_date" ) AS "z"',
+          " FROM ",
+          incoming_table_name
+        ))
+    },
+    columns_produced = c(colnames(dat), "z"))
 
-as.data.table(dat) %.>% ops
+as.data.table(dat) %.>% ops2
+
+db %.>% ops2
+```
+
+```{r}
+DBI::dbDisconnect(raw_connection)
 ```
 
 
 `data.table` methodology from here: https://stackoverflow.com/questions/26291988/how-to-create-a-lag-variable-within-each-group
+
+Maybe a Janus_node solution.
+
 
