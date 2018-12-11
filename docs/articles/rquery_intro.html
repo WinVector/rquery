@@ -109,19 +109,19 @@
 <a href="#introduction" class="anchor"></a>Introduction</h1>
 <p><a href="https://github.com/WinVector/rquery"><code>rquery</code></a> is a query generator for <a href="https://www.r-project.org"><code>R</code></a>. It is based on <a href="https://en.wikipedia.org/wiki/Relational_algebra">Edgar F. Codd’s relational algebra</a> plus experience using <code>SQL</code> and <a href="https://CRAN.R-project.org/package=dplyr"><code>dplyr</code></a> at big data scale. The design represents an attempt to make <code>SQL</code> more teachable by denoting composition by a sequential pipeline notation instead of nested queries or functions. The implementation delivers reliable high performance data processing on large data systems such as <code>Spark</code> and databases. Package features include: data processing trees or pipelines as observable objects (able to report both columns produced and columns used), optimized <code>SQL</code> generation as an explicit user visible modeling step, convenience methods for applying query trees to in-memory <code>data.frame</code>s, and low direct package dependencies.</p>
 <p>Let’s set up our environment so we can work with examples.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">run_vignette &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ns-load">requireNamespace</a></span>(<span class="st">"DBI"</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>) <span class="op">&amp;&amp;</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ns-load">requireNamespace</a></span>(<span class="st">"RSQLite"</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"rquery"</span>)</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"wrapr"</span>)</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="co"># example database connection</span></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5">db &lt;-<span class="st"> </span>DBI<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DBI/topics/dbConnect">dbConnect</a></span>(RSQLite<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/RSQLite/topics/SQLite">SQLite</a></span>(),</a>
-<a class="sourceLine" id="cb2-6" data-line-number="6">                     <span class="st">":memory:"</span>)</a>
-<a class="sourceLine" id="cb2-7" data-line-number="7">RSQLite<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/RSQLite/topics/initExtension">initExtension</a></span>(db)</a>
-<a class="sourceLine" id="cb2-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb2-9" data-line-number="9"><span class="co"># adapt to database</span></a>
-<a class="sourceLine" id="cb2-10" data-line-number="10">dbopts &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rq_connection_tests.html">rq_connection_tests</a></span>(db)</a>
-<a class="sourceLine" id="cb2-11" data-line-number="11"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(dbopts)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">run_vignette &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ns-load">requireNamespace</a></span>(<span class="st">"DBI"</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>) <span class="op">&amp;&amp;</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ns-load">requireNamespace</a></span>(<span class="st">"RSQLite"</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"rquery"</span>)
+<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"wrapr"</span>)
+
+<span class="co"># example database connection</span>
+db &lt;-<span class="st"> </span>DBI<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DBI/topics/dbConnect">dbConnect</a></span>(RSQLite<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/RSQLite/topics/SQLite">SQLite</a></span>(),
+                     <span class="st">":memory:"</span>)
+RSQLite<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/RSQLite/topics/initExtension">initExtension</a></span>(db)
+
+<span class="co"># adapt to database</span>
+dbopts &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rq_connection_tests.html">rq_connection_tests</a></span>(db)
+<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(dbopts)</code></pre></div>
 <pre><code>## $rquery.SQLiteConnection.use_DBI_dbListFields
 ## [1] TRUE
 ## 
@@ -149,24 +149,24 @@
 ## $rquery.SQLiteConnection.fn_name_map
 ##  mean 
 ## "avg"</code></pre>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/options">options</a></span>(dbopts)</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="co"># register database</span></a>
-<a class="sourceLine" id="cb4-4" data-line-number="4">old_o &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/options">options</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="st">"rquery.rquery_db_executor"</span> =<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">db =</span> db)))</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/options">options</a></span>(dbopts)
+
+<span class="co"># register database</span>
+old_o &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/options">options</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="st">"rquery.rquery_db_executor"</span> =<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">db =</span> db)))</code></pre></div>
 </div>
 <div id="table-descriptions" class="section level1">
 <h1 class="hasAnchor">
 <a href="#table-descriptions" class="anchor"></a>Table descriptions</h1>
 <p><code>rquery</code> table descriptions are simple objects that store only the name of a table and expected columns. Any local data or database table that has at least the set of columns named in the table description can be used in a given <code>rquery</code> pipeline.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co"># copy in example data</span></a>
-<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw"><a href="../reference/rq_copy_to.html">rq_copy_to</a></span>(</a>
-<a class="sourceLine" id="cb5-3" data-line-number="3">  db, <span class="st">'d'</span>,</a>
-<a class="sourceLine" id="cb5-4" data-line-number="4">  <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/data.frame">data.frame</a></span>(<span class="dt">v =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>, <span class="dv">-5</span>, <span class="dv">3</span>)),</a>
-<a class="sourceLine" id="cb5-5" data-line-number="5">  <span class="dt">temporary =</span> <span class="ot">FALSE</span>,</a>
-<a class="sourceLine" id="cb5-6" data-line-number="6">  <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># copy in example data</span>
+<span class="kw"><a href="../reference/rq_copy_to.html">rq_copy_to</a></span>(
+  db, <span class="st">'d'</span>,
+  <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/data.frame">data.frame</a></span>(<span class="dt">v =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>, <span class="op">-</span><span class="dv">5</span>, <span class="dv">3</span>)),
+  <span class="dt">temporary =</span> <span class="ot">FALSE</span>,
+  <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <pre><code>## [1] "table(`d`; v)"</code></pre>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="co"># produce a hande to existing table</span></a>
-<a class="sourceLine" id="cb7-2" data-line-number="2">d &lt;-<span class="st"> </span><span class="kw"><a href="../reference/db_td.html">db_td</a></span>(db, <span class="st">"d"</span>)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># produce a hande to existing table</span>
+d &lt;-<span class="st"> </span><span class="kw"><a href="../reference/db_td.html">db_td</a></span>(db, <span class="st">"d"</span>)</code></pre></div>
 <p>The table description “<code>d</code>” we have been using in examples was produced as a result of moving data to a database by <a href="https://winvector.github.io/rquery/reference/rq_copy_to.html"><code><a href="../reference/rq_copy_to.html">rq_copy_to()</a></code></a>. However we can also create a description of an existing database table with <a href="https://winvector.github.io/rquery/reference/db_td.html"><code><a href="../reference/db_td.html">db_td()</a></code></a> or even build a description by hand with <a href="https://winvector.github.io/rquery/reference/mk_td.html"><code><a href="../reference/mk_td.html">mk_td()</a></code></a>. Also one can build descriptions of local or in-memory <code>data.frame</code>s with <a href="https://winvector.github.io/rquery/reference/local_td.html"><code><a href="../reference/local_td.html">local_td()</a></code></a>.</p>
 </div>
 <div id="operators" class="section level1">
@@ -198,10 +198,10 @@
 </ul>
 <p>The above list (and especially naming) are chosen to first match Codd’s relational concepts (<code>project</code>, <code>select</code>, <code>rename</code>, <code>join</code>, aggregation), <code>SQL</code> naming conventions. Notice this covers the <a href="http://dplyr.tidyverse.org">primary <code>dplyr</code> operators</a> <code>mutate()</code> (Codd’s <code>extend</code>), <code>select()</code> (not relational), <code><a href="https://www.rdocumentation.org/packages/stats/topics/filter">filter()</a></code> (Codd’s <code>select</code>, represented in <code>SQL</code> by “<code>WHERE</code>”), <code>summarise()</code> (Codd’s <code>project</code> or aggregate concepts, triggered in <code>SQL</code> by “<code>GROUP BY</code>”), <code>arrange()</code> (not a relational concept, implemented in <code>SQL</code> by “ORDER BY”). This correspondence is due to Codd’s ideas and <code>SQL</code> driving data engineering thinking for almost the last 50 years (both with and without credit or citation).</p>
 <p>With relational operators the user can work fast and work further away from syntactic details. For example some <code>R</code> operators (such as <code>is.na</code>) are translated to <code>SQL</code> analogues (in this case <code>IS NULL</code>).</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">d <span class="op">%.&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/extend.html">extend</a></span>(., was_na <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ifelse">ifelse</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/NA">is.na</a></span>(v), <span class="dv">1</span>, <span class="dv">0</span>)) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb8-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(., db) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb8-4" data-line-number="4"><span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(.)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">d <span class="op">%.&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="../reference/extend.html">extend</a></span>(., was_na <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/ifelse">ifelse</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/NA">is.na</a></span>(v), <span class="dv">1</span>, <span class="dv">0</span>)) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(., db) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(.)</code></pre></div>
 <pre><code>## SELECT
 ##  `v`,
 ##  ( CASE WHEN ( ( `v` ) IS NULL ) THEN ( 1 ) WHEN NOT ( ( `v` ) IS NULL ) THEN ( 0 ) ELSE NULL END )  AS `was_na`
@@ -210,43 +210,43 @@
 ##   `v`
 ##  FROM
 ##   `d`
-##  ) tsql_36136577807006045289_0000000000</code></pre>
+##  ) tsql_49964879483494227281_0000000000</code></pre>
 <p>The exact translation depends on the database (which is why <code><a href="../reference/to_sql.html">to_sql()</a></code> takes a database argument). Some care has to be taken as <code>SQL</code> types are different than <code>R</code> types (in particular for some databases logical types are not numeric).</p>
 <p>With a database that supplies window functions one can quickly work the “logistic scoring by hand” example from<br>
 from <a href="http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/">Let’s Have Some Sympathy For The Part-time R User</a>. This example worked with <code>rquery</code> code that works with both <code>PostgreSQL</code> and <code>Spark</code> can be found <a href="https://github.com/WinVector/rquery/blob/master/README.md">here</a>.</p>
 <p>We can demonstrate the pipeline, but the <code>SQLite</code> database we are using in this vignette does not have the window functions required to execute it. <code>PostgreSQL</code>, <code>Spark</code>, and many other databases do have the necessary functionality. The pipeline is a good example of a non-trivial sequence of relational nodes.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">scale &lt;-<span class="st"> </span><span class="fl">0.237</span></a>
-<a class="sourceLine" id="cb10-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb10-3" data-line-number="3">dq &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mk_td.html">mk_td</a></span>(<span class="st">"d3"</span>, </a>
-<a class="sourceLine" id="cb10-4" data-line-number="4">                   <span class="dt">columns =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/wrapr/topics/qc">qc</a></span>(subjectID, </a>
-<a class="sourceLine" id="cb10-5" data-line-number="5">                                surveyCategory, </a>
-<a class="sourceLine" id="cb10-6" data-line-number="6">                                assessmentTotal)) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb10-7" data-line-number="7"><span class="st">  </span><span class="kw"><a href="../reference/extend.html">extend</a></span>(.,</a>
-<a class="sourceLine" id="cb10-8" data-line-number="8">             probability <span class="op">:</span><span class="er">=</span></a>
-<a class="sourceLine" id="cb10-9" data-line-number="9"><span class="st">               </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">exp</a></span>(assessmentTotal <span class="op">*</span><span class="st"> </span>scale))  <span class="op">%.&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb10-10" data-line-number="10"><span class="st">  </span><span class="kw"><a href="../reference/normalize_cols.html">normalize_cols</a></span>(.,</a>
-<a class="sourceLine" id="cb10-11" data-line-number="11">                 <span class="st">"probability"</span>,</a>
-<a class="sourceLine" id="cb10-12" data-line-number="12">                 <span class="dt">partitionby =</span> <span class="st">'subjectID'</span>) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb10-13" data-line-number="13"><span class="st">  </span><span class="kw"><a href="../reference/pick_top_k.html">pick_top_k</a></span>(.,</a>
-<a class="sourceLine" id="cb10-14" data-line-number="14">             <span class="dt">partitionby =</span> <span class="st">'subjectID'</span>,</a>
-<a class="sourceLine" id="cb10-15" data-line-number="15">             <span class="dt">orderby =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">'probability'</span>, <span class="st">'surveyCategory'</span>),</a>
-<a class="sourceLine" id="cb10-16" data-line-number="16">             <span class="dt">reverse =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">'probability'</span>)) <span class="op">%.&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb10-17" data-line-number="17"><span class="st">  </span><span class="kw"><a href="../reference/rename_columns.html">rename_columns</a></span>(., <span class="st">'diagnosis'</span> <span class="op">:</span><span class="er">=</span><span class="st"> 'surveyCategory'</span>) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb10-18" data-line-number="18"><span class="st">  </span><span class="kw"><a href="../reference/select_columns.html">select_columns</a></span>(., <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">'subjectID'</span>, </a>
-<a class="sourceLine" id="cb10-19" data-line-number="19">                      <span class="st">'diagnosis'</span>, </a>
-<a class="sourceLine" id="cb10-20" data-line-number="20">                      <span class="st">'probability'</span>)) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb10-21" data-line-number="21"><span class="st">  </span><span class="kw"><a href="../reference/orderby.html">orderby</a></span>(., <span class="st">'subjectID'</span>)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">scale &lt;-<span class="st"> </span><span class="fl">0.237</span>
+
+dq &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mk_td.html">mk_td</a></span>(<span class="st">"d3"</span>, 
+                   <span class="dt">columns =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/wrapr/topics/qc">qc</a></span>(subjectID, 
+                                surveyCategory, 
+                                assessmentTotal)) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/extend.html">extend</a></span>(.,
+             probability <span class="op">:</span><span class="er">=</span>
+<span class="st">               </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">exp</a></span>(assessmentTotal <span class="op">*</span><span class="st"> </span>scale))  <span class="op">%.&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="../reference/normalize_cols.html">normalize_cols</a></span>(.,
+                 <span class="st">"probability"</span>,
+                 <span class="dt">partitionby =</span> <span class="st">'subjectID'</span>) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/pick_top_k.html">pick_top_k</a></span>(.,
+             <span class="dt">partitionby =</span> <span class="st">'subjectID'</span>,
+             <span class="dt">orderby =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">'probability'</span>, <span class="st">'surveyCategory'</span>),
+             <span class="dt">reverse =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">'probability'</span>)) <span class="op">%.&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="../reference/rename_columns.html">rename_columns</a></span>(., <span class="st">'diagnosis'</span> <span class="op">:</span><span class="er">=</span><span class="st"> 'surveyCategory'</span>) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/select_columns.html">select_columns</a></span>(., <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">'subjectID'</span>, 
+                      <span class="st">'diagnosis'</span>, 
+                      <span class="st">'probability'</span>)) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/orderby.html">orderby</a></span>(., <span class="st">'subjectID'</span>)</code></pre></div>
 <p><a href="https://winvector.github.io/wrapr/reference/qc.html"><code><a href="https://www.rdocumentation.org/packages/wrapr/topics/qc">qc()</a></code></a> is “quoting concatenate”, a convenience function that lets us skip a few quote marks. No <code><a href="https://www.rdocumentation.org/packages/base/topics/list">list()</a></code>, <code><a href="https://www.rdocumentation.org/packages/base/topics/name">as.name()</a></code>, or <code><a href="https://www.rdocumentation.org/packages/base/topics/substitute">quote()</a></code> steps are needed as the operator nodes are parsed by <code>R</code> to find identifiers. The <code>scale</code> constant was added to the environment as pipelines try to bind constants during pipe construction (else <code>scale</code> would be estimated to be a missing column name).</p>
 <p>Even though we are not going to run this query here, we can still check some properties of the query.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw"><a href="../reference/tables_used.html">tables_used</a></span>(dq)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/tables_used.html">tables_used</a></span>(dq)</code></pre></div>
 <pre><code>## [1] "d3"</code></pre>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw"><a href="../reference/columns_used.html">columns_used</a></span>(dq)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/columns_used.html">columns_used</a></span>(dq)</code></pre></div>
 <pre><code>## $d3
 ## [1] "subjectID"       "surveyCategory"  "assessmentTotal"</code></pre>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="kw"><a href="../reference/column_names.html">column_names</a></span>(dq)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/column_names.html">column_names</a></span>(dq)</code></pre></div>
 <pre><code>## [1] "subjectID"   "diagnosis"   "probability"</code></pre>
 <p>The operations can be printed as an operations tree.</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/format">format</a></span>(dq))</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/format">format</a></span>(dq))</code></pre></div>
 <pre><code>## table(d3; 
 ##   subjectID,
 ##   surveyCategory,
@@ -269,7 +269,7 @@ from <a href="http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for
 ##  orderby(., subjectID)</code></pre>
 <p>Notice the returned presentation is not exactly the set of nodes we specified. This is because of the nodes we used (<code><a href="../reference/normalize_cols.html">normalize_cols()</a></code> and <code><a href="../reference/pick_top_k.html">pick_top_k()</a></code>) are actually higher-order nodes (implemented in terms of nodes). Also <code><a href="../reference/extend.html">extend()</a></code> nodes are re-factored to be unambiguous in their use and re-use of column names.</p>
 <p>We can also exhibit the <code>SQL</code> this operations tree renders, to (though the <code>SQLite</code> database we are using in vignettes does not have the required window-functions to execute it; we suggest using <code>PostgreSQL</code>).</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(dq, db))</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(dq, db))</code></pre></div>
 <pre><code>## SELECT * FROM (
 ##  SELECT
 ##   `subjectID`,
@@ -304,14 +304,14 @@ from <a href="http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for
 ##         `assessmentTotal`
 ##        FROM
 ##         `d3`
-##        ) tsql_86488069647597465212_0000000000
-##       ) tsql_86488069647597465212_0000000001
-##      ) tsql_86488069647597465212_0000000002
-##    ) tsql_86488069647597465212_0000000003
+##        ) tsql_37187869663297748238_0000000000
+##       ) tsql_37187869663297748238_0000000001
+##      ) tsql_37187869663297748238_0000000002
+##    ) tsql_37187869663297748238_0000000003
 ##    WHERE `row_number` &lt;= 1
-##   ) tsql_86488069647597465212_0000000004
-##  ) tsql_86488069647597465212_0000000005
-## ) tsql_86488069647597465212_0000000006 ORDER BY `subjectID`</code></pre>
+##   ) tsql_37187869663297748238_0000000004
+##  ) tsql_37187869663297748238_0000000005
+## ) tsql_37187869663297748238_0000000006 ORDER BY `subjectID`</code></pre>
 <p>The above query is long, but actually quite performant.</p>
 <p>To see the query executed, please see <a href="https://github.com/WinVector/rquery/blob/master/README.md">here</a>.</p>
 </div>
@@ -320,9 +320,9 @@ from <a href="http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for
 <a href="#non-sql-nodes" class="anchor"></a>Non-<code>SQL</code> nodes</h1>
 <p>Not all data transform steps can conveniently be written as a single <code>SQL</code> statement. To work around this potential limitation <code>rquery</code> supplies a special type of node called <a href="https://winvector.github.io/rquery/reference/non_sql_node.html"><code><a href="../reference/non_sql_node.html">non_sql_node()</a></code></a>. <code><a href="../reference/non_sql_node.html">non_sql_node()</a></code> is used to implement arbitrary table to table transforms as <code>rquery</code> pipeline steps. Two prototypical <code><a href="../reference/non_sql_node.html">non_sql_node()</a></code> is <a href="https://winvector.github.io/rquery/reference/rsummary_node.html"><code><a href="../reference/rsummary_node.html">rsummary_node()</a></code></a>.</p>
 <p><code><a href="../reference/rsummary_node.html">rsummary_node()</a></code> builds a table of summary information about another database table. The format is each column of the original table produces a row of summary information in the result table. Here is a simple example.</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1">d <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb21-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/rsummary_node.html">rsummary_node</a></span>(.) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb21-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/execute.html">execute</a></span>(db, .)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">d <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/rsummary_node.html">rsummary_node</a></span>(.) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/execute.html">execute</a></span>(db, .)</code></pre></div>
 <pre><code>##   column index   class nrows nna nunique min max       mean       sd
 ## 1      v     1 numeric     3   0      NA  -5   3 -0.3333333 4.163332
 ##   lexmin lexmax
@@ -339,16 +339,16 @@ from <a href="http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for
 <a href="#assignment-partitioning" class="anchor"></a>Assignment partitioning</h1>
 <p><code>rquery</code> accepts many assignment in a <code><a href="../reference/sql_node.html">sql_node()</a></code> or in a single <code>extend</code> node. The <code>extend</code> node comes with automatic <a href="#assignment-partitioning">assignment partitioning</a> to ensure correct and performant results. This allows the user to write large <code>extend</code> blocks and know they will be executed correctly.</p>
 <p>Here is an example.</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1">ot &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mk_td.html">mk_td</a></span>(<span class="st">'d4'</span>,</a>
-<a class="sourceLine" id="cb23-2" data-line-number="2">                   <span class="dt">columns =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/wrapr/topics/qc">qc</a></span>(<span class="st">'a'</span>, <span class="st">'b'</span>, <span class="st">'c'</span>, <span class="st">'d'</span>)) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb23-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/extend.html">extend</a></span>(., </a>
-<a class="sourceLine" id="cb23-4" data-line-number="4">             <span class="dt">x =</span> a <span class="op">+</span><span class="st"> </span><span class="dv">1</span>,</a>
-<a class="sourceLine" id="cb23-5" data-line-number="5">             <span class="dt">y =</span> x <span class="op">+</span><span class="st"> </span><span class="dv">1</span>,</a>
-<a class="sourceLine" id="cb23-6" data-line-number="6">             <span class="dt">u =</span> b <span class="op">+</span><span class="st"> </span><span class="dv">1</span>,</a>
-<a class="sourceLine" id="cb23-7" data-line-number="7">             <span class="dt">v =</span> c <span class="op">+</span><span class="st"> </span><span class="dv">1</span>,</a>
-<a class="sourceLine" id="cb23-8" data-line-number="8">             <span class="dt">w =</span> d <span class="op">+</span><span class="st"> </span><span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb23-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb23-10" data-line-number="10"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/format">format</a></span>(ot))</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ot &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mk_td.html">mk_td</a></span>(<span class="st">'d4'</span>,
+                   <span class="dt">columns =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/wrapr/topics/qc">qc</a></span>(<span class="st">'a'</span>, <span class="st">'b'</span>, <span class="st">'c'</span>, <span class="st">'d'</span>)) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/extend.html">extend</a></span>(., 
+             <span class="dt">x =</span> a <span class="op">+</span><span class="st"> </span><span class="dv">1</span>,
+             <span class="dt">y =</span> x <span class="op">+</span><span class="st"> </span><span class="dv">1</span>,
+             <span class="dt">u =</span> b <span class="op">+</span><span class="st"> </span><span class="dv">1</span>,
+             <span class="dt">v =</span> c <span class="op">+</span><span class="st"> </span><span class="dv">1</span>,
+             <span class="dt">w =</span> d <span class="op">+</span><span class="st"> </span><span class="dv">1</span>)
+
+<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/format">format</a></span>(ot))</code></pre></div>
 <pre><code>## table(d4; 
 ##   a,
 ##   b,
@@ -363,19 +363,19 @@ from <a href="http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for
 ##   y := x + 1)</code></pre>
 <p>Notice the dependent assignment was moved into its own extend block. This sort of transform is critical in getting correct results from <code>SQL</code> (<a href="http://www.win-vector.com/blog/2018/01/advisory-on-multiple-assignment-dplyrmutate-on-databases/">here</a> is an example of what can happen when one does not correctly mitigate this issue).</p>
 <p>A node that uses the assignment partitioning and re-ordering is the <a href="https://winvector.github.io/rquery/reference/if_else_block.html"><code><a href="../reference/if_else_block.html">if_else_block()</a></code></a> which can be used to simulate block-oriented if-else semantics as seen in systems such as <code>SAS</code> (also meaning <code>rquery</code> can be critical porting code from <code>SAS</code> to <code>SQL</code> based <code>R</code>). This allows coordinated assignments such as the following:</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1">ifet &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mk_td.html">mk_td</a></span>(<span class="st">"d5"</span>,</a>
-<a class="sourceLine" id="cb25-2" data-line-number="2">                     <span class="dt">columns =</span> <span class="st">"test"</span>) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb25-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/extend_se.html">extend_se</a></span>(.,</a>
-<a class="sourceLine" id="cb25-4" data-line-number="4">            <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/wrapr/topics/qae">qae</a></span>(<span class="dt">x =</span> <span class="st">''</span>,</a>
-<a class="sourceLine" id="cb25-5" data-line-number="5">                  <span class="dt">y =</span> <span class="st">''</span>),</a>
-<a class="sourceLine" id="cb25-6" data-line-number="6">              <span class="kw"><a href="../reference/if_else_block.html">if_else_block</a></span>(</a>
-<a class="sourceLine" id="cb25-7" data-line-number="7">                <span class="kw"><a href="https://www.rdocumentation.org/packages/wrapr/topics/qe">qe</a></span>(test <span class="op">&gt;</span><span class="st"> </span><span class="dv">5</span>),</a>
-<a class="sourceLine" id="cb25-8" data-line-number="8">                <span class="dt">thenexprs =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/wrapr/topics/qae">qae</a></span>(<span class="dt">x =</span> <span class="st">'a'</span>, </a>
-<a class="sourceLine" id="cb25-9" data-line-number="9">                                <span class="dt">y =</span> <span class="st">'b'</span>),</a>
-<a class="sourceLine" id="cb25-10" data-line-number="10">                <span class="dt">elseexprs =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/wrapr/topics/qae">qae</a></span>(<span class="dt">x =</span> <span class="st">'b'</span>, </a>
-<a class="sourceLine" id="cb25-11" data-line-number="11">                                <span class="dt">y =</span> <span class="st">'a'</span>)</a>
-<a class="sourceLine" id="cb25-12" data-line-number="12">              )))</a>
-<a class="sourceLine" id="cb25-13" data-line-number="13"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/format">format</a></span>(ifet))</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ifet &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mk_td.html">mk_td</a></span>(<span class="st">"d5"</span>,
+                     <span class="dt">columns =</span> <span class="st">"test"</span>) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/extend_se.html">extend_se</a></span>(.,
+            <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/wrapr/topics/qae">qae</a></span>(<span class="dt">x =</span> <span class="st">''</span>,
+                  <span class="dt">y =</span> <span class="st">''</span>),
+              <span class="kw"><a href="../reference/if_else_block.html">if_else_block</a></span>(
+                <span class="kw"><a href="https://www.rdocumentation.org/packages/wrapr/topics/qe">qe</a></span>(test <span class="op">&gt;</span><span class="st"> </span><span class="dv">5</span>),
+                <span class="dt">thenexprs =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/wrapr/topics/qae">qae</a></span>(<span class="dt">x =</span> <span class="st">'a'</span>, 
+                                <span class="dt">y =</span> <span class="st">'b'</span>),
+                <span class="dt">elseexprs =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/wrapr/topics/qae">qae</a></span>(<span class="dt">x =</span> <span class="st">'b'</span>, 
+                                <span class="dt">y =</span> <span class="st">'a'</span>)
+              )))
+<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/format">format</a></span>(ifet))</code></pre></div>
 <pre><code>## table(d5; 
 ##   test) %.&gt;%
 ##  extend(.,
@@ -401,12 +401,12 @@ from <a href="http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for
 </blockquote>
 <p>In addition <code>rquery</code> includes automatic column narrowing: where only columns used to construct the final result are pulled from initial tables. This feature is important in production (where data marts can be quite wide) and has show significant additional performance advantages</p>
 <p>From a coding point of view the automatic narrowing effect looks like this.</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1">wp &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mk_td.html">mk_td</a></span>(<span class="dt">table =</span> <span class="st">'d6'</span>,</a>
-<a class="sourceLine" id="cb27-2" data-line-number="2">                   <span class="dt">columns =</span> letters[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>]) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb27-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/extend.html">extend</a></span>(., res <span class="op">:</span><span class="er">=</span><span class="st"> </span>a <span class="op">+</span><span class="st"> </span>b)</a>
-<a class="sourceLine" id="cb27-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb27-5" data-line-number="5"><span class="co"># full query</span></a>
-<a class="sourceLine" id="cb27-6" data-line-number="6"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(wp, db))</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">wp &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mk_td.html">mk_td</a></span>(<span class="dt">table =</span> <span class="st">'d6'</span>,
+                   <span class="dt">columns =</span> letters[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>]) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/extend.html">extend</a></span>(., res <span class="op">:</span><span class="er">=</span><span class="st"> </span>a <span class="op">+</span><span class="st"> </span>b)
+
+<span class="co"># full query</span>
+<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(wp, db))</code></pre></div>
 <pre><code>## SELECT
 ##  `a`,
 ##  `b`,
@@ -423,15 +423,15 @@ from <a href="http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for
 ##   `e`
 ##  FROM
 ##   `d6`
-##  ) tsql_60025330333577922683_0000000000</code></pre>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" data-line-number="1"><span class="co"># longer pipeline</span></a>
-<a class="sourceLine" id="cb29-2" data-line-number="2">wn &lt;-<span class="st"> </span>wp <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb29-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/select_columns.html">select_columns</a></span>(., <span class="st">"res"</span>)</a>
-<a class="sourceLine" id="cb29-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb29-5" data-line-number="5"><span class="co"># notice select at end of the pipeline automatically </span></a>
-<a class="sourceLine" id="cb29-6" data-line-number="6"><span class="co"># gets propagated back to the beginning of the</span></a>
-<a class="sourceLine" id="cb29-7" data-line-number="7"><span class="co"># pipeline</span></a>
-<a class="sourceLine" id="cb29-8" data-line-number="8"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(wn, db))</a></code></pre></div>
+##  ) tsql_83102893644481113844_0000000000</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># longer pipeline</span>
+wn &lt;-<span class="st"> </span>wp <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/select_columns.html">select_columns</a></span>(., <span class="st">"res"</span>)
+
+<span class="co"># notice select at end of the pipeline automatically </span>
+<span class="co"># gets propagated back to the beginning of the</span>
+<span class="co"># pipeline</span>
+<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(wn, db))</code></pre></div>
 <pre><code>## SELECT
 ##  `res`
 ## FROM (
@@ -443,8 +443,8 @@ from <a href="http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for
 ##    `b`
 ##   FROM
 ##    `d6`
-##   ) tsql_38940797010170317456_0000000000
-## ) tsql_38940797010170317456_0000000001</code></pre>
+##   ) tsql_57488809739944545684_0000000000
+## ) tsql_57488809739944545684_0000000001</code></pre>
 <p>A graph of the the effects of this kind of narrowing (for <code>dplyr</code> by hand as <code>dplyr</code> currently does not have the above type of automatic query analysis/optimization) shows the sensitivity to this optimization.</p>
 <blockquote>
 <p><img src="present-2.png"></p>
@@ -474,8 +474,8 @@ from <a href="http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for
 <div id="appendix-always-clean-up-on-the-way-out" class="section level1">
 <h1 class="hasAnchor">
 <a href="#appendix-always-clean-up-on-the-way-out" class="anchor"></a>Appendix: Always clean up on the way out</h1>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/options">options</a></span>(old_o)</a>
-<a class="sourceLine" id="cb31-2" data-line-number="2">DBI<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DBI/topics/dbDisconnect">dbDisconnect</a></span>(db)</a></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/options">options</a></span>(old_o)
+DBI<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DBI/topics/dbDisconnect">dbDisconnect</a></span>(db)</code></pre></div>
 </div>
   </div>
 

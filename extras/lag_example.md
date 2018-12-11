@@ -65,8 +65,8 @@ ops %.>%
     ##    "product"
     ##   FROM
     ##    "dat"
-    ##   ) tsql_24483175587002579552_0000000000
-    ## ) tsql_24483175587002579552_0000000001 ORDER BY "product", "purchase_date"
+    ##   ) tsql_07356867390669918379_0000000000
+    ## ) tsql_07356867390669918379_0000000001 ORDER BY "product", "purchase_date"
 
 ``` r
 #DBI::dbGetQuery(raw_connection, to_sql(ops, db))
@@ -165,7 +165,6 @@ DBI::dbDisconnect(raw_connection)
 
     ## [1] TRUE
 
-`data.table` methodology from here:
-<https://stackoverflow.com/questions/26291988/how-to-create-a-lag-variable-within-each-group>
+`data.table` methodology from here: <https://stackoverflow.com/questions/26291988/how-to-create-a-lag-variable-within-each-group>
 
 Maybe a Janus\_node solution.
