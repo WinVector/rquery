@@ -61,6 +61,11 @@ orderby.relop <- function(source,
   }
   have <- column_names(source)
   check_have_cols(have, cols, "rquery::orderby.relop")
+  if(!is.null(limit)) {
+    if(limit<0) {
+      stop("rquery::orderby.relop limit must be >=0 or NULL")
+    }
+  }
   r <- list(source = list(source),
             table_name = NULL,
             parsed = NULL,

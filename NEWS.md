@@ -1,5 +1,5 @@
 
-# rquery 1.2.1 2018/12/10
+# rquery 1.2.1 2018/12/13
 
  * versions without _nse() suffix.
  * parse ^ power.
@@ -12,6 +12,7 @@
  * allow concatinating compatible pipelines.
  * check for table name consistency.
  * NULL/NA parsing.
+ * Forcer order limit to be >= 0.
 
 # rquery 1.2.0 2018/11/06
 
