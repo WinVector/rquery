@@ -1,4 +1,8 @@
 
+# rquery 1.2.2 2018/01/03
+
+ * %%/MOD().
+
 # rquery 1.2.1 2018/12/16
 
  * versions without _nse() suffix.

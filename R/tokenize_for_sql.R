@@ -232,6 +232,15 @@ tokenize_call_for_SQL <- function(lexpr,
                            ltok(")"))
       return(res)
     }
+    if(callName=="%%") {
+      res$parsed_toks <- c(ltok("MOD"),
+                           ltok("("),
+                           args[[1]]$parsed_toks,
+                           ltok(","),
+                           args[[2]]$parsed_toks,
+                           ltok(")"))
+      return(res)
+    }
     lhs <- args[[1]]
     rhs <- args[[2]]
     if(callName %in% c("=", ":=", "%:=%")) { # assignment special case
