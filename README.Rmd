@@ -96,7 +96,7 @@ from [Let’s Have Some Sympathy For The Part-time R User](http://www.win-vector
 ```{r ex, warning=FALSE, message=FALSE}
 library("rquery")
 library("wrapr")
-use_spark <- FALSE
+use_spark <- TRUE
 
 if(use_spark) {
   raw_connection <- sparklyr::spark_connect(version='2.2.0', 
@@ -122,10 +122,10 @@ db <- rquery_db_info(connection = raw_connection,
 # copy data in so we have an example
 d_local <- build_frame(
    "subjectID", "surveyCategory"     , "assessmentTotal", "irrelevantCol1", "irrelevantCol2" |
-   1          , "withdrawal behavior", 5                , "irrel1"        , "irrel2"         |
-   1          , "positive re-framing", 2                , "irrel1"        , "irrel2"         |
-   2          , "withdrawal behavior", 3                , "irrel1"        , "irrel2"         |
-   2          , "positive re-framing", 4                , "irrel1"        , "irrel2"         )
+   1L         , "withdrawal behavior", 5                , "irrel1"        , "irrel2"         |
+   1L         , "positive re-framing", 2                , "irrel1"        , "irrel2"         |
+   2L         , "withdrawal behavior", 3                , "irrel1"        , "irrel2"         |
+   2L         , "positive re-framing", 4                , "irrel1"        , "irrel2"         )
 rq_copy_to(db, 'd',
             d_local,
             temporary = TRUE, 

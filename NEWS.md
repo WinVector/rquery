@@ -1,7 +1,8 @@
 
-# rquery 1.2.2 2018/01/03
+# rquery 1.2.2 2018/01/06
 
  * %%/MOD().
+ * Narow interfaces (unpublish tokenize_for_SQL()).
 
 # rquery 1.2.1 2018/12/16
 
