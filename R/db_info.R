@@ -152,6 +152,7 @@ print.rquery_db_info <- function(x, ...) {
 #' An example \code{rquery_db_info} object useful for formatting \code{SQL} without a database connection.
 #'
 #' @export
+#'
 rquery_default_db_info <- rquery_db_info(identifier_quote_char = '"',
                                          string_quote_char = "'",
                                          is_dbi = FALSE,
@@ -290,8 +291,11 @@ dispatch_to_sql_method <- function(
   # gaurantee we call the actual methods with an rquery_db_info
   if(!("rquery_db_info" %in% class(db))) {
     connection <- db
-    db <- rquery_default_db_info
-    db$connection <- connection
+    db <- rquery_db_info(connection = connection,
+                         identifier_quote_char = '"',
+                         string_quote_char = "'",
+                         is_dbi = TRUE,
+                         db_methods = rquery_default_methods())
   }
   sql_method <- db$db_methods[[method_name]]
   if(is.null(sql_method)) {

@@ -209,7 +209,7 @@ d &lt;-<span class="st"> </span><span class="kw"><a href="../reference/db_td.htm
 ##   "v"
 ##  FROM
 ##   "d"
-##  ) tsql_11363196647225866757_0000000000</code></pre>
+##  ) tsql_63281131810730806518_0000000000</code></pre>
 <p>The exact translation depends on the database (which is why <code><a href="../reference/to_sql.html">to_sql()</a></code> takes a database argument). Some care has to be taken as <code>SQL</code> types are different than <code>R</code> types (in particular for some databases logical types are not numeric).</p>
 <p>With a database that supplies window functions one can quickly work the “logistic scoring by hand” example from<br>
 from <a href="http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/">Let’s Have Some Sympathy For The Part-time R User</a>. This example worked with <code>rquery</code> code that works with both <code>PostgreSQL</code> and <code>Spark</code> can be found <a href="https://github.com/WinVector/rquery/blob/master/README.html">here</a>.</p>
@@ -303,14 +303,14 @@ dq &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mk_td.ht
 ##         "assessmentTotal"
 ##        FROM
 ##         "d3"
-##        ) tsql_53584166366286116591_0000000000
-##       ) tsql_53584166366286116591_0000000001
-##      ) tsql_53584166366286116591_0000000002
-##    ) tsql_53584166366286116591_0000000003
+##        ) tsql_42507835533322554488_0000000000
+##       ) tsql_42507835533322554488_0000000001
+##      ) tsql_42507835533322554488_0000000002
+##    ) tsql_42507835533322554488_0000000003
 ##    WHERE "row_number" &lt;= 1
-##   ) tsql_53584166366286116591_0000000004
-##  ) tsql_53584166366286116591_0000000005
-## ) tsql_53584166366286116591_0000000006 ORDER BY "subjectID"</code></pre>
+##   ) tsql_42507835533322554488_0000000004
+##  ) tsql_42507835533322554488_0000000005
+## ) tsql_42507835533322554488_0000000006 ORDER BY "subjectID"</code></pre>
 <p>The above query is long, but actually quite performant.</p>
 <p>To see the query executed, please see <a href="https://github.com/WinVector/rquery/blob/master/README.html">here</a>.</p>
 </div>
@@ -422,7 +422,7 @@ dq &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mk_td.ht
 ##   "e"
 ##  FROM
 ##   "d6"
-##  ) tsql_98860212522028510419_0000000000</code></pre>
+##  ) tsql_91124043427627329343_0000000000</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># longer pipeline</span>
 wn &lt;-<span class="st"> </span>wp <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/select_columns.html">select_columns</a></span>(., <span class="st">"res"</span>)
@@ -442,8 +442,8 @@ wn &lt;-<span class="st"> </span>wp <span class="op">%.&gt;%</span>
 ##    "b"
 ##   FROM
 ##    "d6"
-##   ) tsql_42770810566888604754_0000000000
-## ) tsql_42770810566888604754_0000000001</code></pre>
+##   ) tsql_15396462116959814656_0000000000
+## ) tsql_15396462116959814656_0000000001</code></pre>
 <p>A graph of the the effects of this kind of narrowing (for <code>dplyr</code> by hand as <code>dplyr</code> currently does not have the above type of automatic query analysis/optimization) shows the sensitivity to this optimization.</p>
 <blockquote>
 <p><img src="present-2.png"></p>

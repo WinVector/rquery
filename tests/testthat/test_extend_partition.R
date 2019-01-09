@@ -43,7 +43,7 @@ test_that("test_extend_partition: Works As Expected", {
     tab <- tab[, c("sum", "x", "y")]
     testthat::expect_equal(data.frame(sum = 2, x = 1, y = 3), tab[ , c("sum", "x", "y"), drop = FALSE])
     tab2 <- data.frame(x = 1) %.>% optree
-    expect_equal(data.frame(sum = 2, x = 1, y = 3), tab2[ , c("sum", "x", "y"), drop = FALSE])
+    testthat::expect_equal(data.frame(sum = 2, x = 1, y = 3), tab2[ , c("sum", "x", "y"), drop = FALSE])
 
     optree <- d %.>%
        extend(., a = 1, b := 2, c %:=% 4)

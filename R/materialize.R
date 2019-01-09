@@ -381,6 +381,8 @@ materialize <- function(db,
 #'   DBI::dbDisconnect(my_db)
 #' }
 #'
+#' @keywords internal
+#'
 #' @export
 #'
 materialize_sql <- function(db,

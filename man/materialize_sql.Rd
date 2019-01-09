@@ -45,3 +45,4 @@ if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quiet
 \seealso{
 \code{\link{db_td}}, \code{\link{materialize}}, \code{\link{to_sql}}, \code{\link{rq_copy_to}}, \code{\link{mk_td}}
 }
+\keyword{internal}

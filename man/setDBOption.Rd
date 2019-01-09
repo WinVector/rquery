@@ -17,5 +17,5 @@ setDBOption(db, optname, val)
 named list containing old value if any (invisible).
 }
 \description{
-Set a database connection option.
+Note: we are moving away from global options to options in the DB handle.
 }

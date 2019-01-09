@@ -19,7 +19,7 @@ getDBOption(db, optname, default, connection_options = list())
 option value
 }
 \description{
-Get a database connection option.
+Note: we are moving away from global options to options in the DB handle.
 }
 \examples{
 
