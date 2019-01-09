@@ -1,3 +1,4 @@
 spark-warehouse
 logs
 derby.log
+metastore_db
