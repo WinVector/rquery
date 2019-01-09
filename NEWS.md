@@ -1,5 +1,5 @@
 
-# rquery 1.3.0 2019/01/08
+# rquery 1.3.0 2019/01/09
 
  * More per-DB SQL rendering control.
  * %%/MOD().
