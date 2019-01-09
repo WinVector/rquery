@@ -176,3 +176,60 @@ to_sql.relop_orderby <- function (x,
     using = using)
 }
 
+
+to_sql_relop_orderby <- function(
+  x,
+  db,
+  ...,
+  limit = NULL,
+  source_limit = NULL,
+  indent_level = 0,
+  tnum = mk_tmp_name_source('tsql'),
+  append_cr = TRUE,
+  using = NULL) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::to_sql.relop_orderby")
+  cols1 <- column_names(x$source[[1]])
+  cols <- vapply(cols1,
+                 function(ci) {
+                   quote_identifier(db, ci)
+                 }, character(1))
+  ot <- vapply(x$orderby,
+               function(ci) {
+                 quote_identifier(db, ci)
+               }, character(1))
+  if(length(x$reverse)>0) {
+    ot[x$orderby %in% x$reverse] <- paste(ot[x$orderby %in% x$reverse], "DESC")
+  }
+  subcols <- calc_used_relop_orderby(x, using=using)
+  subsql_list <- to_sql(x$source[[1]],
+                        db = db,
+                        limit = NULL, # can't pass down limit from order_by
+                        source_limit = source_limit,
+                        indent_level = indent_level + 1,
+                        tnum = tnum,
+                        append_cr = FALSE,
+                        using = subcols)
+  subsql <- subsql_list[[length(subsql_list)]]
+  tab <- tnum()
+  prefix <- paste(rep(' ', indent_level), collapse = '')
+  q <- paste0(prefix, "SELECT * FROM (\n",
+              subsql, "\n",
+              prefix, ") ",
+              tab,
+              ifelse(length(ot)>0,
+                     paste0(" ORDER BY ", paste(ot, collapse = ", ")),
+                     ""))
+  if(!is.null(x$limit)) {
+    limit <- min(limit, x$limit)
+  }
+  if(!is.null(limit)) {
+    q <- paste(q, "LIMIT",
+               format(ceiling(limit), scientific = FALSE))
+  }
+  if(append_cr) {
+    q <- paste0(q, "\n")
+  }
+  c(subsql_list[-length(subsql_list)], q)
+}
+

@@ -205,3 +205,49 @@ to_sql.relop_select_rows <- function (x,
     append_cr = append_cr,
     using = using)
 }
+
+to_sql_relop_select_rows <- function(
+  x,
+  db,
+  ...,
+  limit = NULL,
+  source_limit = NULL,
+  indent_level = 0,
+  tnum = mk_tmp_name_source('tsql'),
+  append_cr = TRUE,
+  using = NULL) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::to_sql.relop_select_rows")
+  # re-quote expr
+  re_quoted <- redo_parse_quoting(x$parsed, db)
+  re_expr <- unpack_assignments(x$source[[1]], re_quoted,
+                                check_is_assignment = FALSE)
+  # work on query
+  cols <- calc_used_relop_select_rows(x,
+                                      using = using)
+  subsql_list <- to_sql(x$source[[1]],
+                        db = db,
+                        source_limit = source_limit,
+                        indent_level = indent_level + 1,
+                        tnum = tnum,
+                        append_cr = FALSE,
+                        using = cols)
+  subsql <- subsql_list[[length(subsql_list)]]
+  tab <- tnum()
+  prefix <- paste(rep(' ', indent_level), collapse = '')
+  q <- paste0(prefix, "SELECT * FROM (\n",
+              subsql, "\n",
+              prefix, ") ",
+              tab, "\n",
+              prefix, "WHERE ",
+              re_expr)
+  if(!is.null(limit)) {
+    q <- paste(q, "LIMIT",
+               format(ceiling(limit), scientific = FALSE))
+  }
+  if(append_cr) {
+    q <- paste0(q, "\n")
+  }
+  c(subsql_list[-length(subsql_list)], q)
+}
+

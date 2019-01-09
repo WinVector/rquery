@@ -277,3 +277,93 @@ to_sql.relop_project <- function (x,
     append_cr = append_cr,
     using = using)
 }
+
+
+to_sql_relop_project <- function(
+  x,
+  db,
+  ...,
+  limit = NULL,
+  source_limit = NULL,
+  indent_level = 0,
+  tnum = mk_tmp_name_source('tsql'),
+  append_cr = TRUE,
+  using = NULL) {
+  if(length(list(...))>0) {
+    stop("unexpected arguments")
+  }
+  if(!("rquery_db_info" %in% class(db))) {
+    connection <- db
+    db <- rquery_default_db_info
+    db$connection <- connection
+  }
+  # re-quote expr
+  parsed <- x$parsed
+  if(length(using)>0) {
+    want_expr <- vapply(x$parsed,
+                        function(pi) {
+                          length(intersect(pi$symbols_produced, using))>0
+                        }, logical(1))
+    parsed <- x$parsed[want_expr]
+  }
+  re_quoted <- redo_parse_quoting(parsed, db)
+  re_assignments <- unpack_assignments(x$source[[1]], re_quoted)
+  # work on query
+  using_incoming <- calc_used_relop_project(x,
+                                            using = using)
+  subsql_list <- to_sql(x$source[[1]],
+                        db = db,
+                        source_limit = source_limit,
+                        indent_level = indent_level + 1,
+                        tnum = tnum,
+                        append_cr = FALSE,
+                        using = using_incoming)
+  subsql <- subsql_list[[length(subsql_list)]]
+  grouping_cols <- x$groupby
+  if(length(x$groupby)>0) {
+    grouping_cols <- vapply(x$groupby,
+                            function(ci) {
+                              quote_identifier(db, ci)
+                            }, character(1))
+  }
+  extra_cols <- x$groupby
+  if(length(using)>0) {
+    extra_cols <- intersect(x$groupby, using)
+  }
+  if(length(extra_cols)>0) {
+    extra_cols <- vapply(extra_cols,
+                         function(ci) {
+                           quote_identifier(db, ci)
+                         }, character(1))
+  }
+  derived <- NULL
+  if(length(re_assignments)>0) {
+    derived <- vapply(names(re_assignments),
+                      function(ni) {
+                        ei <- re_assignments[[ni]]
+                        paste(ei, "AS", quote_identifier(db, ni))
+                      }, character(1))
+  }
+  tab <- tnum()
+  prefix <- paste(rep(' ', indent_level), collapse = '')
+  q <- paste0(prefix, "SELECT ",
+              paste(c(extra_cols, derived), collapse = ", "),
+              " FROM (\n",
+              subsql, "\n",
+              prefix, " ) ", tab)
+  if(length(grouping_cols)>0) {
+    q <- paste0(q,
+                "\n",
+                prefix, "GROUP BY\n",
+                prefix, " ", paste(grouping_cols, collapse = ", "))
+  }
+  if(!is.null(limit)) {
+    q <- paste(q, "LIMIT",
+               format(ceiling(limit), scientific = FALSE))
+  }
+  if(append_cr) {
+    q <- paste0(q, "\n")
+  }
+  c(subsql_list[-length(subsql_list)], q)
+}
+

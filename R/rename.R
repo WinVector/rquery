@@ -160,5 +160,54 @@ to_sql.relop_rename_columns <- function (x,
     using = using)
 }
 
+to_sql_relop_rename_columns <- function(
+  x,
+  db,
+  ...,
+  limit = NULL,
+  source_limit = NULL,
+  indent_level = 0,
+  tnum = mk_tmp_name_source('tsql'),
+  append_cr = TRUE,
+  using = NULL) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::to_sql.relop_rename_columns")
+  qmap <- calc_used_relop_rename_columns(x, using=using)
+  colsV <- vapply(as.character(qmap),
+                  function(ci) {
+                    quote_identifier(db, ci)
+                  }, character(1))
+  colsA <- vapply(names(qmap),
+                  function(ci) {
+                    quote_identifier(db, ci)
+                  }, character(1))
+  cols <- paste(colsV, "AS", colsA)
+  subsql_list <- to_sql(x$source[[1]],
+                        db = db,
+                        limit = limit,
+                        source_limit = source_limit,
+                        indent_level = indent_level + 1,
+                        tnum = tnum,
+                        append_cr = FALSE,
+                        using = as.character(qmap))
+  subsql <- subsql_list[[length(subsql_list)]]
+  tab <- tnum()
+  prefix <- paste(rep(' ', indent_level), collapse = '')
+  q <- paste0(prefix, "SELECT\n",
+              prefix, " ", paste(cols, collapse = paste0(",\n", prefix, " ")), "\n",
+              prefix, "FROM (\n",
+              subsql, "\n",
+              prefix, ") ",
+              tab)
+  if(!is.null(limit)) {
+    q <- paste(q, "LIMIT",
+               format(ceiling(limit), scientific = FALSE))
+  }
+  if(append_cr) {
+    q <- paste0(q, "\n")
+  }
+  c(subsql_list[-length(subsql_list)], q)
+}
+
 
 

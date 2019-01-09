@@ -216,4 +216,57 @@ to_sql.relop_set_indicator <- function (x,
     using = using)
 }
 
+to_sql_relop_set_indicator <- function(
+  x,
+  db,
+  ...,
+  limit = NULL,
+  source_limit = NULL,
+  indent_level = 0,
+  tnum = mk_tmp_name_source('tsql'),
+  append_cr = TRUE,
+  using = NULL) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::to_sql.relop_set_indicator")
+  cols1 <- column_names(x$source[[1]])
+  qexample = quote_string(db, "a")
+  qlen = as.numeric(regexec("a", qexample, fixed = TRUE)) - 1
+  qsym = substr(qexample, 1, qlen)
+  sqlexprs <- vapply(x$terms,
+                     function(ei) {
+                       prep_sql_toks(db, ei,
+                                     translate_quotes = x$translate_quotes,
+                                     qsym = qsym)
+                     }, character(1))
+  if(length(sqlexprs)!=1) {
+    stop("rquery::to_sql.relop_set_indicator expected indicator calculation to be length 1")
+  }
+  subsql_list <- to_sql(x$source[[1]],
+                        db = db,
+                        limit = limit,
+                        source_limit = source_limit,
+                        indent_level = indent_level + 1,
+                        tnum = tnum,
+                        append_cr = FALSE,
+                        using = cols1)  # TODO: double check using calculation
+  subsql <- subsql_list[[length(subsql_list)]]
+  tab <- tnum()
+  prefix <- paste(rep(' ', indent_level), collapse = '')
+  q <- paste0(prefix, "SELECT *, ",
+              sqlexprs[[1]], " AS ", quote_identifier(db, names(sqlexprs)),
+              " FROM (\n",
+              subsql, "\n",
+              prefix, ") ",
+              tab)
+  if(!is.null(limit)) {
+    q <- paste(q, "LIMIT",
+               format(ceiling(limit), scientific = FALSE))
+  }
+  if(append_cr) {
+    q <- paste0(q, "\n")
+  }
+  c(subsql_list[-length(subsql_list)], q)
+}
+
+
 

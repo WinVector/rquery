@@ -287,6 +287,43 @@ to_sql.relop_table_source <- function (x,
 }
 
 
+to_sql_relop_table_source <- function(
+  x,
+  db,
+  ...,
+  limit = NULL,
+  source_limit = NULL,
+  indent_level = 0,
+  tnum = mk_tmp_name_source('tsql'),
+  append_cr = TRUE,
+  using = NULL) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::to_sql.relop_table_source")
+  prefix <- paste(rep(' ', indent_level), collapse = '')
+  tabnam <- quote_table_name(db,  x$table_name, qualifiers = x$qualifiers)
+  cols <- columns_used_relop_table_source(x, using = using)
+  qcols <- vapply(cols,
+                  function(ui) {
+                    quote_identifier(db, ui)
+                  }, character(1))
+  qt <- paste(qcols, collapse = paste0(",\n", prefix, " "))
+  q <- paste0(prefix,
+              "SELECT\n",
+              prefix, " ", qt, "\n",
+              prefix, "FROM\n",
+              prefix, " ", tabnam)
+  if((!is.null(limit))||(!is.null(source_limit))) {
+    limit <- min(limit, source_limit)
+    q <- paste(q, "LIMIT",
+               format(ceiling(limit), scientific = FALSE))
+  }
+  if(append_cr) {
+    q <- paste0(q, "\n")
+  }
+  q
+}
+
+
 
 #' @export
 format_node.relop_table_source <- function(node) {

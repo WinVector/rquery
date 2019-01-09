@@ -409,3 +409,111 @@ to_sql.relop_extend <- function (x,
     using = using)
 }
 
+to_sql_relop_extend <- function(
+  x,
+  db,
+  ...,
+  limit = NULL,
+  source_limit = NULL,
+  indent_level = 0,
+  tnum = mk_tmp_name_source('tsql'),
+  append_cr = TRUE,
+  using = NULL) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::to_sql.relop_extend")
+  # re-quote expr
+  parsed <- x$parsed
+  if(length(using)>0) {
+    want_expr <- vapply(x$parsed,
+                        function(pi) {
+                          length(intersect(pi$symbols_produced, using))>0
+                        }, logical(1))
+    parsed <- x$parsed[want_expr]
+  }
+  re_quoted <- redo_parse_quoting(parsed, db)
+  re_assignments <- unpack_assignments(x$source[[1]], re_quoted)
+  # work on query
+  using_incoming <- calc_used_relop_extend(x,
+                                           using = using)
+  qlimit = limit
+  if(!getDBOption(db, "use_pass_limit", TRUE)) {
+    qlimit = NULL
+  }
+  subsql_list <- to_sql(x$source[[1]],
+                        db = db,
+                        limit = qlimit,
+                        source_limit = source_limit,
+                        indent_level = indent_level + 1,
+                        tnum = tnum,
+                        append_cr = FALSE,
+                        using = using_incoming)
+  subsql <- subsql_list[[length(subsql_list)]]
+  cols1 <- column_names(x$source[[1]])
+  if(length(using)>0) {
+    cols1 <- intersect(cols1, using)
+  }
+  cols1 <- setdiff(cols1, names(re_assignments)) # allow simple name re-use
+  cols <- NULL
+  if(length(cols1)>0) {
+    cols <- vapply(cols1,
+                   function(ci) {
+                     quote_identifier(db, ci)
+                   }, character(1))
+  }
+  prefix <- paste(rep(' ', indent_level), collapse = '')
+  derived <- NULL
+  if(length(re_assignments)>0) {
+    windowTerm <- ""
+    if((length(x$partitionby)>0) || (length(x$orderby)>0)) {
+      windowTerm <- "OVER ( "
+      if(length(x$partitionby)>0) {
+        pcols <- vapply(x$partitionby,
+                        function(ci) {
+                          quote_identifier(db, ci)
+                        }, character(1))
+        windowTerm <- paste0(windowTerm,
+                             " PARTITION BY ",
+                             paste(pcols, collapse = ", "))
+      }
+      ocols <- NULL
+      if(length(x$orderby)>0) {
+        ocols <- vapply(x$orderby,
+                        function(ci) {
+                          quote_identifier(db, ci)
+                        }, character(1))
+      }
+      if(length(x$reverse)>0) {
+        ocols[x$orderby %in% x$reverse] <- paste(ocols[x$orderby %in% x$reverse],
+                                                 "DESC")
+      }
+      if(length(ocols)>0) {
+        windowTerm <- paste0(windowTerm,
+                             " ORDER BY ",
+                             paste(ocols, collapse = ", "))
+      }
+      windowTerm <- paste(windowTerm, ")")
+    }
+    derived <- vapply(names(re_assignments),
+                      function(ni) {
+                        ei <- re_assignments[[ni]]
+                        paste(ei,
+                              windowTerm,
+                              "AS", quote_identifier(db, ni))
+                      }, character(1))
+  }
+  tab <- tnum()
+  q <- paste0(prefix, "SELECT\n",
+              prefix, " ", paste(c(cols, derived), collapse = paste0(",\n", prefix, " ")))
+  q <- paste0(q, "\n",
+              prefix, "FROM (\n",
+              subsql, "\n",
+              prefix, " ) ", tab)
+  if(!is.null(limit)) {
+    q <- paste(q, "LIMIT",
+               format(ceiling(limit), scientific = FALSE))
+  }
+  if(append_cr) {
+    q <- paste0(q, "\n")
+  }
+  c(subsql_list[-length(subsql_list)], q)
+}
