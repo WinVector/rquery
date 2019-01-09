@@ -847,7 +847,7 @@ setDBOpt <- function(db, optname, val) {
 #'
 #'
 #' Note: we are moving away from global options to options in the DB handle.
-#' Prefer \code{\link{setDBOpt()}}.
+#' Prefer \code{\link{setDBOpt}}.
 #'
 #' @param db database connection handle.
 #' @param optname character, single option name.

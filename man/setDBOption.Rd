@@ -18,5 +18,5 @@ original options value
 }
 \description{
 Note: we are moving away from global options to options in the DB handle.
-Prefer \code{\link{setDBOpt()}}.
+Prefer \code{\link{setDBOpt}}.
 }

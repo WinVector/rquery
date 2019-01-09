@@ -142,10 +142,9 @@ sql_node.relop <- function(source, exprs,
   # translate {Q} into as.name("Q")
   exprs <- as.list(exprs)
   if(expand_braces) {
-    # TODO: switch to wrapr version
-    exprs <- split_at_brace_pairs_rq(exprs, open_symbol = ".[", close_symbol = "]")
+    exprs <- wrapr::split_at_brace_pairs(exprs, open_symbol = ".[", close_symbol = "]")
     exprs <- lapply(exprs, promote_brace_to_var, open_symbol = ".[", close_symbol = "]")
-    mods <- split_at_brace_pairs_rq(mods, open_symbol = ".[", close_symbol = "]")
+    mods <- wrapr::split_at_brace_pairs(mods, open_symbol = ".[", close_symbol = "]")
     mods <- promote_brace_to_var(mods, open_symbol = ".[", close_symbol = "]")
   }
   # look for names used
