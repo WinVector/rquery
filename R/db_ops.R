@@ -419,8 +419,14 @@ rq_copy_to <- function(db, table_name, d,
   if(!requireNamespace("DBI", quietly = TRUE)) {
     stop("rquery::rq_copy_to without per-connection implemention need DBI package")
   }
-  if(force_drop_overwrite) {
-    rq_remove_table(db, table_name)
+  if(rq_table_exists(db, table_name)) {
+    if(overwrite) {
+      if(force_drop_overwrite) {
+        rq_remove_table(db, table_name)
+      }
+    } else {
+      stop(paste("rquery::rq_copy_to table", table_name, "exists and overwrite==FALSE"))
+    }
   }
   if(can_set_temp) {
      if(can_set_rownames) {
