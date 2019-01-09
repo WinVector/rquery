@@ -57,7 +57,7 @@ materialize_sql_statement <- function(db, sql, table_name,
 #' that can be applied to relop trees, not as a component to place
 #' in pipelines.
 #'
-#' @param db database connecton handle.
+#' @param db database connecton (rquery_db_info class or DBI connections preferred) handle.
 #' @param optree relop operation tree.
 #' @param table_name character, name of table to create.
 #' @param ... force later arguments to bind by name.
@@ -287,7 +287,7 @@ materialize_impl <- function(db,
 #' that can be applied to relop trees, not as a component to place
 #' in pipelines.
 #'
-#' @param db database connecton.
+#' @param db database connecton (rquery_db_info class or DBI connections preferred).
 #' @param optree relop operation tree.
 #' @param table_name character, name of table to create.
 #' @param ... force later arguments to bind by name.
@@ -356,7 +356,7 @@ materialize <- function(db,
 #'
 #' Run the data query with a CREATE TABLE AS .
 #'
-#' @param db DBI connecton.
+#' @param db database connecton (rquery_db_info class or DBI connections preferred).
 #' @param sql character, user supplied SQL statement.
 #' @param table_name character, name of table to create.
 #' @param ... force later arguments to bind by name.
@@ -418,7 +418,7 @@ NULL
 #'
 #' Run the data query.
 #'
-#' @param source data.frame or DBI connection.
+#' @param source data.frame or database connecton (rquery_db_info class or DBI connections preferred).
 #' @param optree relop operation tree.
 #' @param ... force later arguments to bind by name.
 #' @param limit numeric, if set limit to this many rows during data bring back (not used when landing a table).
@@ -493,7 +493,7 @@ execute <- function(source,
   if(isS4(source) && methods::is(source, "UnaryFn")) {
     stop("rquery::execute attempt to use a wrapr::UnaryFn as a data source, please use rqdatatable::rq_fn_wrapper() to wrap the relop or rqdatatable::rq_ufn() to wrap the UnaryFn")
   }
-  db <- source # assume it is a DBI connection (as data.frame and DBI connections should not share a base class, and do not as of 5-11-2018)
+  db <- source # assume it is a database connection (as data.frame and rquery_db_info and DBI connections should not share a base class, and do not as of 5-11-2018)
   # fast SQL only path
   sql <- to_sql(optree, db,
                 limit = limit,

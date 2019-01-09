@@ -28,8 +28,8 @@ Imports:
   utils,
   stats,
   methods,
-  DBI
 Suggests:
+    DBI,
     RSQLite,
     rqdatatable,
     igraph,

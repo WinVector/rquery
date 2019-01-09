@@ -4,7 +4,7 @@
 \alias{rquery_db_info}
 \title{Build a db information stand-in}
 \usage{
-rquery_db_info(..., connection = NULL, is_dbi = TRUE,
+rquery_db_info(..., connection = NULL, is_dbi = FALSE,
   identifier_quote_char = "\\"", string_quote_char = "'",
   overrides = NULL, note = "", connection_options = list(),
   db_methods = rquery_default_methods())

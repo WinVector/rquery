@@ -28,6 +28,9 @@ rstr <- function(my_db, tableName,
                  ...,
                  displayRows = 10,
                  countRows = TRUE) {
+  if(!requireNamespace("DBI", quietly = TRUE)) {
+    stop("rquery::rst requires the DBI package")
+  }
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery:::rstr")
   if("rquery_db_info" %in% class(my_db)) {

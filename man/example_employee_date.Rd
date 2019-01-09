@@ -2,7 +2,7 @@
 % Please edit documentation in R/join_controller.R
 \name{example_employee_date}
 \alias{example_employee_date}
-\title{build some example tables}
+\title{Build some example tables (requires DBI).}
 \usage{
 example_employee_date(con)
 }
@@ -13,7 +13,7 @@ example_employee_date(con)
 example tables
 }
 \description{
-build some example tables
+Build some example tables (requires DBI).
 }
 \examples{
 
@@ -24,3 +24,4 @@ if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quiet
 }
 
 }
+\keyword{internal}

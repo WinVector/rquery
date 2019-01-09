@@ -94,7 +94,7 @@
       <h1>Query Generation</h1>
                         <h4 class="author">John Mount</h4>
             
-            <h4 class="date">2019-01-08</h4>
+            <h4 class="date">2019-01-09</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery//blob/master/vignettes/QueryGeneration.Rmd"><code>vignettes/QueryGeneration.Rmd</code></a></small>
       <div class="hidden name"><code>QueryGeneration.Rmd</code></div>
@@ -158,44 +158,44 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <p><code><a href="../reference/to_sql.html">to_sql()</a></code> SQL (see also <a href="https://winvector.github.io/rquery/reference/materialize.html"><code><a href="../reference/materialize.html">materialize()</a></code></a>):</p>
 <pre><code>  SELECT * FROM (
    SELECT
-    `subjectID`,
-    `diagnosis`,
-    `probability`
+    "subjectID",
+    "diagnosis",
+    "probability"
    FROM (
     SELECT * FROM (
      SELECT
-      `subjectID` AS `subjectID`,
-      `surveyCategory` AS `diagnosis`,
-      `probability` AS `probability`,
-      `count` AS `count`,
-      `rank` AS `rank`
+      "subjectID" AS "subjectID",
+      "surveyCategory" AS "diagnosis",
+      "probability" AS "probability",
+      "count" AS "count",
+      "rank" AS "rank"
      FROM (
       SELECT
-       `subjectID`,
-       `surveyCategory`,
-       `probability`,
-       `count`,
-       rank ( ) OVER (  PARTITION BY `subjectID` ORDER BY `probability`, `surveyCategory` ) AS `rank`
+       "subjectID",
+       "surveyCategory",
+       "probability",
+       "count",
+       rank ( ) OVER (  PARTITION BY "subjectID" ORDER BY "probability", "surveyCategory" ) AS "rank"
       FROM (
        SELECT
-        `subjectID`,
-        `surveyCategory`,
-        exp ( `assessmentTotal` * 0.237 ) / sum ( exp ( `assessmentTotal` * 0.237 ) ) OVER (  PARTITION BY `subjectID` ) AS `probability`,
-        count ( 1 ) OVER (  PARTITION BY `subjectID` ) AS `count`
+        "subjectID",
+        "surveyCategory",
+        exp ( "assessmentTotal" * 0.237 ) / sum ( exp ( "assessmentTotal" * 0.237 ) ) OVER (  PARTITION BY "subjectID" ) AS "probability",
+        count ( 1 ) OVER (  PARTITION BY "subjectID" ) AS "count"
        FROM (
         SELECT
-         `subjectID`,
-         `surveyCategory`,
-         `assessmentTotal`
+         "subjectID",
+         "surveyCategory",
+         "assessmentTotal"
         FROM
-         `d` LIMIT 1000
-        ) tsql_01850090541610624031_0000000000
-       ) tsql_01850090541610624031_0000000001
-     ) tsql_01850090541610624031_0000000002
-    ) tsql_01850090541610624031_0000000003
-    WHERE `rank` = `count`
-   ) tsql_01850090541610624031_0000000004
-  ) tsql_01850090541610624031_0000000005 ORDER BY `subjectID`</code></pre>
+         "d" LIMIT 1000
+        ) tsql_73803494379694020766_0000000000
+       ) tsql_73803494379694020766_0000000001
+     ) tsql_73803494379694020766_0000000002
+    ) tsql_73803494379694020766_0000000003
+    WHERE "rank" = "count"
+   ) tsql_73803494379694020766_0000000004
+  ) tsql_73803494379694020766_0000000005 ORDER BY "subjectID"</code></pre>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

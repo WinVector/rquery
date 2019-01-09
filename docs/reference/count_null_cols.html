@@ -194,15 +194,15 @@
 #&gt;  sql_node(.,
 #&gt;           count_null_cols(AUC, R2))
 #&gt; SELECT
-#&gt;  `R2` AS `R2`,
-#&gt;  ( CASE WHEN ( `AUC` IS NULL ) THEN 1 ELSE 0 END ) + ( CASE WHEN ( `R2` IS NULL ) THEN 1 ELSE 0 END ) AS `nnull`,
-#&gt;  `AUC` AS `AUC`
+#&gt;  "R2" AS "R2",
+#&gt;  ( CASE WHEN ( "AUC" IS NULL ) THEN 1 ELSE 0 END ) + ( CASE WHEN ( "R2" IS NULL ) THEN 1 ELSE 0 END ) AS "nnull",
+#&gt;  "AUC" AS "AUC"
 #&gt; FROM (
 #&gt;  SELECT
-#&gt;   `AUC`,
-#&gt;   `R2`
+#&gt;   "AUC",
+#&gt;   "R2"
 #&gt;  FROM
-#&gt;   `d`
+#&gt;   "d"
 #&gt; ) tsql_77593170710789316807_0000000000
 #&gt;    R2 nnull AUC
 #&gt; 1 1.0     0 0.6

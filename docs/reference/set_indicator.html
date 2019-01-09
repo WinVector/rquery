@@ -220,14 +220,14 @@
 #&gt;   q) %.&gt;%
 #&gt;  set_indicator(., one_two = a IN set) %.&gt;%
 #&gt;  set_indicator(., z = a IN c())
-#&gt; SELECT *, 0 AS `z` FROM (
-#&gt;  SELECT *, `a`  IN (  '1'  ,  '2'  )  AS `one_two` FROM (
+#&gt; SELECT *, 0 AS "z" FROM (
+#&gt;  SELECT *, "a"  IN (  '1'  ,  '2'  )  AS "one_two" FROM (
 #&gt;   SELECT
-#&gt;    `a`,
-#&gt;    `b`,
-#&gt;    `q`
+#&gt;    "a",
+#&gt;    "b",
+#&gt;    "q"
 #&gt;   FROM
-#&gt;    `d`
+#&gt;    "d"
 #&gt;  ) tsql_24207746012802677052_0000000000
 #&gt; ) tsql_24207746012802677052_0000000001
 #&gt;   a b q one_two z

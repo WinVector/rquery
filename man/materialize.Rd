@@ -9,7 +9,7 @@ materialize(db, optree, table_name = mk_tmp_name_source("rquery_mat")(),
   temporary = FALSE, precheck = FALSE)
 }
 \arguments{
-\item{db}{database connecton.}
+\item{db}{database connecton (rquery_db_info class or DBI connections preferred).}
 
 \item{optree}{relop operation tree.}
 

@@ -191,16 +191,16 @@
 #&gt;  sql_node(.,
 #&gt;           mark_null_cols(c('AUC_NULL' = 'AUC', 'R2_NULL' = 'R2')))
 #&gt; SELECT
-#&gt;  `AUC` AS `AUC`,
-#&gt;  `R2` AS `R2`,
-#&gt;  `AUC` IS NULL AS `AUC_NULL`,
-#&gt;  `R2` IS NULL AS `R2_NULL`
+#&gt;  "AUC" AS "AUC",
+#&gt;  "R2" AS "R2",
+#&gt;  "AUC" IS NULL AS "AUC_NULL",
+#&gt;  "R2" IS NULL AS "R2_NULL"
 #&gt; FROM (
 #&gt;  SELECT
-#&gt;   `AUC`,
-#&gt;   `R2`
+#&gt;   "AUC",
+#&gt;   "R2"
 #&gt;  FROM
-#&gt;   `d`
+#&gt;   "d"
 #&gt; ) tsql_45934203179645364871_0000000000
 #&gt;   AUC  R2 AUC_NULL R2_NULL
 #&gt; 1 0.6 1.0        0       0

@@ -1,8 +1,5 @@
 
 
-#' @importFrom DBI dbQuoteIdentifier
-NULL
-
 #' Build a db information stand-in
 #'
 #' @param ... force all arguments to be by name.
@@ -20,7 +17,7 @@ NULL
 #'
 rquery_db_info <- function(...,
                            connection = NULL,
-                           is_dbi = TRUE,
+                           is_dbi = FALSE,
                            identifier_quote_char = '"',
                            string_quote_char = "'",
                            overrides = NULL,
@@ -30,6 +27,11 @@ rquery_db_info <- function(...,
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::rquery_db_info")
   if("rquery_db_info" %in% class(connection)) {
     stop("rquery::rquery_db_info connection is already of class rquery_db_info")
+  }
+  if(is_dbi) {
+    if(!requireNamespace("DBI", quietly = TRUE)) {
+      stop("rquery::rquery_db_info requires the DBI package for is_dbi=TRUE")
+    }
   }
   # does not handle quotes inside strings
   r <- list(
@@ -152,7 +154,7 @@ print.rquery_db_info <- function(x, ...) {
 #' @export
 rquery_default_db_info <- rquery_db_info(identifier_quote_char = '"',
                                          string_quote_char = "'",
-                                         is_dbi = TRUE,
+                                         is_dbi = FALSE,
                                          db_methods = rquery_default_methods())
 
 #' Quote an identifier.
@@ -172,7 +174,9 @@ quote_identifier <- function(x, id) {
       }
       return(x$dbqi(id))
     }
-    return(as.character(DBI::dbQuoteIdentifier(x, id)))
+    if(requireNamespace("DBI", quietly = TRUE)) {
+      return(as.character(DBI::dbQuoteIdentifier(x, id)))
+    }
   }
   rquery_default_db_info$dbqi(id)
 }
@@ -205,7 +209,9 @@ quote_table_name <- function(x, id,
     } else {
       dbi_id <- as.character(id) # sparklyr ‘0.8.4’ does not implement DBI::dbQuoteIdentifier for DBI::Id
     }
-    return(as.character(DBI::dbQuoteIdentifier(x, dbi_id)))
+    if(requireNamespace("DBI", quietly = TRUE)) {
+      return(as.character(DBI::dbQuoteIdentifier(x, dbi_id)))
+    }
   }
   rquery_default_db_info$dbqi(id)
 }
@@ -229,7 +235,9 @@ quote_string <- function(x, s) {
       }
       return(x$dbqs(s))
     }
-    return(as.character(DBI::dbQuoteString(x, s)))
+    if(requireNamespace("DBI", quietly = TRUE)) {
+      return(as.character(DBI::dbQuoteString(x, s)))
+    }
   }
   rquery_default_db_info$dbqs(s)
 }
@@ -254,7 +262,9 @@ quote_literal <- function(x, o) {
       }
       return(x$dbql(o))
     }
-    return(as.character(DBI::dbQuoteLiteral(x, o)))
+    if(requireNamespace("DBI", quietly = TRUE)) {
+      return(as.character(DBI::dbQuoteLiteral(x, o)))
+    }
   }
   rquery_default_db_info$dbql(o)
 }

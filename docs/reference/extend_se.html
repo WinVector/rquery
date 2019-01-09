@@ -212,35 +212,35 @@
 #&gt;  extend(.,
 #&gt;   x := pmax(AUC, v))
 #&gt; SELECT
-#&gt;  `AUC`,
-#&gt;  `R2`,
-#&gt;  `v`,
-#&gt;  ( CASE WHEN ( `AUC` ) IS NULL THEN ( `v` ) WHEN ( `v` ) IS NULL THEN ( `AUC` ) WHEN ( `AUC` ) &gt;= ( `v` ) THEN ( `AUC` ) ELSE ( `v` ) END )  AS `x`
+#&gt;  "AUC",
+#&gt;  "R2",
+#&gt;  "v",
+#&gt;  ( CASE WHEN ( "AUC" ) IS NULL THEN ( "v" ) WHEN ( "v" ) IS NULL THEN ( "AUC" ) WHEN ( "AUC" ) &gt;= ( "v" ) THEN ( "AUC" ) ELSE ( "v" ) END )  AS "x"
 #&gt; FROM (
 #&gt;  SELECT
-#&gt;   `AUC`,
-#&gt;   `R2`,
-#&gt;   `AUC` + `R2`  AS `v`
+#&gt;   "AUC",
+#&gt;   "R2",
+#&gt;   "AUC" + "R2"  AS "v"
 #&gt;  FROM (
 #&gt;   SELECT
-#&gt;    `AUC`,
-#&gt;    `R2`
+#&gt;    "AUC",
+#&gt;    "R2"
 #&gt;   FROM
-#&gt;    `d`
+#&gt;    "d"
 #&gt;   ) tsql_22643126905802424410_0000000000
 #&gt;  ) tsql_22643126905802424410_0000000001
 #&gt;   AUC  R2   v   x
 #&gt; 1 0.6 0.2 0.8 0.8
 #&gt; SELECT
-#&gt;  `AUC`,
-#&gt;  `R2`,
-#&gt;  rank ( ) OVER (  PARTITION BY `AUC` ORDER BY `R2` ) AS `v`
+#&gt;  "AUC",
+#&gt;  "R2",
+#&gt;  rank ( ) OVER (  PARTITION BY "AUC" ORDER BY "R2" ) AS "v"
 #&gt; FROM (
 #&gt;  SELECT
-#&gt;   `AUC`,
-#&gt;   `R2`
+#&gt;   "AUC",
+#&gt;   "R2"
 #&gt;  FROM
-#&gt;   `d`
+#&gt;   "d"
 #&gt;  ) tsql_07951046575409495350_0000000000</div><div class='input'>
 </div></pre>
   </div>

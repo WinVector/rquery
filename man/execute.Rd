@@ -10,7 +10,7 @@ execute(source, optree, ..., limit = NULL, source_limit = NULL,
   env = parent.frame())
 }
 \arguments{
-\item{source}{data.frame or DBI connection.}
+\item{source}{data.frame or database connecton (rquery_db_info class or DBI connections preferred).}
 
 \item{optree}{relop operation tree.}
 

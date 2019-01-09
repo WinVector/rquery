@@ -148,7 +148,7 @@ in pipelines.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>db</th>
-      <td><p>database connecton.</p></td>
+      <td><p>database connecton (rquery_db_info class or DBI connections preferred).</p></td>
     </tr>
     <tr>
       <th>optree</th>
@@ -232,12 +232,12 @@ in pipelines.</p>
 #&gt;   v,
 #&gt;   x)
 #&gt; SELECT
-#&gt;  `AUC`,
-#&gt;  `R2`,
-#&gt;  `v`,
-#&gt;  `x`
+#&gt;  "AUC",
+#&gt;  "R2",
+#&gt;  "v",
+#&gt;  "x"
 #&gt; FROM
-#&gt;  `example`
+#&gt;  "example"
 #&gt;   AUC  R2   v   x
 #&gt; 1 0.6 0.2 0.8 0.8
 #&gt; [1] "Error in materialize_impl(db = db, optree = optree, table_name = table_name, : rquery::materialize table d missing required columns: AUC, R2\n"</div><div class='input'>

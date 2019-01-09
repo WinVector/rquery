@@ -4,7 +4,7 @@
 \name{rquery_default_db_info}
 \alias{rquery_default_db_info}
 \title{An example \code{rquery_db_info} object useful for formatting \code{SQL} without a database connection.}
-\format{An object of class \code{rquery_db_info} of length 15.}
+\format{An object of class \code{rquery_db_info} of length 11.}
 \usage{
 rquery_default_db_info
 }

@@ -198,15 +198,15 @@
 #&gt;   val) %.&gt;%
 #&gt;  project(., vmax := max(val),
 #&gt;   g= group)
-#&gt; SELECT `group`, max ( `val` ) AS `vmax` FROM (
+#&gt; SELECT "group", max ( "val" ) AS "vmax" FROM (
 #&gt;  SELECT
-#&gt;   `group`,
-#&gt;   `val`
+#&gt;   "group",
+#&gt;   "val"
 #&gt;  FROM
-#&gt;   `d`
+#&gt;   "d"
 #&gt;  ) tsql_15984332451387591786_0000000000
 #&gt; GROUP BY
-#&gt;  `group`
+#&gt;  "group"
 #&gt;   group vmax
 #&gt; 1     a    2
 #&gt; 2     b    4
@@ -215,11 +215,11 @@
 #&gt;   val) %.&gt;%
 #&gt;  project(., vmax := max(val),
 #&gt;   g= )
-#&gt; SELECT max ( `val` ) AS `vmax` FROM (
+#&gt; SELECT max ( "val" ) AS "vmax" FROM (
 #&gt;  SELECT
-#&gt;   `val`
+#&gt;   "val"
 #&gt;  FROM
-#&gt;   `d`
+#&gt;   "d"
 #&gt;  ) tsql_26783868617674275883_0000000000
 #&gt;   vmax
 #&gt; 1    4</div><div class='input'>

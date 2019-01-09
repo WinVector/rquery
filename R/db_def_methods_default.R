@@ -1,5 +1,6 @@
 
 # default to_sql implementations
+# dispatching per handle instance (instead of per handle class)
 
 to_sql_relop_drop_columns <- function(
   x,

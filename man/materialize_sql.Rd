@@ -8,7 +8,7 @@ materialize_sql(db, sql, table_name = mk_tmp_name_source("rqms")(), ...,
   overwrite = TRUE, temporary = FALSE)
 }
 \arguments{
-\item{db}{DBI connecton.}
+\item{db}{database connecton (rquery_db_info class or DBI connections preferred).}
 
 \item{sql}{character, user supplied SQL statement.}
 

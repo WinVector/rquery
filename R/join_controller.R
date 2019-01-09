@@ -1,5 +1,5 @@
 
-#' build some example tables
+#' Build some example tables (requires DBI).
 #'
 #' @param con db connection
 #' @return example tables
@@ -12,9 +12,14 @@
 #'   DBI::dbDisconnect(my_db)
 #' }
 #'
+#' @keywords internal
+#'
 #' @export
 #
 example_employee_date <- function(con) {
+  if(!requireNamespace("DBI", quietly = TRUE)) {
+    stop("rquery::example_employee_date requires the DBI package")
+  }
   . <- NULL # Declare not an unbound varaible
   # note: employeeanddate is likely built as a cross-product
   #       join of an employee table and set of dates of interest
