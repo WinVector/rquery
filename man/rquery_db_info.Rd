@@ -4,9 +4,10 @@
 \alias{rquery_db_info}
 \title{Build a db information stand-in}
 \usage{
-rquery_db_info(..., connection = NULL, is_dbi = FALSE,
-  identifier_quote_char = NULL, string_quote_char = NULL,
-  overrides = NULL, note = "", connection_options = list())
+rquery_db_info(..., connection = NULL, is_dbi = TRUE,
+  identifier_quote_char = "\\"", string_quote_char = "'",
+  overrides = NULL, note = "", connection_options = list(),
+  db_methods = rquery_default_methods())
 }
 \arguments{
 \item{...}{force all arguments to be by name.}
@@ -23,7 +24,9 @@ rquery_db_info(..., connection = NULL, is_dbi = FALSE,
 
 \item{note}{character note to add to display form.}
 
-\item{connection_options}{names list of per-connection options.}
+\item{connection_options}{named list of per-connection options.}
+
+\item{db_methods}{named list of to_sql methods.}
 }
 \value{
 rquery_db_info object

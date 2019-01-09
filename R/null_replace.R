@@ -140,69 +140,16 @@ to_sql.relop_null_replace <- function (x,
                                        append_cr = TRUE,
                                        using = NULL) {
   if(length(list(...))>0) {
-    stop("unexpected arguments")
+    stop("rquery::to_sql.relop_null_replace unexpected arguments")
   }
-  qlimit = limit
-  if(!getDBOption(db, "use_pass_limit", TRUE)) {
-    qlimit = NULL
-  }
-  subsqla_list <- to_sql(x$source[[1]],
-                         db = db,
-                         limit = qlimit,
-                         source_limit = source_limit,
-                         indent_level = indent_level + 1,
-                         tnum = tnum,
-                         append_cr = FALSE,
-                         using = using)
-  subsqla <- subsqla_list[[length(subsqla_list)]]
-  prefix <- paste(rep(' ', indent_level), collapse = '')
-  tab <- tnum()
-  cols <- column_names(x$source[[1]])
-  qnames <- vapply(cols,
-                   function(ci) {
-                     quote_identifier(db, ci)
-                   }, character(1))
-  tqnames <- paste0(quote_identifier(db, tab),
-                    ".",
-                    qnames)
-  qexpr <- tqnames
-  alter <- which(cols %in% x$cols)
-  if(length(alter)>0) {
-    qexpr[alter] <- paste0("CASE WHEN ",
-                           tqnames[alter],
-                           " IS NULL THEN ",
-                           quote_literal(db, x$value),
-                           " ELSE ",
-                           tqnames[alter],
-                           " END")
-  }
-  qexpr <- paste(qexpr, "AS", qnames)
-  texpr <- paste(qnames = qexpr)
-  if(length(x$note_col)==1) {
-    sumexprs <- c("0",
-                  paste0("( CASE WHEN ",
-                         tqnames[alter],
-                         " IS NULL THEN 1 ELSE 0 END )"))
-    sexpr <- paste0(
-      paste(sumexprs, collapse = paste0(" + \n ", prefix)),
-      " AS ", quote_identifier(db, x$note_col),
-      "\n")
-    texpr <- c(texpr, sexpr)
-  }
-  texpr <- paste(texpr, collapse = paste0(",\n ", prefix))
-  q <- paste0(prefix, "SELECT\n",
-              " ", prefix, texpr, "\n",
-              prefix, "FROM (\n",
-              subsqla, "\n",
-              prefix, ") ",
-              tab)
-  if(!is.null(limit)) {
-    q <- paste(q, "LIMIT",
-               format(ceiling(limit), scientific = FALSE))
-  }
-  if(append_cr) {
-    q <- paste0(q, "\n")
-  }
-  c(subsqla_list[-length(subsqla_list)],
-    q)
+  dispatch_to_sql_method(
+    method_name = "to_sql.relop_null_replace",
+    x = x,
+    db = db,
+    limit = limit,
+    source_limit = source_limit,
+    indent_level = indent_level,
+    tnum = tnum,
+    append_cr = append_cr,
+    using = using)
 }

@@ -61,7 +61,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">1.2.1</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">1.3.0</span>
       </span>
     </div>
 
@@ -135,9 +135,10 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>rquery_db_info</span>(<span class='no'>...</span>, <span class='kw'>connection</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>is_dbi</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>identifier_quote_char</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>string_quote_char</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>overrides</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>note</span> <span class='kw'>=</span> <span class='st'>""</span>, <span class='kw'>connection_options</span> <span class='kw'>=</span> <span class='fu'>list</span>())</pre>
+    <pre class="usage"><span class='fu'>rquery_db_info</span>(<span class='no'>...</span>, <span class='kw'>connection</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>is_dbi</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>identifier_quote_char</span> <span class='kw'>=</span> <span class='st'>"\""</span>, <span class='kw'>string_quote_char</span> <span class='kw'>=</span> <span class='st'>"'"</span>,
+  <span class='kw'>overrides</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>note</span> <span class='kw'>=</span> <span class='st'>""</span>, <span class='kw'>connection_options</span> <span class='kw'>=</span> <span class='fu'>list</span>(),
+  <span class='kw'>db_methods</span> <span class='kw'>=</span> <span class='fu'><a href='rquery_default_methods.html'>rquery_default_methods</a></span>())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -172,7 +173,11 @@
     </tr>
     <tr>
       <th>connection_options</th>
-      <td><p>names list of per-connection options.</p></td>
+      <td><p>named list of per-connection options.</p></td>
+    </tr>
+    <tr>
+      <th>db_methods</th>
+      <td><p>named list of to_sql methods.</p></td>
     </tr>
     </table>
     

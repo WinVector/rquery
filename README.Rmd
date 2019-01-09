@@ -96,7 +96,7 @@ from [Let’s Have Some Sympathy For The Part-time R User](http://www.win-vector
 ```{r ex, warning=FALSE, message=FALSE}
 library("rquery")
 library("wrapr")
-use_spark <- TRUE
+use_spark <- FALSE
 
 if(use_spark) {
   raw_connection <- sparklyr::spark_connect(version='2.2.0', 

@@ -1,6 +1,7 @@
 
-# rquery 1.2.2 2018/01/06
+# rquery 1.3.0 2019/01/08
 
+ * More per-DB SQL rendering control.
  * %%/MOD().
  * Narow interfaces (unpublish tokenize_for_SQL()).
 

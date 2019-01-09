@@ -292,73 +292,19 @@ to_sql.relop_sql <- function (x,
                               tnum = mk_tmp_name_source('tsql'),
                               append_cr = TRUE,
                               using = NULL) {
-  wrapr::stop_if_dot_args(substitute(list(...)), "to_sql.relop_sql")
-  colsA <- vapply(names(x$exprs),
-                  function(ci) {
-                    quote_identifier(db, ci)
-                  }, character(1))
-  qexample = quote_string(db, "a")
-  qlen = as.numeric(regexec("a", qexample, fixed = TRUE)) - 1
-  qsym = substr(qexample, 1, qlen)
-  sqlexprs <- vapply(x$exprs,
-                     function(ei) {
-                       prep_sql_toks(db, ei,
-                                     translate_quotes = x$translate_quotes,
-                                     qsym = qsym)
-                     }, character(1))
-  cols <- paste(sqlexprs, "AS", colsA)
-  names(cols) <- names(x$exprs)
-  if(x$orig_columns) {
-    extras <- setdiff(column_names(x$source[[1]]),
-                      names(x$exprs))
-    if(length(extras)>0) {
-      qcols <- vapply(extras,
-                      function(ci) {
-                        quote_identifier(db, ci)
-                      }, character(1))
-      qcols <- paste(qcols, "AS", qcols)
-      names(qcols) <- extras
-      cols <- c(qcols, cols)
-    }
+  if(length(list(...))>0) {
+    stop("rquery::to_sql.relop_sql unexpected arguments")
   }
-  cols <- cols[x$cols]
-  names(cols) <- NULL
-  qlimit = limit
-  if(!getDBOption(db, "use_pass_limit", TRUE)) {
-    qlimit = NULL
-  }
-  subsql_list <- to_sql(x$source[[1]],
-                        db = db,
-                        limit = qlimit,
-                        source_limit = source_limit,
-                        indent_level = indent_level + 1,
-                        tnum = tnum,
-                        append_cr = FALSE,
-                        using = NULL)
-  subsql <- subsql_list[[length(subsql_list)]]
-  tab <- tnum()
-  prefix <- paste(rep(' ', indent_level), collapse = '')
-  star_str <- ""
-  q <- paste0(prefix, "SELECT\n",
-              prefix, " ", paste(cols, collapse = paste0(",\n", prefix, " ")), "\n",
-              prefix, "FROM (\n",
-              subsql, "\n",
-              prefix, ") ",
-              tab)
-  if(length(x$mods)>0) {
-    modsql <- prep_sql_toks(db, x$mods,
-                            translate_quotes = x$translate_quotes,
-                            qsym = qsym)
-    q <- paste(q, modsql)
-  }
-  if(!is.null(limit)) {
-    q <- paste(q, "LIMIT",
-               format(ceiling(limit), scientific = FALSE))
-  }
-  if(append_cr) {
-    q <- paste0(q, "\n")
-  }
-  c(subsql_list[-length(subsql_list)], q)
+  dispatch_to_sql_method(
+    method_name = "to_sql.relop_sql",
+    x = x,
+    db = db,
+    limit = limit,
+    source_limit = source_limit,
+    indent_level = indent_level,
+    tnum = tnum,
+    append_cr = append_cr,
+    using = using)
 }
 
 

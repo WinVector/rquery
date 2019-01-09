@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Build a nice description of a table. — describe_tables • rquery</title>
+<title>Build an optree pipeline counts rows. — row_counts • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -30,10 +30,9 @@
 
 
 
-<meta property="og:title" content="Build a nice description of a table. — describe_tables" />
+<meta property="og:title" content="Build an optree pipeline counts rows. — row_counts" />
 
-<meta property="og:description" content="Please see http://www.win-vector.com/blog/2017/05/managing-spark-data-handles-in-r/ for details.
-Note: one usually needs to alter the keys column which is just populated with all columns." />
+<meta property="og:description" content="This is an example of building up a desired pre-prepared pipeline fragment from relop nodes." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -125,92 +124,63 @@ Note: one usually needs to alter the keys column which is just populated with al
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Build a nice description of a table.</h1>
-    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/join_controller.R'><code>R/join_controller.R</code></a></small>
-    <div class="hidden name"><code>describe_tables.Rd</code></div>
+    <h1>Build an optree pipeline counts rows.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/row_counts.R'><code>R/row_counts.R</code></a></small>
+    <div class="hidden name"><code>row_counts.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Please see <a href='http://www.win-vector.com/blog/2017/05/managing-spark-data-handles-in-r/'>http://www.win-vector.com/blog/2017/05/managing-spark-data-handles-in-r/</a> for details.
-Note: one usually needs to alter the keys column which is just populated with all columns.</p>
+    <p>This is an example of building up a desired pre-prepared pipeline fragment from relop nodes.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>describe_tables</span>(<span class='no'>db</span>, <span class='no'>tablenames</span>, <span class='no'>...</span>,
-  <span class='kw'>keyInspector</span> <span class='kw'>=</span> <span class='no'>key_inspector_all_cols</span>)</pre>
+    <pre class="usage"><span class='fu'>row_counts</span>(<span class='no'>source</span>, <span class='no'>...</span>, <span class='kw'>groupby</span> <span class='kw'>=</span> <span class='fu'>character</span>(<span class='fl'>0</span>), <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>db</th>
-      <td><p>database handle</p></td>
-    </tr>
-    <tr>
-      <th>tablenames</th>
-      <td><p>character, names of tables to describe.</p></td>
+      <th>source</th>
+      <td><p>relop tree or data.frame source.</p></td>
     </tr>
     <tr>
       <th>...</th>
       <td><p>force later arguments to bind by name.</p></td>
     </tr>
     <tr>
-      <th>keyInspector</th>
-      <td><p>function that determines preferred primary key set for tables.</p></td>
+      <th>groupby</th>
+      <td><p>partitioning (window function) column names.</p></td>
+    </tr>
+    <tr>
+      <th>env</th>
+      <td><p>environment to look for values in.</p></td>
     </tr>
     </table>
-    
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>table describing the data.</p>
-    
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>Please see <code>vignette('DependencySorting', package = 'rquery')</code> and <code>vignette('joinController', package= 'rquery')</code> for more details.</p>
-    
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><code><a href='build_join_plan.html'>build_join_plan</a></code>, <code><a href='graph_join_plan.html'>graph_join_plan</a></code>, <code><a href='actualize_join_plan.html'>actualize_join_plan</a></code></p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='kw'>if</span> (<span class='fu'>requireNamespace</span>(<span class='st'>"DBI"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>&amp;&amp;</span> <span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
-  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
-  <span class='no'>ex</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='example_employee_date.html'>example_employee_date</a></span>(<span class='no'>my_db</span>)
-  <span class='fu'>print</span>(<span class='fu'>describe_tables</span>(<span class='no'>my_db</span>, <span class='no'>ex</span>$<span class='no'>tableName</span>,
-                         <span class='kw'>keyInspector</span> <span class='kw'>=</span> <span class='no'>key_inspector_sqlite</span>))
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt;         tableName isEmpty               indicatorColumn
-#&gt; 1 employeeanddate   FALSE table_employeeanddate_present
-#&gt; 2         revenue   FALSE         table_revenue_present
-#&gt; 3        activity   FALSE        table_activity_present
-#&gt; 4        orgtable   FALSE        table_orgtable_present
-#&gt;                      columns       keys
-#&gt; 1                   id, date           
-#&gt; 2            date, dept, rev date, dept
-#&gt; 3 eid, date, hours, location  eid, date
-#&gt; 4  eid, date, dept, location  eid, date
-#&gt;                                   colClass
-#&gt; 1                       character, integer
-#&gt; 2              integer, character, integer
-#&gt; 3   character, integer, integer, character
-#&gt; 4 character, integer, character, character</div><div class='input'>
-
+<span class='co'># by hand logistic regression example</span>
+<span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='mk_td.html'>mk_td</a></span>(<span class='st'>"survey_table"</span>,
+           <span class='fu'>c</span>(<span class='st'>"subjectID"</span>, <span class='st'>"surveyCategory"</span>, <span class='st'>"assessmentTotal"</span>))
+<span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span>
+  <span class='fu'>row_counts</span>(<span class='no'>.</span>, <span class='kw'>groupby</span> <span class='kw'>=</span> <span class='st'>"subjectID"</span>)
+<span class='fu'>cat</span>(<span class='fu'>format</span>(<span class='no'>optree</span>))</div><div class='output co'>#&gt; table(survey_table; 
+#&gt;   subjectID,
+#&gt;   surveyCategory,
+#&gt;   assessmentTotal) %.&gt;%
+#&gt;  extend(.,
+#&gt;   one := 1) %.&gt;%
+#&gt;  project(., n := sum(one),
+#&gt;   g= subjectID)</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#value">Value</a></li>
-
-      <li><a href="#details">Details</a></li>
-
-      <li><a href="#see-also">See also</a></li>
-      
+            
       <li><a href="#examples">Examples</a></li>
     </ul>
 

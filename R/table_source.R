@@ -271,30 +271,19 @@ to_sql.relop_table_source <- function (x,
                                        tnum = mk_tmp_name_source('tsql'),
                                        append_cr = TRUE,
                                        using = NULL) {
-  wrapr::stop_if_dot_args(substitute(list(...)),
-                          "rquery::to_sql.relop_table_source")
-  prefix <- paste(rep(' ', indent_level), collapse = '')
-  tabnam <- quote_table_name(db,  x$table_name, qualifiers = x$qualifiers)
-  cols <- columns_used_relop_table_source(x, using = using)
-  qcols <- vapply(cols,
-                  function(ui) {
-                    quote_identifier(db, ui)
-                  }, character(1))
-  qt <- paste(qcols, collapse = paste0(",\n", prefix, " "))
-  q <- paste0(prefix,
-              "SELECT\n",
-              prefix, " ", qt, "\n",
-              prefix, "FROM\n",
-              prefix, " ", tabnam)
-  if((!is.null(limit))||(!is.null(source_limit))) {
-    limit <- min(limit, source_limit)
-    q <- paste(q, "LIMIT",
-               format(ceiling(limit), scientific = FALSE))
+  if(length(list(...))>0) {
+    stop("rquery::to_sql.relop_table_source unexpected arguments")
   }
-  if(append_cr) {
-    q <- paste0(q, "\n")
-  }
-  q
+  dispatch_to_sql_method(
+    method_name = "to_sql.relop_table_source",
+    x = x,
+    db = db,
+    limit = limit,
+    source_limit = source_limit,
+    indent_level = indent_level,
+    tnum = tnum,
+    append_cr = append_cr,
+    using = using)
 }
 
 

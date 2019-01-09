@@ -126,43 +126,18 @@ to_sql.relop_drop_columns <- function (x,
                                        append_cr = TRUE,
                                        using = NULL) {
   if(length(list(...))>0) {
-    stop("unexpected arguments")
+    stop("rquery::to_sql.relop_drop_columns unexpected arguments")
   }
-  using <- calc_using_relop_drop_columns(x,
-                                         using = using)
-  qlimit = limit
-  if(!getDBOption(db, "use_pass_limit", TRUE)) {
-    qlimit = NULL
-  }
-  subsql_list <- to_sql(x$source[[1]],
-                        db = db,
-                        limit = qlimit,
-                        source_limit = source_limit,
-                        indent_level = indent_level + 1,
-                        tnum = tnum,
-                        append_cr = FALSE,
-                        using = using)
-  subsql <- subsql_list[[length(subsql_list)]]
-  cols <- vapply(x$columns,
-                 function(ci) {
-                   quote_identifier(db, ci)
-                 }, character(1))
-  tab <- tnum()
-  prefix <- paste(rep(' ', indent_level), collapse = '')
-  q <- paste0(prefix, "SELECT\n",
-              prefix, " ", paste(cols, collapse = paste0(",\n", prefix, " ")), "\n",
-              prefix, "FROM (\n",
-              subsql, "\n",
-              prefix, ") ",
-              tab)
-  if(!is.null(limit)) {
-    q <- paste(q, "LIMIT",
-               format(ceiling(limit), scientific = FALSE))
-  }
-  if(append_cr) {
-    q <- paste0(q, "\n")
-  }
-  c(subsql_list[-length(subsql_list)], q)
+  dispatch_to_sql_method(
+    method_name = "to_sql.relop_drop_columns",
+    x = x,
+    db = db,
+    limit = limit,
+    source_limit = source_limit,
+    indent_level = indent_level,
+    tnum = tnum,
+    append_cr = append_cr,
+    using = using)
 }
 
 

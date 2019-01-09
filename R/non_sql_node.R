@@ -163,40 +163,19 @@ to_sql.relop_non_sql <- function (x,
                                   tnum = mk_tmp_name_source('tsql'),
                                   append_cr = TRUE,
                                   using = NULL) {
-  subsql <- to_sql(x$source[[1]],
-                    db = db,
-                    source_limit = source_limit,
-                    indent_level = indent_level + 1,
-                    tnum = tnum,
-                    append_cr = append_cr,
-                    using = NULL)
-  nsubsql <- length(subsql)
-  # non-SQL nodes must always be surrounded by SQL on both sides
-  step1 <- materialize_sql_statement(db,
-                                     subsql[[nsubsql]],
-                                     x$incoming_table_name,
-                                     temporary = x$temporary)
-  nsql_step <- list(display_form = x$display_form,
-                    incoming_table_name = x$incoming_table_name,
-                    outgoing_table_name = x$outgoing_table_name,
-                    temporary = x$temporary,
-                    node = x,
-                    f = x$f_db)
-  class(nsql_step) <- "rquery_non_sql_step"
-  step2 <- list(nsql_step)
-  qlimit = limit
-  if(!getDBOption(db, "use_pass_limit", TRUE)) {
-    qlimit = NULL
+  if(length(list(...))>0) {
+    stop("rquery::to_sql.relop_non_sql unexpected arguments")
   }
-  step3 <- list(to_sql(mk_td(x$outgoing_table_name, column_names(x)),
-                       db = db,
-                       limit = qlimit,
-                       source_limit = source_limit,
-                       indent_level = indent_level + 1,
-                       tnum = tnum,
-                       append_cr = append_cr,
-                       using = NULL))
-  c(subsql[-length(subsql)], step1, step2, step3)
+  dispatch_to_sql_method(
+    method_name = "to_sql.relop_non_sql",
+    x = x,
+    db = db,
+    limit = limit,
+    source_limit = source_limit,
+    indent_level = indent_level,
+    tnum = tnum,
+    append_cr = append_cr,
+    using = using)
 }
 
 

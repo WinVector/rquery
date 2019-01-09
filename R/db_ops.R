@@ -23,9 +23,6 @@ rq_get_query <- function(db, q) {
     db <- db$connection
   }
   # fall back to DBI
-  if(!requireNamespace("DBI", quietly = TRUE)) {
-    stop("rquery this function currently requires the DBI package")
-  }
   DBI::dbGetQuery(db, q)
 }
 
@@ -50,9 +47,6 @@ rq_execute <- function(db, q) {
     }
     connection_options <- db$connection_options
     db <- db$connection
-  }
-  if(!requireNamespace("DBI", quietly = TRUE)) {
-    stop("rquery this function currently requires the DBI package")
   }
   res <- NULL
   if(getDBOption(db, "use_DBI_dbExecute", TRUE, connection_options)) {
@@ -85,9 +79,6 @@ rq_table_exists <- function(db, table_name) {
     }
     connection_options <- db$connection_options
     db <- db$connection
-  }
-  if(!requireNamespace("DBI", quietly = TRUE)) {
-    stop("rquery this function currently requires the DBI package")
   }
   # Would like to just return DBI::dbExistsTable(db, table_name)
   if(getDBOption(db, "use_DBI_dbExistsTable", FALSE, connection_options)) {
@@ -138,9 +129,6 @@ rq_colnames <- function(db, table_name,
     }
     connection_options <- db$connection_options
     db <- db$connection
-  }
-  if(!requireNamespace("DBI", quietly = TRUE)) {
-    stop("rquery this function currently requires the DBI package")
   }
   # DBI::dbListFields fails intermitnently, and sometimes gives wrong results
   # filed as: https://github.com/tidyverse/dplyr/issues/3204
@@ -225,9 +213,6 @@ rq_coltypes <- function(db, table_name,
     connection_options <- db$connection_options
     db <- db$connection
   }
-  if(!requireNamespace("DBI", quietly = TRUE)) {
-    stop("rquery this function currently requires the DBI package")
-  }
   # RSQLite returns logical type for any returned column
   # that is entirely NA, regardless of storage type.
   # below is going to have issues to to R-column name conversion!
@@ -274,9 +259,6 @@ rq_remove_table <- function(db, table_name) {
     }
     connection_options <- db$connection_options
     db <- db$connection
-  }
-  if(!requireNamespace("DBI", quietly = TRUE)) {
-    stop("rquery this function currently requires the DBI package")
   }
   if(!is.null(table_name)) {
     if(rq_table_exists(db, table_name)) {
@@ -354,9 +336,6 @@ rq_copy_to <- function(db, table_name, d,
     connection_options <- db$connection_options
     db <- db$connection
   }
-  if(!requireNamespace("DBI", quietly = TRUE)) {
-    stop("rquery this function currently requires the DBI package")
-  }
   if(!is.null(rowidcolumn)) {
     d[[rowidcolumn]] <- seq_len(nrow(d))
   }
@@ -429,9 +408,6 @@ rq_nrow <- function(db, table_name) {
       return(f(db, table_name))
     }
     db <- db$connection
-  }
-  if(!requireNamespace("DBI", quietly = TRUE)) {
-    stop("rquery this function currently requires the DBI package")
   }
   nrowst <- rq_get_query(
     db,
@@ -562,9 +538,6 @@ rq_connection_tests <- function(db,
       stop("rquery::rq_connection_tests only applies to dbi handles")
     }
     db <- db$connection
-  }
-  if(!requireNamespace("DBI", quietly = TRUE)) {
-    stop("rquery::rq_connection_tests this function currently requires the DBI package")
   }
   cname <- rq_connection_name(db)
   opts <- list()

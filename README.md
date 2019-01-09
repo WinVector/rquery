@@ -88,7 +88,7 @@ Let's work a non-trivial example: the `dplyr` pipeline from [Let’s Have Some S
 ``` r
 library("rquery")
 library("wrapr")
-use_spark <- TRUE
+use_spark <- FALSE
 
 if(use_spark) {
   raw_connection <- sparklyr::spark_connect(version='2.2.0', 
@@ -124,7 +124,7 @@ rq_copy_to(db, 'd',
             overwrite = TRUE)
 ```
 
-    ## [1] "table(`d`; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2)"
+    ## [1] "table(\"d\"; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2)"
 
 ``` r
 # produce a hande to existing table
@@ -145,7 +145,7 @@ class(db)
 print(db)
 ```
 
-    ## [1] "rquery_db_info(DBIConnection_spark_connection_spark_shell_connection, is_dbi=TRUE, note=\"\")"
+    ## [1] "rquery_db_info(PostgreSQLConnection, is_dbi=TRUE, note=\"\")"
 
 ``` r
 class(d)
@@ -157,14 +157,14 @@ class(d)
 print(d)
 ```
 
-    ## [1] "table(`d`; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2)"
+    ## [1] "table(\"d\"; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2)"
 
 ``` r
 # remote structure inspection
 rstr(db, d$table_name)
 ```
 
-    ## table `d` spark_connection spark_shell_connection DBIConnection 
+    ## table "d" PostgreSQLConnection 
     ##  nrow: 4 
     ## 'data.frame':    4 obs. of  5 variables:
     ##  $ subjectID      : int  1 1 2 2
@@ -226,7 +226,7 @@ class(result)
 result
 ```
 
-    ## [1] "table(`rquery_mat_22059236164602539725_0000000000`; subjectID, diagnosis, probability)"
+    ## [1] "table(\"rquery_mat_96244023511522880980_0000000000\"; subjectID, diagnosis, probability)"
 
 ``` r
 DBI::dbReadTable(db$connection, result$table_name) %.>%
@@ -265,46 +265,46 @@ cat(to_sql(dq, db, source_limit = 1000))
 
     SELECT * FROM (
      SELECT
-      `subjectID`,
-      `diagnosis`,
-      `probability`
+      "subjectID",
+      "diagnosis",
+      "probability"
      FROM (
       SELECT
-       `subjectID` AS `subjectID`,
-       `surveyCategory` AS `diagnosis`,
-       `probability` AS `probability`
+       "subjectID" AS "subjectID",
+       "surveyCategory" AS "diagnosis",
+       "probability" AS "probability"
       FROM (
        SELECT * FROM (
         SELECT
-         `subjectID`,
-         `surveyCategory`,
-         `probability`,
-         row_number ( ) OVER (  PARTITION BY `subjectID` ORDER BY `probability` DESC, `surveyCategory` ) AS `row_number`
+         "subjectID",
+         "surveyCategory",
+         "probability",
+         row_number ( ) OVER (  PARTITION BY "subjectID" ORDER BY "probability" DESC, "surveyCategory" ) AS "row_number"
         FROM (
          SELECT
-          `subjectID`,
-          `surveyCategory`,
-          `probability` / sum ( `probability` ) OVER (  PARTITION BY `subjectID` ) AS `probability`
+          "subjectID",
+          "surveyCategory",
+          "probability" / sum ( "probability" ) OVER (  PARTITION BY "subjectID" ) AS "probability"
          FROM (
           SELECT
-           `subjectID`,
-           `surveyCategory`,
-           exp ( `assessmentTotal` * 0.237 )  AS `probability`
+           "subjectID",
+           "surveyCategory",
+           exp ( "assessmentTotal" * 0.237 )  AS "probability"
           FROM (
            SELECT
-            `subjectID`,
-            `surveyCategory`,
-            `assessmentTotal`
+            "subjectID",
+            "surveyCategory",
+            "assessmentTotal"
            FROM
-            `d` LIMIT 1000
-           ) tsql_96455569405882458900_0000000000
-          ) tsql_96455569405882458900_0000000001
-         ) tsql_96455569405882458900_0000000002
-       ) tsql_96455569405882458900_0000000003
-       WHERE `row_number` <= 1
-      ) tsql_96455569405882458900_0000000004
-     ) tsql_96455569405882458900_0000000005
-    ) tsql_96455569405882458900_0000000006 ORDER BY `subjectID`
+            "d" LIMIT 1000
+           ) tsql_38599584704335882072_0000000000
+          ) tsql_38599584704335882072_0000000001
+         ) tsql_38599584704335882072_0000000002
+       ) tsql_38599584704335882072_0000000003
+       WHERE "row_number" <= 1
+      ) tsql_38599584704335882072_0000000004
+     ) tsql_38599584704335882072_0000000005
+    ) tsql_38599584704335882072_0000000006 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
@@ -337,7 +337,7 @@ The additional record-keeping in the operator nodes allows checking and optimiza
 cat(format(dq))
 ```
 
-    table(`d`; 
+    table("d"; 
       subjectID,
       surveyCategory,
       assessmentTotal,
@@ -424,13 +424,13 @@ dq %.>%
 ```
 
     ##        column index     class nrows nna nunique       min       max
-    ## 1   subjectID     1   integer     2   0     NaN 1.0000000 2.0000000
-    ## 2   diagnosis     2 character     2   0       2       NaN       NaN
-    ## 3 probability     3   numeric     2   0     NaN 0.5589742 0.6706221
+    ## 1   subjectID     1   integer     2   0      NA 1.0000000 2.0000000
+    ## 2   diagnosis     2 character     2   0       2        NA        NA
+    ## 3 probability     3   numeric     2   0      NA 0.5589742 0.6706221
     ##        mean         sd              lexmin              lexmax
-    ## 1 1.5000000 0.70710678                  NA                  NA
-    ## 2       NaN        NaN positive re-framing withdrawal behavior
-    ## 3 0.6147982 0.07894697                  NA                  NA
+    ## 1 1.5000000 0.70710678                <NA>                <NA>
+    ## 2        NA         NA positive re-framing withdrawal behavior
+    ## 3 0.6147982 0.07894697                <NA>                <NA>
 
 We have found most big-data projects either require joining very many tables (something `rquery` join planners help with, please see [here](https://github.com/WinVector/rquery/blob/master/extras/JoinController%2Emd) and [here](https://github.com/WinVector/rquery/blob/master/extras/JoinController%2Emd)) or they require working with wide data-marts (where `rquery` query narrowing helps, please see [here](https://github.com/WinVector/rquery/blob/master/extras/PerfTest%2Emd)).
 

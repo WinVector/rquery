@@ -390,70 +390,16 @@ to_sql.relop_theta_join <- function (x,
                                      append_cr = TRUE,
                                      using = NULL) {
   if(length(list(...))>0) {
-    stop("unexpected arguments")
+    stop("rquery::to_sql.relop_theta_join unexpected arguments")
   }
-  # re-quote expr
-  re_quoted <- redo_parse_quoting(x$parsed, db)
-  # work on query
-  using <- calc_used_relop_theta_join(x,
-                                      using=using)
-  c1 <- intersect(using, column_names(x$source[[1]]))
-  c2 <- intersect(using, column_names(x$source[[2]]))
-  subsqla_list <- to_sql(x$source[[1]],
-                         db = db,
-                         source_limit = source_limit,
-                         indent_level = indent_level + 1,
-                         tnum = tnum,
-                         append_cr = FALSE,
-                         using = c1)
-  subsqla <- subsqla_list[[length(subsqla_list)]]
-  subsqlb_list <- to_sql(x$source[[2]],
-                         db = db,
-                         source_limit = source_limit,
-                         indent_level = indent_level + 1,
-                         tnum = tnum,
-                         append_cr = FALSE,
-                         using = c2)
-  subsqlb <- subsqlb_list[[length(subsqlb_list)]]
-  taba <- tnum()
-  tabb <- tnum()
-  bterms <- setdiff(c1,
-                    c2)
-  if(length(bterms)>0) {
-    bcols <- vapply(bterms,
-                    function(ci) {
-                      quote_identifier(db, ci)
-                    }, character(1))
-  }
-  prefix <- paste(rep(' ', indent_level), collapse = '')
-  cseta <- prepColumnNames(db, taba, c1,
-                          x$cmap[['a']])
-  ctermsa <- paste(cseta, collapse = paste0(",\n", prefix, " "))
-  csetb <- prepColumnNames(db, tabb, c2,
-                          x$cmap[['b']])
-  ctermsb <- paste(csetb, collapse = paste0(",\n", prefix, " "))
-  q <- paste0(prefix, "SELECT\n",
-              prefix, " ", ctermsa, ",\n",
-              prefix, " ", ctermsb, "\n",
-              prefix, "FROM (\n",
-              subsqla, "\n",
-              prefix, ") ",
-              quote_identifier(db, taba), "\n",
-              prefix, x$jointype,
-              " JOIN (\n",
-              subsqlb, "\n",
-              prefix, ") ",
-              quote_identifier(db, tabb),
-              " ON ",
-              x$parsed[[1]]$parsed)
-  if(!is.null(limit)) {
-    q <- paste(q, "LIMIT",
-               format(ceiling(limit), scientific = FALSE))
-  }
-  if(append_cr) {
-    q <- paste0(q, "\n")
-  }
-  c(subsqla_list[-length(subsqla_list)],
-    subsqlb_list[-length(subsqlb_list)],
-    q)
+  dispatch_to_sql_method(
+    method_name = "to_sql.relop_theta_join",
+    x = x,
+    db = db,
+    limit = limit,
+    source_limit = source_limit,
+    indent_level = indent_level,
+    tnum = tnum,
+    append_cr = append_cr,
+    using = using)
 }

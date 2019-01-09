@@ -1,4 +1,8 @@
 
+
+#' @importFrom DBI dbQuoteIdentifier
+NULL
+
 #' Build a db information stand-in
 #'
 #' @param ... force all arguments to be by name.
@@ -8,19 +12,21 @@
 #' @param string_quote_char character, quote to put around strings.
 #' @param overrides named list of functions to place in info.
 #' @param note character note to add to display form.
-#' @param connection_options names list of per-connection options.
+#' @param connection_options named list of per-connection options.
+#' @param db_methods named list of to_sql methods.
 #' @return rquery_db_info object
 #'
 #' @export
 #'
 rquery_db_info <- function(...,
                            connection = NULL,
-                           is_dbi = FALSE,
-                           identifier_quote_char = NULL,
-                           string_quote_char = NULL,
+                           is_dbi = TRUE,
+                           identifier_quote_char = '"',
+                           string_quote_char = "'",
                            overrides = NULL,
                            note = "",
-                           connection_options = list()) {
+                           connection_options = list(),
+                           db_methods = rquery_default_methods()) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::rquery_db_info")
   if("rquery_db_info" %in% class(connection)) {
     stop("rquery::rquery_db_info connection is already of class rquery_db_info")
@@ -33,6 +39,7 @@ rquery_db_info <- function(...,
     string_quote_char = string_quote_char,
     note = note,
     connection_options = connection_options,
+    db_methods = db_methods,
     dbqi = function(id) {
       paste0(identifier_quote_char,
              id,
@@ -58,30 +65,67 @@ rquery_db_info <- function(...,
       format(o, scientific = 11)
     })
   if(is_dbi) {
-    if(!requireNamespace("DBI", quietly = TRUE)) {
-      stop("rquery::rquery_db_info is_dbi=TRUE requeries DBI package")
-    }
     r$quote_identifier <- function(x, id) {
-      as.character(DBI::dbQuoteIdentifier(r$connection, as.character(id)))
+      connection <- x
+      if("rquery_db_info" %in% class(x)) {
+        connection <- x$connection
+      }
+      if(!is.null(connection)) {
+        return(as.character(DBI::dbQuoteIdentifier(connection, as.character(id))))
+      }
+      paste0(identifier_quote_char,
+             id,
+             identifier_quote_char)
     }
     r$quote_table_name <- function(x, id, ..., qualifiers) {
       wrapr::stop_if_dot_args(substitute(list(...)),
                               "r$quote_table_name")
-      if("schema" %in% names(qualifiers)) {
-        dbi_id <- DBI::Id(schema = qualifiers$schema, table = as.character(id))
-      } else {
-        dbi_id <- as.character(id) # sparklyr ‘0.8.4’ does not implement DBI::dbQuoteIdentifier for DBI::Id
+      connection <- x
+      if("rquery_db_info" %in% class(x)) {
+        connection <- x$connection
       }
-      as.character(DBI::dbQuoteIdentifier(r$connection, dbi_id))
+      if(!is.null(connection)) {
+        if("schema" %in% names(qualifiers)) {
+          dbi_id <- DBI::Id(schema = qualifiers$schema, table = as.character(id))
+        } else {
+          dbi_id <- as.character(id) # sparklyr ‘0.8.4’ does not implement DBI::dbQuoteIdentifier for DBI::Id
+        }
+        return(as.character(DBI::dbQuoteIdentifier(connection, dbi_id)))
+      }
+      paste(paste0(identifier_quote_char,
+                   c(qualifiers, id),
+                   identifier_quote_char),
+            collapse = ".")
     }
     r$quote_string <- function(x, s) {
-      DBI::dbQuoteString(r$connection, as.character(s))
+      connection <- x
+      if("rquery_db_info" %in% class(x)) {
+        connection <- x$connection
+      }
+      if(!is.null(connection)) {
+        return(as.character(DBI::dbQuoteString(connection, as.character(s))))
+      }
+      paste0(string_quote_char,
+             gsub(string_quote_char, paste0('\\', string_quote_char), s, fixed=TRUE),
+             string_quote_char)
     }
     r$quote_literal <- function(x, o) {
-      if(is.character(o) || is.factor(o)) {
-        return(DBI::dbQuoteString(r$connection, as.character(o)))
+      connection <- x
+      if("rquery_db_info" %in% class(x)) {
+        connection <- x$connection
       }
-      as.character(DBI::dbQuoteLiteral(r$connection, o))
+      if(!is.null(connection)) {
+        if(is.character(o) || is.factor(o)) {
+          return(as.character(DBI::dbQuoteString(x$connection, as.character(o))))
+        }
+        return(as.character(DBI::dbQuoteLiteral(x$connection, o)))
+      }
+      if(is.character(o) || is.factor(o) || is.name(o)) {
+        return(paste0(string_quote_char,
+                      as.character(o),
+                      string_quote_char))
+      }
+      format(o, scientific = 11)
     }
   }
   for(ni in names(overrides)) {
@@ -108,7 +152,8 @@ print.rquery_db_info <- function(x, ...) {
 #' @export
 rquery_default_db_info <- rquery_db_info(identifier_quote_char = '"',
                                          string_quote_char = "'",
-                                         is_dbi = FALSE)
+                                         is_dbi = TRUE,
+                                         db_methods = rquery_default_methods())
 
 #' Quote an identifier.
 #'
@@ -119,14 +164,14 @@ rquery_default_db_info <- rquery_db_info(identifier_quote_char = '"',
 #' @export
 #'
 quote_identifier <- function(x, id) {
-  if("rquery_db_info" %in% class(x)) {
-    f <- x$quote_identifier
-    if(!is.null(f)) {
-      return(f(x, id))
+  if(!is.null(x)) {
+    if("rquery_db_info" %in% class(x)) {
+      f <- x$quote_identifier
+      if(!is.null(f)) {
+        return(f(x, id))
+      }
+      return(x$dbqi(id))
     }
-    return(x$dbqi(id))
-  }
-  if(requireNamespace("DBI", quietly = TRUE)) {
     return(as.character(DBI::dbQuoteIdentifier(x, id)))
   }
   rquery_default_db_info$dbqi(id)
@@ -147,14 +192,14 @@ quote_table_name <- function(x, id,
                              qualifiers = character(0)) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::quote_table_name")
-  if("rquery_db_info" %in% class(x)) {
-    f <- x$quote_table_name
-    if(!is.null(f)) {
-      return(f(x, id, qualifiers = qualifiers))
+  if(!is.null(x)) {
+    if("rquery_db_info" %in% class(x)) {
+      f <- x$quote_table_name
+      if(!is.null(f)) {
+        return(f(x, id, qualifiers = qualifiers))
+      }
+      return(x$dbqt(id, qualifiers = qualifiers))
     }
-    return(x$dbqt(id, qualifiers = qualifiers))
-  }
-  if(requireNamespace("DBI", quietly = TRUE)) {
     if("schema" %in% names(qualifiers)) {
       dbi_id <- DBI::Id(schema = qualifiers[["schema"]], table = as.character(id))
     } else {
@@ -176,14 +221,14 @@ quote_table_name <- function(x, id,
 #'
 quote_string <- function(x, s) {
   s <- as.character(s)
-  if("rquery_db_info" %in% class(x)) {
-    f <- x$quote_string
-    if(!is.null(f)) {
-      return(f(x, s))
+  if(!is.null(x)) {
+    if("rquery_db_info" %in% class(x)) {
+      f <- x$quote_string
+      if(!is.null(f)) {
+        return(f(x, s))
+      }
+      return(x$dbqs(s))
     }
-    return(x$dbqs(s))
-  }
-  if(requireNamespace("DBI", quietly = TRUE)) {
     return(as.character(DBI::dbQuoteString(x, s)))
   }
   rquery_default_db_info$dbqs(s)
@@ -201,16 +246,55 @@ quote_literal <- function(x, o) {
   if(is.character(o) || is.factor(o)) {
     return(quote_string(x, as.character(o)))
   }
-  if("rquery_db_info" %in% class(x)) {
-    f <- x$quote_literal
-    if(!is.null(f)) {
-      return(f(x, o))
+  if(!is.null(x)) {
+    if("rquery_db_info" %in% class(x)) {
+      f <- x$quote_literal
+      if(!is.null(f)) {
+        return(f(x, o))
+      }
+      return(x$dbql(o))
     }
-    return(x$dbql(o))
-  }
-  if(requireNamespace("DBI", quietly = TRUE)) {
     return(as.character(DBI::dbQuoteLiteral(x, o)))
   }
   rquery_default_db_info$dbql(o)
 }
 
+
+dispatch_to_sql_method <- function(
+  method_name,
+  x,
+  db,
+  ...,
+  limit = NULL,
+  source_limit = NULL,
+  indent_level = 0,
+  tnum = mk_tmp_name_source('tsql'),
+  append_cr = TRUE,
+  using = NULL) {
+  if(length(list(...))>0) {
+    stop("unexpected arguments")
+  }
+  if(!("relop" %in% class(x))) {
+    stop("rquery::dispatch_to_sql_method, expect x to be of class relop")
+  }
+  # gaurantee we call the actual methods with an rquery_db_info
+  if(!("rquery_db_info" %in% class(db))) {
+    connection <- db
+    db <- rquery_default_db_info
+    db$connection <- connection
+  }
+  sql_method <- db$db_methods[[method_name]]
+  if(is.null(sql_method)) {
+    stop(paste("rquery::dispatch_to_sql_method, bad method name:",
+               method_name))
+  }
+  sql_method(
+    x = x,
+    db = db,
+    limit = limit,
+    source_limit = source_limit,
+    indent_level = indent_level,
+    tnum = tnum,
+    append_cr = append_cr,
+    using = using)
+}
