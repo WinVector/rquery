@@ -145,6 +145,18 @@ db$quote_literal <- function(x, o) {
   }
   db$dbql(o)
 }
+db$rq_copy_to <- function(db, table_name, d,
+                         ...,
+                         overwrite = FALSE,
+                         temporary = TRUE,
+                         rowidcolumn = NULL) {
+  # overwrite and temporary forced on
+  # not a full impl
+  df <- SparkR::createDataFrame(d)
+  SparkR::createOrReplaceTempView(df, table_name)
+  db_td(db, table_name)
+}
+db <- setDBOpt(db, "create_temporary", FALSE)
 
 
 # copy data in so we have an example
@@ -155,13 +167,11 @@ d_local <- build_frame(
    2L         , "withdrawal behavior", 3                , "irrel1"        , "irrel2"         |
    2L         , "positive re-framing", 4                , "irrel1"        , "irrel2"         )
 
-test_df <- SparkR::createDataFrame(d_local)
-SparkR::createOrReplaceTempView(test_df, "d")
-# TODO: use rq_copy_to()
-# rq_copy_to(db, 'd',
-#            d_local,
-#            temporary = TRUE, 
-#            overwrite = TRUE)
+
+rq_copy_to(db, 'd',
+           d_local,
+           temporary = TRUE,
+           overwrite = TRUE)
 
 # produce a hande to existing table
 d <- db_td(db, "d")
@@ -187,9 +197,8 @@ print(db)
 class(d)
 print(d)
 
-# TODO: get this working
-# # remote structure inspection
-# rstr(db, d$table_name)
+# remote structure inspection
+rstr(db, d$table_name)
 
 # or execute the table representation to bring back data
 d %.>%
@@ -288,16 +297,16 @@ dq %.>%
 
 ```{r utils}
 quantile_cols(db, "d")
+
 rsummary(db, "d")
 
-# TODO: get working
-# dq %.>% 
-#   quantile_node(.) %.>%
-#  execute(db, .)
-# 
-# dq %.>% 
-#   rsummary_node(.) %.>%
-#   execute(db, .)
+dq %.>%
+  quantile_node(.) %.>%
+  execute(db, .)
+
+dq %.>%
+  rsummary_node(.) %.>%
+  execute(db, .)
 ```
 
 We have found most big-data projects either require joining very many tables (something `rquery` join planners help with, please see [here](https://github.com/WinVector/rquery/blob/master/extras/JoinController%2Emd) and [here](https://github.com/WinVector/rquery/blob/master/extras/JoinController%2Emd)) or they require working with wide data-marts (where `rquery` query narrowing helps, please see [here](https://github.com/WinVector/rquery/blob/master/extras/PerfTest%2Emd)).

@@ -627,6 +627,7 @@ rq_connection_tests <- function(db,
   opts[[paste(c("rquery", cname, "use_DBI_dbExecute"), collapse = ".")]] <- FALSE
   opts[[paste(c("rquery", cname, "create_temporary"), collapse = ".")]] <- FALSE
   opts[[paste(c("rquery", cname, "control_temporary"), collapse = ".")]] <- FALSE
+  opts[[paste(c("rquery", cname, "control_temporary_view"), collapse = ".")]] <- FALSE
   opts[[paste(c("rquery", cname, "control_rownames"), collapse = ".")]] <- FALSE
   # Run config tests in addition to dealing with known cases
   obscure_name <- wrapr::mk_tmp_name_source("rq_test")()
@@ -703,13 +704,23 @@ rq_connection_tests <- function(db,
     error = function(e) { e },
     warning = function(w) { w })
   brute_rm_table(db, obscure_name)
-  # check on temporary
+  # check on temporary table
   tryCatch(
     {
       DBI::dbGetQuery(connection, paste("CREATE TEMPORARY TABLE",
                                obscure_name_q,
                                "( x INT )"))
       opts[[paste(c("rquery", cname, "create_temporary"), collapse = ".")]] <- TRUE
+    },
+    error = function(e) { e },
+    warning = function(w) { w })
+  # check on temporary view
+  tryCatch(
+    {
+      DBI::dbGetQuery(connection, paste("CREATE TEMPORARY VIEW",
+                                        obscure_name_q,
+                                        "( x INT )"))
+      opts[[paste(c("rquery", cname, "control_temporary_view"), collapse = ".")]] <- TRUE
     },
     error = function(e) { e },
     warning = function(w) { w })
@@ -813,12 +824,35 @@ getDBOption <- function(db, optname, default,
 
 #' Set a database connection option.
 #'
+#' If db is of class rquery_db_info it sets the appropriate connection option, not the global state.
+#'
+#' @param db rquery_db_info instance
+#' @param optname character, single option name.
+#' @param val value to set
+#' @return db
+#'
+#' @export
+#'
+setDBOpt <- function(db, optname, val) {
+  if(!("rquery_db_info" %in% class(db))) {
+    stop("rquery::setDBOpt db must be of class rquery_db_info")
+  }
+  cname <- rq_connection_name(db)
+  key <- paste(c("rquery", cname, optname), collapse = ".")
+  db$connection_options[[key]] <- val
+  db
+}
+
+#' Set a database connection option.
+#'
+#'
 #' Note: we are moving away from global options to options in the DB handle.
+#' Prefer \code{\link{setDBOpt()}}.
 #'
 #' @param db database connection handle.
 #' @param optname character, single option name.
 #' @param val value to set
-#' @return named list containing old value if any (invisible).
+#' @return original options value
 #'
 #' @export
 #'

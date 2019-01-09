@@ -103,7 +103,7 @@ SparkR::sparkR.session(master = "local[1]",
                        enableHiveSupport = TRUE)
 ```
 
-    ## Launching java with spark-submit command /Users/johnmount/Library/Caches/spark/spark-2.3.0-bin-hadoop2.7/bin/spark-submit   --driver-java-options "-Djava.io.tmpdir=/var/folders/7q/h_jp2vj131g5799gfnpzhdp80000gn/T//RtmprrTxRI" sparkr-shell /var/folders/7q/h_jp2vj131g5799gfnpzhdp80000gn/T//RtmprrTxRI/backend_port294b308a3b45
+    ## Launching java with spark-submit command /Users/johnmount/Library/Caches/spark/spark-2.3.0-bin-hadoop2.7/bin/spark-submit   --driver-java-options "-Djava.io.tmpdir=/var/folders/7q/h_jp2vj131g5799gfnpzhdp80000gn/T//Rtmpy7O4TP" sparkr-shell /var/folders/7q/h_jp2vj131g5799gfnpzhdp80000gn/T//Rtmpy7O4TP/backend_port44ec2e7b1305
 
     ## Java ref type org.apache.spark.sql.SparkSession id 1
 
@@ -142,6 +142,18 @@ db$quote_literal <- function(x, o) {
   }
   db$dbql(o)
 }
+db$rq_copy_to <- function(db, table_name, d,
+                         ...,
+                         overwrite = FALSE,
+                         temporary = TRUE,
+                         rowidcolumn = NULL) {
+  # overwrite and temporary forced on
+  # not a full impl
+  df <- SparkR::createDataFrame(d)
+  SparkR::createOrReplaceTempView(df, table_name)
+  db_td(db, table_name)
+}
+db <- setDBOpt(db, "create_temporary", FALSE)
 
 
 # copy data in so we have an example
@@ -152,14 +164,16 @@ d_local <- build_frame(
    2L         , "withdrawal behavior", 3                , "irrel1"        , "irrel2"         |
    2L         , "positive re-framing", 4                , "irrel1"        , "irrel2"         )
 
-test_df <- SparkR::createDataFrame(d_local)
-SparkR::createOrReplaceTempView(test_df, "d")
-# TODO: use rq_copy_to()
-# rq_copy_to(db, 'd',
-#            d_local,
-#            temporary = TRUE, 
-#            overwrite = TRUE)
 
+rq_copy_to(db, 'd',
+           d_local,
+           temporary = TRUE,
+           overwrite = TRUE)
+```
+
+    ## [1] "table(`d`; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2)"
+
+``` r
 # produce a hande to existing table
 d <- db_td(db, "d")
 ```
@@ -193,10 +207,20 @@ print(d)
     ## [1] "table(`d`; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2)"
 
 ``` r
-# TODO: get this working
-# # remote structure inspection
-# rstr(db, d$table_name)
+# remote structure inspection
+rstr(db, d$table_name)
+```
 
+    ## table `d` rquery_db_info 
+    ##  nrow: 4 
+    ## 'data.frame':    4 obs. of  5 variables:
+    ##  $ subjectID      : int  1 1 2 2
+    ##  $ surveyCategory : chr  "withdrawal behavior" "positive re-framing" "withdrawal behavior" "positive re-framing"
+    ##  $ assessmentTotal: num  5 2 3 4
+    ##  $ irrelevantCol1 : chr  "irrel1" "irrel1" "irrel1" "irrel1"
+    ##  $ irrelevantCol2 : chr  "irrel2" "irrel2" "irrel2" "irrel2"
+
+``` r
 # or execute the table representation to bring back data
 d %.>%
   execute(db, .) %.>%
@@ -249,7 +273,7 @@ class(result)
 result
 ```
 
-    ## [1] "table(`rquery_mat_00789394672889059319_0000000000`; subjectID, diagnosis, probability)"
+    ## [1] "table(`rquery_mat_17815524310310233733_0000000000`; subjectID, diagnosis, probability)"
 
 ``` r
 result %.>%
@@ -321,14 +345,14 @@ cat(to_sql(dq, db, source_limit = 1000))
             `assessmentTotal`
            FROM
             `d` LIMIT 1000
-           ) tsql_16541184759786058244_0000000000
-          ) tsql_16541184759786058244_0000000001
-         ) tsql_16541184759786058244_0000000002
-       ) tsql_16541184759786058244_0000000003
+           ) tsql_37423626497960909751_0000000000
+          ) tsql_37423626497960909751_0000000001
+         ) tsql_37423626497960909751_0000000002
+       ) tsql_37423626497960909751_0000000003
        WHERE `row_number` <= 1
-      ) tsql_16541184759786058244_0000000004
-     ) tsql_16541184759786058244_0000000005
-    ) tsql_16541184759786058244_0000000006 ORDER BY `subjectID`
+      ) tsql_37423626497960909751_0000000004
+     ) tsql_37423626497960909751_0000000005
+    ) tsql_37423626497960909751_0000000006 ORDER BY `subjectID`
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
@@ -429,15 +453,32 @@ rsummary(db, "d")
     ## 5              irrel2              irrel2
 
 ``` r
-# TODO: get working
-# dq %.>% 
-#   quantile_node(.) %.>%
-#  execute(db, .)
-# 
-# dq %.>% 
-#   rsummary_node(.) %.>%
-#   execute(db, .)
+dq %.>%
+  quantile_node(.) %.>%
+  execute(db, .)
 ```
+
+    ##   quantile_probability subjectID           diagnosis probability
+    ## 1                 0.00         1 positive re-framing   0.5589742
+    ## 2                 0.25         1 positive re-framing   0.5589742
+    ## 3                 0.50         1 positive re-framing   0.5589742
+    ## 4                 0.75         2 withdrawal behavior   0.6706221
+    ## 5                 1.00         2 withdrawal behavior   0.6706221
+
+``` r
+dq %.>%
+  rsummary_node(.) %.>%
+  execute(db, .)
+```
+
+    ##        column index     class nrows nna nunique       min       max
+    ## 1   subjectID     1   integer     2   0      NA 1.0000000 2.0000000
+    ## 2   diagnosis     2 character     2   0       2        NA        NA
+    ## 3 probability     3   numeric     2   0      NA 0.5589742 0.6706221
+    ##        mean         sd              lexmin              lexmax
+    ## 1 1.5000000 0.70710678                <NA>                <NA>
+    ## 2        NA         NA positive re-framing withdrawal behavior
+    ## 3 0.6147982 0.07894697                <NA>                <NA>
 
 We have found most big-data projects either require joining very many tables (something `rquery` join planners help with, please see [here](https://github.com/WinVector/rquery/blob/master/extras/JoinController%2Emd) and [here](https://github.com/WinVector/rquery/blob/master/extras/JoinController%2Emd)) or they require working with wide data-marts (where `rquery` query narrowing helps, please see [here](https://github.com/WinVector/rquery/blob/master/extras/PerfTest%2Emd)).
 

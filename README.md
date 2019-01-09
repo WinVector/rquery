@@ -164,7 +164,7 @@ print(d)
 rstr(db, d$table_name)
 ```
 
-    ## table "d" PostgreSQLConnection 
+    ## table "d" rquery_db_info 
     ##  nrow: 4 
     ## 'data.frame':    4 obs. of  5 variables:
     ##  $ subjectID      : int  1 1 2 2
@@ -226,7 +226,7 @@ class(result)
 result
 ```
 
-    ## [1] "table(\"rquery_mat_69267518505458736137_0000000000\"; subjectID, diagnosis, probability)"
+    ## [1] "table(\"rquery_mat_14486841988780751499_0000000000\"; subjectID, diagnosis, probability)"
 
 ``` r
 DBI::dbReadTable(db$connection, result$table_name) %.>%
@@ -297,14 +297,14 @@ cat(to_sql(dq, db, source_limit = 1000))
             "assessmentTotal"
            FROM
             "d" LIMIT 1000
-           ) tsql_79647316770061730036_0000000000
-          ) tsql_79647316770061730036_0000000001
-         ) tsql_79647316770061730036_0000000002
-       ) tsql_79647316770061730036_0000000003
+           ) tsql_10433301915668024616_0000000000
+          ) tsql_10433301915668024616_0000000001
+         ) tsql_10433301915668024616_0000000002
+       ) tsql_10433301915668024616_0000000003
        WHERE "row_number" <= 1
-      ) tsql_79647316770061730036_0000000004
-     ) tsql_79647316770061730036_0000000005
-    ) tsql_79647316770061730036_0000000006 ORDER BY "subjectID"
+      ) tsql_10433301915668024616_0000000004
+     ) tsql_10433301915668024616_0000000005
+    ) tsql_10433301915668024616_0000000006 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 

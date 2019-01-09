@@ -42,8 +42,7 @@ materialize_sql_statement <- function(db, sql, table_name,
   }
   storage_control <- getDBOption(db, "create_options", "")
   sqlc <- paste("CREATE",
-                ifelse(temporary, "TEMPORARY ", ""),
-                "TABLE",
+                ifelse(temporary, "TEMPORARY TABLE", "TABLE"),
                 quote_identifier(db, table_name),
                 storage_control,
                 "AS",
