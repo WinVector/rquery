@@ -390,7 +390,6 @@ rq_copy_to <- function(db, table_name, d,
   }
   can_set_temp <- getDBOption(db, "control_temporary", NULL, connection_options)
   can_set_rownames <- getDBOption(db, "control_rownames", NULL, connection_options)
-  force_drop_overwrite <- getDBOption(db, "force_drop_overwrite", NULL, connection_options)
   if(connection_is_sparklyr(db)) {
     # TODO: remove all of the Sparklyr special cases
     if(is.null(can_set_temp)) {
@@ -399,19 +398,12 @@ rq_copy_to <- function(db, table_name, d,
     if(is.null(can_set_rownames)) {
       can_set_rownames <- FALSE
     }
-    # sparklyr 0.7.0 does not take overwrite or row.names arguments
-    if(is.null(force_drop_overwrite)) {
-      force_drop_overwrite <- TRUE
-    }
   }
   if(is.null(can_set_temp)) {
     can_set_temp <- TRUE
   }
   if(is.null(can_set_rownames)) {
     can_set_rownames <- TRUE
-  }
-  if(is.null(force_drop_overwrite)) {
-    force_drop_overwrite <- FALSE
   }
   if("rquery_db_info" %in% class(db) && (!db$is_dbi)) {
     stop("rquery::rq_copy_to fell back to DBI methods for connection declared not DBI")
@@ -421,9 +413,8 @@ rq_copy_to <- function(db, table_name, d,
   }
   if(rq_table_exists(db, table_name)) {
     if(overwrite) {
-      if(force_drop_overwrite) {
-        rq_remove_table(db, table_name)
-      }
+      # sparklyr 0.7.0 can't take overwrite argument
+      rq_remove_table(db, table_name)
     } else {
       stop(paste("rquery::rq_copy_to table", table_name, "exists and overwrite==FALSE"))
     }
@@ -434,13 +425,11 @@ rq_copy_to <- function(db, table_name, d,
                         table_name,
                         d,
                         temporary = temporary,
-                        overwrite = overwrite,
                         row.names = FALSE)
     } else {
       DBI::dbWriteTable(connection,
                         table_name,
                         d,
-                        overwrite = overwrite,
                         temporary = temporary)
     }
   } else {
@@ -451,12 +440,10 @@ rq_copy_to <- function(db, table_name, d,
       DBI::dbWriteTable(connection,
                         table_name,
                         d,
-                        overwrite = overwrite,
                         row.names = FALSE)
     } else {
       DBI::dbWriteTable(connection,
                         table_name,
-                        overwrite = overwrite,
                         d)
     }
   }
