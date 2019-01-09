@@ -151,7 +151,7 @@ d %.>%
 ```
 
 Now we re-write the original calculation in terms of the `rquery` SQL generating operators.
-`MMonetDBLite` doesn't currenlty declare `sum()` as a window function, so we have to normalize
+[`MMonetDBLite` doesn't currenlty declare `sum()` as a window function](https://www.monetdb.org/Documentation/Manuals/SQLreference/WindowFunctions), so we have to normalize
 probabilities with a join.
 
 ```{r calc, warning=FALSE, message=FALSE}
