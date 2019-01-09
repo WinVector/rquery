@@ -18,7 +18,7 @@ Description: A piped query generator based on Edgar F. Codd's relational
     databases, and 'data.table'. Package features include: data processing trees
     or pipelines as observable objects (able to report both columns
     produced and columns used), optimized 'SQL' generation as an explicit
-    user visible modeling step, explicit query reasoning and checking.
+    user visible table modeling step, plus explicit query reasoning and checking.
 License: GPL-3
 Encoding: UTF-8
 Depends:
