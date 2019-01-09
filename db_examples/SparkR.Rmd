@@ -8,7 +8,9 @@ output: github_document
 
 [`rquery`](https://winvector.github.io/rquery/) is a piped query generator based on [Codd's relational algebra](https://en.wikipedia.org/wiki/Relational_algebra) (updated to reflect lessons learned from working with [`R`](https://www.r-project.org), [`SQL`](https://en.wikipedia.org/wiki/SQL), and [`dplyr`]( https://CRAN.R-project.org/package=dplyr) at big data scale in production).  
 
-`rquery` is currently recommended for user with `Spark` and `PostgreSQL` (and with non-window functionality with `RSQLite`).
+`rquery` is currently recommended for use with
+[`data.table`](http://r-datatable.com) (via [`rqdatatable`](https://github.com/WinVector/rqdatatable/)),
+[`PostgreSQL`](https://github.com/WinVector/rquery/blob/master/db_examples/RPostgreSQL.md), [`sparklyr`](https://github.com/WinVector/rquery/blob/master/db_examples/sparklyr.md), [`SparkR`](https://github.com/WinVector/rquery/blob/master/db_examples/SparkR.md), [`MonetDBLite`](https://github.com/WinVector/rquery/blob/master/db_examples/MonetDBLite.md), and (and with non-window functionality with [`RSQLite`](https://CRAN.R-project.org/package=RSQLite)).  It can target various databases through its adapter layer.
 
 To install: `devtools::install_github("WinVector/rquery")` or `install.packages("rquery")`.
 

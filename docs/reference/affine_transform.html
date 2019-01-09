@@ -199,18 +199,18 @@
 #&gt;   R2) %.&gt;%
 #&gt;  affine_op(. %*% linear_transform + offset)
 #&gt; SELECT
-#&gt;  "AUC",
-#&gt;  "R2",
-#&gt;  "AUC" * ( 1 ) + "R2" * ( 1 ) + 5  AS "res1",
-#&gt;  "AUC" * ( 2 ) + "R2" * ( - ( 1 ) ) + 7  AS "res2",
-#&gt;  "AUC" * ( 1 ) + 1  AS "res3",
-#&gt;  0  AS "res4"
+#&gt;  `AUC`,
+#&gt;  `R2`,
+#&gt;  `AUC` * ( 1 ) + `R2` * ( 1 ) + 5  AS `res1`,
+#&gt;  `AUC` * ( 2 ) + `R2` * ( - ( 1 ) ) + 7  AS `res2`,
+#&gt;  `AUC` * ( 1 ) + 1  AS `res3`,
+#&gt;  0  AS `res4`
 #&gt; FROM (
 #&gt;  SELECT
-#&gt;   "AUC",
-#&gt;   "R2"
+#&gt;   `AUC`,
+#&gt;   `R2`
 #&gt;  FROM
-#&gt;   "d"
+#&gt;   `d`
 #&gt;  ) tsql_26719705660236447912_0000000000
 #&gt;   AUC  R2 res1 res2 res3 res4
 #&gt; 1 0.6 0.2  5.8    8  1.6    0

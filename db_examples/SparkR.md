@@ -5,7 +5,7 @@
 
 [`rquery`](https://winvector.github.io/rquery/) is a piped query generator based on [Codd's relational algebra](https://en.wikipedia.org/wiki/Relational_algebra) (updated to reflect lessons learned from working with [`R`](https://www.r-project.org), [`SQL`](https://en.wikipedia.org/wiki/SQL), and [`dplyr`](https://CRAN.R-project.org/package=dplyr) at big data scale in production).
 
-`rquery` is currently recommended for user with `Spark` and `PostgreSQL` (and with non-window functionality with `RSQLite`).
+`rquery` is currently recommended for use with [`data.table`](http://r-datatable.com) (via [`rqdatatable`](https://github.com/WinVector/rqdatatable/)), [`PostgreSQL`](https://github.com/WinVector/rquery/blob/master/db_examples/RPostgreSQL.md), [`sparklyr`](https://github.com/WinVector/rquery/blob/master/db_examples/sparklyr.md), [`SparkR`](https://github.com/WinVector/rquery/blob/master/db_examples/SparkR.md), [`MonetDBLite`](https://github.com/WinVector/rquery/blob/master/db_examples/MonetDBLite.md), and (and with non-window functionality with [`RSQLite`](https://CRAN.R-project.org/package=RSQLite)). It can target various databases through its adapter layer.
 
 To install: `devtools::install_github("WinVector/rquery")` or `install.packages("rquery")`.
 
@@ -103,7 +103,7 @@ SparkR::sparkR.session(master = "local[1]",
                        enableHiveSupport = TRUE)
 ```
 
-    ## Launching java with spark-submit command /Users/johnmount/Library/Caches/spark/spark-2.3.0-bin-hadoop2.7/bin/spark-submit   --driver-java-options "-Djava.io.tmpdir=/var/folders/7q/h_jp2vj131g5799gfnpzhdp80000gn/T//Rtmpy7O4TP" sparkr-shell /var/folders/7q/h_jp2vj131g5799gfnpzhdp80000gn/T//Rtmpy7O4TP/backend_port44ec2e7b1305
+    ## Launching java with spark-submit command /Users/johnmount/Library/Caches/spark/spark-2.3.0-bin-hadoop2.7/bin/spark-submit   --driver-java-options "-Djava.io.tmpdir=/var/folders/7q/h_jp2vj131g5799gfnpzhdp80000gn/T//RtmplZIeBc" sparkr-shell /var/folders/7q/h_jp2vj131g5799gfnpzhdp80000gn/T//RtmplZIeBc/backend_port52a25cf1e4eb
 
     ## Java ref type org.apache.spark.sql.SparkSession id 1
 
@@ -273,7 +273,7 @@ class(result)
 result
 ```
 
-    ## [1] "table(`rquery_mat_17815524310310233733_0000000000`; subjectID, diagnosis, probability)"
+    ## [1] "table(`rquery_mat_13463902048091016322_0000000000`; subjectID, diagnosis, probability)"
 
 ``` r
 result %.>%
@@ -345,14 +345,14 @@ cat(to_sql(dq, db, source_limit = 1000))
             `assessmentTotal`
            FROM
             `d` LIMIT 1000
-           ) tsql_37423626497960909751_0000000000
-          ) tsql_37423626497960909751_0000000001
-         ) tsql_37423626497960909751_0000000002
-       ) tsql_37423626497960909751_0000000003
+           ) tsql_73501192811194149869_0000000000
+          ) tsql_73501192811194149869_0000000001
+         ) tsql_73501192811194149869_0000000002
+       ) tsql_73501192811194149869_0000000003
        WHERE `row_number` <= 1
-      ) tsql_37423626497960909751_0000000004
-     ) tsql_37423626497960909751_0000000005
-    ) tsql_37423626497960909751_0000000006 ORDER BY `subjectID`
+      ) tsql_73501192811194149869_0000000004
+     ) tsql_73501192811194149869_0000000005
+    ) tsql_73501192811194149869_0000000006 ORDER BY `subjectID`
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 

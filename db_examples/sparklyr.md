@@ -5,7 +5,7 @@
 
 [`rquery`](https://winvector.github.io/rquery/) is a piped query generator based on [Codd's relational algebra](https://en.wikipedia.org/wiki/Relational_algebra) (updated to reflect lessons learned from working with [`R`](https://www.r-project.org), [`SQL`](https://en.wikipedia.org/wiki/SQL), and [`dplyr`](https://CRAN.R-project.org/package=dplyr) at big data scale in production).
 
-`rquery` is currently recommended for user with `Spark` and `PostgreSQL` (and with non-window functionality with `RSQLite`).
+`rquery` is currently recommended for use with [`data.table`](http://r-datatable.com) (via [`rqdatatable`](https://github.com/WinVector/rqdatatable/)), [`PostgreSQL`](https://github.com/WinVector/rquery/blob/master/db_examples/RPostgreSQL.md), [`sparklyr`](https://github.com/WinVector/rquery/blob/master/db_examples/sparklyr.md), [`SparkR`](https://github.com/WinVector/rquery/blob/master/db_examples/SparkR.md), [`MonetDBLite`](https://github.com/WinVector/rquery/blob/master/db_examples/MonetDBLite.md), and (and with non-window functionality with [`RSQLite`](https://CRAN.R-project.org/package=RSQLite)). It can target various databases through its adapter layer.
 
 To install: `devtools::install_github("WinVector/rquery")` or `install.packages("rquery")`.
 
@@ -154,7 +154,7 @@ print(d)
 rstr(db, d$table_name)
 ```
 
-    ## table `d` spark_connection spark_shell_connection DBIConnection 
+    ## table `d` rquery_db_info 
     ##  nrow: 4 
     ## 'data.frame':    4 obs. of  5 variables:
     ##  $ subjectID      : int  1 1 2 2
@@ -216,7 +216,7 @@ class(result)
 result
 ```
 
-    ## [1] "table(`rquery_mat_70717022299628374643_0000000000`; subjectID, diagnosis, probability)"
+    ## [1] "table(`rquery_mat_97359054705559849352_0000000000`; subjectID, diagnosis, probability)"
 
 ``` r
 DBI::dbReadTable(db$connection, result$table_name) %.>%
@@ -287,14 +287,14 @@ cat(to_sql(dq, db, source_limit = 1000))
             `assessmentTotal`
            FROM
             `d` LIMIT 1000
-           ) tsql_83631197542905169205_0000000000
-          ) tsql_83631197542905169205_0000000001
-         ) tsql_83631197542905169205_0000000002
-       ) tsql_83631197542905169205_0000000003
+           ) tsql_28259295202503064995_0000000000
+          ) tsql_28259295202503064995_0000000001
+         ) tsql_28259295202503064995_0000000002
+       ) tsql_28259295202503064995_0000000003
        WHERE `row_number` <= 1
-      ) tsql_83631197542905169205_0000000004
-     ) tsql_83631197542905169205_0000000005
-    ) tsql_83631197542905169205_0000000006 ORDER BY `subjectID`
+      ) tsql_28259295202503064995_0000000004
+     ) tsql_28259295202503064995_0000000005
+    ) tsql_28259295202503064995_0000000006 ORDER BY `subjectID`
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 

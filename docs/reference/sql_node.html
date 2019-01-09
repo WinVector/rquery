@@ -256,18 +256,18 @@
 #&gt;           num_missing %:=% 0 + (CASE WHEN ( v1 IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( v2 IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( v3 IS NULL ) THEN 1.0 ELSE 0.0 END),
 #&gt;              *=TRUE)
 #&gt; SELECT
-#&gt;  "v3" AS "v3",
-#&gt;  0 + (CASE WHEN ( "v1" IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( "v2" IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( "v3" IS NULL ) THEN 1.0 ELSE 0.0 END) AS "num_missing",
-#&gt;  "v1" AS "v1",
-#&gt;  "v2" AS "v2"
+#&gt;  `v3` AS `v3`,
+#&gt;  0 + (CASE WHEN ( `v1` IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( `v2` IS NULL ) THEN 1.0 ELSE 0.0 END) + (CASE WHEN ( `v3` IS NULL ) THEN 1.0 ELSE 0.0 END) AS `num_missing`,
+#&gt;  `v1` AS `v1`,
+#&gt;  `v2` AS `v2`
 #&gt; FROM (
 #&gt;  SELECT
-#&gt;   "v1",
-#&gt;   "v2",
-#&gt;   "v3"
+#&gt;   `v1`,
+#&gt;   `v2`,
+#&gt;   `v3`
 #&gt;  FROM
-#&gt;   "d"
-#&gt; ) tsql_86076896464168684770_0000000000
+#&gt;   `d`
+#&gt; ) tsql_40220562947480591718_0000000000
 #&gt;   v3 num_missing v1   v2
 #&gt; 1 NA           2  1 &lt;NA&gt;
 #&gt; 2 NA           1  2    b

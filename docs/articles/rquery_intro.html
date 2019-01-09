@@ -136,6 +136,9 @@ dbopts &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rq_c
 ## $rquery.SQLiteConnection.control_temporary
 ## [1] TRUE
 ## 
+## $rquery.SQLiteConnection.control_temporary_view
+## [1] FALSE
+## 
 ## $rquery.SQLiteConnection.control_rownames
 ## [1] TRUE
 ## 
@@ -202,14 +205,14 @@ d &lt;-<span class="st"> </span><span class="kw"><a href="../reference/db_td.htm
 <span class="st">  </span><span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(., db) <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw">cat</span>(.)</code></pre></div>
 <pre><code>## SELECT
-##  "v",
-##  ( CASE WHEN ( ( "v" ) IS NULL ) THEN ( 1 ) WHEN NOT ( ( "v" ) IS NULL ) THEN ( 0 ) ELSE NULL END )  AS "was_na"
+##  `v`,
+##  ( CASE WHEN ( ( `v` ) IS NULL ) THEN ( 1 ) WHEN NOT ( ( `v` ) IS NULL ) THEN ( 0 ) ELSE NULL END )  AS `was_na`
 ## FROM (
 ##  SELECT
-##   "v"
+##   `v`
 ##  FROM
-##   "d"
-##  ) tsql_63281131810730806518_0000000000</code></pre>
+##   `d`
+##  ) tsql_18578323136975229107_0000000000</code></pre>
 <p>The exact translation depends on the database (which is why <code><a href="../reference/to_sql.html">to_sql()</a></code> takes a database argument). Some care has to be taken as <code>SQL</code> types are different than <code>R</code> types (in particular for some databases logical types are not numeric).</p>
 <p>With a database that supplies window functions one can quickly work the “logistic scoring by hand” example from<br>
 from <a href="http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/">Let’s Have Some Sympathy For The Part-time R User</a>. This example worked with <code>rquery</code> code that works with both <code>PostgreSQL</code> and <code>Spark</code> can be found <a href="https://github.com/WinVector/rquery/blob/master/README.html">here</a>.</p>
@@ -271,46 +274,46 @@ dq &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mk_td.ht
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(dq, db))</code></pre></div>
 <pre><code>## SELECT * FROM (
 ##  SELECT
-##   "subjectID",
-##   "diagnosis",
-##   "probability"
+##   `subjectID`,
+##   `diagnosis`,
+##   `probability`
 ##  FROM (
 ##   SELECT
-##    "subjectID" AS "subjectID",
-##    "surveyCategory" AS "diagnosis",
-##    "probability" AS "probability"
+##    `subjectID` AS `subjectID`,
+##    `surveyCategory` AS `diagnosis`,
+##    `probability` AS `probability`
 ##   FROM (
 ##    SELECT * FROM (
 ##     SELECT
-##      "subjectID",
-##      "surveyCategory",
-##      "probability",
-##      row_number ( ) OVER (  PARTITION BY "subjectID" ORDER BY "probability" DESC, "surveyCategory" ) AS "row_number"
+##      `subjectID`,
+##      `surveyCategory`,
+##      `probability`,
+##      row_number ( ) OVER (  PARTITION BY `subjectID` ORDER BY `probability` DESC, `surveyCategory` ) AS `row_number`
 ##     FROM (
 ##      SELECT
-##       "subjectID",
-##       "surveyCategory",
-##       "probability" / sum ( "probability" ) OVER (  PARTITION BY "subjectID" ) AS "probability"
+##       `subjectID`,
+##       `surveyCategory`,
+##       `probability` / sum ( `probability` ) OVER (  PARTITION BY `subjectID` ) AS `probability`
 ##      FROM (
 ##       SELECT
-##        "subjectID",
-##        "surveyCategory",
-##        exp ( "assessmentTotal" * 0.237 )  AS "probability"
+##        `subjectID`,
+##        `surveyCategory`,
+##        exp ( `assessmentTotal` * 0.237 )  AS `probability`
 ##       FROM (
 ##        SELECT
-##         "subjectID",
-##         "surveyCategory",
-##         "assessmentTotal"
+##         `subjectID`,
+##         `surveyCategory`,
+##         `assessmentTotal`
 ##        FROM
-##         "d3"
-##        ) tsql_42507835533322554488_0000000000
-##       ) tsql_42507835533322554488_0000000001
-##      ) tsql_42507835533322554488_0000000002
-##    ) tsql_42507835533322554488_0000000003
-##    WHERE "row_number" &lt;= 1
-##   ) tsql_42507835533322554488_0000000004
-##  ) tsql_42507835533322554488_0000000005
-## ) tsql_42507835533322554488_0000000006 ORDER BY "subjectID"</code></pre>
+##         `d3`
+##        ) tsql_55563368394291464494_0000000000
+##       ) tsql_55563368394291464494_0000000001
+##      ) tsql_55563368394291464494_0000000002
+##    ) tsql_55563368394291464494_0000000003
+##    WHERE `row_number` &lt;= 1
+##   ) tsql_55563368394291464494_0000000004
+##  ) tsql_55563368394291464494_0000000005
+## ) tsql_55563368394291464494_0000000006 ORDER BY `subjectID`</code></pre>
 <p>The above query is long, but actually quite performant.</p>
 <p>To see the query executed, please see <a href="https://github.com/WinVector/rquery/blob/master/README.html">here</a>.</p>
 </div>
@@ -407,22 +410,22 @@ dq &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mk_td.ht
 <span class="co"># full query</span>
 <span class="kw">cat</span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(wp, db))</code></pre></div>
 <pre><code>## SELECT
-##  "a",
-##  "b",
-##  "c",
-##  "d",
-##  "e",
-##  "a" + "b"  AS "res"
+##  `a`,
+##  `b`,
+##  `c`,
+##  `d`,
+##  `e`,
+##  `a` + `b`  AS `res`
 ## FROM (
 ##  SELECT
-##   "a",
-##   "b",
-##   "c",
-##   "d",
-##   "e"
+##   `a`,
+##   `b`,
+##   `c`,
+##   `d`,
+##   `e`
 ##  FROM
-##   "d6"
-##  ) tsql_91124043427627329343_0000000000</code></pre>
+##   `d6`
+##  ) tsql_62088783095138644262_0000000000</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># longer pipeline</span>
 wn &lt;-<span class="st"> </span>wp <span class="op">%.&gt;%</span>
 <span class="st">  </span><span class="kw"><a href="../reference/select_columns.html">select_columns</a></span>(., <span class="st">"res"</span>)
@@ -432,18 +435,18 @@ wn &lt;-<span class="st"> </span>wp <span class="op">%.&gt;%</span>
 <span class="co"># pipeline</span>
 <span class="kw">cat</span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(wn, db))</code></pre></div>
 <pre><code>## SELECT
-##  "res"
+##  `res`
 ## FROM (
 ##  SELECT
-##   "a" + "b"  AS "res"
+##   `a` + `b`  AS `res`
 ##  FROM (
 ##   SELECT
-##    "a",
-##    "b"
+##    `a`,
+##    `b`
 ##   FROM
-##    "d6"
-##   ) tsql_15396462116959814656_0000000000
-## ) tsql_15396462116959814656_0000000001</code></pre>
+##    `d6`
+##   ) tsql_62730216233027191577_0000000000
+## ) tsql_62730216233027191577_0000000001</code></pre>
 <p>A graph of the the effects of this kind of narrowing (for <code>dplyr</code> by hand as <code>dplyr</code> currently does not have the above type of automatic query analysis/optimization) shows the sensitivity to this optimization.</p>
 <blockquote>
 <p><img src="present-2.png"></p>

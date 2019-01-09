@@ -5,7 +5,7 @@
 
 [`rquery`](https://winvector.github.io/rquery/) is a piped query generator based on [Codd's relational algebra](https://en.wikipedia.org/wiki/Relational_algebra) (updated to reflect lessons learned from working with [`R`](https://www.r-project.org), [`SQL`](https://en.wikipedia.org/wiki/SQL), and [`dplyr`](https://CRAN.R-project.org/package=dplyr) at big data scale in production).
 
-`rquery` is currently recommended for user with `Spark` and `PostgreSQL` (and with non-window functionality with `RSQLite`).
+`rquery` is currently recommended for use with [`data.table`](http://r-datatable.com) (via [`rqdatatable`](https://github.com/WinVector/rqdatatable/)), [`PostgreSQL`](https://github.com/WinVector/rquery/blob/master/db_examples/RPostgreSQL.md), [`sparklyr`](https://github.com/WinVector/rquery/blob/master/db_examples/sparklyr.md), [`SparkR`](https://github.com/WinVector/rquery/blob/master/db_examples/SparkR.md), [`MonetDBLite`](https://github.com/WinVector/rquery/blob/master/db_examples/MonetDBLite.md), and (and with non-window functionality with [`RSQLite`](https://CRAN.R-project.org/package=RSQLite)). It can target various databases through its adapter layer.
 
 To install: `devtools::install_github("WinVector/rquery")` or `install.packages("rquery")`.
 
@@ -150,7 +150,7 @@ print(d)
 rstr(db, d$table_name)
 ```
 
-    ## table "d" MonetDBEmbeddedConnection 
+    ## table "d" rquery_db_info 
     ##  nrow: 4 
     ## 'data.frame':    4 obs. of  5 variables:
     ##  $ subjectID      : int  1 1 2 2
@@ -220,7 +220,7 @@ class(result)
 result
 ```
 
-    ## [1] "table(\"rquery_mat_67602455987120393808_0000000000\"; subjectID, diagnosis, probability)"
+    ## [1] "table(\"rquery_mat_03130144300052620699_0000000000\"; subjectID, diagnosis, probability)"
 
 ``` r
 DBI::dbReadTable(db$connection, result$table_name) %.>%
@@ -281,10 +281,10 @@ cat(to_sql(dq, db, source_limit = 1000))
           "probability" / "tot_prob"  AS "probability"
          FROM (
           SELECT
-           COALESCE("tsql_05835671424953714978_0000000003"."subjectID", "tsql_05835671424953714978_0000000004"."subjectID") AS "subjectID",
-           "tsql_05835671424953714978_0000000003"."surveyCategory" AS "surveyCategory",
-           "tsql_05835671424953714978_0000000003"."probability" AS "probability",
-           "tsql_05835671424953714978_0000000004"."tot_prob" AS "tot_prob"
+           COALESCE("tsql_20898894911934152893_0000000003"."subjectID", "tsql_20898894911934152893_0000000004"."subjectID") AS "subjectID",
+           "tsql_20898894911934152893_0000000003"."surveyCategory" AS "surveyCategory",
+           "tsql_20898894911934152893_0000000003"."probability" AS "probability",
+           "tsql_20898894911934152893_0000000004"."tot_prob" AS "tot_prob"
           FROM (
            SELECT
             "subjectID",
@@ -297,8 +297,8 @@ cat(to_sql(dq, db, source_limit = 1000))
              "assessmentTotal"
             FROM
              "d" LIMIT 1000
-            ) tsql_05835671424953714978_0000000000
-          ) "tsql_05835671424953714978_0000000003"
+            ) tsql_20898894911934152893_0000000000
+          ) "tsql_20898894911934152893_0000000003"
           LEFT JOIN (
            SELECT "subjectID", sum ( "probability" ) AS "tot_prob" FROM (
             SELECT
@@ -310,20 +310,20 @@ cat(to_sql(dq, db, source_limit = 1000))
               "assessmentTotal"
              FROM
               "d" LIMIT 1000
-             ) tsql_05835671424953714978_0000000001
-            ) tsql_05835671424953714978_0000000002
+             ) tsql_20898894911934152893_0000000001
+            ) tsql_20898894911934152893_0000000002
            GROUP BY
             "subjectID"
-          ) "tsql_05835671424953714978_0000000004"
+          ) "tsql_20898894911934152893_0000000004"
           ON
-           "tsql_05835671424953714978_0000000003"."subjectID" = "tsql_05835671424953714978_0000000004"."subjectID"
-          ) tsql_05835671424953714978_0000000005
-         ) tsql_05835671424953714978_0000000006
-       ) tsql_05835671424953714978_0000000007
+           "tsql_20898894911934152893_0000000003"."subjectID" = "tsql_20898894911934152893_0000000004"."subjectID"
+          ) tsql_20898894911934152893_0000000005
+         ) tsql_20898894911934152893_0000000006
+       ) tsql_20898894911934152893_0000000007
        WHERE "row_number" <= 1
-      ) tsql_05835671424953714978_0000000008
-     ) tsql_05835671424953714978_0000000009
-    ) tsql_05835671424953714978_0000000010 ORDER BY "subjectID"
+      ) tsql_20898894911934152893_0000000008
+     ) tsql_20898894911934152893_0000000009
+    ) tsql_20898894911934152893_0000000010 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 

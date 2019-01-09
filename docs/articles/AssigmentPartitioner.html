@@ -244,48 +244,48 @@ plan &lt;-<span class="st"> </span>d1 <span class="op">%.&gt;%</span>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sql &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(plan, my_db)
 <span class="kw">cat</span>(sql)</code></pre></div>
 <pre><code>SELECT
- "id",
- "a_1",
- "a_2",
- "b_1",
- "b_2",
- "c_1",
- "c_2",
- "d_1",
- "d_2",
- "e_1",
- "e_2"
+ `id`,
+ `a_1`,
+ `a_2`,
+ `b_1`,
+ `b_2`,
+ `c_1`,
+ `c_2`,
+ `d_1`,
+ `d_2`,
+ `e_1`,
+ `e_2`
 FROM (
  SELECT
-  "id",
-  ( CASE WHEN ( "choice_a" ) THEN ( 'T' ) WHEN NOT ( "choice_a" ) THEN ( 'C' ) ELSE NULL END )  AS "a_1",
-  ( CASE WHEN ( "choice_a" ) THEN ( 'C' ) WHEN NOT ( "choice_a" ) THEN ( 'T' ) ELSE NULL END )  AS "a_2",
-  ( CASE WHEN ( "choice_b" ) THEN ( 'T' ) WHEN NOT ( "choice_b" ) THEN ( 'C' ) ELSE NULL END )  AS "b_1",
-  ( CASE WHEN ( "choice_b" ) THEN ( 'C' ) WHEN NOT ( "choice_b" ) THEN ( 'T' ) ELSE NULL END )  AS "b_2",
-  ( CASE WHEN ( "choice_c" ) THEN ( 'T' ) WHEN NOT ( "choice_c" ) THEN ( 'C' ) ELSE NULL END )  AS "c_1",
-  ( CASE WHEN ( "choice_c" ) THEN ( 'C' ) WHEN NOT ( "choice_c" ) THEN ( 'T' ) ELSE NULL END )  AS "c_2",
-  ( CASE WHEN ( "choice_d" ) THEN ( 'T' ) WHEN NOT ( "choice_d" ) THEN ( 'C' ) ELSE NULL END )  AS "d_1",
-  ( CASE WHEN ( "choice_d" ) THEN ( 'C' ) WHEN NOT ( "choice_d" ) THEN ( 'T' ) ELSE NULL END )  AS "d_2",
-  ( CASE WHEN ( "choice_e" ) THEN ( 'T' ) WHEN NOT ( "choice_e" ) THEN ( 'C' ) ELSE NULL END )  AS "e_1",
-  ( CASE WHEN ( "choice_e" ) THEN ( 'C' ) WHEN NOT ( "choice_e" ) THEN ( 'T' ) ELSE NULL END )  AS "e_2"
+  `id`,
+  ( CASE WHEN ( `choice_a` ) THEN ( 'T' ) WHEN NOT ( `choice_a` ) THEN ( 'C' ) ELSE NULL END )  AS `a_1`,
+  ( CASE WHEN ( `choice_a` ) THEN ( 'C' ) WHEN NOT ( `choice_a` ) THEN ( 'T' ) ELSE NULL END )  AS `a_2`,
+  ( CASE WHEN ( `choice_b` ) THEN ( 'T' ) WHEN NOT ( `choice_b` ) THEN ( 'C' ) ELSE NULL END )  AS `b_1`,
+  ( CASE WHEN ( `choice_b` ) THEN ( 'C' ) WHEN NOT ( `choice_b` ) THEN ( 'T' ) ELSE NULL END )  AS `b_2`,
+  ( CASE WHEN ( `choice_c` ) THEN ( 'T' ) WHEN NOT ( `choice_c` ) THEN ( 'C' ) ELSE NULL END )  AS `c_1`,
+  ( CASE WHEN ( `choice_c` ) THEN ( 'C' ) WHEN NOT ( `choice_c` ) THEN ( 'T' ) ELSE NULL END )  AS `c_2`,
+  ( CASE WHEN ( `choice_d` ) THEN ( 'T' ) WHEN NOT ( `choice_d` ) THEN ( 'C' ) ELSE NULL END )  AS `d_1`,
+  ( CASE WHEN ( `choice_d` ) THEN ( 'C' ) WHEN NOT ( `choice_d` ) THEN ( 'T' ) ELSE NULL END )  AS `d_2`,
+  ( CASE WHEN ( `choice_e` ) THEN ( 'T' ) WHEN NOT ( `choice_e` ) THEN ( 'C' ) ELSE NULL END )  AS `e_1`,
+  ( CASE WHEN ( `choice_e` ) THEN ( 'C' ) WHEN NOT ( `choice_e` ) THEN ( 'T' ) ELSE NULL END )  AS `e_2`
  FROM (
   SELECT
-   "id",
-   "rand_a" &gt;= 0.5  AS "choice_a",
-   "rand_b" &gt;= 0.5  AS "choice_b",
-   "rand_c" &gt;= 0.5  AS "choice_c",
-   "rand_d" &gt;= 0.5  AS "choice_d",
-   "rand_e" &gt;= 0.5  AS "choice_e"
+   `id`,
+   `rand_a` &gt;= 0.5  AS `choice_a`,
+   `rand_b` &gt;= 0.5  AS `choice_b`,
+   `rand_c` &gt;= 0.5  AS `choice_c`,
+   `rand_d` &gt;= 0.5  AS `choice_d`,
+   `rand_e` &gt;= 0.5  AS `choice_e`
   FROM (
    SELECT
-    "id",
-    "rand_a",
-    "rand_b",
-    "rand_c",
-    "rand_d",
-    "rand_e"
+    `id`,
+    `rand_a`,
+    `rand_b`,
+    `rand_c`,
+    `rand_d`,
+    `rand_e`
    FROM
-    "example_table"
+    `example_table`
    ) tsql_53272849086359897594_0000000000
   ) tsql_53272849086359897594_0000000001
 ) tsql_53272849086359897594_0000000002</code></pre>

@@ -211,31 +211,31 @@ is a reserved column name for this procedure.</p>
 #&gt;  drop_columns(.,
 #&gt;    ifebtest_1)
 #&gt; SELECT
-#&gt;  "i",
-#&gt;  "a",
-#&gt;  "b",
-#&gt;  "r"
+#&gt;  `i`,
+#&gt;  `a`,
+#&gt;  `b`,
+#&gt;  `r`
 #&gt; FROM (
 #&gt;  SELECT
-#&gt;   "i",
-#&gt;   "r",
-#&gt;   ( CASE WHEN ( "ifebtest_1" ) THEN ( 2 ) WHEN NOT ( "ifebtest_1" ) THEN ( "a" ) ELSE NULL END )  AS "a",
-#&gt;   ( CASE WHEN ( "ifebtest_1" ) THEN ( 2 ) WHEN NOT ( "ifebtest_1" ) THEN ( "b" ) ELSE NULL END )  AS "b"
+#&gt;   `i`,
+#&gt;   `r`,
+#&gt;   ( CASE WHEN ( `ifebtest_1` ) THEN ( 2 ) WHEN NOT ( `ifebtest_1` ) THEN ( `a` ) ELSE NULL END )  AS `a`,
+#&gt;   ( CASE WHEN ( `ifebtest_1` ) THEN ( 2 ) WHEN NOT ( `ifebtest_1` ) THEN ( `b` ) ELSE NULL END )  AS `b`
 #&gt;  FROM (
 #&gt;   SELECT
-#&gt;    "i",
-#&gt;    "a",
-#&gt;    "b",
-#&gt;    "r",
-#&gt;    "r" &lt; 0.5  AS "ifebtest_1"
+#&gt;    `i`,
+#&gt;    `a`,
+#&gt;    `b`,
+#&gt;    `r`,
+#&gt;    `r` &lt; 0.5  AS `ifebtest_1`
 #&gt;   FROM (
 #&gt;    SELECT
-#&gt;     "i",
-#&gt;     "a",
-#&gt;     "b",
-#&gt;     "r"
+#&gt;     `i`,
+#&gt;     `a`,
+#&gt;     `b`,
+#&gt;     `r`
 #&gt;    FROM
-#&gt;     "d"
+#&gt;     `d`
 #&gt;    ) tsql_78089537568529824711_0000000000
 #&gt;   ) tsql_78089537568529824711_0000000001
 #&gt; ) tsql_78089537568529824711_0000000002

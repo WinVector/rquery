@@ -158,44 +158,44 @@ dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span>
 <p><code><a href="../reference/to_sql.html">to_sql()</a></code> SQL (see also <a href="https://winvector.github.io/rquery/reference/materialize.html"><code><a href="../reference/materialize.html">materialize()</a></code></a>):</p>
 <pre><code>  SELECT * FROM (
    SELECT
-    "subjectID",
-    "diagnosis",
-    "probability"
+    `subjectID`,
+    `diagnosis`,
+    `probability`
    FROM (
     SELECT * FROM (
      SELECT
-      "subjectID" AS "subjectID",
-      "surveyCategory" AS "diagnosis",
-      "probability" AS "probability",
-      "count" AS "count",
-      "rank" AS "rank"
+      `subjectID` AS `subjectID`,
+      `surveyCategory` AS `diagnosis`,
+      `probability` AS `probability`,
+      `count` AS `count`,
+      `rank` AS `rank`
      FROM (
       SELECT
-       "subjectID",
-       "surveyCategory",
-       "probability",
-       "count",
-       rank ( ) OVER (  PARTITION BY "subjectID" ORDER BY "probability", "surveyCategory" ) AS "rank"
+       `subjectID`,
+       `surveyCategory`,
+       `probability`,
+       `count`,
+       rank ( ) OVER (  PARTITION BY `subjectID` ORDER BY `probability`, `surveyCategory` ) AS `rank`
       FROM (
        SELECT
-        "subjectID",
-        "surveyCategory",
-        exp ( "assessmentTotal" * 0.237 ) / sum ( exp ( "assessmentTotal" * 0.237 ) ) OVER (  PARTITION BY "subjectID" ) AS "probability",
-        count ( 1 ) OVER (  PARTITION BY "subjectID" ) AS "count"
+        `subjectID`,
+        `surveyCategory`,
+        exp ( `assessmentTotal` * 0.237 ) / sum ( exp ( `assessmentTotal` * 0.237 ) ) OVER (  PARTITION BY `subjectID` ) AS `probability`,
+        count ( 1 ) OVER (  PARTITION BY `subjectID` ) AS `count`
        FROM (
         SELECT
-         "subjectID",
-         "surveyCategory",
-         "assessmentTotal"
+         `subjectID`,
+         `surveyCategory`,
+         `assessmentTotal`
         FROM
-         "d" LIMIT 1000
-        ) tsql_61453597049363354562_0000000000
-       ) tsql_61453597049363354562_0000000001
-     ) tsql_61453597049363354562_0000000002
-    ) tsql_61453597049363354562_0000000003
-    WHERE "rank" = "count"
-   ) tsql_61453597049363354562_0000000004
-  ) tsql_61453597049363354562_0000000005 ORDER BY "subjectID"</code></pre>
+         `d` LIMIT 1000
+        ) tsql_89670756950461219753_0000000000
+       ) tsql_89670756950461219753_0000000001
+     ) tsql_89670756950461219753_0000000002
+    ) tsql_89670756950461219753_0000000003
+    WHERE `rank` = `count`
+   ) tsql_89670756950461219753_0000000004
+  ) tsql_89670756950461219753_0000000005 ORDER BY `subjectID`</code></pre>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

@@ -208,19 +208,19 @@ which builds a reference to a remote table given the table name.</p>
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
 }</div><div class='output co'>#&gt; [1] "table(`d`; AUC, R2)"
 #&gt; SELECT
-#&gt;  "AUC",
-#&gt;  "R2"
+#&gt;  `AUC`,
+#&gt;  `R2`
 #&gt; FROM
-#&gt;  "d"
+#&gt;  `d`
 #&gt;   AUC  R2
 #&gt; 1 0.6 0.2
 #&gt; $d
 #&gt; [1] "AUC" "R2" 
 #&gt; 
 #&gt; SELECT
-#&gt;  "AUC"
+#&gt;  `AUC`
 #&gt; FROM
-#&gt;  "d"
+#&gt;  `d`
 #&gt;   AUC
 #&gt; 1 0.6</div><div class='input'>
 </div></pre>

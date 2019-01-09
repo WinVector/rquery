@@ -248,38 +248,38 @@ is a reserved column name for this procedure.</p>
 #&gt;  drop_columns(.,
 #&gt;    ifebtest_1)
 #&gt; SELECT
-#&gt;  "i",
-#&gt;  "a",
-#&gt;  "b",
-#&gt;  "edited"
+#&gt;  `i`,
+#&gt;  `a`,
+#&gt;  `b`,
+#&gt;  `edited`
 #&gt; FROM (
 #&gt;  SELECT
-#&gt;   "i",
-#&gt;   "a",
-#&gt;   "b",
-#&gt;   ( CASE WHEN ( ( NOT ( "ifebtest_1" ) ) ) THEN ( 0 ) WHEN NOT ( ( NOT ( "ifebtest_1" ) ) ) THEN ( "edited" ) ELSE NULL END )  AS "edited"
+#&gt;   `i`,
+#&gt;   `a`,
+#&gt;   `b`,
+#&gt;   ( CASE WHEN ( ( NOT ( `ifebtest_1` ) ) ) THEN ( 0 ) WHEN NOT ( ( NOT ( `ifebtest_1` ) ) ) THEN ( `edited` ) ELSE NULL END )  AS `edited`
 #&gt;  FROM (
 #&gt;   SELECT
-#&gt;    "i",
-#&gt;    "ifebtest_1",
-#&gt;    ( CASE WHEN ( "ifebtest_1" ) THEN ( 0 ) WHEN NOT ( "ifebtest_1" ) THEN ( "a" ) ELSE NULL END )  AS "a",
-#&gt;    ( CASE WHEN ( "ifebtest_1" ) THEN ( 0 ) WHEN NOT ( "ifebtest_1" ) THEN ( "b" ) ELSE NULL END )  AS "b",
-#&gt;    ( CASE WHEN ( "ifebtest_1" ) THEN ( 1 ) WHEN NOT ( "ifebtest_1" ) THEN ( "edited" ) ELSE NULL END )  AS "edited"
+#&gt;    `i`,
+#&gt;    `ifebtest_1`,
+#&gt;    ( CASE WHEN ( `ifebtest_1` ) THEN ( 0 ) WHEN NOT ( `ifebtest_1` ) THEN ( `a` ) ELSE NULL END )  AS `a`,
+#&gt;    ( CASE WHEN ( `ifebtest_1` ) THEN ( 0 ) WHEN NOT ( `ifebtest_1` ) THEN ( `b` ) ELSE NULL END )  AS `b`,
+#&gt;    ( CASE WHEN ( `ifebtest_1` ) THEN ( 1 ) WHEN NOT ( `ifebtest_1` ) THEN ( `edited` ) ELSE NULL END )  AS `edited`
 #&gt;   FROM (
 #&gt;    SELECT
-#&gt;     "i",
-#&gt;     "a",
-#&gt;     "b",
-#&gt;     "edited",
-#&gt;     ( "a" + "b" ) &gt; 1  AS "ifebtest_1"
+#&gt;     `i`,
+#&gt;     `a`,
+#&gt;     `b`,
+#&gt;     `edited`,
+#&gt;     ( `a` + `b` ) &gt; 1  AS `ifebtest_1`
 #&gt;    FROM (
 #&gt;     SELECT
-#&gt;      "i",
-#&gt;      "a",
-#&gt;      "b",
-#&gt;      "edited"
+#&gt;      `i`,
+#&gt;      `a`,
+#&gt;      `b`,
+#&gt;      `edited`
 #&gt;     FROM
-#&gt;      "d"
+#&gt;      `d`
 #&gt;     ) tsql_47451065980701857394_0000000000
 #&gt;    ) tsql_47451065980701857394_0000000001
 #&gt;   ) tsql_47451065980701857394_0000000002
