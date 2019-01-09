@@ -3,19 +3,19 @@
 
  * More per-DB SQL rendering control.
  * %%/MOD().
- * Narow interfaces (unpublish tokenize_for_SQL()).
+ * Na row interfaces (un-publish tokenize_for_SQL()).
 
 # rquery 1.2.1 2018/12/16
 
  * versions without _nse() suffix.
  * parse ^ power.
  * reflexive arguments to non-sql nodes.
- * Add .[]-variable decleration notation.
+ * Add .[]-variable deceleration notation.
  * Narrow suggests.
  * update docs.
  * add order_expr.
  * declare : as an inline operator.
- * allow concatinating compatible pipelines.
+ * allow concatenating compatible pipelines.
  * check for table name consistency.
  * NULL/NA parsing.
  * Force order limit to be >= 0.
@@ -54,7 +54,7 @@
 # rquery 0.6.1 2018/08/01
 
  * Change to immediate execution.
- * Subtitute in values in presentation layer (rqdatatable depends on this).
+ * Substitute in values in presentation layer (rqdatatable depends on this).
  * Fix name disambiguation.
  * Better column dependency calculation.
  * Re-map function names.
@@ -128,7 +128,7 @@
  * NULL column ops.
  * rsummary().
  * "Non SQL" nodes.
- * New rquery_intro vingette.
+ * New rquery_intro vignette.
  * Improved help examples.
  * Stricter argument checking.
 
