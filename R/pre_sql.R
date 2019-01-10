@@ -13,9 +13,11 @@
 #'  name is name for term
 #'
 #' @param column_name character name of column
-#' @return pre_sql_identifier
+#' @return pre_sql_token
 #'
-#' @noRd
+#' @keywords internal
+#'
+#' @export
 #'
 pre_sql_identifier <- function(column_name) {
   t <- list(token_type = "column",
@@ -30,7 +32,13 @@ pre_sql_identifier <- function(column_name) {
 #' represents a string constant
 #'   value character string
 #'
-#' @noRd
+#' @param value string
+#' @return pre_sql_token
+#'
+#' @keywords internal
+#'
+#'
+#' @export
 #'
 pre_sql_string <- function(value) {
   t <- list(token_type = "string",
@@ -41,14 +49,19 @@ pre_sql_string <- function(value) {
 }
 
 
-#' pre_sql_token
+#' pre_sql_token funtion name
 #'
-#' function name token
+#' @param value function tname
+#' @return pre_sql_token
 #'
 #' @param value character, token string
-#' @return pre_sql_token class
+#' @return pre_sql_token
 #'
-#' @noRd
+#'
+#' @keywords internal
+#'
+#'
+#' @export
 #'
 pre_sql_fn <- function(value) {
   t <- list(token_type = "function_name",
@@ -63,9 +76,12 @@ pre_sql_fn <- function(value) {
 #' general token
 #'
 #' @param value character, token string
-#' @return pre_sql_token class
+#' @return pre_sql_token
 #'
-#' @noRd
+#' @keywords internal
+#'
+#'
+#' @export
 #'
 pre_sql_token <- function(value) {
   t <- list(token_type = "token",
@@ -80,14 +96,15 @@ pre_sql_token <- function(value) {
 #' represents an expression.  Unnamed list of pre_sql_terms and character.
 #'
 #' @param terms list of pre_sql tokens
-#' @return pre_sql_sub_expr class
+#' @param info named list of extra info with a name slot containing a single string without spaces.
+#' @return pre_sql_sub_expr
 #'
-#' @noRd
+#' @export
 #'
 pre_sql_sub_expr <- function(terms, info = NULL) {
   cl <- class(terms)
   if((length(cl)!=1) || (cl!="list")) {
-    stop("rquery::pre_sql_sub_expr terms must be a list")
+    stop("rquery::pre_sql_sub_expr terms must be a simple list")
   }
   for(ti in terms) {
     if(!("pre_sql" %in% class(ti))) {

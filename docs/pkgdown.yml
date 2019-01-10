@@ -8,4 +8,5 @@ articles:
   QueryGeneration: QueryGeneration.html
   rquery_intro: rquery_intro.html
   sql_quoting: sql_quoting.html
+  tree_rewriter: tree_rewriter.html
 

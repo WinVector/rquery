@@ -1,0 +1,126 @@
+---
+title: "SQL Tree Re-Writer"
+author: "John Mount, Win-Vector LLC"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{SQL Tree Re-Writer}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+[`rquery`](https://CRAN.R-project.org/package=rquery) `1.3.0` now incorporates a general `SQL` tree-rewriting capability.  This is to help adapt `rquery` to different databases.
+
+
+
+```{r init, warning=FALSE, message=FALSE}
+library("rquery")
+
+have_rqdatatable <- requireNamespace("rqdatatable", quietly = TRUE) 
+if(have_rqdatatable) {
+  library("rqdatatable")
+}
+
+have_rsqlite <- requireNamespace("DBI", quietly = TRUE) && 
+  requireNamespace("RSQLite", quietly = TRUE) 
+if(have_rqdatatable) {
+  library("RSQLite")
+}
+
+
+have_postgresql <- requireNamespace("DBI", quietly = TRUE) && 
+  requireNamespace("RPostgreSQL", quietly = TRUE) 
+if(have_rqdatatable) {
+  library("RPostgreSQL")
+}
+```
+
+
+```{r data}
+d <- data.frame(x = -3:3)
+knitr::kable(d)
+```
+
+```{r ops}
+ops <- extend(local_td(d), x_mod_2 = x %% 2)
+cat(format(ops))
+```
+
+```{r rqdatatable, eval=have_rqdatatable} 
+d %.>% ops
+```
+
+
+```{r mod_postgresql, eval=have_postgresql, warning=FALSE, message=FALSE}
+postgresql_connection <- DBI::dbConnect(
+  RPostgreSQL::PostgreSQL(),
+  host = 'localhost',
+  port = 5432,
+  user = 'johnmount',
+  password = '')
+
+postgresql_db <- rquery_db_info(
+  connection = postgresql_connection,
+  is_dbi = TRUE,
+  connection_options = rq_connection_tests(postgresql_connection))
+
+postgresql_db
+
+d_postgresql <- rq_copy_to(postgresql_db, "d", d,
+                           temporary = TRUE, overwrite = TRUE)
+
+d_postgresql
+
+rstr(postgresql_db, d_postgresql)
+
+cat(to_sql(ops, postgresql_db))
+
+execute(postgresql_db, ops) %.>%
+  knitr::kable(.)
+# TODO: pipe table into pipeline!
+
+DBI::dbDisconnect(postgresql_connection)
+```
+
+
+```{r mod_rsqlite, eval=FALSE}
+rsqlite_connection <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+rsqlite_db <- rquery_db_info(
+  connection = rsqlite_connection,
+  is_dbi = TRUE,
+  connection_options = rq_connection_tests(rsqlite_connection))
+rsqlite_db$tree_rewriter <- function(x, db_info) {
+  if(("pre_sql_sub_expr" %in% class(x)) && 
+     (x$info$name == "modulo")) {
+    lhs <- x$toks[[3]]
+    rhs <- x$toks[[5]]
+    return(pre_sql_sub_expr(
+      list(pre_sql_token("("),
+           lhs,
+           pre_sql_token("%"),
+           rhs,
+           pre_sql_token(")")),
+      info=list(name = "user_replaced"))
+    )
+  }
+  x
+}
+
+rsqlite_db
+
+d_rsqlite <- rq_copy_to(rsqlite_db, "d", d,
+                        temporary = TRUE, overwrite = TRUE)
+
+d_rsqlite
+
+rstr(rsqlite_db, d_rsqlite)
+
+cat(to_sql(ops, rsqlite_db))
+
+execute(rsqlite_db, ops) %.>%
+  knitr::kable(.)
+
+DBI::dbDisconnect(rsqlite_connection)
+```
+
+
