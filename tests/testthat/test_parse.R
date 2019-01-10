@@ -12,7 +12,7 @@ test_that("test_parse: Works As Expected", {
     p <- tokenize_for_SQL(ei,
                   colnames = c("c1", "c2"),
                   env = env)
-    p$check <- to_query(p$parsed_toks, rquery::rquery_default_db_info)
+    p$check <- to_query(p$parsed_toks, rquery::rquery_default_db_info())
     p
   }
 
@@ -36,8 +36,8 @@ test_that("test_parse: Works As Expected", {
   ex6 <- do_parse("zn")
   testthat::expect_equal("5", ex6$check)
 
-  ex7 <- do_parse("1+1")
-  testthat::expect_equal("1 + 1", ex7$check)
+  ex7 <- do_parse("1+2")
+  testthat::expect_equal("1 + 2", ex7$check)
 
   ex8 <- do_parse("(1+2)*3")
   testthat::expect_equal("( 1 + 2 ) * 3", ex8$check)

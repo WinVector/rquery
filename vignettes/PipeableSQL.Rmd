@@ -452,7 +452,7 @@ ops <- td %.>%
     mods = "GROUP BY cust",
     orig_columns = F)
 
-cat(to_sql(ops, rquery::rquery_default_db_info))
+cat(to_sql(ops, rquery::rquery_default_db_info()))
 ```
 
 The `.[]`-notation is just signalling to `rquery` which symbols are column names (without
@@ -486,7 +486,7 @@ ops <- td %.>%
     mods = paste("GROUP BY", GROUP_COL),
     orig_columns = F)
 
-cat(to_sql(ops, rquery::rquery_default_db_info))
+cat(to_sql(ops, rquery::rquery_default_db_info()))
 ```
 
 # Conclusion

@@ -3,7 +3,7 @@ library("rquery")
 context("capture")
 
 test_that("test_q: Works As Expected", {
-  my_db <- rquery_default_db_info
+  my_db <- rquery_default_db_info()
 
   d <- table_source("d", c("AUC", "R2"))
   v <- "NEWVAR"

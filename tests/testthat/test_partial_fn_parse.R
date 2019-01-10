@@ -19,7 +19,7 @@ test_that("test_partial_fn_parse.R", {
     project(.,
                 x = mean2(x),
                 groupby = c())
-  sql <- to_sql(ops, rquery_default_db_info)
+  sql <- to_sql(ops, rquery_default_db_info())
   # cat(format(sql))
 
   # variation on
@@ -30,6 +30,6 @@ test_that("test_partial_fn_parse.R", {
   exprs <- c(exprs, "x" %:=% "pmax(AUC,v)")
   ops <- extend_se(local_td(d), exprs)
   # cat(format(ops))
-  sql <- to_sql(ops, rquery_default_db_info)
+  sql <- to_sql(ops, rquery_default_db_info())
   # cat(format(sql))
 })

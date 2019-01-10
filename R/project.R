@@ -292,11 +292,6 @@ to_sql_relop_project <- function(
   if(length(list(...))>0) {
     stop("unexpected arguments")
   }
-  if(!("rquery_db_info" %in% class(db))) {
-    connection <- db
-    db <- rquery_default_db_info
-    db$connection <- connection
-  }
   # re-quote expr
   parsed <- x$parsed
   if(length(using)>0) {

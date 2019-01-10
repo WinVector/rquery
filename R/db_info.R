@@ -149,6 +149,20 @@ print.rquery_db_info <- function(x, ...) {
   print(format(x))
 }
 
+#' An example \code{rquery_db_info} object useful for formatting \code{SQL} without a database connection.
+#'
+#' @return a rquery_db_info without a connection and vanilla settings.
+#'
+#' @export
+#'
+rquery_default_db_info <- function() {
+  rquery_db_info(identifier_quote_char = '"',
+                 string_quote_char = "'",
+                 is_dbi = FALSE,
+                 db_methods = rquery_default_methods())
+}
+
+
 
 #' Quote an identifier.
 #'
@@ -171,7 +185,7 @@ quote_identifier <- function(x, id) {
       return(as.character(DBI::dbQuoteIdentifier(x, id)))
     }
   }
-  rquery_default_db_info$dbqi(id)
+  rquery_default_db_info()$dbqi(id)
 }
 
 #' Quote a table name.
@@ -206,7 +220,7 @@ quote_table_name <- function(x, id,
       return(as.character(DBI::dbQuoteIdentifier(x, dbi_id)))
     }
   }
-  rquery_default_db_info$dbqi(id)
+  rquery_default_db_info()$dbqi(id)
 }
 
 
@@ -232,7 +246,7 @@ quote_string <- function(x, s) {
       return(as.character(DBI::dbQuoteString(x, s)))
     }
   }
-  rquery_default_db_info$dbqs(s)
+  rquery_default_db_info()$dbqs(s)
 }
 
 #' Quote a value
@@ -259,7 +273,7 @@ quote_literal <- function(x, o) {
       return(as.character(DBI::dbQuoteLiteral(x, o)))
     }
   }
-  rquery_default_db_info$dbql(o)
+  rquery_default_db_info()$dbql(o)
 }
 
 
@@ -274,9 +288,7 @@ dispatch_to_sql_method <- function(
   tnum = mk_tmp_name_source('tsql'),
   append_cr = TRUE,
   using = NULL) {
-  if(length(list(...))>0) {
-    stop("unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery:::dispatch_to_sql_method")
   if(!("relop" %in% class(x))) {
     stop("rquery::dispatch_to_sql_method, expect x to be of class relop")
   }

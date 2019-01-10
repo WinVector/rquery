@@ -6,7 +6,7 @@ context("test_NULL_NA_parse.R")
 test_that("test_NULL_NA_parse.R: Works As Expected", {
   td <- mk_td("dr", c("purchase_date", "product"))
 
-  db <- rquery::rquery_default_db_info
+  db <- rquery::rquery_default_db_info()
 
   ops <- td %.>%
     extend(., partitionby = "product", orderby = "purchase_date",

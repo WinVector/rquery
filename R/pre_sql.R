@@ -128,7 +128,7 @@ to_query <- function (x,
 #'
 #' @keywords internal
 format.pre_sql_token <- function(x, ...) {
-  to_query(x, rquery_default_db_info)
+  to_query(x, rquery_default_db_info())
 }
 
 #' @export
@@ -158,8 +158,12 @@ to_query.pre_sql_token <- function (x,
                                     source_table = NULL,
                                     source_limit = NA_real_,
                                     using = NULL) {
-  if(length(list(...))>0) {
-    stop("unexpected arguments")
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::to_query.pre_sql_token")
+  if("rquery_db_info" %in% class(db_info)) {
+    tree_rewriter <- db_info[["tree_rewriter"]]
+    if(!is.null(tree_rewriter)) {
+      x <- tree_rewriter(x, db_info)
+    }
   }
   if((!is.null(x$is_zero_argument_call)) && (x$is_zero_argument_call)) {
     val <- paste(as.character(x$value), collapse = " ")
@@ -224,8 +228,12 @@ to_query.pre_sql_sub_expr <- function (x,
                                        source_table = NULL,
                                        source_limit = NA_real_,
                                        using = NULL) {
-  if(length(list(...))>0) {
-    stop("unexpected arguments")
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::to_query.pre_sql_sub_expr")
+  if("rquery_db_info" %in% class(db_info)) {
+    tree_rewriter <- db_info[["tree_rewriter"]]
+    if(!is.null(tree_rewriter)) {
+      x <- tree_rewriter(x, db_info)
+    }
   }
   terms <- lapply(x$toks,
                   function(ti) {
@@ -264,7 +272,7 @@ str_pre_sql_sub_expr <- function(x) {
 #' @keywords internal
 #'
 format.pre_sql_sub_expr <- function(x, ...) {
-  to_query(x, rquery_default_db_info)
+  to_query(x, rquery_default_db_info())
 }
 
 

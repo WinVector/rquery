@@ -1,13 +1,5 @@
 
 
-#' An example \code{rquery_db_info} object useful for formatting \code{SQL} without a database connection.
-#'
-#' @export
-#'
-rquery_default_db_info <- rquery_db_info(identifier_quote_char = '"',
-                                         string_quote_char = "'",
-                                         is_dbi = FALSE,
-                                         db_methods = rquery_default_methods())
 
 
 .onLoad <- function(libname, pkgname) {

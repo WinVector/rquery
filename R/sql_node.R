@@ -233,7 +233,7 @@ format_node.relop_sql <- function(node) {
   modsstr <- ""
   indent_sep <- "\n             "
   if(length(node$mods)>0) {
-    modsql <- prep_sql_toks(rquery_default_db_info, node$mods,
+    modsql <- prep_sql_toks(rquery_default_db_info(), node$mods,
                             translate_quotes = FALSE, qsym = '"')
     modsstr <- paste(";\n          ", modsql)
   }
