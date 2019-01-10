@@ -75,9 +75,9 @@ rstr(postgresql_db, d_postgresql)
 
 cat(to_sql(ops, postgresql_db))
 
-execute(postgresql_db, ops) %.>%
+ops %.>% 
+  postgresql_db %.>%
   knitr::kable(.)
-# TODO: pipe table into pipeline!
 
 DBI::dbDisconnect(postgresql_connection)
 ```
@@ -117,7 +117,8 @@ rstr(rsqlite_db, d_rsqlite)
 
 cat(to_sql(ops, rsqlite_db))
 
-execute(rsqlite_db, ops) %.>%
+ops %.>% 
+  rsqlite_db %.>%
   knitr::kable(.)
 
 DBI::dbDisconnect(rsqlite_connection)
