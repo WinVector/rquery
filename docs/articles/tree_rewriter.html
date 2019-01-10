@@ -107,6 +107,8 @@
     
     
 <p><a href="https://CRAN.R-project.org/package=rquery"><code>rquery</code></a> <code>1.3.0</code> now incorporates a general <code>SQL</code> tree-rewriting capability. This is to help adapt <code>rquery</code> to different databases.</p>
+<p>Let’s work an example using <a href="https://CRAN.R-project.org/package=rqdatatable"><code>rqdatatable</code></a> (<code>rquery</code> in memory using <a href="https://CRAN.R-project.org/package=data.table"><code>data.table</code></a>), <a href="https://CRAN.R-project.org/package=RPostgreSQL"><code>RPostgreSQL</code></a>, and <a href="https://CRAN.R-project.org/package=RSQLite"><code>RSQLite</code></a>.</p>
+<p>First lets confirm we have the needed packages installed and attach them.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">"rquery"</span>)
 
 have_rqdatatable &lt;-<span class="st"> </span><span class="kw">requireNamespace</span>(<span class="st">"rqdatatable"</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>) 
@@ -114,18 +116,18 @@ have_rqdatatable &lt;-<span class="st"> </span><span class="kw">requireNamespace
   <span class="kw">library</span>(<span class="st">"rqdatatable"</span>)
 }
 
-have_rsqlite &lt;-<span class="st"> </span><span class="kw">requireNamespace</span>(<span class="st">"DBI"</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>) <span class="op">&amp;&amp;</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">requireNamespace</span>(<span class="st">"RSQLite"</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>) 
-<span class="cf">if</span>(have_rqdatatable) {
-  <span class="kw">library</span>(<span class="st">"RSQLite"</span>)
-}
-
-
 have_postgresql &lt;-<span class="st"> </span><span class="kw">requireNamespace</span>(<span class="st">"DBI"</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>) <span class="op">&amp;&amp;</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">requireNamespace</span>(<span class="st">"RPostgreSQL"</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>) 
-<span class="cf">if</span>(have_rqdatatable) {
+<span class="cf">if</span>(have_postgresql) {
   <span class="kw">library</span>(<span class="st">"RPostgreSQL"</span>)
+}
+
+have_rsqlite &lt;-<span class="st"> </span><span class="kw">requireNamespace</span>(<span class="st">"DBI"</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>) <span class="op">&amp;&amp;</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">requireNamespace</span>(<span class="st">"RSQLite"</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>) 
+<span class="cf">if</span>(have_rsqlite) {
+  <span class="kw">library</span>(<span class="st">"RSQLite"</span>)
 }</code></pre></div>
+<p>Now let’s set up a simple data example.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">d &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">x =</span> <span class="op">-</span><span class="dv">3</span><span class="op">:</span><span class="dv">3</span>)
 knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(d)</code></pre></div>
 <table class="table">
@@ -156,21 +158,114 @@ knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentati
 </tr>
 </tbody>
 </table>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ops &lt;-<span class="st"> </span><span class="kw"><a href="../reference/extend.html">extend</a></span>(<span class="kw"><a href="../reference/local_td.html">local_td</a></span>(d), <span class="dt">x_mod_2 =</span> x <span class="op">%%</span><span class="st"> </span><span class="dv">2</span>)
-<span class="kw">cat</span>(<span class="kw">format</span>(ops))</code></pre></div>
+<p>We define the <code>rquery</code> pipe line to compute <code>x mod 2</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ops1 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/local_td.html">local_td</a></span>(d) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/extend.html">extend</a></span>(., 
+         <span class="dt">x_mod_2 =</span> x <span class="op">%%</span><span class="st"> </span><span class="dv">2</span>)
+
+<span class="kw">cat</span>(<span class="kw">format</span>(ops1))</code></pre></div>
 <pre><code>## table(d; 
 ##   x) %.&gt;%
 ##  extend(.,
 ##   x_mod_2 := x %% 2)</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">d <span class="op">%.&gt;%</span><span class="st"> </span>ops</code></pre></div>
-<pre><code>##     x x_mod_2
-## 1: -3       1
-## 2: -2       0
-## 3: -1       1
-## 4:  0       0
-## 5:  1       1
-## 6:  2       0
-## 7:  3       1</code></pre>
+<p>And <code>rqdatatable</code> can execute the pipeline against any table that has the required numeric <code>x</code> column.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">d <span class="op">%.&gt;%</span><span class="st"> </span>
+<span class="st">  </span>ops1 <span class="op">%.&gt;%</span><span class="st"> </span>
+<span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="right">x</th>
+<th align="right">x_mod_2</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">-3</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="right">-2</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">-1</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<p>In principle applying the same operations to a database table is easy. However <code>SQL</code> <code>mod</code> unfortunately returns the sign of the argument in its result. This means its range of <code>x mod 2</code> can be from <code>-1</code> through <code>1</code> instead of the more typical <code>0</code> through <code>1</code> (it breaks much of the mathematical purpose of modulo if we don’t have <code>mod(a-b, k)==0</code> equivalent to <code>mod(a)-mod(b)==0</code>; <a href="https://github.com/WinVector/rquery/blob/master/extras/dplyr_modulo.html"><code>dplyr</code> runs into the same issue</a>).</p>
+<p>To work around this we define a larger pipeline that corrects the sign after the modulo operation.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ops &lt;-<span class="st"> </span><span class="kw"><a href="../reference/local_td.html">local_td</a></span>(d) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/extend.html">extend</a></span>(., 
+         <span class="dt">x_mod_2 =</span> x <span class="op">%%</span><span class="st"> </span><span class="dv">2</span>) <span class="op">%.&gt;%</span>
+<span class="st">  </span><span class="kw"><a href="../reference/extend.html">extend</a></span>(., 
+         <span class="co"># extra step to work around SQL mod</span>
+         <span class="co"># returns sign of argument.</span>
+         <span class="dt">x_mod_2 =</span> <span class="kw">ifelse</span>(x_mod_<span class="dv">2</span> <span class="op">&gt;=</span><span class="dv">0</span>, x_mod_<span class="dv">2</span>, x_mod_<span class="dv">2</span> <span class="op">+</span><span class="st"> </span><span class="dv">2</span>))
+
+<span class="kw">cat</span>(<span class="kw">format</span>(ops))</code></pre></div>
+<pre><code>## table(d; 
+##   x) %.&gt;%
+##  extend(.,
+##   x_mod_2 := x %% 2) %.&gt;%
+##  extend(.,
+##   x_mod_2 := ifelse(x_mod_2 &gt;= 0, x_mod_2, x_mod_2 + 2))</code></pre>
+<p>This pipeline still works in memory.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">d <span class="op">%.&gt;%</span><span class="st"> </span>
+<span class="st">  </span>ops <span class="op">%.&gt;%</span><span class="st"> </span>
+<span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="right">x</th>
+<th align="right">x_mod_2</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">-3</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="right">-2</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">-1</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<p>And it works correctly on <code>PostgreSQL</code> database tables.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">postgresql_connection &lt;-<span class="st"> </span>DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbConnect">dbConnect</a></span>(
   RPostgreSQL<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/RPostgreSQL/topics/PostgreSQL">PostgreSQL</a></span>(),
   <span class="dt">host =</span> <span class="st">'localhost'</span>,
@@ -198,14 +293,20 @@ d_postgresql</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(ops, postgresql_db))</code></pre></div>
 <pre><code>## SELECT
 ##  "x",
-##  MOD ( "x" , 2 )  AS "x_mod_2"
+##  ( CASE WHEN ( "x_mod_2" &gt;= 0 ) THEN ( "x_mod_2" ) WHEN NOT ( "x_mod_2" &gt;= 0 ) THEN ( "x_mod_2" + 2 ) ELSE NULL END )  AS "x_mod_2"
 ## FROM (
 ##  SELECT
-##   "x"
-##  FROM
-##   "d"
-##  ) tsql_83735897637435466268_0000000000</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/execute.html">execute</a></span>(postgresql_db, ops) <span class="op">%.&gt;%</span>
+##   "x",
+##   MOD ( "x" , 2 )  AS "x_mod_2"
+##  FROM (
+##   SELECT
+##    "x"
+##   FROM
+##    "d"
+##   ) tsql_08454188117198757187_0000000000
+##  ) tsql_08454188117198757187_0000000001</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ops <span class="op">%.&gt;%</span><span class="st"> </span>
+<span class="st">  </span>postgresql_db <span class="op">%.&gt;%</span>
 <span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</code></pre></div>
 <table class="table">
 <thead><tr class="header">
@@ -215,7 +316,7 @@ d_postgresql</code></pre></div>
 <tbody>
 <tr class="odd">
 <td align="right">-3</td>
-<td align="right">-1</td>
+<td align="right">1</td>
 </tr>
 <tr class="even">
 <td align="right">-2</td>
@@ -223,7 +324,7 @@ d_postgresql</code></pre></div>
 </tr>
 <tr class="odd">
 <td align="right">-1</td>
-<td align="right">-1</td>
+<td align="right">1</td>
 </tr>
 <tr class="even">
 <td align="right">0</td>
@@ -243,18 +344,14 @@ d_postgresql</code></pre></div>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># </span><span class="al">TODO</span><span class="co">: pipe table into pipeline!</span>
-
-DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect">dbDisconnect</a></span>(postgresql_connection)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect">dbDisconnect</a></span>(postgresql_connection)</code></pre></div>
 <pre><code>## [1] TRUE</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rsqlite_connection &lt;-<span class="st"> </span>DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbConnect">dbConnect</a></span>(RSQLite<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/RSQLite/topics/SQLite">SQLite</a></span>(), <span class="st">":memory:"</span>)
-rsqlite_db &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rquery_db_info.html">rquery_db_info</a></span>(
-  <span class="dt">connection =</span> rsqlite_connection,
-  <span class="dt">is_dbi =</span> <span class="ot">TRUE</span>,
-  <span class="dt">connection_options =</span> <span class="kw"><a href="../reference/rq_connection_tests.html">rq_connection_tests</a></span>(rsqlite_connection))
-rsqlite_db<span class="op">$</span>tree_rewriter &lt;-<span class="st"> </span><span class="cf">function</span>(x, db_info) {
+<p>However <code>SQLite</code> needs <code>mod(a,b)</code> written as <code>a % b</code>. So we need to re-write our <code>SQL</code> to comply with <code>SQLite</code>’s variation when talking to <code>SQLite</code>. In <code>rquery</code> this is easy: we define a tree-node re-write rule and <code>rquery</code>’s <code>SQL</code> translator lets this user code visit every node of a <code>SQL</code> parse tree during the translation.</p>
+<p>The use code looks like this:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tree_rewriter &lt;-<span class="st"> </span><span class="cf">function</span>(x, db_info) {
   <span class="cf">if</span>((<span class="st">"pre_sql_sub_expr"</span> <span class="op">%in%</span><span class="st"> </span><span class="kw">class</span>(x)) <span class="op">&amp;&amp;</span><span class="st"> </span>
 <span class="st">     </span>(x<span class="op">$</span>info<span class="op">$</span>name <span class="op">==</span><span class="st"> "modulo"</span>)) {
+    <span class="co"># print(str_pre_sql_sub_expr(x))</span>
     lhs &lt;-<span class="st"> </span>x<span class="op">$</span>toks[[<span class="dv">3</span>]]
     rhs &lt;-<span class="st"> </span>x<span class="op">$</span>toks[[<span class="dv">5</span>]]
     <span class="kw">return</span>(<span class="kw"><a href="../reference/pre_sql_sub_expr.html">pre_sql_sub_expr</a></span>(
@@ -267,23 +364,101 @@ rsqlite_db<span class="op">$</span>tree_rewriter &lt;-<span class="st"> </span><
     )
   }
   x
-}
+}</code></pre></div>
+<p>And using the re-writer is as easy as attaching it to our database handle, which we show below.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rsqlite_connection &lt;-<span class="st"> </span>DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbConnect">dbConnect</a></span>(RSQLite<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/RSQLite/topics/SQLite">SQLite</a></span>(), <span class="st">":memory:"</span>)
+rsqlite_db &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rquery_db_info.html">rquery_db_info</a></span>(
+  <span class="dt">connection =</span> rsqlite_connection,
+  <span class="dt">is_dbi =</span> <span class="ot">TRUE</span>,
+  <span class="dt">connection_options =</span> <span class="kw"><a href="../reference/rq_connection_tests.html">rq_connection_tests</a></span>(rsqlite_connection))
 
-rsqlite_db
+<span class="co"># attach our tree-rewriter to the databse handle.</span>
+<span class="co"># this handle now uses this re-writer.</span>
+rsqlite_db<span class="op">$</span>tree_rewriter &lt;-<span class="st"> </span>tree_rewriter
 
-d_rsqlite &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rq_copy_to.html">rq_copy_to</a></span>(rsqlite_db, <span class="st">"d"</span>, d,
+rsqlite_db</code></pre></div>
+<pre><code>## [1] "rquery_db_info(SQLiteConnection, is_dbi=TRUE, note=\"\")"</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">d_rsqlite &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rq_copy_to.html">rq_copy_to</a></span>(rsqlite_db, <span class="st">"d"</span>, d,
                         <span class="dt">temporary =</span> <span class="ot">TRUE</span>, <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)
 
-d_rsqlite
-
-<span class="kw"><a href="../reference/rstr.html">rstr</a></span>(rsqlite_db, d_rsqlite)
-
-<span class="kw">cat</span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(ops, rsqlite_db))
-
-<span class="kw"><a href="../reference/execute.html">execute</a></span>(rsqlite_db, ops) <span class="op">%.&gt;%</span>
-<span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)
-
-DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect">dbDisconnect</a></span>(rsqlite_connection)</code></pre></div>
+d_rsqlite</code></pre></div>
+<pre><code>## [1] "table(`d`; x)"</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/rstr.html">rstr</a></span>(rsqlite_db, d_rsqlite)</code></pre></div>
+<pre><code>## table `d` rquery_db_info 
+##  nrow: 7 
+## 'data.frame':    7 obs. of  1 variable:
+##  $ x: int  -3 -2 -1 0 1 2 3</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cat</span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(ops, rsqlite_db))</code></pre></div>
+<pre><code>## SELECT
+##  `x`,
+##  ( CASE WHEN ( `x_mod_2` &gt;= 0 ) THEN ( `x_mod_2` ) WHEN NOT ( `x_mod_2` &gt;= 0 ) THEN ( `x_mod_2` + 2 ) ELSE NULL END )  AS `x_mod_2`
+## FROM (
+##  SELECT
+##   `x`,
+##   ( `x` % 2 )  AS `x_mod_2`
+##  FROM (
+##   SELECT
+##    `x`
+##   FROM
+##    `d`
+##   ) tsql_46531261100024411750_0000000000
+##  ) tsql_46531261100024411750_0000000001</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ops <span class="op">%.&gt;%</span><span class="st"> </span>
+<span class="st">  </span>rsqlite_db <span class="op">%.&gt;%</span>
+<span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="right">x</th>
+<th align="right">x_mod_2</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">-3</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="right">-2</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">-1</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<p>We learn how to write the transform by using the function <code><a href="../reference/str_pre_sql_sub_expr.html">str_pre_sql_sub_expr()</a></code> which prints out node details, telling us where to get the arguments for our new <code>SQL</code> code. We can dump all the nodes the <code>SQL</code> translator visits (to see what pattern we would have to re-write) as follows. The <code>"pre_sql_sub_expr" %in% class(x)</code> is merely restricting the printing to non-leaf nodes (the ones likely to hold the references to the values we need).</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rsqlite_db<span class="op">$</span>tree_rewriter &lt;-<span class="st"> </span><span class="cf">function</span>(x, db_info) {
+  <span class="cf">if</span>(<span class="st">"pre_sql_sub_expr"</span> <span class="op">%in%</span><span class="st"> </span><span class="kw">class</span>(x)) {
+    <span class="kw">print</span>(<span class="kw"><a href="../reference/str_pre_sql_sub_expr.html">str_pre_sql_sub_expr</a></span>(x))
+  }
+  x
+}
+untranslated_sql &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(ops, rsqlite_db)</code></pre></div>
+<pre><code>## [1] "{:_ifelse 1_{(} 2_{CASE} 3_{WHEN} 4_{(} 5_{{:_inline_op 1_{\"x_mod_2\"} 2_{&gt;=} 3_{0} :}} 6_{)} 7_{THEN} 8_{(} 9_{\"x_mod_2\"} 10_{)} 11_{WHEN} 12_{NOT (} 13_{{:_inline_op 1_{\"x_mod_2\"} 2_{&gt;=} 3_{0} :}} 14_{)} 15_{THEN} 16_{(} 17_{{:_inline_op 1_{\"x_mod_2\"} 2_{+} 3_{2} :}} 18_{)} 19_{ELSE} 20_{NULL} 21_{END} 22_{)} :}"
+## [1] "{:_inline_op 1_{\"x_mod_2\"} 2_{&gt;=} 3_{0} :}"
+## [1] "{:_inline_op 1_{\"x_mod_2\"} 2_{&gt;=} 3_{0} :}"
+## [1] "{:_inline_op 1_{\"x_mod_2\"} 2_{+} 3_{2} :}"
+## [1] "{:_modulo 1_{MOD} 2_{(} 3_{\"x\"} 4_{,} 5_{2} 6_{)} :}"</code></pre>
+<p>From the above we see that the node named “modulo” (name found after the first colon) is the one we need to re-write, and that it has the values we need as terms <code>3</code> and <code>5</code> (where we find the values <code>x</code> and <code>2</code>).</p>
+<p>In addition to expression-tree re-writing procedures <code>rquery</code> also allows a per-handle replacement of any <code><a href="../reference/to_sql.html">to_sql()</a></code> method via the <code>db_methods</code> map found on the <code>rquery_db_info</code> database handle. Yet another form of adaption can be found here, where we <a href="https://github.com/WinVector/rquery/blob/master/db_examples/MonetDBLite.html">by-hand replace a window function with a join</a> when using <code>MonetDBLite</code> (as while <code>MonetDBLite</code> defines window functions, it doesn’t define a windowed version of <code>sum()</code>; also check out the operator diagram showing the two uses of the same table arriving at a join).</p>
+<p>And that is a brief introduction to adapting <code>rquery</code> to new databases.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">DBI<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect">dbDisconnect</a></span>(rsqlite_connection)</code></pre></div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

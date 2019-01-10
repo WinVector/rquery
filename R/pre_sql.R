@@ -282,7 +282,10 @@ str_pre_sql_sub_expr <- function(x) {
   # get sub-expressions
   subs <- vapply(x$toks, str_pre_sql_sub_expr, character(1))
   # mark
-  paste0("{:", x$info$name," ", paste(subs, collapse = " "), " :}")
+  paste0("{:_",
+         x$info$name," ",
+         paste(paste0(seq_len(length(subs)), "_{", subs, "}"), collapse = " "),
+         " :}")
 }
 
 #' @export
