@@ -1,7 +1,8 @@
 
-# rquery 1.3.0 2019/01/09
+# rquery 1.3.0 2019/01/10
 
  * More per-DB SQL rendering control.
+ * Move to tree-based parse representation (instead flat).
  * %%/MOD().
  * Na row interfaces (un-publish tokenize_for_SQL()).
 

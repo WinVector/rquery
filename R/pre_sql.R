@@ -21,7 +21,7 @@ pre_sql_identifier <- function(column_name) {
   t <- list(token_type = "column",
             column_name = column_name,
             is_zero_argument_call = FALSE)
-  class(t) <- "pre_sql_token"
+  class(t) <- c("pre_sql_token", "pre_sql")
   t
 }
 
@@ -36,7 +36,7 @@ pre_sql_string <- function(value) {
   t <- list(token_type = "string",
             value = value,
             is_zero_argument_call = FALSE)
-  class(t) <- "pre_sql_token"
+  class(t) <- c("pre_sql_token", "pre_sql")
   t
 }
 
@@ -54,7 +54,7 @@ pre_sql_fn <- function(value) {
   t <- list(token_type = "function_name",
             value = value,
             is_zero_argument_call = FALSE)
-  class(t) <- "pre_sql_token"
+  class(t) <- c("pre_sql_token", "pre_sql")
   t
 }
 
@@ -71,7 +71,7 @@ pre_sql_token <- function(value) {
   t <- list(token_type = "token",
             value = value,
             is_zero_argument_call = FALSE)
-  class(t) <- "pre_sql_token"
+  class(t) <- c("pre_sql_token", "pre_sql")
   t
 }
 
@@ -85,8 +85,17 @@ pre_sql_token <- function(value) {
 #' @noRd
 #'
 pre_sql_sub_expr <- function(terms, info = NULL) {
+  cl <- class(terms)
+  if((length(cl)!=1) || (cl!="list")) {
+    stop("rquery::pre_sql_sub_expr terms must be a list")
+  }
+  for(ti in terms) {
+    if(!("pre_sql" %in% class(ti))) {
+      stop("pre_sql_sub_expr all terms must be of class pre_sql")
+    }
+  }
   t = list(toks = terms, info = info)
-  class(t) <- "pre_sql_sub_expr"
+  class(t) <- c("pre_sql_sub_expr", "pre_sql")
   t
 }
 
@@ -193,6 +202,8 @@ to_query.pre_sql_token <- function (x,
 }
 
 
+
+
 #' Convert a pre_sql token object to SQL query text.
 #'
 #' @param x the pre_sql token
@@ -229,6 +240,25 @@ to_query.pre_sql_sub_expr <- function (x,
 }
 
 
+#' Structure of a pre_sql_sub_expr
+#'
+#' @param x a pre_sql_sub_expr
+#' @return charcter presentation with {} denoting nesting
+#'
+#' @keywords internal
+#'
+#' @export
+#'
+str_pre_sql_sub_expr <- function(x) {
+  if(!("pre_sql_sub_expr" %in% class(x))) {
+    return(format(x))
+  }
+  # get sub-expressions
+  subs <- vapply(x$toks, str_pre_sql_sub_expr, character(1))
+  # mark
+  paste("{", paste(subs, collapse = " "), "}")
+}
+
 #' @export
 #'
 #' @keywords internal
@@ -237,12 +267,13 @@ format.pre_sql_sub_expr <- function(x, ...) {
   to_query(x, rquery_default_db_info)
 }
 
+
 #' @export
 #'
 #' @keywords internal
 #'
 print.pre_sql_sub_expr <- function(x, ...) {
-  print(format(x))
+  cat(format(x))
 }
 
 

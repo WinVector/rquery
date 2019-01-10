@@ -1,7 +1,4 @@
 
-ltok <- function(v) {
-  list(pre_sql_token(v))
-}
 
 
 is_inline_expr <- function(lexpr) {
@@ -144,9 +141,11 @@ tokenize_call_for_SQL <- function(lexpr,
   if(n==1) {
     # zero argument call
     # wire-up for possible later name-remapping.
-    ctok <- ltok(callName)
-    ctok[[1]]$is_zero_argument_call <- TRUE
-    res$parsed_toks <- c(ctok, ltok("("),  ltok(")"))
+    ctok <- pre_sql_token(callName)
+    ctok$is_zero_argument_call <- TRUE
+    res$parsed_toks <- pre_sql_sub_expr(
+      list(ctok, pre_sql_token("("),  pre_sql_token(")")),
+      info = list(name = "zero_arg_call", call = callName))
     return(res)
   }
   args <- list()
@@ -159,89 +158,102 @@ tokenize_call_for_SQL <- function(lexpr,
                                    colnames = colnames,
                                    env = env)
                    })
-    subqstrs <- lapply(args,
-                       function(ri) {
-                         ri$parsed_toks
-                       })
-    if(length(subqstrs)>1) {
-      # insert commas
-      subqstrso <- subqstrs
-      ns <- length(subqstrs)
-      subqstrs <- rep(list(ltok(",")), ns+ns-1)
-      subqstrs[2*seq_len(ns)-1] <- subqstrso
-    }
-    subseq <- unlist(subqstrs, recursive = FALSE)
-    # TODO: switch above unlist to recursive wrapping throughout
-    # subseq <- pre_sql_sub_expr(subqstrs,
-    #                            info = list(name = "arguments", args = subqstrs))
     res$symbols_used <- merge_fld(args,
                                   "symbols_used")
     res$symbols_produced <- merge_fld(args,
                                       "symbols_produced")
     res$free_symbols <- merge_fld(args,
                                   "free_symbols")
+    subseq <- args[[1]]$parsed_toks
+    if(length(args)>1) {
+      subqstrs <- lapply(args,
+                         function(ri) {
+                           ri$parsed_toks
+                         })
+      # insert commas
+      subqstrso <- subqstrs
+      ns <- length(subqstrs)
+      subqstrs <- rep(list(pre_sql_token(",")), ns+ns-1)
+      subqstrs[2*seq_len(ns)-1] <- subqstrso
+      subseq <- pre_sql_sub_expr(subqstrs,
+                                 info = list(name = "arguments"))
+    }
   }
   if(callName=="(") {
-    res$parsed_toks <- c(ltok("("), subseq, ltok(")"))
+    res$parsed_toks <- pre_sql_sub_expr(
+      list(pre_sql_token("("), subseq, pre_sql_token(")")),
+      info = list(name = "paren_expr"))
     return(res)
   }
   if(callName=="!") {
-    res$parsed_toks <- c(ltok("("), ltok("NOT"), ltok("("), subseq, ltok(")"), ltok(")"))
+    if(n!=2) {
+      stop("rquery::tokenize_call_for_SQL expect ! to have 1 argument")
+    }
+    res$parsed_toks <- pre_sql_sub_expr(
+      list(pre_sql_token("("), pre_sql_token("NOT"), pre_sql_token("("), subseq, pre_sql_token(")"), pre_sql_token(")")),
+      info = list(name = "not"))
     return(res)
   }
   if(callName=='is.na') {
     if(n!=2) {
       stop("rquery::tokenize_call_for_SQL expect is.na to have 1 argument")
     }
-    res$parsed_toks <- c(ltok("("), args[[1]]$parsed_toks, ltok(")"), ltok("IS NULL"))
+    res$parsed_toks <- pre_sql_sub_expr(
+      list(pre_sql_token("("), pre_sql_token("("), subseq, pre_sql_token(")"), pre_sql_token("IS NULL"), pre_sql_token(")")),
+      info = list(name = "is.na"))
     return(res)
   }
   if(callName=='ifelse') {
     if(n!=4) {
       stop("rquery::tokenize_call_for_SQL expect ifelse to have 3 arguments")
     }
-    res$parsed_toks <- c(ltok("("),
-                         ltok("CASE"),
-                         ltok("WHEN"),
-                         ltok("("),
-                         args[[1]]$parsed_toks,
-                         ltok(")"),
-                         ltok("THEN"),
-                         ltok("("),
-                         args[[2]]$parsed_toks,
-                         ltok(")"),
-                         ltok("WHEN"),
-                         ltok("NOT ("),
-                         args[[1]]$parsed_toks,
-                         ltok(")"),
-                         ltok("THEN"),
-                         ltok("("),
-                         args[[3]]$parsed_toks,
-                         ltok(")"),
-                         ltok("ELSE"),
-                         ltok("NULL"),
-                         ltok("END"),
-                         ltok(")"))
+    res$parsed_toks <- pre_sql_sub_expr(
+      list(pre_sql_token("("),
+           pre_sql_token("CASE"),
+           pre_sql_token("WHEN"),
+           pre_sql_token("("),
+           args[[1]]$parsed_toks,
+           pre_sql_token(")"),
+           pre_sql_token("THEN"),
+           pre_sql_token("("),
+           args[[2]]$parsed_toks,
+           pre_sql_token(")"),
+           pre_sql_token("WHEN"),
+           pre_sql_token("NOT ("),
+           args[[1]]$parsed_toks,
+           pre_sql_token(")"),
+           pre_sql_token("THEN"),
+           pre_sql_token("("),
+           args[[3]]$parsed_toks,
+           pre_sql_token(")"),
+           pre_sql_token("ELSE"),
+           pre_sql_token("NULL"),
+           pre_sql_token("END"),
+           pre_sql_token(")")),
+      info = list(name = "ifelse"))
     return(res)
   }
-  # ifelse back in place.
   if(is_inline_expr(lexpr)) {
     if(callName=="^") {
-      res$parsed_toks <- c(ltok("POWER"),
-                           ltok("("),
-                           args[[1]]$parsed_toks,
-                           ltok(","),
-                           args[[2]]$parsed_toks,
-                           ltok(")"))
+      res$parsed_toks <- pre_sql_sub_expr(
+        list(pre_sql_token("POWER"),
+             pre_sql_token("("),
+             args[[1]]$parsed_toks,
+             pre_sql_token(","),
+             args[[2]]$parsed_toks,
+             pre_sql_token(")")),
+        info = list(name = "power"))
       return(res)
     }
     if(callName=="%%") {
-      res$parsed_toks <- c(ltok("MOD"),
-                           ltok("("),
-                           args[[1]]$parsed_toks,
-                           ltok(","),
-                           args[[2]]$parsed_toks,
-                           ltok(")"))
+      res$parsed_toks <- pre_sql_sub_expr(
+        list(pre_sql_token("MOD"),
+             pre_sql_token("("),
+             args[[1]]$parsed_toks,
+             pre_sql_token(","),
+             args[[2]]$parsed_toks,
+             pre_sql_token(")")),
+        info = list(name = "modulo"))
       return(res)
     }
     lhs <- args[[1]]
@@ -263,7 +275,10 @@ tokenize_call_for_SQL <- function(lexpr,
     if(!is.null(replacement)) {
       callName <- replacement
     }
-    res$parsed_toks <- c(lhs$parsed_toks, ltok(callName), rhs$parsed_toks)
+    res$parsed_toks <- pre_sql_sub_expr(
+      list(lhs$parsed_toks, pre_sql_token(callName), rhs$parsed_toks),
+      info = list(name = "inline_op",
+                  op = callName))
     return(res)
   }
   if(callName %in% c("pmin", "pmax")) {
@@ -271,53 +286,62 @@ tokenize_call_for_SQL <- function(lexpr,
       stop("rquery::tokenize_call_for_SQL expect pmin/pmax to have 2 arguments")
     }
     if(callName=="pmax") {
-      comptok <- ltok(">=")
+      comptok <- pre_sql_token(">=")
     } else {
-      comptok <- ltok("<=")
+      comptok <- pre_sql_token("<=")
     }
-    res$parsed_toks <- c(ltok("("),
-                         ltok("CASE"),
-                         ltok("WHEN"),
-                         ltok("("),
-                         args[[1]]$parsed_toks,
-                         ltok(")"),
-                         ltok("IS NULL"),
-                         ltok("THEN"),
-                         ltok("("),
-                         args[[2]]$parsed_toks,
-                         ltok(")"),
-                         ltok("WHEN"),
-                         ltok("("),
-                         args[[2]]$parsed_toks,
-                         ltok(")"),
-                         ltok("IS NULL"),
-                         ltok("THEN"),
-                         ltok("("),
-                         args[[1]]$parsed_toks,
-                         ltok(")"),
-                         ltok("WHEN"),
-                         ltok("("),
-                         args[[1]]$parsed_toks,
-                         ltok(")"),
-                         comptok,
-                         ltok("("),
-                         args[[2]]$parsed_toks,
-                         ltok(")"),
-                         ltok("THEN"),
-                         ltok("("),
-                         args[[1]]$parsed_toks,
-                         ltok(")"),
-                         ltok("ELSE"),
-                         ltok("("),
-                         args[[2]]$parsed_toks,
-                         ltok(")"),
-                         ltok("END"),
-                         ltok(")"))
+    res$parsed_toks <- pre_sql_sub_expr(
+      list(pre_sql_token("("),
+           pre_sql_token("CASE"),
+           pre_sql_token("WHEN"),
+           pre_sql_token("("),
+           args[[1]]$parsed_toks,
+           pre_sql_token(")"),
+           pre_sql_token("IS NULL"),
+           pre_sql_token("THEN"),
+           pre_sql_token("("),
+           args[[2]]$parsed_toks,
+           pre_sql_token(")"),
+           pre_sql_token("WHEN"),
+           pre_sql_token("("),
+           args[[2]]$parsed_toks,
+           pre_sql_token(")"),
+           pre_sql_token("IS NULL"),
+           pre_sql_token("THEN"),
+           pre_sql_token("("),
+           args[[1]]$parsed_toks,
+           pre_sql_token(")"),
+           pre_sql_token("WHEN"),
+           pre_sql_token("("),
+           args[[1]]$parsed_toks,
+           pre_sql_token(")"),
+           comptok,
+           pre_sql_token("("),
+           args[[2]]$parsed_toks,
+           pre_sql_token(")"),
+           pre_sql_token("THEN"),
+           pre_sql_token("("),
+           args[[1]]$parsed_toks,
+           pre_sql_token(")"),
+           pre_sql_token("ELSE"),
+           pre_sql_token("("),
+           args[[2]]$parsed_toks,
+           pre_sql_token(")"),
+           pre_sql_token("END"),
+           pre_sql_token(")")),
+      info = list(name = callName))
     return(res)
   }
   # default
-  res$parsed_toks <- c(list(pre_sql_fn(callName)),
-                       ltok("("), subseq, ltok(")"))
+  if(length(subseq)>0) {
+    res$parsed_toks <- pre_sql_sub_expr(
+      list(pre_sql_fn(callName), pre_sql_token("("), subseq, pre_sql_token(")")),
+      info = list("call"))
+  } else {
+    res$parsed_toks <- pre_sql_sub_expr(
+      list(pre_sql_fn(callName), pre_sql_token("("), pre_sql_token(")")),
+      info = list("zero_arg_call"))
+  }
   return(res)
 }
 
@@ -337,20 +361,20 @@ tokenize_for_SQL_r <- function(lexpr,
                           env) {
   check_for_forbidden_forms(lexpr)
   n <- length(lexpr)
-  res <- list(parsed_toks = list(),
+  res <- list(parsed_toks = NULL,
               symbols_used = character(0),
               symbols_produced = character(0),
               free_symbols = character(0))
   # just in case (establishes an invarient of n>=1)
   if(n<=0) {
-    res <- list(parsed_toks = list(pre_sql_token("NULL")),
+    res <- list(parsed_toks = pre_sql_token("NULL"),
                 symbols_used = character(0),
                 symbols_produced = character(0),
                 free_symbols = character(0))
     return(res)
   }
   if((!is.language(lexpr)) && (length(lexpr)==1) && is.na(lexpr)) {
-    res <- list(parsed_toks = list(pre_sql_token("NA")),
+    res <- list(parsed_toks = pre_sql_token("NA"),  # TODO special case this to NULL?
                 symbols_used = character(0),
                 symbols_produced = character(0),
                 free_symbols = character(0))
@@ -380,8 +404,8 @@ tokenize_for_SQL_r <- function(lexpr,
                        function(ri) {
                          ri$parsed_toks
                        })
-    subseq <- unlist(subqstrs, recursive = FALSE)
-    res$parsed_toks <- subseq
+    res$parsed_toks <- pre_sql_sub_expr(subqstrs,
+                                        info = "list")
     res$symbols_used <- merge_fld(sube,
                                   "symbols_used")
     res$symbols_produced = merge_fld(sube,
@@ -396,7 +420,7 @@ tokenize_for_SQL_r <- function(lexpr,
     # look for columns
     if(lexpr %in% colnames) {
       res$symbols_used <- lexpr
-      res$parsed_toks <- list(pre_sql_identifier(lexpr))
+      res$parsed_toks <- pre_sql_identifier(lexpr)
       return(res)
     }
     # now look in environment
@@ -406,28 +430,28 @@ tokenize_for_SQL_r <- function(lexpr,
                     inherits = TRUE)[[1]]
     if(length(v)==1) {
       if(is.character(v)) {
-        res$parsed_toks <- list(pre_sql_string(v))
+        res$parsed_toks <- pre_sql_string(v)
         return(res)
       }
       if(is.numeric(v)) {
         # TODO: see if we can keep things numeric
-        res$parsed_toks <- list(pre_sql_token(paste(as.character(v), collapse = " ")))
+        res$parsed_toks <- pre_sql_token(paste(as.character(v), collapse = " "))
         return(res)
       }
       # TODO: think about logical?
-      # finding functions in the env is a problem here
+      # finding functions in the env is a to avoid problem here
     }
     res$free_symbols <- lexpr
     # fall back
-    res$parsed_toks <- list(pre_sql_token(paste(as.character(lexpr), collapse = " ")))
+    res$parsed_toks <- pre_sql_token(paste(as.character(lexpr), collapse = " "))
     return(res)
   }
   if(is.character(lexpr)) {
-    res$parsed_toks <- list(pre_sql_string(paste(as.character(lexpr), collapse = " ")))
+    res$parsed_toks <- pre_sql_string(paste(as.character(lexpr), collapse = " "))
     return(res)
   }
   # fall-back (NA comes to here if not caught earlier)
-  res$parsed_toks <- list(pre_sql_token(paste(as.character(lexpr), collapse = " ")))
+  res$parsed_toks <- pre_sql_token(paste(as.character(lexpr), collapse = " "))
   return(res)
 }
 
@@ -462,6 +486,5 @@ tokenize_for_SQL <- function(lexpr,
                                       colnames = colnames,
                                       env = env)
   p <- c(list(presentation = presentation), p)
-  p$parsed_toks <- pre_sql_sub_expr(p$parsed_toks)
   p
 }

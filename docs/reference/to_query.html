@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Cross-parse from an R parse tree into SQL. — tokenize_for_SQL • rquery</title>
+<title>Return SQL transform of tokens. — to_query • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Cross-parse from an R parse tree into SQL. — tokenize_for_SQL" />
+<meta property="og:title" content="Return SQL transform of tokens. — to_query" />
 
-<meta property="og:description" content="Cross-parse from an R parse tree into SQL." />
+<meta property="og:description" content="Return SQL transform of tokens." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -124,98 +124,54 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Cross-parse from an R parse tree into SQL.</h1>
-    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/tokenize_for_sql.R'><code>R/tokenize_for_sql.R</code></a></small>
-    <div class="hidden name"><code>tokenize_for_SQL.Rd</code></div>
+    <h1>Return SQL transform of tokens.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/pre_sql.R'><code>R/pre_sql.R</code></a></small>
+    <div class="hidden name"><code>to_query.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Cross-parse from an R parse tree into SQL.</p>
+    <p>Return SQL transform of tokens.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>tokenize_for_SQL</span>(<span class='no'>lexpr</span>, <span class='no'>colnames</span>, <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'>parent.frame</span>())</pre>
+    <pre class="usage"><span class='fu'>to_query</span>(<span class='no'>x</span>, <span class='no'>db_info</span>, <span class='no'>...</span>, <span class='kw'>source_table</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>source_limit</span> <span class='kw'>=</span> <span class='fl'>NA_real_</span>,
+  <span class='kw'>using</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>lexpr</th>
-      <td><p>item from  <code>substitute</code></p></td>
+      <th>x</th>
+      <td><p>parsed tokens.</p></td>
     </tr>
     <tr>
-      <th>colnames</th>
-      <td><p>column names of table</p></td>
+      <th>db_info</th>
+      <td><p>DBI connnection or rquery_db_info object</p></td>
     </tr>
     <tr>
-      <th>env</th>
-      <td><p>environment to look for values</p></td>
+      <th>...</th>
+      <td><p>generic additional arguments (not used).</p></td>
+    </tr>
+    <tr>
+      <th>source_table</th>
+      <td><p>character if not NULL name of source table.</p></td>
+    </tr>
+    <tr>
+      <th>source_limit</th>
+      <td><p>numeric if not NULL limit sources to this many rows.</p></td>
+    </tr>
+    <tr>
+      <th>using</th>
+      <td><p>character, if not NULL set of columns used from above.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>sql info: list(presentation, parsed_toks(list of tokens), sql_text, symbols_used, symbols_produced, free_symbols)</p>
+    <p>SQL command</p>
     
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-<span class='fu'>tokenize_for_SQL</span>(<span class='fu'>substitute</span>(<span class='fl'>1</span> + <span class='fl'>2</span>), <span class='kw'>colnames</span><span class='kw'>=</span> <span class='kw'>NULL</span>)</div><div class='output co'>#&gt; $presentation
-#&gt; [1] "1 + 2"
-#&gt; 
-#&gt; $parsed_toks
-#&gt; 1 + 2
-#&gt; $symbols_used
-#&gt; character(0)
-#&gt; 
-#&gt; $symbols_produced
-#&gt; character(0)
-#&gt; 
-#&gt; $free_symbols
-#&gt; character(0)
-#&gt; </div><div class='input'><span class='fu'>tokenize_for_SQL</span>(<span class='fu'>substitute</span>(<span class='no'>a</span> <span class='kw'>:=</span> <span class='fl'>3</span>), <span class='kw'>colnames</span><span class='kw'>=</span> <span class='kw'>NULL</span>)</div><div class='output co'>#&gt; $presentation
-#&gt; [1] "a := 3"
-#&gt; 
-#&gt; $parsed_toks
-#&gt; [1] "3"
-#&gt; 
-#&gt; $symbols_used
-#&gt; character(0)
-#&gt; 
-#&gt; $symbols_produced
-#&gt; [1] "a"
-#&gt; 
-#&gt; $free_symbols
-#&gt; character(0)
-#&gt; </div><div class='input'><span class='fu'>tokenize_for_SQL</span>(<span class='fu'>substitute</span>(<span class='no'>a</span> <span class='kw'>%:=%</span> ( <span class='fl'>3</span> + <span class='fl'>4</span> )), <span class='kw'>colnames</span><span class='kw'>=</span> <span class='kw'>NULL</span>)</div><div class='output co'>#&gt; $presentation
-#&gt; [1] "a %:=% (3 + 4)"
-#&gt; 
-#&gt; $parsed_toks
-#&gt; ( 3 + 4 )
-#&gt; $symbols_used
-#&gt; character(0)
-#&gt; 
-#&gt; $symbols_produced
-#&gt; [1] "a"
-#&gt; 
-#&gt; $free_symbols
-#&gt; character(0)
-#&gt; </div><div class='input'><span class='fu'>tokenize_for_SQL</span>(<span class='fu'>substitute</span>(<span class='no'>a</span> <span class='kw'>%:=%</span> <span class='fu'>rank</span>(<span class='fl'>3</span>, <span class='fl'>4</span>)), <span class='kw'>colnames</span><span class='kw'>=</span> <span class='kw'>NULL</span>)</div><div class='output co'>#&gt; $presentation
-#&gt; [1] "a %:=% rank(3, 4)"
-#&gt; 
-#&gt; $parsed_toks
-#&gt; rank ( 3 , 4 )
-#&gt; $symbols_used
-#&gt; character(0)
-#&gt; 
-#&gt; $symbols_produced
-#&gt; [1] "a"
-#&gt; 
-#&gt; $free_symbols
-#&gt; character(0)
-#&gt; </div><div class='input'>
-</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -223,9 +179,7 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-      
-      <li><a href="#examples">Examples</a></li>
-    </ul>
+          </ul>
 
   </div>
 </div>

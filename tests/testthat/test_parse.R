@@ -39,8 +39,8 @@ test_that("test_parse: Works As Expected", {
   ex7 <- do_parse("1+1")
   testthat::expect_equal("1 + 1", ex7$check)
 
-  ex8 <- do_parse("(1+1)*3")
-  testthat::expect_equal("( 1 + 1 ) * 3", ex8$check)
+  ex8 <- do_parse("(1+2)*3")
+  testthat::expect_equal("( 1 + 2 ) * 3", ex8$check)
 
   ex9 <- do_parse("!TRUE")
   testthat::expect_equal("( NOT ( TRUE ) )", ex9$check)
