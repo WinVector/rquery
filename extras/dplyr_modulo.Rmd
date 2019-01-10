@@ -1,0 +1,28 @@
+---
+title: "dplyr modulo"
+output: github_document
+---
+
+```{r}
+library("dplyr")
+
+postgresql_connection <- DBI::dbConnect(
+  RPostgreSQL::PostgreSQL(),
+  host = 'localhost',
+  port = 5432,
+  user = 'johnmount',
+  password = '')
+
+d <- data.frame(x = -3:3)
+d_db <- dplyr::copy_to(postgresql_connection, d, "d")
+
+d %>%
+  mutate(x_mod_2 = x %%2)
+
+d_db %>%
+  mutate(x_mod_2 = x %%2)
+
+
+DBI::dbDisconnect(postgresql_connection)
+```
+
