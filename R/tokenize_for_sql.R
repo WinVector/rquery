@@ -171,6 +171,9 @@ tokenize_call_for_SQL <- function(lexpr,
       subqstrs[2*seq_len(ns)-1] <- subqstrso
     }
     subseq <- unlist(subqstrs, recursive = FALSE)
+    # TODO: switch above unlist to recursive wrapping throughout
+    # subseq <- pre_sql_sub_expr(subqstrs,
+    #                            info = list(name = "arguments", args = subqstrs))
     res$symbols_used <- merge_fld(args,
                                   "symbols_used")
     res$symbols_produced <- merge_fld(args,
@@ -444,6 +447,7 @@ tokenize_for_SQL_r <- function(lexpr,
 #' tokenize_for_SQL(substitute(a %:=% ( 3 + 4 )), colnames= NULL)
 #' tokenize_for_SQL(substitute(a %:=% rank(3, 4)), colnames= NULL)
 #'
+#'
 #' @noRd
 #'
 tokenize_for_SQL <- function(lexpr,
@@ -457,6 +461,6 @@ tokenize_for_SQL <- function(lexpr,
                                       colnames = colnames,
                                       env = env)
   p <- c(list(presentation = presentation), p)
-  class(p$parsed_toks) <- c("pre_sql_expr")
+  p$parsed_toks <- pre_sql_sub_expr(p$parsed_toks)
   p
 }

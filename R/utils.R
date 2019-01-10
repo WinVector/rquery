@@ -149,6 +149,9 @@ parse_nse <- function(source, exprs, env,
 }
 
 
+# parsed is a list of named parsed lists:
+# (presentation, parsed_toks, symbols_used, symbols_produced, free_symbols, parsed)
+# parsed_toks is sequence of pre_sql tokens
 redo_parse_quoting <- function(parsed, db_info) {
   n <- length(parsed)
   for(i in seq_len(n)) {

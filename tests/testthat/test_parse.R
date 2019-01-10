@@ -12,31 +12,26 @@ test_that("test_parse: Works As Expected", {
     p <- tokenize_for_SQL(ei,
                   colnames = c("c1", "c2"),
                   env = env)
-    ftoks <- vapply(p$parsed,
-                     function(pi) {
-                       format(pi)
-                       }, character(1))
-    p$check <- trimws(paste(ftoks, collapse = " "), which = "both")
+    p$check <- to_query(p$parsed_toks, rquery::rquery_default_db_info)
     p
   }
 
   ex1 <- do_parse("1")
   expect_equal("1", ex1$check)
-  expect_equal("1", to_query(ex1$parsed_toks))
 
   ex2 <- do_parse("c1")
-  expect_equal("'c1'", ex2$check)
+  expect_equal('"c1"', ex2$check)
   expect_equal("c1", ex2$symbols_used)
 
   ex3 <- do_parse("x1")
   expect_equal("x1", ex3$check)
   expect_equal(character(0), ex3$symbols_used)
 
-  ex4 <- do_parse("'c1'")
-  expect_equal('"c1"', ex4$check)
+  ex4 <- do_parse('"c1"')
+  expect_equal("'c1'", ex4$check)
 
   ex5 <- do_parse("zs")
-  expect_equal('"q"', ex5$check)
+  expect_equal("'q'", ex5$check)
 
   ex6 <- do_parse("zn")
   expect_equal("5", ex6$check)

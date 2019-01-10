@@ -75,19 +75,18 @@ pre_sql_token <- function(value) {
   t
 }
 
-#' pre_sql_expr
+#' pre_sql_sub_expr
 #'
 #' represents an expression.  Unnamed list of pre_sql_terms and character.
 #'
-#' @param terms character, term vector
-#' @return pre_sql_expr class
+#' @param terms list of pre_sql tokens
+#' @return pre_sql_sub_expr class
 #'
 #' @noRd
 #'
-pre_sql_expr <- function(terms) {
-  t <- as.list(terms)
-  names(t) <- NULL
-  class(t) <- c("pre_sql_expr", "pre_sql")
+pre_sql_sub_expr <- function(terms, info = NULL) {
+  t = list(toks = terms, info = info)
+  class(t) <- "pre_sql_sub_expr"
   t
 }
 
@@ -186,9 +185,10 @@ to_query.pre_sql_token <- function (x,
   paste(as.character(x$value), collapse = " ")
 }
 
-#' Convert a pre_sql expr object to SQL query text.
+
+#' Convert a pre_sql token object to SQL query text.
 #'
-#' @param x the pre_sql expr
+#' @param x the pre_sql token
 #' @param db_info representation of the database to convert to
 #' @param ... force later arguments to be by name
 #' @param source_table concrete table for query
@@ -198,23 +198,24 @@ to_query.pre_sql_token <- function (x,
 #'
 #' @noRd
 #'
-to_query.pre_sql_expr <- function (x,
-                                   db_info,
-                                   ...,
-                                   source_table = NULL,
-                                   source_limit = NA_real_,
-                                   using = NULL) {
+to_query.pre_sql_sub_expr <- function (x,
+                                       db_info,
+                                       ...,
+                                       source_table = NULL,
+                                       source_limit = NA_real_,
+                                       using = NULL) {
   if(length(list(...))>0) {
     stop("unexpected arguments")
   }
-  terms <- vapply(x,
+  terms <- lapply(x$toks,
                   function(ti) {
                     to_query(ti,
                              db_info = db_info,
                              source_table = source_table,
                              source_limit = source_limit,
                              using = using)
-                  }, character(1))
+                  })
+  terms <- as.character(unlist(terms))
   paste(terms, collapse = " ")
 }
 
