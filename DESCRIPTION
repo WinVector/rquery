@@ -31,7 +31,6 @@ Imports:
 Suggests:
     DBI,
     RSQLite,
-    RPostgreSQL,
     rqdatatable,
     igraph,
     DiagrammeR,
