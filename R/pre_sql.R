@@ -224,7 +224,7 @@ to_query.pre_sql_sub_expr <- function (x,
                              source_limit = source_limit,
                              using = using)
                   })
-  terms <- as.character(unlist(terms))
+  terms <- as.character(unlist(terms, recursive = TRUE, use.names = FALSE))
   paste(terms, collapse = " ")
 }
 
