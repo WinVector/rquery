@@ -102,7 +102,9 @@ pre_sql_sub_expr <- function(terms, info = NULL) {
 #' @param using character, if not NULL set of columns used from above.
 #' @return SQL command
 #'
-#' @noRd
+#' @keywords internal
+#'
+#' @export
 #'
 to_query <- function (x,
                       db_info,
@@ -114,14 +116,17 @@ to_query <- function (x,
 }
 
 #' @export
+#'
+#' @keywords internal
 format.pre_sql_token <- function(x, ...) {
-  if(x$token_type == "column") {
-    return(paste0("'", x$column_name, "'"))
-  }
-  if(x$token_type == "string") {
-    return(paste0('"', paste(as.character(x$value), collapse = " "), '"'))
-  }
-  paste(as.character(x$value), collapse = " ")
+  to_query(x, rquery_default_db_info)
+}
+
+#' @export
+#'
+#' @keywords internal
+print.pre_sql_token <- function(x, ...) {
+  print(format(x))
 }
 
 #' Convert a pre_sql token object to SQL query text.
@@ -134,7 +139,9 @@ format.pre_sql_token <- function(x, ...) {
 #' @param using TBD
 #' @return SQL query text
 #'
-#' @noRd
+#' @keywords internal
+#'
+#' @export
 #'
 to_query.pre_sql_token <- function (x,
                                     db_info,
@@ -196,7 +203,9 @@ to_query.pre_sql_token <- function (x,
 #' @param using TBD
 #' @return SQL query text
 #'
-#' @noRd
+#' @keywords internal
+#'
+#' @export
 #'
 to_query.pre_sql_sub_expr <- function (x,
                                        db_info,
@@ -217,6 +226,23 @@ to_query.pre_sql_sub_expr <- function (x,
                   })
   terms <- as.character(unlist(terms))
   paste(terms, collapse = " ")
+}
+
+
+#' @export
+#'
+#' @keywords internal
+#'
+format.pre_sql_sub_expr <- function(x, ...) {
+  to_query(x, rquery_default_db_info)
+}
+
+#' @export
+#'
+#' @keywords internal
+#'
+print.pre_sql_sub_expr <- function(x, ...) {
+  print(format(x))
 }
 
 
