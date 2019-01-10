@@ -258,6 +258,7 @@ to_query.pre_sql_sub_expr <- function (x,
 #' @export
 #'
 str_pre_sql_sub_expr <- function(x) {
+  # process leaf-cases
   if(!("pre_sql_sub_expr" %in% class(x))) {
     return(format(x))
   }
