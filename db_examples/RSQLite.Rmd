@@ -1,0 +1,110 @@
+---
+output: github_document
+---
+
+
+Let's work a non-trivial example: the `dplyr` pipeline 
+from [Let’s Have Some Sympathy For The Part-time R User](http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/).
+
+For `RSQlite` this is going to be a mess, as we do not have window functions and self-joins can be problematic in `RSQlite`.
+
+
+
+```{r ex, warning=FALSE, message=FALSE}
+library("rquery")
+library("wrapr")
+
+raw_connection <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+db <- rquery_db_info(
+  connection = raw_connection,
+  is_dbi = TRUE,
+  connection_options = rq_connection_tests(raw_connection))
+tmps <- mk_tmp_name_source("ex")
+
+
+# copy data in so we have an example
+d_local <- build_frame(
+   "subjectID", "surveyCategory"     , "assessmentTotal", "irrelevantCol1", "irrelevantCol2" |
+   1L         , "withdrawal behavior", 5                , "irrel1"        , "irrel2"         |
+   1L         , "positive re-framing", 2                , "irrel1"        , "irrel2"         |
+   2L         , "withdrawal behavior", 3                , "irrel1"        , "irrel2"         |
+   2L         , "positive re-framing", 4                , "irrel1"        , "irrel2"         )
+rq_copy_to(db, 'd',
+            d_local,
+            temporary = TRUE, 
+            overwrite = TRUE)
+
+# produce a hande to existing table
+d <- db_td(db, "d")
+```
+
+
+
+```{r calcm, warning=FALSE, message=FALSE}
+scale <- 0.237
+
+dqp <- d %.>%
+  extend(.,
+         probability :=
+           exp(assessmentTotal * scale)) %.>%
+  materialize_node(., table_name = tmps())
+
+dqs <- dqp %.>%
+  project(., 
+       tot_prob := sum(probability),
+       groupby = 'subjectID') %.>%
+  materialize_node(., table_name = tmps())
+
+dqx <- natural_join(dqp, dqs,
+                   by = 'subjectID',
+                   jointype = 'LEFT') %.>%
+  extend(., 
+         probability := probability/tot_prob) %.>% 
+  materialize_node(., table_name = tmps()) 
+
+mp <- dqx %.>%
+  project(., 
+          probability := max(probability),
+          groupby = 'subjectID') %.>% 
+  materialize_node(., table_name = tmps()) 
+
+dq <- natural_join(mp, dqx,
+                    by = c("subjectID", "probability")) %.>%
+  project(., 
+          probability := max(probability), # pseudo aggregator
+          surveyCategory := max(surveyCategory),
+          groupby = 'subjectID') %.>%
+  rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
+  select_columns(., c('subjectID', 
+                      'diagnosis', 
+                      'probability')) %.>%
+  orderby(., cols = 'subjectID')
+
+cat(format(dq))
+```
+
+(Note one can also use the named map builder alias `%:=%` if there is concern of aliasing with `data.table`'s definition of `:=`.)
+
+We then generate our result:
+
+```{r res, warning=FALSE, message=FALSE}
+result <- materialize(db, dq)
+
+class(result)
+result
+
+DBI::dbReadTable(db$connection, result$table_name) %.>%
+  knitr::kable(.)
+```
+
+```{r diagram, fig.width=8, fig.height=8, eval=FALSE}
+dq %.>%
+  op_diagram(., merge_tables = TRUE) %.>% 
+  DiagrammeR::grViz(.)
+```
+
+
+```{r cleanup, include=FALSE}
+DBI::dbDisconnect(raw_connection)
+rm(list = c("raw_connection", "db"))
+```

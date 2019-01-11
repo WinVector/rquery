@@ -192,6 +192,7 @@ materialize_impl <- function(db,
   for(ti in temp_intermediate_tables) {
     rq_remove_table(db, ti)
   }
+  built <- list()
   # work on all but last node of chain
   notes <- data.frame(step = seq_len(n_steps),
                       node = NA_character_,
@@ -203,7 +204,6 @@ materialize_impl <- function(db,
                       stringsAsFactors = FALSE)
   notes$start_time[seq_len(n_steps)] <- NA
   notes$end_time[seq_len(n_steps)] <- NA
-  to_clear <- NULL
   if(n_steps>=2) {
     # do the work on all but the last node
     for(ii in seq_len(n_steps-1)) {
@@ -212,40 +212,41 @@ materialize_impl <- function(db,
       if(is.character(sqli)) {
         notes$node[[ii]] <- "sql"
         notes$sql[[ii]] <- sqli
-        rq_execute(db, sqli)
-        if(!is.null(to_clear)) {
-          rq_remove_table(db, to_clear)
-          to_clear <- NULL
+        sqliP <- sql_list[[ii+1]]
+        skip <- FALSE
+        if(!is.character(sqliP)) {
+          if(sqliP$incoming_table_name==sqliP$outgoing_table_name) {
+            # this SQL is part of a materialize node
+            tn <- sqliP$incoming_table_name
+            skip <- tn %in% built
+            if(!skip) {
+              built <- c(built, tn)
+            }
+          }
+        }
+        if(!skip) {
+          rq_execute(db, sqli)
         }
       } else {
+        notes$node[[ii]] <- sqli$display_form
+        notes$incoming_table_name[[ii]] <- sqli$incoming_table_name
+        notes$outgoing_table_name[[ii]] <- sqli$outgoing_table_name
         if(!is.null(sqli$f)) {
-          notes$node[[ii]] <- sqli$display_form
-          notes$incoming_table_name[[ii]] <- sqli$incoming_table_name
-          notes$outgoing_table_name[[ii]] <- sqli$outgoing_table_name
-          if(length(formals(sqli$f))>=4) {
-            sqli$f(db,
-                   sqli$incoming_table_name,
-                   sqli$outgoing_table_name,
-                   sqli)
-          } else {
-            # legacy signature
-            sqli$f(db,
-                   sqli$incoming_table_name,
-                   sqli$outgoing_table_name)
+          if(!(sqli$outgoing_table_name %in% built)) {
+            if(length(formals(sqli$f))>=4) {
+              sqli$f(db,
+                     sqli$incoming_table_name,
+                     sqli$outgoing_table_name,
+                     sqli)
+            } else {
+              # legacy signature
+              sqli$f(db,
+                     sqli$incoming_table_name,
+                     sqli$outgoing_table_name)
+            }
           }
-          rq_remove_table(db, sqli$incoming_table_name)
-          if((!is.null(to_clear)) &&
-             (to_clear!=sqli$outgoing_table_name)) {
-            rq_remove_table(db, to_clear)
-          }
-          to_clear <- sqli$outgoing_table_name
         } else {
-          if((!is.null(to_clear)) &&
-             (to_clear!=sqli$outgoing_table_name)) {
-            rq_remove_table(db, to_clear)
-            to_clean <- NULL
-          }
-          to_clear <- sqli$outgoing_table_name
+          built <- c(built, sqli$outgoing_table_name)
         }
       }
       notes$end_time[[ii]] <- Sys.time()
@@ -270,9 +271,9 @@ materialize_impl <- function(db,
   sqlc <- materialize_sql_statement(db, sql, table_name,
                                     temporary = temporary)
   rq_execute(db, sqlc)
-  if(!is.null(to_clear)) {
-    rq_remove_table(db, to_clear)
-    to_clear <- NULL
+  # clear intermediates
+  for(ti in setdiff(built, table_name)) {
+    rq_remove_table(db, ti)
   }
   res <- db_td(db, table_name)
   notes$end_time[[n_steps]] <- Sys.time()
