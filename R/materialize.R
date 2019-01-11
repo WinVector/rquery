@@ -136,6 +136,17 @@ materialize_impl <- function(db,
       }
     }
   }
+  # check for producing the same table twice
+  outgoing <- character(0)
+  for(ii in seq_len(n_steps)) {
+    sqli <- sql_list[[ii]]
+    if(!is.character(sqli)) {
+      if(sqli$outgoing_table_name %in% outgoing) {
+        stop("rquery:::materialize_impl repeated outgoing temp table")
+      }
+      outgoing <- c(outgoing, sqli$outgoing_table_name)
+    }
+  }
   # get list of temporary intermediates
   temp_intermediate_tables <- character(0)
   for(ii in seq_len(n_steps)) {
