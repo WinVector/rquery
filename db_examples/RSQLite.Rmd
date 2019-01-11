@@ -120,13 +120,15 @@ DBI::dbReadTable(db$connection, result$table_name) %.>%
 
 We can also diagram the calculation.
 
-```{r eval=FALSE}
+```{r echo=FALSE}
 stages %.>%
   op_diagram(., merge_tables = TRUE) %.>% 
-  DiagrammeR::grViz(.)
+  DiagrammeR::grViz(.) %.>%
+  DiagrammeRsvg::export_svg(.) %.>%
+  write(., file="RSQLite_diagram.svg")
 ```
 
-![](https://github.com/WinVector/rquery/raw/master/db_examples/RSQLite_diagram.png)
+![](RSQLite_diagram.svg)
 
 Or even print the enormous SQL required to impelment the calculation.
 
