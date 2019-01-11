@@ -240,13 +240,16 @@ The additional record-keeping in the operator nodes allows checking and optimiza
 cat(format(dq))
 ```
 
-```{r diagram, fig.width=8, fig.height=8, eval=FALSE}
+```{r diagram, fig.width=8, fig.height=8}
 dq %.>%
   op_diagram(., merge_tables = TRUE) %.>% 
-  DiagrammeR::grViz(.)
+  DiagrammeR::grViz(.) %.>%
+  DiagrammeRsvg::export_svg(.) %.>%
+  write(., file="MonetDBLite_diagram.svg")
 ```
 
-![](https://github.com/WinVector/rquery/raw/master/db_examples/MonetDBLite_diagram.png)
+
+![](MonetDBLite_diagram.svg)
 
 `rquery` also includes a number of useful utilities (both as nodes and as functions).
 

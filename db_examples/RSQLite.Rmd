@@ -120,7 +120,7 @@ DBI::dbReadTable(db$connection, result$table_name) %.>%
 
 We can also diagram the calculation.
 
-```{r echo=FALSE}
+```{r}
 stages %.>%
   op_diagram(., merge_tables = TRUE) %.>% 
   DiagrammeR::grViz(.) %.>%
