@@ -46,6 +46,9 @@ mk_td <- function(table_name, columns,
                   q_table_name = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::mk_td")
+  if(is.null(table_name)) {
+    stop("rquery::mk_td called with NULL table_name")
+  }
   if(is.null(q_table_name)) {
     q_table_name <- table_name
   }
