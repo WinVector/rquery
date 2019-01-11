@@ -6,7 +6,7 @@
 \usage{
 materialize(db, optree, table_name = mk_tmp_name_source("rquery_mat")(),
   ..., limit = NULL, source_limit = NULL, overwrite = TRUE,
-  temporary = FALSE, precheck = FALSE)
+  temporary = FALSE)
 }
 \arguments{
 \item{db}{database connecton (rquery_db_info class or DBI connections preferred).}
@@ -24,8 +24,6 @@ materialize(db, optree, table_name = mk_tmp_name_source("rquery_mat")(),
 \item{overwrite}{logical if TRUE drop an previous table.}
 
 \item{temporary}{logical if TRUE try to create a temporary table.}
-
-\item{precheck}{logical if TRUE precheck existence of table and columns.}
 }
 \value{
 table description
@@ -45,20 +43,11 @@ if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quiet
                    temporary = TRUE, overwrite = TRUE)
   optree <- extend_se(d, c("v" \%:=\% "AUC + R2", "x" \%:=\% "pmax(AUC,v)"))
   cat(format(optree))
-  res <- materialize(my_db, optree, "example", precheck = TRUE)
+  res <- materialize(my_db, optree, "example")
   cat(format(res))
   sql <- to_sql(res, my_db)
   cat(sql)
   print(DBI::dbGetQuery(my_db, sql))
-
-  # extra example, table that doesn't match declared structure
-  rq_copy_to(my_db, 'd',
-              data.frame(z = 1:5),
-              temporary = TRUE, overwrite = TRUE)
-  tryCatch(
-     materialize(my_db, optree, "example", precheck = TRUE),
-     error = function(e) { as.character(e) }) \%.>\%
-     print(.)
 
   DBI::dbDisconnect(my_db)
 }

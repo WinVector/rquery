@@ -12,7 +12,6 @@ db <- rquery_db_info(
   connection = raw_connection,
   is_dbi = TRUE,
   connection_options = rq_connection_tests(raw_connection))
-tmps <- mk_tmp_name_source("ex")
 
 
 # copy data in so we have an example
@@ -38,19 +37,25 @@ d <- db_td(db, "d")
 ``` r
 scale <- 0.237
 
+tmps <- mk_tmp_name_source("ex")
+
 # convert assessmentTotal to unscaled proabilities
 dqp <- d %.>%
   extend(.,
          probability :=
            exp(assessmentTotal * scale)) %.>%
-  materialize_node(., table_name = tmps())
+  materialize(db, ., table_name = tmps(),
+              overwrite = TRUE,
+              temporary = FALSE)
 
 # total the probabilities per-group
 dqs <- dqp %.>%
   project(., 
        tot_prob := sum(probability),
        groupby = 'subjectID') %.>%
-  materialize_node(., table_name = tmps())
+  materialize(db, ., table_name = tmps(),
+              overwrite = TRUE,
+              temporary = FALSE)
 
 # join total back in and scale
 dqx <- natural_join(dqp, dqs,
@@ -58,14 +63,18 @@ dqx <- natural_join(dqp, dqs,
                    jointype = 'LEFT') %.>%
   extend(., 
          probability := probability/tot_prob) %.>% 
-  materialize_node(., table_name = tmps()) 
+  materialize(db, ., table_name = tmps(),
+              overwrite = TRUE,
+              temporary = FALSE)
 
 # find largest per subject probability
 mp <- dqx %.>%
   project(., 
           probability := max(probability),
           groupby = 'subjectID') %.>% 
-  materialize_node(., table_name = tmps()) 
+  materialize(db, ., table_name = tmps(),
+              overwrite = TRUE,
+              temporary = FALSE)
 
 # join in by best score and probability per subject 
 # (to break ties)
@@ -81,15 +90,21 @@ dq <- natural_join(mp, dqx,
                       'diagnosis', 
                       'probability')) %.>%
   orderby(., cols = 'subjectID')
+
+result <- materialize(db, dq, table_name = "result")
+
+# clean up tmps
+intermediates <- tmps(dumpList = TRUE)
+for(ti in intermediates) {
+  rquery::rq_remove_table(db, ti)
+}
 ```
 
 (Note one can also use the named map builder alias `%:=%` if there is concern of aliasing with `data.table`'s definition of `:=`.)
 
-We then generate our result:
+We then look at our result:
 
 ``` r
-result <- materialize(db, dq)
-
 class(result)
 ```
 
@@ -99,7 +114,7 @@ class(result)
 result
 ```
 
-    ## [1] "table(`rquery_mat_49882603414725633293_0000000000`; subjectID, diagnosis, probability)"
+    ## [1] "table(`result`; subjectID, diagnosis, probability)"
 
 ``` r
 DBI::dbReadTable(db$connection, result$table_name) %.>%
@@ -110,9 +125,3 @@ DBI::dbReadTable(db$connection, result$table_name) %.>%
 |----------:|:--------------------|------------:|
 |          1| withdrawal behavior |    0.6706221|
 |          2| positive re-framing |    0.5589742|
-
-``` r
-dq %.>%
-  op_diagram(., merge_tables = TRUE) %.>% 
-  DiagrammeR::grViz(.)
-```

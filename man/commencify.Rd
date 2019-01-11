@@ -5,9 +5,8 @@
 \title{Hyderdrive (science fiction show) synonym for \code{\link{execute}}}
 \usage{
 commencify(source, optree, ..., limit = NULL, source_limit = NULL,
-  overwrite = TRUE, temporary = TRUE, precheck = FALSE,
-  allow_executor = TRUE, temp_source = mk_tmp_name_source("rquery_ex"),
-  env = parent.frame())
+  overwrite = TRUE, temporary = TRUE, allow_executor = TRUE,
+  temp_source = mk_tmp_name_source("rquery_ex"), env = parent.frame())
 }
 \arguments{
 \item{source}{data.frame or database connecton (rquery_db_info class or DBI connections preferred).}
@@ -23,8 +22,6 @@ commencify(source, optree, ..., limit = NULL, source_limit = NULL,
 \item{overwrite}{logical if TRUE drop an previous table.}
 
 \item{temporary}{logical if TRUE try to create a temporary table.}
-
-\item{precheck}{logical if TRUE precheck existence of table and columns.}
 
 \item{allow_executor}{logical if TRUE allow any executor set as rquery.rquery_executor to be used.}
 

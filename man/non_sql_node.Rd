@@ -48,5 +48,5 @@ to non-temporary structures.  Also they tend to land all columns
 so can be expensive and should be used sparingly.
 }
 \seealso{
-\code{\link{rsummary_node}}, \code{\link{quantile_node}}, \code{\link{materialize_node}}
+\code{\link{rsummary_node}}, \code{\link{quantile_node}}
 }

@@ -24,7 +24,7 @@
 #' @param env environment to look to.
 #' @return non-sql node.
 #'
-#' @seealso \code{\link{rsummary_node}}, \code{\link{quantile_node}}, \code{\link{materialize_node}}
+#' @seealso \code{\link{rsummary_node}}, \code{\link{quantile_node}}
 #'
 #' @export
 #'
@@ -239,37 +239,4 @@ print.rquery_non_sql_step <- function(x, ...) {
   print(format(x))
 }
 
-
-#' Cache results to a named table inside a pipeline.
-#'
-#'
-#' @param source source to work from (relop node)
-#' @param table_name character, name of caching table
-#' @param ... force later arguments to bind by name
-#' @param temporary logical, if TRUE mark tables temporary.
-#' @return sql node.
-#'
-#' @seealso \code{\link{rsummary_node}}, \code{\link{non_sql_node}}
-#'
-#' @export
-#'
-materialize_node <- function(source,
-                             table_name,
-                             ...,
-                             temporary = TRUE) {
-  wrapr::stop_if_dot_args(substitute(list(...)), "materialize_node")
-  if(!("relop" %in% class(source))) {
-    stop("rquery::materialize_node requires source be of class relop")
-  }
-  non_sql_node(source = source,
-               f_db = NULL,
-               f_df = function(x, nd = NULL) { x },
-               f_dt = NULL,
-               incoming_table_name = table_name,
-               outgoing_table_name = table_name,
-               columns_produced = NULL,
-               display_form = paste0("materialize_node(", table_name, ")"),
-               orig_columns = TRUE,
-               temporary = temporary)
-}
 

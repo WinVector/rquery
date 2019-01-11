@@ -226,7 +226,7 @@ class(result)
 result
 ```
 
-    ## [1] "table(\"rquery_mat_96954594240431140014_0000000000\"; subjectID, diagnosis, probability)"
+    ## [1] "table(\"rquery_mat_16153549719036371985_0000000000\"; subjectID, diagnosis, probability)"
 
 ``` r
 DBI::dbReadTable(db$connection, result$table_name) %.>%
@@ -297,14 +297,14 @@ cat(to_sql(dq, db, source_limit = 1000))
             "assessmentTotal"
            FROM
             "d" LIMIT 1000
-           ) tsql_67921351234512107649_0000000000
-          ) tsql_67921351234512107649_0000000001
-         ) tsql_67921351234512107649_0000000002
-       ) tsql_67921351234512107649_0000000003
+           ) tsql_56389361563016958637_0000000000
+          ) tsql_56389361563016958637_0000000001
+         ) tsql_56389361563016958637_0000000002
+       ) tsql_56389361563016958637_0000000003
        WHERE "row_number" <= 1
-      ) tsql_67921351234512107649_0000000004
-     ) tsql_67921351234512107649_0000000005
-    ) tsql_67921351234512107649_0000000006 ORDER BY "subjectID"
+      ) tsql_56389361563016958637_0000000004
+     ) tsql_56389361563016958637_0000000005
+    ) tsql_56389361563016958637_0000000006 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
