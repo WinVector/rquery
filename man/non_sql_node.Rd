@@ -45,7 +45,8 @@ Note: non-SQL nodes are allowed to delete/overwrite both
 both the incoming and outgoing tables, so do not point them
 to non-temporary structures.  Also they tend to land all columns
 (losing narrowing optimization),
-so can be expensive and should be used sparingly.
+so can be expensive and should be used sparingly.  Finally their
+result can only be used once in a pipeline (else they will try to clobber their own result).
 }
 \seealso{
 \code{\link{rsummary_node}}, \code{\link{quantile_node}}

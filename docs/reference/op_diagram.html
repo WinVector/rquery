@@ -145,7 +145,7 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>optree</th>
-      <td><p>operation tree pipeline.</p></td>
+      <td><p>operation tree pipeline (or list of such).</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -153,7 +153,7 @@
     </tr>
     <tr>
       <th>merge_tables</th>
-      <td><p>logical if TRUE merge all same table references into one node.</p></td>
+      <td><p>logical if TRUE merge all same table references into one node.  rel_op nodes that declare a materialize_as name will be cross-linked.</p></td>
     </tr>
     </table>
     

@@ -220,7 +220,7 @@ class(result)
 result
 ```
 
-    ## [1] "table(\"rquery_mat_67701318219550145006_0000000000\"; subjectID, diagnosis, probability)"
+    ## [1] "table(\"rquery_mat_49134023432571468632_0000000000\"; subjectID, diagnosis, probability)"
 
 ``` r
 DBI::dbReadTable(db$connection, result$table_name) %.>%
@@ -281,10 +281,10 @@ cat(to_sql(dq, db, source_limit = 1000))
           "probability" / "tot_prob"  AS "probability"
          FROM (
           SELECT
-           COALESCE("tsql_02721829543716247509_0000000003"."subjectID", "tsql_02721829543716247509_0000000004"."subjectID") AS "subjectID",
-           "tsql_02721829543716247509_0000000003"."surveyCategory" AS "surveyCategory",
-           "tsql_02721829543716247509_0000000003"."probability" AS "probability",
-           "tsql_02721829543716247509_0000000004"."tot_prob" AS "tot_prob"
+           COALESCE("tsql_77051385333571004961_0000000003"."subjectID", "tsql_77051385333571004961_0000000004"."subjectID") AS "subjectID",
+           "tsql_77051385333571004961_0000000003"."surveyCategory" AS "surveyCategory",
+           "tsql_77051385333571004961_0000000003"."probability" AS "probability",
+           "tsql_77051385333571004961_0000000004"."tot_prob" AS "tot_prob"
           FROM (
            SELECT
             "subjectID",
@@ -297,8 +297,8 @@ cat(to_sql(dq, db, source_limit = 1000))
              "assessmentTotal"
             FROM
              "d" LIMIT 1000
-            ) tsql_02721829543716247509_0000000000
-          ) "tsql_02721829543716247509_0000000003"
+            ) tsql_77051385333571004961_0000000000
+          ) "tsql_77051385333571004961_0000000003"
           LEFT JOIN (
            SELECT "subjectID", sum ( "probability" ) AS "tot_prob" FROM (
             SELECT
@@ -310,20 +310,20 @@ cat(to_sql(dq, db, source_limit = 1000))
               "assessmentTotal"
              FROM
               "d" LIMIT 1000
-             ) tsql_02721829543716247509_0000000001
-            ) tsql_02721829543716247509_0000000002
+             ) tsql_77051385333571004961_0000000001
+            ) tsql_77051385333571004961_0000000002
            GROUP BY
             "subjectID"
-          ) "tsql_02721829543716247509_0000000004"
+          ) "tsql_77051385333571004961_0000000004"
           ON
-           "tsql_02721829543716247509_0000000003"."subjectID" = "tsql_02721829543716247509_0000000004"."subjectID"
-          ) tsql_02721829543716247509_0000000005
-         ) tsql_02721829543716247509_0000000006
-       ) tsql_02721829543716247509_0000000007
+           "tsql_77051385333571004961_0000000003"."subjectID" = "tsql_77051385333571004961_0000000004"."subjectID"
+          ) tsql_77051385333571004961_0000000005
+         ) tsql_77051385333571004961_0000000006
+       ) tsql_77051385333571004961_0000000007
        WHERE "row_number" <= 1
-      ) tsql_02721829543716247509_0000000008
-     ) tsql_02721829543716247509_0000000009
-    ) tsql_02721829543716247509_0000000010 ORDER BY "subjectID"
+      ) tsql_77051385333571004961_0000000008
+     ) tsql_77051385333571004961_0000000009
+    ) tsql_77051385333571004961_0000000010 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 

@@ -31,8 +31,7 @@ table of quantiles
 Please see \url{https://github.com/WinVector/rquery/blob/master/extras/Summary_Example.md} for an example.
 }
 \details{
-This is a non_sql_node, so forces the materialization of
-the calculation prior to it losing narrowing optimizations.
+This is a non_sql_node, so please see \code{\link{non_sql_node}} for some of the issues for this node type.
 }
 \seealso{
 \code{\link{quantile_cols}}, \code{\link{rsummary}}, \code{\link{non_sql_node}}

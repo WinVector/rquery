@@ -118,6 +118,24 @@ DBI::dbReadTable(db$connection, result$table_name) %.>%
   knitr::kable(.)
 ```
 
+We can also diagram the calculation.
+
+```{r eval=FALSE}
+stages %.>%
+  op_diagram(., merge_tables = TRUE) %.>% 
+  DiagrammeR::grViz(.)
+```
+
+![](https://github.com/WinVector/rquery/raw/master/db_examples/RSQLite_diagram.png)
+
+Or even print the enormous SQL required to impelment the calculation.
+
+```{r printsql}
+for(stage in stages) {
+  cat(paste0(to_sql(stage, db), ";\n\n"))
+}
+```
+
 
 ```{r cleanup}
 # clean up tmps

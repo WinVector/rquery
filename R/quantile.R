@@ -117,8 +117,7 @@ quantile_cols_d <- function(d,
 #'
 #' Please see \url{https://github.com/WinVector/rquery/blob/master/extras/Summary_Example.md} for an example.
 #'
-#' This is a non_sql_node, so forces the materialization of
-#' the calculation prior to it losing narrowing optimizations.
+#' This is a non_sql_node, so please see \code{\link{non_sql_node}} for some of the issues for this node type.
 #'
 #' @param source source to select from (relop or data.frame).
 #' @param cols character, compute quantiles for these columns (NULL indicates all columns).

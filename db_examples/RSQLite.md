@@ -126,6 +126,146 @@ DBI::dbReadTable(db$connection, result$table_name) %.>%
 |          1| withdrawal behavior |    0.6706221|
 |          2| positive re-framing |    0.5589742|
 
+We can also diagram the calculation.
+
+``` r
+stages %.>%
+  op_diagram(., merge_tables = TRUE) %.>% 
+  DiagrammeR::grViz(.)
+```
+
+![](https://github.com/WinVector/rquery/raw/master/db_examples/RSQLite_diagram.png)
+
+Or even print the enormous SQL required to impelment the calculation.
+
+``` r
+for(stage in stages) {
+  cat(paste0(to_sql(stage, db), ";\n\n"))
+}
+```
+
+    ## SELECT
+    ##  `subjectID`,
+    ##  `surveyCategory`,
+    ##  `assessmentTotal`,
+    ##  `irrelevantCol1`,
+    ##  `irrelevantCol2`,
+    ##  exp ( `assessmentTotal` * 0.237 )  AS `probability`
+    ## FROM (
+    ##  SELECT
+    ##   `subjectID`,
+    ##   `surveyCategory`,
+    ##   `assessmentTotal`,
+    ##   `irrelevantCol1`,
+    ##   `irrelevantCol2`
+    ##  FROM
+    ##   `d`
+    ##  ) tsql_37655697476456085001_0000000000
+    ## ;
+    ## 
+    ## SELECT `subjectID`, sum ( `probability` ) AS `tot_prob` FROM (
+    ##  SELECT
+    ##   `subjectID`,
+    ##   `probability`
+    ##  FROM
+    ##   `ex_71161136888445738717_0000000000`
+    ##  ) tsql_04617332599496833255_0000000000
+    ## GROUP BY
+    ##  `subjectID`
+    ## ;
+    ## 
+    ## SELECT
+    ##  `subjectID`,
+    ##  `surveyCategory`,
+    ##  `assessmentTotal`,
+    ##  `irrelevantCol1`,
+    ##  `irrelevantCol2`,
+    ##  `tot_prob`,
+    ##  `probability` / `tot_prob`  AS `probability`
+    ## FROM (
+    ##  SELECT
+    ##   COALESCE(`tsql_61924761500335914908_0000000000`.`subjectID`, `tsql_61924761500335914908_0000000001`.`subjectID`) AS `subjectID`,
+    ##   `tsql_61924761500335914908_0000000000`.`surveyCategory` AS `surveyCategory`,
+    ##   `tsql_61924761500335914908_0000000000`.`assessmentTotal` AS `assessmentTotal`,
+    ##   `tsql_61924761500335914908_0000000000`.`irrelevantCol1` AS `irrelevantCol1`,
+    ##   `tsql_61924761500335914908_0000000000`.`irrelevantCol2` AS `irrelevantCol2`,
+    ##   `tsql_61924761500335914908_0000000000`.`probability` AS `probability`,
+    ##   `tsql_61924761500335914908_0000000001`.`tot_prob` AS `tot_prob`
+    ##  FROM (
+    ##   SELECT
+    ##    `subjectID`,
+    ##    `surveyCategory`,
+    ##    `assessmentTotal`,
+    ##    `irrelevantCol1`,
+    ##    `irrelevantCol2`,
+    ##    `probability`
+    ##   FROM
+    ##    `ex_71161136888445738717_0000000000`
+    ##  ) `tsql_61924761500335914908_0000000000`
+    ##  LEFT JOIN (
+    ##   SELECT
+    ##    `subjectID`,
+    ##    `tot_prob`
+    ##   FROM
+    ##    `ex_71161136888445738717_0000000001`
+    ##  ) `tsql_61924761500335914908_0000000001`
+    ##  ON
+    ##   `tsql_61924761500335914908_0000000000`.`subjectID` = `tsql_61924761500335914908_0000000001`.`subjectID`
+    ##  ) tsql_61924761500335914908_0000000002
+    ## ;
+    ## 
+    ## SELECT `subjectID`, max ( `probability` ) AS `probability` FROM (
+    ##  SELECT
+    ##   `subjectID`,
+    ##   `probability`
+    ##  FROM
+    ##   `ex_71161136888445738717_0000000002`
+    ##  ) tsql_89909652234894541184_0000000000
+    ## GROUP BY
+    ##  `subjectID`
+    ## ;
+    ## 
+    ## SELECT * FROM (
+    ##  SELECT
+    ##   `subjectID`,
+    ##   `diagnosis`,
+    ##   `probability`
+    ##  FROM (
+    ##   SELECT
+    ##    `subjectID` AS `subjectID`,
+    ##    `probability` AS `probability`,
+    ##    `surveyCategory` AS `diagnosis`
+    ##   FROM (
+    ##    SELECT `subjectID`, max ( `probability` ) AS `probability`, min ( `surveyCategory` ) AS `surveyCategory` FROM (
+    ##     SELECT
+    ##      COALESCE(`tsql_68094518664131237381_0000000000`.`subjectID`, `tsql_68094518664131237381_0000000001`.`subjectID`) AS `subjectID`,
+    ##      COALESCE(`tsql_68094518664131237381_0000000000`.`probability`, `tsql_68094518664131237381_0000000001`.`probability`) AS `probability`,
+    ##      `tsql_68094518664131237381_0000000001`.`surveyCategory` AS `surveyCategory`
+    ##     FROM (
+    ##      SELECT
+    ##       `subjectID`,
+    ##       `probability`
+    ##      FROM
+    ##       `ex_71161136888445738717_0000000003`
+    ##     ) `tsql_68094518664131237381_0000000000`
+    ##     INNER JOIN (
+    ##      SELECT
+    ##       `subjectID`,
+    ##       `surveyCategory`,
+    ##       `probability`
+    ##      FROM
+    ##       `ex_71161136888445738717_0000000002`
+    ##     ) `tsql_68094518664131237381_0000000001`
+    ##     ON
+    ##      `tsql_68094518664131237381_0000000000`.`subjectID` = `tsql_68094518664131237381_0000000001`.`subjectID` AND `tsql_68094518664131237381_0000000000`.`probability` = `tsql_68094518664131237381_0000000001`.`probability`
+    ##     ) tsql_68094518664131237381_0000000002
+    ##    GROUP BY
+    ##     `subjectID`
+    ##   ) tsql_68094518664131237381_0000000003
+    ##  ) tsql_68094518664131237381_0000000004
+    ## ) tsql_68094518664131237381_0000000005 ORDER BY `subjectID`
+    ## ;
+
 ``` r
 # clean up tmps
 intermediates <- tmps(dumpList = TRUE)

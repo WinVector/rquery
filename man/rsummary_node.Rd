@@ -22,8 +22,7 @@ rsummary_node(source, ..., quartiles = FALSE,
 rsummary node
 }
 \description{
-This is a non_sql_node, so forces the materialization of
-the calculation prior to it losing narrowing optimizations.
+This is a non_sql_node, so please see \code{\link{non_sql_node}} for some of the issues for this node type.
 }
 \examples{
 

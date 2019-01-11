@@ -7,7 +7,8 @@
 #' both the incoming and outgoing tables, so do not point them
 #' to non-temporary structures.  Also they tend to land all columns
 #' (losing narrowing optimization),
-#' so can be expensive and should be used sparingly.
+#' so can be expensive and should be used sparingly.  Finally their
+#' result can only be used once in a pipeline (else they will try to clobber their own result).
 #'
 #' @param source source to work from (data.frame or relop node)
 #' @param ... force later arguments to bind by name

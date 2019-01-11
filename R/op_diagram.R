@@ -69,9 +69,9 @@ r_optree_diagram <- function(optree, nextid, use_table_names) {
 
 #' Build a diagram of a optree pipeline.
 #'
-#' @param optree operation tree pipeline.
+#' @param optree operation tree pipeline (or list of such).
 #' @param ... force other argument to be by name.
-#' @param merge_tables logical if TRUE merge all same table references into one node.
+#' @param merge_tables logical if TRUE merge all same table references into one node.  rel_op nodes that declare a materialize_as name will be cross-linked.
 #' @return character DiagrammeR::grViz() ready text.
 #'
 #' @examples
@@ -116,7 +116,25 @@ digraph rquery_optree {
   node [style=filled, fillcolor=lightgrey]
 
 "
-  graph <- r_optree_diagram(optree, 1, merge_tables)
+  nextid = 1
+  if(!("relop" %in% class(optree))) {
+    # list of optrees case
+    nodes <- list()
+    edges <- list()
+    for(opt in optree) {
+      graph <- r_optree_diagram(opt, nextid, merge_tables)
+      nextid <- graph$nextid + 1
+      nodesi <- graph$nodes
+      nodesi[[length(nodesi)]]$table_name_out <- opt$materialize_as
+      nodes <- c(nodes, nodesi)
+      edges <- c(edges, graph$edges)
+    }
+    graph <- list(nextid = nextid,
+                  nodes = nodes,
+                  edges = edges)
+  } else {
+    graph <- r_optree_diagram(optree, nextid, merge_tables)
+  }
   # de-dup any nodes
   node_names <- vapply(graph$nodes, function(ni) { ni$name }, character(1))
   graph$nodes <- graph$nodes[sort(unique(match(node_names, node_names)))]
@@ -126,10 +144,7 @@ digraph rquery_optree {
   outgoing_names <- lapply(graph$nodes, function(ni) { ni$table_name_out })
   matches <- match(incoming_names, outgoing_names)
   for(i in seq_len(length(matches))) {
-    if((!is.null(incoming_names[[i]])) &&
-       (!is.na(incoming_names[[i]])) &&
-       (!is.null(outgoing_names[[i]])) &&
-       (!is.na(outgoing_names[[i]]))) {
+    if((!is.na(i)) && (!is.null(incoming_names[[i]]))) {
       li <- matches[[i]]
       if((!is.null(li))&&(!is.na(li))) {
         edge <- paste0(node_names[[li]], " -> ",

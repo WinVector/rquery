@@ -454,8 +454,7 @@ rsummary_d <- function(d,
 
 #' Create an rsumary relop operator node.
 #'
-#' This is a non_sql_node, so forces the materialization of
-#' the calculation prior to it losing narrowing optimizations.
+#' This is a non_sql_node, so please see \code{\link{non_sql_node}} for some of the issues for this node type.
 #'
 #' @param source incoming source (relop node or data.frame).
 #' @param ... force later arguments to be by name
