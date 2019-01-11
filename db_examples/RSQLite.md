@@ -39,10 +39,9 @@ d <- db_td(db, "d")
 scale <- 0.237
 
 stages <- list()
-add_stage <- function(ops) {
-  tname <- tmps()
-  ops$materialize_as <- tname
-  table <- mk_td(tname, column_names(ops))
+add_stage <- function(ops, table_name = tmps()) {
+  ops$materialize_as <- table_name
+  table <- mk_td(table_name, column_names(ops))
   stages <<- c(stages, list(ops))
   table
 }
@@ -91,18 +90,19 @@ dq <- natural_join(mp_table, dqx_table,
                       'diagnosis', 
                       'probability')) %.>%
   orderby(., cols = 'subjectID')
+result = add_stage(dq, "result_table")
+```
 
+We then build our result.
+
+``` r
 for(stage in stages) {
   materialize(db, stage, table_name = stage$materialize_as,
               temporary = TRUE, overwrite = TRUE)
 }
-result <- materialize(db, dq, table_name = "result_table",
-                      temporary = TRUE, overwrite = TRUE)
 ```
 
-(Note one can also use the named map builder alias `%:=%` if there is concern of aliasing with `data.table`'s definition of `:=`.)
-
-We then look at our result:
+And take a look.
 
 ``` r
 class(result)
@@ -114,7 +114,7 @@ class(result)
 result
 ```
 
-    ## [1] "table(`result_table`; subjectID, diagnosis, probability)"
+    ## [1] "table(result_table; subjectID, diagnosis, probability)"
 
 ``` r
 DBI::dbReadTable(db$connection, result$table_name) %.>%
