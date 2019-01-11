@@ -40,71 +40,75 @@ d <- db_td(db, "d")
 
 
 ```{r calcm, warning=FALSE, message=FALSE}
-scale <- 0.237
-
-tmps <- mk_tmp_name_source("ex")
-
-# convert assessmentTotal to unscaled proabilities
-dqp <- d %.>%
-  extend(.,
-         probability :=
-           exp(assessmentTotal * scale)) %.>%
-  materialize(db, ., table_name = tmps(),
-              overwrite = TRUE,
-              temporary = FALSE)
-
-# total the probabilities per-group
-dqs <- dqp %.>%
-  project(., 
-       tot_prob := sum(probability),
-       groupby = 'subjectID') %.>%
-  materialize(db, ., table_name = tmps(),
-              overwrite = TRUE,
-              temporary = FALSE)
-
-# join total back in and scale
-dqx <- natural_join(dqp, dqs,
-                   by = 'subjectID',
-                   jointype = 'LEFT') %.>%
-  extend(., 
-         probability := probability/tot_prob) %.>% 
-  materialize(db, ., table_name = tmps(),
-              overwrite = TRUE,
-              temporary = FALSE)
-
-# find largest per subject probability
-mp <- dqx %.>%
-  project(., 
-          probability := max(probability),
-          groupby = 'subjectID') %.>% 
-  materialize(db, ., table_name = tmps(),
-              overwrite = TRUE,
-              temporary = FALSE)
-
-# join in by best score and probability per subject 
-# (to break ties)
-# and finish the scoring as before
-dq <- natural_join(mp, dqx,
-                    by = c("subjectID", "probability")) %.>%
-  project(., 
-          probability := max(probability), # pseudo aggregator
-          surveyCategory := min(surveyCategory),
-          groupby = 'subjectID') %.>%
-  rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
-  select_columns(., c('subjectID', 
-                      'diagnosis', 
-                      'probability')) %.>%
-  orderby(., cols = 'subjectID')
-
-result <- materialize(db, dq, table_name = "result")
-
-# clean up tmps
-intermediates <- tmps(dumpList = TRUE)
-for(ti in intermediates) {
-  rquery::rq_remove_table(db, ti)
+score_table <- function(db, d, result_name) {
+  scale <- 0.237
+  
+  tmps <- mk_tmp_name_source("ex")
+  
+  # convert assessmentTotal to unscaled proabilities
+  dqp <- d %.>%
+    extend(.,
+           probability :=
+             exp(assessmentTotal * scale)) %.>%
+    materialize(db, ., table_name = tmps(),
+                overwrite = TRUE,
+                temporary = FALSE)
+  
+  # total the probabilities per-group
+  dqs <- dqp %.>%
+    project(., 
+            tot_prob := sum(probability),
+            groupby = 'subjectID') %.>%
+    materialize(db, ., table_name = tmps(),
+                overwrite = TRUE,
+                temporary = FALSE)
+  
+  # join total back in and scale
+  dqx <- natural_join(dqp, dqs,
+                      by = 'subjectID',
+                      jointype = 'LEFT') %.>%
+    extend(., 
+           probability := probability/tot_prob) %.>% 
+    materialize(db, ., table_name = tmps(),
+                overwrite = TRUE,
+                temporary = FALSE)
+  
+  # find largest per subject probability
+  mp <- dqx %.>%
+    project(., 
+            probability := max(probability),
+            groupby = 'subjectID') %.>% 
+    materialize(db, ., table_name = tmps(),
+                overwrite = TRUE,
+                temporary = FALSE)
+  
+  # join in by best score and probability per subject 
+  # (to break ties)
+  # and finish the scoring as before
+  dq <- natural_join(mp, dqx,
+                     by = c("subjectID", "probability")) %.>%
+    project(., 
+            probability := max(probability), # pseudo aggregator
+            surveyCategory := min(surveyCategory),
+            groupby = 'subjectID') %.>%
+    rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
+    select_columns(., c('subjectID', 
+                        'diagnosis', 
+                        'probability')) %.>%
+    orderby(., cols = 'subjectID')
+  
+  result <- materialize(db, dq, table_name = result_name)
+  
+  # clean up tmps
+  intermediates <- tmps(dumpList = TRUE)
+  for(ti in intermediates) {
+    rquery::rq_remove_table(db, ti)
+  }
+  
+  result
 }
 
-
+result <- score_table(db, d, "result_table")
 ```
 
 (Note one can also use the named map builder alias `%:=%` if there is concern of aliasing with `data.table`'s definition of `:=`.)
