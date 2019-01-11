@@ -38,18 +38,21 @@ d <- db_td(db, "d")
 ``` r
 scale <- 0.237
 
+# convert assessmentTotal to unscaled proabilities
 dqp <- d %.>%
   extend(.,
          probability :=
            exp(assessmentTotal * scale)) %.>%
   materialize_node(., table_name = tmps())
 
+# total the probabilities per-group
 dqs <- dqp %.>%
   project(., 
        tot_prob := sum(probability),
        groupby = 'subjectID') %.>%
   materialize_node(., table_name = tmps())
 
+# join total back in and scale
 dqx <- natural_join(dqp, dqs,
                    by = 'subjectID',
                    jointype = 'LEFT') %.>%
@@ -57,91 +60,28 @@ dqx <- natural_join(dqp, dqs,
          probability := probability/tot_prob) %.>% 
   materialize_node(., table_name = tmps()) 
 
+# find largest per subject probability
 mp <- dqx %.>%
   project(., 
           probability := max(probability),
           groupby = 'subjectID') %.>% 
   materialize_node(., table_name = tmps()) 
 
+# join in by best score and probability per subject 
+# (to break ties)
+# and finish the scoring as before
 dq <- natural_join(mp, dqx,
                     by = c("subjectID", "probability")) %.>%
   project(., 
           probability := max(probability), # pseudo aggregator
-          surveyCategory := max(surveyCategory),
+          surveyCategory := min(surveyCategory),
           groupby = 'subjectID') %.>%
   rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
   select_columns(., c('subjectID', 
                       'diagnosis', 
                       'probability')) %.>%
   orderby(., cols = 'subjectID')
-
-cat(format(dq))
 ```
-
-    ## table(`d`; 
-    ##   subjectID,
-    ##   surveyCategory,
-    ##   assessmentTotal,
-    ##   irrelevantCol1,
-    ##   irrelevantCol2) %.>%
-    ##  extend(.,
-    ##   probability := exp(assessmentTotal * 0.237)) %.>%
-    ##  non_sql_node(., materialize_node(ex_41439864325863495117_0000000000)) %.>%
-    ##  natural_join(.,
-    ##   table(`d`; 
-    ##     subjectID,
-    ##     surveyCategory,
-    ##     assessmentTotal,
-    ##     irrelevantCol1,
-    ##     irrelevantCol2) %.>%
-    ##    extend(.,
-    ##     probability := exp(assessmentTotal * 0.237)) %.>%
-    ##    non_sql_node(., materialize_node(ex_41439864325863495117_0000000000)) %.>%
-    ##    project(., tot_prob := sum(probability),
-    ##     g= subjectID) %.>%
-    ##    non_sql_node(., materialize_node(ex_41439864325863495117_0000000001)),
-    ##   j= LEFT, by= subjectID) %.>%
-    ##  extend(.,
-    ##   probability := probability / tot_prob) %.>%
-    ##  non_sql_node(., materialize_node(ex_41439864325863495117_0000000002)) %.>%
-    ##  project(., probability := max(probability),
-    ##   g= subjectID) %.>%
-    ##  non_sql_node(., materialize_node(ex_41439864325863495117_0000000003)) %.>%
-    ##  natural_join(.,
-    ##   table(`d`; 
-    ##     subjectID,
-    ##     surveyCategory,
-    ##     assessmentTotal,
-    ##     irrelevantCol1,
-    ##     irrelevantCol2) %.>%
-    ##    extend(.,
-    ##     probability := exp(assessmentTotal * 0.237)) %.>%
-    ##    non_sql_node(., materialize_node(ex_41439864325863495117_0000000000)) %.>%
-    ##    natural_join(.,
-    ##     table(`d`; 
-    ##       subjectID,
-    ##       surveyCategory,
-    ##       assessmentTotal,
-    ##       irrelevantCol1,
-    ##       irrelevantCol2) %.>%
-    ##      extend(.,
-    ##       probability := exp(assessmentTotal * 0.237)) %.>%
-    ##      non_sql_node(., materialize_node(ex_41439864325863495117_0000000000)) %.>%
-    ##      project(., tot_prob := sum(probability),
-    ##       g= subjectID) %.>%
-    ##      non_sql_node(., materialize_node(ex_41439864325863495117_0000000001)),
-    ##     j= LEFT, by= subjectID) %.>%
-    ##    extend(.,
-    ##     probability := probability / tot_prob) %.>%
-    ##    non_sql_node(., materialize_node(ex_41439864325863495117_0000000002)),
-    ##   j= INNER, by= subjectID, probability) %.>%
-    ##  project(., probability := max(probability), surveyCategory := max(surveyCategory),
-    ##   g= subjectID) %.>%
-    ##  rename(.,
-    ##   c('diagnosis' = 'surveyCategory')) %.>%
-    ##  select_columns(.,
-    ##    subjectID, diagnosis, probability) %.>%
-    ##  orderby(., subjectID)
 
 (Note one can also use the named map builder alias `%:=%` if there is concern of aliasing with `data.table`'s definition of `:=`.)
 
@@ -159,7 +99,7 @@ class(result)
 result
 ```
 
-    ## [1] "table(`rquery_mat_09117987609820632164_0000000000`; subjectID, diagnosis, probability)"
+    ## [1] "table(`rquery_mat_49882603414725633293_0000000000`; subjectID, diagnosis, probability)"
 
 ``` r
 DBI::dbReadTable(db$connection, result$table_name) %.>%
