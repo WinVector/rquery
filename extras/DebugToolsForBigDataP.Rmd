@@ -12,6 +12,7 @@ base::date()
 
 library("dplyr")
 library("rquery")
+library("wrapr")
 
 my_db <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
                         host = 'localhost',
@@ -105,7 +106,8 @@ system.time({
                    partitionby = 'subjectID') %.>%
     pick_top_k(.,
                partitionby = 'subjectID',
-               rev_orderby = c('probability', 'surveyCategory')) %.>%
+               orderby = c('probability', 'surveyCategory'),
+               reverse = c('probability', 'surveyCategory')) %.>%
     rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
     select_columns(., qc(subjectID, diagnosis, probability)) %.>%
     orderby(., 'subjectID') 
@@ -148,7 +150,7 @@ system.time(nrow(as.data.frame(dplyr_pipeline)))
 base::date()
 ```
 
-`rquery` `materialize_node()` (`rquery`'s caching node)
+`rquery` `materialize_node()` 
 works with `rquery`'s column narrowing calculations.
 
 ```{r rqueryexp_cache}
@@ -166,8 +168,9 @@ system.time({
                    partitionby = 'subjectID') %.>%
     pick_top_k(.,
                partitionby = 'subjectID',
-               rev_orderby = c('probability', 'surveyCategory')) %.>%
-    materialize_node(., "tmp_res") %.>%  # <- insert caching node into pipeline prior to narrowing
+               orderby = c('probability', 'surveyCategory'),
+               reverse = c('probability', 'surveyCategory')) %.>%
+    materialize_node(., outgoing_table_name = "tmp_res") %.>%  # <- insert caching node into pipeline prior to narrowing
     rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
     select_columns(., qc(subjectID, diagnosis, probability)) %.>%
     orderby(., 'subjectID') 
@@ -245,7 +248,8 @@ system.time({
                    partitionby = 'subjectID') %.>%
     pick_top_k(.,
                partitionby = 'subjectID',
-               rev_orderby = c('probability', 'surveyCategory')) %.>%
+               orderby = c('probability', 'surveyCategory'),
+               reverse = c('probability', 'surveyCategory')) %.>%
     rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
     select_columns(., qc(subjectID, diagnosis, probability)) %.>%
     orderby(., 'ZubjectIDZZZ') # <- error non-existent column
