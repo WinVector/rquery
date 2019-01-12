@@ -156,6 +156,7 @@ Or even print the enormous SQL required to impelment the calculation.
 
 ```{r printsql}
 for(stage in stages) {
+  cat(paste0("\n-- ", stage$materialize_as, "\n"))
   cat(paste0(to_sql(stage, db), ";\n\n"))
 }
 ```
