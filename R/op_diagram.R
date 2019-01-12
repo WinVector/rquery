@@ -175,7 +175,7 @@ digraph rquery_optree {
   }
   shapes <- rep("box", length(graph$nodes))
   colors <- rep("khaki3", length(graph$nodes))
-  seen <- list()
+  msgs_seen <- list()
   for(ii in seq_len(length(graph$nodes))) {
     ni <- graph$nodes[[ii]]
     if(!is.null(ni$table_name_in)) {
@@ -185,9 +185,12 @@ digraph rquery_optree {
       if(counts[[ni$unique_node_name]]>1) {
         shapes[[ii]] <- "note"
         colors[[ii]] <- "orange"
-        if(!(ni$unique_node_name %in% seen)) {
-          cat(paste("warning: possible repeated calculation:\n", paste(format(ni$optree), collapse = " ")))
-          seen <- c(seen, ni$unique_node_name)
+        if(length(msgs_seen)<5) {
+          msg <- paste(format_node(ni$optree), collapse = " ")
+          if(!(msg %in% msgs_seen)) {
+            warning(paste("possible repeated calculation:\n", msg))
+            msgs_seen <- c(msgs_seen, msg)
+          }
         }
       }
     }
