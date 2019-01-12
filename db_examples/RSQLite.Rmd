@@ -152,7 +152,7 @@ c(stages, list(result)) %.>%
 
 ![](RSQLite_diagram.svg)
 
-Or even print the enormous SQL required to impelment the calculation.
+Or even print the enormous SQL required to implement the calculation.
 
 ```{r printsql}
 for(stage in stages) {

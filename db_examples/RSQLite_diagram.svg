@@ -35,11 +35,11 @@
 <text text-anchor="middle" x="274.7201" y="-1312.2" font-family="Times,serif" font-size="14.00" fill="#000000">.</text>
 <polyline fill="none" stroke="#000000" points="276.4701,-1308 272.9701,-1308 272.9701,-1316.4318 "/>
 </g>
-<!-- table_ex_43867708645243063765_0000000000 -->
+<!-- table_ex_55662762402969382209_0000000000 -->
 <g id="node3" class="node">
-<title>table_ex_43867708645243063765_0000000000</title>
+<title>table_ex_55662762402969382209_0000000000</title>
 <polygon fill="#66cd00" stroke="#000000" points="419.4467,-1238.2006 416.4467,-1242.2006 395.4467,-1242.2006 392.4467,-1238.2006 126.4935,-1238.2006 126.4935,-1112.9994 419.4467,-1112.9994 419.4467,-1238.2006"/>
-<text text-anchor="start" x="134.732" y="-1221.8" font-family="Times,serif" font-size="14.00" fill="#000000">table(ex_43867708645243063765_0000000000; </text>
+<text text-anchor="start" x="134.732" y="-1221.8" font-family="Times,serif" font-size="14.00" fill="#000000">table(ex_55662762402969382209_0000000000; </text>
 <text text-anchor="start" x="134.732" y="-1205" font-family="Times,serif" font-size="14.00" fill="#000000"> &#160;subjectID,</text>
 <text text-anchor="start" x="134.732" y="-1188.2" font-family="Times,serif" font-size="14.00" fill="#000000"> &#160;surveyCategory,</text>
 <text text-anchor="start" x="134.732" y="-1171.4" font-family="Times,serif" font-size="14.00" fill="#000000"> &#160;assessmentTotal,</text>
@@ -47,9 +47,9 @@
 <text text-anchor="start" x="134.732" y="-1137.8" font-family="Times,serif" font-size="14.00" fill="#000000"> &#160;irrelevantCol2,</text>
 <text text-anchor="start" x="134.732" y="-1121" font-family="Times,serif" font-size="14.00" fill="#000000"> &#160;probability)</text>
 </g>
-<!-- node_2&#45;&gt;table_ex_43867708645243063765_0000000000 -->
+<!-- node_2&#45;&gt;table_ex_55662762402969382209_0000000000 -->
 <g id="edge13" class="edge">
-<title>node_2&#45;&gt;table_ex_43867708645243063765_0000000000</title>
+<title>node_2&#45;&gt;table_ex_55662762402969382209_0000000000</title>
 <path fill="none" stroke="#000000" d="M272.9701,-1257.4374C272.9701,-1254.6578 272.9701,-1251.6903 272.9701,-1248.5934"/>
 <polygon fill="#000000" stroke="#000000" points="276.4702,-1248.3348 272.9701,-1238.3348 269.4702,-1248.3348 276.4702,-1248.3348"/>
 </g>
@@ -60,9 +60,9 @@
 <text text-anchor="start" x="71.0438" y="-1061.4" font-family="Times,serif" font-size="14.00" fill="#000000">project(., tot_prob := sum(probability),</text>
 <text text-anchor="start" x="71.0438" y="-1044.6" font-family="Times,serif" font-size="14.00" fill="#000000"> &#160;g= subjectID)</text>
 </g>
-<!-- table_ex_43867708645243063765_0000000000&#45;&gt;node_5 -->
+<!-- table_ex_55662762402969382209_0000000000&#45;&gt;node_5 -->
 <g id="edge2" class="edge">
-<title>table_ex_43867708645243063765_0000000000&#45;&gt;node_5</title>
+<title>table_ex_55662762402969382209_0000000000&#45;&gt;node_5</title>
 <path fill="none" stroke="#000000" d="M223.7469,-1112.933C216.2965,-1103.4477 208.9396,-1094.0816 202.4448,-1085.813"/>
 <polygon fill="#000000" stroke="#000000" points="205.1954,-1083.6486 196.2659,-1077.9465 199.6905,-1087.9726 205.1954,-1083.6486"/>
 <text text-anchor="middle" x="217.7201" y="-1091.2" font-family="Times,serif" font-size="14.00" fill="#000000">.</text>
@@ -74,31 +74,31 @@
 <polygon fill="#cdc673" stroke="#000000" points="391.4859,-908.4 124.4543,-908.4 124.4543,-872.4 391.4859,-872.4 391.4859,-908.4"/>
 <text text-anchor="start" x="132.4622" y="-886.2" font-family="Times,serif" font-size="14.00" fill="#000000">natural_join(.1, .2, &#160;j= LEFT, by= subjectID)</text>
 </g>
-<!-- table_ex_43867708645243063765_0000000000&#45;&gt;node_9 -->
+<!-- table_ex_55662762402969382209_0000000000&#45;&gt;node_9 -->
 <g id="edge3" class="edge">
-<title>table_ex_43867708645243063765_0000000000&#45;&gt;node_9</title>
+<title>table_ex_55662762402969382209_0000000000&#45;&gt;node_9</title>
 <path fill="none" stroke="#000000" d="M306.9967,-1112.916C328.358,-1064.657 347.4638,-997.2822 321.9701,-943.2 316.7399,-932.1048 307.9077,-922.5486 298.4485,-914.7354"/>
 <polygon fill="#000000" stroke="#000000" points="300.4877,-911.8887 290.4206,-908.5867 296.2313,-917.4459 300.4877,-911.8887"/>
 <text text-anchor="middle" x="339.2201" y="-1014.8" font-family="Times,serif" font-size="14.00" fill="#000000">.1</text>
 <polyline fill="none" stroke="#000000" points="344.4701,-1010.6 333.9701,-1010.6 333.429,-1018.4044 "/>
 </g>
-<!-- table_ex_43867708645243063765_0000000001 -->
+<!-- table_ex_55662762402969382209_0000000001 -->
 <g id="node5" class="node">
-<title>table_ex_43867708645243063765_0000000001</title>
+<title>table_ex_55662762402969382209_0000000001</title>
 <polygon fill="#66cd00" stroke="#000000" points="304.4467,-1001.8014 301.4467,-1005.8014 280.4467,-1005.8014 277.4467,-1001.8014 11.4935,-1001.8014 11.4935,-942.9986 304.4467,-942.9986 304.4467,-1001.8014"/>
-<text text-anchor="start" x="19.732" y="-985" font-family="Times,serif" font-size="14.00" fill="#000000">table(ex_43867708645243063765_0000000001; </text>
+<text text-anchor="start" x="19.732" y="-985" font-family="Times,serif" font-size="14.00" fill="#000000">table(ex_55662762402969382209_0000000001; </text>
 <text text-anchor="start" x="19.732" y="-968.2" font-family="Times,serif" font-size="14.00" fill="#000000"> &#160;subjectID,</text>
 <text text-anchor="start" x="19.732" y="-951.4" font-family="Times,serif" font-size="14.00" fill="#000000"> &#160;tot_prob)</text>
 </g>
-<!-- node_5&#45;&gt;table_ex_43867708645243063765_0000000001 -->
+<!-- node_5&#45;&gt;table_ex_55662762402969382209_0000000001 -->
 <g id="edge14" class="edge">
-<title>node_5&#45;&gt;table_ex_43867708645243063765_0000000001</title>
+<title>node_5&#45;&gt;table_ex_55662762402969382209_0000000001</title>
 <path fill="none" stroke="#000000" d="M174.5319,-1036.2382C172.593,-1028.7648 170.3413,-1020.0855 168.1347,-1011.58"/>
 <polygon fill="#000000" stroke="#000000" points="171.4856,-1010.5584 165.5865,-1001.7578 164.7099,-1012.3163 171.4856,-1010.5584"/>
 </g>
-<!-- table_ex_43867708645243063765_0000000001&#45;&gt;node_9 -->
+<!-- table_ex_55662762402969382209_0000000001&#45;&gt;node_9 -->
 <g id="edge4" class="edge">
-<title>table_ex_43867708645243063765_0000000001&#45;&gt;node_9</title>
+<title>table_ex_55662762402969382209_0000000001&#45;&gt;node_9</title>
 <path fill="none" stroke="#000000" d="M193.7899,-943.0277C204.9547,-933.8726 217.1479,-923.8742 227.8787,-915.0749"/>
 <polygon fill="#000000" stroke="#000000" points="230.245,-917.6608 235.7584,-908.6136 225.8064,-912.248 230.245,-917.6608"/>
 <text text-anchor="middle" x="228.2201" y="-921.6" font-family="Times,serif" font-size="14.00" fill="#000000">.2</text>
@@ -119,11 +119,11 @@
 <text text-anchor="middle" x="259.7201" y="-850.8" font-family="Times,serif" font-size="14.00" fill="#000000">.</text>
 <polyline fill="none" stroke="#000000" points="261.4701,-846.6 257.9701,-846.6 257.9701,-854.8905 "/>
 </g>
-<!-- table_ex_43867708645243063765_0000000002 -->
+<!-- table_ex_55662762402969382209_0000000002 -->
 <g id="node8" class="node">
-<title>table_ex_43867708645243063765_0000000002</title>
+<title>table_ex_55662762402969382209_0000000002</title>
 <polygon fill="#66cd00" stroke="#000000" points="404.4467,-777.2006 401.4467,-781.2006 380.4467,-781.2006 377.4467,-777.2006 111.4935,-777.2006 111.4935,-634.3994 404.4467,-634.3994 404.4467,-777.2006"/>
-<text text-anchor="start" x="119.732" y="-760.4" font-family="Times,serif" font-size="14.00" fill="#000000">table(ex_43867708645243063765_0000000002; </text>
+<text text-anchor="start" x="119.732" y="-760.4" font-family="Times,serif" font-size="14.00" fill="#000000">table(ex_55662762402969382209_0000000002; </text>
 <text text-anchor="start" x="119.732" y="-743.6" font-family="Times,serif" font-size="14.00" fill="#000000"> &#160;subjectID,</text>
 <text text-anchor="start" x="119.732" y="-726.8" font-family="Times,serif" font-size="14.00" fill="#000000"> &#160;surveyCategory,</text>
 <text text-anchor="start" x="119.732" y="-710" font-family="Times,serif" font-size="14.00" fill="#000000"> &#160;assessmentTotal,</text>
@@ -132,9 +132,9 @@
 <text text-anchor="start" x="119.732" y="-659.6" font-family="Times,serif" font-size="14.00" fill="#000000"> &#160;probability,</text>
 <text text-anchor="start" x="119.732" y="-642.8" font-family="Times,serif" font-size="14.00" fill="#000000"> &#160;tot_prob)</text>
 </g>
-<!-- node_10&#45;&gt;table_ex_43867708645243063765_0000000002 -->
+<!-- node_10&#45;&gt;table_ex_55662762402969382209_0000000002 -->
 <g id="edge15" class="edge">
-<title>node_10&#45;&gt;table_ex_43867708645243063765_0000000002</title>
+<title>node_10&#45;&gt;table_ex_55662762402969382209_0000000002</title>
 <path fill="none" stroke="#000000" d="M257.9701,-796.1819C257.9701,-793.4487 257.9701,-790.5258 257.9701,-787.4652"/>
 <polygon fill="#000000" stroke="#000000" points="261.4702,-787.2858 257.9701,-777.2858 254.4702,-787.2858 261.4702,-787.2858"/>
 </g>
@@ -145,9 +145,9 @@
 <text text-anchor="start" x="49.6609" y="-583.2" font-family="Times,serif" font-size="14.00" fill="#000000">project(., probability := max(probability),</text>
 <text text-anchor="start" x="49.6609" y="-566.4" font-family="Times,serif" font-size="14.00" fill="#000000"> &#160;g= subjectID)</text>
 </g>
-<!-- table_ex_43867708645243063765_0000000002&#45;&gt;node_13 -->
+<!-- table_ex_55662762402969382209_0000000002&#45;&gt;node_13 -->
 <g id="edge6" class="edge">
-<title>table_ex_43867708645243063765_0000000002&#45;&gt;node_13</title>
+<title>table_ex_55662762402969382209_0000000002&#45;&gt;node_13</title>
 <path fill="none" stroke="#000000" d="M206.055,-634.2475C199.3503,-625.0066 192.8161,-616.0007 187.0348,-608.0327"/>
 <polygon fill="#000000" stroke="#000000" points="189.7903,-605.8705 181.0847,-599.8319 184.1245,-609.9813 189.7903,-605.8705"/>
 <text text-anchor="middle" x="200.7201" y="-613" font-family="Times,serif" font-size="14.00" fill="#000000">.</text>
@@ -159,31 +159,31 @@
 <polygon fill="#cdc673" stroke="#000000" points="421.2462,-430.2 76.694,-430.2 76.694,-394.2 421.2462,-394.2 421.2462,-430.2"/>
 <text text-anchor="start" x="84.5821" y="-408" font-family="Times,serif" font-size="14.00" fill="#000000">natural_join(.1, .2, &#160;j= INNER, by= subjectID, probability)</text>
 </g>
-<!-- table_ex_43867708645243063765_0000000002&#45;&gt;node_17 -->
+<!-- table_ex_55662762402969382209_0000000002&#45;&gt;node_17 -->
 <g id="edge8" class="edge">
-<title>table_ex_43867708645243063765_0000000002&#45;&gt;node_17</title>
+<title>table_ex_55662762402969382209_0000000002&#45;&gt;node_17</title>
 <path fill="none" stroke="#000000" d="M297.9794,-634.4011C320.0527,-585.0356 338.3399,-518.8192 312.9701,-465 307.7399,-453.9048 298.9077,-444.3486 289.4485,-436.5354"/>
 <polygon fill="#000000" stroke="#000000" points="291.4877,-433.6887 281.4206,-430.3867 287.2313,-439.2459 291.4877,-433.6887"/>
 <text text-anchor="middle" x="331.2201" y="-536.6" font-family="Times,serif" font-size="14.00" fill="#000000">.2</text>
 <polyline fill="none" stroke="#000000" points="336.4701,-532.4 325.9701,-532.4 324.5682,-539.961 "/>
 </g>
-<!-- table_ex_43867708645243063765_0000000003 -->
+<!-- table_ex_55662762402969382209_0000000003 -->
 <g id="node10" class="node">
-<title>table_ex_43867708645243063765_0000000003</title>
+<title>table_ex_55662762402969382209_0000000003</title>
 <polygon fill="#66cd00" stroke="#000000" points="295.4467,-523.6014 292.4467,-527.6014 271.4467,-527.6014 268.4467,-523.6014 2.4935,-523.6014 2.4935,-464.7986 295.4467,-464.7986 295.4467,-523.6014"/>
-<text text-anchor="start" x="10.732" y="-506.8" font-family="Times,serif" font-size="14.00" fill="#000000">table(ex_43867708645243063765_0000000003; </text>
+<text text-anchor="start" x="10.732" y="-506.8" font-family="Times,serif" font-size="14.00" fill="#000000">table(ex_55662762402969382209_0000000003; </text>
 <text text-anchor="start" x="10.732" y="-490" font-family="Times,serif" font-size="14.00" fill="#000000"> &#160;subjectID,</text>
 <text text-anchor="start" x="10.732" y="-473.2" font-family="Times,serif" font-size="14.00" fill="#000000"> &#160;probability)</text>
 </g>
-<!-- node_13&#45;&gt;table_ex_43867708645243063765_0000000003 -->
+<!-- node_13&#45;&gt;table_ex_55662762402969382209_0000000003 -->
 <g id="edge16" class="edge">
-<title>node_13&#45;&gt;table_ex_43867708645243063765_0000000003</title>
+<title>node_13&#45;&gt;table_ex_55662762402969382209_0000000003</title>
 <path fill="none" stroke="#000000" d="M161.7679,-558.0382C160.2696,-550.5648 158.5297,-541.8855 156.8246,-533.38"/>
 <polygon fill="#000000" stroke="#000000" points="160.2529,-532.6747 154.8555,-523.5578 153.3895,-534.0507 160.2529,-532.6747"/>
 </g>
-<!-- table_ex_43867708645243063765_0000000003&#45;&gt;node_17 -->
+<!-- table_ex_55662762402969382209_0000000003&#45;&gt;node_17 -->
 <g id="edge7" class="edge">
-<title>table_ex_43867708645243063765_0000000003&#45;&gt;node_17</title>
+<title>table_ex_55662762402969382209_0000000003&#45;&gt;node_17</title>
 <path fill="none" stroke="#000000" d="M184.7899,-464.8277C195.9547,-455.6726 208.1479,-445.6742 218.8787,-436.8749"/>
 <polygon fill="#000000" stroke="#000000" points="221.245,-439.4608 226.7584,-430.4136 216.8064,-434.048 221.245,-439.4608"/>
 <text text-anchor="middle" x="219.2201" y="-443.4" font-family="Times,serif" font-size="14.00" fill="#000000">.1</text>
