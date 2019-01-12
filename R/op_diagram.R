@@ -54,8 +54,8 @@ r_optree_diagram <- function(optree,
                     name = name,
                     table_name_in = table_name_in,
                     table_name_out = table_name_out,
-                    label = label,
                     unique_node_name = unique_node_name,
+                    label = label,
                     optree = optree))
   edge = NULL
   if(length(immed_nodes)>0) {
@@ -71,6 +71,7 @@ r_optree_diagram <- function(optree,
                   "']")
   }
   list(nextid = nextid,
+       unique_node_name = unique_node_name,
        nodes = c(prev_nodes, node),
        edges = c(prev_edges, edge))
 }

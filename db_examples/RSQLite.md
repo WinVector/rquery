@@ -184,7 +184,7 @@ for(stage in stages) {
     ##   `irrelevantCol2`
     ##  FROM
     ##   `d`
-    ##  ) tsql_91795727526773698984_0000000000
+    ##  ) tsql_75808170996618918335_0000000000
     ## ;
     ## 
     ## SELECT `subjectID`, sum ( `probability` ) AS `tot_prob` FROM (
@@ -192,8 +192,8 @@ for(stage in stages) {
     ##   `subjectID`,
     ##   `probability`
     ##  FROM
-    ##   `ex_17267790773558762779_0000000000`
-    ##  ) tsql_85241104410554150704_0000000000
+    ##   `ex_53706711142556061998_0000000000`
+    ##  ) tsql_73567643467016531307_0000000000
     ## GROUP BY
     ##  `subjectID`
     ## ;
@@ -208,13 +208,13 @@ for(stage in stages) {
     ##  `probability` / `tot_prob`  AS `probability`
     ## FROM (
     ##  SELECT
-    ##   COALESCE(`tsql_89857308125020733103_0000000000`.`subjectID`, `tsql_89857308125020733103_0000000001`.`subjectID`) AS `subjectID`,
-    ##   `tsql_89857308125020733103_0000000000`.`surveyCategory` AS `surveyCategory`,
-    ##   `tsql_89857308125020733103_0000000000`.`assessmentTotal` AS `assessmentTotal`,
-    ##   `tsql_89857308125020733103_0000000000`.`irrelevantCol1` AS `irrelevantCol1`,
-    ##   `tsql_89857308125020733103_0000000000`.`irrelevantCol2` AS `irrelevantCol2`,
-    ##   `tsql_89857308125020733103_0000000000`.`probability` AS `probability`,
-    ##   `tsql_89857308125020733103_0000000001`.`tot_prob` AS `tot_prob`
+    ##   COALESCE(`tsql_13882323789204239160_0000000000`.`subjectID`, `tsql_13882323789204239160_0000000001`.`subjectID`) AS `subjectID`,
+    ##   `tsql_13882323789204239160_0000000000`.`surveyCategory` AS `surveyCategory`,
+    ##   `tsql_13882323789204239160_0000000000`.`assessmentTotal` AS `assessmentTotal`,
+    ##   `tsql_13882323789204239160_0000000000`.`irrelevantCol1` AS `irrelevantCol1`,
+    ##   `tsql_13882323789204239160_0000000000`.`irrelevantCol2` AS `irrelevantCol2`,
+    ##   `tsql_13882323789204239160_0000000000`.`probability` AS `probability`,
+    ##   `tsql_13882323789204239160_0000000001`.`tot_prob` AS `tot_prob`
     ##  FROM (
     ##   SELECT
     ##    `subjectID`,
@@ -224,18 +224,18 @@ for(stage in stages) {
     ##    `irrelevantCol2`,
     ##    `probability`
     ##   FROM
-    ##    `ex_17267790773558762779_0000000000`
-    ##  ) `tsql_89857308125020733103_0000000000`
+    ##    `ex_53706711142556061998_0000000000`
+    ##  ) `tsql_13882323789204239160_0000000000`
     ##  LEFT JOIN (
     ##   SELECT
     ##    `subjectID`,
     ##    `tot_prob`
     ##   FROM
-    ##    `ex_17267790773558762779_0000000001`
-    ##  ) `tsql_89857308125020733103_0000000001`
+    ##    `ex_53706711142556061998_0000000001`
+    ##  ) `tsql_13882323789204239160_0000000001`
     ##  ON
-    ##   `tsql_89857308125020733103_0000000000`.`subjectID` = `tsql_89857308125020733103_0000000001`.`subjectID`
-    ##  ) tsql_89857308125020733103_0000000002
+    ##   `tsql_13882323789204239160_0000000000`.`subjectID` = `tsql_13882323789204239160_0000000001`.`subjectID`
+    ##  ) tsql_13882323789204239160_0000000002
     ## ;
     ## 
     ## SELECT `subjectID`, max ( `probability` ) AS `probability` FROM (
@@ -243,8 +243,8 @@ for(stage in stages) {
     ##   `subjectID`,
     ##   `probability`
     ##  FROM
-    ##   `ex_17267790773558762779_0000000002`
-    ##  ) tsql_56741888814653323047_0000000000
+    ##   `ex_53706711142556061998_0000000002`
+    ##  ) tsql_72123721335711925888_0000000000
     ## GROUP BY
     ##  `subjectID`
     ## ;
@@ -262,32 +262,32 @@ for(stage in stages) {
     ##   FROM (
     ##    SELECT `subjectID`, max ( `probability` ) AS `probability`, min ( `surveyCategory` ) AS `surveyCategory` FROM (
     ##     SELECT
-    ##      COALESCE(`tsql_83074414712428484956_0000000000`.`subjectID`, `tsql_83074414712428484956_0000000001`.`subjectID`) AS `subjectID`,
-    ##      COALESCE(`tsql_83074414712428484956_0000000000`.`probability`, `tsql_83074414712428484956_0000000001`.`probability`) AS `probability`,
-    ##      `tsql_83074414712428484956_0000000001`.`surveyCategory` AS `surveyCategory`
+    ##      COALESCE(`tsql_04114530339071115487_0000000000`.`subjectID`, `tsql_04114530339071115487_0000000001`.`subjectID`) AS `subjectID`,
+    ##      COALESCE(`tsql_04114530339071115487_0000000000`.`probability`, `tsql_04114530339071115487_0000000001`.`probability`) AS `probability`,
+    ##      `tsql_04114530339071115487_0000000001`.`surveyCategory` AS `surveyCategory`
     ##     FROM (
     ##      SELECT
     ##       `subjectID`,
     ##       `probability`
     ##      FROM
-    ##       `ex_17267790773558762779_0000000003`
-    ##     ) `tsql_83074414712428484956_0000000000`
+    ##       `ex_53706711142556061998_0000000003`
+    ##     ) `tsql_04114530339071115487_0000000000`
     ##     INNER JOIN (
     ##      SELECT
     ##       `subjectID`,
     ##       `surveyCategory`,
     ##       `probability`
     ##      FROM
-    ##       `ex_17267790773558762779_0000000002`
-    ##     ) `tsql_83074414712428484956_0000000001`
+    ##       `ex_53706711142556061998_0000000002`
+    ##     ) `tsql_04114530339071115487_0000000001`
     ##     ON
-    ##      `tsql_83074414712428484956_0000000000`.`subjectID` = `tsql_83074414712428484956_0000000001`.`subjectID` AND `tsql_83074414712428484956_0000000000`.`probability` = `tsql_83074414712428484956_0000000001`.`probability`
-    ##     ) tsql_83074414712428484956_0000000002
+    ##      `tsql_04114530339071115487_0000000000`.`subjectID` = `tsql_04114530339071115487_0000000001`.`subjectID` AND `tsql_04114530339071115487_0000000000`.`probability` = `tsql_04114530339071115487_0000000001`.`probability`
+    ##     ) tsql_04114530339071115487_0000000002
     ##    GROUP BY
     ##     `subjectID`
-    ##   ) tsql_83074414712428484956_0000000003
-    ##  ) tsql_83074414712428484956_0000000004
-    ## ) tsql_83074414712428484956_0000000005 ORDER BY `subjectID`
+    ##   ) tsql_04114530339071115487_0000000003
+    ##  ) tsql_04114530339071115487_0000000004
+    ## ) tsql_04114530339071115487_0000000005 ORDER BY `subjectID`
     ## ;
 
 ``` r

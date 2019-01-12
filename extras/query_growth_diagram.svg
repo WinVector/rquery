@@ -139,9 +139,7 @@
 <!-- node_15 -->
 <g id="node8" class="node">
 <title>node_15</title>
-<polygon fill="#ffa500" stroke="#000000" points="597.3908,-36 384.2028,-36 384.2028,0 603.3908,0 603.3908,-30 597.3908,-36"/>
-<polyline fill="none" stroke="#000000" points="597.3908,-36 597.3908,-30 "/>
-<polyline fill="none" stroke="#000000" points="603.3908,-30 597.3908,-30 "/>
+<polygon fill="#cdc673" stroke="#000000" points="603.3908,-36 384.2028,-36 384.2028,0 603.3908,0 603.3908,-36"/>
 <text text-anchor="start" x="392" y="-13.8" font-family="Times,serif" font-size="14.00" fill="#000000">natural_join(.1, .2, &#160;j= LEFT, by= x)</text>
 </g>
 <!-- node_7&#45;&gt;node_15 -->

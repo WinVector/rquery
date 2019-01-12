@@ -125,7 +125,7 @@ dbplyr::remote_query(d3_dplyr)
 ```
 
     ## <SQL> SELECT *
-    ## FROM `vtbuqkrkns`
+    ## FROM `qbocxehtkt`
 
 `rquery` can also fix the issue by landing intermediate results, though the table lifetime tracking is intentionally more explicit.
 
@@ -145,7 +145,7 @@ d3_mat <- materialize(
 cat(format(d3_mat))
 ```
 
-    ## table(`tmpnam_37469070633169650126_0000000002`; 
+    ## table(`tmpnam_86512277439790376947_0000000002`; 
     ##   x)
 
 And `rquery`'s query diagrammer can help spot and diagnose these issues.
@@ -164,6 +164,38 @@ d3 %.>%
 ![](query_growth_diagram.svg)
 
 The gold nodes are possibly repeated calculations, and the warning also notes the issue.
+
+One could hope the query optimizer will eliminate the common sub-expressions, but that is not always going to be the case. In fact sometimes the very size of a query turns off the query optimizer in systems such as `Spark`. It is better to organize your calculation to not emit so many common sub-expressions in the first place.
+
+With a little more notation we can even produce a diagram of the materialized strategy.
+
+``` r
+stages <- list()
+add_stage <- function(ops, table_name = tmps()) {
+  ops$materialize_as <- table_name
+  table <- mk_td(table_name, column_names(ops))
+  stages <<- c(stages, list(ops))
+  table
+}
+
+d1_tab <- add_stage(natural_join(d0, d0, by = "x", jointype = "LEFT"))
+d2_tab <- add_stage(natural_join(d1_tab, d1_tab, by = "x", jointype = "LEFT"))
+d3_tab <- add_stage(natural_join(d2_tab, d2_tab, by = "x", jointype = "LEFT"))
+cat(format(d3_tab))
+```
+
+    ## table(tmpnam_86512277439790376947_0000000005; 
+    ##   x)
+
+``` r
+stages %.>%
+  op_diagram(., merge_tables = TRUE) %.>% 
+  DiagrammeR::grViz(.) %.>%
+  DiagrammeRsvg::export_svg(.) %.>%
+  write(., file="query_growth_diagram2.svg")
+```
+
+![](query_growth_diagram2.svg)
 
 For a non-trivial example of computation management and value re-use please see [here](https://github.com/WinVector/rquery/blob/master/db_examples/RSQLite.md).
 
