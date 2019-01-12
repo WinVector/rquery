@@ -25,7 +25,19 @@
 materialize_sql_statement <- function(db, sql, table_name,
                                       ...,
                                       temporary = FALSE) {
-  # TODO: put in more per-connection options here (including partion controls)
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery:::materialize_sql_statement")
+  # check for a per-database implementation
+  if("rquery_db_info" %in% class(db)) {
+    f <- db[["materialize_sql_statement"]]
+    if(!is.null(f)) {
+      return(f(db = db,
+               sql = sql,
+               table_name = table_name,
+               temporary = temporary))
+    }
+  }
+  # work on the general case
   if(isTRUE(temporary)) {
     create_temp <- getDBOption(db, "create_temporary", NULL)
     if(is.null(create_temp)) {
