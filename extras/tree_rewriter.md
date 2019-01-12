@@ -1,7 +1,7 @@
 SQL Tree Re-Writer
 ================
 John Mount, Win-Vector LLC
-2019-01-10
+2019-01-12
 
 [`rquery`](https://CRAN.R-project.org/package=rquery) `1.3.0` now incorporates a general `SQL` tree-rewriting capability. This is to help adapt `rquery` to different databases.
 
@@ -175,8 +175,8 @@ cat(to_sql(ops, postgresql_db))
     ##    "x"
     ##   FROM
     ##    "d"
-    ##   ) tsql_21247241725879741540_0000000000
-    ##  ) tsql_21247241725879741540_0000000001
+    ##   ) tsql_44021238336041178501_0000000000
+    ##  ) tsql_44021238336041178501_0000000001
 
 ``` r
 ops %.>% 
@@ -207,8 +207,8 @@ The use code looks like this:
 ``` r
 tree_rewriter <- function(x, db_info) {
   if(("pre_sql_sub_expr" %in% class(x)) && 
+     (length(x$info$name) == 1) &&
      (x$info$name == "modulo")) {
-    # print(str_pre_sql_sub_expr(x))
     lhs <- x$toks[[3]]
     rhs <- x$toks[[5]]
     return(pre_sql_sub_expr(
@@ -276,8 +276,8 @@ cat(to_sql(ops, rsqlite_db))
     ##    `x`
     ##   FROM
     ##    `d`
-    ##   ) tsql_03514433704752827225_0000000000
-    ##  ) tsql_03514433704752827225_0000000001
+    ##   ) tsql_33601897649263872580_0000000000
+    ##  ) tsql_33601897649263872580_0000000001
 
 ``` r
 ops %.>% 
