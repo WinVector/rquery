@@ -170,7 +170,7 @@ system.time({
                partitionby = 'subjectID',
                orderby = c('probability', 'surveyCategory'),
                reverse = c('probability', 'surveyCategory')) %.>%
-    materialize_node(., outgoing_table_name = "tmp_res") %.>%  # <- insert caching node into pipeline prior to narrowing
+    materialize_node(., "tmp_res") %.>%  # <- insert caching node into pipeline prior to narrowing
     rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
     select_columns(., qc(subjectID, diagnosis, probability)) %.>%
     orderby(., 'subjectID') 

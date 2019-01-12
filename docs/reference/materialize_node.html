@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Cache results to a named table inside a pipeline. — materialize_node • rquery</title>
+<title>Create a materialize node. — materialize_node • rquery</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -30,9 +30,11 @@
 
 
 
-<meta property="og:title" content="Cache results to a named table inside a pipeline. — materialize_node" />
+<meta property="og:title" content="Create a materialize node. — materialize_node" />
 
-<meta property="og:description" content="Cache results to a named table inside a pipeline." />
+<meta property="og:description" content="Write results into a specified table.  Result is transient, lives only for the duration of the
+pipeline calculation.  This node is only used to break up or un-nest calculations, not for value sharing or
+re-use." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -127,18 +129,21 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Cache results to a named table inside a pipeline.</h1>
-    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/non_sql_node.R'><code>R/non_sql_node.R</code></a></small>
+    <h1>Create a materialize node.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery//blob/master/R/materialize_node.R'><code>R/materialize_node.R</code></a></small>
     <div class="hidden name"><code>materialize_node.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Cache results to a named table inside a pipeline.</p>
+    <p>Write results into a specified table.  Result is transient, lives only for the duration of the
+pipeline calculation.  This node is only used to break up or un-nest calculations, not for value sharing or
+re-use.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>materialize_node</span>(<span class='no'>source</span>, <span class='no'>table_name</span>, <span class='no'>...</span>, <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>materialize_node</span>(<span class='no'>source</span>,
+  <span class='kw'>table_name</span> <span class='kw'>=</span> (<span class='kw pkg'>wrapr</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/wrapr/topics/mk_tmp_name_source'>mk_tmp_name_source</a></span>(<span class='st'>"rquerymn"</span>))())</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -151,19 +156,16 @@
       <th>table_name</th>
       <td><p>character, name of caching table</p></td>
     </tr>
-    <tr>
-      <th>...</th>
-      <td><p>force later arguments to bind by name</p></td>
-    </tr>
-    <tr>
-      <th>temporary</th>
-      <td><p>logical, if TRUE mark tables temporary.</p></td>
-    </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>sql node.</p>
+    <p>relop materialize_node</p>
+    
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>Note this node can not be used in multiple paths in the same rel_op tree as it re-uses table names and
+re-computes each time called.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
@@ -177,6 +179,8 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
+
+      <li><a href="#details">Details</a></li>
 
       <li><a href="#see-also">See also</a></li>
           </ul>

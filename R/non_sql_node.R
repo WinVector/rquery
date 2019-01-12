@@ -86,7 +86,8 @@ non_sql_node.relop <- function(source,
             overwrite = TRUE,
             src_cols = src_cols,
             temporary = temporary,
-            check_result_details = check_result_details)
+            check_result_details = check_result_details,
+            allow_narrowing = (length(columns_produced)==0) && orig_columns)
   r <- relop_decorate("relop_non_sql", r)
   r
 }
@@ -149,8 +150,11 @@ format_node.relop_non_sql <- function(node) {
 #' @export
 columns_used.relop_non_sql <- function (x, ...,
                                         using = NULL) {
+  if(!x$allow_narrowing) {
+    using <- NULL
+  }
   columns_used(x$source[[1]],
-               using = NULL)
+               using = using)
 }
 
 
@@ -191,13 +195,16 @@ to_sql_relop_non_sql <- function(
   tnum = mk_tmp_name_source('tsql'),
   append_cr = TRUE,
   using = NULL) {
+  if(!x$allow_narrowing) {
+    using <- NULL
+  }
   subsql <- to_sql(x$source[[1]],
                    db = db,
                    source_limit = source_limit,
                    indent_level = indent_level + 1,
                    tnum = tnum,
                    append_cr = append_cr,
-                   using = NULL)
+                   using = using)
   nsubsql <- length(subsql)
   # non-SQL nodes must always be surrounded by SQL on both sides
   step1 <- materialize_sql_statement(db,
@@ -223,7 +230,7 @@ to_sql_relop_non_sql <- function(
                        indent_level = indent_level + 1,
                        tnum = tnum,
                        append_cr = append_cr,
-                       using = NULL))
+                       using = using))
   c(subsql[-length(subsql)], step1, step2, step3)
 }
 
