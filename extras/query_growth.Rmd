@@ -103,6 +103,7 @@ add_stage <- function(ops, table_name = tmps()) {
 d1_tab <- add_stage(natural_join(d0, d0, by = "x", jointype = "LEFT"))
 d2_tab <- add_stage(natural_join(d1_tab, d1_tab, by = "x", jointype = "LEFT"))
 d3_tab <- add_stage(natural_join(d2_tab, d2_tab, by = "x", jointype = "LEFT"))
+stages <- c(stages, list(d3_tab))
 cat(format(d3_tab))
 ```
 

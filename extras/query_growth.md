@@ -125,7 +125,7 @@ dbplyr::remote_query(d3_dplyr)
 ```
 
     ## <SQL> SELECT *
-    ## FROM `qbocxehtkt`
+    ## FROM `jxijgxhxgh`
 
 `rquery` can also fix the issue by landing intermediate results, though the table lifetime tracking is intentionally more explicit.
 
@@ -145,7 +145,7 @@ d3_mat <- materialize(
 cat(format(d3_mat))
 ```
 
-    ## table(`tmpnam_86512277439790376947_0000000002`; 
+    ## table(`tmpnam_79660587678086627709_0000000002`; 
     ##   x)
 
 And `rquery`'s query diagrammer can help spot and diagnose these issues.
@@ -181,10 +181,11 @@ add_stage <- function(ops, table_name = tmps()) {
 d1_tab <- add_stage(natural_join(d0, d0, by = "x", jointype = "LEFT"))
 d2_tab <- add_stage(natural_join(d1_tab, d1_tab, by = "x", jointype = "LEFT"))
 d3_tab <- add_stage(natural_join(d2_tab, d2_tab, by = "x", jointype = "LEFT"))
+stages <- c(stages, list(d3_tab))
 cat(format(d3_tab))
 ```
 
-    ## table(tmpnam_86512277439790376947_0000000005; 
+    ## table(tmpnam_79660587678086627709_0000000005; 
     ##   x)
 
 ``` r
