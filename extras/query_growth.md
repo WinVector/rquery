@@ -125,7 +125,7 @@ dbplyr::remote_query(d3_dplyr)
 ```
 
     ## <SQL> SELECT *
-    ## FROM `jxijgxhxgh`
+    ## FROM `ucswscfklo`
 
 `rquery` can also fix the issue by landing intermediate results, though the table lifetime tracking is intentionally more explicit.
 
@@ -145,7 +145,7 @@ d3_mat <- materialize(
 cat(format(d3_mat))
 ```
 
-    ## table(`tmpnam_79660587678086627709_0000000002`; 
+    ## table(`tmpnam_74925700276090619476_0000000002`; 
     ##   x)
 
 And `rquery`'s query diagrammer can help spot and diagnose these issues.
@@ -185,7 +185,7 @@ stages <- c(stages, list(d3_tab))
 cat(format(d3_tab))
 ```
 
-    ## table(tmpnam_79660587678086627709_0000000005; 
+    ## table(tmpnam_74925700276090619476_0000000005; 
     ##   x)
 
 ``` r
