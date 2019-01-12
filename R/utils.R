@@ -81,7 +81,7 @@ parse_se <- function(source, assignments, env,
                         colnames = have,
                         env = env)
     pi$symbols_produced <- unique(c(pi$symbols_produced, ni))
-    pi$parsed <- to_query(pi$parsed_toks,
+    pi$parsed <- pre_sql_to_query(pi$parsed_toks,
                           db_info = db_inf)
     if((!is.null(ni)) && (nchar(as.character(ni))>0)) {
       pi$presentation <- paste(ni, ":=", pi$presentation)
@@ -132,7 +132,7 @@ parse_nse <- function(source, exprs, env,
     if((!is.null(ni)) && (nchar(as.character(ni))>0)) {
       pi$presentation <- paste(ni, ":=", pi$presentation)
     }
-    pi$parsed <- to_query(pi$parsed_toks,
+    pi$parsed <- pre_sql_to_query(pi$parsed_toks,
                           db_info = db_inf)
     have <- unique(c(have, pi$symbols_produced))
     parsed[[i]] <- pi
@@ -156,7 +156,7 @@ redo_parse_quoting <- function(parsed, db_info) {
   n <- length(parsed)
   for(i in seq_len(n)) {
     pi <- parsed[[i]]
-    pi$parsed <- to_query(pi$parsed_toks,
+    pi$parsed <- pre_sql_to_query(pi$parsed_toks,
                           db_info = db_info)
     parsed[[i]] <- pi
   }

@@ -12,7 +12,7 @@ test_that("test_parse: Works As Expected", {
     p <- tokenize_for_SQL(ei,
                   colnames = c("c1", "c2"),
                   env = env)
-    p$check <- to_query(p$parsed_toks, rquery::rquery_default_db_info())
+    p$check <- pre_sql_to_query(p$parsed_toks, rquery::rquery_default_db_info())
     p
   }
 

@@ -132,20 +132,20 @@ pre_sql_sub_expr <- function(terms, info = NULL) {
 #'
 #' @export
 #'
-to_query <- function (x,
+pre_sql_to_query <- function (x,
                       db_info,
                       ...,
                       source_table = NULL,
                       source_limit = NA_real_,
                       using = NULL) {
-  UseMethod("to_query", x)
+  UseMethod("pre_sql_to_query", x)
 }
 
 #' @export
 #'
 #' @keywords internal
 format.pre_sql_token <- function(x, ...) {
-  to_query(x, rquery_default_db_info())
+  pre_sql_to_query(x, rquery_default_db_info())
 }
 
 #' @export
@@ -169,13 +169,13 @@ print.pre_sql_token <- function(x, ...) {
 #'
 #' @export
 #'
-to_query.pre_sql_token <- function (x,
+pre_sql_to_query.pre_sql_token <- function (x,
                                     db_info,
                                     ...,
                                     source_table = NULL,
                                     source_limit = NA_real_,
                                     using = NULL) {
-  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::to_query.pre_sql_token")
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::pre_sql_to_query.pre_sql_token")
   if("rquery_db_info" %in% class(db_info)) {
     tree_rewriter <- db_info[["tree_rewriter"]]
     if(!is.null(tree_rewriter)) {
@@ -239,13 +239,13 @@ to_query.pre_sql_token <- function (x,
 #'
 #' @export
 #'
-to_query.pre_sql_sub_expr <- function (x,
+pre_sql_to_query.pre_sql_sub_expr <- function (x,
                                        db_info,
                                        ...,
                                        source_table = NULL,
                                        source_limit = NA_real_,
                                        using = NULL) {
-  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::to_query.pre_sql_sub_expr")
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::pre_sql_to_query.pre_sql_sub_expr")
   if("rquery_db_info" %in% class(db_info)) {
     tree_rewriter <- db_info[["tree_rewriter"]]
     if(!is.null(tree_rewriter)) {
@@ -254,7 +254,7 @@ to_query.pre_sql_sub_expr <- function (x,
   }
   terms <- lapply(x$toks,
                   function(ti) {
-                    to_query(ti,
+                    pre_sql_to_query(ti,
                              db_info = db_info,
                              source_table = source_table,
                              source_limit = source_limit,
@@ -293,7 +293,7 @@ str_pre_sql_sub_expr <- function(x) {
 #' @keywords internal
 #'
 format.pre_sql_sub_expr <- function(x, ...) {
-  to_query(x, rquery_default_db_info())
+  pre_sql_to_query(x, rquery_default_db_info())
 }
 
 
