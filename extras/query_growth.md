@@ -8,12 +8,20 @@ library("rquery")
 
 db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
 
+db_rquery <- rquery_db_info(
+  connection = db,
+  is_dbi = TRUE,
+  connection_options = rq_connection_tests(db))
+tmps <- wrapr::mk_tmp_name_source()
+
 d <- data.frame(x = -3:3)
-d0 <- rq_copy_to(db, "d", d)
+
+d0 <- rq_copy_to(db_rquery, "d", d)
 
 d1 <- natural_join(d0, d0, by = "x", jointype = "LEFT")
 d2 <- natural_join(d1, d1, by = "x", jointype = "LEFT")
 d3 <- natural_join(d2, d2, by = "x", jointype = "LEFT")
+
 cat(format(d3))
 ```
 
@@ -48,9 +56,7 @@ cat(format(d3))
     ##     j= LEFT, by= x),
     ##   j= LEFT, by= x)
 
-``` r
-DBI::dbDisconnect(db)
-```
+Notice the depth 3 expression exploded into tree with 7 joins.
 
 This is not unique to [`rquery`](https://CRAN.R-project.org/package=rquery), [`dplyr`](https://CRAN.R-project.org/package=dplyr) has the same issue.
 
@@ -70,15 +76,12 @@ library("dplyr")
     ##     intersect, setdiff, setequal, union
 
 ``` r
-db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+d0_dplyr <- tbl(db, "d")
 
-d <- data.frame(x = -3:3)
-d0 <- dplyr::copy_to(db, d, "d")
-
-d1 <- left_join(d0, d0, by = "x")
-d2 <- left_join(d1, d1, by = "x")
-d3 <- left_join(d2, d2, by = "x")
-dbplyr::remote_query(d3)
+d1_dplyr <- left_join(d0_dplyr, d0_dplyr, by = "x")
+d2_dplyr <- left_join(d1_dplyr, d1_dplyr, by = "x")
+d3_dplyr <- left_join(d2_dplyr, d2_dplyr, by = "x")
+dbplyr::remote_query(d3_dplyr)
 ```
 
     ## <SQL> SELECT `TBL_LEFT`.`x` AS `x`
@@ -110,60 +113,59 @@ dbplyr::remote_query(d3)
     ## ) AS `TBL_RIGHT`
     ##   ON (`TBL_LEFT`.`x` = `TBL_RIGHT`.`x`)
 
-``` r
-DBI::dbDisconnect(db)
-```
-
-Largely it is a lack of a convenient way to name and cache the intermediate results in basic `SQL`.
+Largely it is a lack of a convenient way to name and cache the intermediate results in basic `SQL` without landing a table or view and starting a new query. Without value re-use, re-writing a directed-acyclic graph (the specified input) into a tree (the basis of `SQL`) can cause a query explosion.
 
 `dplyr` can easily overcome this limitation with it's `compute()` node.
 
 ``` r
-library("dplyr")
-
-db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-
-d <- data.frame(x = -3:3)
-d0 <- dplyr::copy_to(db, d, "d")
-
-d1 <- compute(left_join(d0, d0, by = "x"))
-d2 <- compute(left_join(d1, d1, by = "x"))
-d3 <- compute(left_join(d2, d2, by = "x"))
-dbplyr::remote_query(d3)
+d1_dplyr <- compute(left_join(d0_dplyr, d0_dplyr, by = "x"))
+d2_dplyr <- compute(left_join(d1_dplyr, d1_dplyr, by = "x"))
+d3_dplyr <- compute(left_join(d2_dplyr, d2_dplyr, by = "x"))
+dbplyr::remote_query(d3_dplyr)
 ```
 
     ## <SQL> SELECT *
-    ## FROM `gxhhblafgm`
+    ## FROM `vtbuqkrkns`
+
+`rquery` can also fix the issue by landing intermediate results, though the table lifetime tracking is intentionally more explicit.
 
 ``` r
-DBI::dbDisconnect(db)
+d1_mat <- materialize(
+  db,
+  natural_join(d0, d0, by = "x", jointype = "LEFT"),
+  table_name = tmps(), temporary = TRUE, overwrite = TRUE)
+d2_mat <- materialize(
+  db,
+  natural_join(d1_mat, d1_mat, by = "x", jointype = "LEFT"),
+  table_name = tmps(), temporary = TRUE, overwrite = TRUE)
+d3_mat <- materialize(
+  db,
+  natural_join(d2_mat, d2_mat, by = "x", jointype = "LEFT"),
+  table_name = tmps(), temporary = TRUE, overwrite = TRUE)
+cat(format(d3_mat))
 ```
 
-`rquery` can also land intermediate results, though the table lifetime tracking is intentionally more explicit.
-
-``` r
-library("rquery")
-
-db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-tmps <- mk_tmp_name_source("ex")
-
-d <- data.frame(x = -3:3)
-d0 <- rq_copy_to(db, "d", d)
-
-d1 <- materialize(db,
-                  natural_join(d0, d0, by = "x", jointype = "LEFT"),
-                  table_name = tmps(), temporary = TRUE, overwrite = TRUE)
-d2 <- materialize(db,
-                  natural_join(d1, d1, by = "x", jointype = "LEFT"),
-                  table_name = tmps(), temporary = TRUE, overwrite = TRUE)
-d3 <- materialize(db,
-                  natural_join(d2, d2, by = "x", jointype = "LEFT"),
-                  table_name = tmps(), temporary = TRUE, overwrite = TRUE)
-cat(format(d3))
-```
-
-    ## table(`ex_84942077294344486277_0000000002`; 
+    ## table(`tmpnam_37469070633169650126_0000000002`; 
     ##   x)
+
+And `rquery`'s query diagrammer can help spot and diagnose these issues.
+
+``` r
+d3 %.>%
+  op_diagram(., merge_tables = TRUE) %.>% 
+  DiagrammeR::grViz(.) %.>%
+  DiagrammeRsvg::export_svg(.) %.>%
+  write(., file="query_growth_diagram.svg")
+```
+
+    ## Warning in op_diagram(., merge_tables = TRUE): possible repeated calculation:
+    ##  natural_join(.1, .2,  j= LEFT, by= x)
+
+![](query_growth_diagram.svg)
+
+The gold nodes are possibly repeated calculations, and the warning also notes the issue.
+
+For a non-trivial example of computation management and value re-use please see [here](https://github.com/WinVector/rquery/blob/master/db_examples/RSQLite.md).
 
 ``` r
 # clean up tmps
@@ -174,5 +176,3 @@ for(ti in intermediates) {
 
 DBI::dbDisconnect(db)
 ```
-
-For a non-trivial example of computation management and value re-use please see [here](https://github.com/WinVector/rquery/blob/master/db_examples/RSQLite.md).
