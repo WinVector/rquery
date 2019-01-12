@@ -11,7 +11,7 @@ op_diagram(optree, ..., merge_tables = FALSE)
 
 \item{...}{force other argument to be by name.}
 
-\item{merge_tables}{logical if TRUE merge all same table references into one node.  rel_op nodes that declare a materialize_as name will be cross-linked.}
+\item{merge_tables}{logical, if TRUE merge all same table references into one node.  rel_op nodes that declare a materialize_as name will be cross-linked.}
 }
 \value{
 character DiagrammeR::grViz() ready text.

@@ -1,12 +1,19 @@
 
-r_optree_diagram <- function(optree, nextid, use_table_names) {
+r_optree_diagram <- function(optree,
+                             nextid,
+                             use_table_names) {
   immed_nodes <- NULL
   prev_nodes <- NULL
   prev_edges <- NULL
   ninputs <- length(optree$source)
+  label = format_node(optree)
+  unique_node_name <- label
   if(ninputs>0) {
     for(i in seq_len(ninputs)) {
-      ndi <- r_optree_diagram(optree$source[[i]], nextid, use_table_names)
+      ndi <- r_optree_diagram(optree$source[[i]],
+                              nextid = nextid,
+                              use_table_names = use_table_names)
+      unique_node_name <- paste(unique_node_name, "_", i, ":{", ndi$unique_node_name, "}")
       nextid <- ndi$nextid
       immed_nodes <- c(immed_nodes,
                        ndi$nodes[[length(ndi$nodes)]]$name)
@@ -25,7 +32,6 @@ r_optree_diagram <- function(optree, nextid, use_table_names) {
     }
     table_name_in <- optree$table_name
   }
-  label = format_node(optree)
   label = gsub("\n", "\\l", label, fixed = TRUE)
   label = gsub("'", "", label)
   label = gsub('"', "", label)
@@ -48,7 +54,9 @@ r_optree_diagram <- function(optree, nextid, use_table_names) {
                     name = name,
                     table_name_in = table_name_in,
                     table_name_out = table_name_out,
-                    label = label))
+                    label = label,
+                    unique_node_name = unique_node_name,
+                    optree = optree))
   edge = NULL
   if(length(immed_nodes)>0) {
     labels = "."
@@ -71,7 +79,7 @@ r_optree_diagram <- function(optree, nextid, use_table_names) {
 #'
 #' @param optree operation tree pipeline (or list of such).
 #' @param ... force other argument to be by name.
-#' @param merge_tables logical if TRUE merge all same table references into one node.  rel_op nodes that declare a materialize_as name will be cross-linked.
+#' @param merge_tables logical, if TRUE merge all same table references into one node.  rel_op nodes that declare a materialize_as name will be cross-linked.
 #' @return character DiagrammeR::grViz() ready text.
 #'
 #' @examples
@@ -122,7 +130,9 @@ digraph rquery_optree {
     nodes <- list()
     edges <- list()
     for(opt in optree) {
-      graph <- r_optree_diagram(opt, nextid, merge_tables)
+      graph <- r_optree_diagram(opt,
+                                nextid = nextid,
+                                use_table_names = merge_tables)
       nextid <- graph$nextid + 1
       nodesi <- graph$nodes
       nodesi[[length(nodesi)]]$table_name_out <- opt$materialize_as
@@ -133,7 +143,9 @@ digraph rquery_optree {
                   nodes = nodes,
                   edges = edges)
   } else {
-    graph <- r_optree_diagram(optree, nextid, merge_tables)
+    graph <- r_optree_diagram(optree,
+                              nextid = nextid,
+                              use_table_names = merge_tables)
   }
   # de-dup any nodes
   node_names <- vapply(graph$nodes, function(ni) { ni$name }, character(1))
@@ -153,13 +165,41 @@ digraph rquery_optree {
       }
     }
   }
-  ntxts <- lapply(graph$nodes,
-                  function(ni) {
+  counts <- list()
+  for(nd in graph$nodes) {
+    prev <- counts[[nd$unique_node_name]]
+    if(is.null(prev)) {
+      prev <- 0
+    }
+    counts[[nd$unique_node_name]] <- prev + 1
+  }
+  shapes <- rep("box", length(graph$nodes))
+  colors <- rep("khaki3", length(graph$nodes))
+  seen <- list()
+  for(ii in seq_len(length(graph$nodes))) {
+    ni <- graph$nodes[[ii]]
+    if(!is.null(ni$table_name_in)) {
+      shapes[[ii]] <- "folder"
+      colors[[ii]] <- "chartreuse3"
+    } else {
+      if(counts[[ni$unique_node_name]]>1) {
+        shapes[[ii]] <- "note"
+        colors[[ii]] <- "orange"
+        if(!(ni$unique_node_name %in% seen)) {
+          cat(paste("warning: possible repeated calculation:\n", paste(format(ni$optree), collapse = " ")))
+          seen <- c(seen, ni$unique_node_name)
+        }
+      }
+    }
+  }
+  ntxts <- lapply(seq_len(length(graph$nodes)),
+                  function(ii) {
+                    ni <- graph$nodes[[ii]]
                     paste0(ni$name,
                            " [ shape = '",
-                           ifelse(is.null(ni$table_name_in),
-                                  "tab",
-                                  "folder"),
+                           shapes[[ii]],
+                           "' , fillcolor = '",
+                           colors[[ii]],
                            "' , label = '",
                            ni$label,
                            "']\n")

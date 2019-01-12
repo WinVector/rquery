@@ -153,7 +153,7 @@
     </tr>
     <tr>
       <th>merge_tables</th>
-      <td><p>logical if TRUE merge all same table references into one node.  rel_op nodes that declare a materialize_as name will be cross-linked.</p></td>
+      <td><p>logical, if TRUE merge all same table references into one node.  rel_op nodes that declare a materialize_as name will be cross-linked.</p></td>
     </tr>
     </table>
     
@@ -190,17 +190,17 @@
 #&gt;   edge [decorate = true, arrowhead = normal]
 #&gt;   node [style=filled, fillcolor=lightgrey]
 #&gt; 
-#&gt; node_1 [ shape = 'folder' , label = 'table(d; \l  AUC,\l  R2)\l']
+#&gt; node_1 [ shape = 'folder' , fillcolor = 'chartreuse3' , label = 'table(d; \l  AUC,\l  R2)\l']
 #&gt; 
-#&gt; node_2 [ shape = 'tab' , label = 'extend(.,\l  v %:=% ifelse(AUC &gt; 0.5, R2, 1))\l']
+#&gt; node_2 [ shape = 'box' , fillcolor = 'khaki3' , label = 'extend(.,\l  v %:=% ifelse(AUC &gt; 0.5, R2, 1))\l']
 #&gt; 
-#&gt; node_3 [ shape = 'tab' , label = 'non_sql_node(., quantile_node(.))\l']
+#&gt; node_3 [ shape = 'box' , fillcolor = 'khaki3' , label = 'non_sql_node(., quantile_node(.))\l']
 #&gt; 
-#&gt; node_4 [ shape = 'folder' , label = 'table(d; \l  AUC,\l  R2)\l']
+#&gt; node_4 [ shape = 'folder' , fillcolor = 'chartreuse3' , label = 'table(d; \l  AUC,\l  R2)\l']
 #&gt; 
-#&gt; node_5 [ shape = 'tab' , label = 'natural_join(.1, .2,  j= LEFT, by= AUC)\l']
+#&gt; node_5 [ shape = 'box' , fillcolor = 'khaki3' , label = 'natural_join(.1, .2,  j= LEFT, by= AUC)\l']
 #&gt; 
-#&gt; node_6 [ shape = 'tab' , label = 'orderby(., AUC)\l']
+#&gt; node_6 [ shape = 'box' , fillcolor = 'khaki3' , label = 'orderby(., AUC)\l']
 #&gt; node_1 -&gt; node_2 [ label = '.']
 #&gt; node_2 -&gt; node_3 [ label = '.']
 #&gt; node_3 -&gt; node_5 [ label = '.1']
