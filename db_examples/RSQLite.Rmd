@@ -137,7 +137,7 @@ We can also diagram the calculation.
 
 ```{r}
 c(get_relop_list_stages(collector), list(result)) %.>%
-  op_diagram(., merge_tables = TRUE) %.>% 
+  op_diagram(., merge_tables = TRUE, show_table_columns = FALSE) %.>% 
   DiagrammeR::grViz(.) %.>%
   DiagrammeRsvg::export_svg(.) %.>%
   write(., file="RSQLite_diagram.svg")
@@ -159,6 +159,8 @@ for(stage in get_relop_list_stages(collector)) {
   cat(paste0(to_sql(stage, db), ";\n\n"))
 }
 ```
+
+Notice how each stage was limited to columns actually used in later stages.
 
 
 ```{r cleanup}

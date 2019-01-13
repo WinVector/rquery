@@ -32,7 +32,7 @@
 
 <meta property="og:title" content="Return the stages list. — get_relop_list_stages" />
 
-<meta property="og:description" content="Return the stages list." />
+<meta property="og:description" content="Stages can be narrowed to what is actually used." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -134,11 +134,11 @@
 
     <div class="ref-description">
     
-    <p>Return the stages list.</p>
+    <p>Stages can be narrowed to what is actually used.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>get_relop_list_stages</span>(<span class='no'>collector</span>)</pre>
+    <pre class="usage"><span class='fu'>get_relop_list_stages</span>(<span class='no'>collector</span>, <span class='no'>...</span>, <span class='kw'>narrow</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -146,6 +146,14 @@
     <tr>
       <th>collector</th>
       <td><p>a rquery::relop_list</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>force later arguments to bind by name</p></td>
+    </tr>
+    <tr>
+      <th>narrow</th>
+      <td><p>logical, if TRUE add select_columns() to narrow stages.</p></td>
     </tr>
     </table>
     

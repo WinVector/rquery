@@ -103,27 +103,66 @@ setMethod(
   })
 
 
+# work out column use moving right to left
+relop_list_stages_columns_used <- function(stages) {
+  n <- length(stages)
+  new_stages <- list()
+  cu <- list()
+  for(i in rev(seq_len(n))) {
+    si <- stages[[i]]
+    mat_as <- si$materialize_as
+    if(!is.null(mat_as)) {
+      consuming <- cu[[mat_as]]
+      if(!is.null(consuming)) {
+        si$materialize_as <- NULL
+        si <- select_columns(si, consuming)
+        si$materialize_as <- mat_as
+      }
+    }
+    cui <- columns_used(si)
+    cu <- merge_columns_used(cu, cui)
+    new_stages[[i]] <- si
+  }
+  new_stages
+}
 
+
+# TODO: update incoming table defs to match what is used.
 
 #' Return the stages list.
 #'
+#' Stages can be narrowed to what is actually used.
+#'
 #' @param collector a rquery::relop_list
+#' @param ... force later arguments to bind by name
+#' @param narrow logical, if TRUE add select_columns() to narrow stages.
 #' @return a list of rquery::relops
 #'
 #' @export
 #'
-get_relop_list_stages <- function(collector) {
+get_relop_list_stages <- function(collector,
+                                  ...,
+                                  narrow = TRUE) {
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::get_relop_list_stages")
   if(!(isS4(collector) && methods::is(collector, "relop_list"))) {
     stop("rquery::get_relop_list_stages, expected collector to be of S4 class relop_list")
   }
-  collector@mutable_store$stages
+  stages <- collector@mutable_store$stages
+  if(narrow) {
+    stages <- relop_list_stages_columns_used(stages)
+  }
+  stages
 }
+
+
+
 
 #' Materialize a stages list on a database.
 #'
 #' @param db database connecton (rquery_db_info class preferred, or DBI connections).
 #' @param collector a rquery::relop_list
 #' @param ... force later arguments to bind by name.
+#' @param narrow logical, if TRUE add select_columns() to narrow stages.
 #' @param limit numeric if not NULL result limit (to use this, last statement must not have a limit).
 #' @param source_limit numeric if not NULL limit sources to this many rows.
 #' @param overwrite logical if TRUE drop an previous table.
@@ -136,6 +175,7 @@ get_relop_list_stages <- function(collector) {
 materialize_relop_list_stages <- function(db,
                                           collector,
                                           ...,
+                                          narrow = TRUE,
                                           limit = NULL,
                                           source_limit = NULL,
                                           overwrite = TRUE,
@@ -143,11 +183,12 @@ materialize_relop_list_stages <- function(db,
   if(!(isS4(collector) && methods::is(collector, "relop_list"))) {
     stop("rquery::materialize_relop_list_local, expected collector to be of S4 class relop_list")
   }
-  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::get_relop_list_stages")
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::materialize_relop_list_stages")
   res <- NULL
-  nstg <- length(collector@mutable_store$stages)
+  stages <- get_relop_list_stages(collector, narrow = narrow)
+  nstg <- length(stages)
   for(i in seq_len(nstg)) {
-    stage <- collector@mutable_store$stages[[i]]
+    stage <- stages[[i]]
     lmt <- NULL
     if(i==nstg) {
       lmt <- limit

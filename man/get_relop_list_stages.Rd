@@ -4,14 +4,18 @@
 \alias{get_relop_list_stages}
 \title{Return the stages list.}
 \usage{
-get_relop_list_stages(collector)
+get_relop_list_stages(collector, ..., narrow = TRUE)
 }
 \arguments{
 \item{collector}{a rquery::relop_list}
+
+\item{...}{force later arguments to bind by name}
+
+\item{narrow}{logical, if TRUE add select_columns() to narrow stages.}
 }
 \value{
 a list of rquery::relops
 }
 \description{
-Return the stages list.
+Stages can be narrowed to what is actually used.
 }

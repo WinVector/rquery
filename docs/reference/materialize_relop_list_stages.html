@@ -138,8 +138,9 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>materialize_relop_list_stages</span>(<span class='no'>db</span>, <span class='no'>collector</span>, <span class='no'>...</span>, <span class='kw'>limit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>source_limit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>materialize_relop_list_stages</span>(<span class='no'>db</span>, <span class='no'>collector</span>, <span class='no'>...</span>, <span class='kw'>narrow</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>limit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>source_limit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -155,6 +156,10 @@
     <tr>
       <th>...</th>
       <td><p>force later arguments to bind by name.</p></td>
+    </tr>
+    <tr>
+      <th>narrow</th>
+      <td><p>logical, if TRUE add select_columns() to narrow stages.</p></td>
     </tr>
     <tr>
       <th>limit</th>

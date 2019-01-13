@@ -138,7 +138,8 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>op_diagram</span>(<span class='no'>optree</span>, <span class='no'>...</span>, <span class='kw'>merge_tables</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>op_diagram</span>(<span class='no'>optree</span>, <span class='no'>...</span>, <span class='kw'>merge_tables</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>show_table_columns</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -154,6 +155,10 @@
     <tr>
       <th>merge_tables</th>
       <td><p>logical, if TRUE merge all same table references into one node.  rel_op nodes that declare a materialize_as name will be cross-linked.</p></td>
+    </tr>
+    <tr>
+      <th>show_table_columns</th>
+      <td><p>logical, if TRUE show table columns.</p></td>
     </tr>
     </table>
     

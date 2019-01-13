@@ -1,7 +1,8 @@
 
 r_optree_diagram <- function(optree,
                              nextid,
-                             use_table_names) {
+                             use_table_names,
+                             show_table_columns) {
   immed_nodes <- NULL
   prev_nodes <- NULL
   prev_edges <- NULL
@@ -12,7 +13,8 @@ r_optree_diagram <- function(optree,
     for(i in seq_len(ninputs)) {
       ndi <- r_optree_diagram(optree$source[[i]],
                               nextid = nextid,
-                              use_table_names = use_table_names)
+                              use_table_names = use_table_names,
+                              show_table_columns = show_table_columns)
       unique_node_name <- paste(unique_node_name, "_", i, ":{", ndi$unique_node_name, "}")
       nextid <- ndi$nextid
       immed_nodes <- c(immed_nodes,
@@ -31,6 +33,9 @@ r_optree_diagram <- function(optree,
       name <- paste("table", optree$table_name, sep = "_")
     }
     table_name_in <- optree$table_name
+    if(!show_table_columns) {
+      label <- optree$table_name
+    }
   }
   label = gsub("\n", "\\l", label, fixed = TRUE)
   label = gsub("'", "", label)
@@ -81,6 +86,7 @@ r_optree_diagram <- function(optree,
 #' @param optree operation tree pipeline (or list of such).
 #' @param ... force other argument to be by name.
 #' @param merge_tables logical, if TRUE merge all same table references into one node.  rel_op nodes that declare a materialize_as name will be cross-linked.
+#' @param show_table_columns logical, if TRUE show table columns.
 #' @return character DiagrammeR::grViz() ready text.
 #'
 #' @examples
@@ -115,7 +121,8 @@ r_optree_diagram <- function(optree,
 #'
 op_diagram <- function(optree,
                        ...,
-                       merge_tables = FALSE) {
+                       merge_tables = FALSE,
+                       show_table_columns = TRUE) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::op_diagram")
   diagram <- "
@@ -133,7 +140,8 @@ digraph rquery_optree {
     for(opt in optree) {
       graph <- r_optree_diagram(opt,
                                 nextid = nextid,
-                                use_table_names = merge_tables)
+                                use_table_names = merge_tables,
+                                show_table_columns = show_table_columns)
       nextid <- graph$nextid + 1
       nodesi <- graph$nodes
       nodesi[[length(nodesi)]]$table_name_out <- opt$materialize_as
@@ -146,7 +154,8 @@ digraph rquery_optree {
   } else {
     graph <- r_optree_diagram(optree,
                               nextid = nextid,
-                              use_table_names = merge_tables)
+                              use_table_names = merge_tables,
+                              show_table_columns = show_table_columns)
   }
   # de-dup any nodes
   node_names <- vapply(graph$nodes, function(ni) { ni$name }, character(1))

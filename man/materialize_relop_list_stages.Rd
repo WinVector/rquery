@@ -4,8 +4,9 @@
 \alias{materialize_relop_list_stages}
 \title{Materialize a stages list on a database.}
 \usage{
-materialize_relop_list_stages(db, collector, ..., limit = NULL,
-  source_limit = NULL, overwrite = TRUE, temporary = TRUE)
+materialize_relop_list_stages(db, collector, ..., narrow = TRUE,
+  limit = NULL, source_limit = NULL, overwrite = TRUE,
+  temporary = TRUE)
 }
 \arguments{
 \item{db}{database connecton (rquery_db_info class preferred, or DBI connections).}
@@ -13,6 +14,8 @@ materialize_relop_list_stages(db, collector, ..., limit = NULL,
 \item{collector}{a rquery::relop_list}
 
 \item{...}{force later arguments to bind by name.}
+
+\item{narrow}{logical, if TRUE add select_columns() to narrow stages.}
 
 \item{limit}{numeric if not NULL result limit (to use this, last statement must not have a limit).}
 
