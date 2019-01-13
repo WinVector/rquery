@@ -27,6 +27,22 @@ make_relop_list <- function(name_source = wrapr::mk_tmp_name_source("rqrol")) {
       name_source = name_source)
 }
 
+#' S4 print method
+#'
+#' @param object item to print
+#'
+#' @export
+setMethod(
+  f = "show",
+  signature = "relop_list",
+  definition = function(object) {
+    lst <- collector@mutable_store$stages
+    names(lst) <- vapply(lst,
+                         function(opi) {
+                           opi$materialize_as
+                         }, character(1))
+    print(lst)
+  })
 
 #' Add a relop to the end of a relop_list.
 #'

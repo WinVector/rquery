@@ -144,6 +144,12 @@ c(get_relop_list_stages(collector), list(result)) %.>%
 
 ![](RSQLite_diagram.svg)
 
+We can print the stages.
+
+```{r printops}
+collector
+```
+
 Or even print the enormous SQL required to implement the calculation.
 
 ```{r printsql}
