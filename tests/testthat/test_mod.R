@@ -16,8 +16,8 @@ test_that("test_mod: Works As Expected", {
 
     tree_rewriter <- function(x, db_info) {
       if(("pre_sql_sub_expr" %in% class(x)) &&
+         (length(x$info$name) == 1) &&
          (x$info$name == "modulo")) {
-        # print(str_pre_sql_sub_expr(x))
         lhs <- x$toks[[3]]
         rhs <- x$toks[[5]]
         return(pre_sql_sub_expr(
