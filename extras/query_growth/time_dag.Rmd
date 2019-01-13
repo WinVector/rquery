@@ -180,6 +180,17 @@ The above may seem extreme, but in our experience we have seen teams working wit
 
 For a non-trivial example of computation management and value re-use please see [here](https://github.com/WinVector/rquery/blob/master/db_examples/RSQLite.md).
 
+```{r}
+library("rqdatatable")
+
+summary <- data.frame(timings) %.>% 
+  project(., 
+          time_seconds := median(time)/1e+9,
+          groupby = "expr") 
+print(summary)
+```
+
+
 
 ```{r}
 # clean up tmps
@@ -189,5 +200,5 @@ for(ti in intermediates) {
 }
 
 sparklyr::spark_disconnect(raw_connection)
-rm(list = c("raw_connection", "raw_connection"))
+rm(list = c("raw_connection", "db_rquery"))
 ```

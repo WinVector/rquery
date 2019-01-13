@@ -176,7 +176,7 @@ dbplyr::remote_query(d3_dplyr)
 ```
 
     ## <SQL> SELECT *
-    ## FROM `xmwcuhyopq`
+    ## FROM `dwcjtolazb`
 
 `rquery` can also fix the issue by landing intermediate results, though the table lifetime tracking is intentionally more explicit through either a [`materialize()`](https://winvector.github.io/rquery/reference/materialize.html) or [`relop_list`](https://winvector.github.io/rquery/reference/relop_list-class.html) step. With a more advanced "collector" notation we can both build the efficient query plan, but also the diagram certifying the lack of redundant stages.
 
@@ -263,9 +263,9 @@ timings
 
     ## Unit: seconds
     ##                expr      min       lq     mean   median       uq      max
-    ##       dplyr_compute 3.305415 3.455514 3.739611 3.525979 3.913310 4.497837
-    ##              rquery 1.304959 1.438198 1.495331 1.438576 1.520384 1.774537
-    ##  rquery_materialize 3.267082 3.271671 3.902180 3.428535 3.996724 5.546887
+    ##       dplyr_compute 3.501938 3.610904 3.890573 3.842296 3.904748 4.592978
+    ##              rquery 1.334388 1.340033 1.563447 1.415750 1.862080 1.864985
+    ##  rquery_materialize 3.450987 3.743380 4.072540 3.813637 3.820653 5.534044
     ##  neval cld
     ##      5   b
     ##      5  a 
@@ -280,6 +280,21 @@ The above may seem extreme, but in our experience we have seen teams working wit
 For a non-trivial example of computation management and value re-use please see [here](https://github.com/WinVector/rquery/blob/master/db_examples/RSQLite.md).
 
 ``` r
+library("rqdatatable")
+
+summary <- data.frame(timings) %.>% 
+  project(., 
+          time_seconds := median(time)/1e+9,
+          groupby = "expr") 
+print(summary)
+```
+
+    ##                  expr time_seconds
+    ## 1: rquery_materialize     3.813637
+    ## 2:      dplyr_compute     3.842296
+    ## 3:             rquery     1.415750
+
+``` r
 # clean up tmps
 intermediates <- tmps(dumpList = TRUE)
 for(ti in intermediates) {
@@ -287,8 +302,5 @@ for(ti in intermediates) {
 }
 
 sparklyr::spark_disconnect(raw_connection)
-rm(list = c("raw_connection", "raw_connection"))
+rm(list = c("raw_connection", "db_rquery"))
 ```
-
-    ## Warning in rm(list = c("raw_connection", "raw_connection")): object
-    ## 'raw_connection' not found
