@@ -198,6 +198,9 @@ materialize_relop_list_stages <- function(db,
   stages <- get_relop_list_stages(collector, narrow = narrow)
   nstg <- length(stages)
   for(i in seq_len(nstg)) {
+    rq_remove_table(db, stage$materialize_as)
+  }
+  for(i in seq_len(nstg)) {
     stage <- stages[[i]]
     lmt <- NULL
     if(i==nstg) {

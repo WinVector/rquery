@@ -176,7 +176,7 @@ dbplyr::remote_query(d3_dplyr)
 ```
 
     ## <SQL> SELECT *
-    ## FROM `dwcjtolazb`
+    ## FROM `pkzdkylymh`
 
 `rquery` can also fix the issue by landing intermediate results, though the table lifetime tracking is intentionally more explicit through either a [`materialize()`](https://winvector.github.io/rquery/reference/materialize.html) or [`relop_list`](https://winvector.github.io/rquery/reference/relop_list-class.html) step. With a more advanced "collector" notation we can both build the efficient query plan, but also the diagram certifying the lack of redundant stages.
 
@@ -263,9 +263,9 @@ timings
 
     ## Unit: seconds
     ##                expr      min       lq     mean   median       uq      max
-    ##       dplyr_compute 3.501938 3.610904 3.890573 3.842296 3.904748 4.592978
-    ##              rquery 1.334388 1.340033 1.563447 1.415750 1.862080 1.864985
-    ##  rquery_materialize 3.450987 3.743380 4.072540 3.813637 3.820653 5.534044
+    ##       dplyr_compute 3.330701 3.738710 4.017508 3.974615 4.007144 5.036371
+    ##              rquery 1.381438 1.429085 1.676716 1.628102 1.672958 2.271998
+    ##  rquery_materialize 3.298693 3.410993 3.808256 3.875215 4.161819 4.294561
     ##  neval cld
     ##      5   b
     ##      5  a 
@@ -290,9 +290,9 @@ print(summary)
 ```
 
     ##                  expr time_seconds
-    ## 1: rquery_materialize     3.813637
-    ## 2:      dplyr_compute     3.842296
-    ## 3:             rquery     1.415750
+    ## 1:      dplyr_compute     3.974615
+    ## 2:             rquery     1.628102
+    ## 3: rquery_materialize     3.875215
 
 ``` r
 # clean up tmps
