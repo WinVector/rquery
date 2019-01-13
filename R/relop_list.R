@@ -114,14 +114,14 @@ setMethod(
 #'
 get_relop_list_stages <- function(collector) {
   if(!(isS4(collector) && methods::is(collector, "relop_list"))) {
-    stop("rquery::add_relop, expected collector to be of S4 class relop_list")
+    stop("rquery::get_relop_list_stages, expected collector to be of S4 class relop_list")
   }
   collector@mutable_store$stages
 }
 
-#' Materialize a stages list.
+#' Materialize a stages list on a database.
 #'
-#' @param db database connecton (rquery_db_info class or DBI connections preferred).
+#' @param db database connecton (rquery_db_info class preferred, or DBI connections).
 #' @param collector a rquery::relop_list
 #' @param ... force later arguments to bind by name.
 #' @param limit numeric if not NULL result limit (to use this, last statement must not have a limit).
@@ -141,7 +141,7 @@ materialize_relop_list_stages <- function(db,
                                           overwrite = TRUE,
                                           temporary = TRUE) {
   if(!(isS4(collector) && methods::is(collector, "relop_list"))) {
-    stop("rquery::add_relop, expected collector to be of S4 class relop_list")
+    stop("rquery::materialize_relop_list_local, expected collector to be of S4 class relop_list")
   }
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::get_relop_list_stages")
   res <- NULL
