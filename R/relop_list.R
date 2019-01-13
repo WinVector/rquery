@@ -60,9 +60,19 @@ add_relop <- function(collector, ops) {
     stop("rquery::add_relop, expected ops to be of S3 class relop")
   }
   table_name <- collector@name_source()
+  stages <- get("stages", envir = collector@mutable_store)
+  # check for circularity (likely due to re-insertion of already existing stages)
+  # (something we will not allow)
+  for(si in stages) {
+    if(length(intersect(tables_used(si), table_name))!=0) {
+      stop("rquery::add_relop name chosen for materialization was already used in an earlier table")
+    }
+    if(length(intersect(si$materialize_as, table_name))!=0) {
+      stop("rquery::add_relop name chosen for materialization was already materialization in an earlier table")
+    }
+  }
   ops$materialize_as <- table_name
   table <- mk_td(table_name, column_names(ops)) # note this preculdes later thinning
-  stages <- get("stages", envir = collector@mutable_store)
   assign("stages", c(stages, list(ops)), envir = collector@mutable_store)
   table
 }
