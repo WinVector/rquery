@@ -2,10 +2,10 @@
 % Please edit documentation in R/relop_list.R
 \name{materialize_relop_list_stages}
 \alias{materialize_relop_list_stages}
-\title{Materialize the stages list.}
+\title{Materialize a stages list.}
 \usage{
 materialize_relop_list_stages(db, collector, ..., limit = NULL,
-  source_limit = NULL, overwrite = TRUE, temporary = FALSE)
+  source_limit = NULL, overwrite = TRUE, temporary = TRUE)
 }
 \arguments{
 \item{db}{database connecton (rquery_db_info class or DBI connections preferred).}
@@ -26,5 +26,5 @@ materialize_relop_list_stages(db, collector, ..., limit = NULL,
 a rquery::relop_table_source representing ops's materialization.
 }
 \description{
-Materialize the stages list.
+Materialize a stages list.
 }

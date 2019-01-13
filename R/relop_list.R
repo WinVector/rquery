@@ -81,7 +81,7 @@ get_relop_list_stages <- function(collector) {
   collector@mutable_store$stages
 }
 
-#' Materialize the stages list.
+#' Materialize a stages list.
 #'
 #' @param db database connecton (rquery_db_info class or DBI connections preferred).
 #' @param collector a rquery::relop_list
@@ -101,7 +101,7 @@ materialize_relop_list_stages <- function(db,
                                           limit = NULL,
                                           source_limit = NULL,
                                           overwrite = TRUE,
-                                          temporary = FALSE) {
+                                          temporary = TRUE) {
   if(!(isS4(collector) && methods::is(collector, "relop_list"))) {
     stop("rquery::add_relop, expected collector to be of S4 class relop_list")
   }
@@ -123,5 +123,63 @@ materialize_relop_list_stages <- function(db,
   res
 }
 
+
+
+#' Materialize a stages list.
+#'
+#' Materialize a stages list in pipe notation with relop_list on the left.
+#'
+#' @param pipe_left_arg relop operation tree
+#' @param pipe_right_arg rquery_db_info
+#' @param pipe_environment environment to evaluate in.
+#' @param left_arg_name name, if not NULL name of left argument.
+#' @param pipe_string character, name of pipe operator.
+#' @param right_arg_name name, if not NULL name of right argument.
+#' @return result
+#'
+#' @importMethodsFrom wrapr ApplyTo apply_right_S4
+#' @export
+setMethod(
+  "apply_right_S4",
+  signature(pipe_left_arg = "relop_list", pipe_right_arg = "rquery_db_info"),
+  function(pipe_left_arg,
+           pipe_right_arg,
+           pipe_environment,
+           left_arg_name,
+           pipe_string,
+           right_arg_name) {
+    db <- pipe_right_arg
+    collector <- pipe_left_arg
+    rquery::materialize_relop_list_stages(db, collector)
+  })
+
+
+#' Materialize a stages list.
+#'
+#' Materialize a stages list in pipe notation with relop_list on the right.
+#'
+#' @param pipe_left_arg relop operation tree
+#' @param pipe_right_arg rquery_db_info
+#' @param pipe_environment environment to evaluate in.
+#' @param left_arg_name name, if not NULL name of left argument.
+#' @param pipe_string character, name of pipe operator.
+#' @param right_arg_name name, if not NULL name of right argument.
+#' @return result
+#'
+#' @importMethodsFrom wrapr ApplyTo apply_right_S4
+#' @export
+setMethod(
+  "apply_right_S4",
+  signature(pipe_left_arg = "rquery_db_info", pipe_right_arg = "relop_list"),
+  function(pipe_left_arg,
+           pipe_right_arg,
+           pipe_environment,
+           left_arg_name,
+           pipe_string,
+           right_arg_name) {
+    db <- pipe_left_arg
+    collector <- pipe_right_arg
+    rquery::materialize_relop_list_stages(db, collector)
+  })
 
 
