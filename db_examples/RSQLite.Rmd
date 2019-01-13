@@ -69,38 +69,40 @@ collector <- make_relop_list(tmps)
 scale <- 0.237
 
 # convert assessmentTotal to unscaled proabilities
-dqp_ops <- d %.>%
+dqp <- d %.>%
   extend(.,
          probability :=
-           exp(assessmentTotal * scale)) 
-dqp_table <- add_relop(collector, dqp_ops)
+           exp(assessmentTotal * scale)) %.>%
+  collector
 
 # total the probabilities per-group
-dqs_ops <- dqp_table %.>%
+dqs <- dqp %.>%
   project(., 
           tot_prob := sum(probability),
-          groupby = 'subjectID') 
-dqs_table <- add_relop(collector, dqs_ops)
+          groupby = 'subjectID') # could add a collector here to
+                                 # to avoid a self-join if RSQlite
+                                 # has a problem with that
 
 # join total back in and scale
-dqx_ops <- natural_join(dqp_table, dqs_table,
+dqx <- natural_join(dqp, dqs,
                     by = 'subjectID',
                     jointype = 'LEFT') %.>%
   extend(., 
-         probability := probability/tot_prob) 
-dqx_table <- add_relop(collector, dqx_ops)
+         probability := probability/tot_prob) %.>%
+  collector
 
 # find largest per subject probability
-mp_ops <- dqx_table %.>%
+mp <- dqx %.>%
   project(., 
           probability := max(probability),
-          groupby = 'subjectID') 
-mp_table <- add_relop(collector, mp_ops)
+          groupby = 'subjectID') # could add a collector here to
+                                 # to avoid a self-join if RSQlite
+                                 # has a problem with that
 
 # join in by best score and probability per subject 
 # (to break ties)
 # and finish the scoring as before
-dq <- natural_join(mp_table, dqx_table,
+natural_join(mp, dqx,
                    by = c("subjectID", "probability")) %.>%
   project(., 
           probability := max(probability), # pseudo aggregator
@@ -110,8 +112,8 @@ dq <- natural_join(mp_table, dqx_table,
   select_columns(., c('subjectID', 
                       'diagnosis', 
                       'probability')) %.>%
-  orderby(., cols = 'subjectID')
-add_relop(collector, dq)
+  orderby(., cols = 'subjectID') %.>% 
+  collector
 ```
 
 We then build our result.

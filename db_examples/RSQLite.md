@@ -63,38 +63,40 @@ collector <- make_relop_list(tmps)
 scale <- 0.237
 
 # convert assessmentTotal to unscaled proabilities
-dqp_ops <- d %.>%
+dqp <- d %.>%
   extend(.,
          probability :=
-           exp(assessmentTotal * scale)) 
-dqp_table <- add_relop(collector, dqp_ops)
+           exp(assessmentTotal * scale)) %.>%
+  collector
 
 # total the probabilities per-group
-dqs_ops <- dqp_table %.>%
+dqs <- dqp %.>%
   project(., 
           tot_prob := sum(probability),
-          groupby = 'subjectID') 
-dqs_table <- add_relop(collector, dqs_ops)
+          groupby = 'subjectID') # could add a collector here to
+                                 # to avoid a self-join if RSQlite
+                                 # has a problem with that
 
 # join total back in and scale
-dqx_ops <- natural_join(dqp_table, dqs_table,
+dqx <- natural_join(dqp, dqs,
                     by = 'subjectID',
                     jointype = 'LEFT') %.>%
   extend(., 
-         probability := probability/tot_prob) 
-dqx_table <- add_relop(collector, dqx_ops)
+         probability := probability/tot_prob) %.>%
+  collector
 
 # find largest per subject probability
-mp_ops <- dqx_table %.>%
+mp <- dqx %.>%
   project(., 
           probability := max(probability),
-          groupby = 'subjectID') 
-mp_table <- add_relop(collector, mp_ops)
+          groupby = 'subjectID') # could add a collector here to
+                                 # to avoid a self-join if RSQlite
+                                 # has a problem with that
 
 # join in by best score and probability per subject 
 # (to break ties)
 # and finish the scoring as before
-dq <- natural_join(mp_table, dqx_table,
+natural_join(mp, dqx,
                    by = c("subjectID", "probability")) %.>%
   project(., 
           probability := max(probability), # pseudo aggregator
@@ -104,11 +106,11 @@ dq <- natural_join(mp_table, dqx_table,
   select_columns(., c('subjectID', 
                       'diagnosis', 
                       'probability')) %.>%
-  orderby(., cols = 'subjectID')
-add_relop(collector, dq)
+  orderby(., cols = 'subjectID') %.>% 
+  collector
 ```
 
-    ## [1] "table(ex_04636621259739350459_0000000004; subjectID, diagnosis, probability)"
+    ## [1] "table(ex_47818072688998837753_0000000002; subjectID, diagnosis, probability)"
 
 We then build our result.
 
@@ -128,7 +130,7 @@ class(result)
 result
 ```
 
-    ## [1] "table(`ex_04636621259739350459_0000000004`; subjectID, diagnosis, probability)"
+    ## [1] "table(`ex_47818072688998837753_0000000002`; subjectID, diagnosis, probability)"
 
 ``` r
 DBI::dbReadTable(db$connection, result$table_name) %.>%
@@ -158,20 +160,14 @@ We can print the stages.
 collector
 ```
 
-    ## $ex_04636621259739350459_0000000000
+    ## $ex_47818072688998837753_0000000000
     ## [1] "table(`d`; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2) %.>% extend(., probability := exp(assessmentTotal * 0.237))"
     ## 
-    ## $ex_04636621259739350459_0000000001
-    ## [1] "table(ex_04636621259739350459_0000000000; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2, probability) %.>% project(., tot_prob := sum(probability), g= subjectID)"
+    ## $ex_47818072688998837753_0000000001
+    ## [1] "table(ex_47818072688998837753_0000000000; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2, probability) %.>% natural_join(., table(ex_47818072688998837753_0000000000; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2, probability) %.>% project(., tot_prob := sum(probability), g= subjectID), j= LEFT, by= subjectID) %.>% extend(., probability := probability / tot_prob)"
     ## 
-    ## $ex_04636621259739350459_0000000002
-    ## [1] "table(ex_04636621259739350459_0000000000; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2, probability) %.>% natural_join(., table(ex_04636621259739350459_0000000001; subjectID, tot_prob), j= LEFT, by= subjectID) %.>% extend(., probability := probability / tot_prob)"
-    ## 
-    ## $ex_04636621259739350459_0000000003
-    ## [1] "table(ex_04636621259739350459_0000000002; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2, probability, tot_prob) %.>% project(., probability := max(probability), g= subjectID)"
-    ## 
-    ## $ex_04636621259739350459_0000000004
-    ## [1] "table(ex_04636621259739350459_0000000003; subjectID, probability) %.>% natural_join(., table(ex_04636621259739350459_0000000002; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2, probability, tot_prob), j= INNER, by= subjectID, probability) %.>% project(., probability := max(probability), surveyCategory := min(surveyCategory), g= subjectID) %.>% rename(., c('diagnosis' = 'surveyCategory')) %.>% select_columns(., subjectID, diagnosis, probability) %.>% orderby(., subjectID)"
+    ## $ex_47818072688998837753_0000000002
+    ## [1] "table(ex_47818072688998837753_0000000001; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2, probability, tot_prob) %.>% project(., probability := max(probability), g= subjectID) %.>% natural_join(., table(ex_47818072688998837753_0000000001; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2, probability, tot_prob), j= INNER, by= subjectID, probability) %.>% project(., probability := max(probability), surveyCategory := min(surveyCategory), g= subjectID) %.>% rename(., c('diagnosis' = 'surveyCategory')) %.>% select_columns(., subjectID, diagnosis, probability) %.>% orderby(., subjectID)"
 
 Or even print the enormous SQL required to implement the calculation.
 
@@ -183,7 +179,7 @@ for(stage in get_relop_list_stages(collector)) {
 ```
 
     ## 
-    ## -- ex_04636621259739350459_0000000000
+    ## -- ex_47818072688998837753_0000000000
     ## SELECT
     ##  `subjectID`,
     ##  `surveyCategory`,
@@ -200,24 +196,11 @@ for(stage in get_relop_list_stages(collector)) {
     ##   `irrelevantCol2`
     ##  FROM
     ##   `d`
-    ##  ) tsql_08247698344886054263_0000000000
+    ##  ) tsql_63164278337121863507_0000000000
     ## ;
     ## 
     ## 
-    ## -- ex_04636621259739350459_0000000001
-    ## SELECT `subjectID`, sum ( `probability` ) AS `tot_prob` FROM (
-    ##  SELECT
-    ##   `subjectID`,
-    ##   `probability`
-    ##  FROM
-    ##   `ex_04636621259739350459_0000000000`
-    ##  ) tsql_69922230954570112074_0000000000
-    ## GROUP BY
-    ##  `subjectID`
-    ## ;
-    ## 
-    ## 
-    ## -- ex_04636621259739350459_0000000002
+    ## -- ex_47818072688998837753_0000000001
     ## SELECT
     ##  `subjectID`,
     ##  `surveyCategory`,
@@ -228,13 +211,13 @@ for(stage in get_relop_list_stages(collector)) {
     ##  `probability` / `tot_prob`  AS `probability`
     ## FROM (
     ##  SELECT
-    ##   COALESCE(`tsql_89913088825279674555_0000000000`.`subjectID`, `tsql_89913088825279674555_0000000001`.`subjectID`) AS `subjectID`,
-    ##   `tsql_89913088825279674555_0000000000`.`surveyCategory` AS `surveyCategory`,
-    ##   `tsql_89913088825279674555_0000000000`.`assessmentTotal` AS `assessmentTotal`,
-    ##   `tsql_89913088825279674555_0000000000`.`irrelevantCol1` AS `irrelevantCol1`,
-    ##   `tsql_89913088825279674555_0000000000`.`irrelevantCol2` AS `irrelevantCol2`,
-    ##   `tsql_89913088825279674555_0000000000`.`probability` AS `probability`,
-    ##   `tsql_89913088825279674555_0000000001`.`tot_prob` AS `tot_prob`
+    ##   COALESCE(`tsql_30651415626774439575_0000000001`.`subjectID`, `tsql_30651415626774439575_0000000002`.`subjectID`) AS `subjectID`,
+    ##   `tsql_30651415626774439575_0000000001`.`surveyCategory` AS `surveyCategory`,
+    ##   `tsql_30651415626774439575_0000000001`.`assessmentTotal` AS `assessmentTotal`,
+    ##   `tsql_30651415626774439575_0000000001`.`irrelevantCol1` AS `irrelevantCol1`,
+    ##   `tsql_30651415626774439575_0000000001`.`irrelevantCol2` AS `irrelevantCol2`,
+    ##   `tsql_30651415626774439575_0000000001`.`probability` AS `probability`,
+    ##   `tsql_30651415626774439575_0000000002`.`tot_prob` AS `tot_prob`
     ##  FROM (
     ##   SELECT
     ##    `subjectID`,
@@ -244,35 +227,26 @@ for(stage in get_relop_list_stages(collector)) {
     ##    `irrelevantCol2`,
     ##    `probability`
     ##   FROM
-    ##    `ex_04636621259739350459_0000000000`
-    ##  ) `tsql_89913088825279674555_0000000000`
+    ##    `ex_47818072688998837753_0000000000`
+    ##  ) `tsql_30651415626774439575_0000000001`
     ##  LEFT JOIN (
-    ##   SELECT
-    ##    `subjectID`,
-    ##    `tot_prob`
-    ##   FROM
-    ##    `ex_04636621259739350459_0000000001`
-    ##  ) `tsql_89913088825279674555_0000000001`
+    ##   SELECT `subjectID`, sum ( `probability` ) AS `tot_prob` FROM (
+    ##    SELECT
+    ##     `subjectID`,
+    ##     `probability`
+    ##    FROM
+    ##     `ex_47818072688998837753_0000000000`
+    ##    ) tsql_30651415626774439575_0000000000
+    ##   GROUP BY
+    ##    `subjectID`
+    ##  ) `tsql_30651415626774439575_0000000002`
     ##  ON
-    ##   `tsql_89913088825279674555_0000000000`.`subjectID` = `tsql_89913088825279674555_0000000001`.`subjectID`
-    ##  ) tsql_89913088825279674555_0000000002
+    ##   `tsql_30651415626774439575_0000000001`.`subjectID` = `tsql_30651415626774439575_0000000002`.`subjectID`
+    ##  ) tsql_30651415626774439575_0000000003
     ## ;
     ## 
     ## 
-    ## -- ex_04636621259739350459_0000000003
-    ## SELECT `subjectID`, max ( `probability` ) AS `probability` FROM (
-    ##  SELECT
-    ##   `subjectID`,
-    ##   `probability`
-    ##  FROM
-    ##   `ex_04636621259739350459_0000000002`
-    ##  ) tsql_97927359070752440378_0000000000
-    ## GROUP BY
-    ##  `subjectID`
-    ## ;
-    ## 
-    ## 
-    ## -- ex_04636621259739350459_0000000004
+    ## -- ex_47818072688998837753_0000000002
     ## SELECT * FROM (
     ##  SELECT
     ##   `subjectID`,
@@ -286,32 +260,36 @@ for(stage in get_relop_list_stages(collector)) {
     ##   FROM (
     ##    SELECT `subjectID`, max ( `probability` ) AS `probability`, min ( `surveyCategory` ) AS `surveyCategory` FROM (
     ##     SELECT
-    ##      COALESCE(`tsql_10527435650172438922_0000000000`.`subjectID`, `tsql_10527435650172438922_0000000001`.`subjectID`) AS `subjectID`,
-    ##      COALESCE(`tsql_10527435650172438922_0000000000`.`probability`, `tsql_10527435650172438922_0000000001`.`probability`) AS `probability`,
-    ##      `tsql_10527435650172438922_0000000001`.`surveyCategory` AS `surveyCategory`
+    ##      COALESCE(`tsql_31150410950505004387_0000000001`.`subjectID`, `tsql_31150410950505004387_0000000002`.`subjectID`) AS `subjectID`,
+    ##      COALESCE(`tsql_31150410950505004387_0000000001`.`probability`, `tsql_31150410950505004387_0000000002`.`probability`) AS `probability`,
+    ##      `tsql_31150410950505004387_0000000002`.`surveyCategory` AS `surveyCategory`
     ##     FROM (
-    ##      SELECT
-    ##       `subjectID`,
-    ##       `probability`
-    ##      FROM
-    ##       `ex_04636621259739350459_0000000003`
-    ##     ) `tsql_10527435650172438922_0000000000`
+    ##      SELECT `subjectID`, max ( `probability` ) AS `probability` FROM (
+    ##       SELECT
+    ##        `subjectID`,
+    ##        `probability`
+    ##       FROM
+    ##        `ex_47818072688998837753_0000000001`
+    ##       ) tsql_31150410950505004387_0000000000
+    ##      GROUP BY
+    ##       `subjectID`
+    ##     ) `tsql_31150410950505004387_0000000001`
     ##     INNER JOIN (
     ##      SELECT
     ##       `subjectID`,
     ##       `surveyCategory`,
     ##       `probability`
     ##      FROM
-    ##       `ex_04636621259739350459_0000000002`
-    ##     ) `tsql_10527435650172438922_0000000001`
+    ##       `ex_47818072688998837753_0000000001`
+    ##     ) `tsql_31150410950505004387_0000000002`
     ##     ON
-    ##      `tsql_10527435650172438922_0000000000`.`subjectID` = `tsql_10527435650172438922_0000000001`.`subjectID` AND `tsql_10527435650172438922_0000000000`.`probability` = `tsql_10527435650172438922_0000000001`.`probability`
-    ##     ) tsql_10527435650172438922_0000000002
+    ##      `tsql_31150410950505004387_0000000001`.`subjectID` = `tsql_31150410950505004387_0000000002`.`subjectID` AND `tsql_31150410950505004387_0000000001`.`probability` = `tsql_31150410950505004387_0000000002`.`probability`
+    ##     ) tsql_31150410950505004387_0000000003
     ##    GROUP BY
     ##     `subjectID`
-    ##   ) tsql_10527435650172438922_0000000003
-    ##  ) tsql_10527435650172438922_0000000004
-    ## ) tsql_10527435650172438922_0000000005 ORDER BY `subjectID`
+    ##   ) tsql_31150410950505004387_0000000004
+    ##  ) tsql_31150410950505004387_0000000005
+    ## ) tsql_31150410950505004387_0000000006 ORDER BY `subjectID`
     ## ;
 
 ``` r

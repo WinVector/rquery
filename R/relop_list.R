@@ -36,7 +36,7 @@ setMethod(
   f = "show",
   signature = "relop_list",
   definition = function(object) {
-    lst <- collector@mutable_store$stages
+    lst <- object@mutable_store$stages
     names(lst) <- vapply(lst,
                          function(opi) {
                            opi$materialize_as
@@ -66,6 +66,44 @@ add_relop <- function(collector, ops) {
   assign("stages", c(stages, list(ops)), envir = collector@mutable_store)
   table
 }
+
+
+# using ANY as relops are not S4 classes.
+
+#' Add a relop to the end of a relop_list (piped version).
+#'
+#' Add a relop to the end of a relop_list in pipe notation with collector on the right.
+#'
+#' @param pipe_left_arg relop operation tree
+#' @param pipe_right_arg relop_list
+#' @param pipe_environment environment to evaluate in.
+#' @param left_arg_name name, if not NULL name of left argument.
+#' @param pipe_string character, name of pipe operator.
+#' @param right_arg_name name, if not NULL name of right argument.
+#' @return result
+#'
+#' @importMethodsFrom wrapr ApplyTo apply_right_S4
+#' @export
+setMethod(
+  "apply_right_S4",
+  signature(pipe_left_arg = "ANY", pipe_right_arg = "relop_list"),
+  function(pipe_left_arg,
+           pipe_right_arg,
+           pipe_environment,
+           left_arg_name,
+           pipe_string,
+           right_arg_name) {
+    ops <- pipe_left_arg
+    collector <- pipe_right_arg
+    if(!("relop" %in% class(ops))) {
+      print(class(ops))
+      stop("rquery pipe into relop_list expected left argument to be of class relop")
+    }
+    rquery::add_relop(collector, ops)
+  })
+
+
+
 
 #' Return the stages list.
 #'
@@ -125,11 +163,11 @@ materialize_relop_list_stages <- function(db,
 
 
 
-#' Materialize a stages list.
+#' Materialize a stages list in pipe notation with relop_list on the left.
 #'
 #' Materialize a stages list in pipe notation with relop_list on the left.
 #'
-#' @param pipe_left_arg relop operation tree
+#' @param pipe_left_arg relop_list
 #' @param pipe_right_arg rquery_db_info
 #' @param pipe_environment environment to evaluate in.
 #' @param left_arg_name name, if not NULL name of left argument.
@@ -154,12 +192,12 @@ setMethod(
   })
 
 
-#' Materialize a stages list.
+#' Materialize a stages list in pipe notation with relop_list on the right.
 #'
 #' Materialize a stages list in pipe notation with relop_list on the right.
 #'
-#' @param pipe_left_arg relop operation tree
-#' @param pipe_right_arg rquery_db_info
+#' @param pipe_left_arg rquery_db_info
+#' @param pipe_right_arg relop_list
 #' @param pipe_environment environment to evaluate in.
 #' @param left_arg_name name, if not NULL name of left argument.
 #' @param pipe_string character, name of pipe operator.

@@ -125,7 +125,7 @@ dbplyr::remote_query(d3_dplyr)
 ```
 
     ## <SQL> SELECT *
-    ## FROM `ucswscfklo`
+    ## FROM `uuyncyawfu`
 
 `rquery` can also fix the issue by landing intermediate results, though the table lifetime tracking is intentionally more explicit.
 
@@ -145,7 +145,7 @@ d3_mat <- materialize(
 cat(format(d3_mat))
 ```
 
-    ## table(`tmpnam_74925700276090619476_0000000002`; 
+    ## table(`tmpnam_18493123241752192273_0000000002`; 
     ##   x)
 
 And `rquery`'s query diagrammer can help spot and diagnose these issues.
@@ -167,25 +167,24 @@ The gold nodes are possibly repeated calculations, and the warning also notes th
 
 One could hope the query optimizer will eliminate the common sub-expressions, but that is not always going to be the case. In fact sometimes the very size of a query turns off the query optimizer in systems such as `Spark`. It is better to organize your calculation to not emit so many common sub-expressions in the first place.
 
-With a little more notation we can even produce a diagram of the materialized strategy.
+With a more advanced "collector" notation we can both build the efficient query plan, but also the diagram certifying the lack of redundant stages.
 
 ``` r
-stages <- list()
-add_stage <- function(ops, table_name = tmps()) {
-  ops$materialize_as <- table_name
-  table <- mk_td(table_name, column_names(ops))
-  stages <<- c(stages, list(ops))
-  table
-}
+collector <- make_relop_list(tmps)
 
-d1_tab <- add_stage(natural_join(d0, d0, by = "x", jointype = "LEFT"))
-d2_tab <- add_stage(natural_join(d1_tab, d1_tab, by = "x", jointype = "LEFT"))
-d3_tab <- add_stage(natural_join(d2_tab, d2_tab, by = "x", jointype = "LEFT"))
-stages <- c(stages, list(d3_tab))
+d1_tab <- natural_join(d0, d0, by = "x", jointype = "LEFT") %.>%
+  collector
+d2_tab <- natural_join(d1_tab, d1_tab, by = "x", jointype = "LEFT") %.>%
+  collector
+d3_tab <- natural_join(d2_tab, d2_tab, by = "x", jointype = "LEFT") %.>%
+  collector
+
+stages <- get_relop_list_stages(collector)
+#stages <- c(stages, list(d3_tab))
 cat(format(d3_tab))
 ```
 
-    ## table(tmpnam_74925700276090619476_0000000005; 
+    ## table(tmpnam_18493123241752192273_0000000005; 
     ##   x)
 
 ``` r

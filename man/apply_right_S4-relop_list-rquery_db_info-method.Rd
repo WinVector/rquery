@@ -3,14 +3,14 @@
 \docType{methods}
 \name{apply_right_S4,relop_list,rquery_db_info-method}
 \alias{apply_right_S4,relop_list,rquery_db_info-method}
-\title{Materialize a stages list.}
+\title{Materialize a stages list in pipe notation with relop_list on the left.}
 \usage{
 \S4method{apply_right_S4}{relop_list,rquery_db_info}(pipe_left_arg,
   pipe_right_arg, pipe_environment, left_arg_name, pipe_string,
   right_arg_name)
 }
 \arguments{
-\item{pipe_left_arg}{relop operation tree}
+\item{pipe_left_arg}{relop_list}
 
 \item{pipe_right_arg}{rquery_db_info}
 
