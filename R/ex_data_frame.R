@@ -209,6 +209,14 @@ as.character.relop <- function (x, ...) {
 }
 
 
+
+
+
+
+# relop using S3 right distpatch as relop instances have
+# more than one S3 class label (not a good S4 practice).
+
+
 #' Execute pipeline treating pipe_left_arg as local data to
 #' be copied into database.
 #'
@@ -292,6 +300,10 @@ apply_right.relop <- function(pipe_left_arg,
 setOldClass("rquery_db_info")
 
 
+# Using S4 dispatch for rquery_db_info as we can treat
+# rquery_db_info as an S4 class.  using ANY as the
+# relop is not an S4 class.
+
 
 #' Apply pipeline to a database.
 #'
@@ -318,10 +330,10 @@ setMethod(
            right_arg_name) {
     force(pipe_environment)
     if(!("relop" %in% class(pipe_left_arg))) {
-      stop("rquery::apply_right_S4('ANY', 'rquery_db_info') pipe_left_arg must be of call relop")
+      stop("rquery::apply_right_S4('ANY', 'rquery_db_info') pipe_left_arg must be of class relop")
     }
     if(!("rquery_db_info" %in% class(pipe_right_arg))) {
-      stop("rquery::apply_right_S4('ANY', 'rquery_db_info') pipe_right_arg must be of call rquery_db_info")
+      stop("rquery::apply_right_S4('ANY', 'rquery_db_info') pipe_right_arg must be of class rquery_db_info")
     }
     rquery::execute(pipe_right_arg, pipe_left_arg, env = pipe_environment)
   })

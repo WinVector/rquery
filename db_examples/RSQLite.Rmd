@@ -63,30 +63,24 @@ d <- db_td(db, "d")
 
 
 ```{r calcm, warning=FALSE, message=FALSE}
+
+collector <- make_relop_list(tmps)
+
 scale <- 0.237
-
-stages <- list()
-add_stage <- function(ops, table_name = tmps()) {
-  ops$materialize_as <- table_name
-  table <- mk_td(table_name, column_names(ops))
-  stages <<- c(stages, list(ops))
-  table
-}
-
 
 # convert assessmentTotal to unscaled proabilities
 dqp_ops <- d %.>%
   extend(.,
          probability :=
            exp(assessmentTotal * scale)) 
-dqp_table <- add_stage(dqp_ops)
+dqp_table <- add_relop(collector, dqp_ops)
 
 # total the probabilities per-group
 dqs_ops <- dqp_table %.>%
   project(., 
           tot_prob := sum(probability),
           groupby = 'subjectID') 
-dqs_table <- add_stage(dqs_ops)
+dqs_table <- add_relop(collector, dqs_ops)
 
 # join total back in and scale
 dqx_ops <- natural_join(dqp_table, dqs_table,
@@ -94,14 +88,14 @@ dqx_ops <- natural_join(dqp_table, dqs_table,
                     jointype = 'LEFT') %.>%
   extend(., 
          probability := probability/tot_prob) 
-dqx_table <- add_stage(dqx_ops)
+dqx_table <- add_relop(collector, dqx_ops)
 
 # find largest per subject probability
 mp_ops <- dqx_table %.>%
   project(., 
           probability := max(probability),
           groupby = 'subjectID') 
-mp_table <- add_stage(mp_ops)
+mp_table <- add_relop(collector, mp_ops)
 
 # join in by best score and probability per subject 
 # (to break ties)
@@ -117,16 +111,14 @@ dq <- natural_join(mp_table, dqx_table,
                       'diagnosis', 
                       'probability')) %.>%
   orderby(., cols = 'subjectID')
-result = add_stage(dq, "result_table")
+result = add_relop(collector, dq)
 ```
 
 We then build our result.
 
 ```{r materialize, warning=FALSE, message=FALSE}
-for(stage in stages) {
-  materialize(db, stage, table_name = stage$materialize_as,
-              temporary = TRUE, overwrite = TRUE)
-}
+materialize_relop_list_stages(db, collector,
+                              temporary = TRUE, overwrite = TRUE)
 ```
 
 
@@ -143,7 +135,7 @@ DBI::dbReadTable(db$connection, result$table_name) %.>%
 We can also diagram the calculation.
 
 ```{r}
-c(stages, list(result)) %.>%
+c(get_relop_list_stages(collector), list(result)) %.>%
   op_diagram(., merge_tables = TRUE) %.>% 
   DiagrammeR::grViz(.) %.>%
   DiagrammeRsvg::export_svg(.) %.>%
@@ -155,7 +147,7 @@ c(stages, list(result)) %.>%
 Or even print the enormous SQL required to implement the calculation.
 
 ```{r printsql}
-for(stage in stages) {
+for(stage in get_relop_list_stages(collector)) {
   cat(paste0("\n-- ", stage$materialize_as, "\n"))
   cat(paste0(to_sql(stage, db), ";\n\n"))
 }
