@@ -111,14 +111,13 @@ dq <- natural_join(mp_table, dqx_table,
                       'diagnosis', 
                       'probability')) %.>%
   orderby(., cols = 'subjectID')
-result = add_relop(collector, dq)
+add_relop(collector, dq)
 ```
 
 We then build our result.
 
 ```{r materialize, warning=FALSE, message=FALSE}
-materialize_relop_list_stages(db, collector,
-                              temporary = TRUE, overwrite = TRUE)
+result <- collector %.>% db
 ```
 
 
