@@ -3,7 +3,9 @@
 
  * User controlled SQL-tree re-writing.
  * More per-DB SQL rendering control.
- * Move to tree-based parse representation (instead flat).
+ * Move to tree-based parse representation (instead of flat).
+ * relop_list collector interface.
+ * Specialize materialze_node for lineage breaking.
  * %%/MOD().
  * Na row interfaces (un-publish tokenize_for_SQL()).
 
