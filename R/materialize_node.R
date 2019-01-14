@@ -20,6 +20,9 @@
 #'
 materialize_node <- function(source,
                              table_name = wrapr::mk_tmp_name_source("rquerymn")()) {
+  if("data.frame" %in% class(source)) {
+    return(source)
+  }
   if(!("relop" %in% class(source))) {
     stop("rquery::materialize_node requires source be of class relop")
   }
