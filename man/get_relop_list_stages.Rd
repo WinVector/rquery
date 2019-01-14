@@ -18,4 +18,17 @@ a list of rquery::relops
 }
 \description{
 Stages can be narrowed to what is actually used.
+For how to use please see here \url{https://github.com/WinVector/rquery/blob/master/extras/query_growth/query_growth.md}.
+}
+\examples{
+
+collector <- make_relop_list()
+ops <- mk_td("d", c("x", "y")) \%.>\%
+  extend(., z \%:=\% x + y) \%.>\%
+  collector
+get_relop_list_stages(collector)
+
+}
+\seealso{
+\code{\link{make_relop_list}}, \code{\link{add_relop}}, \code{\link{materialize_relop_list_stages}}
 }

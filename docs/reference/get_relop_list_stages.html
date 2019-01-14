@@ -32,7 +32,8 @@
 
 <meta property="og:title" content="Return the stages list. — get_relop_list_stages" />
 
-<meta property="og:description" content="Stages can be narrowed to what is actually used." />
+<meta property="og:description" content="Stages can be narrowed to what is actually used.
+For how to use please see here https://github.com/WinVector/rquery/blob/master/extras/query_growth/query_growth.md." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -134,7 +135,8 @@
 
     <div class="ref-description">
     
-    <p>Stages can be narrowed to what is actually used.</p>
+    <p>Stages can be narrowed to what is actually used.
+For how to use please see here <a href='https://github.com/WinVector/rquery/blob/master/extras/query_growth/query_growth.md'>https://github.com/WinVector/rquery/blob/master/extras/query_growth/query_growth.md</a>.</p>
     
     </div>
 
@@ -161,7 +163,21 @@
 
     <p>a list of rquery::relops</p>
     
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
+    <div class='dont-index'><p><code><a href='make_relop_list.html'>make_relop_list</a></code>, <code><a href='add_relop.html'>add_relop</a></code>, <code><a href='materialize_relop_list_stages.html'>materialize_relop_list_stages</a></code></p></div>
+    
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'>
+<span class='no'>collector</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='make_relop_list.html'>make_relop_list</a></span>()
+<span class='no'>ops</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='mk_td.html'>mk_td</a></span>(<span class='st'>"d"</span>, <span class='fu'>c</span>(<span class='st'>"x"</span>, <span class='st'>"y"</span>)) <span class='kw'>%.&gt;%</span>
+  <span class='fu'><a href='extend.html'>extend</a></span>(<span class='no'>.</span>, <span class='no'>z</span> <span class='kw'>%:=%</span> <span class='no'>x</span> + <span class='no'>y</span>) <span class='kw'>%.&gt;%</span>
+  <span class='no'>collector</span>
+<span class='fu'>get_relop_list_stages</span>(<span class='no'>collector</span>)</div><div class='output co'>#&gt; [[1]]
+#&gt; [1] "table(d; x, y) %.&gt;% extend(., z %:=% x + y)"
+#&gt; </div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -169,7 +185,11 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-          </ul>
+
+      <li><a href="#see-also">See also</a></li>
+      
+      <li><a href="#examples">Examples</a></li>
+    </ul>
 
   </div>
 </div>

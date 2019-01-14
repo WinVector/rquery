@@ -32,7 +32,7 @@
 
 <meta property="og:title" content="Materialize a stages list on a database. — materialize_relop_list_stages" />
 
-<meta property="og:description" content="Materialize a stages list on a database." />
+<meta property="og:description" content="For how to use please see here https://github.com/WinVector/rquery/blob/master/extras/query_growth/query_growth.md." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -134,7 +134,7 @@
 
     <div class="ref-description">
     
-    <p>Materialize a stages list on a database.</p>
+    <p>For how to use please see here <a href='https://github.com/WinVector/rquery/blob/master/extras/query_growth/query_growth.md'>https://github.com/WinVector/rquery/blob/master/extras/query_growth/query_growth.md</a>.</p>
     
     </div>
 
@@ -183,7 +183,39 @@
 
     <p>a rquery::relop_table_source representing ops's materialization.</p>
     
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
+    <div class='dont-index'><p><code><a href='make_relop_list.html'>make_relop_list</a></code>, <code><a href='add_relop.html'>add_relop</a></code>, <code><a href='get_relop_list_stages.html'>get_relop_list_stages</a></code></p></div>
+    
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'>
+<span class='kw'>if</span>(<span class='fu'>requireNamespace</span>(<span class='st'>"DBI"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>&amp;&amp;</span>
+   <span class='fu'>requireNamespace</span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) ) {
+
+  <span class='no'>rsqlite_connection</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(),
+                                       <span class='st'>":memory:"</span>)
+  <span class='no'>db</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rquery_db_info.html'>rquery_db_info</a></span>(
+    <span class='kw'>connection</span> <span class='kw'>=</span> <span class='no'>rsqlite_connection</span>,
+    <span class='kw'>is_dbi</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
+    )
+
+  <span class='no'>collector</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='make_relop_list.html'>make_relop_list</a></span>()
+  <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(<span class='no'>db</span>, <span class='st'>"d"</span>, <span class='fu'>data.frame</span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='fl'>2</span>),
+                  <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+  <span class='no'>ops1</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span>
+    <span class='fu'><a href='extend.html'>extend</a></span>(<span class='no'>.</span>, <span class='no'>z</span> <span class='kw'>%:=%</span> <span class='no'>x</span> + <span class='no'>y</span>) <span class='kw'>%.&gt;%</span>
+    <span class='no'>collector</span>
+  <span class='no'>ops2</span> <span class='kw'>&lt;-</span> <span class='no'>ops1</span> <span class='kw'>%.&gt;%</span>
+    <span class='fu'><a href='extend.html'>extend</a></span>(<span class='no'>.</span>, <span class='no'>z2</span> <span class='kw'>%:=%</span> <span class='no'>x</span> / <span class='no'>y</span>) <span class='kw'>%.&gt;%</span>
+    <span class='no'>collector</span>
+  <span class='fu'><a href='get_relop_list_stages.html'>get_relop_list_stages</a></span>(<span class='no'>collector</span>)
+  <span class='no'>res</span> <span class='kw'>&lt;-</span> <span class='fu'>materialize_relop_list_stages</span>(<span class='no'>db</span>, <span class='no'>collector</span>)
+  <span class='no'>res</span>
+  <span class='fu'><a href='execute.html'>execute</a></span>(<span class='no'>db</span>, <span class='no'>res</span>)
+
+  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>rsqlite_connection</span>)
+}</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -191,7 +223,11 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-          </ul>
+
+      <li><a href="#see-also">See also</a></li>
+      
+      <li><a href="#examples">Examples</a></li>
+    </ul>
 
   </div>
 </div>

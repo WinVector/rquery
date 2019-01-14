@@ -179,6 +179,7 @@ The above may seem extreme, but in our experience we have seen teams working wit
 
 
 For a non-trivial example of computation management and value re-use please see [here](https://github.com/WinVector/rquery/blob/master/db_examples/RSQLite.md).
+Some more discussion of the query explosion effect is available [here](https://github.com/WinVector/rquery/blob/master/extras/query_growth/query_growth.md).
 
 ```{r}
 library("rqdatatable")

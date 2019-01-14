@@ -13,5 +13,18 @@ make_relop_list(name_source = wrapr::mk_tmp_name_source("rqrol"))
 a relop_list relop stage collector
 }
 \description{
-Create a new \code{rquery::relop} operator tree collector list
+For how to use please see here \url{https://github.com/WinVector/rquery/blob/master/extras/query_growth/query_growth.md}.
+}
+\examples{
+
+collector <- make_relop_list()
+ops <- mk_td("d", c("x", "y")) \%.>\%
+  extend(., z \%:=\% x + y) \%.>\%
+  collector
+get_relop_list_stages(collector)
+
+
+}
+\seealso{
+\code{\link{add_relop}}, \code{\link{get_relop_list_stages}}, \code{\link{materialize_relop_list_stages}}
 }

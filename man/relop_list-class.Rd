@@ -6,4 +6,8 @@
 \title{List of \code{rquery::relop} operator trees taken in order.}
 \description{
 Used to collect a sequence of related operations.
+For how to use please see here \url{https://github.com/WinVector/rquery/blob/master/extras/query_growth/query_growth.md}.
+}
+\seealso{
+\code{\link{add_relop}}, \code{\link{get_relop_list_stages}}, \code{\link{materialize_relop_list_stages}}
 }

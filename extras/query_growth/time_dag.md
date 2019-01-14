@@ -176,7 +176,7 @@ dbplyr::remote_query(d3_dplyr)
 ```
 
     ## <SQL> SELECT *
-    ## FROM `pkzdkylymh`
+    ## FROM `osxiotaosr`
 
 `rquery` can also fix the issue by landing intermediate results, though the table lifetime tracking is intentionally more explicit through either a [`materialize()`](https://winvector.github.io/rquery/reference/materialize.html) or [`relop_list`](https://winvector.github.io/rquery/reference/relop_list-class.html) step. With a more advanced "collector" notation we can both build the efficient query plan, but also the diagram certifying the lack of redundant stages.
 
@@ -263,9 +263,9 @@ timings
 
     ## Unit: seconds
     ##                expr      min       lq     mean   median       uq      max
-    ##       dplyr_compute 3.330701 3.738710 4.017508 3.974615 4.007144 5.036371
-    ##              rquery 1.381438 1.429085 1.676716 1.628102 1.672958 2.271998
-    ##  rquery_materialize 3.298693 3.410993 3.808256 3.875215 4.161819 4.294561
+    ##       dplyr_compute 3.564287 3.982069 4.040852 4.049691 4.260888 4.347327
+    ##              rquery 1.343013 1.486147 1.768126 1.510705 1.663427 2.837337
+    ##  rquery_materialize 3.476329 3.489488 4.054822 4.070123 4.133059 5.105111
     ##  neval cld
     ##      5   b
     ##      5  a 
@@ -277,7 +277,7 @@ The timings indicate introducing the intermediate computes actually slows things
 
 The above may seem extreme, but in our experience we have seen teams working with `Spark` through automatic query generators spend a *lot* of time running into and debugging very opaque query growth problems. The issues include that long sequences of operations get translated into very deep nested queries *and* any re-use of intermediate values translates into unexpected (and not-signaled) query explosion. Some things that are cheap in immediate/imperative systems are in fact hard in delayed evaluation systems (so common intuition fails). Our hope is that with diagramming tools such as `rquery::op_diagram()` users can anticipate the issues tune their calculation plans using methods such as `rquery::materialize()` and `rquery::relop_list()`.
 
-For a non-trivial example of computation management and value re-use please see [here](https://github.com/WinVector/rquery/blob/master/db_examples/RSQLite.md).
+For a non-trivial example of computation management and value re-use please see [here](https://github.com/WinVector/rquery/blob/master/db_examples/RSQLite.md). Some more discussion of the query explosion effect is available [here](https://github.com/WinVector/rquery/blob/master/extras/query_growth/query_growth.md).
 
 ``` r
 library("rqdatatable")
@@ -290,9 +290,9 @@ print(summary)
 ```
 
     ##                  expr time_seconds
-    ## 1:      dplyr_compute     3.974615
-    ## 2:             rquery     1.628102
-    ## 3: rquery_materialize     3.875215
+    ## 1:             rquery     1.510705
+    ## 2: rquery_materialize     4.070123
+    ## 3:      dplyr_compute     4.049691
 
 ``` r
 # clean up tmps

@@ -125,7 +125,7 @@ dbplyr::remote_query(d3_dplyr)
 ```
 
     ## <SQL> SELECT *
-    ## FROM `mwxyqrxrzk`
+    ## FROM `akwatbjfat`
 
 `rquery` can also fix the issue by landing intermediate results, though the table lifetime tracking is intentionally more explicit.
 
@@ -145,7 +145,7 @@ d3_mat <- materialize(
 cat(format(d3_mat))
 ```
 
-    ## table(`tmpnam_77865517590496941184_0000000002`; 
+    ## table(`tmpnam_09361289392209488621_0000000002`; 
     ##   x)
 
 And `rquery`'s query diagrammer can help spot and diagnose these issues.
@@ -184,7 +184,7 @@ stages <- get_relop_list_stages(collector)
 cat(format(d3_tab))
 ```
 
-    ## table(tmpnam_77865517590496941184_0000000005; 
+    ## table(tmpnam_09361289392209488621_0000000005; 
     ##   x)
 
 ``` r
@@ -197,7 +197,7 @@ stages %.>%
 
 ![](query_growth_diagram2.svg)
 
-For a non-trivial example of computation management and value re-use please see [here](https://github.com/WinVector/rquery/blob/master/db_examples/RSQLite.md).
+For a non-trivial example of computation management and value re-use please see [here](https://github.com/WinVector/rquery/blob/master/db_examples/RSQLite.md). Some timings of the query explosing effect are available [here](https://github.com/WinVector/rquery/blob/master/extras/query_growth/time_dag.md).
 
 ``` r
 # clean up tmps

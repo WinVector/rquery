@@ -29,5 +29,38 @@ materialize_relop_list_stages(db, collector, ..., narrow = TRUE,
 a rquery::relop_table_source representing ops's materialization.
 }
 \description{
-Materialize a stages list on a database.
+For how to use please see here \url{https://github.com/WinVector/rquery/blob/master/extras/query_growth/query_growth.md}.
+}
+\examples{
+
+if(requireNamespace("DBI", quietly = TRUE) &&
+   requireNamespace("RSQLite", quietly = TRUE) ) {
+
+  rsqlite_connection <- DBI::dbConnect(RSQLite::SQLite(),
+                                       ":memory:")
+  db <- rquery_db_info(
+    connection = rsqlite_connection,
+    is_dbi = TRUE
+    )
+
+  collector <- make_relop_list()
+  d <- rq_copy_to(db, "d", data.frame(x = 1, y = 2),
+                  temporary = TRUE, overwrite = TRUE)
+  ops1 <- d \%.>\%
+    extend(., z \%:=\% x + y) \%.>\%
+    collector
+  ops2 <- ops1 \%.>\%
+    extend(., z2 \%:=\% x / y) \%.>\%
+    collector
+  get_relop_list_stages(collector)
+  res <- materialize_relop_list_stages(db, collector)
+  res
+  execute(db, res)
+
+  DBI::dbDisconnect(rsqlite_connection)
+}
+
+}
+\seealso{
+\code{\link{make_relop_list}}, \code{\link{add_relop}}, \code{\link{get_relop_list_stages}}
 }

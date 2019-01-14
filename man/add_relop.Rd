@@ -15,5 +15,17 @@ add_relop(collector, ops)
 a rquery::relop_table_source representing ops's future materialization.
 }
 \description{
-Add a relop to the end of a relop_list.
+For how to use please see here \url{https://github.com/WinVector/rquery/blob/master/extras/query_growth/query_growth.md}.
+}
+\examples{
+
+collector <- make_relop_list()
+ops <- mk_td("d", c("x", "y")) \%.>\%
+  extend(., z \%:=\% x + y) \%.>\%
+  collector
+get_relop_list_stages(collector)
+
+}
+\seealso{
+\code{\link{make_relop_list}}, \code{\link{get_relop_list_stages}}, \code{\link{materialize_relop_list_stages}}
 }

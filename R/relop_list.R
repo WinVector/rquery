@@ -3,8 +3,12 @@
 #' List of \code{rquery::relop} operator trees taken in order.
 #'
 #' Used to collect a sequence of related operations.
+#' For how to use please see here \url{https://github.com/WinVector/rquery/blob/master/extras/query_growth/query_growth.md}.
+#'
+#' @seealso \code{\link{add_relop}}, \code{\link{get_relop_list_stages}}, \code{\link{materialize_relop_list_stages}}
 #'
 #' @export
+#'
 setClass(
   "relop_list",
   slots = c(mutable_store = "environment",
@@ -13,8 +17,21 @@ setClass(
 
 #' Create a new \code{rquery::relop} operator tree collector list
 #'
+#' For how to use please see here \url{https://github.com/WinVector/rquery/blob/master/extras/query_growth/query_growth.md}.
+#'
 #' @param name_source a wrapr::mk_tmp_name_source()
 #' @return a relop_list relop stage collector
+#'
+#' @seealso \code{\link{add_relop}}, \code{\link{get_relop_list_stages}}, \code{\link{materialize_relop_list_stages}}
+#'
+#' @examples
+#'
+#' collector <- make_relop_list()
+#' ops <- mk_td("d", c("x", "y")) %.>%
+#'   extend(., z %:=% x + y) %.>%
+#'   collector
+#' get_relop_list_stages(collector)
+#'
 #'
 #' @export
 #'
@@ -46,9 +63,21 @@ setMethod(
 
 #' Add a relop to the end of a relop_list.
 #'
+#' For how to use please see here \url{https://github.com/WinVector/rquery/blob/master/extras/query_growth/query_growth.md}.
+#'
 #' @param collector a rquery::relop_list
 #' @param ops a rquery::relop
 #' @return a rquery::relop_table_source representing ops's future materialization.
+#'
+#' @seealso \code{\link{make_relop_list}}, \code{\link{get_relop_list_stages}}, \code{\link{materialize_relop_list_stages}}
+#'
+#' @examples
+#'
+#' collector <- make_relop_list()
+#' ops <- mk_td("d", c("x", "y")) %.>%
+#'   extend(., z %:=% x + y) %.>%
+#'   collector
+#' get_relop_list_stages(collector)
 #'
 #' @export
 #'
@@ -78,7 +107,7 @@ add_relop <- function(collector, ops) {
 }
 
 
-# using ANY as relops are not S4 classes.
+# using ANY, as relops are not S4 classes.
 
 #' Add a relop to the end of a relop_list (piped version).
 #'
@@ -137,16 +166,27 @@ relop_list_stages_columns_used <- function(stages) {
 }
 
 
-# TODO: update incoming table defs to match what is used.
+# TODO: update incoming table defs to match what is used?
 
 #' Return the stages list.
 #'
 #' Stages can be narrowed to what is actually used.
+#' For how to use please see here \url{https://github.com/WinVector/rquery/blob/master/extras/query_growth/query_growth.md}.
 #'
 #' @param collector a rquery::relop_list
 #' @param ... force later arguments to bind by name
 #' @param narrow logical, if TRUE add select_columns() to narrow stages.
 #' @return a list of rquery::relops
+#'
+#' @seealso \code{\link{make_relop_list}}, \code{\link{add_relop}}, \code{\link{materialize_relop_list_stages}}
+#'
+#' @examples
+#'
+#' collector <- make_relop_list()
+#' ops <- mk_td("d", c("x", "y")) %.>%
+#'   extend(., z %:=% x + y) %.>%
+#'   collector
+#' get_relop_list_stages(collector)
 #'
 #' @export
 #'
@@ -169,6 +209,8 @@ get_relop_list_stages <- function(collector,
 
 #' Materialize a stages list on a database.
 #'
+#' For how to use please see here \url{https://github.com/WinVector/rquery/blob/master/extras/query_growth/query_growth.md}.
+#'
 #' @param db database connecton (rquery_db_info class preferred, or DBI connections).
 #' @param collector a rquery::relop_list
 #' @param ... force later arguments to bind by name.
@@ -179,6 +221,37 @@ get_relop_list_stages <- function(collector,
 #' @param temporary logical if TRUE try to create a temporary table.
 #'
 #' @return a rquery::relop_table_source representing ops's materialization.
+#'
+#' @seealso \code{\link{make_relop_list}}, \code{\link{add_relop}}, \code{\link{get_relop_list_stages}}
+#'
+#' @examples
+#'
+#' if(requireNamespace("DBI", quietly = TRUE) &&
+#'    requireNamespace("RSQLite", quietly = TRUE) ) {
+#'
+#'   rsqlite_connection <- DBI::dbConnect(RSQLite::SQLite(),
+#'                                        ":memory:")
+#'   db <- rquery_db_info(
+#'     connection = rsqlite_connection,
+#'     is_dbi = TRUE
+#'     )
+#'
+#'   collector <- make_relop_list()
+#'   d <- rq_copy_to(db, "d", data.frame(x = 1, y = 2),
+#'                   temporary = TRUE, overwrite = TRUE)
+#'   ops1 <- d %.>%
+#'     extend(., z %:=% x + y) %.>%
+#'     collector
+#'   ops2 <- ops1 %.>%
+#'     extend(., z2 %:=% x / y) %.>%
+#'     collector
+#'   get_relop_list_stages(collector)
+#'   res <- materialize_relop_list_stages(db, collector)
+#'   res
+#'   execute(db, res)
+#'
+#'   DBI::dbDisconnect(rsqlite_connection)
+#' }
 #'
 #' @export
 #'
@@ -197,7 +270,7 @@ materialize_relop_list_stages <- function(db,
   res <- NULL
   stages <- get_relop_list_stages(collector, narrow = narrow)
   nstg <- length(stages)
-  for(i in seq_len(nstg)) {
+  for(stage in stages) {
     rq_remove_table(db, stage$materialize_as)
   }
   for(i in seq_len(nstg)) {
