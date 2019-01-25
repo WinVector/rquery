@@ -11,6 +11,7 @@
 
 # add class info and helpers to a relop node.
 relop_decorate <- function(class_name, r) {
+  r$mutable_annotation_space = new.env(parent = emptyenv())
   class(r) <- c(class_name, "relop")
   r
 }

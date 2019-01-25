@@ -1,5 +1,5 @@
 
-# rquery 1.3.0 2019/01/24
+# rquery 1.3.0 2019/01/25
 
  * User controlled SQL-tree re-writing.
  * More per-DB SQL rendering control.
@@ -8,6 +8,7 @@
  * Specialize materialze_node for lineage breaking.
  * %%/MOD().
  * Na row interfaces (un-publish tokenize_for_SQL()).
+ * Add mutable scratch area on nodes.
 
 # rquery 1.2.1 2018/12/16
 
