@@ -41,15 +41,13 @@ r_optree_diagram <- function(optree,
   prev_nodes <- NULL
   prev_edges <- NULL
   ninputs <- length(optree$source)
-  label = format_node(optree)
-  unique_node_name <- label
+  unique_op_node_name <- as.character(optree$mutable_annotation_space$node_id)
   if(ninputs>0) {
     for(i in seq_len(ninputs)) {
       ndi <- r_optree_diagram(optree$source[[i]],
                               next_diagram_id = next_diagram_id,
                               use_table_names = use_table_names,
                               show_table_columns = show_table_columns)
-      unique_node_name <- paste(unique_node_name, "_", i, ":{", ndi$unique_node_name, "}")
       next_diagram_id <- ndi$next_diagram_id
       immed_nodes <- c(immed_nodes,
                        ndi$nodes[[length(ndi$nodes)]]$name)
@@ -62,6 +60,7 @@ r_optree_diagram <- function(optree,
   table_name_in <- NULL
   table_name_out <- NULL # TODO: set this
   name = paste0("node_", nodeid)
+  label = format_node(optree)
   if("relop_table_source" %in% class(optree)) {
     if(use_table_names) {
       name <- paste("table", optree$table_name, sep = "_")
@@ -93,7 +92,7 @@ r_optree_diagram <- function(optree,
                     name = name,
                     table_name_in = table_name_in,
                     table_name_out = table_name_out,
-                    unique_node_name = unique_node_name,
+                    unique_op_node_name = unique_op_node_name,
                     label = label,
                     optree = optree))
   edge = NULL
@@ -110,7 +109,7 @@ r_optree_diagram <- function(optree,
                   "']")
   }
   list(next_diagram_id = next_diagram_id,
-       unique_node_name = unique_node_name,
+       unique_op_node_name = unique_op_node_name,
        nodes = c(prev_nodes, node),
        edges = c(prev_edges, edge))
 }
@@ -214,11 +213,11 @@ digraph rquery_optree {
   }
   counts <- list()
   for(nd in graph$nodes) {
-    prev <- counts[[nd$unique_node_name]]
+    prev <- counts[[nd$unique_op_node_name]]
     if(is.null(prev)) {
       prev <- 0
     }
-    counts[[nd$unique_node_name]] <- prev + 1
+    counts[[nd$unique_op_node_name]] <- prev + 1
   }
   shapes <- rep("box", length(graph$nodes))
   colors <- rep("khaki3", length(graph$nodes))
@@ -229,7 +228,7 @@ digraph rquery_optree {
       shapes[[ii]] <- "folder"
       colors[[ii]] <- "chartreuse3"
     } else {
-      if(counts[[ni$unique_node_name]]>1) {
+      if(counts[[ni$unique_op_node_name]]>1) {
         shapes[[ii]] <- "note"
         colors[[ii]] <- "orange"
         if(length(msgs_seen)<5) {
