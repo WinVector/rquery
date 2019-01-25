@@ -1,0 +1,88 @@
+---
+title: "Traversing Object DAGs in R"
+output: github_document
+---
+
+```{r}
+
+mk_obj <- function(source = list()) {
+  r <- list(source = source)
+  class(r) <- "node"
+  r
+}
+
+o4 <- mk_obj()
+dag <- mk_obj(list(mk_obj(list(o4)), mk_obj(list(o4))))
+rm(list = "o4")
+str(dag)
+
+r_visitor_1 <- function(obj) {
+  obj$mutable_annotation_space <- new.env(parent = emptyenv())
+  for(ii in obj$source) {
+    r_visitor_1(ii)
+  }
+}
+r_visitor_1(dag)
+str(dag)
+# oops our alterations are not saved
+
+r_visitor_2 <- function(obj) {
+  obj$mutable_annotation_space <- new.env(parent = emptyenv())
+  obj$source <- lapply(obj$source, r_visitor_2)
+  obj
+}
+dag2 <- r_visitor_2(dag)
+str(dag2)
+# oops each visit to o4 creates a different copy with a different
+# mutable_annotation_space.
+dag2$source[[1]]$source[[1]]$mutable_annotation_space
+dag2$source[[2]]$source[[1]]$mutable_annotation_space
+
+
+mk_obj <- function(source = list()) {
+  r <- list(
+    source = source,
+    mutable_annotation_space = new.env(parent = emptyenv()))
+  class(r) <- "node"
+  r
+}
+
+o4 <- mk_obj()
+dag <- mk_obj(list(mk_obj(list(o4)), mk_obj(list(o4))))
+rm(list = "o4")
+str(dag)
+# success bottom of dag recieves the same environment both times
+
+label_nodes <- function(obj, label_key = "node_id") {
+  force(label_key)
+  clear_node_labels <- function(obj) {
+    assign(label_key, NULL, envir = obj$mutable_annotation_space)
+    lapply(obj$source, clear_node_labels)
+    NULL
+  }
+  clear_node_labels(obj)
+  counter <- new.env(parent = emptyenv())
+  assign(label_key, 1, envir = counter)
+  set_node_labels <- function(obj) {
+    see <- get(label_key, envir = obj$mutable_annotation_space)
+    if(is.null(see)) {
+      id <- get(label_key, envir = counter)
+      assign(label_key, id + 1, envir = counter)
+      assign(label_key, id, envir = obj$mutable_annotation_space)
+      lapply(obj$source, set_node_labels)
+    }
+    NULL
+  }
+  set_node_labels(obj)
+  get(label_key, envir = counter) - 1
+}
+
+label_nodes(dag)
+dag$mutable_annotation_space$node_id
+dag$source[[1]]$mutable_annotation_space$node_id
+dag$source[[1]]$source[[1]]$mutable_annotation_space$node_id
+dag$source[[2]]$mutable_annotation_space$node_id
+dag$source[[2]]$source[[1]]$mutable_annotation_space$node_id
+#works!
+
+```
