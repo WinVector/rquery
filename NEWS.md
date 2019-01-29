@@ -1,5 +1,5 @@
 
-# rquery 1.3.0 2019/01/25
+# rquery 1.3.0 2019/01/29
 
  * User controlled SQL-tree re-writing.
  * More per-DB SQL rendering control.
