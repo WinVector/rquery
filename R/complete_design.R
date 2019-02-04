@@ -28,6 +28,7 @@ expand_grid <- function(db,
                         ...,
                         temporary = TRUE,
                         table_name = wrapr::mk_tmp_name_source('eg')()) {
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::expand_grid")
   temp_name_source <- wrapr::mk_tmp_name_source('egb')
   tabs <- lapply(names(values),
                  function(ni) {

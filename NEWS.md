@@ -1,4 +1,8 @@
 
+# rquery 1.3.1 2019/02/04
+
+ * Add more argument checks.
+
 # rquery 1.3.0 2019/01/29
 
  * User controlled SQL-tree re-writing.
