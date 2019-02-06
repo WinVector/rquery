@@ -200,7 +200,7 @@ to_sql <- function (x,
 #' @export
 #'
 dimnames.relop <- function(x) {
-  column_names(x)
+  list(NULL, column_names(x))
 }
 
 
