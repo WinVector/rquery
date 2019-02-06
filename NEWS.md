@@ -1,7 +1,9 @@
 
-# rquery 1.3.1 2019/02/04
+# rquery 1.3.1 2019/02/06
 
+ * Fix dimnames().
  * Add more argument checks.
+ * More tests.
 
 # rquery 1.3.0 2019/01/29
 

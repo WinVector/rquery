@@ -15,10 +15,15 @@ packageVersion("rquery")
 ``` r
 library("wrapr")
 library("sparklyr")
+```
+
+    ## Warning: package 'sparklyr' was built under R version 3.5.2
+
+``` r
 packageVersion("sparklyr")
 ```
 
-    ## [1] '0.9.1'
+    ## [1] '0.9.4'
 
 ``` r
 conf <- sparklyr::spark_config()
@@ -134,7 +139,7 @@ packageVersion("dplyr")
 packageVersion("dbplyr")
 ```
 
-    ## [1] '1.2.2'
+    ## [1] '1.3.0'
 
 ``` r
 d0_dplyr <- tbl(raw_connection, "d")
@@ -188,7 +193,7 @@ dbplyr::remote_query(d3_dplyr)
 ```
 
     ## <SQL> SELECT *
-    ## FROM `ugzxnuoopi`
+    ## FROM `mvfmilkyqp`
 
 `rquery` can also fix the issue by landing intermediate results, though the table lifetime tracking is intentionally more explicit through either a [`materialize()`](https://winvector.github.io/rquery/reference/materialize.html) or [`relop_list`](https://winvector.github.io/rquery/reference/relop_list-class.html) step. With a more advanced "collector" notation we can both build the efficient query plan, but also the diagram certifying the lack of redundant stages.
 
@@ -255,7 +260,11 @@ f_rquery_materialize <- function() {
 }
 ```
 
-We can't include the non-cached `dplyr` calculation as, with the above configuration on the test machine, it bombs-out with the following error message:
+We can't include the non-cached `dplyr` calculation as, with the above configuration on the test machine, it bombs-out with the following error message (hard-crahsing RStudio):
+
+``` r
+f_dplyr()
+```
 
 ![](dplyr_error.png)
 
@@ -274,9 +283,9 @@ timings
 
     ## Unit: seconds
     ##                expr      min       lq     mean   median       uq      max
-    ##       dplyr_compute 3.552538 3.603478 3.861793 3.607878 4.262742 4.282328
-    ##              rquery 1.356903 1.547709 1.781917 1.558823 1.853839 2.592310
-    ##  rquery_materialize 3.474622 3.812504 4.356573 4.142157 4.703615 5.649969
+    ##       dplyr_compute 3.935978 4.025674 4.352025 4.380247 4.440485 4.977743
+    ##              rquery 1.640646 1.676690 1.844740 1.708707 1.755389 2.442266
+    ##  rquery_materialize 3.741375 3.822195 4.272878 3.852931 3.976129 5.971760
     ##  neval cld
     ##      5   b
     ##      5  a 
@@ -301,9 +310,9 @@ print(summary)
 ```
 
     ##                  expr time_seconds
-    ## 1: rquery_materialize     4.142157
-    ## 2:             rquery     1.558823
-    ## 3:      dplyr_compute     3.607878
+    ## 1: rquery_materialize     3.852931
+    ## 2:      dplyr_compute     4.380247
+    ## 3:             rquery     1.708707
 
 ``` r
 # clean up tmps
@@ -313,5 +322,10 @@ for(ti in intermediates) {
 }
 
 sparklyr::spark_disconnect(raw_connection)
+```
+
+    ## NULL
+
+``` r
 rm(list = c("raw_connection", "db_rquery"))
 ```

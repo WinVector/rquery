@@ -155,7 +155,11 @@ f_rquery_materialize <- function() {
 }
 ```
 
-We can't include the non-cached `dplyr` calculation as, with the above configuration on the test machine, it bombs-out with the following error message:
+We can't include the non-cached `dplyr` calculation as, with the above configuration on the test machine, it bombs-out with the following error message (hard-crahsing RStudio):
+
+```{r er, eval = FALSE, error = TRUE}
+f_dplyr()
+```
 
 ![](dplyr_error.png)
 

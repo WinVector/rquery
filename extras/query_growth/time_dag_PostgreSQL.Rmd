@@ -26,15 +26,19 @@ db_rquery <- rquery_db_info(connection = raw_connection,
                      connection_options = dbopts)
 
 d <- data.frame(x = paste0("v_", 1:100000),
+                y = 1.0,
                 stringsAsFactors = FALSE)
 
 d0 <- rq_copy_to(db_rquery, "d", d,
                  temporary = TRUE, 
                  overwrite = TRUE)
 
-d1 <- natural_join(d0, d0, by = "x", jointype = "LEFT")
-d2 <- natural_join(d1, d1, by = "x", jointype = "LEFT")
-d3 <- natural_join(d2, d2, by = "x", jointype = "LEFT")
+d1 <- natural_join(d0, d0, by = "x", jointype = "LEFT") %.>%
+  extend(., y = y + 1)
+d2 <- natural_join(d1, d1, by = "x", jointype = "LEFT") %.>%
+  extend(., y = y + 1)
+d3 <- natural_join(d2, d2, by = "x", jointype = "LEFT") %.>%
+  extend(., y = y + 1)
 
 cat(format(d3))
 ```
@@ -47,6 +51,9 @@ d3 %.>%
   DiagrammeR::grViz(.) %.>%
   DiagrammeRsvg::export_svg(.) %.>%
   write(., file="time_dag_diagram1p.svg")
+
+res_rquery <- materialize(db_rquery, d3)
+rstr(db_rquery, res_rquery)
 ```
 
 ![](time_dag_diagram1p.svg)
@@ -62,10 +69,15 @@ packageVersion("dbplyr")
 
 d0_dplyr <- tbl(raw_connection, "d")
 
-d1_dplyr <- left_join(d0_dplyr, d0_dplyr, by = "x")
-d2_dplyr <- left_join(d1_dplyr, d1_dplyr, by = "x")
-d3_dplyr <- left_join(d2_dplyr, d2_dplyr, by = "x")
+d1_dplyr <- left_join(d0_dplyr, select(d0_dplyr, x), by = "x") %>%
+  mutate(y = y + 1)
+d2_dplyr <- left_join(d1_dplyr, select(d1_dplyr, x), by = "x") %>%
+  mutate(y = y + 1)
+d3_dplyr <- left_join(d2_dplyr, select(d2_dplyr, x), by = "x") %>%
+  mutate(y = y + 1)
 dbplyr::remote_query(d3_dplyr)
+
+d3_dplyr
 ```
 
 The expanded query again contains seven joins.
@@ -119,7 +131,7 @@ f_dplyr <- function() {
                             overwrite = TRUE,
                             temporary = TRUE)
   for(i in 1:depth) {
-    d_dplyr <- left_join(d_dplyr, d_dplyr, by = "x")
+    d_dplyr <- left_join(d_dplyr, select(d_dplyr, x), by = "x")
   }
   compute(d_dplyr)
 }
@@ -129,7 +141,7 @@ f_dplyr_compute <- function() {
                             overwrite = TRUE,
                             temporary = TRUE)
   for(i in 1:depth) {
-    d_dplyr <- compute(left_join(d_dplyr, d_dplyr, by = "x"))
+    d_dplyr <- compute(left_join(d_dplyr, select(d_dplyr, x), by = "x"))
   }
   d_dplyr
 }
@@ -169,7 +181,7 @@ timings <- microbenchmark::microbenchmark(
 timings
 ```
 
-I would say concentrate on the mean and median times (as they are similar).  The caching slows things down.  This is likely due to the `PostgreSQL` query optimizer/planner identifying and eliminating common sub-queries.  Though to do so it must survive the query analysis phase.
+I would say concentrate on the mean and median times (as they are similar).  In this example `dplyr`'s `SQL` seems to not need the caching steps, though `rquery` does.
 
 The above may seem extreme, but in our experience we have seen teams working with database systems through automatic query generators spend a *lot* of time running into and debugging very opaque query growth problems.  The issues include that long sequences of operations get translated into very deep nested queries *and* any re-use of intermediate values translates into unexpected (and not-signaled) query explosion.  Some things that are cheap in immediate/imperative systems are in fact hard in delayed evaluation systems (so common intuition fails). Our hope is that with diagramming tools such as `rquery::op_diagram()` users can anticipate the issues tune their calculation plans using methods such as `rquery::materialize()` and `rquery::relop_list()`.
 
