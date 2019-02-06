@@ -13,5 +13,5 @@ test_that("test_self_join: Works As Expected", {
   d1 <- natural_join(dA, dA, by = "x", jointype = "LEFT")
   testthat::expect_equal(2, length(column_names(d1)))
   d2 <- natural_join(dA, dB, by = "x", jointype = "LEFT")
-  testthat::expect_equal(3, length(column_names(d2)))
+  testthat::expect_equal(2, length(column_names(d2)))
 })
