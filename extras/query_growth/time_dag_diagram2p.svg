@@ -12,9 +12,9 @@
 <!-- table_d -->
 <g id="node1" class="node">
 <title>table_d</title>
-<polygon fill="#66cd00" stroke="#000000" points="198.158,-527.8019 195.158,-531.8019 174.158,-531.8019 171.158,-527.8019 126.99,-527.8019 126.99,-486.5981 198.158,-486.5981 198.158,-527.8019"/>
-<text text-anchor="start" x="134.7826" y="-511.4" font-family="Times,serif" font-size="14.00" fill="#000000">table(`d`; </text>
-<text text-anchor="start" x="134.7826" y="-494.6" font-family="Times,serif" font-size="14.00" fill="#000000"> &#160;x)</text>
+<polygon fill="#66cd00" stroke="#000000" points="193.8362,-527.8019 190.8362,-531.8019 169.8362,-531.8019 166.8362,-527.8019 131.3118,-527.8019 131.3118,-486.5981 193.8362,-486.5981 193.8362,-527.8019"/>
+<text text-anchor="start" x="139.4432" y="-511.4" font-family="Times,serif" font-size="14.00" fill="#000000">table(d; </text>
+<text text-anchor="start" x="139.4432" y="-494.6" font-family="Times,serif" font-size="14.00" fill="#000000"> &#160;x)</text>
 </g>
 <!-- node_3 -->
 <g id="node2" class="node">
@@ -53,16 +53,16 @@
 <text text-anchor="middle" x="164.324" y="-394" font-family="Times,serif" font-size="14.00" fill="#000000">.</text>
 <polyline fill="none" stroke="#000000" points="166.074,-389.8 162.574,-389.8 162.574,-398.0905 "/>
 </g>
-<!-- table_tmpnam_16613484634349077995_0000000000 -->
+<!-- table_tmpnam_27725822412575885500_0000000000 -->
 <g id="node4" class="node">
-<title>table_tmpnam_16613484634349077995_0000000000</title>
+<title>table_tmpnam_27725822412575885500_0000000000</title>
 <polygon fill="#66cd00" stroke="#000000" points="325.222,-320.0019 322.222,-324.0019 301.222,-324.0019 298.222,-320.0019 -.074,-320.0019 -.074,-278.7981 325.222,-278.7981 325.222,-320.0019"/>
-<text text-anchor="start" x="8" y="-303.6" font-family="Times,serif" font-size="14.00" fill="#000000">table(tmpnam_16613484634349077995_0000000000; </text>
+<text text-anchor="start" x="8" y="-303.6" font-family="Times,serif" font-size="14.00" fill="#000000">table(tmpnam_27725822412575885500_0000000000; </text>
 <text text-anchor="start" x="8" y="-286.8" font-family="Times,serif" font-size="14.00" fill="#000000"> &#160;x)</text>
 </g>
-<!-- node_4&#45;&gt;table_tmpnam_16613484634349077995_0000000000 -->
+<!-- node_4&#45;&gt;table_tmpnam_27725822412575885500_0000000000 -->
 <g id="edge9" class="edge">
-<title>node_4&#45;&gt;table_tmpnam_16613484634349077995_0000000000</title>
+<title>node_4&#45;&gt;table_tmpnam_27725822412575885500_0000000000</title>
 <path fill="none" stroke="#000000" d="M162.574,-339.1449C162.574,-336.2562 162.574,-333.2401 162.574,-330.2173"/>
 <polygon fill="#000000" stroke="#000000" points="166.0741,-330.0882 162.574,-320.0882 159.0741,-330.0883 166.0741,-330.0882"/>
 </g>
@@ -72,17 +72,17 @@
 <polygon fill="#cdc673" stroke="#000000" points="272.168,-243.8 52.98,-243.8 52.98,-207.8 272.168,-207.8 272.168,-243.8"/>
 <text text-anchor="start" x="60.7772" y="-221.6" font-family="Times,serif" font-size="14.00" fill="#000000">natural_join(.1, .2, &#160;j= LEFT, by= x)</text>
 </g>
-<!-- table_tmpnam_16613484634349077995_0000000000&#45;&gt;node_8 -->
+<!-- table_tmpnam_27725822412575885500_0000000000&#45;&gt;node_8 -->
 <g id="edge4" class="edge">
-<title>table_tmpnam_16613484634349077995_0000000000&#45;&gt;node_8</title>
+<title>table_tmpnam_27725822412575885500_0000000000&#45;&gt;node_8</title>
 <path fill="none" stroke="#000000" d="M140.8591,-278.5017C138.9253,-275.6951 137.2553,-272.7061 136.074,-269.6 133.4198,-262.621 133.2489,-259.7116 136.074,-252.8 136.1144,-252.7012 136.1553,-252.6026 136.1968,-252.5041"/>
 <polygon fill="#000000" stroke="#000000" points="139.2234,-254.2626 141.3717,-243.8878 133.2225,-250.6584 139.2234,-254.2626"/>
 <text text-anchor="middle" x="141.824" y="-257" font-family="Times,serif" font-size="14.00" fill="#000000">.1</text>
 <polyline fill="none" stroke="#000000" points="147.074,-252.8 136.574,-252.8 134.0192,-261.1747 "/>
 </g>
-<!-- table_tmpnam_16613484634349077995_0000000000&#45;&gt;node_8 -->
+<!-- table_tmpnam_27725822412575885500_0000000000&#45;&gt;node_8 -->
 <g id="edge5" class="edge">
-<title>table_tmpnam_16613484634349077995_0000000000&#45;&gt;node_8</title>
+<title>table_tmpnam_27725822412575885500_0000000000&#45;&gt;node_8</title>
 <path fill="none" stroke="#000000" d="M162.574,-278.5061C162.574,-270.9413 162.574,-262.2661 162.574,-254.1668"/>
 <polygon fill="#000000" stroke="#000000" points="166.0741,-253.9932 162.574,-243.9933 159.0741,-253.9933 166.0741,-253.9932"/>
 <text text-anchor="middle" x="167.824" y="-257" font-family="Times,serif" font-size="14.00" fill="#000000">.2</text>
@@ -103,16 +103,16 @@
 <text text-anchor="middle" x="164.324" y="-186.2" font-family="Times,serif" font-size="14.00" fill="#000000">.</text>
 <polyline fill="none" stroke="#000000" points="166.074,-182 162.574,-182 162.574,-190.2905 "/>
 </g>
-<!-- table_tmpnam_16613484634349077995_0000000001 -->
+<!-- table_tmpnam_27725822412575885500_0000000001 -->
 <g id="node7" class="node">
-<title>table_tmpnam_16613484634349077995_0000000001</title>
+<title>table_tmpnam_27725822412575885500_0000000001</title>
 <polygon fill="#66cd00" stroke="#000000" points="325.222,-112.2019 322.222,-116.2019 301.222,-116.2019 298.222,-112.2019 -.074,-112.2019 -.074,-70.9981 325.222,-70.9981 325.222,-112.2019"/>
-<text text-anchor="start" x="8" y="-95.8" font-family="Times,serif" font-size="14.00" fill="#000000">table(tmpnam_16613484634349077995_0000000001; </text>
+<text text-anchor="start" x="8" y="-95.8" font-family="Times,serif" font-size="14.00" fill="#000000">table(tmpnam_27725822412575885500_0000000001; </text>
 <text text-anchor="start" x="8" y="-79" font-family="Times,serif" font-size="14.00" fill="#000000"> &#160;x)</text>
 </g>
-<!-- node_9&#45;&gt;table_tmpnam_16613484634349077995_0000000001 -->
+<!-- node_9&#45;&gt;table_tmpnam_27725822412575885500_0000000001 -->
 <g id="edge10" class="edge">
-<title>node_9&#45;&gt;table_tmpnam_16613484634349077995_0000000001</title>
+<title>node_9&#45;&gt;table_tmpnam_27725822412575885500_0000000001</title>
 <path fill="none" stroke="#000000" d="M162.574,-131.3449C162.574,-128.4562 162.574,-125.4401 162.574,-122.4173"/>
 <polygon fill="#000000" stroke="#000000" points="166.0741,-122.2882 162.574,-112.2882 159.0741,-122.2883 166.0741,-122.2882"/>
 </g>
@@ -122,17 +122,17 @@
 <polygon fill="#cdc673" stroke="#000000" points="272.168,-36 52.98,-36 52.98,0 272.168,0 272.168,-36"/>
 <text text-anchor="start" x="60.7772" y="-13.8" font-family="Times,serif" font-size="14.00" fill="#000000">natural_join(.1, .2, &#160;j= LEFT, by= x)</text>
 </g>
-<!-- table_tmpnam_16613484634349077995_0000000001&#45;&gt;node_13 -->
+<!-- table_tmpnam_27725822412575885500_0000000001&#45;&gt;node_13 -->
 <g id="edge7" class="edge">
-<title>table_tmpnam_16613484634349077995_0000000001&#45;&gt;node_13</title>
+<title>table_tmpnam_27725822412575885500_0000000001&#45;&gt;node_13</title>
 <path fill="none" stroke="#000000" d="M140.8591,-70.7017C138.9253,-67.8951 137.2553,-64.9061 136.074,-61.8 133.4198,-54.821 133.2489,-51.9116 136.074,-45 136.1144,-44.9012 136.1553,-44.8026 136.1968,-44.7041"/>
 <polygon fill="#000000" stroke="#000000" points="139.2234,-46.4626 141.3717,-36.0878 133.2225,-42.8584 139.2234,-46.4626"/>
 <text text-anchor="middle" x="141.824" y="-49.2" font-family="Times,serif" font-size="14.00" fill="#000000">.1</text>
 <polyline fill="none" stroke="#000000" points="147.074,-45 136.574,-45 134.0192,-53.3747 "/>
 </g>
-<!-- table_tmpnam_16613484634349077995_0000000001&#45;&gt;node_13 -->
+<!-- table_tmpnam_27725822412575885500_0000000001&#45;&gt;node_13 -->
 <g id="edge8" class="edge">
-<title>table_tmpnam_16613484634349077995_0000000001&#45;&gt;node_13</title>
+<title>table_tmpnam_27725822412575885500_0000000001&#45;&gt;node_13</title>
 <path fill="none" stroke="#000000" d="M162.574,-70.7061C162.574,-63.1413 162.574,-54.4661 162.574,-46.3668"/>
 <polygon fill="#000000" stroke="#000000" points="166.0741,-46.1932 162.574,-36.1933 159.0741,-46.1933 166.0741,-46.1932"/>
 <text text-anchor="middle" x="167.824" y="-49.2" font-family="Times,serif" font-size="14.00" fill="#000000">.2</text>

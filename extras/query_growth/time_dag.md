@@ -7,6 +7,12 @@ First we set up an `Apache Spark` example in `R`.
 
 ``` r
 library("rquery")
+packageVersion("rquery")
+```
+
+    ## [1] '1.3.1'
+
+``` r
 library("wrapr")
 library("sparklyr")
 packageVersion("sparklyr")
@@ -97,7 +103,7 @@ d3 %.>%
 
 ![](time_dag_diagram1.svg)
 
-This is not unique to [`rquery`](https://CRAN.R-project.org/package=rquery), [`dplyr`](https://CRAN.R-project.org/package=dplyr) has the same issue.
+This is not unique to [`rquery`](https://CRAN.R-project.org/package=rquery), [`dplyr`](https://CRAN.R-project.org/package=dplyr) has the same issue. This is the consequence of re-using results in SQL (without the the use of intermediate tables or common tabel expressions).
 
 ``` r
 library("dplyr")
@@ -123,6 +129,12 @@ packageVersion("dplyr")
 ```
 
     ## [1] '0.7.8'
+
+``` r
+packageVersion("dbplyr")
+```
+
+    ## [1] '1.2.2'
 
 ``` r
 d0_dplyr <- tbl(raw_connection, "d")
@@ -176,7 +188,7 @@ dbplyr::remote_query(d3_dplyr)
 ```
 
     ## <SQL> SELECT *
-    ## FROM `osxiotaosr`
+    ## FROM `ugzxnuoopi`
 
 `rquery` can also fix the issue by landing intermediate results, though the table lifetime tracking is intentionally more explicit through either a [`materialize()`](https://winvector.github.io/rquery/reference/materialize.html) or [`relop_list`](https://winvector.github.io/rquery/reference/relop_list-class.html) step. With a more advanced "collector" notation we can both build the efficient query plan, but also the diagram certifying the lack of redundant stages.
 
@@ -219,7 +231,6 @@ f_dplyr <- function() {
 
 f_dplyr_compute <- function() {
   d_dplyr <- dplyr::copy_to(raw_connection, d, overwrite = TRUE)
-  d_dplyr <- d0_dplyr
   for(i in 1:depth) {
     d_dplyr <- compute(left_join(d_dplyr, d_dplyr, by = "x"))
   }
@@ -263,9 +274,9 @@ timings
 
     ## Unit: seconds
     ##                expr      min       lq     mean   median       uq      max
-    ##       dplyr_compute 3.564287 3.982069 4.040852 4.049691 4.260888 4.347327
-    ##              rquery 1.343013 1.486147 1.768126 1.510705 1.663427 2.837337
-    ##  rquery_materialize 3.476329 3.489488 4.054822 4.070123 4.133059 5.105111
+    ##       dplyr_compute 3.552538 3.603478 3.861793 3.607878 4.262742 4.282328
+    ##              rquery 1.356903 1.547709 1.781917 1.558823 1.853839 2.592310
+    ##  rquery_materialize 3.474622 3.812504 4.356573 4.142157 4.703615 5.649969
     ##  neval cld
     ##      5   b
     ##      5  a 
@@ -290,9 +301,9 @@ print(summary)
 ```
 
     ##                  expr time_seconds
-    ## 1:             rquery     1.510705
-    ## 2: rquery_materialize     4.070123
-    ## 3:      dplyr_compute     4.049691
+    ## 1: rquery_materialize     4.142157
+    ## 2:             rquery     1.558823
+    ## 3:      dplyr_compute     3.607878
 
 ``` r
 # clean up tmps

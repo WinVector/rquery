@@ -1,37 +1,24 @@
 ---
-title: "Time DAG"
-output: github_document
+title: "Time DAG PostgreSQL"
+output: html_document
 ---
+
+
 
 Query sequences joined to themselves blow up the query complexity exponentially, as each path is re-build on each attempted re-use.  Here we will work a deliberately nasty example.  We are going to push hard on the infrastructure to see how strong it is.
 
-First we set up an `Apache Spark` example in `R`.
+First we set up a `PostgreSQL` example in `R`.
 
 ```{r}
 library("rquery")
 packageVersion("rquery")
 library("wrapr")
-library("sparklyr")
-packageVersion("sparklyr")
 
-conf <- sparklyr::spark_config()
-conf$spark.executor.cores <- 2
-conf$spark.executor.memory <- "4G"
-conf$spark.yarn.am.cores <- 2
-conf$spark.yarn.am.memory <- "4G"
-conf$spark.driver.memory <- "4G"
-conf$spark.executor.memory <- "4G"
-conf$spark.yarn.am.memory <- "4G"
-conf$`sparklyr.shell.driver-memory` <- "4G"
-conf$`sparklyr.shell.executor-memory` <- "4G"
-conf$`spark.yarn.executor.memoryOverhead` <- "4G"
-raw_connection <- sparklyr::spark_connect(version='2.2.0', 
-                                          master = "local",
-                                          config = conf)
-cname <- rq_connection_name(raw_connection)
-rquery::setDBOption(raw_connection, 
-                    "create_options",
-                    "USING PARQUET OPTIONS ('compression'='snappy')")
+raw_connection <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
+                                 host = 'localhost',
+                                 port = 5432,
+                                 user = 'johnmount',
+                                 password = '')
 
 dbopts <- rq_connection_tests(raw_connection)
 db_rquery <- rquery_db_info(connection = raw_connection,
@@ -41,7 +28,9 @@ db_rquery <- rquery_db_info(connection = raw_connection,
 d <- data.frame(x = paste0("v_", 1:100000),
                 stringsAsFactors = FALSE)
 
-d0 <- rq_copy_to(db_rquery, "d", d)
+d0 <- rq_copy_to(db_rquery, "d", d,
+                 temporary = TRUE, 
+                 overwrite = TRUE)
 
 d1 <- natural_join(d0, d0, by = "x", jointype = "LEFT")
 d2 <- natural_join(d1, d1, by = "x", jointype = "LEFT")
@@ -57,12 +46,14 @@ d3 %.>%
   op_diagram(., merge_tables = TRUE) %.>% 
   DiagrammeR::grViz(.) %.>%
   DiagrammeRsvg::export_svg(.) %.>%
-  write(., file="time_dag_diagram1.svg")
+  write(., file="time_dag_diagram1p.svg")
 ```
 
-![](time_dag_diagram1.svg)
+![](time_dag_diagram1p.svg)
 
-This is not unique to [`rquery`](https://CRAN.R-project.org/package=rquery), [`dplyr`](https://CRAN.R-project.org/package=dplyr) has the same issue. This is the consequence of re-using results in SQL (without the the use of intermediate tables or common tabel expressions).
+Notice the directed acyclic graph of three joins exploded into diagram of seven joins (due to the re-computation of intermediate results).  This is the consequence of re-using results in SQL (without the the use of intermediate tables or common tabel expressions).
+
+This is not unique to [`rquery`](https://CRAN.R-project.org/package=rquery), [`dplyr`](https://CRAN.R-project.org/package=dplyr) has the same issue.
 
 ```{r}
 library("dplyr")
@@ -76,6 +67,8 @@ d2_dplyr <- left_join(d1_dplyr, d1_dplyr, by = "x")
 d3_dplyr <- left_join(d2_dplyr, d2_dplyr, by = "x")
 dbplyr::remote_query(d3_dplyr)
 ```
+
+The expanded query again contains seven joins.
 
 Largely it is a lack of a convenient way to name and cache the intermediate results in basic `SQL` without landing a table or view and starting a new query.  Without value re-use, re-writing a directed-acyclic graph (the specified input) into a tree (the basis of `SQL`) can cause a query explosion.
 
@@ -111,10 +104,10 @@ stages %.>%
   op_diagram(., merge_tables = TRUE) %.>% 
   DiagrammeR::grViz(.) %.>%
   DiagrammeRsvg::export_svg(.) %.>%
-  write(., file="time_dag_diagram2.svg")
+  write(., file="time_dag_diagram2p.svg")
 ```
 
-![](time_dag_diagram2.svg)
+![](time_dag_diagram2p.svg)
 
 We can also time the various methods.  For each function we are re-creating the table to try and defeat the result cache and ensure the calculation actually runs (i.e. to get timings similar to what a user would see on first application). For intermediate results the query planner may or may not eliminate redundant calculations at will.
 
@@ -122,7 +115,9 @@ We can also time the various methods.  For each function we are re-creating the 
 depth <- 6
 
 f_dplyr <- function() {
-  d_dplyr <- dplyr::copy_to(raw_connection, d, overwrite = TRUE)
+  d_dplyr <- dplyr::copy_to(raw_connection, d, 
+                            overwrite = TRUE,
+                            temporary = TRUE)
   for(i in 1:depth) {
     d_dplyr <- left_join(d_dplyr, d_dplyr, by = "x")
   }
@@ -130,7 +125,9 @@ f_dplyr <- function() {
 }
 
 f_dplyr_compute <- function() {
-  d_dplyr <- dplyr::copy_to(raw_connection, d, overwrite = TRUE)
+  d_dplyr <- dplyr::copy_to(raw_connection, d, 
+                            overwrite = TRUE,
+                            temporary = TRUE)
   for(i in 1:depth) {
     d_dplyr <- compute(left_join(d_dplyr, d_dplyr, by = "x"))
   }
@@ -138,7 +135,9 @@ f_dplyr_compute <- function() {
 }
 
 f_rquery <- function() {
-  d_rquery <- rq_copy_to(db_rquery, "d", d, overwrite = TRUE)
+  d_rquery <- rq_copy_to(db_rquery, "d", d, 
+                         temporary = TRUE,
+                         overwrite = TRUE)
   for(i in 1:depth) {
     d_rquery <- natural_join(d_rquery, d_rquery, by = "x", jointype = "LEFT")
   }
@@ -146,7 +145,9 @@ f_rquery <- function() {
 }
 
 f_rquery_materialize <- function() {
-  d_rquery <- rq_copy_to(db_rquery, "d", d, overwrite = TRUE)
+  d_rquery <- rq_copy_to(db_rquery, "d", d, 
+                         temporary = TRUE,
+                         overwrite = TRUE)
   for(i in 1:depth) {
     d_rquery <- materialize(db_rquery,
                             natural_join(d_rquery, d_rquery, by = "x", jointype = "LEFT"))
@@ -155,15 +156,11 @@ f_rquery_materialize <- function() {
 }
 ```
 
-We can't include the non-cached `dplyr` calculation as, with the above configuration on the test machine, it bombs-out with the following error message:
 
-![](dplyr_error.png)
-
-We can time the rest of the methods.
 
 ```{r timings}
 timings <- microbenchmark::microbenchmark(
-  # dplyr = f_dplyr(),
+  dplyr = f_dplyr(),
   dplyr_compute = f_dplyr_compute(),
   rquery = f_rquery(),
   rquery_materialize = f_rquery_materialize(),
@@ -172,11 +169,9 @@ timings <- microbenchmark::microbenchmark(
 timings
 ```
 
-I would say concentrate on the mean and median times (as they are similar).  Notice `rquery` with no intermediate value saving is by far the fastest (about 2.5 times as fast as `dplyr`).  However, for safety, we recommend using some variation of the calculations that save intermediate results (though perhaps saving less often).  On re-runs `dplyr_compute` often appears to be a bit faster than `rquery_materialize` (we think [`compute()` may in fact achieve less isolation](https://github.com/rstudio/sparklyr/issues/1026) than `materialize()`), but can be considered to be roughly running at the same rate.
+I would say concentrate on the mean and median times (as they are similar).  The caching slows things down.  This is likely due to the `PostgreSQL` query optimizer/planner identifying and eliminating common sub-queries.  Though to do so it must survive the query analysis phase.
 
-The timings indicate introducing the intermediate computes actually slows things down (as they take effort and move data away from the faster representations). These results above are consistent with `sparklyr` itself reducing the query from the exponential blow-up back down to the linear tree by itself eliminating repeated calculation.  However, note the query optimizer has to survive the query to do this- and in our experience with client `sparklyr` work very long queries (which turn into very deep nested queries) often overrun the query optimizer.  So users must be cautions and break up their calculations in places (though at some cost).
-
-The above may seem extreme, but in our experience we have seen teams working with `Spark` through automatic query generators spend a *lot* of time running into and debugging very opaque query growth problems.  The issues include that long sequences of operations get translated into very deep nested queries *and* any re-use of intermediate values translates into unexpected (and not-signaled) query explosion.  Some things that are cheap in immediate/imperative systems are in fact hard in delayed evaluation systems (so common intuition fails). Our hope is that with diagramming tools such as `rquery::op_diagram()` users can anticipate the issues tune their calculation plans using methods such as `rquery::materialize()` and `rquery::relop_list()`.
+The above may seem extreme, but in our experience we have seen teams working with database systems through automatic query generators spend a *lot* of time running into and debugging very opaque query growth problems.  The issues include that long sequences of operations get translated into very deep nested queries *and* any re-use of intermediate values translates into unexpected (and not-signaled) query explosion.  Some things that are cheap in immediate/imperative systems are in fact hard in delayed evaluation systems (so common intuition fails). Our hope is that with diagramming tools such as `rquery::op_diagram()` users can anticipate the issues tune their calculation plans using methods such as `rquery::materialize()` and `rquery::relop_list()`.
 
 
 For a non-trivial example of computation management and value re-use please see [here](https://github.com/WinVector/rquery/blob/master/db_examples/RSQLite.md).
@@ -201,6 +196,6 @@ for(ti in intermediates) {
   rquery::rq_remove_table(raw_connection, ti)
 }
 
-sparklyr::spark_disconnect(raw_connection)
+DBI::dbDisconnect(raw_connection)
 rm(list = c("raw_connection", "db_rquery"))
 ```
