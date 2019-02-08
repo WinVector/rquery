@@ -1,9 +1,5 @@
-library("rquery")
-context("materialize")
 
-
-
-test_that("test_materialize_node.R: Works As Expected", {
+test_materialize <- function() {
   if (requireNamespace("RSQLite", quietly = TRUE) &&
       requireNamespace("DBI", quietly = TRUE)) {
     raw_connection <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
@@ -21,17 +17,18 @@ test_that("test_materialize_node.R: Works As Expected", {
       materialize_node(., "tmp2") %.>%
       select_columns(., columns =c("x_col", "y_col"))
     sql1 <- to_sql(p1, db_handle)
-    testthat::expect_equal(1, length(grep("z_col", sql1[[1]], fixed = TRUE)))
-    testthat::expect_equal(1, length(grep("z_col", sql1[[3]], fixed = TRUE)))
+    RUnit::checkEquals(1, length(grep("z_col", sql1[[1]], fixed = TRUE)))
+    RUnit::checkEquals(1, length(grep("z_col", sql1[[3]], fixed = TRUE)))
     sql2 <- to_sql(p2, db_handle)
-    testthat::expect_equal(0, length(grep("z_col", sql2[[1]], fixed = TRUE)))
-    testthat::expect_equal(0, length(grep("z_col", sql2[[3]], fixed = TRUE)))
+    RUnit::checkEquals(0, length(grep("z_col", sql2[[1]], fixed = TRUE)))
+    RUnit::checkEquals(0, length(grep("z_col", sql2[[3]], fixed = TRUE)))
     l1 <- execute(db_handle, p1)
-    testthat::expect_equal(3, length(column_names(l1)))
+    RUnit::checkEquals(3, length(column_names(l1)))
     l2 <- execute(db_handle, p2)
-    testthat::expect_equal(2, length(column_names(l2)))
+    RUnit::checkEquals(2, length(column_names(l2)))
 
     DBI::dbDisconnect(raw_connection)
   }
 
-})
+  invisible(NULL)
+}

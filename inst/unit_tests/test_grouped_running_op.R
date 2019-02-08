@@ -1,7 +1,5 @@
-library("rquery")
-context("grouped_running_ops")
 
-test_that("test_grouped_running.R", {
+test_grouped_running_op <- function() {
 
   if (requireNamespace("RSQLite", quietly = TRUE) &&
       requireNamespace("DBI", quietly = TRUE)) {
@@ -41,7 +39,8 @@ test_that("test_grouped_running.R", {
 
     str1 <- gsub("tsql_[0-9_]*", "tsq*", sql1)
     str2 <- gsub("tsql_[0-9_]*", "tsq*", sql2)
-    testthat::expect_equal(str1, str2)
+    RUnit::checkEquals(str1, str2)
   }
 
-})
+  invisible(NULL)
+}

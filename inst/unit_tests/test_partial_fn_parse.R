@@ -1,9 +1,5 @@
-library("rquery")
-context("test_partial_fn_parse")
 
-
-
-test_that("test_partial_fn_parse.R", {
+test_partial_fn_parse <- function() {
   d <- data.frame(x = c(1, NA), g = c(1, 1))
 
   testthat::expect_error(
@@ -32,4 +28,6 @@ test_that("test_partial_fn_parse.R", {
   # cat(format(ops))
   sql <- to_sql(ops, rquery_default_db_info())
   # cat(format(sql))
-})
+
+  invisible(NULL)
+}

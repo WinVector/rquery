@@ -1,9 +1,5 @@
-library("rquery")
-context("translation")
 
-
-
-test_that("test_translation: Works As Expected", {
+test_translation <- function() {
   if (requireNamespace("RSQLite", quietly = TRUE)) {
     db <- DBI::dbConnect(RSQLite::SQLite(),
                          ":memory:")
@@ -29,7 +25,7 @@ test_that("test_translation: Works As Expected", {
 
     res1 <- DBI::dbGetQuery(db, sql1)
     res1 <- res1[order(res1$idx), , drop = FALSE]
-    expect_equal(c(0, 1, 1, 0, 2), res1$na_count)
+    RUnit::checkEquals(c(0, 1, 1, 0, 2), res1$na_count)
 
     op2 <- d %.>%
       extend(., mx %:=% pmax(x, y))
@@ -41,7 +37,7 @@ test_that("test_translation: Works As Expected", {
 
     res2 <- DBI::dbGetQuery(db, sql2)
     res2 <- res2[order(res2$idx), , drop = FALSE]
-    expect_equal(c(2, 4, 3, 6, NA), res2$mx)
+    RUnit::checkEquals(c(2, 4, 3, 6, NA), res2$mx)
 
     d2 <-  d <- rq_copy_to(
       db, 'd2',
@@ -68,9 +64,11 @@ test_that("test_translation: Works As Expected", {
     # cat(sql3)
     res3 <- DBI::dbGetQuery(db, sql3)
     res3 <- res3[order(res3$idx), , drop = FALSE]
-    expect_equal(c('b', 'b', 'a'), res3$x)
-    expect_equal(c('a', 'a', 'b'), res3$y)
+    RUnit::checkEquals(c('b', 'b', 'a'), res3$x)
+    RUnit::checkEquals(c('a', 'a', 'b'), res3$y)
 
     DBI::dbDisconnect(db)
   }
-})
+
+  invisible(NULL)
+}

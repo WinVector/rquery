@@ -1,10 +1,5 @@
-library("rquery")
 
-context("test_concat")
-
-
-
-test_that("test_concat.R: Works As Expected", {
+test_concat <- function() {
 
   d <- data.frame(x = 1)
   p1 <- local_td(d) %.>% extend(., x = x + 1)
@@ -20,4 +15,6 @@ test_that("test_concat.R: Works As Expected", {
     # expect an exception here
     ops <- p1 %.>% p2
   }, ".*")
-})
+
+  invisible(NULL)
+}

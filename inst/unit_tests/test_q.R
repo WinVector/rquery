@@ -1,8 +1,5 @@
-library("rquery")
 
-context("capture")
-
-test_that("test_q: Works As Expected", {
+test_q <- function() {
   my_db <- rquery_default_db_info()
 
   d <- table_source("d", c("AUC", "R2"))
@@ -11,9 +8,9 @@ test_that("test_q: Works As Expected", {
   R2 <- "NEWVAR"
   optree <- extend(d, v %:=% R2 + 1)
   str <- format(optree)
-  testthat::expect_equal(0, length(grep("NEWVAR", str, fixed = TRUE)))
+  RUnit::checkEquals(0, length(grep("NEWVAR", str, fixed = TRUE)))
   sql <- to_sql(optree, my_db)
-  testthat::expect_equal(0, length(grep("NEWVAR", sql, fixed = TRUE)))
+  RUnit::checkEquals(0, length(grep("NEWVAR", sql, fixed = TRUE)))
 
   # should throw
   testthat::expect_error({
@@ -50,4 +47,6 @@ test_that("test_q: Works As Expected", {
   # sql <- to_sql(optree, my_db)
   # cat(sql)
   # testthat::expect(length(grep("TARGETCOL", sql, fixed = TRUE))>0)
-})
+
+  invisible(NULL)
+}

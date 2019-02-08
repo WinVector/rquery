@@ -1,17 +1,12 @@
 
-library("rquery")
-context("if_else")
-
-
-
-test_that("test_extend_partition: Works As Expected", {
+test_if_else <- function() {
 
   d <- mk_td("d",
              c("a_1", "a_2", "a_3"  ))
   dQ <- d %.>%
     extend_se(., "a_4" %:=% "ifelse(! a_1, a_2, a_3)")
   txt <- format(dQ)
-  expect_true(length(grep("!", txt, fixed = TRUE))>0)
+  RUnit::checkTrue(length(grep("!", txt, fixed = TRUE))>0)
 
 
 
@@ -38,11 +33,12 @@ test_that("test_extend_partition: Works As Expected", {
         2L  , 1  , "one"     |
         3L  , NA ,  NA       )
 
-    expect_equal(expect, res)
+    RUnit::checkEquals(expect, res)
 
 
 
     DBI::dbDisconnect(my_db)
   }
 
-})
+  invisible(NULL)
+}

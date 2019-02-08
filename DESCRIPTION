@@ -25,7 +25,7 @@ Encoding: UTF-8
 Depends:
   R (>= 3.4.0)
 Imports:
-  wrapr (>= 1.8.2),
+  wrapr (>= 1.8.4),
   utils,
   stats,
   methods,
@@ -37,7 +37,7 @@ Suggests:
     DiagrammeR,
     knitr,
     rmarkdown,
-    testthat
+    RUnit
 LazyData: true
 RoxygenNote: 6.1.1
 ByteCompile: true

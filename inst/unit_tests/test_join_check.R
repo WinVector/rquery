@@ -1,10 +1,5 @@
-library("rquery")
 
-context("test_join_check")
-
-
-
-test_that("test_join_check.R: Works As Expected", {
+test_join_check <- function() {
 
   d1 <- mk_td("d", "x")
   d2 <- mk_td("d", "x")
@@ -29,4 +24,6 @@ test_that("test_join_check.R: Works As Expected", {
     # expect an exception here
     ops <- theta_join(d1, d2, x == x)
   }, ".*")
-})
+
+  invisible(NULL)
+}

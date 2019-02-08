@@ -1,10 +1,6 @@
 
-library("rquery")
-context("parse_issue")
 
-
-
-test_that("test_parse_issue: Works As Expected", {
+test_parse_issue <- function() {
   badex <- wrapr::build_frame(
     'name'                      , 'expr'                                                              |
     'Var228_lev_x.F2FyR07IdsN7I', 'ifelse(is.na(Var228), 0, ifelse(Var228 == "F2FyR07IdsN7I", 1, 0))' )
@@ -14,5 +10,7 @@ test_that("test_parse_issue: Works As Expected", {
   op <- extend_se(dat, expr)
   str <- format(op) # notice some lines have more than 1 := !
   parts <- strsplit(str, ":=", fixed = TRUE)
-  expect_equal(length(parts[[1]]), 2)
-})
+  RUnit::checkEquals(length(parts[[1]]), 2)
+
+  invisible(NULL)
+}

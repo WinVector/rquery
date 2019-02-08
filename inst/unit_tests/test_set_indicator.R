@@ -1,11 +1,5 @@
 
-library("rquery")
-
-
-context("test_set_indicator.R")
-
-
-test_that("test_set_indicator.R: Works As Expected", {
+test_set_indicator <- function() {
 
   if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
     my_db <- DBI::dbConnect(RSQLite::SQLite(),
@@ -44,5 +38,5 @@ test_that("test_set_indicator.R: Works As Expected", {
     DBI::dbDisconnect(my_db)
   }
 
-
-})
+  invisible(NULL)
+}

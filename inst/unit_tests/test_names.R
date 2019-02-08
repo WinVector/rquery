@@ -1,9 +1,5 @@
-library("rquery")
-context("namedetection")
 
-
-
-test_that("test_names: Works As Expected", {
+test_names <- function() {
   if (requireNamespace("RSQLite", quietly = TRUE) &&
       requireNamespace("DBI", quietly = TRUE)) {
     db <- DBI::dbConnect(RSQLite::SQLite(),
@@ -23,14 +19,14 @@ test_that("test_names: Works As Expected", {
       project(.,
                   mean_mpg = avg(mpg),
                   groupby = "cyl")
-    expect_equal(qc(cyl, mpg),
+    RUnit::checkEquals(qc(cyl, mpg),
                  sort(columns_used(optree)$mtcars))
-    expect_equal(qc(cyl, mean_mpg),
+    RUnit::checkEquals(qc(cyl, mean_mpg),
                  sort(column_names(optree)))
     d <- execute(db, optree)
 
     # detect unbound column reference
-    expect_error(
+    RUnit::checkException(
       badtree <- hdl %.>%
         project(.,
                     delay = avg(dep_time),
@@ -38,7 +34,7 @@ test_that("test_names: Works As Expected", {
     )
 
     # detect failure to assign
-    expect_error(
+    RUnit::checkException(
       badtree <- hdl %.>%
         extend(.,
                    mpg + 1)
@@ -46,7 +42,7 @@ test_that("test_names: Works As Expected", {
 
     # detect non-scalar constant
     v <- c(1, 2)
-    expect_error(
+    RUnit::checkException(
       badtree <- hdl %.>%
         extend(.,
                    d2 = mpg + v)
@@ -58,8 +54,10 @@ test_that("test_names: Works As Expected", {
     p <- hdl %.>%
       extend(.,
                  d2 = mpg)
-    expect_equal(sort(qc(am, carb, cyl, d2, disp, drat, gear, hp, mpg, qsec, vs, wt)),
+    RUnit::checkEquals(sort(qc(am, carb, cyl, d2, disp, drat, gear, hp, mpg, qsec, vs, wt)),
                  sort(column_names(p)))
     DBI::dbDisconnect(db)
   }
-})
+
+  invisible(NULL)
+}

@@ -1,8 +1,5 @@
-library("rquery")
 
-context("partitioning")
-
-test_that("test_extend_partition: Works As Expected", {
+test_extend_partition <- function() {
   if (requireNamespace("RSQLite", quietly = TRUE) &&
       requireNamespace("DBI", quietly = TRUE)) {
     raw_connection <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
@@ -41,16 +38,18 @@ test_that("test_extend_partition: Works As Expected", {
       extend(., sum = x + 1 , y = sum + 1)
     tab <- execute(db_handle, optree)
     tab <- tab[, c("sum", "x", "y")]
-    testthat::expect_equal(data.frame(sum = 2, x = 1, y = 3), tab[ , c("sum", "x", "y"), drop = FALSE])
+    RUnit::checkEquals(data.frame(sum = 2, x = 1, y = 3), tab[ , c("sum", "x", "y"), drop = FALSE])
     tab2 <- data.frame(x = 1) %.>% optree
-    testthat::expect_equal(data.frame(sum = 2, x = 1, y = 3), tab2[ , c("sum", "x", "y"), drop = FALSE])
+    RUnit::checkEquals(data.frame(sum = 2, x = 1, y = 3), tab2[ , c("sum", "x", "y"), drop = FALSE])
 
     optree <- d %.>%
        extend(., a = 1, b := 2, c %:=% 4)
     tab3 <- execute(db_handle, optree)
-    testthat::expect_equal(data.frame(x = 1, a = 1, b = 2, c = 4), tab3[ , c("x", "a", "b", "c"), drop = FALSE])
+    RUnit::checkEquals(data.frame(x = 1, a = 1, b = 2, c = 4), tab3[ , c("x", "a", "b", "c"), drop = FALSE])
 
     options(old_o)
     DBI::dbDisconnect(raw_connection)
   }
-})
+
+  invisible(NULL)
+}
