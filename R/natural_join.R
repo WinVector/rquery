@@ -144,7 +144,7 @@ natural_join.data.frame <- function(a, b,
   tmp_namea <- nmgen()
   dnodea <- mk_td(tmp_namea, colnames(a))
   tmp_nameb <- nmgen()
-  dnodeb <- mk_td(tmp_namea, colnames(b))
+  dnodeb <- mk_td(tmp_nameb, colnames(b))
   enode <- natural_join(dnodea, dnodeb,
                         jointype = jointype,
                         by = by,

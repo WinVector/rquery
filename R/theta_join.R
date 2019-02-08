@@ -273,7 +273,7 @@ theta_join.data.frame <- function(a, b,
   tmp_namea <- nmgen()
   dnodea <- mk_td(tmp_namea, colnames(a))
   tmp_nameb <- nmgen()
-  dnodeb <- mk_td(tmp_namea, colnames(b))
+  dnodeb <- mk_td(tmp_nameb, colnames(b))
   enode <- theta_join(dnodea, dnodeb,
                           rquery_deparse(exprq),
                           jointype = jointype,
