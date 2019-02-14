@@ -20,7 +20,7 @@ test_pow <- function() {
                temporary = TRUE, overwrite = TRUE)
     res <- DBI::dbGetQuery(raw_connection, sql)
     DBI::dbDisconnect(raw_connection)
-    testthat::expect_equivalent(data.frame(x = 2, xsq = 4), data.frame(res))
+    RUnit::checkEquals(data.frame(x = 2, xsq = 4), data.frame(res))
   }
 
   invisible(NULL)

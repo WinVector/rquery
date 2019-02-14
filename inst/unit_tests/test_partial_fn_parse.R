@@ -2,7 +2,7 @@
 test_partial_fn_parse <- function() {
   d <- data.frame(x = c(1, NA), g = c(1, 1))
 
-  testthat::expect_error(
+  RUnit::checkException(
     d %.>%
       project(.,
                   x = mean(x, na.rm = TRUE),

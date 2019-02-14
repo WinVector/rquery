@@ -13,40 +13,40 @@ test_q <- function() {
   RUnit::checkEquals(0, length(grep("NEWVAR", sql, fixed = TRUE)))
 
   # should throw
-  testthat::expect_error({
+  RUnit::checkException({
     d <- table_source("d", c("AUC", "R2", "z"))
     TARGETCOL = as.name("AUC")
     VALUE = 0.5
     optree <- select_rows(d, TARGETCOL >= VALUE)
-  }, ".*")
+  })
   # str <- format(optree)
-  # testthat::expect(length(grep("TARGETCOL", str, fixed = TRUE))>0, "saw TARGETCOL")
+  # RUnit::checkTrue(length(grep("TARGETCOL", str, fixed = TRUE))>0, "saw TARGETCOL")
   # sql <- to_sql(optree, my_db)
   # cat(sql)
-  # testthat::expect(length(grep("TARGETCOL", sql, fixed = TRUE))>0)
+  # RUnit::checkTrue(length(grep("TARGETCOL", sql, fixed = TRUE))>0)
 
   d <- table_source("d", c("AUC", "R2", "z"))
   TARGETCOL = as.name("AUC")
   VALUE = 0.5
   optree <- select_rows(d, .(TARGETCOL) >= VALUE)
   str <- format(optree)
-  testthat::expect(length(grep("TARGETCOL", str, fixed = TRUE))==0, "saw TARGETCOL")
-  testthat::expect(length(grep("VALUE", str, fixed = TRUE))==0, "saw VALUE")
+  RUnit::checkTrue(length(grep("TARGETCOL", str, fixed = TRUE))==0, "saw TARGETCOL")
+  RUnit::checkTrue(length(grep("VALUE", str, fixed = TRUE))==0, "saw VALUE")
   sql <- to_sql(optree, my_db)
-  testthat::expect(length(grep("TARGETCOL", sql, fixed = TRUE))==0, "saw TARGETCOL")
-  testthat::expect(length(grep("VALUE", sql, fixed = TRUE))==0, "saw VALUE")
+  RUnit::checkTrue(length(grep("TARGETCOL", sql, fixed = TRUE))==0, "saw TARGETCOL")
+  RUnit::checkTrue(length(grep("VALUE", sql, fixed = TRUE))==0, "saw VALUE")
 
   # should throw
-  testthat::expect_error({
+  RUnit::checkException({
     d <- table_source("d", c("AUC", "R2", "z"))
     TARGETCOL = as.name("AUC")
     optree <- extend(d, AUC = TARGETCOL)
-  }, ".*")
+  })
   # str <- format(optree)
-  # testthat::expect(length(grep("TARGETCOL", str, fixed = TRUE))>0, "saw TARGETCOL")
+  # RUnit::checkTrue(length(grep("TARGETCOL", str, fixed = TRUE))>0, "saw TARGETCOL")
   # sql <- to_sql(optree, my_db)
   # cat(sql)
-  # testthat::expect(length(grep("TARGETCOL", sql, fixed = TRUE))>0)
+  # RUnit::checkTrue(length(grep("TARGETCOL", sql, fixed = TRUE))>0)
 
   invisible(NULL)
 }

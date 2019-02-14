@@ -26,9 +26,9 @@ test_extend_partition <- function() {
                     a_1 %:=% 'control',
                     a_2 %:=% 'treatment')))
     txt <- format(dQ)
-    testthat::expect_true(length(grep("!", txt, fixed = TRUE))>0)
+    RUnit::checkTrue(length(grep("!", txt, fixed = TRUE))>0)
     sql <- to_sql(dQ, db_handle)
-    testthat::expect_true(length(grep("e_2", sql, fixed = TRUE))>0)
+    RUnit::checkTrue(length(grep("e_2", sql, fixed = TRUE))>0)
 
 
     d <- rq_copy_to(db_handle, "ds",

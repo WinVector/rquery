@@ -1,5 +1,5 @@
 
-test_mode <- function() {
+test_mod <- function() {
   my_db <- rquery_default_db_info()
 
   td <- mk_td("data", "x")
@@ -56,8 +56,8 @@ test_mode <- function() {
       rsqlite_db
 
     expect <- data.frame(x = -3:3,
-                         y = c(1, rep(c(0,1),3)))
-    testthat::expect_equivalent(expect, data.frame(res))
+                         x_mod_2 = c(1, rep(c(0,1),3)))
+    RUnit::checkEquals(expect, data.frame(res))
 
     DBI::dbDisconnect(rsqlite_connection)
   }

@@ -11,10 +11,10 @@ test_concat <- function() {
   d2 <- data.frame(y = 1)
   p1 <- local_td(d1) %.>% extend(., x = x + 1)
   p2 <- local_td(d2) %.>% extend(., y = y + 2)
-  testthat::expect_error({
+  RUnit::checkException({
     # expect an exception here
     ops <- p1 %.>% p2
-  }, ".*")
+  })
 
   invisible(NULL)
 }
