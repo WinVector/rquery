@@ -32,8 +32,7 @@
     801#> Maintainer: 'John Mount '
     855#> Status: OK
     
-    devtools::build_win()
-    
+
 ### Linux
 
     * using R version 3.5.2 (2018-12-20)
