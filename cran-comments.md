@@ -19,6 +19,19 @@
 
 ### Windows
 
+    rhub::check_for_cran()
+    792#> * using R Under development (unstable) (2019-01-26 r76018)
+    793#> * using platform: x86_64-w64-mingw32 (64-bit)
+    794#> * using session charset: ISO8859-1
+    795#> * using option '--as-cran'
+    796#> * checking for file 'rquery/DESCRIPTION' ... OK
+    797#> * checking extension type ... Package
+    798#> * this is package 'rquery' version '1.3.1'
+    799#> * package encoding: UTF-8
+    800#> * checking CRAN incoming feasibility ... Note_to_CRAN_maintainers
+    801#> Maintainer: 'John Mount '
+    855#> Status: OK
+    
     devtools::build_win()
   
 
