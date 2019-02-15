@@ -115,7 +115,7 @@ dbplyr::remote_query(d3_dplyr)
 
 Largely it is a lack of a convenient way to name and cache the intermediate results in basic `SQL` without landing a table or view and starting a new query. Without value re-use, re-writing a directed-acyclic graph (the specified input) into a tree (the basis of `SQL`) can cause a query explosion.
 
-`dplyr` can easily overcome this limitation with it's `compute()` node.
+`dplyr` can easily overcome this limitation with its `compute()` node.
 
 ``` r
 d1_dplyr <- compute(left_join(d0_dplyr, d0_dplyr, by = "x"))
@@ -125,7 +125,7 @@ dbplyr::remote_query(d3_dplyr)
 ```
 
     ## <SQL> SELECT *
-    ## FROM `zrcbpcyjvc`
+    ## FROM `fbiouovcna`
 
 `rquery` can also fix the issue by landing intermediate results, though the table lifetime tracking is intentionally more explicit.
 
@@ -145,7 +145,7 @@ d3_mat <- materialize(
 cat(format(d3_mat))
 ```
 
-    ## table(`tmpnam_96174027702855531308_0000000002`; 
+    ## table(`tmpnam_45020507077594676717_0000000002`; 
     ##   x)
 
 And `rquery`'s query diagrammer can help spot and diagnose these issues.
@@ -184,7 +184,7 @@ stages <- get_relop_list_stages(collector)
 cat(format(d3_tab))
 ```
 
-    ## table(tmpnam_96174027702855531308_0000000005; 
+    ## table(tmpnam_45020507077594676717_0000000005; 
     ##   x)
 
 ``` r

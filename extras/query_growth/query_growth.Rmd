@@ -44,7 +44,7 @@ dbplyr::remote_query(d3_dplyr)
 
 Largely it is a lack of a convenient way to name and cache the intermediate results in basic `SQL` without landing a table or view and starting a new query.  Without value re-use, re-writing a directed-acyclic graph (the specified input) into a tree (the basis of `SQL`) can cause a query explosion.
 
-`dplyr` can easily overcome this limitation with it's `compute()` node.
+`dplyr` can easily overcome this limitation with its `compute()` node.
 
 ```{r}
 d1_dplyr <- compute(left_join(d0_dplyr, d0_dplyr, by = "x"))
