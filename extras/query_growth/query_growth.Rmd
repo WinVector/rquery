@@ -3,7 +3,7 @@ title: "query growth"
 output: github_document
 ---
 
-Query sequences joined to themselves blow up the query complexity exponentially, as each path is re-build on each attempted re-use.
+Query sequences joined to themselves blow up the query complexity exponentially, as each path is re-built on each attempted re-use.
 
 ```{r}
 library("rquery")
@@ -118,7 +118,8 @@ stages %.>%
 
 
 For a non-trivial example of computation management and value re-use please see [here](https://github.com/WinVector/rquery/blob/master/db_examples/RSQLite.md).
-Some timings of the query explosing effect are available [here](https://github.com/WinVector/rquery/blob/master/extras/query_growth/time_dag.md).
+Some timings of the query exploding effect are available [here](https://github.com/WinVector/rquery/blob/master/extras/query_growth/time_dag.md) 
+and [here](https://github.com/WinVector/rquery/blob/master/extras/query_growth/time_dag_PostgreSQL.md).
 
 
 ```{r}
