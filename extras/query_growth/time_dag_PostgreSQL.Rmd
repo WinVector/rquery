@@ -1,6 +1,6 @@
 ---
 title: "Time DAG PostgreSQL"
-output: html_document
+output: github_document
 ---
 
 
