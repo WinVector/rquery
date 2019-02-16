@@ -180,7 +180,7 @@ relop_list %.>%
 
 ![](query_growth_diagram2.svg)
 
-The `relop_list` collector is introducing and managing intermediate tables.  It is simple to materialized inspect the results.
+The `relop_list` collector is introducing and managing intermediate tables.  It is simple to materialized inspect the results (either through piping or using `materialize_relop_list_stages()`).
 
 ```{r}
 print(relop_list)
