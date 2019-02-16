@@ -1,4 +1,8 @@
 
+# rquery 1.3.2 2019/02/16
+
+ * Don't override names() (messes up str()).
+
 # rquery 1.3.1 2019/02/14
 
  * Fix dimnames().

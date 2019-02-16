@@ -212,11 +212,6 @@ dim.relop <- function(x) {
   c(NA_real_, length(column_names(x)))
 }
 
-#' @export
-#'
-names.relop <- function(x) {
-  column_names(x)
-}
 
 #' Format a single node for printing.
 #'
