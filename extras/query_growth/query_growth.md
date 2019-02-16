@@ -61,8 +61,8 @@ cat(to_sql(ops, db_rquery))
     ##    `x`
     ##   FROM
     ##    `d`
-    ##   ) tsql_75171259600124714346_0000000000
-    ## ) tsql_75171259600124714346_0000000001
+    ##   ) tsql_38280614414821583912_0000000000
+    ## ) tsql_38280614414821583912_0000000001
     ## WHERE `x` > `y`
 
 Notice the database handle is kept separate from the operators. Furthermore execution is not entangled with operator definition, but is a separate step (performed through `materialze()`, `execute()` or even sending the query to the database via a pipe).
@@ -224,7 +224,7 @@ dbplyr::remote_query(d3_dplyr)
 ```
 
     ## <SQL> SELECT *
-    ## FROM `fwahtbkpwq`
+    ## FROM `ofsgqnxcku`
 
 Notice the `dplyr::compute()` results are actually tables (not general queries).
 
@@ -254,7 +254,7 @@ d3_mat <- materialize(
 cat(format(d3_mat))
 ```
 
-    ## table(`tmpnam_55171188460053063528_0000000002`; 
+    ## table(`tmpnam_82654876444053153969_0000000002`; 
     ##   x)
 
 More advanced solutions
@@ -295,21 +295,21 @@ The `relop_list` collector is introducing and managing intermediate tables. It i
 print(relop_list)
 ```
 
-    ## $tmpnam_55171188460053063528_0000000003
+    ## $tmpnam_82654876444053153969_0000000003
     ## [1] "table(`d`; x) %.>% natural_join(., table(`d`; x), j= LEFT, by= x)"
     ## 
-    ## $tmpnam_55171188460053063528_0000000004
-    ## [1] "table(tmpnam_55171188460053063528_0000000003; x) %.>% natural_join(., table(tmpnam_55171188460053063528_0000000003; x), j= LEFT, by= x)"
+    ## $tmpnam_82654876444053153969_0000000004
+    ## [1] "table(tmpnam_82654876444053153969_0000000003; x) %.>% natural_join(., table(tmpnam_82654876444053153969_0000000003; x), j= LEFT, by= x)"
     ## 
-    ## $tmpnam_55171188460053063528_0000000005
-    ## [1] "table(tmpnam_55171188460053063528_0000000004; x) %.>% natural_join(., table(tmpnam_55171188460053063528_0000000004; x), j= LEFT, by= x)"
+    ## $tmpnam_82654876444053153969_0000000005
+    ## [1] "table(tmpnam_82654876444053153969_0000000004; x) %.>% natural_join(., table(tmpnam_82654876444053153969_0000000004; x), j= LEFT, by= x)"
 
 ``` r
 result <- relop_list %.>% db_rquery
 print(result)
 ```
 
-    ## [1] "table(`tmpnam_55171188460053063528_0000000005`; x)"
+    ## [1] "table(`tmpnam_82654876444053153969_0000000005`; x)"
 
 ``` r
 DBI::dbReadTable(raw_connection, result$table_name) %.>%
