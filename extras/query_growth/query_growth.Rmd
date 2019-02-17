@@ -53,7 +53,7 @@ ops %.>%
 
 ## Re-using derived values
 
-The piped operator notation runs into trouble if we re-use derived values.  `SQL` can re-use tables and views, but can not conveniently re-use queries.  So if use query results more than once the notation expands our [directed acyclic graph](https://en.wikipedia.org/wiki/Directed_acyclic_graph) specification into a possibly much larger tree.
+The piped operator notation runs into trouble if we re-use derived values.  `SQL` can re-use tables and views, but can not conveniently re-use queries.  So if we use query results more than once the notation expands our [directed acyclic graph](https://en.wikipedia.org/wiki/Directed_acyclic_graph) specification into a possibly much larger tree.
 
 The following is an artificial example to demonstrate the issue.
 

@@ -61,8 +61,8 @@ cat(to_sql(ops, db_rquery))
     ##    `x`
     ##   FROM
     ##    `d`
-    ##   ) tsql_75272080647529533783_0000000000
-    ## ) tsql_75272080647529533783_0000000001
+    ##   ) tsql_09475918393068567149_0000000000
+    ## ) tsql_09475918393068567149_0000000001
     ## WHERE `x` > `y`
 
 Notice the database handle is kept separate from the operators. Furthermore execution is not entangled with operator definition, but is a separate step (performed through `materialze()`, `execute()` or even sending the query to the database via a pipe).
@@ -81,7 +81,7 @@ ops %.>%
 Re-using derived values
 -----------------------
 
-The piped operator notation runs into trouble if we re-use derived values. `SQL` can re-use tables and views, but can not conveniently re-use queries. So if use query results more than once the notation expands our [directed acyclic graph](https://en.wikipedia.org/wiki/Directed_acyclic_graph) specification into a possibly much larger tree.
+The piped operator notation runs into trouble if we re-use derived values. `SQL` can re-use tables and views, but can not conveniently re-use queries. So if we use query results more than once the notation expands our [directed acyclic graph](https://en.wikipedia.org/wiki/Directed_acyclic_graph) specification into a possibly much larger tree.
 
 The following is an artificial example to demonstrate the issue.
 
@@ -224,7 +224,7 @@ dbplyr::remote_query(d3_dplyr)
 ```
 
     ## <SQL> SELECT *
-    ## FROM `setpbvcpul`
+    ## FROM `stthpcrlgf`
 
 Notice the `dplyr::compute()` results are actually tables (not general queries).
 
@@ -254,7 +254,7 @@ d3_mat <- materialize(
 cat(format(d3_mat))
 ```
 
-    ## table(`tmpnam_02975606879822925676_0000000002`; 
+    ## table(`tmpnam_85242167791778851766_0000000002`; 
     ##   x)
 
 More advanced solutions
@@ -295,21 +295,21 @@ The `relop_list` collector is introducing and managing intermediate tables. It i
 print(relop_list)
 ```
 
-    ## $tmpnam_02975606879822925676_0000000003
+    ## $tmpnam_85242167791778851766_0000000003
     ## [1] "table(`d`; x) %.>% natural_join(., table(`d`; x), j= LEFT, by= x)"
     ## 
-    ## $tmpnam_02975606879822925676_0000000004
-    ## [1] "table(tmpnam_02975606879822925676_0000000003; x) %.>% natural_join(., table(tmpnam_02975606879822925676_0000000003; x), j= LEFT, by= x)"
+    ## $tmpnam_85242167791778851766_0000000004
+    ## [1] "table(tmpnam_85242167791778851766_0000000003; x) %.>% natural_join(., table(tmpnam_85242167791778851766_0000000003; x), j= LEFT, by= x)"
     ## 
-    ## $tmpnam_02975606879822925676_0000000005
-    ## [1] "table(tmpnam_02975606879822925676_0000000004; x) %.>% natural_join(., table(tmpnam_02975606879822925676_0000000004; x), j= LEFT, by= x)"
+    ## $tmpnam_85242167791778851766_0000000005
+    ## [1] "table(tmpnam_85242167791778851766_0000000004; x) %.>% natural_join(., table(tmpnam_85242167791778851766_0000000004; x), j= LEFT, by= x)"
 
 ``` r
 result <- relop_list %.>% db_rquery
 print(result)
 ```
 
-    ## [1] "table(`tmpnam_02975606879822925676_0000000005`; x)"
+    ## [1] "table(`tmpnam_85242167791778851766_0000000005`; x)"
 
 ``` r
 DBI::dbReadTable(raw_connection, result$table_name) %.>%
