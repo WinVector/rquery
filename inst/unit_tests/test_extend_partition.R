@@ -40,6 +40,8 @@ test_extend_partition <- function() {
     tab <- tab[, c("sum", "x", "y")]
     RUnit::checkEquals(data.frame(sum = 2, x = 1, y = 3), tab[ , c("sum", "x", "y"), drop = FALSE])
     tab2 <- data.frame(x = 1) %.>% optree
+    tab2 <- data.frame(tab2) # if rqdatatable is attached pipe exectution would be through data.table, not
+                             # database, thus returning a data.table (not a basic data.frame).
     RUnit::checkEquals(data.frame(sum = 2, x = 1, y = 3), tab2[ , c("sum", "x", "y"), drop = FALSE])
 
     optree <- d %.>%

@@ -1,7 +1,8 @@
 
-# rquery 1.3.2 2019/02/16
+# rquery 1.3.2 2019/02/18
 
  * Don't override names() (messes up str()).
+ * Test checks that are correct when rqdatatable is attached.
 
 # rquery 1.3.1 2019/02/14
 
