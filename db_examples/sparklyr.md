@@ -16,7 +16,7 @@ Note: `rquery` is a "database first" design. This means choices are made that fa
 Discussion
 ==========
 
-[`rquery`](https://github.com/WinVector/rquery) can be an excellent advanced `SQL` training tool (it shows how some very deep `SQL` by composing `rquery` operators). Currently `rquery` is biased towards the `Spark` and `PostgeSQL` `SQL` dialects.
+[`rquery`](https://github.com/WinVector/rquery) can be an excellent advanced `SQL` training tool (it shows how to build some very deep `SQL` by composing `rquery` operators). Currently `rquery` is biased towards the `Spark` and `PostgeSQL` `SQL` dialects.
 
 There are many prior relational algebra inspired specialized query languages. Just a few include:
 
