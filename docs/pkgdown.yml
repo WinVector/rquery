@@ -7,5 +7,6 @@ articles:
   PipeableSQL: PipeableSQL.html
   QueryGeneration: QueryGeneration.html
   rquery_intro: rquery_intro.html
+  rquery_substitution: rquery_substitution.html
   sql_quoting: sql_quoting.html
 

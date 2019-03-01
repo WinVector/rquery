@@ -68,6 +68,9 @@
       <a href="../articles/rquery_intro.html">rquery Introduction</a>
     </li>
     <li>
+      <a href="../articles/rquery_substitution.html">rquery Substitution</a>
+    </li>
+    <li>
       <a href="../articles/sql_quoting.html">SQL quoting</a>
     </li>
   </ul>
@@ -98,7 +101,7 @@
       <h1>Parameterized rquery</h1>
                         <h4 class="author">John Mount, Win-Vector LLC</h4>
             
-            <h4 class="date">2019-02-21</h4>
+            <h4 class="date">2019-03-01</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery/blob/master/vignettes/Parameterized_rquery.Rmd"><code>vignettes/Parameterized_rquery.Rmd</code></a></small>
       <div class="hidden name"><code>Parameterized_rquery.Rmd</code></div>
@@ -230,11 +233,11 @@ sql &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.
 ##     `cyl`
 ##    FROM
 ##     `mtcars`
-##    ) tsql_88902515332107348473_0000000000
-##   ) tsql_88902515332107348473_0000000001
+##    ) tsql_25217216802733088842_0000000000
+##   ) tsql_25217216802733088842_0000000001
 ##  GROUP BY
 ##   `am`
-## ) tsql_88902515332107348473_0000000002 ORDER BY `am`</code></pre>
+## ) tsql_25217216802733088842_0000000002 ORDER BY `am`</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># disconnect</span>
 DBI<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DBI/topics/dbDisconnect">dbDisconnect</a></span>(raw_connection)
 <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/rm">rm</a></span>(<span class="dt">list =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"raw_connection"</span>, <span class="st">"db"</span>))</code></pre></div>
