@@ -145,7 +145,7 @@ cat(to_sql(d_rep %.>% select_rows(., is.na(.(col_string))),
 ```
 
 ```{r}
-# bquote substitution on name type: col_string 
+# bquote substitution on name type: col_name 
 # is taken to represent a column name.
 cat(to_sql(d_rep %.>% select_rows(., is.na(.(col_name))),
            db_info))
@@ -160,7 +160,7 @@ cat(to_sql(d_rep %.>% select_rows_se(., qe(is.na(.(col_string)))),
 ```
 
 ```{r}
-# bquote substitution on name type: col_string 
+# bquote substitution on name type: col_name 
 # is taken to represent a column name.
 cat(to_sql(d_rep %.>% select_rows_se(., qe(is.na(.(col_name)))),
            db_info))
