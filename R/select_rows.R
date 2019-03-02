@@ -1,4 +1,25 @@
 
+
+warn_about_filter_conditions <- function(parsed) {
+  issued_warning <- FALSE
+  ln <- length(parsed)
+  if(ln<=0) {
+    warning(paste("rquery::select_rows: no expressions"))
+    issued_warning <- TRUE
+  } else {
+    for(i in seq_len(ln)) {
+      parsedi <- parsed[[i]]
+      if(length(parsedi$symbols_used)<=0) {
+        warning(paste("rquery::select_rows: expression",
+                      paste(parsedi$presentation, collapse = " "),
+                      "refers to no columns (so is a constant)"))
+        issued_warning <- TRUE
+      }
+    }
+  }
+  issued_warning
+}
+
 #' Make a select rows node.
 #'
 #' @param source source to select from.
@@ -34,6 +55,7 @@ select_rows_se.relop <- function(source, expr,
   have <- column_names(source)
   parsed <- parse_se(source, expr, env = env,
                      check_names = FALSE)
+  warn_about_filter_conditions(parsed)
   src_columns <- column_names(source)
   required_cols <- sort(unique(c(
     merge_fld(parsed, "symbols_used"),
@@ -112,6 +134,7 @@ select_rows.relop <- function(source, expr,
   have <- column_names(source)
   parsed <- parse_nse(source, list(exprq), env = env,
                       check_names = FALSE)
+  warn_about_filter_conditions(parsed)
   src_columns <- column_names(source)
   required_cols <- sort(unique(c(
     merge_fld(parsed, "symbols_used"),

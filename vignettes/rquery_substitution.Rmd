@@ -26,9 +26,13 @@ Let's take a look at this through small examples.  First let's take a look at th
 ```{r}
 col_string <- "x"
 col_name <- as.name(col_string)
+```
 
+```{r}
 str(col_string)
+```
 
+```{r}
 str(col_name)
 ```
 
@@ -46,7 +50,9 @@ d_rep <- local_td(d)
 
 db_info <- rquery_db_info(identifier_quote_char = "__IDENTIFIER__",
                           string_quote_char = "__STRING_CONSTANT__")
+```
 
+```{r}
 # direct use, comparing to a string constant
 # probaly not the query we intend as the
 # result is going to be empty independent
@@ -96,8 +102,9 @@ Accordingly `wrapr::let()` treats both names/symbols and strings as symbols.
 let(c(COL_STRING = col_string),
     cat(to_sql(d_rep %.>% select_rows(., is.na(COL_STRING)),
                db_info)))
+```
 
-
+```{r}
 # Let substitution treats all substitutions as source-text
 # so strings and names are as if the user had typed them
 # in and behave as names (becoming the name of a column).
@@ -134,21 +141,24 @@ Here are examples to show the differences.  In all cases substitution is trigger
 # the name of a column.
 cat(to_sql(d_rep %.>% select_rows(., is.na(.(col_string))),
            db_info))
+```
 
-
+```{r}
 # bquote substitution on name type: col_string 
 # is taken to represent a column name.
 cat(to_sql(d_rep %.>% select_rows(., is.na(.(col_name))),
            db_info))
+```
 
-
+```{r}
 # bquote substitution on string type: col_string 
 # is taken to represent a string constant, not
 # the name of a column.
 cat(to_sql(d_rep %.>% select_rows_se(., qe(is.na(.(col_string)))),
            db_info))
+```
 
-
+```{r}
 # bquote substitution on name type: col_string 
 # is taken to represent a column name.
 cat(to_sql(d_rep %.>% select_rows_se(., qe(is.na(.(col_name)))),
