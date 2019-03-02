@@ -114,7 +114,7 @@ let(c(COL_NAME = col_name),
                db_info)))
 ```
 
-`wrapr::let()`'s operating assumption is: if the user was using `wrapr::let()` the user was intending a symbol, regardless if they specify that symbol using a string or a symbol type.  This means the user doesn't have to maintain the distinction between string representations of names and symbol representations of names when using `wrapr::let()`.  And again, for substituting string-values in: there are much better ways such as `R` evaluation itself (as we show below).
+`wrapr::let()`'s operating assumption is: if the user was using `wrapr::let()` the user was intending a symbol, regardless if they specify that symbol using a string or a symbol type.  This means the user doesn't have to maintain the distinction between string representations of names and symbol representations of names when using `wrapr::let()`.  And again, for substituting string-values in: there are already much better ways, such as `R` evaluation itself (as we show below).
 
 ```{r}
 value_we_want <- "a"
