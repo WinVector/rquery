@@ -111,12 +111,12 @@ dbopts <- rq_connection_tests(raw_connection)
 
     ## Error in postgresqlExecStatement(conn, statement, ...) : 
     ##   RS-DBI driver: (could not Retrieve the result : ERROR:  syntax error at or near "INT"
-    ## LINE 1: ...ARY VIEW "rq_test_44784395422484414014_0000000000" ( x INT )
+    ## LINE 1: ...ARY VIEW "rq_test_23470105350733459902_0000000000" ( x INT )
     ##                                                                   ^
     ## )
     ## Error in postgresqlExecStatement(conn, statement, ...) : 
-    ##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "rq_test_44784395422484414014_0000000000" does not exist
-    ## LINE 1: SELECT * FROM "rq_test_44784395422484414014_0000000000" LIMI...
+    ##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "rq_test_23470105350733459902_0000000000" does not exist
+    ## LINE 1: SELECT * FROM "rq_test_23470105350733459902_0000000000" LIMI...
     ##                       ^
     ## )
 
@@ -233,8 +233,8 @@ result <- materialize(db, dq)
 ```
 
     ## Error in postgresqlExecStatement(conn, statement, ...) : 
-    ##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "rquery_mat_44363751847693213531_0000000000" does not exist
-    ## LINE 1: SELECT * FROM "rquery_mat_44363751847693213531_0000000000" L...
+    ##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "rquery_mat_38954678098867775608_0000000000" does not exist
+    ## LINE 1: SELECT * FROM "rquery_mat_38954678098867775608_0000000000" L...
     ##                       ^
     ## )
 
@@ -248,7 +248,7 @@ class(result)
 result
 ```
 
-    ## [1] "table(\"rquery_mat_44363751847693213531_0000000000\"; subjectID, diagnosis, probability)"
+    ## [1] "table(\"rquery_mat_38954678098867775608_0000000000\"; subjectID, diagnosis, probability)"
 
 ``` r
 DBI::dbReadTable(db$connection, result$table_name) %.>%
@@ -319,14 +319,14 @@ cat(to_sql(dq, db, source_limit = 1000))
             "assessmentTotal"
            FROM
             "d" LIMIT 1000
-           ) tsql_29001517448545434625_0000000000
-          ) tsql_29001517448545434625_0000000001
-         ) tsql_29001517448545434625_0000000002
-       ) tsql_29001517448545434625_0000000003
+           ) tsql_97627007110742070403_0000000000
+          ) tsql_97627007110742070403_0000000001
+         ) tsql_97627007110742070403_0000000002
+       ) tsql_97627007110742070403_0000000003
        WHERE "row_number" <= 1
-      ) tsql_29001517448545434625_0000000004
-     ) tsql_29001517448545434625_0000000005
-    ) tsql_29001517448545434625_0000000006 ORDER BY "subjectID"
+      ) tsql_97627007110742070403_0000000004
+     ) tsql_97627007110742070403_0000000005
+    ) tsql_97627007110742070403_0000000006 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very amenable to query optimization.
 
@@ -433,23 +433,23 @@ dq %.>%
 ```
 
     ## Error in postgresqlExecStatement(conn, statement, ...) : 
-    ##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "rquery_ex_17191216984385144380_0000000000" does not exist
-    ## LINE 1: SELECT * FROM "rquery_ex_17191216984385144380_0000000000" LI...
+    ##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "rquery_ex_13074711364751711343_0000000000" does not exist
+    ## LINE 1: SELECT * FROM "rquery_ex_13074711364751711343_0000000000" LI...
     ##                       ^
     ## )
     ## Error in postgresqlExecStatement(conn, statement, ...) : 
-    ##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "qn_35785083428023663396_0000000000" does not exist
-    ## LINE 1: SELECT * FROM "qn_35785083428023663396_0000000000" LIMIT 1
+    ##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "qn_60505155281560537591_0000000000" does not exist
+    ## LINE 1: SELECT * FROM "qn_60505155281560537591_0000000000" LIMIT 1
     ##                       ^
     ## )
     ## Error in postgresqlExecStatement(conn, statement, ...) : 
-    ##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "qn_35785083428023663396_0000000001" does not exist
-    ## LINE 1: SELECT * FROM "qn_35785083428023663396_0000000001" LIMIT 1
+    ##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "qn_60505155281560537591_0000000001" does not exist
+    ## LINE 1: SELECT * FROM "qn_60505155281560537591_0000000001" LIMIT 1
     ##                       ^
     ## )
     ## Error in postgresqlExecStatement(conn, statement, ...) : 
-    ##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "qn_35785083428023663396_0000000001" does not exist
-    ## LINE 1: SELECT * FROM "qn_35785083428023663396_0000000001" LIMIT 1
+    ##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "qn_60505155281560537591_0000000001" does not exist
+    ## LINE 1: SELECT * FROM "qn_60505155281560537591_0000000001" LIMIT 1
     ##                       ^
     ## )
 
@@ -467,23 +467,23 @@ dq %.>%
 ```
 
     ## Error in postgresqlExecStatement(conn, statement, ...) : 
-    ##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "rquery_ex_79338006170373870268_0000000000" does not exist
-    ## LINE 1: SELECT * FROM "rquery_ex_79338006170373870268_0000000000" LI...
+    ##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "rquery_ex_37964716047819115422_0000000000" does not exist
+    ## LINE 1: SELECT * FROM "rquery_ex_37964716047819115422_0000000000" LI...
     ##                       ^
     ## )
     ## Error in postgresqlExecStatement(conn, statement, ...) : 
-    ##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "sn_45320546701968715667_0000000000" does not exist
-    ## LINE 1: SELECT * FROM "sn_45320546701968715667_0000000000" LIMIT 1
+    ##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "sn_96672569214126175096_0000000000" does not exist
+    ## LINE 1: SELECT * FROM "sn_96672569214126175096_0000000000" LIMIT 1
     ##                       ^
     ## )
     ## Error in postgresqlExecStatement(conn, statement, ...) : 
-    ##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "sn_45320546701968715667_0000000001" does not exist
-    ## LINE 1: SELECT * FROM "sn_45320546701968715667_0000000001" LIMIT 1
+    ##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "sn_96672569214126175096_0000000001" does not exist
+    ## LINE 1: SELECT * FROM "sn_96672569214126175096_0000000001" LIMIT 1
     ##                       ^
     ## )
     ## Error in postgresqlExecStatement(conn, statement, ...) : 
-    ##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "sn_45320546701968715667_0000000001" does not exist
-    ## LINE 1: SELECT * FROM "sn_45320546701968715667_0000000001" LIMIT 1
+    ##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "sn_96672569214126175096_0000000001" does not exist
+    ## LINE 1: SELECT * FROM "sn_96672569214126175096_0000000001" LIMIT 1
     ##                       ^
     ## )
 

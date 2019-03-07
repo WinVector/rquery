@@ -101,7 +101,7 @@
       <h1>rquery Substitution</h1>
                         <h4 class="author">John Mount, Win-Vector LLC</h4>
             
-            <h4 class="date">2019-03-02</h4>
+            <h4 class="date">2019-03-06</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery/blob/master/vignettes/rquery_substitution.Rmd"><code>vignettes/rquery_substitution.Rmd</code></a></small>
       <div class="hidden name"><code>rquery_substitution.Rmd</code></div>
@@ -147,7 +147,7 @@ db_info &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rqu
 ##   __IDENTIFIER__x__IDENTIFIER__
 ##  FROM
 ##   __IDENTIFIER__d__IDENTIFIER__
-## ) tsql_57007456940041053628_0000000000
+## ) tsql_52049941410239879670_0000000000
 ## WHERE ( ( __STRING_CONSTANT__x__STRING_CONSTANT__ ) IS NULL )</code></pre>
 <p>(The warning is new to <code>rquery</code> version <code>1.3.2</code>.)</p>
 <p>We take careful note what is marked as “<code>__IDENTIFIER__</code>”, versus what is marked as “<code>__STRING_CONSTANT__</code>”. Notice “<code>__IDENTIFIER__</code>” is used in the <code>SQL</code> for table names and column name, and “<code>__STRING_CONSTANT__</code>” is used for string constants. The above query is probably not what a user intended as we are checking if a user supplied string constant is <code>NA</code>, which is not interesting.</p>
@@ -161,7 +161,7 @@ db_info &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rqu
 ##   __IDENTIFIER__x__IDENTIFIER__
 ##  FROM
 ##   __IDENTIFIER__d__IDENTIFIER__
-## ) tsql_69690914807578482176_0000000000
+## ) tsql_73628924515035148847_0000000000
 ## WHERE ( ( __IDENTIFIER__x__IDENTIFIER__ ) IS NULL )</code></pre>
 <p>In the above query we are now comparing an identifier to <code>NULL</code>, which is how <code>SQL</code> expresses comparing the contents of the column named to <code>NULL</code> in a row by row fashion (a useful query).</p>
 <p>Or combing the two ideas. We check which rows of the column <code>x</code> have the value <code>"a"</code> as follows.</p>
@@ -173,7 +173,7 @@ db_info &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rqu
 ##   __IDENTIFIER__x__IDENTIFIER__
 ##  FROM
 ##   __IDENTIFIER__d__IDENTIFIER__
-## ) tsql_92018855540893434995_0000000000
+## ) tsql_01315895577986352990_0000000000
 ## WHERE __IDENTIFIER__x__IDENTIFIER__ = __STRING_CONSTANT__a__STRING_CONSTANT__</code></pre>
 </div>
 <div id="wraprlet-substitution" class="section level2">
@@ -193,7 +193,7 @@ db_info &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rqu
 ##   __IDENTIFIER__x__IDENTIFIER__
 ##  FROM
 ##   __IDENTIFIER__d__IDENTIFIER__
-## ) tsql_37364357448922449088_0000000000
+## ) tsql_43121237987731731868_0000000000
 ## WHERE ( ( __IDENTIFIER__x__IDENTIFIER__ ) IS NULL )</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Let substitution treats all substitutions as source-text</span>
 <span class="co"># so strings and names are as if the user had typed them</span>
@@ -206,7 +206,7 @@ db_info &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rqu
 ##   __IDENTIFIER__x__IDENTIFIER__
 ##  FROM
 ##   __IDENTIFIER__d__IDENTIFIER__
-## ) tsql_78020172879598060732_0000000000
+## ) tsql_11799560261678439951_0000000000
 ## WHERE ( ( __IDENTIFIER__x__IDENTIFIER__ ) IS NULL )</code></pre>
 <p><code><a href="https://www.rdocumentation.org/packages/wrapr/topics/let">wrapr::let()</a></code>’s operating assumption is: if the user was using <code><a href="https://www.rdocumentation.org/packages/wrapr/topics/let">wrapr::let()</a></code> the user was intending a symbol, regardless if they specify that symbol using a string or a symbol type. This means the user doesn’t have to maintain the distinction between string representations of names and symbol representations of names when using <code><a href="https://www.rdocumentation.org/packages/wrapr/topics/let">wrapr::let()</a></code>. And again, for substituting string-values in: there are already much better ways, such as <code>R</code> evaluation itself (as we show below).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">value_we_want &lt;-<span class="st"> "a"</span>
@@ -219,7 +219,7 @@ db_info &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rqu
 ##   __IDENTIFIER__x__IDENTIFIER__
 ##  FROM
 ##   __IDENTIFIER__d__IDENTIFIER__
-## ) tsql_18184731832135840000_0000000000
+## ) tsql_14303373772621656878_0000000000
 ## WHERE __IDENTIFIER__x__IDENTIFIER__ = __STRING_CONSTANT__a__STRING_CONSTANT__</code></pre>
 <p>By assuming more about user intent <code><a href="https://www.rdocumentation.org/packages/wrapr/topics/let">wrapr::let()</a></code> can smooth over inessential differences for the user.</p>
 </div>
@@ -242,7 +242,7 @@ db_info &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rqu
 ##   __IDENTIFIER__x__IDENTIFIER__
 ##  FROM
 ##   __IDENTIFIER__d__IDENTIFIER__
-## ) tsql_93525037247073736787_0000000000
+## ) tsql_25090319092882594957_0000000000
 ## WHERE ( ( __STRING_CONSTANT__x__STRING_CONSTANT__ ) IS NULL )</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># bquote substitution on name type: col_name </span>
 <span class="co"># is taken to represent a column name.</span>
@@ -253,7 +253,7 @@ db_info &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rqu
 ##   __IDENTIFIER__x__IDENTIFIER__
 ##  FROM
 ##   __IDENTIFIER__d__IDENTIFIER__
-## ) tsql_58967304064266295886_0000000000
+## ) tsql_45646334129967704194_0000000000
 ## WHERE ( ( __IDENTIFIER__x__IDENTIFIER__ ) IS NULL )</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># bquote substitution on string type: col_string </span>
 <span class="co"># is taken to represent a string constant, not</span>
@@ -267,7 +267,7 @@ db_info &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rqu
 ##   __IDENTIFIER__x__IDENTIFIER__
 ##  FROM
 ##   __IDENTIFIER__d__IDENTIFIER__
-## ) tsql_22723376307141627840_0000000000
+## ) tsql_28050683635709870663_0000000000
 ## WHERE ( ( __STRING_CONSTANT__x__STRING_CONSTANT__ ) IS NULL )</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># bquote substitution on name type: col_name </span>
 <span class="co"># is taken to represent a column name.</span>
@@ -278,7 +278,7 @@ db_info &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rqu
 ##   __IDENTIFIER__x__IDENTIFIER__
 ##  FROM
 ##   __IDENTIFIER__d__IDENTIFIER__
-## ) tsql_80028584206748414850_0000000000
+## ) tsql_51498983002753072425_0000000000
 ## WHERE ( ( __IDENTIFIER__x__IDENTIFIER__ ) IS NULL )</code></pre>
 </div>
 <div id="conclusion" class="section level2">
