@@ -4,49 +4,18 @@
 
 ### OSX (local machine using --as-cran from the command line)
 
-    R CMD check --as-cran rquery_1.3.1.tar.gz 
-    * using R version 3.5.0 (2018-04-23)
-    * using platform: x86_64-apple-darwin15.6.0 (64-bit)
-    * using session charset: UTF-8
-    * using option ‘--as-cran’
-    * checking for file ‘rquery/DESCRIPTION’ ... OK
-    * checking extension type ... Package
-    * this is package ‘rquery’ version ‘1.3.1’
-    * package encoding: UTF-8
-    * checking CRAN incoming feasibility ... Note_to_CRAN_maintainers
-    Maintainer: ‘John Mount <jmount@win-vector.com>’
-    Status: OK
+    R CMD check --as-cran rquery_1.3.2.tar.gz 
+
 
 ### Windows
 
     rhub::check_for_cran()
-    792#> * using R Under development (unstable) (2019-01-26 r76018)
-    793#> * using platform: x86_64-w64-mingw32 (64-bit)
-    794#> * using session charset: ISO8859-1
-    795#> * using option '--as-cran'
-    796#> * checking for file 'rquery/DESCRIPTION' ... OK
-    797#> * checking extension type ... Package
-    798#> * this is package 'rquery' version '1.3.1'
-    799#> * package encoding: UTF-8
-    800#> * checking CRAN incoming feasibility ... Note_to_CRAN_maintainers
-    801#> Maintainer: 'John Mount '
-    855#> Status: OK
-    
+
 
 ### Linux
 
-    * using R version 3.5.2 (2018-12-20)
-    * using platform: x86_64-pc-linux-gnu (64-bit)
-    * using session charset: UTF-8
-    * using option ‘--as-cran’
-    * checking for file ‘rquery/DESCRIPTION’ ... OK
-    * checking extension type ... Package
-    * this is package ‘rquery’ version ‘1.3.1’
-    * package encoding: UTF-8
-    * checking CRAN incoming feasibility ... Note_to_CRAN_maintainers
-    Maintainer: ‘John Mount <jmount@win-vector.com>’
-    Status: OK
-
+    R CMD check --as-cran rquery_1.3.2.tar.gz 
+ 
   
 
 ## Reverse dependencies
