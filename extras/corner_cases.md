@@ -1,4 +1,4 @@
-Corner Cases
+Data Manipulation Corner Cases
 ================
 
 Let's try some "ugly corner cases" for data manipulation in [`R`](https://www.r-project.org). Corner cases are examples where the user might be running to the edge of where the package developer intended their package to work, and thus often where things can go wrong.
@@ -260,7 +260,9 @@ ex_data_table(ops2b,
     ##      x y   z
     ## 1: 0.5 1 1.5
 
-And there we are.
+And there we are. Frankly we didn't really have to stretch things very far to break things (including building up non-signalling data mistakes; inspect your intermediate results!!).
+
+We have been trying to keep the number of unexpected behaviors in `rquery` down by keeping the `rquery` implementation very simple (and very thin) and then relying on either the database or `data.table` for the actual implementation and semantics. There are, of course, going to be cases where `rquery` needs a fix- but we have been able to find and apply such fixes quite quickly. We have also found fixing `rquery` is *much* faster than coding around bugs.
 
 ``` r
 # clean up
