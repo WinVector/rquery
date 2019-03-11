@@ -1,0 +1,181 @@
+---
+title: "Corner Cases"
+output: github_document
+---
+
+Let's try some "ugly corner cases" for data manipulation in [`R`](https://www.r-project.org).
+Corner cases are examples where the user might be running to the edge of where
+the package developer intended their package to work, and thus often where things can go wrong.
+
+Let's see what happens when we try to stick a fork in the power-outlet.
+
+![](fork.jpg)
+
+For our example let's set up some `data.frame`s.
+
+```{r}
+# create some exmaple tables
+d1 <- data.frame(v1 = c("a", "b"),
+                 stringsAsFactors = FALSE)
+d2 <- data.frame(v2 = c("x", "y"),
+                 stringsAsFactors = FALSE)
+d3 <- data.frame(x = 1, y = 2, z = 3)
+``` 
+
+And we will also copy this data into a database.
+
+```{r}
+# copy the example tables to a database
+db <- DBI::dbConnect(RSQLite::SQLite(),
+                     ":memory:")
+DBI::dbWriteTable(db, "d1d", d1)
+DBI::dbWriteTable(db, "d2d", d2)
+DBI::dbWriteTable(db, "d3d", d3)
+``` 
+
+Now let's try a couple of basic tasks using `dplyr`.
+
+```{r}
+# try to use dplyr to work with the original tables
+# in memory
+suppressPackageStartupMessages(library("dplyr"))
+packageVersion("dplyr")
+``` 
+
+First we try a [cross-join](https://en.wikipedia.org/wiki/Join_(SQL)#Cross_join).
+
+```{r, error=TRUE}
+# try to do a cross-join
+left_join(d1, d2, by = character(0))
+# join is rejected
+``` 
+
+Obviously that is something deliberately prohibited by the package authors.
+
+Let's try dividing all columns by a value.
+
+```{r}
+# try to divide all columns by y
+mutate_all(d3, ~(./y))
+# z is divided by 1, not by the original
+# y-value
+``` 
+
+Something went wrong, notice `z` was not altered.  We will return to this later.
+
+Now let's try the same operations using `dplyr` on a database.
+
+
+```{r}
+# try the same calculations in database
+# using dplyr
+packageVersion("dbplyr")
+
+# get references to the database tables
+d1d <- dplyr::tbl(db, "d1d")
+d2d <- dplyr::tbl(db, "d2d")
+d3d <- dplyr::tbl(db, "d3d")
+
+# try to do a cross-join
+left_join(d1d, d2d,
+          by = character(0))
+# this time it works
+``` 
+
+In this case the cross join works (as databases expect to support this operation).
+
+Okay, let's try the divide by columns example again.
+
+```{r, error=TRUE}
+# try to divide all columns by y
+mutate_all(d3d, ~(./y))
+# this time it errors-out
+``` 
+
+Boom (ouch).
+
+Now let's try that again with the [`rquery`](https://github.com/WinVector/rquery/) package.
+
+```{r}
+# try the join task using rquery
+library("rquery")
+
+# get references to the database tables
+d1r <- rquery::db_td(db, "d1d")
+d2r <- rquery::db_td(db, "d2d")
+d3r <- rquery::db_td(db, "d3d")
+
+# try the cross-join
+ops <- natural_join(d1r, d2r,
+                    by = character(0),
+                    jointype = "LEFT")
+execute(db, ops)
+``` 
+
+The cross-join worked in the database.
+
+Now we start on the column division.  We have to specify
+the set of operations explicitly, but that really isn't too
+big of burden (as `rquery` supplies tools for this).
+
+```{r}
+# try to get column alterations
+vars <- colnames(d3)
+expressions <- paste(vars, "%:=%", vars, "/", "y")
+print(expressions)
+ops2 <- extend_se(d3r, expressions)
+cat(format(ops2))
+# Oh! This isn't what I want, see
+# how y gets updated before it is used on column z.
+``` 
+
+We took the extra step of examining the operations before
+we tried them.  Notice the `rquery::extend()` operation
+got factored into explicit steps.  This introduces inspectable guarantees
+as to what value each column has at each step.  This is enough
+to show us that the `y` column will be all ones before it is used
+to try and adjust the `z` column.  This is not what we wanted, though
+this query is guaranteed to have similar semantics both on-database and
+in-memory.
+
+Now let's build, examine and execute a better version of the query.
+
+```{r}
+# try to get column alterations again
+vars <- setdiff(colnames(d3), "y")
+expressions <- paste(vars, "%:=%", vars, "/", "y")
+print(expressions)
+ops2b <- d3r %.>%
+  extend_se(., expressions) %.>%
+  extend(., y = 1)
+cat(format(ops2b))
+
+execute(db, ops2b)
+``` 
+
+With the [`rqdatatable`](https://github.com/WinVector/rqdatatable/) package we can use `data.table` to process
+in-R data.
+
+```{r}
+# try the join task using rqdatatable
+library("rqdatatable")
+
+# immediate notation
+natural_join(d1, d2, by = character(0))
+
+# join task in operators notation
+ex_data_table(ops,
+              tables = list(d1d = d1, d2d = d2))
+
+# column alterations in operators notation
+ex_data_table(ops2b,
+              tables = list(d3d = d3))
+``` 
+
+And there we are.
+
+```{r}
+# clean up
+DBI::dbDisconnect(db)
+```
+
