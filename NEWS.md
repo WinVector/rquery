@@ -1,4 +1,8 @@
 
+# rquery 1.3.3 2019/03/13
+
+ * Clean up test_set_indicator()
+
 # rquery 1.3.2 2019/03/10
 
  * Don't override names() (messes up str()).

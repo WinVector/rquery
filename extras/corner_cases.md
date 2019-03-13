@@ -260,9 +260,76 @@ ex_data_table(ops2b,
     ##      x y   z
     ## 1: 0.5 1 1.5
 
-And there we are. Frankly we didn't really have to stretch things very far to break things (including building up non-signalling data mistakes; inspect your intermediate results!!).
+And there we are. Frankly we didn’t really have to stretch things very far to break things (including building up non-signalling data mistakes; inspect your intermediate results!!).
 
-We have been trying to keep the number of unexpected behaviors in `rquery` down by keeping the `rquery` implementation very simple (and very thin) and then relying on either the database or `data.table` for the actual implementation and semantics. There are, of course, going to be cases where `rquery` needs a fix- but we have been able to find and apply such fixes quite quickly. We have also found fixing `rquery` is *much* faster than coding around bugs.
+We have been trying to keep the number of unexpected behaviors in rquery down by keeping the rquery implementation very simple (and very thin) and then relying on either the database or data.table for the actual implementation and semantics. There are, of course, going to be cases where rquery needs a fix- but we have been able to find and apply such fixes quite quickly. We have also found fixing rquery is much faster than coding around bugs.
+
+------------------------------------------------------------------------
+
+``` r
+# selecting rows using set membership
+d1 %.>% set_indicator(., "want", "v1", c('a'))
+```
+
+    ##    v1 want
+    ## 1:  a    1
+    ## 2:  b    0
+
+``` r
+d1 %.>% set_indicator(., "want", "v1", c())
+```
+
+    ##    v1 want
+    ## 1:  a    0
+    ## 2:  b    0
+
+``` r
+d1r %.>% set_indicator(., "want", "v1", c('a'))  %.>% execute(db, .)
+```
+
+    ##   v1 want
+    ## 1  a    1
+    ## 2  b    0
+
+``` r
+d1r %.>% set_indicator(., "want", "v1", c()) %.>% execute(db, .)
+```
+
+    ##   v1 want
+    ## 1  a    0
+    ## 2  b    0
+
+``` r
+d1 %>% filter(v1 %in% c('a'))
+```
+
+    ##   v1
+    ## 1  a
+
+``` r
+d1 %>% filter(v1 %in% c())
+```
+
+    ## [1] v1
+    ## <0 rows> (or 0-length row.names)
+
+``` r
+d1d %>% filter(v1 %in% c('a'))
+```
+
+    ## # Source:   lazy query [?? x 1]
+    ## # Database: sqlite 3.22.0 [:memory:]
+    ##   v1   
+    ##   <chr>
+    ## 1 a
+
+``` r
+d1d %>% filter(v1 %in% c()) # https://github.com/tidyverse/dplyr/issues/3375 fixed
+```
+
+    ## # Source:   lazy query [?? x 1]
+    ## # Database: sqlite 3.22.0 [:memory:]
+    ## # … with 1 variable: v1 <chr>
 
 ``` r
 # clean up

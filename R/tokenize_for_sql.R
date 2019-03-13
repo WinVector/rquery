@@ -31,7 +31,7 @@ check_for_forbidden_forms <- function(lexpr) {
     if(call_text %in% c("%in%", "in")) {
       stop(paste("rquery forbidden construction: ",
                  call_text,
-                 "(please gry a test_set_indicator() node instead)"))
+                 "(please try a set_indicator() node instead)"))
     }
   }
 }
