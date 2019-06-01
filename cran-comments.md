@@ -21,6 +21,16 @@
 ### Windows
 
     devtools::build_win()
+    
+    * using log directory 'd:/RCompile/CRANguest/R-release/rquery.Rcheck'
+    * using R version 3.6.0 (2019-04-26)
+    * using platform: x86_64-w64-mingw32 (64-bit)
+    Status: OK
+    
+    * using log directory 'd:/RCompile/CRANguest/R-devel/rquery.Rcheck'
+    * using R Under development (unstable) (2019-05-30 r76623)
+    * using platform: x86_64-w64-mingw32 (64-bit)
+    Status: OK
 
 ## Reverse dependencies
 
