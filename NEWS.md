@@ -1,5 +1,5 @@
 
-# rquery 1.3.3 2019/03/20
+# rquery 1.3.3 2019/06/01
 
  * Clean up test_set_indicator() error message.
 
