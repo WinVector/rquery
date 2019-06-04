@@ -88,7 +88,7 @@ rquery_db_info <- function(...,
       }
       if(!is.null(connection)) {
         if("schema" %in% names(qualifiers)) {
-          dbi_id <- DBI::Id(schema = qualifiers$schema, table = as.character(id))
+          dbi_id <- DBI::Id(schema = qualifiers[["schema"]], table = as.character(id))
         } else {
           dbi_id <- as.character(id) # sparklyr '0.8.4' does not implement DBI::dbQuoteIdentifier for DBI::Id
         }
