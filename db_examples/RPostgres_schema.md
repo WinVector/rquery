@@ -37,23 +37,11 @@ DBI::dbExecute(raw_connection, "CREATE SCHEMA test_schema")
     ## [1] 0
 
 ``` r
-DBI::dbExecute(raw_connection, "CREATE TABLE test_schema.test_table (email varchar)")
+rq_copy_to(db, "test_table", data.frame(x = 1), 
+           qualifiers = c(schema = "test_schema"), temporary = FALSE)
 ```
 
-    ## [1] 0
-
-``` r
-DBI::dbExecute(raw_connection, "INSERT INTO test_schema.test_table (email) VALUES ('j@example.com')")
-```
-
-    ## [1] 1
-
-``` r
-DBI::dbGetQuery(raw_connection, "SELECT * FROM test_schema.test_table")
-```
-
-    ##           email
-    ## 1 j@example.com
+    ## [1] "table(\"test_schema\".\"test_table\"; x)"
 
 ``` r
 table_handle <- db_td(db, "test_table", qualifiers = c(schema = "test_schema"))
@@ -61,14 +49,14 @@ table_handle <- db_td(db, "test_table", qualifiers = c(schema = "test_schema"))
 print(table_handle)
 ```
 
-    ## [1] "table(\"test_schema\".\"test_table\"; email)"
+    ## [1] "table(\"test_schema\".\"test_table\"; x)"
 
 ``` r
 execute(db, table_handle)
 ```
 
-    ##           email
-    ## 1 j@example.com
+    ##   x
+    ## 1 1
 
 ``` r
 DBI::dbExecute(raw_connection, "DROP SCHEMA IF EXISTS test_schema CASCADE")

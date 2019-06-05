@@ -24,13 +24,8 @@ dbopts <- rq_connection_tests(raw_connection)
 ```
 
     ## Error in postgresqlExecStatement(conn, statement, ...) : 
-    ##   RS-DBI driver: (could not Retrieve the result : ERROR:  syntax error at or near "INT"
-    ## LINE 1: ...ARY VIEW "rq_test_41578610905065626267_0000000000" ( x INT )
-    ##                                                                   ^
-    ## )
-    ## Error in postgresqlExecStatement(conn, statement, ...) : 
-    ##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "rq_test_41578610905065626267_0000000000" does not exist
-    ## LINE 1: SELECT * FROM "rq_test_41578610905065626267_0000000000" LIMI...
+    ##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "rq_test_36224202393110960328_0000000000" does not exist
+    ## LINE 1: SELECT * FROM "rq_test_36224202393110960328_0000000000" LIMI...
     ##                       ^
     ## )
 
@@ -70,6 +65,10 @@ DBI::dbGetQuery(raw_connection, "SELECT * FROM test_schema.test_table")
     ## 1 j@example.com
 
 ``` r
+## Doesn't work yet.
+#rq_copy_to(db, "test_table", data.frame(x = 1), 
+#           qualifiers = c(schema = "test_schema"), temporary = FALSE)
+
 table_handle <- db_td(db, "test_table", qualifiers = c(schema = "test_schema"))
 
 print(table_handle)

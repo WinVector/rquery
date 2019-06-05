@@ -356,12 +356,23 @@ connection_is_sparklyr <- function(db) {
                    class(db)))>=1
 }
 
+maybe_dbi_table_id <- function(table_name, qualifiers) {
+  # https://github.com/r-dbi/odbc/issues/91
+  if("schema" %in% names(qualifiers)) {
+    return(DBI::Id(table = table_name, schema = qualifiers[["schema"]]))
+  }
+  # DBI::Id(table = table_name) # RPostgreSQL can't use this form in some cases
+  table_name
+}
+
+
 #' Copy local R table to remote data handle.
 #'
 #' @param db database connection handle.
 #' @param table_name name of table to create.
 #' @param d data.frame to copy to database.
 #' @param ... force later argument to be by name
+#' @param qualifiers optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.
 #' @param overwrite logical, if TRUE try to overwrite existing table.
 #' @param temporary logical, if TRUE try to mark table as temporary.
 #' @param rowidcolumn character, name to land row-ids.
@@ -386,6 +397,7 @@ connection_is_sparklyr <- function(db) {
 #'
 rq_copy_to <- function(db, table_name, d,
                        ...,
+                       qualifiers = NULL,
                        overwrite = FALSE,
                        temporary = TRUE,
                        rowidcolumn = NULL) {
@@ -401,6 +413,7 @@ rq_copy_to <- function(db, table_name, d,
     f <- db$rq_copy_to
     if(!is.null(f)) {
       return(f(db, table_name, d,
+               qualifiers = qualifiers,
                overwrite = overwrite,
                temporary = temporary,
                rowidcolumn = rowidcolumn))
@@ -437,10 +450,10 @@ rq_copy_to <- function(db, table_name, d,
   if(!requireNamespace("DBI", quietly = TRUE)) {
     stop("rquery::rq_copy_to without per-connection implemention need DBI package")
   }
-  if(rq_table_exists(db, table_name)) {
+  if(rq_table_exists(db, table_name, qualifiers = qualifiers)) {
     if(overwrite) {
       # sparklyr 0.7.0 can't take overwrite argument
-      rq_remove_table(db, table_name)
+      rq_remove_table(db, table_name, qualifiers = qualifiers)
     } else {
       stop(paste("rquery::rq_copy_to table", table_name, "exists and overwrite==FALSE"))
     }
@@ -448,13 +461,13 @@ rq_copy_to <- function(db, table_name, d,
   if(can_set_temp) {
     if(can_set_rownames) {
       DBI::dbWriteTable(connection,
-                        table_name,
+                        maybe_dbi_table_id(table_name, qualifiers = qualifiers),
                         d,
                         temporary = temporary,
                         row.names = FALSE)
     } else {
       DBI::dbWriteTable(connection,
-                        table_name,
+                        maybe_dbi_table_id(table_name, qualifiers = qualifiers),
                         d,
                         temporary = temporary)
     }
@@ -464,16 +477,16 @@ rq_copy_to <- function(db, table_name, d,
     }
     if(can_set_rownames) {
       DBI::dbWriteTable(connection,
-                        table_name,
+                        maybe_dbi_table_id(table_name, qualifiers = qualifiers),
                         d,
                         row.names = FALSE)
     } else {
       DBI::dbWriteTable(connection,
-                        table_name,
+                        maybe_dbi_table_id(table_name, qualifiers = qualifiers),
                         d)
     }
   }
-  db_td(db, table_name)
+  db_td(db, table_name, qualifiers = qualifiers)
 }
 
 #' Count rows and return as numeric
@@ -755,16 +768,17 @@ rq_connection_tests <- function(db,
     },
     error = function(e) { e },
     warning = function(w) { w })
-  # check on temporary view
-  tryCatch(
-    {
-      DBI::dbGetQuery(connection, paste("CREATE TEMPORARY VIEW",
-                                        obscure_name_q,
-                                        "( x INT )"))
-      opts[[paste(c("rquery", cname, "control_temporary_view"), collapse = ".")]] <- TRUE
-    },
-    error = function(e) { e },
-    warning = function(w) { w })
+  # # check on temporary view NOT CORRECT, NEED 2nd table name
+  # tryCatch(
+  #   {
+  #     DBI::dbGetQuery(connection, paste("CREATE TEMPORARY VIEW",
+  #                                       obscure_name_q,
+  #                                       "AS SELECT * FROM ",
+  #                                       obscure_name))
+  #     opts[[paste(c("rquery", cname, "control_temporary_view"), collapse = ".")]] <- TRUE
+  #   },
+  #   error = function(e) { e },
+  #   warning = function(w) { w })
   brute_rm_table(db, obscure_name)
   # see if NA columns masquerade as logical
   # (RSQLite has this property for some derived columns)

@@ -4,8 +4,8 @@
 \alias{rq_copy_to}
 \title{Copy local R table to remote data handle.}
 \usage{
-rq_copy_to(db, table_name, d, ..., overwrite = FALSE, temporary = TRUE,
-  rowidcolumn = NULL)
+rq_copy_to(db, table_name, d, ..., qualifiers = NULL,
+  overwrite = FALSE, temporary = TRUE, rowidcolumn = NULL)
 }
 \arguments{
 \item{db}{database connection handle.}
@@ -15,6 +15,8 @@ rq_copy_to(db, table_name, d, ..., overwrite = FALSE, temporary = TRUE,
 \item{d}{data.frame to copy to database.}
 
 \item{...}{force later argument to be by name}
+
+\item{qualifiers}{optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.}
 
 \item{overwrite}{logical, if TRUE try to overwrite existing table.}
 
