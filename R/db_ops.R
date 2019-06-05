@@ -480,28 +480,36 @@ rq_copy_to <- function(db, table_name, d,
 #'
 #' @param db database connection
 #' @param table_name character, name of table
+#' @param ... not used, force later argument to bind by name
+#' @param qualifiers optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.
 #' @return numeric row count
 #'
 #' @seealso \code{\link{db_td}}
 #'
 #' @export
 #'
-rq_nrow <- function(db, table_name) {
+rq_nrow <- function(db, table_name,
+                    ...,
+                    qualifiers = NULL) {
   if(is.null(db)) {
     stop("rquery::rq_nrow db was null")
   }
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::rq_nrow")
   # first shot- see if it is a db info with function overrriden
   if("rquery_db_info" %in% class(db)) {
     f <- db$rq_nrow
     if(!is.null(f)) {
-      return(f(db, table_name))
+      return(f(db, table_name, qualifiers = qualifiers))
     }
+    q_table_name <- db$quote_table_name(db, table_name, qualifiers = qualifiers)
+  } else {
+    q_table_name <- quote_table_name(db, table_name, qualifiers = qualifiers)
   }
   nrowst <- rq_get_query(
     db,
     paste0("SELECT COUNT(1) FROM ",
-           quote_identifier(db,
-                            table_name)))
+           q_table_name))
   # integer64 was coming back from RPostgres
   # and that does not work as numeric in pmin()
   nrows <- as.numeric(nrowst[[1]][[1]])
@@ -610,6 +618,7 @@ brute_rm_table <- function(db, table_name) {
 #'
 #' These settings are estimated by experiments.  This is not
 #' the full set of options- but just the ones tested here.
+#' Note: tests are currently run in the default schema.
 #'
 #' @param db database connection handle.
 #' @param ... force later arguments to bind by name.

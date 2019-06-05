@@ -21,6 +21,7 @@ named list of options
 \description{
 These settings are estimated by experiments.  This is not
 the full set of options- but just the ones tested here.
+Note: tests are currently run in the default schema.
 }
 \examples{
 
