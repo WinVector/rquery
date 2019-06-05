@@ -4,8 +4,8 @@
 \alias{rq_coltypes}
 \title{Get column types by example values as a data.frame.}
 \usage{
-rq_coltypes(db, table_name, ..., prefer_not_NA = FALSE,
-  force_check = FALSE)
+rq_coltypes(db, table_name, ..., qualifiers = NULL,
+  prefer_not_NA = FALSE, force_check = FALSE)
 }
 \arguments{
 \item{db}{Connection handle.}
@@ -13,6 +13,8 @@ rq_coltypes(db, table_name, ..., prefer_not_NA = FALSE,
 \item{table_name}{character table name referring to a non-empty table.}
 
 \item{...}{force later arguments to bind by name.}
+
+\item{qualifiers}{optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.}
 
 \item{prefer_not_NA}{logical, if TRUE try to find an non-NA example for all columns (FALSE just for logical columns).}
 

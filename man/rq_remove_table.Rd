@@ -4,12 +4,16 @@
 \alias{rq_remove_table}
 \title{Remove table}
 \usage{
-rq_remove_table(db, table_name)
+rq_remove_table(db, table_name, ..., qualifiers = NULL)
 }
 \arguments{
 \item{db}{database connection.}
 
 \item{table_name}{character, name of table to create.}
+
+\item{...}{not used, force later argument to bind by name}
+
+\item{qualifiers}{optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.}
 }
 \value{
 logical TRUE if table existed, else FALSE

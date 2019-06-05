@@ -25,12 +25,12 @@ dbopts <- rq_connection_tests(raw_connection)
 
     ## Error in postgresqlExecStatement(conn, statement, ...) : 
     ##   RS-DBI driver: (could not Retrieve the result : ERROR:  syntax error at or near "INT"
-    ## LINE 1: ...ARY VIEW "rq_test_92195306220322744348_0000000000" ( x INT )
+    ## LINE 1: ...ARY VIEW "rq_test_28976240887255490122_0000000000" ( x INT )
     ##                                                                   ^
     ## )
     ## Error in postgresqlExecStatement(conn, statement, ...) : 
-    ##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "rq_test_92195306220322744348_0000000000" does not exist
-    ## LINE 1: SELECT * FROM "rq_test_92195306220322744348_0000000000" LIMI...
+    ##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "rq_test_28976240887255490122_0000000000" does not exist
+    ## LINE 1: SELECT * FROM "rq_test_28976240887255490122_0000000000" LIMI...
     ##                       ^
     ## )
 

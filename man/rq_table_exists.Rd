@@ -4,12 +4,16 @@
 \alias{rq_table_exists}
 \title{Check if a table exists.}
 \usage{
-rq_table_exists(db, table_name)
+rq_table_exists(db, table_name, ..., qualifiers = NULL)
 }
 \arguments{
 \item{db}{Connection handle}
 
 \item{table_name}{character table name}
+
+\item{...}{not used, force later argument to bind by name}
+
+\item{qualifiers}{optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.}
 }
 \value{
 logical TRUE if table exists.
