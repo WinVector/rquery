@@ -147,7 +147,6 @@ rq_colnames <- function(db, table_name,
   # first shot- see if it is a db info with function overrriden
   connection <- db
   connection_options <- NULL
-  q_table_name <- quote_identifier(db, table_name)
   if("rquery_db_info" %in% class(db)) {
     f <- db$rq_colnames
     if(!is.null(f)) {
@@ -156,6 +155,8 @@ rq_colnames <- function(db, table_name,
     connection_options <- db$connection_options
     connection <- db$connection
     q_table_name <- db$quote_table_name(db, table_name, qualifiers = qualifiers)
+  } else {
+    q_table_name <- quote_table_name(db, table_name, qualifiers = qualifiers)
   }
   if(is.null(connection)) {
     stop("rquery::rq_colnames db$connection was null")
@@ -163,7 +164,8 @@ rq_colnames <- function(db, table_name,
   # DBI::dbListFields fails intermitnently, and sometimes gives wrong results
   # filed as: https://github.com/tidyverse/dplyr/issues/3204
   if(getDBOption(db, "use_DBI_dbListFields", FALSE, connection_options) && requireNamespace("DBI", quietly = TRUE)) {
-    return(DBI::dbListFields(connection, q_table_name))
+    # this path doesn't handle schemas
+    return(DBI::dbListFields(connection, table_name))
   }
   # below is going to have issues to R-column name conversion!
   q <- paste0("SELECT * FROM ",

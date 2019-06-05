@@ -31,6 +31,8 @@ DBI::dbGetQuery(raw_connection, "SELECT * FROM test_schema.test_table")
 
 table_handle <- db_td(db, "test_table", qualifiers = c(schema = "test_schema"))
 
+print(table_handle)
+
 execute(db, table_handle)
 
    

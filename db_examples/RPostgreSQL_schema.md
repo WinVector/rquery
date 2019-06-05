@@ -1,4 +1,4 @@
-RPostgres schema
+RPostgreSQL schema
 ================
 
 Working with a schema. Package is not quite ready for schemas yet as we
@@ -13,7 +13,7 @@ packageVersion("rquery")
     ## [1] '1.3.4'
 
 ``` r
-raw_connection <- DBI::dbConnect(RPostgres::Postgres(),
+raw_connection <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
                                  host = 'localhost',
                                  port = 5432,
                                  user = 'johnmount',
@@ -21,6 +21,20 @@ raw_connection <- DBI::dbConnect(RPostgres::Postgres(),
 
 
 dbopts <- rq_connection_tests(raw_connection)
+```
+
+    ## Error in postgresqlExecStatement(conn, statement, ...) : 
+    ##   RS-DBI driver: (could not Retrieve the result : ERROR:  syntax error at or near "INT"
+    ## LINE 1: ...ARY VIEW "rq_test_92195306220322744348_0000000000" ( x INT )
+    ##                                                                   ^
+    ## )
+    ## Error in postgresqlExecStatement(conn, statement, ...) : 
+    ##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "rq_test_92195306220322744348_0000000000" does not exist
+    ## LINE 1: SELECT * FROM "rq_test_92195306220322744348_0000000000" LIMI...
+    ##                       ^
+    ## )
+
+``` r
 db <- rquery_db_info(connection = raw_connection,
                      is_dbi = TRUE,
                      connection_options = dbopts)
@@ -79,3 +93,5 @@ DBI::dbExecute(raw_connection, "DROP SCHEMA IF EXISTS test_schema CASCADE")
 ``` r
 DBI::dbDisconnect(raw_connection)
 ```
+
+    ## [1] TRUE
