@@ -99,7 +99,7 @@ rq_table_exists <- function(db, table_name,
   if("rquery_db_info" %in% class(db)) {
     f <- db$rq_table_exists
     if(!is.null(f)) {
-      return(f(db, table_name))
+      return(f(db, table_name, qualifiers = qualifiers))
     }
     connection_options <- db$connection_options
     connection <- db$connection
@@ -254,6 +254,7 @@ rq_coltypes <- function(db, table_name,
     f <- db$rq_coltypes
     if(!is.null(f)) {
       return(f(db, table_name,
+               qualifiers = qualifiers,
                prefer_not_NA = prefer_not_NA,
                force_check = force_check))
     }

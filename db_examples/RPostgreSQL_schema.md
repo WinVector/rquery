@@ -24,8 +24,8 @@ dbopts <- rq_connection_tests(raw_connection)
 ```
 
     ## Error in postgresqlExecStatement(conn, statement, ...) : 
-    ##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "rq_test_36224202393110960328_0000000000" does not exist
-    ## LINE 1: SELECT * FROM "rq_test_36224202393110960328_0000000000" LIMI...
+    ##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "rq_test_38318638763732784745_0000000000" does not exist
+    ## LINE 1: SELECT * FROM "rq_test_38318638763732784745_0000000000" LIMI...
     ##                       ^
     ## )
 
