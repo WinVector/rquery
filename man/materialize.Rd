@@ -6,7 +6,7 @@
 \usage{
 materialize(db, optree, table_name = mk_tmp_name_source("rquery_mat")(),
   ..., limit = NULL, source_limit = NULL, overwrite = TRUE,
-  temporary = FALSE)
+  temporary = FALSE, qualifiers = NULL)
 }
 \arguments{
 \item{db}{database connecton (rquery_db_info class or DBI connections preferred).}
@@ -24,6 +24,8 @@ materialize(db, optree, table_name = mk_tmp_name_source("rquery_mat")(),
 \item{overwrite}{logical if TRUE drop an previous table.}
 
 \item{temporary}{logical if TRUE try to create a temporary table.}
+
+\item{qualifiers}{optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.}
 }
 \value{
 table description

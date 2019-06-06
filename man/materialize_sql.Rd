@@ -5,7 +5,7 @@
 \title{Materialize a user supplied SQL statement as a table.}
 \usage{
 materialize_sql(db, sql, table_name = mk_tmp_name_source("rqms")(), ...,
-  overwrite = TRUE, temporary = FALSE)
+  overwrite = TRUE, temporary = FALSE, qualifiers = NULL)
 }
 \arguments{
 \item{db}{database connecton (rquery_db_info class or DBI connections preferred).}
@@ -19,6 +19,8 @@ materialize_sql(db, sql, table_name = mk_tmp_name_source("rqms")(), ...,
 \item{overwrite}{logical if TRUE drop an previous table.}
 
 \item{temporary}{logical if TRUE try to create a temporary table.}
+
+\item{qualifiers}{optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.}
 }
 \value{
 table description

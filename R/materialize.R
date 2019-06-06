@@ -6,6 +6,7 @@
 #' @param table_name character, name of table to create.
 #' @param ... force later arguments to bind by name.
 #' @param temporary logical if TRUE try to create a temporary table.
+#' @param qualifiers optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.
 #' @return modified SQL
 #'
 #' @seealso \code{\link{materialize}}, \code{\link{db_td}}, \code{\link{execute}}, \code{\link{to_sql}}, \code{\link{rq_copy_to}}, \code{\link{mk_td}}
@@ -24,7 +25,8 @@
 #'
 materialize_sql_statement <- function(db, sql, table_name,
                                       ...,
-                                      temporary = FALSE) {
+                                      temporary = FALSE,
+                                      qualifiers = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery:::materialize_sql_statement")
   # check for a per-database implementation
@@ -34,8 +36,12 @@ materialize_sql_statement <- function(db, sql, table_name,
       return(f(db = db,
                sql = sql,
                table_name = table_name,
-               temporary = temporary))
+               temporary = temporary,
+               qualifiers = qualifiers))
     }
+    q_table_name <- db$quote_table_name(db, table_name, qualifiers = qualifiers)
+  } else {
+    q_table_name <- quote_table_name(db, table_name, qualifiers = qualifiers)
   }
   # work on the general case
   if(isTRUE(temporary)) {
@@ -55,7 +61,7 @@ materialize_sql_statement <- function(db, sql, table_name,
   storage_control <- getDBOption(db, "create_options", "")
   sqlc <- paste("CREATE",
                 ifelse(temporary, "TEMPORARY TABLE", "TABLE"),
-                quote_identifier(db, table_name),
+                q_table_name,
                 storage_control,
                 "AS",
                 sql)
@@ -76,6 +82,7 @@ materialize_sql_statement <- function(db, sql, table_name,
 #' @param source_limit numeric if not NULL limit sources to this many rows.
 #' @param overwrite logical if TRUE drop an previous table.
 #' @param temporary logical if TRUE try to create a temporary table.
+#' @param qualifiers optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.
 #' @param sql character, pre-rendered SQL matching optree and options- should not be set by user code.
 #' @return table description
 #'
@@ -110,6 +117,7 @@ materialize_impl <- function(db,
                              source_limit = NULL,
                              overwrite = TRUE,
                              temporary = FALSE,
+                             qualifiers = NULL,
                              sql = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery:::materialize_impl")
   if(!("relop" %in% class(optree))) {
@@ -171,12 +179,12 @@ materialize_impl <- function(db,
   }
   temp_intermediate_tables <- sort(unique(temp_intermediate_tables))
   # check/clear final result
-  if(rq_table_exists(db, table_name)) {
+  if(rq_table_exists(db, table_name, qualifiers = qualifiers)) {
     if(overwrite) {
-      rq_remove_table(db, table_name)
+      rq_remove_table(db, table_name, qualifiers = qualifiers)
     } else {
       stop(paste("rquery::materialize result table",
-                 table_name,
+                 table_name, qualifiers,
                  "exists, but do not have overwrite=TRUE"))
     }
   }
@@ -242,13 +250,14 @@ materialize_impl <- function(db,
     }
   }
   sqlc <- materialize_sql_statement(db, sql, table_name,
-                                    temporary = temporary)
+                                    temporary = temporary,
+                                    qualifiers = qualifiers)
   rq_execute(db, sqlc)
   # clear intermediates
   for(ti in temp_intermediate_tables) {
     rq_remove_table(db, ti)
   }
-  res <- db_td(db, table_name)
+  res <- db_td(db, table_name, qualifiers = qualifiers)
   notes$end_time[[n_steps]] <- Sys.time()
   res$notes <- notes
   res
@@ -268,6 +277,7 @@ materialize_impl <- function(db,
 #' @param source_limit numeric if not NULL limit sources to this many rows.
 #' @param overwrite logical if TRUE drop an previous table.
 #' @param temporary logical if TRUE try to create a temporary table.
+#' @param qualifiers optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.
 #' @return table description
 #'
 #' @seealso \code{\link{db_td}}, \code{\link{execute}}, \code{\link{to_sql}}, \code{\link{rq_copy_to}}, \code{\link{mk_td}}
@@ -300,7 +310,8 @@ materialize <- function(db,
                         limit = NULL,
                         source_limit = NULL,
                         overwrite = TRUE,
-                        temporary = FALSE) {
+                        temporary = FALSE,
+                        qualifiers = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::materialize")
   materialize_impl(db = db,
                    optree = optree,
@@ -308,7 +319,8 @@ materialize <- function(db,
                    limit = limit,
                    source_limit = source_limit,
                    overwrite = overwrite,
-                   temporary = temporary)
+                   temporary = temporary,
+                   qualifiers = qualifiers)
 }
 
 
@@ -323,6 +335,7 @@ materialize <- function(db,
 #' @param ... force later arguments to bind by name.
 #' @param overwrite logical if TRUE drop an previous table.
 #' @param temporary logical if TRUE try to create a temporary table.
+#' @param qualifiers optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.
 #' @return table description
 #'
 #' @seealso \code{\link{db_td}}, \code{\link{materialize}}, \code{\link{to_sql}}, \code{\link{rq_copy_to}}, \code{\link{mk_td}}
@@ -351,7 +364,8 @@ materialize_sql <- function(db,
                         table_name = mk_tmp_name_source('rqms')(),
                         ...,
                         overwrite = TRUE,
-                        temporary = FALSE) {
+                        temporary = FALSE,
+                        qualifiers = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::materialize_sql")
   # check/clear final result
   if(rq_table_exists(db, table_name)) {
@@ -365,9 +379,10 @@ materialize_sql <- function(db,
   }
   stmt <- materialize_sql_statement(db, sql,
                                     table_name = table_name,
-                                    temporary = temporary)
+                                    temporary = temporary,
+                                    qualifiers = qualifiers)
   rq_execute(db, stmt)
-  db_td(db, table_name)
+  db_td(db, table_name, qualifiers = qualifiers)
 }
 
 
