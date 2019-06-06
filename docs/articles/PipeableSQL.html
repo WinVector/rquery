@@ -30,7 +30,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.4</span>
       </span>
     </div>
 
@@ -101,7 +101,7 @@
       <h1>Pipeable SQL</h1>
                         <h4 class="author">John Mount</h4>
             
-            <h4 class="date">2019-06-02</h4>
+            <h4 class="date">2019-06-05</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery/blob/master/vignettes/PipeableSQL.Rmd"><code>vignettes/PipeableSQL.Rmd</code></a></small>
       <div class="hidden name"><code>PipeableSQL.Rmd</code></div>
@@ -239,8 +239,8 @@ FROM (
    `v`
   FROM
    `d`
- ) tsql_63717124072710327188_0000000000
-) tsql_63717124072710327188_0000000001</code></pre>
+ ) tsql_00356996585669639541_0000000000
+) tsql_00356996585669639541_0000000001</code></pre>
 <p>Notice the above translations did not add identifier quotes to our use of “<code>v</code>” in “<code>ABS(v)</code>”. This is because the <code>SQL</code> expression is not parsed in <code>R</code>. If we want to identify terms as variables we can wrap them with <code><a href="https://www.rdocumentation.org/packages/base/topics/name">as.name()</a></code> or <code><a href="https://www.rdocumentation.org/packages/base/topics/substitute">quote()</a></code> to get the quoting (and other variable oriented features). The extra <code>SELECT</code> step to pull data from the inner table is used by <code>rquery</code> for important column narrowing steps, and can actually improve query performance.</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">op_tree &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb15-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(., <span class="st">"absv"</span> <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="st">"ABS("</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/substitute">quote</a></span>(v), <span class="st">")"</span>))) <span class="op">%.&gt;%</span></a>
@@ -259,8 +259,8 @@ FROM (
    `v`
   FROM
    `d`
- ) tsql_02762099390958533444_0000000000
-) tsql_02762099390958533444_0000000001</code></pre>
+ ) tsql_80189940746883507184_0000000000
+) tsql_80189940746883507184_0000000001</code></pre>
 <p>The <code><a href="https://www.rdocumentation.org/packages/base/topics/list">list(list())</a></code> notation is how we say in <code>R</code> that we have a single element list (i.e. one expression) that is built up as a list of terms. The marking notation is cumbersome, but is not needed when we move on to relation nodes, which are parsed in <code>R</code> and can spot identifiers without additional help.</p>
 <p><code>op_tree</code> itself is a an object with its own presentation format:</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/format">format</a></span>(op_tree))</a></code></pre></div>
@@ -386,7 +386,7 @@ FROM (
 ##   `v3`
 ##  FROM
 ##   `d2`
-## ) tsql_84492947113834909341_0000000000</code></pre>
+## ) tsql_66844962297475961435_0000000000</code></pre>
 <div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb42-1" data-line-number="1"><span class="co"># execute</span></a>
 <a class="sourceLine" id="cb42-2" data-line-number="2"><span class="kw"><a href="../reference/execute.html">execute</a></span>(db, op_tree_count_null)</a></code></pre></div>
 <pre><code>##   v3 num_missing v1   v2
@@ -435,7 +435,7 @@ FROM (
 ##   `v3`
 ##  FROM
 ##   `d2`
-## ) tsql_57030921563320245244_0000000000</code></pre>
+## ) tsql_27629624469551613360_0000000000</code></pre>
 <div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb50-1" data-line-number="1"><span class="kw"><a href="../reference/execute.html">execute</a></span>(db, s_tree)</a></code></pre></div>
 <pre><code>##   v1   v2 v3 v1_isNA v2_isNA v3_isNA
 ## 1  1 &lt;NA&gt; NA       0       1       1
@@ -559,9 +559,9 @@ FROM (
 ##    "sales"
 ##   FROM
 ##    "df"
-##  ) tsql_78946281514040684409_0000000000
+##  ) tsql_36978765559950835405_0000000000
 ##  WHERE "trans_date" &lt;= str_to_date ( '2017-04-02' , '%Y-%m-%d' )
-## ) tsql_78946281514040684409_0000000001 GROUP BY cust</code></pre>
+## ) tsql_36978765559950835405_0000000001 GROUP BY cust</code></pre>
 <p>The <code>.[]</code>-notation is just signalling to <code>rquery</code> which symbols are column names (without requiring <code>rquery</code> to fully parse the <code>SQL</code> fragments). The <code>rquery</code> relational nodes get this sort of checking without any additional notation as they do fully parse the <code>R</code> expressions prior to any <code>SQL</code> translation.</p>
 <p>We can combine <code>.()</code> and <code>.[]</code> for even more powerful expressions such as the following.</p>
 <div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb62-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"rquery"</span>)</a>
@@ -598,9 +598,9 @@ FROM (
 ##    "sales"
 ##   FROM
 ##    "df"
-##  ) tsql_55255464810066438504_0000000000
+##  ) tsql_32591572297272350765_0000000000
 ##  WHERE "trans_date" &lt;= str_to_date ( '2017-04-02' , '%Y-%m-%d' )
-## ) tsql_55255464810066438504_0000000001 GROUP BY cust</code></pre>
+## ) tsql_32591572297272350765_0000000001 GROUP BY cust</code></pre>
 </div>
 <div id="conclusion" class="section level1">
 <h1 class="hasAnchor">

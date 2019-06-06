@@ -39,7 +39,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.4</span>
       </span>
     </div>
 
@@ -234,13 +234,8 @@
 <a class="sourceLine" id="cb1-20" data-line-number="20"></a>
 <a class="sourceLine" id="cb1-21" data-line-number="21">dbopts &lt;-<span class="st"> </span><span class="kw"><a href="reference/rq_connection_tests.html">rq_connection_tests</a></span>(raw_connection)</a></code></pre></div>
 <pre><code>## Error in postgresqlExecStatement(conn, statement, ...) : 
-##   RS-DBI driver: (could not Retrieve the result : ERROR:  syntax error at or near "INT"
-## LINE 1: ...ARY VIEW "rq_test_76732207274275136593_0000000000" ( x INT )
-##                                                                   ^
-## )
-## Error in postgresqlExecStatement(conn, statement, ...) : 
-##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "rq_test_76732207274275136593_0000000000" does not exist
-## LINE 1: SELECT * FROM "rq_test_76732207274275136593_0000000000" LIMI...
+##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "rq_test_38670492741400901216_0000000000" does not exist
+## LINE 1: SELECT * FROM "rq_test_38670492741400901216_0000000000" LIMI...
 ##                       ^
 ## )</code></pre>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">db &lt;-<span class="st"> </span><span class="kw"><a href="reference/rquery_db_info.html">rquery_db_info</a></span>(<span class="dt">connection =</span> raw_connection,</a>
@@ -347,14 +342,14 @@
 <p>We then generate our result:</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">result &lt;-<span class="st"> </span><span class="kw"><a href="reference/materialize.html">materialize</a></span>(db, dq)</a></code></pre></div>
 <pre><code>## Error in postgresqlExecStatement(conn, statement, ...) : 
-##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "rquery_mat_23768645103258140470_0000000000" does not exist
-## LINE 1: SELECT * FROM "rquery_mat_23768645103258140470_0000000000" L...
+##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "rquery_mat_17937837848722503253_0000000000" does not exist
+## LINE 1: SELECT * FROM "rquery_mat_17937837848722503253_0000000000" L...
 ##                       ^
 ## )</code></pre>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/class">class</a></span>(result)</a></code></pre></div>
 <pre><code>## [1] "relop_table_source" "relop"</code></pre>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1">result</a></code></pre></div>
-<pre><code>## [1] "table(\"rquery_mat_23768645103258140470_0000000000\"; subjectID, diagnosis, probability)"</code></pre>
+<pre><code>## [1] "table(\"rquery_mat_17937837848722503253_0000000000\"; subjectID, diagnosis, probability)"</code></pre>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1">DBI<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DBI/topics/dbReadTable">dbReadTable</a></span>(db<span class="op">$</span>connection, result<span class="op">$</span>table_name) <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb24-2" data-line-number="2"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</a></code></pre></div>
 <table class="table table">
@@ -439,14 +434,14 @@
         "assessmentTotal"
        FROM
         "d" LIMIT 1000
-       ) tsql_70686360241919281803_0000000000
-      ) tsql_70686360241919281803_0000000001
-     ) tsql_70686360241919281803_0000000002
-   ) tsql_70686360241919281803_0000000003
+       ) tsql_02644236561788990156_0000000000
+      ) tsql_02644236561788990156_0000000001
+     ) tsql_02644236561788990156_0000000002
+   ) tsql_02644236561788990156_0000000003
    WHERE "row_number" &lt;= 1
-  ) tsql_70686360241919281803_0000000004
- ) tsql_70686360241919281803_0000000005
-) tsql_70686360241919281803_0000000006 ORDER BY "subjectID"</code></pre>
+  ) tsql_02644236561788990156_0000000004
+ ) tsql_02644236561788990156_0000000005
+) tsql_02644236561788990156_0000000006 ORDER BY "subjectID"</code></pre>
 <p>The query is large, but due to its regular structure it should be very amenable to query optimization.</p>
 <p>A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our <a href="https://github.com/WinVector/rquery/blob/master/extras/PerfTest%2Emd">initial experiments</a> show <code>rquery</code> narrowed queries to be twice as fast as un-narrowed <code>dplyr</code> on a synthetic problem simulating large disk-based queries. We think if we connected directly to <code>Spark</code>’s relational operators (avoiding the <code>SQL</code> layer) we may be able to achieve even faster performance.</p>
 <p>The above optimization is possible because the <code>rquery</code> representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query. For example:</p>
@@ -516,23 +511,23 @@
 <a class="sourceLine" id="cb41-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="reference/quantile_node.html">quantile_node</a></span>(.) <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb41-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="reference/execute.html">execute</a></span>(db, .)</a></code></pre></div>
 <pre><code>## Error in postgresqlExecStatement(conn, statement, ...) : 
-##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "rquery_ex_07871573643068741868_0000000000" does not exist
-## LINE 1: SELECT * FROM "rquery_ex_07871573643068741868_0000000000" LI...
+##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "rquery_ex_59487920111498290889_0000000000" does not exist
+## LINE 1: SELECT * FROM "rquery_ex_59487920111498290889_0000000000" LI...
 ##                       ^
 ## )
 ## Error in postgresqlExecStatement(conn, statement, ...) : 
-##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "qn_17487870476551640656_0000000000" does not exist
-## LINE 1: SELECT * FROM "qn_17487870476551640656_0000000000" LIMIT 1
+##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "qn_68473671261842673687_0000000000" does not exist
+## LINE 1: SELECT * FROM "qn_68473671261842673687_0000000000" LIMIT 1
 ##                       ^
 ## )
 ## Error in postgresqlExecStatement(conn, statement, ...) : 
-##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "qn_17487870476551640656_0000000001" does not exist
-## LINE 1: SELECT * FROM "qn_17487870476551640656_0000000001" LIMIT 1
+##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "qn_68473671261842673687_0000000001" does not exist
+## LINE 1: SELECT * FROM "qn_68473671261842673687_0000000001" LIMIT 1
 ##                       ^
 ## )
 ## Error in postgresqlExecStatement(conn, statement, ...) : 
-##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "qn_17487870476551640656_0000000001" does not exist
-## LINE 1: SELECT * FROM "qn_17487870476551640656_0000000001" LIMIT 1
+##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "qn_68473671261842673687_0000000001" does not exist
+## LINE 1: SELECT * FROM "qn_68473671261842673687_0000000001" LIMIT 1
 ##                       ^
 ## )</code></pre>
 <pre><code>##   quantile_probability subjectID           diagnosis probability
@@ -545,23 +540,23 @@
 <a class="sourceLine" id="cb44-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="reference/rsummary_node.html">rsummary_node</a></span>(.) <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb44-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="reference/execute.html">execute</a></span>(db, .)</a></code></pre></div>
 <pre><code>## Error in postgresqlExecStatement(conn, statement, ...) : 
-##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "rquery_ex_16743951042197795371_0000000000" does not exist
-## LINE 1: SELECT * FROM "rquery_ex_16743951042197795371_0000000000" LI...
+##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "rquery_ex_19224813909588880621_0000000000" does not exist
+## LINE 1: SELECT * FROM "rquery_ex_19224813909588880621_0000000000" LI...
 ##                       ^
 ## )
 ## Error in postgresqlExecStatement(conn, statement, ...) : 
-##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "sn_85949860158934314338_0000000000" does not exist
-## LINE 1: SELECT * FROM "sn_85949860158934314338_0000000000" LIMIT 1
+##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "sn_21696781613968416080_0000000000" does not exist
+## LINE 1: SELECT * FROM "sn_21696781613968416080_0000000000" LIMIT 1
 ##                       ^
 ## )
 ## Error in postgresqlExecStatement(conn, statement, ...) : 
-##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "sn_85949860158934314338_0000000001" does not exist
-## LINE 1: SELECT * FROM "sn_85949860158934314338_0000000001" LIMIT 1
+##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "sn_21696781613968416080_0000000001" does not exist
+## LINE 1: SELECT * FROM "sn_21696781613968416080_0000000001" LIMIT 1
 ##                       ^
 ## )
 ## Error in postgresqlExecStatement(conn, statement, ...) : 
-##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "sn_85949860158934314338_0000000001" does not exist
-## LINE 1: SELECT * FROM "sn_85949860158934314338_0000000001" LIMIT 1
+##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "sn_21696781613968416080_0000000001" does not exist
+## LINE 1: SELECT * FROM "sn_21696781613968416080_0000000001" LIMIT 1
 ##                       ^
 ## )</code></pre>
 <pre><code>##        column index     class nrows nna nunique       min       max
