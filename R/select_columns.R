@@ -60,9 +60,7 @@ select_columns.data.frame <- function(source, columns, env = parent.frame()) {
 
 #' @export
 column_names.relop_select_columns <- function (x, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::column_names.relop_select_columns")
   x$columns
 }
 
@@ -108,9 +106,7 @@ to_sql.relop_select_columns <- function (x,
                                          tnum = mk_tmp_name_source('tsql'),
                                          append_cr = TRUE,
                                          using = NULL) {
-  if(length(list(...))>0) {
-    stop("rquery::to_sql.relop_select_columns unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::to_sql.relop_select_columns")
   dispatch_to_sql_method(
     method_name = "to_sql.relop_select_columns",
     x = x,
@@ -135,9 +131,7 @@ to_sql_relop_select_columns <- function(
   tnum = mk_tmp_name_source('tsql'),
   append_cr = TRUE,
   using = NULL) {
-  if(length(list(...))>0) {
-    stop("unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::to_sql_relop_select_columns")
   using <- calc_using_relop_select_columns(x,
                                            using = using)
   qlimit = limit

@@ -80,7 +80,7 @@ cat(to_sql(ops, db))
     ##   "date"
     ##  FROM
     ##   "testdate"
-    ##  ) tsql_26490984128390048895_0000000000
+    ##  ) tsql_87133997021493417008_0000000000
 
 ``` r
 # as.Date() not going to work without a translation
@@ -128,7 +128,7 @@ cat(to_sql(ops, db))
     ##   "date"
     ##  FROM
     ##   "testdate"
-    ##  ) tsql_74516666135686185576_0000000000
+    ##  ) tsql_96245854681053201932_0000000000
 
 ``` r
 execute(db, ops)  %.>%

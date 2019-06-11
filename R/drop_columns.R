@@ -77,9 +77,8 @@ drop_columns.data.frame <- function(source, drops,
 
 #' @export
 column_names.relop_drop_columns <- function (x, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::column_names.relop_drop_columns")
   x$columns
 }
 
@@ -94,6 +93,8 @@ format_node.relop_drop_columns <- function(node) {
 
 calc_using_relop_drop_columns <- function(x, ...,
                                           using = NULL) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::calc_using_relop_drop_columns")
   cols <- x$columns
   if(length(using)>0) {
     missing <- setdiff(using, x$columns)
@@ -109,6 +110,8 @@ calc_using_relop_drop_columns <- function(x, ...,
 #' @export
 columns_used.relop_drop_columns <- function (x, ...,
                                              using = NULL) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::columns_used.relop_drop_columns")
   cols <- calc_using_relop_drop_columns(x,
                                         using = using)
   return(columns_used(x$source[[1]],
@@ -125,9 +128,8 @@ to_sql.relop_drop_columns <- function (x,
                                        tnum = mk_tmp_name_source('tsql'),
                                        append_cr = TRUE,
                                        using = NULL) {
-  if(length(list(...))>0) {
-    stop("rquery::to_sql.relop_drop_columns unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::to_sql.relop_drop_columns")
   dispatch_to_sql_method(
     method_name = "to_sql.relop_drop_columns",
     x = x,
@@ -151,9 +153,8 @@ to_sql_relop_drop_columns <- function(
   tnum = mk_tmp_name_source('tsql'),
   append_cr = TRUE,
   using = NULL) {
-  if(length(list(...))>0) {
-    stop("unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::to_sql_relop_drop_columns")
   using <- calc_using_relop_drop_columns(x,
                                          using = using)
   qlimit = limit

@@ -258,6 +258,8 @@ columns_used_relop_table_source <- function (x,
 #' @export
 columns_used.relop_table_source <- function (x, ...,
                                              using = NULL) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::columns_used.relop_table_source")
   cols <- columns_used_relop_table_source(x, using = using)
   r <- list(cols)
   names(r) <- x$table_name
@@ -274,9 +276,8 @@ to_sql.relop_table_source <- function (x,
                                        tnum = mk_tmp_name_source('tsql'),
                                        append_cr = TRUE,
                                        using = NULL) {
-  if(length(list(...))>0) {
-    stop("rquery::to_sql.relop_table_source unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::to_sql.relop_table_source")
   dispatch_to_sql_method(
     method_name = "to_sql.relop_table_source",
     x = x,

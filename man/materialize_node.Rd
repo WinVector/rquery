@@ -5,12 +5,17 @@
 \title{Create a materialize node.}
 \usage{
 materialize_node(source,
-  table_name = (wrapr::mk_tmp_name_source("rquerymn"))())
+  table_name = (wrapr::mk_tmp_name_source("rquerymn"))(), ...,
+  qualifiers = NULL)
 }
 \arguments{
 \item{source}{source to work from (relop node)}
 
 \item{table_name}{character, name of caching table}
+
+\item{...}{not used, force later argument to bind by name}
+
+\item{qualifiers}{optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.}
 }
 \value{
 relop materialize_node

@@ -16,7 +16,9 @@
 #' @param f_df data.frame implementation signature: f_df(data.frame, nd) (NULL defaults to taking from database).
 #' @param f_dt data.table implementation signature: f_dt(data.table, nd) (NULL defaults f_df).
 #' @param incoming_table_name character, name of incoming table
+#' @param incoming_qualifiers optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.
 #' @param outgoing_table_name character, name of produced table
+#' @param outgoing_qualifiers optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.
 #' @param columns_produced character, names of additional columns produced
 #' @param display_form character, how to print node
 #' @param orig_columns logical if TRUE select all original columns.
@@ -35,7 +37,9 @@ non_sql_node <- function(source,
                          f_df = NULL,
                          f_dt = NULL,
                          incoming_table_name,
+                         incoming_qualifiers = NULL,
                          outgoing_table_name,
+                         outgoing_qualifiers = NULL,
                          columns_produced,
                          display_form = 'non_sql_node',
                          orig_columns = TRUE,
@@ -54,7 +58,9 @@ non_sql_node.relop <- function(source,
                                f_df = NULL,
                                f_dt = NULL,
                                incoming_table_name,
+                               incoming_qualifiers = NULL,
                                outgoing_table_name,
+                               outgoing_qualifiers = NULL,
                                columns_produced,
                                display_form = 'non_sql_node',
                                orig_columns = TRUE,
@@ -79,7 +85,9 @@ non_sql_node.relop <- function(source,
             f_df = f_df,
             f_dt = f_dt,
             incoming_table_name = incoming_table_name,
+            incoming_qualifiers = incoming_qualifiers,
             outgoing_table_name = outgoing_table_name,
+            outgoing_qualifiers = outgoing_qualifiers,
             columns_produced = columns_produced,
             display_form = display_form,
             orig_columns = orig_columns,
@@ -99,7 +107,9 @@ non_sql_node.data.frame <- function(source,
                                     f_df = NULL,
                                     f_dt = NULL,
                                     incoming_table_name,
+                                    incoming_qualifiers = NULL,
                                     outgoing_table_name,
+                                    outgoing_qualifiers = NULL,
                                     columns_produced,
                                     display_form = 'non_sql_node',
                                     orig_columns = TRUE,
@@ -115,7 +125,9 @@ non_sql_node.data.frame <- function(source,
                         f_df = f_df,
                         f_dt = f_dt,
                         incoming_table_name = incoming_table_name,
+                        incoming_qualifiers = incoming_qualifiers,
                         outgoing_table_name = outgoing_table_name,
+                        outgoing_qualifiers = outgoing_qualifiers,
                         columns_produced = columns_produced,
                         display_form = display_form,
                         orig_columns = orig_columns,
@@ -168,9 +180,7 @@ to_sql.relop_non_sql <- function (x,
                                   tnum = mk_tmp_name_source('tsql'),
                                   append_cr = TRUE,
                                   using = NULL) {
-  if(length(list(...))>0) {
-    stop("rquery::to_sql.relop_non_sql unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::to_sql.relop_non_sql")
   dispatch_to_sql_method(
     method_name = "to_sql.relop_non_sql",
     x = x,
@@ -210,10 +220,13 @@ to_sql_relop_non_sql <- function(
   step1 <- materialize_sql_statement(db,
                                      subsql[[nsubsql]],
                                      x$incoming_table_name,
+                                     qualifiers = x$incoming_qualifiers,
                                      temporary = x$temporary)
   nsql_step <- list(display_form = x$display_form,
                     incoming_table_name = x$incoming_table_name,
+                    incoming_qualifiers = x$incoming_qualifiers,
                     outgoing_table_name = x$outgoing_table_name,
+                    outgoing_qualifiers = x$outgoing_qualifiers,
                     temporary = x$temporary,
                     node = x,
                     f = x$f_db)

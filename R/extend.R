@@ -85,6 +85,8 @@ extend_impl_list <- function(source, parsed,
                              orderby = NULL,
                              reverse = NULL,
                              display_form = NULL) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery:::extend_impl_list")
   if(length(setdiff(reverse, c(orderby, partitionby)))>0) {
     stop("rquery::extend_impl_list all reverse columns must also be orderby or partitionby columns")
   }
@@ -394,9 +396,8 @@ to_sql.relop_extend <- function (x,
                                  tnum = mk_tmp_name_source('tsql'),
                                  append_cr = TRUE,
                                  using = NULL) {
-  if(length(list(...))>0) {
-    stop("rquery::to_sql.relop_extend unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::to_sql.relop_extend")
   dispatch_to_sql_method(
     method_name = "to_sql.relop_extend",
     x = x,

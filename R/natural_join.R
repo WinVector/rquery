@@ -96,9 +96,7 @@ natural_join.relop <- function(a, b,
                                jointype = 'INNER',
                                env = parent.frame()) {
   force(env)
-  if(length(list(...))>0) {
-    stop("rquery::natural_join unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::natural_join.relop")
   if(!("relop" %in% class(a))) {
     stop("rquery::natural_join.relop a must be of class relop")
   }
@@ -134,9 +132,7 @@ natural_join.data.frame <- function(a, b,
                                     jointype = 'INNER',
                                     env = parent.frame()) {
   force(env)
-  if(length(list(...))>0) {
-    stop("rquery::natural_join unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::natural_join.data.frame")
   if(!is.data.frame(b)) {
     stop("rquery::natural_join.data.frame b must also be a data.frame")
   }
@@ -229,9 +225,7 @@ to_sql.relop_natural_join <- function (x,
                                        tnum = mk_tmp_name_source('tsql'),
                                        append_cr = TRUE,
                                        using = NULL) {
-  if(length(list(...))>0) {
-    stop("rquery::to_sql.relop_natural_join unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::to_sql.relop_natural_join")
   dispatch_to_sql_method(
     method_name = "to_sql.relop_natural_join",
     x = x,
@@ -255,9 +249,7 @@ to_sql_relop_natural_join <- function(
   tnum = mk_tmp_name_source('tsql'),
   append_cr = TRUE,
   using = NULL) {
-  if(length(list(...))>0) {
-    stop("unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::to_sql_relop_natural_join")
   using <- unique(c(calc_used_relop_natural_join(x,
                                                  using=using),
                     x$by))

@@ -291,9 +291,7 @@ to_sql.relop_sql <- function (x,
                               tnum = mk_tmp_name_source('tsql'),
                               append_cr = TRUE,
                               using = NULL) {
-  if(length(list(...))>0) {
-    stop("rquery::to_sql.relop_sql unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::to_sql.relop_sql")
   dispatch_to_sql_method(
     method_name = "to_sql.relop_sql",
     x = x,

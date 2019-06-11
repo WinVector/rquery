@@ -139,9 +139,7 @@ to_sql.relop_null_replace <- function (x,
                                        tnum = mk_tmp_name_source('tsql'),
                                        append_cr = TRUE,
                                        using = NULL) {
-  if(length(list(...))>0) {
-    stop("rquery::to_sql.relop_null_replace unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::to_sql.relop_null_replace")
   dispatch_to_sql_method(
     method_name = "to_sql.relop_null_replace",
     x = x,
@@ -165,9 +163,7 @@ to_sql_relop_null_replace <- function(
   tnum = mk_tmp_name_source('tsql'),
   append_cr = TRUE,
   using = NULL) {
-  if(length(list(...))>0) {
-    stop("unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::to_sql_relop_null_replace")
   qlimit = limit
   if(!getDBOption(db, "use_pass_limit", TRUE)) {
     qlimit = NULL

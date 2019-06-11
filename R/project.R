@@ -203,9 +203,7 @@ project.data.frame <- function(source, groupby, ...,
 
 #' @export
 column_names.relop_project <- function (x, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::column_names.relop_project")
   x$columns
 }
 
@@ -243,9 +241,7 @@ calc_used_relop_project <- function (x,
 #' @export
 columns_used.relop_project <- function (x, ...,
                                         using = NULL) {
-  if(length(list(...))>0) {
-    stop("rquery:columns_used: unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::columns_used.relop_project")
   cols <- calc_used_relop_project(x,
                                   using = using)
   columns_used(x$source[[1]],
@@ -263,9 +259,7 @@ to_sql.relop_project <- function (x,
                                   tnum = mk_tmp_name_source('tsql'),
                                   append_cr = TRUE,
                                   using = NULL) {
-  if(length(list(...))>0) {
-    stop("rquery::to_sql.relop_project unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::to_sql.relop_project")
   dispatch_to_sql_method(
     method_name = "to_sql.relop_project",
     x = x,
@@ -289,9 +283,7 @@ to_sql_relop_project <- function(
   tnum = mk_tmp_name_source('tsql'),
   append_cr = TRUE,
   using = NULL) {
-  if(length(list(...))>0) {
-    stop("unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::to_sql_relop_project")
   # re-quote expr
   parsed <- x$parsed
   if(length(using)>0) {

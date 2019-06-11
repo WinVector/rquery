@@ -148,7 +148,8 @@ re-use.</p>
     </div>
 
     <pre class="usage"><span class='fu'>materialize_node</span>(<span class='no'>source</span>,
-  <span class='kw'>table_name</span> <span class='kw'>=</span> (<span class='kw pkg'>wrapr</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/wrapr/topics/mk_tmp_name_source'>mk_tmp_name_source</a></span>(<span class='st'>"rquerymn"</span>))())</pre>
+  <span class='kw'>table_name</span> <span class='kw'>=</span> (<span class='kw pkg'>wrapr</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/wrapr/topics/mk_tmp_name_source'>mk_tmp_name_source</a></span>(<span class='st'>"rquerymn"</span>))(), <span class='no'>...</span>,
+  <span class='kw'>qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -160,6 +161,14 @@ re-use.</p>
     <tr>
       <th>table_name</th>
       <td><p>character, name of caching table</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>not used, force later argument to bind by name</p></td>
+    </tr>
+    <tr>
+      <th>qualifiers</th>
+      <td><p>optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.</p></td>
     </tr>
     </table>
     

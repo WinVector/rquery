@@ -99,9 +99,7 @@ theta_join_se.relop <- function(a, b,
                                 suffix = c("_a", "_b"),
                                 env = parent.frame()) {
   force(env)
-  if(length(list(...))>0) {
-    stop("rquery::theta_join_se unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::theta_join_se.relop")
   if(!("relop" %in% class(a))) {
     stop("rquery::theta_join_se.relop b must be of class relop")
   }
@@ -144,9 +142,7 @@ theta_join_se.data.frame <- function(a, b,
                                      suffix = c("_a", "_b"),
                                      env = parent.frame()) {
   force(env)
-  if(length(list(...))>0) {
-    stop("rquery::theta_join_se unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::theta_join_se.data.frame")
   if(!is.data.frame(b)) {
     stop("rquery::theta_join_se.data.frame b must also be a data.frame")
   }
@@ -290,9 +286,7 @@ theta_join.data.frame <- function(a, b,
 
 #' @export
 column_names.relop_theta_join <- function (x, ...) {
-  if(length(list(...))>0) {
-    stop("unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::column_names.relop_theta_join")
   c(as.character(x$cmap[['a']]), as.character(x$cmap[['b']]))
 }
 
@@ -389,9 +383,7 @@ to_sql.relop_theta_join <- function (x,
                                      tnum = mk_tmp_name_source('tsql'),
                                      append_cr = TRUE,
                                      using = NULL) {
-  if(length(list(...))>0) {
-    stop("rquery::to_sql.relop_theta_join unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::to_sql.relop_theta_join")
   dispatch_to_sql_method(
     method_name = "to_sql.relop_theta_join",
     x = x,
@@ -415,9 +407,7 @@ to_sql_relop_theta_join <- function(
   tnum = mk_tmp_name_source('tsql'),
   append_cr = TRUE,
   using = NULL) {
-  if(length(list(...))>0) {
-    stop("unexpected arguments")
-  }
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery::to_sql_relop_theta_join")
   # re-quote expr
   re_quoted <- redo_parse_quoting(x$parsed, db)
   # work on query

@@ -5,7 +5,8 @@
 \title{Wrap a non-SQL node.}
 \usage{
 non_sql_node(source, ..., f_db = NULL, f_df = NULL, f_dt = NULL,
-  incoming_table_name, outgoing_table_name, columns_produced,
+  incoming_table_name, incoming_qualifiers = NULL, outgoing_table_name,
+  outgoing_qualifiers = NULL, columns_produced,
   display_form = "non_sql_node", orig_columns = TRUE,
   temporary = TRUE, check_result_details = TRUE,
   env = parent.frame())
@@ -23,7 +24,11 @@ non_sql_node(source, ..., f_db = NULL, f_df = NULL, f_dt = NULL,
 
 \item{incoming_table_name}{character, name of incoming table}
 
+\item{incoming_qualifiers}{optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.}
+
 \item{outgoing_table_name}{character, name of produced table}
+
+\item{outgoing_qualifiers}{optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.}
 
 \item{columns_produced}{character, names of additional columns produced}
 
