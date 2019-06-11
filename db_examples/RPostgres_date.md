@@ -66,6 +66,25 @@ DBI::dbReadTable(db$connection, db_result$table_name) %.>%
 ``` r
 # translated remote op
 
+ops <- db_testdate %.>%
+   extend(., date := as.Date(date))
+cat(to_sql(ops, db))
+```
+
+    ## SELECT
+    ##  "id",
+    ##  as.Date ( "date" )  AS "date"
+    ## FROM (
+    ##  SELECT
+    ##   "id",
+    ##   "date"
+    ##  FROM
+    ##   "testdate"
+    ##  ) tsql_26490984128390048895_0000000000
+
+``` r
+# as.Date() not going to work without a translation
+
 # define user specified translation
 expr_map <- list("as.Date" = function(x, db_info) {
   tx <- x
@@ -96,8 +115,6 @@ db$tree_rewriter <- function(x, db_info) {
   x
 }
 
-ops <- db_testdate %.>%
-   extend(., date := as.Date(date))
 
 cat(to_sql(ops, db))
 ```
@@ -111,7 +128,7 @@ cat(to_sql(ops, db))
     ##   "date"
     ##  FROM
     ##   "testdate"
-    ##  ) tsql_65497076009420059964_0000000000
+    ##  ) tsql_74516666135686185576_0000000000
 
 ``` r
 execute(db, ops)  %.>%

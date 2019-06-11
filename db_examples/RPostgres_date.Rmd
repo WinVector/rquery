@@ -49,6 +49,11 @@ DBI::dbReadTable(db$connection, db_result$table_name) %.>%
 
 # translated remote op
 
+ops <- db_testdate %.>%
+   extend(., date := as.Date(date))
+cat(to_sql(ops, db))
+# as.Date() not going to work without a translation
+
 # define user specified translation
 expr_map <- list("as.Date" = function(x, db_info) {
   tx <- x
@@ -79,8 +84,6 @@ db$tree_rewriter <- function(x, db_info) {
   x
 }
 
-ops <- db_testdate %.>%
-   extend(., date := as.Date(date))
 
 cat(to_sql(ops, db))
 
