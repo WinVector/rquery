@@ -1,5 +1,5 @@
 
-# rquery 1.3.4 2019/06/04
+# rquery 1.3.4 2019/06/11
 
  * Work on schema qualifications.
  
