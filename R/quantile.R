@@ -1,11 +1,12 @@
 
 
-quantile_col <- function(db, incoming_table_name, probs, ci) {
+quantile_col <- function(db, incoming_table_name, probs, ci, qualifiers) {
+  q_table_name <- quote_table_name(db, incoming_table_name, qualifiers = qualifiers)
   qcount <- paste0("
      SELECT
         COUNT(1)
      FROM
-        ", quote_identifier(db, incoming_table_name), "
+        ", q_table_name, "
      WHERE
         ", quote_identifier(db, ci), " IS NOT NULL")
   nrows <- as.numeric(rq_get_query(db, qcount)[[1]][[1]])
@@ -30,7 +31,7 @@ quantile_col <- function(db, incoming_table_name, probs, ci) {
            ", quote_identifier(db, ci), ",
            ROW_NUMBER() OVER (ORDER BY ", quote_identifier(db, ci), ")  AS idx_rquery
         FROM
-           ", quote_identifier(db, incoming_table_name), "
+           ", q_table_name, "
         WHERE
            ", quote_identifier(db, ci), " IS NOT NULL
       ) rquery_qtable
@@ -72,6 +73,7 @@ quantile_col_d <- function(d, probs, ci) {
 #' @param probs numeric, probabilities to compute quantiles of
 #' @param probs_name character name for probability column
 #' @param cols character, columns to compute quantiles of
+#' @param qualifiers optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.
 #' @return data.frame of quantiles
 #'
 #' @seealso \code{\link{quantile_node}}, \code{\link{rsummary}}
@@ -82,12 +84,14 @@ quantile_cols <- function(db, incoming_table_name,
                           ...,
                           probs = seq(0, 1, 0.25),
                           probs_name = "quantile_probability",
-                          cols = rq_colnames(db, incoming_table_name)) {
+                          cols = rq_colnames(db, incoming_table_name),
+                          qualifiers = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::quantile_cols")
   qtable <- data.frame(probs = probs)
   colnames(qtable) <- probs_name
   for(ci in cols) {
-    qi <- quantile_col(db, incoming_table_name, probs, ci)
+    qi <- quantile_col(db, incoming_table_name, probs, ci,
+                       qualifiers = qualifiers)
     qtable[[ci]] <- qi
   }
   qtable
@@ -126,6 +130,7 @@ quantile_cols_d <- function(d,
 #' @param probs numeric quantiles to compute
 #' @param tmp_name_source wrapr::mk_tmp_name_source(), temporary name generator.
 #' @param temporary logical, if TRUE use temporary tables
+#' @param qualifiers optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.
 #' @return table of quantiles
 #'
 #' @seealso \code{\link{quantile_cols}}, \code{\link{rsummary}}, \code{\link{non_sql_node}}
@@ -139,7 +144,8 @@ quantile_node <- function(source,
                           probs_name = "quantile_probability",
                           probs = seq(0, 1, 0.25),
                           tmp_name_source = wrapr::mk_tmp_name_source("qn"),
-                          temporary = TRUE) {
+                          temporary = TRUE,
+                          qualifiers = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::quantile_node.relop")
   if(probs_name %in% cols) {
     stop("rquery::quantile_node.relop probs_name must be disjoint from cols")
@@ -163,12 +169,14 @@ quantile_node <- function(source,
     qtable <- quantile_cols(db, incoming_table_name,
                             probs = probs,
                             probs_name = probs_name,
-                            cols = cols)
+                            cols = cols,
+                            qualifiers = qualifiers)
     rq_copy_to(db,
                table_name = outgoing_table_name,
                d = qtable,
                overwrite = TRUE,
-               temporary = temporary)
+               temporary = temporary,
+               qualifiers = qualifiers)
   }
   f_df <- function(d, nd = NULL) {
     quantile_cols_d(d,
@@ -181,7 +189,9 @@ quantile_node <- function(source,
                      f_df = f_df,
                      f_dt = NULL,
                      incoming_table_name = incoming_table_name,
+                     incoming_qualifiers = qualifiers,
                      outgoing_table_name = outgoing_table_name,
+                     outgoing_qualifiers = qualifiers,
                      columns_produced = c(probs_name, cols),
                      display_form = paste0("quantile_node(.)"),
                      orig_columns = FALSE,

@@ -7,7 +7,8 @@
 \usage{
 quantile_node(source, cols = NULL, ...,
   probs_name = "quantile_probability", probs = seq(0, 1, 0.25),
-  tmp_name_source = wrapr::mk_tmp_name_source("qn"), temporary = TRUE)
+  tmp_name_source = wrapr::mk_tmp_name_source("qn"), temporary = TRUE,
+  qualifiers = NULL)
 }
 \arguments{
 \item{source}{source to select from (relop or data.frame).}
@@ -23,6 +24,8 @@ quantile_node(source, cols = NULL, ...,
 \item{tmp_name_source}{wrapr::mk_tmp_name_source(), temporary name generator.}
 
 \item{temporary}{logical, if TRUE use temporary tables}
+
+\item{qualifiers}{optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.}
 }
 \value{
 table of quantiles

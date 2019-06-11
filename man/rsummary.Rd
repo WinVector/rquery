@@ -5,7 +5,7 @@
 \title{Compute usable summary of columns of remote table.}
 \usage{
 rsummary(db, tableName, ..., countUniqueNum = FALSE, quartiles = FALSE,
-  cols = NULL)
+  cols = NULL, qualifiers = NULL)
 }
 \arguments{
 \item{db}{database connection.}
@@ -19,6 +19,8 @@ rsummary(db, tableName, ..., countUniqueNum = FALSE, quartiles = FALSE,
 \item{quartiles}{logical, if TRUE add Q1 (25\%), median (50\%), Q3 (75\%) quartiles.}
 
 \item{cols}{if not NULL set of columns to restrict to.}
+
+\item{qualifiers}{optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.}
 }
 \value{
 data.frame summary of columns.

@@ -5,9 +5,11 @@
 \alias{rlook}
 \title{Quick look at remote data}
 \usage{
-rstr(my_db, tableName, ..., displayRows = 10, countRows = TRUE)
+rstr(my_db, tableName, ..., displayRows = 10, countRows = TRUE,
+  qualifiers = NULL)
 
-rlook(my_db, tableName, ..., displayRows = 10, countRows = TRUE)
+rlook(my_db, tableName, ..., displayRows = 10, countRows = TRUE,
+  qualifiers = NULL)
 }
 \arguments{
 \item{my_db}{database handle}
@@ -19,6 +21,8 @@ rlook(my_db, tableName, ..., displayRows = 10, countRows = TRUE)
 \item{displayRows}{number of rows to sample}
 
 \item{countRows}{logical, if TRUE return row count.}
+
+\item{qualifiers}{optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.}
 }
 \value{
 str view of data

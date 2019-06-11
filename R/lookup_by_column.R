@@ -9,6 +9,7 @@
 #' @param ... force later arguments to be bound by name
 #' @param tmp_name_source wrapr::mk_tmp_name_source(), temporary name generator.
 #' @param temporary logical, if TRUE use temporary tables.
+#' @param qualifiers optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.
 #' @param f_dt_factory optional signature f_dt_factory(pick, result) returns function with signature f_dt(d, nd) where d is a data.table.  The point is the function must come from a data.table enabled package. Please see \code{rqdatatable::make_dt_lookup_by_column} for an example.
 #'
 #' @examples
@@ -50,6 +51,7 @@ lookup_by_column <- function(source,
                              ...,
                              tmp_name_source = wrapr::mk_tmp_name_source("qn"),
                              temporary = TRUE,
+                             qualifiers = NULL,
                              f_dt_factory = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::lookup_by_column.relop")
   src_cols <- column_names(source)
@@ -66,6 +68,7 @@ lookup_by_column <- function(source,
     stop("rquery::lookup_by_column result must not be a source column")
   }
   force(temporary)
+  force(qualifiers)
   f_dt <- NULL
   if(!is.null(f_dt_factory)) {
     f_dt <- f_dt_factory(pick, result)
@@ -113,9 +116,10 @@ lookup_by_column <- function(source,
         ", quote_identifier(db, incoming_table_name))
     qm <- materialize_sql_statement(db, q,
                                     table_name = outgoing_table_name,
-                                    temporary = temporary)
+                                    temporary = temporary,
+                                    qualifiers = qualifiers)
     rq_execute(db, qm)
-    db_td(db, outgoing_table_name)
+    db_td(db, outgoing_table_name, qualifiers = qualifiers)
   }
   f_df <- function(d, nd = NULL) {
     d <- as.data.frame(d)
@@ -134,7 +138,9 @@ lookup_by_column <- function(source,
                      f_df = f_df,
                      f_dt = f_dt,
                      incoming_table_name = incoming_table_name,
+                     incoming_qualifiers = qualifiers,
                      outgoing_table_name = outgoing_table_name,
+                     outgoing_qualifiers = qualifiers,
                      columns_produced = result,
                      display_form = paste0("lookup_by_column(.; ",
                                            pick,

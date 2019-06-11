@@ -6,6 +6,7 @@
 #' @param ... not used, force later arguments to bind by name
 #' @param displayRows number of rows to sample
 #' @param countRows logical, if TRUE return row count.
+#' @param qualifiers optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.
 #' @return str view of data
 #'
 #' @examples
@@ -27,7 +28,8 @@
 rstr <- function(my_db, tableName,
                  ...,
                  displayRows = 10,
-                 countRows = TRUE) {
+                 countRows = TRUE,
+                 qualifiers = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery:::rstr")
   connection <- my_db
@@ -43,7 +45,7 @@ rstr <- function(my_db, tableName,
   if(length(tableName)!=1) {
     stop("rquery::rstr tableName must be scalar string or relop_table_source")
   }
-  q_table_name <- quote_identifier(my_db, tableName)
+  q_table_name <- quote_table_name(my_db, tableName, qualifiers = qualifiers)
   h <- rq_get_query(my_db,
                     paste0("SELECT * FROM ",
                            q_table_name,

@@ -14,6 +14,7 @@ NULL
 #' @param rexpr left portion of expression
 #' @param ... force later arguments to be by name
 #' @param skipNulls if TRUE skip NULLs
+#' @param qualifiers optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.
 #' @return counts
 #'
 #' @noRd
@@ -21,12 +22,14 @@ NULL
 summarize_columns <- function(db, tableName,
                               lexpr, cols, rexpr,
                               ...,
-                              skipNulls = FALSE) {
+                              skipNulls = FALSE,
+                              qualifiers = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery:::summarize_columns")
   nc <- length(cols)
   if(nc<1) {
     stop("rquery:::summarize_columns need at least one column name")
   }
+  q_table_name <- quote_table_name(db, tableName, qualifiers = qualifiers)
   terms <- vapply(cols,
                   function(ci) {
                     paste0(lexpr,
@@ -40,7 +43,7 @@ summarize_columns <- function(db, tableName,
   q <- paste0("SELECT ",
               paste(terms, collapse = ", "),
               " FROM ",
-              quote_identifier(db, tableName))
+              q_table_name)
   rq_get_query(db, q)
 }
 
@@ -58,6 +61,7 @@ summarize_columns <- function(db, tableName,
 #' @param countUniqueNum logical, if TRUE include unique non-NA counts for numeric cols.
 #' @param quartiles logical, if TRUE add Q1 (25\%), median (50\%), Q3 (75\%) quartiles.
 #' @param cols if not NULL set of columns to restrict to.
+#' @param qualifiers optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.
 #' @return data.frame summary of columns.
 #'
 #' @examples
@@ -86,9 +90,11 @@ rsummary <- function(db,
                      ...,
                      countUniqueNum = FALSE,
                      quartiles = FALSE,
-                     cols = NULL) {
+                     cols = NULL,
+                     qualifiers = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::rsummary")
-  localSample <- rq_coltypes(db, tableName)
+  q_table_name <- quote_table_name(db, tableName, qualifiers = qualifiers)
+  localSample <- rq_coltypes(db, tableName, qualifiers = qualifiers)
   cnames <- colnames(localSample)
   if(!is.null(cols)) {
     cnames <- intersect(cnames, cols)
@@ -96,7 +102,7 @@ rsummary <- function(db,
   }
   nrows <- 0
   if(nrow(localSample)>0) {
-    nrows <- rq_nrow(db, tableName)
+    nrows <- rq_nrow(db, tableName, qualifiers = qualifiers)
   }
   cmap <- seq_len(length(cnames))
   names(cmap) <- cnames
@@ -141,7 +147,8 @@ rsummary <- function(db,
   null_stats <- summarize_columns(db, tableName,
                                   "SUM( CASE WHEN (",
                                   workingCols,
-                                  "IS NULL ) THEN 1.0 ELSE 0.0 END )")
+                                  "IS NULL ) THEN 1.0 ELSE 0.0 END )",
+                                  qualifiers = qualifiers)
   res <- populate_column(res, "nna", null_stats)
   # limit down to populated columns
   unpop_cols <- res$column[res$nna>=res$nrows]
@@ -154,19 +161,22 @@ rsummary <- function(db,
                              "MAX(",
                              numericCols,
                              ")",
-                             skipNulls = TRUE) %.>%
+                             skipNulls = TRUE,
+                             qualifiers = qualifiers) %.>%
       populate_column(res, "max", .)
     res <- summarize_columns(db, tableName,
                              "MIN(",
                              numericCols,
                              ")",
-                             skipNulls = TRUE) %.>%
+                             skipNulls = TRUE,
+                             qualifiers = qualifiers) %.>%
       populate_column(res, "min", .)
     res <- summarize_columns(db, tableName,
                              "AVG(",
                              numericCols,
                              ")",
-                             skipNulls = TRUE) %.>%
+                             skipNulls = TRUE,
+                             qualifiers = qualifiers) %.>%
       populate_column(res, "mean", .)
     for(ci in numericCols) {
       idx <- which(ci==res$column)[[1]]
@@ -184,7 +194,7 @@ rsummary <- function(db,
                        ")) AS ",
                        quote_identifier(db, ci),
                        " FROM ",
-                       quote_identifier(db, tableName),
+                       q_table_name,
                        " WHERE ",
                        quote_identifier(db, ci),
                        " IS NOT NULL")
@@ -199,7 +209,7 @@ rsummary <- function(db,
           qcount <- paste0("SELECT COUNT(1) FROM ( SELECT ",
                            quote_identifier(db, ci),
                            " FROM ",
-                           quote_identifier(db, tableName),
+                           q_table_name,
                            " WHERE ",
                            quote_identifier(db, ci),
                            " IS NOT NULL GROUP BY ",
@@ -216,19 +226,22 @@ rsummary <- function(db,
                              "MIN(CASE WHEN",
                              logicalCols,
                              "THEN 1.0 ELSE 0.0 END)",
-                             skipNulls = TRUE) %.>%
+                             skipNulls = TRUE,
+                             qualifiers = qualifiers) %.>%
       populate_column(res, "min", .)
     res <- summarize_columns(db, tableName,
                              "MAX(CASE WHEN",
                              logicalCols,
                              "THEN 1.0 ELSE 0.0 END)",
-                             skipNulls = TRUE) %.>%
+                             skipNulls = TRUE,
+                             qualifiers = qualifiers) %.>%
       populate_column(res, "max", .)
     res <- summarize_columns(db, tableName,
                              "AVG(CASE WHEN",
                              logicalCols,
                              "THEN 1.0 ELSE 0.0 END)",
-                             skipNulls = TRUE) %.>%
+                             skipNulls = TRUE,
+                             qualifiers = qualifiers) %.>%
       populate_column(res, "mean", .)
     for(ci in logicalCols) {
       # sample standard deviation!
@@ -261,7 +274,7 @@ rsummary <- function(db,
         qmin <- paste0("SELECT ",
                        quote_identifier(db, ci),
                        " FROM ",
-                       quote_identifier(db, tableName),
+                       q_table_name,
                        " WHERE ",
                        quote_identifier(db, ci),
                        " IS NOT NULL ORDER BY ",
@@ -271,7 +284,7 @@ rsummary <- function(db,
         qmax <- paste0("SELECT ",
                        quote_identifier(db, ci),
                        " FROM ",
-                       quote_identifier(db, tableName),
+                       q_table_name,
                        " WHERE ",
                        quote_identifier(db, ci),
                        " IS NOT NULL ORDER BY ",
@@ -281,7 +294,7 @@ rsummary <- function(db,
         qcount <- paste0("SELECT COUNT(1) FROM ( SELECT ",
                          quote_identifier(db, ci),
                          " FROM ",
-                         quote_identifier(db, tableName),
+                         q_table_name,
                          " WHERE ",
                          quote_identifier(db, ci),
                          " IS NOT NULL GROUP BY ",
@@ -300,7 +313,8 @@ rsummary <- function(db,
     qs <- quantile_cols(db, tableName,
                         probs = c(0.25, 0.5, 0.75),
                         probs_name = "rquery_probs_col",
-                        cols = numericCols)
+                        cols = numericCols,
+                        qualifiers = qualifiers)
     res$Q1 <- NA_real_
     res$median <- NA_real_
     res$Q3 <- NA_real_
@@ -327,7 +341,8 @@ rsummary_d <- function(d,
                        ...,
                        countUniqueNum = TRUE,
                        quartiles = TRUE,
-                       cols = NULL) {
+                       cols = NULL,
+                       qualifiers = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::rsummary_d")
   if(!is.data.frame(d)) {
     stop("rquery::rsummary_d d is supposed to be a data.frame")
@@ -437,7 +452,8 @@ rsummary_d <- function(d,
     qs <- quantile_cols_d(d,
                           probs = c(0.25, 0.5, 0.75),
                           probs_name = "rquery_probs_col",
-                          cols = numericCols)
+                          cols = numericCols,
+                          qualifiers = qualifiers)
     res$Q1 <- NA_real_
     res$median <- NA_real_
     res$Q3 <- NA_real_

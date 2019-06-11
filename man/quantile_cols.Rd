@@ -7,7 +7,7 @@
 \usage{
 quantile_cols(db, incoming_table_name, ..., probs = seq(0, 1, 0.25),
   probs_name = "quantile_probability", cols = rq_colnames(db,
-  incoming_table_name))
+  incoming_table_name), qualifiers = NULL)
 }
 \arguments{
 \item{db}{database connection}
@@ -21,6 +21,8 @@ quantile_cols(db, incoming_table_name, ..., probs = seq(0, 1, 0.25),
 \item{probs_name}{character name for probability column}
 
 \item{cols}{character, columns to compute quantiles of}
+
+\item{qualifiers}{optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.}
 }
 \value{
 data.frame of quantiles
