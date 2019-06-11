@@ -1,0 +1,60 @@
+---
+title: "Expression Factoring"
+output: github_document
+---
+
+A quick example of expression factoring in `dplyr` and `rquery`.
+
+We set up our local and remote tables.
+
+```{r setup}
+db <- DBI::dbConnect(RSQLite::SQLite(), 
+                     ":memory:")
+
+d_local <- data.frame(x = 1)
+
+DBI::dbWriteTable(db, "d_remote", d_local)
+```
+
+We try the same calculation with `dplyr` in `R` and in the database.
+
+```{r dplyr}
+library("dplyr")
+packageVersion("dplyr")
+packageVersion("dbplyr")
+
+d_local %>% 
+  mutate(y = 1, y = y + 1, y = y + 1)
+
+dplyr_remote <- dplyr::tbl(db, "d_remote")
+
+dplyr_remote %>% 
+  mutate(y = 1, y = y + 1, y = y + 1)
+# notice y does not equal 3 in this case
+```
+
+We try the same calculation with `rquery` in `R` and in the database.
+
+
+```{r rqdatatable}
+library("rqdatatable")
+library("rquery")
+
+d_local %.>% 
+  extend(., 
+         y = 1, y = y + 1, y = y + 1)
+
+rquery_remote <- rquery::db_td(db, "d_remote")
+
+rquery_remote %.>% 
+  extend(., 
+         y = 1, y = y + 1, y = y + 1) %.>%
+  execute(db, .)
+```
+
+And we clean up after.
+
+
+```{r disconnect}
+DBI::dbDisconnect(db)
+```
