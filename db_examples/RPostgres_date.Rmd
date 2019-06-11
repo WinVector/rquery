@@ -9,6 +9,7 @@ Unlike `dplyr`, `rquery` does not depend on a hybrid-eval and also does not have
 So one has to use the Postgres date conversion which is `to_date(COLUMN, FORMAT)`.
 
 ```{r}
+library(rqdatatable)
 library(rquery)
 library(wrapr)
 library(RPostgres)
@@ -24,21 +25,61 @@ db <- rquery_db_info(connection = raw_connection,
                      is_dbi = TRUE,
                      connection_options = dbopts)
 
+# local table
 df <- wrapr::build_frame(
   "id"  , "date"       |
     "a" , "2019-01-12" |
     "b" , "2019-02-21" |
     "c" , "2019-02-11" )
 
+# remote table
 db_testdate <- rq_copy_to(db, "testdate",
            df, overwrite = TRUE)
 
+# R idiom local op
+df %.>%
+  extend(., date := as.Date(date))
+
+# SQL idiom remote op
 db_result <- db_testdate %.>%
   extend(. , date := to_date(date, "YYYY-MM-DD")) %.>%
   materialize(db, .)
-
 DBI::dbReadTable(db$connection, db_result$table_name) %.>%
   str(.)
+
+# translated remote op
+
+# define user specified translation
+db$tree_rewriter <- function(x, db_info) {
+  if("pre_sql_sub_expr" %in% class(x)) {
+    if(("pre_sql_token" %in% class(x$toks[[1]])) &&
+       (x$toks[[1]]$token_type == "function_name") &&
+       (x$toks[[1]]$value == "as.Date")) {
+      # call is as.Date ( date_col )
+      x$toks[[1]]$value <- "to_date"
+      x$toks[[6]] <- x$toks[[4]] # copy paren to the end
+      x$toks[[4]]$value <- ","
+      x$toks[[5]] <- pre_sql_string("YYYY-MM-DD")
+      return(x)
+    }
+  }
+  if("pre_sql_sub_expr" %in% class(x)) {
+    x$toks <- lapply(x$toks,
+                     function(ti) {
+                       tree_rewriter(ti, db_info)
+                     })
+  }
+  x
+}
+
+ops <- db_testdate %.>%
+   extend(., date := as.Date(date))
+
+cat(to_sql(ops, db))
+
+execute(db, ops)  %.>%
+  str(.)
+
 
 DBI::dbDisconnect(raw_connection)
 ```
