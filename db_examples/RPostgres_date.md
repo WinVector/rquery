@@ -67,27 +67,37 @@ DBI::dbReadTable(db$connection, db_result$table_name) %.>%
 # translated remote op
 
 # define user specified translation
-db$tree_rewriter <- function(x, db_info) {
+as_date_to_to_date <- function(x, db_info) {
+  tx <- x
+  # call is 1:as.Date 2:( 3:date_col 4:)
+  tx$toks[[1]]$value <- "to_date"
+  tx$toks[[6]] <- x$toks[[4]] # copy paren to the end
+  tx$toks[[4]]$value <- ","
+  tx$toks[[5]] <- pre_sql_string("YYYY-MM-DD")
+  return(tx)
+}
+expr_map <- list("as.Date" = as_date_to_to_date)
+our_tree_rewriter <- function(x, db_info) {
   if("pre_sql_sub_expr" %in% class(x)) {
-    if(("pre_sql_token" %in% class(x$toks[[1]])) &&
-       (x$toks[[1]]$token_type == "function_name") &&
-       (x$toks[[1]]$value == "as.Date")) {
-      # call is as.Date ( date_col )
-      x$toks[[1]]$value <- "to_date"
-      x$toks[[6]] <- x$toks[[4]] # copy paren to the end
-      x$toks[[4]]$value <- ","
-      x$toks[[5]] <- pre_sql_string("YYYY-MM-DD")
-      return(x)
-    }
-  }
-  if("pre_sql_sub_expr" %in% class(x)) {
+    # first recurse
     x$toks <- lapply(x$toks,
                      function(ti) {
-                       tree_rewriter(ti, db_info)
+                       our_tree_rewriter(ti, db_info)
                      })
+    # now look for special cases
+    if(("pre_sql_token" %in% class(x$toks[[1]])) &&
+       (x$toks[[1]]$token_type == "function_name")) {
+      key <- x$toks[[1]][["value"]]
+      rule_fn <- expr_map[[key]]
+      if(!is.null(rule_fn)) {
+        x_translated <- rule_fn(x)
+        return(x_translated)
+      }
+    }
   }
   x
 }
+db$tree_rewriter <- our_tree_rewriter
 
 ops <- db_testdate %.>%
    extend(., date := as.Date(date))
@@ -104,7 +114,7 @@ cat(to_sql(ops, db))
     ##   "date"
     ##  FROM
     ##   "testdate"
-    ##  ) tsql_71069006688393428885_0000000000
+    ##  ) tsql_11925254266399306754_0000000000
 
 ``` r
 execute(db, ops)  %.>%
