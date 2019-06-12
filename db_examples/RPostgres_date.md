@@ -80,20 +80,24 @@ cat(to_sql(ops, db))
     ##   "date"
     ##  FROM
     ##   "testdate"
-    ##  ) tsql_87133997021493417008_0000000000
+    ##  ) tsql_60968558061494171098_0000000000
 
 ``` r
 # as.Date() not going to work without a translation
 
 # define user specified translation
 expr_map <- list("as.Date" = function(x, db_info) {
-  tx <- x
   # call is 1:as.Date 2:( 3:date_col 4:)
-  tx$toks[[1]]$value <- "to_date"
-  tx$toks[[6]] <- x$toks[[4]] # copy paren to the end
-  tx$toks[[4]]$value <- ","
-  tx$toks[[5]] <- pre_sql_string("YYYY-MM-DD")
-  return(tx)
+  tx <- x
+  tx$toks <- list(
+    pre_sql_fn("to_date"),
+    pre_sql_token("("),
+    tx$toks[[3]],  # the date column
+    pre_sql_token(","),
+    pre_sql_string("YYYY-MM-DD"),
+    pre_sql_token(")")
+  )
+  tx
 })
 db$tree_rewriter <- function(x, db_info) {
   if("pre_sql_sub_expr" %in% class(x)) {
@@ -128,7 +132,7 @@ cat(to_sql(ops, db))
     ##   "date"
     ##  FROM
     ##   "testdate"
-    ##  ) tsql_96245854681053201932_0000000000
+    ##  ) tsql_13608066064460791367_0000000000
 
 ``` r
 execute(db, ops)  %.>%
