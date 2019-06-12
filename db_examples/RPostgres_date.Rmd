@@ -80,7 +80,7 @@ db$tree_rewriter <- function(x, db_info) {
       key <- x$toks[[1]][["value"]]
       rule_fn <- expr_map[[key]]
       if(!is.null(rule_fn)) {
-        x_translated <- rule_fn(x)
+        x_translated <- rule_fn(x, db_info)
         return(x_translated)
       }
     }

@@ -80,7 +80,7 @@ cat(to_sql(ops, db))
     ##   "date"
     ##  FROM
     ##   "testdate"
-    ##  ) tsql_60968558061494171098_0000000000
+    ##  ) tsql_55026154392819106293_0000000000
 
 ``` r
 # as.Date() not going to work without a translation
@@ -111,7 +111,7 @@ db$tree_rewriter <- function(x, db_info) {
       key <- x$toks[[1]][["value"]]
       rule_fn <- expr_map[[key]]
       if(!is.null(rule_fn)) {
-        x_translated <- rule_fn(x)
+        x_translated <- rule_fn(x, db_info)
         return(x_translated)
       }
     }
@@ -132,7 +132,7 @@ cat(to_sql(ops, db))
     ##   "date"
     ##  FROM
     ##   "testdate"
-    ##  ) tsql_13608066064460791367_0000000000
+    ##  ) tsql_23265771183809290652_0000000000
 
 ``` r
 execute(db, ops)  %.>%
