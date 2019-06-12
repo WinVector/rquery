@@ -80,25 +80,44 @@ cat(to_sql(ops, db))
     ##   "date"
     ##  FROM
     ##   "testdate"
-    ##  ) tsql_55026154392819106293_0000000000
+    ##  ) tsql_60889200356789734695_0000000000
 
 ``` r
 # as.Date() not going to work without a translation
 
 # define user specified translation
-expr_map <- list("as.Date" = function(x, db_info) {
-  # call is 1:as.Date 2:( 3:date_col 4:)
-  tx <- x
-  tx$toks <- list(
+expr_map <- list("as.Date" = list( # call is 1:as.Date 2:( 3:date_col 4:)
     pre_sql_fn("to_date"),
     pre_sql_token("("),
-    tx$toks[[3]],  # the date column
+    3,  # the date column
     pre_sql_token(","),
     pre_sql_string("YYYY-MM-DD"),
     pre_sql_token(")")
   )
-  tx
-})
+)
+print(expr_map)
+```
+
+    ## $as.Date
+    ## $as.Date[[1]]
+    ## [1] "to_date"
+    ## 
+    ## $as.Date[[2]]
+    ## [1] "("
+    ## 
+    ## $as.Date[[3]]
+    ## [1] 3
+    ## 
+    ## $as.Date[[4]]
+    ## [1] ","
+    ## 
+    ## $as.Date[[5]]
+    ## [1] "'YYYY-MM-DD'"
+    ## 
+    ## $as.Date[[6]]
+    ## [1] ")"
+
+``` r
 db$tree_rewriter <- function(x, db_info) {
   if("pre_sql_sub_expr" %in% class(x)) {
     # first recurse
@@ -109,9 +128,15 @@ db$tree_rewriter <- function(x, db_info) {
     if(("pre_sql_token" %in% class(x$toks[[1]])) &&
        (x$toks[[1]]$token_type == "function_name")) {
       key <- x$toks[[1]][["value"]]
-      rule_fn <- expr_map[[key]]
-      if(!is.null(rule_fn)) {
-        x_translated <- rule_fn(x, db_info)
+      replacement <- expr_map[[key]]
+      if(!is.null(replacement)) {
+        x_translated <- x
+        x_translated$toks <- replacement
+        for(i in seq_len(length(replacement))) {
+          if(is.numeric(replacement[[i]])) {
+            x_translated$toks[[i]] <- x$toks[[replacement[[i]]]]
+          }
+        }
         return(x_translated)
       }
     }
@@ -132,7 +157,7 @@ cat(to_sql(ops, db))
     ##   "date"
     ##  FROM
     ##   "testdate"
-    ##  ) tsql_23265771183809290652_0000000000
+    ##  ) tsql_37167747422159635647_0000000000
 
 ``` r
 execute(db, ops)  %.>%
