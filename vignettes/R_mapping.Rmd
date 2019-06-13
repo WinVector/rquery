@@ -1,0 +1,83 @@
+---
+title: "R mapping"
+author: "John Mount"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{R mapping}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+`rquery` re-maps a number of symbols during `SQL` translation.
+
+During expression parsing the internal `rquery` function `tokenize_call_for_SQL()` implements the following re-mappings.
+
+```{r}
+library("rquery")
+library("wrapr")
+
+show_translation <- function(strings) {
+  vapply(strings,
+         function(si) {
+           format(rquery::tokenize_for_SQL(str2lang(si), colnames = NULL)$parsed_toks)
+         }, character(1))
+}
+
+mapping_table <- data.frame(
+  example = c('!x', 'is.na(x)', 'ifelse(a, b, c)', 'a^b', 'a%%b', 
+               'a==b', 'a&&b', 'a&b', 'a||b', 'a|b', 
+              'pmin(a, b)', 'pmax(a, b)'),
+  stringsAsFactors = FALSE)
+mapping_table$translation <- show_translation(mapping_table$example)
+knitr::kable(mapping_table)
+```
+
+In addition to this the database connectors can specify additional re-mappings. This can be found by building a formal connector and inspecting the re-mappings.
+
+```{r}
+raw_connection <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+RSQLite::initExtension(raw_connection)
+db <- rquery_db_info(
+  connection = raw_connection,
+  is_dbi = TRUE,
+  connection_options = rq_connection_tests(raw_connection))
+fn_name_map <- db$connection_options[[paste0("rquery.", rq_connection_name(db), ".", "fn_name_map")]]
+fn_name_map
+```
+
+We see above that "`mean`" is re-mapped to "`avg`".
+
+In all cases we can see what re-mappings happen by examining a query.
+
+```{r}
+d_local <- build_frame(
+   "subjectID", "surveyCategory"     , "assessmentTotal", "irrelevantCol1", "irrelevantCol2" |
+   1L         , "withdrawal behavior", 5                , "irrel1"        , "irrel2"         |
+   1L         , "positive re-framing", 2                , "irrel1"        , "irrel2"         |
+   2L         , "withdrawal behavior", 3                , "irrel1"        , "irrel2"         |
+   2L         , "positive re-framing", 4                , "irrel1"        , "irrel2"         )
+table_handle <- rq_copy_to(db, 'd',
+            d_local,
+            temporary = TRUE, 
+            overwrite = TRUE)
+print(table_handle)
+
+ops <- table_handle %.>% 
+  project(., 
+          avg_total := avg(pmax(0, assessmentTotal)),
+          groupby = "subjectID")
+
+cat(to_sql(ops, db))
+
+ops %.>%
+  execute(db, .) %.>%
+  knitr::kable(.)
+
+DBI::dbDisconnect(raw_connection)
+```
+
+Additional function re-mappings can be specified by user code.  One such example is re-writing `as.Date(x)` as `to_date(date, "YYYY-MM-DD")` as seen in an example [here](https://github.com/WinVector/rquery/blob/master/db_examples/RPostgres_date.md) (though we are looking at moving this service into `rquery`).
+
+
+

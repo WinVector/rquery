@@ -62,7 +62,6 @@ cat(to_sql(
   db_info))
 ```
 
-(The warning is new to `rquery` version `1.3.2`.)
 
 We take careful note what is marked as "`__IDENTIFIER__`", versus what is marked as "`__STRING_CONSTANT__`".
 Notice "`__IDENTIFIER__`" is used in the `SQL` for table names and column name, and "`__STRING_CONSTANT__`" is used for string constants.  The above query is probably not what a user intended as we are checking if a user

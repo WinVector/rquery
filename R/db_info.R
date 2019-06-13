@@ -163,6 +163,63 @@ rquery_default_db_info <- function() {
 }
 
 
+#' Return function mappings for a connection
+#'
+#' @param db a rquery_db_info
+#' @param expr_map rquery expression map to include in report (function names to pseudo pre-sql sequences)
+#' @return data.frame of function mappings
+#'
+#' @export
+#'
+#' @keywords internal
+#'
+rq_function_mappings <- function(db, expr_map = NULL) {
+  if(!("rquery_db_info" %in% class(db))) {
+    stop("rquery::rq_function_mappings db must be of class rq_function_mappings")
+  }
+  # create zero row data.frame
+  mp <- data.frame(R_name = character(0),
+                   sql_mapping = character(0),
+                   simple_name_mapping = logical(0),
+                   stringsAsFactors = FALSE)
+  # map in simple renamings
+  fn_name_map <- db$connection_options[[paste0("rquery.", rq_connection_name(db), ".", "fn_name_map")]]
+  if(length(fn_name_map)>0) {
+    fmp <- data.frame(R_name = names(fn_name_map),
+                      stringsAsFactors = FALSE)
+    lst <- fn_name_map
+    names(lst) <- NULL
+    fmp$sql_mapping <- lst
+    fmp$simple_name_mapping <- TRUE
+    mp <- rbind(mp, fmp)
+  }
+  # map in function re-writes
+  if(length(expr_map)>0) {
+    emp <- data.frame(R_name = names(expr_map),
+                      stringsAsFactors = FALSE)
+    elst <- expr_map
+    names(elst) <- NULL
+    for(ei in seq_len(length(elst))) {
+      elsti <- elst[[ei]]
+      elsti <- vapply(elsti,
+                      function(elstij) {
+                        if("pre_sql" %in% class(elstij)) {
+                          pre_sql_to_query(elstij, db)
+                        } else {
+                          paste0(".(", elstij, ")")
+                        }
+                      }, character(1))
+      elsti <- paste(elsti, collapse = "")
+      elst[[ei]] <- elsti
+    }
+    emp$sql_mapping <- elst
+    emp$simple_name_mapping <- FALSE
+    mp <- rbind(mp, emp)
+  }
+  mp
+}
+
+
 
 #' Quote an identifier.
 #'

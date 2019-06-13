@@ -25,6 +25,8 @@ db <- rquery_db_info(connection = raw_connection,
                      is_dbi = TRUE,
                      connection_options = dbopts)
 
+print(db)
+
 # local table
 df <- wrapr::build_frame(
   "id"  , "date"       |
@@ -97,6 +99,7 @@ cat(to_sql(ops, db))
 execute(db, ops)  %.>%
   str(.)
 
+rquery::rq_function_mappings(db, expr_map)
 
 DBI::dbDisconnect(raw_connection)
 ```

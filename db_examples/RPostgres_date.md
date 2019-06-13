@@ -29,6 +29,12 @@ db <- rquery_db_info(connection = raw_connection,
                      is_dbi = TRUE,
                      connection_options = dbopts)
 
+print(db)
+```
+
+    ## [1] "rquery_db_info(PqConnection, is_dbi=TRUE, note=\"\")"
+
+``` r
 # local table
 df <- wrapr::build_frame(
   "id"  , "date"       |
@@ -80,7 +86,7 @@ cat(to_sql(ops, db))
     ##   "date"
     ##  FROM
     ##   "testdate"
-    ##  ) tsql_60889200356789734695_0000000000
+    ##  ) tsql_33083902583463410241_0000000000
 
 ``` r
 # as.Date() not going to work without a translation
@@ -157,7 +163,7 @@ cat(to_sql(ops, db))
     ##   "date"
     ##  FROM
     ##   "testdate"
-    ##  ) tsql_37167747422159635647_0000000000
+    ##  ) tsql_58703987721269890569_0000000000
 
 ``` r
 execute(db, ops)  %.>%
@@ -167,6 +173,14 @@ execute(db, ops)  %.>%
     ## 'data.frame':    3 obs. of  2 variables:
     ##  $ id  : chr  "a" "b" "c"
     ##  $ date: Date, format: "2019-01-12" "2019-02-21" ...
+
+``` r
+rquery::rq_function_mappings(db, expr_map)
+```
+
+    ##    R_name                sql_mapping simple_name_mapping
+    ## 1    mean                        avg                TRUE
+    ## 2 as.Date to_date(.(3),'YYYY-MM-DD')               FALSE
 
 ``` r
 DBI::dbDisconnect(raw_connection)
