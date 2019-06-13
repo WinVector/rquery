@@ -98,6 +98,9 @@
       <a href="../articles/QueryGeneration.html">Query Generation</a>
     </li>
     <li>
+      <a href="../articles/R_mapping.html">R mapping</a>
+    </li>
+    <li>
       <a href="../articles/rquery_intro.html">rquery Introduction</a>
     </li>
     <li>
@@ -144,7 +147,7 @@
     </div>
 
     <pre class="usage"><span class='fu'>rsummary</span>(<span class='no'>db</span>, <span class='no'>tableName</span>, <span class='no'>...</span>, <span class='kw'>countUniqueNum</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>quartiles</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>cols</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+  <span class='kw'>cols</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -172,6 +175,10 @@
     <tr>
       <th>cols</th>
       <td><p>if not NULL set of columns to restrict to.</p></td>
+    </tr>
+    <tr>
+      <th>qualifiers</th>
+      <td><p>optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.</p></td>
     </tr>
     </table>
     

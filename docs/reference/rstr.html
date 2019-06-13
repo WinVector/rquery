@@ -98,6 +98,9 @@
       <a href="../articles/QueryGeneration.html">Query Generation</a>
     </li>
     <li>
+      <a href="../articles/R_mapping.html">R mapping</a>
+    </li>
+    <li>
       <a href="../articles/rquery_intro.html">rquery Introduction</a>
     </li>
     <li>
@@ -143,9 +146,11 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>rstr</span>(<span class='no'>my_db</span>, <span class='no'>tableName</span>, <span class='no'>...</span>, <span class='kw'>displayRows</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>countRows</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+    <pre class="usage"><span class='fu'>rstr</span>(<span class='no'>my_db</span>, <span class='no'>tableName</span>, <span class='no'>...</span>, <span class='kw'>displayRows</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>countRows</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
 
-<span class='fu'>rlook</span>(<span class='no'>my_db</span>, <span class='no'>tableName</span>, <span class='no'>...</span>, <span class='kw'>displayRows</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>countRows</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+<span class='fu'>rlook</span>(<span class='no'>my_db</span>, <span class='no'>tableName</span>, <span class='no'>...</span>, <span class='kw'>displayRows</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>countRows</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -169,6 +174,10 @@
     <tr>
       <th>countRows</th>
       <td><p>logical, if TRUE return row count.</p></td>
+    </tr>
+    <tr>
+      <th>qualifiers</th>
+      <td><p>optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.</p></td>
     </tr>
     </table>
     

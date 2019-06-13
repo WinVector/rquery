@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Check if a table exists. — rq_table_exists • rquery</title>
+<title>Return function mappings for a connection — rq_function_mappings • rquery</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Check if a table exists. — rq_table_exists" />
+<meta property="og:title" content="Return function mappings for a connection — rq_function_mappings" />
 
-<meta property="og:description" content="Check if a table exists." />
+<meta property="og:description" content="Return function mappings for a connection" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -135,47 +135,35 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Check if a table exists.</h1>
-    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery/blob/master/R/db_ops.R'><code>R/db_ops.R</code></a></small>
-    <div class="hidden name"><code>rq_table_exists.Rd</code></div>
+    <h1>Return function mappings for a connection</h1>
+    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery/blob/master/R/db_info.R'><code>R/db_info.R</code></a></small>
+    <div class="hidden name"><code>rq_function_mappings.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Check if a table exists.</p>
+    <p>Return function mappings for a connection</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>rq_table_exists</span>(<span class='no'>db</span>, <span class='no'>table_name</span>, <span class='no'>...</span>, <span class='kw'>qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>rq_function_mappings</span>(<span class='no'>db</span>, <span class='kw'>expr_map</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>db</th>
-      <td><p>Connection handle</p></td>
+      <td><p>a rquery_db_info</p></td>
     </tr>
     <tr>
-      <th>table_name</th>
-      <td><p>character table name</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>not used, force later argument to bind by name</p></td>
-    </tr>
-    <tr>
-      <th>qualifiers</th>
-      <td><p>optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.</p></td>
+      <th>expr_map</th>
+      <td><p>rquery expression map to include in report (function names to pseudo pre-sql sequences)</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>logical TRUE if table exists.</p>
-    
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><code><a href='db_td.html'>db_td</a></code></p></div>
+    <p>data.frame of function mappings</p>
     
 
   </div>
@@ -185,8 +173,6 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-
-      <li><a href="#see-also">See also</a></li>
           </ul>
 
   </div>

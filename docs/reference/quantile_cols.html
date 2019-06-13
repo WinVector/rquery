@@ -101,6 +101,9 @@
       <a href="../articles/QueryGeneration.html">Query Generation</a>
     </li>
     <li>
+      <a href="../articles/R_mapping.html">R mapping</a>
+    </li>
+    <li>
       <a href="../articles/rquery_intro.html">rquery Introduction</a>
     </li>
     <li>
@@ -150,7 +153,7 @@
 
     <pre class="usage"><span class='fu'>quantile_cols</span>(<span class='no'>db</span>, <span class='no'>incoming_table_name</span>, <span class='no'>...</span>, <span class='kw'>probs</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/seq'>seq</a></span>(<span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>0.25</span>),
   <span class='kw'>probs_name</span> <span class='kw'>=</span> <span class='st'>"quantile_probability"</span>, <span class='kw'>cols</span> <span class='kw'>=</span> <span class='fu'><a href='rq_colnames.html'>rq_colnames</a></span>(<span class='no'>db</span>,
-  <span class='no'>incoming_table_name</span>))</pre>
+  <span class='no'>incoming_table_name</span>), <span class='kw'>qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -178,6 +181,10 @@
     <tr>
       <th>cols</th>
       <td><p>character, columns to compute quantiles of</p></td>
+    </tr>
+    <tr>
+      <th>qualifiers</th>
+      <td><p>optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.</p></td>
     </tr>
     </table>
     

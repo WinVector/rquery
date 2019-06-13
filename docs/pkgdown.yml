@@ -6,6 +6,7 @@ articles:
   Parameterized_rquery: Parameterized_rquery.html
   PipeableSQL: PipeableSQL.html
   QueryGeneration: QueryGeneration.html
+  R_mapping: R_mapping.html
   rquery_intro: rquery_intro.html
   rquery_substitution: rquery_substitution.html
   sql_quoting: sql_quoting.html
