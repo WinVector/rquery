@@ -616,13 +616,17 @@ rq_connection_advice <- function(db) {
 }
 
 
-brute_rm_table <- function(db, table_name) {
+brute_rm_table <- function(db, table_name,
+                           ...,
+                           qualifiers = NULL) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery:::brute_rm_table")
   if(is.null(db)) {
     stop("rquery::brute_rm_table db was null")
   }
   tryCatch(
     rq_execute(db, paste("DROP TABLE",
-                         quote_identifier(db, table_name))),
+                         quote_table_name(db, table_name, qualifiers = qualifiers))),
     error = function(e) {e},
     warning = function(w) {w})
   NULL

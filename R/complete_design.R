@@ -7,6 +7,7 @@
 #' @param ... force later arguments to bind by name.
 #' @param temporary logical if TRUE try to make temporary table.
 #' @param table_name name to land result as.
+#' @param qualifiers optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.
 #' @return table handle.
 #'
 #' @examples
@@ -27,7 +28,8 @@ expand_grid <- function(db,
                         values,
                         ...,
                         temporary = TRUE,
-                        table_name = wrapr::mk_tmp_name_source('eg')()) {
+                        table_name = wrapr::mk_tmp_name_source('eg')(),
+                        qualifiers = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::expand_grid")
   temp_name_source <- wrapr::mk_tmp_name_source('egb')
   tabs <- lapply(names(values),
@@ -39,13 +41,16 @@ expand_grid <- function(db,
                  })
   qs <- vapply(tabs,
                function(tni) {
-                 paste0("LEFT JOIN ", quote_identifier(db, tni$table_name), " WHERE 1=1")
+                 paste0("LEFT JOIN ", quote_table_name(db, tni$table_name, qualifiers = qualifiers), " WHERE 1=1")
                }, character(1))
-  qs[[1]] <- paste0("SELECT * FROM ", quote_identifier(db, tabs[[1]]$table_name))
+  qs[[1]] <- paste0("SELECT * FROM ", quote_table_name(db, tabs[[1]]$table_name, qualifiers = qualifiers))
   sql <- paste(qs, collapse = " ")
-  sql <- materialize_sql_statement(db, sql, table_name, temporary = temporary)
+  sql <- materialize_sql_statement(db, sql, table_name,
+                                   temporary = temporary,
+                                   qualifiers = qualifiers)
   rq_execute(db, sql)
-  res <- db_td(db, table_name)
+  res <- db_td(db, table_name,
+               qualifiers = qualifiers)
   for(tni in tabs) {
     rq_remove_table(db, tni$table_name)
   }

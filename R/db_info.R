@@ -201,13 +201,17 @@ rquery_default_db_info <- function() {
 #' Return function mappings for a connection
 #'
 #' @param db a rquery_db_info
+#' @param ... not used, force later arguments to bind by name
+#' @param qualifiers optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.
 #' @return data.frame of function mappings
 #'
 #' @export
 #'
 #' @keywords internal
 #'
-rq_function_mappings <- function(db) {
+rq_function_mappings <- function(db,
+                                 ...,
+                                 qualifiers = NULL) {
   if(!("rquery_db_info" %in% class(db))) {
     stop("rquery::rq_function_mappings db must be of class rq_function_mappings")
   }
@@ -239,7 +243,7 @@ rq_function_mappings <- function(db) {
       elsti <- vapply(elsti,
                       function(elstij) {
                         if("pre_sql" %in% class(elstij)) {
-                          pre_sql_to_query(elstij, db)
+                          pre_sql_to_query(elstij, db, qualifiers = qualifiers)
                         } else {
                           paste0(".(", elstij, ")")
                         }

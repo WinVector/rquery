@@ -5,7 +5,7 @@
 \title{Cross product vectors in database.}
 \usage{
 expand_grid(db, values, ..., temporary = TRUE,
-  table_name = (wrapr::mk_tmp_name_source("eg"))())
+  table_name = (wrapr::mk_tmp_name_source("eg"))(), qualifiers = NULL)
 }
 \arguments{
 \item{db}{database handle}
@@ -17,6 +17,8 @@ expand_grid(db, values, ..., temporary = TRUE,
 \item{temporary}{logical if TRUE try to make temporary table.}
 
 \item{table_name}{name to land result as.}
+
+\item{qualifiers}{optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.}
 }
 \value{
 table handle.

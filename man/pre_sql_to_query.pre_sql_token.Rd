@@ -5,7 +5,8 @@
 \title{Convert a pre_sql token object to SQL query text.}
 \usage{
 \method{pre_sql_to_query}{pre_sql_token}(x, db_info, ...,
-  source_table = NULL, source_limit = NA_real_, using = NULL)
+  source_table = NULL, source_limit = NA_real_, using = NULL,
+  qualifiers = NULL)
 }
 \arguments{
 \item{x}{the pre_sql token}
@@ -19,6 +20,8 @@
 \item{source_limit}{numeric limit on rows from this source table}
 
 \item{using}{TBD}
+
+\item{qualifiers}{named ordered vector of strings carrying additional db hierarchy terms, such as schema.}
 }
 \value{
 SQL query text

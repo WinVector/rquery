@@ -5,7 +5,7 @@
 \title{Return SQL transform of tokens.}
 \usage{
 pre_sql_to_query(x, db_info, ..., source_table = NULL,
-  source_limit = NA_real_, using = NULL)
+  source_limit = NA_real_, using = NULL, qualifiers = NULL)
 }
 \arguments{
 \item{x}{parsed tokens.}
@@ -19,6 +19,8 @@ pre_sql_to_query(x, db_info, ..., source_table = NULL,
 \item{source_limit}{numeric if not NULL limit sources to this many rows.}
 
 \item{using}{character, if not NULL set of columns used from above.}
+
+\item{qualifiers}{named ordered vector of strings carrying additional db hierarchy terms, such as schema.}
 }
 \value{
 SQL command
