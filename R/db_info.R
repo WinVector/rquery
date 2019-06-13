@@ -130,6 +130,41 @@ rquery_db_info <- function(...,
       format(o, scientific = 11)
     }
   }
+  r$expr_map <- list("as.Date" = list( # call is 1:as.Date 2:( 3:date_col 4:)
+    pre_sql_fn("to_date"),
+    pre_sql_token("("),
+    3,  # the date column
+    pre_sql_token(","),
+    pre_sql_string("YYYY-MM-DD"),
+    pre_sql_token(")")
+  )
+  )
+  r$tree_rewriter <- function(x, db_info) {
+    expr_map <- db_info$expr_map
+    if("pre_sql_sub_expr" %in% class(x)) {
+      # first recurse
+      for(i in seq_len(length(x$toks))) {
+        x$toks[[i]] <- Recall(x$toks[[i]], db_info)
+      }
+      # now look for special cases
+      if(("pre_sql_token" %in% class(x$toks[[1]])) &&
+         (x$toks[[1]]$token_type == "function_name")) {
+        key <- x$toks[[1]][["value"]]
+        replacement <- expr_map[[key]]
+        if(!is.null(replacement)) {
+          x_translated <- x
+          x_translated$toks <- replacement
+          for(i in seq_len(length(replacement))) {
+            if(is.numeric(replacement[[i]])) {
+              x_translated$toks[[i]] <- x$toks[[replacement[[i]]]]
+            }
+          }
+          return(x_translated)
+        }
+      }
+    }
+    x
+  }
   for(ni in names(overrides)) {
     r[[ni]] <- overrides[[ni]]
   }
@@ -166,14 +201,13 @@ rquery_default_db_info <- function() {
 #' Return function mappings for a connection
 #'
 #' @param db a rquery_db_info
-#' @param expr_map rquery expression map to include in report (function names to pseudo pre-sql sequences)
 #' @return data.frame of function mappings
 #'
 #' @export
 #'
 #' @keywords internal
 #'
-rq_function_mappings <- function(db, expr_map = NULL) {
+rq_function_mappings <- function(db) {
   if(!("rquery_db_info" %in% class(db))) {
     stop("rquery::rq_function_mappings db must be of class rq_function_mappings")
   }
@@ -194,6 +228,7 @@ rq_function_mappings <- function(db, expr_map = NULL) {
     mp <- rbind(mp, fmp)
   }
   # map in function re-writes
+  expr_map <- db$expr_map
   if(length(expr_map)>0) {
     emp <- data.frame(R_name = names(expr_map),
                       stringsAsFactors = FALSE)

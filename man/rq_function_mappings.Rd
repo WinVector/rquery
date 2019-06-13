@@ -4,12 +4,10 @@
 \alias{rq_function_mappings}
 \title{Return function mappings for a connection}
 \usage{
-rq_function_mappings(db, expr_map = NULL)
+rq_function_mappings(db)
 }
 \arguments{
 \item{db}{a rquery_db_info}
-
-\item{expr_map}{rquery expression map to include in report (function names to pseudo pre-sql sequences)}
 }
 \value{
 data.frame of function mappings

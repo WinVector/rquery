@@ -53,53 +53,14 @@ DBI::dbReadTable(db$connection, db_result$table_name) %.>%
 
 ops <- db_testdate %.>%
    extend(., date := as.Date(date))
-cat(to_sql(ops, db))
-# as.Date() not going to work without a translation
-
-# define user specified translation
-expr_map <- list("as.Date" = list( # call is 1:as.Date 2:( 3:date_col 4:)
-    pre_sql_fn("to_date"),
-    pre_sql_token("("),
-    3,  # the date column
-    pre_sql_token(","),
-    pre_sql_string("YYYY-MM-DD"),
-    pre_sql_token(")")
-  )
-)
-print(expr_map)
-db$tree_rewriter <- function(x, db_info) {
-  if("pre_sql_sub_expr" %in% class(x)) {
-    # first recurse
-    for(i in seq_len(length(x$toks))) {
-      x$toks[[i]] <- Recall(x$toks[[i]], db_info)
-    }
-    # now look for special cases
-    if(("pre_sql_token" %in% class(x$toks[[1]])) &&
-       (x$toks[[1]]$token_type == "function_name")) {
-      key <- x$toks[[1]][["value"]]
-      replacement <- expr_map[[key]]
-      if(!is.null(replacement)) {
-        x_translated <- x
-        x_translated$toks <- replacement
-        for(i in seq_len(length(replacement))) {
-          if(is.numeric(replacement[[i]])) {
-            x_translated$toks[[i]] <- x$toks[[replacement[[i]]]]
-          }
-        }
-        return(x_translated)
-      }
-    }
-  }
-  x
-}
-
 
 cat(to_sql(ops, db))
 
 execute(db, ops)  %.>%
   str(.)
 
-rquery::rq_function_mappings(db, expr_map)
+rquery::rq_function_mappings(db) %.>%
+  knitr::kable(.)
 
 DBI::dbDisconnect(raw_connection)
 ```

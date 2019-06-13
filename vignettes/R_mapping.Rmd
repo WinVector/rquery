@@ -75,11 +75,17 @@ cat(to_sql(ops, db))
 ops %.>%
   execute(db, .) %.>%
   knitr::kable(.)
-
-DBI::dbDisconnect(raw_connection)
 ```
 
-Additional function re-mappings can be specified by user code.  One such example is re-writing `as.Date(x)` as `to_date(date, "YYYY-MM-DD")` as seen in an example [here](https://github.com/WinVector/rquery/blob/master/db_examples/RPostgres_date.md) (though we are looking at moving this service into `rquery`).
+Additional function re-mappings can be specified by user code.  One such example is re-writing `as.Date(x)` as `to_date(date, "YYYY-MM-DD")` as seen in an example [here](https://github.com/WinVector/rquery/blob/master/db_examples/RPostgres_date.md).
+
+```{r}
+rquery::rq_function_mappings(db) %.>%
+  knitr::kable(.)
+```
 
 
+```{r}
+DBI::dbDisconnect(raw_connection)
+```
 

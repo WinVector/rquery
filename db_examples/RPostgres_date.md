@@ -74,82 +74,6 @@ DBI::dbReadTable(db$connection, db_result$table_name) %.>%
 
 ops <- db_testdate %.>%
    extend(., date := as.Date(date))
-cat(to_sql(ops, db))
-```
-
-    ## SELECT
-    ##  "id",
-    ##  as.Date ( "date" )  AS "date"
-    ## FROM (
-    ##  SELECT
-    ##   "id",
-    ##   "date"
-    ##  FROM
-    ##   "testdate"
-    ##  ) tsql_33083902583463410241_0000000000
-
-``` r
-# as.Date() not going to work without a translation
-
-# define user specified translation
-expr_map <- list("as.Date" = list( # call is 1:as.Date 2:( 3:date_col 4:)
-    pre_sql_fn("to_date"),
-    pre_sql_token("("),
-    3,  # the date column
-    pre_sql_token(","),
-    pre_sql_string("YYYY-MM-DD"),
-    pre_sql_token(")")
-  )
-)
-print(expr_map)
-```
-
-    ## $as.Date
-    ## $as.Date[[1]]
-    ## [1] "to_date"
-    ## 
-    ## $as.Date[[2]]
-    ## [1] "("
-    ## 
-    ## $as.Date[[3]]
-    ## [1] 3
-    ## 
-    ## $as.Date[[4]]
-    ## [1] ","
-    ## 
-    ## $as.Date[[5]]
-    ## [1] "'YYYY-MM-DD'"
-    ## 
-    ## $as.Date[[6]]
-    ## [1] ")"
-
-``` r
-db$tree_rewriter <- function(x, db_info) {
-  if("pre_sql_sub_expr" %in% class(x)) {
-    # first recurse
-    for(i in seq_len(length(x$toks))) {
-      x$toks[[i]] <- Recall(x$toks[[i]], db_info)
-    }
-    # now look for special cases
-    if(("pre_sql_token" %in% class(x$toks[[1]])) &&
-       (x$toks[[1]]$token_type == "function_name")) {
-      key <- x$toks[[1]][["value"]]
-      replacement <- expr_map[[key]]
-      if(!is.null(replacement)) {
-        x_translated <- x
-        x_translated$toks <- replacement
-        for(i in seq_len(length(replacement))) {
-          if(is.numeric(replacement[[i]])) {
-            x_translated$toks[[i]] <- x$toks[[replacement[[i]]]]
-          }
-        }
-        return(x_translated)
-      }
-    }
-  }
-  x
-}
-
 
 cat(to_sql(ops, db))
 ```
@@ -163,7 +87,7 @@ cat(to_sql(ops, db))
     ##   "date"
     ##  FROM
     ##   "testdate"
-    ##  ) tsql_58703987721269890569_0000000000
+    ##  ) tsql_46145630843822943536_0000000000
 
 ``` r
 execute(db, ops)  %.>%
@@ -175,12 +99,14 @@ execute(db, ops)  %.>%
     ##  $ date: Date, format: "2019-01-12" "2019-02-21" ...
 
 ``` r
-rquery::rq_function_mappings(db, expr_map)
+rquery::rq_function_mappings(db) %.>%
+  knitr::kable(.)
 ```
 
-    ##    R_name                sql_mapping simple_name_mapping
-    ## 1    mean                        avg                TRUE
-    ## 2 as.Date to_date(.(3),'YYYY-MM-DD')               FALSE
+| R\_name | sql\_mapping                | simple\_name\_mapping |
+| :------ | :-------------------------- | :-------------------- |
+| mean    | avg                         | TRUE                  |
+| as.Date | to\_date(.(3),‘YYYY-MM-DD’) | FALSE                 |
 
 ``` r
 DBI::dbDisconnect(raw_connection)
