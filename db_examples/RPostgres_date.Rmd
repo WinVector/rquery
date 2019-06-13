@@ -64,3 +64,5 @@ rquery::rq_function_mappings(db) %.>%
 
 DBI::dbDisconnect(raw_connection)
 ```
+
+More on what re-mappings `rquery` provides can be found [here](https://winvector.github.io/rquery/articles/R_mapping.html).

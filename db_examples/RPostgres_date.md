@@ -87,7 +87,7 @@ cat(to_sql(ops, db))
     ##   "date"
     ##  FROM
     ##   "testdate"
-    ##  ) tsql_46145630843822943536_0000000000
+    ##  ) tsql_07076266217990694448_0000000000
 
 ``` r
 execute(db, ops)  %.>%
@@ -111,3 +111,6 @@ rquery::rq_function_mappings(db) %.>%
 ``` r
 DBI::dbDisconnect(raw_connection)
 ```
+
+More on what re-mappings `rquery` provides can be found
+[here](https://winvector.github.io/rquery/articles/R_mapping.html).
