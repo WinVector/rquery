@@ -11,7 +11,7 @@ vignette: >
 
 `rquery` re-maps a number of symbols during `SQL` translation.
 
-During expression parsing the internal `rquery` function `tokenize_call_for_SQL()` implements the following re-mappings.
+During expression parsing the internal `rquery` function `tokenize_call_for_SQL()` implements the following re-mappings from `R` idioms to `SQL` notation.
 
 ```{r}
 library("rquery")
@@ -32,6 +32,8 @@ mapping_table <- data.frame(
 mapping_table$translation <- show_translation(mapping_table$example)
 knitr::kable(mapping_table)
 ```
+
+Note: not all possible mappings are implemented.  For example we currently do not re-map `%in%`, preferring the user to explicitly work with [`set_indicator()`](https://winvector.github.io/rquery/reference/set_indicator.html) directly.
 
 In addition to this the database connectors can specify additional re-mappings. This can be found by building a formal connector and inspecting the re-mappings.
 
