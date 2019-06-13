@@ -227,50 +227,46 @@
 <a class="sourceLine" id="cb1-10" data-line-number="10">                      <span class="st">"create_options"</span>,</a>
 <a class="sourceLine" id="cb1-11" data-line-number="11">                      <span class="st">"USING PARQUET OPTIONS ('compression'='snappy')"</span>)</a>
 <a class="sourceLine" id="cb1-12" data-line-number="12">} <span class="cf">else</span> {</a>
-<a class="sourceLine" id="cb1-13" data-line-number="13">  driver &lt;-<span class="st"> </span>RPostgreSQL<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/RPostgreSQL/topics/PostgreSQL">PostgreSQL</a></span>()</a>
-<a class="sourceLine" id="cb1-14" data-line-number="14">  raw_connection &lt;-<span class="st"> </span>DBI<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DBI/topics/dbConnect">dbConnect</a></span>(driver,</a>
-<a class="sourceLine" id="cb1-15" data-line-number="15">                          <span class="dt">host =</span> <span class="st">'localhost'</span>,</a>
-<a class="sourceLine" id="cb1-16" data-line-number="16">                          <span class="dt">port =</span> <span class="dv">5432</span>,</a>
-<a class="sourceLine" id="cb1-17" data-line-number="17">                          <span class="dt">user =</span> <span class="st">'johnmount'</span>,</a>
-<a class="sourceLine" id="cb1-18" data-line-number="18">                          <span class="dt">password =</span> <span class="st">''</span>)</a>
-<a class="sourceLine" id="cb1-19" data-line-number="19">}</a>
-<a class="sourceLine" id="cb1-20" data-line-number="20"></a>
-<a class="sourceLine" id="cb1-21" data-line-number="21">dbopts &lt;-<span class="st"> </span><span class="kw"><a href="reference/rq_connection_tests.html">rq_connection_tests</a></span>(raw_connection)</a></code></pre></div>
-<pre><code>## Error in postgresqlExecStatement(conn, statement, ...) : 
-##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "rq_test_10159728251515058239_0000000000" does not exist
-## LINE 1: SELECT * FROM "rq_test_10159728251515058239_0000000000" LIMI...
-##                       ^
-## )</code></pre>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">db &lt;-<span class="st"> </span><span class="kw"><a href="reference/rquery_db_info.html">rquery_db_info</a></span>(<span class="dt">connection =</span> raw_connection,</a>
-<a class="sourceLine" id="cb3-2" data-line-number="2">                     <span class="dt">is_dbi =</span> <span class="ot">TRUE</span>,</a>
-<a class="sourceLine" id="cb3-3" data-line-number="3">                     <span class="dt">connection_options =</span> dbopts)</a>
-<a class="sourceLine" id="cb3-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="co"># copy data in so we have an example</span></a>
-<a class="sourceLine" id="cb3-6" data-line-number="6">d_local &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/wrapr/topics/build_frame">build_frame</a></span>(</a>
-<a class="sourceLine" id="cb3-7" data-line-number="7">   <span class="st">"subjectID"</span>, <span class="st">"surveyCategory"</span>     , <span class="st">"assessmentTotal"</span>, <span class="st">"irrelevantCol1"</span>, <span class="st">"irrelevantCol2"</span> <span class="op">|</span></a>
-<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="st">   </span>1L         , <span class="st">"withdrawal behavior"</span>, <span class="dv">5</span>                , <span class="st">"irrel1"</span>        , <span class="st">"irrel2"</span>         <span class="op">|</span></a>
-<a class="sourceLine" id="cb3-9" data-line-number="9"><span class="st">   </span>1L         , <span class="st">"positive re-framing"</span>, <span class="dv">2</span>                , <span class="st">"irrel1"</span>        , <span class="st">"irrel2"</span>         <span class="op">|</span></a>
-<a class="sourceLine" id="cb3-10" data-line-number="10"><span class="st">   </span>2L         , <span class="st">"withdrawal behavior"</span>, <span class="dv">3</span>                , <span class="st">"irrel1"</span>        , <span class="st">"irrel2"</span>         <span class="op">|</span></a>
-<a class="sourceLine" id="cb3-11" data-line-number="11"><span class="st">   </span>2L         , <span class="st">"positive re-framing"</span>, <span class="dv">4</span>                , <span class="st">"irrel1"</span>        , <span class="st">"irrel2"</span>         )</a>
-<a class="sourceLine" id="cb3-12" data-line-number="12"><span class="kw"><a href="reference/rq_copy_to.html">rq_copy_to</a></span>(db, <span class="st">'d'</span>,</a>
-<a class="sourceLine" id="cb3-13" data-line-number="13">            d_local,</a>
-<a class="sourceLine" id="cb3-14" data-line-number="14">            <span class="dt">temporary =</span> <span class="ot">TRUE</span>, </a>
-<a class="sourceLine" id="cb3-15" data-line-number="15">            <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+<a class="sourceLine" id="cb1-13" data-line-number="13">  <span class="co">#driver &lt;- RPostgreSQL::PostgreSQL()</span></a>
+<a class="sourceLine" id="cb1-14" data-line-number="14">  driver &lt;-<span class="st"> </span>RPostgres<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/RPostgres/topics/Postgres">Postgres</a></span>()</a>
+<a class="sourceLine" id="cb1-15" data-line-number="15">  raw_connection &lt;-<span class="st"> </span>DBI<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DBI/topics/dbConnect">dbConnect</a></span>(driver,</a>
+<a class="sourceLine" id="cb1-16" data-line-number="16">                          <span class="dt">host =</span> <span class="st">'localhost'</span>,</a>
+<a class="sourceLine" id="cb1-17" data-line-number="17">                          <span class="dt">port =</span> <span class="dv">5432</span>,</a>
+<a class="sourceLine" id="cb1-18" data-line-number="18">                          <span class="dt">user =</span> <span class="st">'johnmount'</span>,</a>
+<a class="sourceLine" id="cb1-19" data-line-number="19">                          <span class="dt">password =</span> <span class="st">''</span>)</a>
+<a class="sourceLine" id="cb1-20" data-line-number="20">}</a>
+<a class="sourceLine" id="cb1-21" data-line-number="21"></a>
+<a class="sourceLine" id="cb1-22" data-line-number="22">dbopts &lt;-<span class="st"> </span><span class="kw"><a href="reference/rq_connection_tests.html">rq_connection_tests</a></span>(raw_connection)</a>
+<a class="sourceLine" id="cb1-23" data-line-number="23">db &lt;-<span class="st"> </span><span class="kw"><a href="reference/rquery_db_info.html">rquery_db_info</a></span>(<span class="dt">connection =</span> raw_connection,</a>
+<a class="sourceLine" id="cb1-24" data-line-number="24">                     <span class="dt">is_dbi =</span> <span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb1-25" data-line-number="25">                     <span class="dt">connection_options =</span> dbopts)</a>
+<a class="sourceLine" id="cb1-26" data-line-number="26"></a>
+<a class="sourceLine" id="cb1-27" data-line-number="27"><span class="co"># copy data in so we have an example</span></a>
+<a class="sourceLine" id="cb1-28" data-line-number="28">d_local &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/wrapr/topics/build_frame">build_frame</a></span>(</a>
+<a class="sourceLine" id="cb1-29" data-line-number="29">   <span class="st">"subjectID"</span>, <span class="st">"surveyCategory"</span>     , <span class="st">"assessmentTotal"</span>, <span class="st">"irrelevantCol1"</span>, <span class="st">"irrelevantCol2"</span> <span class="op">|</span></a>
+<a class="sourceLine" id="cb1-30" data-line-number="30"><span class="st">   </span>1L         , <span class="st">"withdrawal behavior"</span>, <span class="dv">5</span>                , <span class="st">"irrel1"</span>        , <span class="st">"irrel2"</span>         <span class="op">|</span></a>
+<a class="sourceLine" id="cb1-31" data-line-number="31"><span class="st">   </span>1L         , <span class="st">"positive re-framing"</span>, <span class="dv">2</span>                , <span class="st">"irrel1"</span>        , <span class="st">"irrel2"</span>         <span class="op">|</span></a>
+<a class="sourceLine" id="cb1-32" data-line-number="32"><span class="st">   </span>2L         , <span class="st">"withdrawal behavior"</span>, <span class="dv">3</span>                , <span class="st">"irrel1"</span>        , <span class="st">"irrel2"</span>         <span class="op">|</span></a>
+<a class="sourceLine" id="cb1-33" data-line-number="33"><span class="st">   </span>2L         , <span class="st">"positive re-framing"</span>, <span class="dv">4</span>                , <span class="st">"irrel1"</span>        , <span class="st">"irrel2"</span>         )</a>
+<a class="sourceLine" id="cb1-34" data-line-number="34"><span class="kw"><a href="reference/rq_copy_to.html">rq_copy_to</a></span>(db, <span class="st">'d'</span>,</a>
+<a class="sourceLine" id="cb1-35" data-line-number="35">            d_local,</a>
+<a class="sourceLine" id="cb1-36" data-line-number="36">            <span class="dt">temporary =</span> <span class="ot">TRUE</span>, </a>
+<a class="sourceLine" id="cb1-37" data-line-number="37">            <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
 <pre><code>## [1] "table(\"d\"; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2)"</code></pre>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co"># produce a hande to existing table</span></a>
-<a class="sourceLine" id="cb5-2" data-line-number="2">d &lt;-<span class="st"> </span><span class="kw"><a href="reference/db_td.html">db_td</a></span>(db, <span class="st">"d"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># produce a hande to existing table</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">d &lt;-<span class="st"> </span><span class="kw"><a href="reference/db_td.html">db_td</a></span>(db, <span class="st">"d"</span>)</a></code></pre></div>
 <p>Note: in examples we use <code><a href="reference/rq_copy_to.html">rq_copy_to()</a></code> to create data. This is only for the purpose of having easy portable examples. With big data the data is usually already in the remote database or Spark system. The task is almost always to connect and work with this pre-existing remote data and the method to do this is <a href="https://winvector.github.io/rquery/reference/db_td.html"><code><a href="reference/db_td.html">db_td()</a></code></a>, which builds a reference to a remote table given the table name. The suggested pattern for working with remote tables is to get inputs via <a href="https://winvector.github.io/rquery/reference/db_td.html"><code><a href="reference/db_td.html">db_td()</a></code></a> and land remote results with <a href="https://winvector.github.io/rquery/reference/materialize.html"><code>materialze()</code></a>. To work with local data one can copy data from memory to the database with <a href="https://winvector.github.io/rquery/reference/rq_copy_to.html"><code><a href="reference/rq_copy_to.html">rq_copy_to()</a></code></a> and bring back results with <a href="https://winvector.github.io/rquery/reference/execute.html"><code><a href="reference/execute.html">execute()</a></code></a> (though be aware operation on remote non-memory data is <code>rquery</code>’s primary intent).</p>
 <p>First we show the Spark/database version of the original example data:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/class">class</a></span>(db)</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/class">class</a></span>(db)</a></code></pre></div>
 <pre><code>## [1] "rquery_db_info"</code></pre>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(db)</a></code></pre></div>
-<pre><code>## [1] "rquery_db_info(PostgreSQLConnection, is_dbi=TRUE, note=\"\")"</code></pre>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/class">class</a></span>(d)</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(db)</a></code></pre></div>
+<pre><code>## [1] "rquery_db_info(PqConnection, is_dbi=TRUE, note=\"\")"</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/class">class</a></span>(d)</a></code></pre></div>
 <pre><code>## [1] "relop_table_source" "relop"</code></pre>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(d)</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(d)</a></code></pre></div>
 <pre><code>## [1] "table(\"d\"; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2)"</code></pre>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="co"># remote structure inspection</span></a>
-<a class="sourceLine" id="cb14-2" data-line-number="2"><span class="kw"><a href="reference/rstr.html">rstr</a></span>(db, d<span class="op">$</span>table_name)</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="co"># remote structure inspection</span></a>
+<a class="sourceLine" id="cb12-2" data-line-number="2"><span class="kw"><a href="reference/rstr.html">rstr</a></span>(db, d<span class="op">$</span>table_name)</a></code></pre></div>
 <pre><code>## table "d" rquery_db_info 
 ##  nrow: 4 
 ## 'data.frame':    4 obs. of  5 variables:
@@ -279,10 +275,10 @@
 ##  $ assessmentTotal: num  5 2 3 4
 ##  $ irrelevantCol1 : chr  "irrel1" "irrel1" "irrel1" "irrel1"
 ##  $ irrelevantCol2 : chr  "irrel2" "irrel2" "irrel2" "irrel2"</code></pre>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="co"># or execute the table representation to bring back data</span></a>
-<a class="sourceLine" id="cb16-2" data-line-number="2">d <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb16-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="reference/execute.html">execute</a></span>(db, .) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb16-4" data-line-number="4"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</a></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="co"># or execute the table representation to bring back data</span></a>
+<a class="sourceLine" id="cb14-2" data-line-number="2">d <span class="op">%.&gt;%</span></a>
+<a class="sourceLine" id="cb14-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="reference/execute.html">execute</a></span>(db, .) <span class="op">%.&gt;%</span></a>
+<a class="sourceLine" id="cb14-4" data-line-number="4"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</a></code></pre></div>
 <table class="table table">
 <thead><tr class="header">
 <th align="right">subjectID</th>
@@ -323,38 +319,34 @@
 </tbody>
 </table>
 <p>Now we re-write the original calculation in terms of the <code>rquery</code> SQL generating operators.</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">scale &lt;-<span class="st"> </span><span class="fl">0.237</span></a>
-<a class="sourceLine" id="cb17-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb17-3" data-line-number="3">dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb17-4" data-line-number="4"><span class="st">  </span><span class="kw"><a href="reference/extend.html">extend</a></span>(.,</a>
-<a class="sourceLine" id="cb17-5" data-line-number="5">         probability <span class="op">:</span><span class="er">=</span></a>
-<a class="sourceLine" id="cb17-6" data-line-number="6"><span class="st">           </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">exp</a></span>(assessmentTotal <span class="op">*</span><span class="st"> </span>scale))  <span class="op">%.&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb17-7" data-line-number="7"><span class="st">  </span><span class="kw"><a href="reference/normalize_cols.html">normalize_cols</a></span>(.,</a>
-<a class="sourceLine" id="cb17-8" data-line-number="8">                 <span class="st">"probability"</span>,</a>
-<a class="sourceLine" id="cb17-9" data-line-number="9">                 <span class="dt">partitionby =</span> <span class="st">'subjectID'</span>) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb17-10" data-line-number="10"><span class="st">  </span><span class="kw"><a href="reference/pick_top_k.html">pick_top_k</a></span>(.,</a>
-<a class="sourceLine" id="cb17-11" data-line-number="11">             <span class="dt">partitionby =</span> <span class="st">'subjectID'</span>,</a>
-<a class="sourceLine" id="cb17-12" data-line-number="12">             <span class="dt">orderby =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">'probability'</span>, <span class="st">'surveyCategory'</span>),</a>
-<a class="sourceLine" id="cb17-13" data-line-number="13">             <span class="dt">reverse =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">'probability'</span>)) <span class="op">%.&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb17-14" data-line-number="14"><span class="st">  </span><span class="kw"><a href="reference/rename_columns.html">rename_columns</a></span>(., <span class="st">'diagnosis'</span> <span class="op">:</span><span class="er">=</span><span class="st"> 'surveyCategory'</span>) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb17-15" data-line-number="15"><span class="st">  </span><span class="kw"><a href="reference/select_columns.html">select_columns</a></span>(., <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">'subjectID'</span>, </a>
-<a class="sourceLine" id="cb17-16" data-line-number="16">                      <span class="st">'diagnosis'</span>, </a>
-<a class="sourceLine" id="cb17-17" data-line-number="17">                      <span class="st">'probability'</span>)) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb17-18" data-line-number="18"><span class="st">  </span><span class="kw"><a href="reference/orderby.html">orderby</a></span>(., <span class="dt">cols =</span> <span class="st">'subjectID'</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">scale &lt;-<span class="st"> </span><span class="fl">0.237</span></a>
+<a class="sourceLine" id="cb15-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb15-3" data-line-number="3">dq &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span></a>
+<a class="sourceLine" id="cb15-4" data-line-number="4"><span class="st">  </span><span class="kw"><a href="reference/extend.html">extend</a></span>(.,</a>
+<a class="sourceLine" id="cb15-5" data-line-number="5">         probability <span class="op">:</span><span class="er">=</span></a>
+<a class="sourceLine" id="cb15-6" data-line-number="6"><span class="st">           </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Log">exp</a></span>(assessmentTotal <span class="op">*</span><span class="st"> </span>scale))  <span class="op">%.&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb15-7" data-line-number="7"><span class="st">  </span><span class="kw"><a href="reference/normalize_cols.html">normalize_cols</a></span>(.,</a>
+<a class="sourceLine" id="cb15-8" data-line-number="8">                 <span class="st">"probability"</span>,</a>
+<a class="sourceLine" id="cb15-9" data-line-number="9">                 <span class="dt">partitionby =</span> <span class="st">'subjectID'</span>) <span class="op">%.&gt;%</span></a>
+<a class="sourceLine" id="cb15-10" data-line-number="10"><span class="st">  </span><span class="kw"><a href="reference/pick_top_k.html">pick_top_k</a></span>(.,</a>
+<a class="sourceLine" id="cb15-11" data-line-number="11">             <span class="dt">partitionby =</span> <span class="st">'subjectID'</span>,</a>
+<a class="sourceLine" id="cb15-12" data-line-number="12">             <span class="dt">orderby =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">'probability'</span>, <span class="st">'surveyCategory'</span>),</a>
+<a class="sourceLine" id="cb15-13" data-line-number="13">             <span class="dt">reverse =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">'probability'</span>)) <span class="op">%.&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb15-14" data-line-number="14"><span class="st">  </span><span class="kw"><a href="reference/rename_columns.html">rename_columns</a></span>(., <span class="st">'diagnosis'</span> <span class="op">:</span><span class="er">=</span><span class="st"> 'surveyCategory'</span>) <span class="op">%.&gt;%</span></a>
+<a class="sourceLine" id="cb15-15" data-line-number="15"><span class="st">  </span><span class="kw"><a href="reference/select_columns.html">select_columns</a></span>(., <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">'subjectID'</span>, </a>
+<a class="sourceLine" id="cb15-16" data-line-number="16">                      <span class="st">'diagnosis'</span>, </a>
+<a class="sourceLine" id="cb15-17" data-line-number="17">                      <span class="st">'probability'</span>)) <span class="op">%.&gt;%</span></a>
+<a class="sourceLine" id="cb15-18" data-line-number="18"><span class="st">  </span><span class="kw"><a href="reference/orderby.html">orderby</a></span>(., <span class="dt">cols =</span> <span class="st">'subjectID'</span>)</a></code></pre></div>
 <p>(Note one can also use the named map builder alias <code>%:=%</code> if there is concern of aliasing with <code>data.table</code>’s definition of <code>:=</code>.)</p>
 <p>We then generate our result:</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">result &lt;-<span class="st"> </span><span class="kw"><a href="reference/materialize.html">materialize</a></span>(db, dq)</a></code></pre></div>
-<pre><code>## Error in postgresqlExecStatement(conn, statement, ...) : 
-##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "rquery_mat_02282176097476174872_0000000000" does not exist
-## LINE 1: SELECT * FROM "rquery_mat_02282176097476174872_0000000000" L...
-##                       ^
-## )</code></pre>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/class">class</a></span>(result)</a></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">result &lt;-<span class="st"> </span><span class="kw"><a href="reference/materialize.html">materialize</a></span>(db, dq)</a>
+<a class="sourceLine" id="cb16-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb16-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/class">class</a></span>(result)</a></code></pre></div>
 <pre><code>## [1] "relop_table_source" "relop"</code></pre>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1">result</a></code></pre></div>
-<pre><code>## [1] "table(\"rquery_mat_02282176097476174872_0000000000\"; subjectID, diagnosis, probability)"</code></pre>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1">DBI<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DBI/topics/dbReadTable">dbReadTable</a></span>(db<span class="op">$</span>connection, result<span class="op">$</span>table_name) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb24-2" data-line-number="2"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</a></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">result</a></code></pre></div>
+<pre><code>## [1] "table(\"rquery_mat_07245558837352452837_0000000000\"; subjectID, diagnosis, probability)"</code></pre>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1">DBI<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DBI/topics/dbReadTable">dbReadTable</a></span>(db<span class="op">$</span>connection, result<span class="op">$</span>table_name) <span class="op">%.&gt;%</span></a>
+<a class="sourceLine" id="cb20-2" data-line-number="2"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</a></code></pre></div>
 <table class="table table">
 <thead><tr class="header">
 <th align="right">subjectID</th>
@@ -376,11 +368,11 @@
 </table>
 <p>We see we have quickly reproduced the original result using the new database operators. This means such a calculation could easily be performed at a “big data” scale (using a database or <code>Spark</code>; in this case we would not take the results back, but instead use <code>CREATE TABLE tname AS</code> to build a remote materialized view of the results).</p>
 <p>A bonus is, thanks to <code>data.table</code> and the <code>rqdatatable</code> packages we can run the exact same operator pipeline on local data.</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"rqdatatable"</span>)</a>
-<a class="sourceLine" id="cb25-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb25-3" data-line-number="3">d_local <span class="op">%.&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb25-4" data-line-number="4"><span class="st">  </span>dq <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb25-5" data-line-number="5"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</a></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"rqdatatable"</span>)</a>
+<a class="sourceLine" id="cb21-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb21-3" data-line-number="3">d_local <span class="op">%.&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb21-4" data-line-number="4"><span class="st">  </span>dq <span class="op">%.&gt;%</span></a>
+<a class="sourceLine" id="cb21-5" data-line-number="5"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</a></code></pre></div>
 <table class="table table">
 <thead><tr class="header">
 <th align="right">subjectID</th>
@@ -402,7 +394,7 @@
 </table>
 <p>Notice we applied the pipeline by piping data into it. This ability is a feature of the <a href="https://journal.r-project.org/archive/2018/RJ-2018-042/index.html">dot arrow pipe</a> we are using here.</p>
 <p>The actual <code>SQL</code> query that produces the database result is, in fact, quite involved:</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="reference/to_sql.html">to_sql</a></span>(dq, db, <span class="dt">source_limit =</span> <span class="dv">1000</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="reference/to_sql.html">to_sql</a></span>(dq, db, <span class="dt">source_limit =</span> <span class="dv">1000</span>))</a></code></pre></div>
 <pre><code>SELECT * FROM (
  SELECT
   "subjectID",
@@ -437,26 +429,26 @@
         "assessmentTotal"
        FROM
         "d" LIMIT 1000
-       ) tsql_42520820247065318733_0000000000
-      ) tsql_42520820247065318733_0000000001
-     ) tsql_42520820247065318733_0000000002
-   ) tsql_42520820247065318733_0000000003
+       ) tsql_52060090704300411733_0000000000
+      ) tsql_52060090704300411733_0000000001
+     ) tsql_52060090704300411733_0000000002
+   ) tsql_52060090704300411733_0000000003
    WHERE "row_number" &lt;= 1
-  ) tsql_42520820247065318733_0000000004
- ) tsql_42520820247065318733_0000000005
-) tsql_42520820247065318733_0000000006 ORDER BY "subjectID"</code></pre>
+  ) tsql_52060090704300411733_0000000004
+ ) tsql_52060090704300411733_0000000005
+) tsql_52060090704300411733_0000000006 ORDER BY "subjectID"</code></pre>
 <p>The query is large, but due to its regular structure it should be very amenable to query optimization.</p>
 <p>A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our <a href="https://github.com/WinVector/rquery/blob/master/extras/PerfTest%2Emd">initial experiments</a> show <code>rquery</code> narrowed queries to be twice as fast as un-narrowed <code>dplyr</code> on a synthetic problem simulating large disk-based queries. We think if we connected directly to <code>Spark</code>’s relational operators (avoiding the <code>SQL</code> layer) we may be able to achieve even faster performance.</p>
 <p>The above optimization is possible because the <code>rquery</code> representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query. For example:</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1"><span class="kw"><a href="reference/column_names.html">column_names</a></span>(dq)</a></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1"><span class="kw"><a href="reference/column_names.html">column_names</a></span>(dq)</a></code></pre></div>
 <pre><code>## [1] "subjectID"   "diagnosis"   "probability"</code></pre>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" data-line-number="1"><span class="kw"><a href="reference/tables_used.html">tables_used</a></span>(dq)</a></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="kw"><a href="reference/tables_used.html">tables_used</a></span>(dq)</a></code></pre></div>
 <pre><code>## [1] "d"</code></pre>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" data-line-number="1"><span class="kw"><a href="reference/columns_used.html">columns_used</a></span>(dq)</a></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1"><span class="kw"><a href="reference/columns_used.html">columns_used</a></span>(dq)</a></code></pre></div>
 <pre><code>## $d
 ## [1] "subjectID"       "surveyCategory"  "assessmentTotal"</code></pre>
 <p>The additional record-keeping in the operator nodes allows checking and optimization (such as <a href="http://www.win-vector.com/blog/2017/12/how-to-greatly-speed-up-your-spark-queries/">query narrowing</a>). The flow itself is represented as follows:</p>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb34-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/format">format</a></span>(dq))</a></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/format">format</a></span>(dq))</a></code></pre></div>
 <pre><code>table("d"; 
   subjectID,
   surveyCategory,
@@ -479,12 +471,12 @@
  select_columns(.,
    subjectID, diagnosis, probability) %.&gt;%
  orderby(., subjectID)</code></pre>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb36-1" data-line-number="1">dq <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb36-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="reference/op_diagram.html">op_diagram</a></span>(.) <span class="op">%.&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb36-3" data-line-number="3"><span class="st">  </span>DiagrammeR<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DiagrammeR/topics/grViz">grViz</a></span>(.)</a></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" data-line-number="1">dq <span class="op">%.&gt;%</span></a>
+<a class="sourceLine" id="cb32-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="reference/op_diagram.html">op_diagram</a></span>(.) <span class="op">%.&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb32-3" data-line-number="3"><span class="st">  </span>DiagrammeR<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DiagrammeR/topics/grViz">grViz</a></span>(.)</a></code></pre></div>
 <p><img src="https://github.com/WinVector/rquery/raw/master/tools/pipe_diagram.png"></p>
 <p><code>rquery</code> also includes a number of useful utilities (both as nodes and as functions).</p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb37-1" data-line-number="1"><span class="kw"><a href="reference/quantile_cols.html">quantile_cols</a></span>(db, <span class="st">"d"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" data-line-number="1"><span class="kw"><a href="reference/quantile_cols.html">quantile_cols</a></span>(db, <span class="st">"d"</span>)</a></code></pre></div>
 <pre><code>##   quantile_probability subjectID      surveyCategory assessmentTotal
 ## 1                 0.00         1 positive re-framing               2
 ## 2                 0.25         1 positive re-framing               2
@@ -497,7 +489,7 @@
 ## 3         irrel1         irrel2
 ## 4         irrel1         irrel2
 ## 5         irrel1         irrel2</code></pre>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" data-line-number="1"><span class="kw"><a href="reference/rsummary.html">rsummary</a></span>(db, <span class="st">"d"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" data-line-number="1"><span class="kw"><a href="reference/rsummary.html">rsummary</a></span>(db, <span class="st">"d"</span>)</a></code></pre></div>
 <pre><code>##            column index     class nrows nna nunique min max mean        sd
 ## 1       subjectID     1   integer     4   0      NA   1   2  1.5 0.5773503
 ## 2  surveyCategory     2 character     4   0       2  NA  NA   NA        NA
@@ -510,66 +502,26 @@
 ## 3                &lt;NA&gt;                &lt;NA&gt;
 ## 4              irrel1              irrel1
 ## 5              irrel2              irrel2</code></pre>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb41-1" data-line-number="1">dq <span class="op">%.&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb41-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="reference/quantile_node.html">quantile_node</a></span>(.) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb41-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="reference/execute.html">execute</a></span>(db, .)</a></code></pre></div>
-<pre><code>## Error in postgresqlExecStatement(conn, statement, ...) : 
-##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "rquery_ex_93385618021417900074_0000000000" does not exist
-## LINE 1: SELECT * FROM "rquery_ex_93385618021417900074_0000000000" LI...
-##                       ^
-## )
-## Error in postgresqlExecStatement(conn, statement, ...) : 
-##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "qn_93897509878243751191_0000000000" does not exist
-## LINE 1: SELECT * FROM "qn_93897509878243751191_0000000000" LIMIT 1
-##                       ^
-## )
-## Error in postgresqlExecStatement(conn, statement, ...) : 
-##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "qn_93897509878243751191_0000000001" does not exist
-## LINE 1: SELECT * FROM "qn_93897509878243751191_0000000001" LIMIT 1
-##                       ^
-## )
-## Error in postgresqlExecStatement(conn, statement, ...) : 
-##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "qn_93897509878243751191_0000000001" does not exist
-## LINE 1: SELECT * FROM "qn_93897509878243751191_0000000001" LIMIT 1
-##                       ^
-## )</code></pre>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb37-1" data-line-number="1">dq <span class="op">%.&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb37-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="reference/quantile_node.html">quantile_node</a></span>(.) <span class="op">%.&gt;%</span></a>
+<a class="sourceLine" id="cb37-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="reference/execute.html">execute</a></span>(db, .)</a></code></pre></div>
 <pre><code>##   quantile_probability subjectID           diagnosis probability
-## 1                 0.00         1 positive re-framing   0.5589742
-## 2                 0.25         1 positive re-framing   0.5589742
-## 3                 0.50         1 positive re-framing   0.5589742
-## 4                 0.75         2 withdrawal behavior   0.6706221
-## 5                 1.00         2 withdrawal behavior   0.6706221</code></pre>
-<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb44-1" data-line-number="1">dq <span class="op">%.&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb44-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="reference/rsummary_node.html">rsummary_node</a></span>(.) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb44-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="reference/execute.html">execute</a></span>(db, .)</a></code></pre></div>
-<pre><code>## Error in postgresqlExecStatement(conn, statement, ...) : 
-##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "rquery_ex_13711225073942772174_0000000000" does not exist
-## LINE 1: SELECT * FROM "rquery_ex_13711225073942772174_0000000000" LI...
-##                       ^
-## )
-## Error in postgresqlExecStatement(conn, statement, ...) : 
-##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "sn_98571120157280046995_0000000000" does not exist
-## LINE 1: SELECT * FROM "sn_98571120157280046995_0000000000" LIMIT 1
-##                       ^
-## )
-## Error in postgresqlExecStatement(conn, statement, ...) : 
-##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "sn_98571120157280046995_0000000001" does not exist
-## LINE 1: SELECT * FROM "sn_98571120157280046995_0000000001" LIMIT 1
-##                       ^
-## )
-## Error in postgresqlExecStatement(conn, statement, ...) : 
-##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "sn_98571120157280046995_0000000001" does not exist
-## LINE 1: SELECT * FROM "sn_98571120157280046995_0000000001" LIMIT 1
-##                       ^
-## )</code></pre>
-<pre><code>##        column index     class nrows nna nunique       min       max
-## 1   subjectID     1   integer     2   0      NA 1.0000000 2.0000000
-## 2   diagnosis     2 character     2   0       2        NA        NA
-## 3 probability     3   numeric     2   0      NA 0.5589742 0.6706221
-##        mean         sd              lexmin              lexmax
-## 1 1.5000000 0.70710678                &lt;NA&gt;                &lt;NA&gt;
-## 2        NA         NA positive re-framing withdrawal behavior
-## 3 0.6147982 0.07894697                &lt;NA&gt;                &lt;NA&gt;</code></pre>
+## 1                 0.00         1 positive re-framing    0.558974
+## 2                 0.25         1 positive re-framing    0.558974
+## 3                 0.50         1 positive re-framing    0.558974
+## 4                 0.75         2 withdrawal behavior    0.670622
+## 5                 1.00         2 withdrawal behavior    0.670622</code></pre>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" data-line-number="1">dq <span class="op">%.&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb39-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="reference/rsummary_node.html">rsummary_node</a></span>(.) <span class="op">%.&gt;%</span></a>
+<a class="sourceLine" id="cb39-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="reference/execute.html">execute</a></span>(db, .)</a></code></pre></div>
+<pre><code>##        column index     class nrows nna nunique      min      max     mean
+## 1   subjectID     1   integer     2   0      NA 1.000000 2.000000 1.500000
+## 2   diagnosis     2 character     2   0       2       NA       NA       NA
+## 3 probability     3   numeric     2   0      NA 0.558974 0.670622 0.614798
+##         sd              lexmin              lexmax
+## 1 0.707107                &lt;NA&gt;                &lt;NA&gt;
+## 2       NA positive re-framing withdrawal behavior
+## 3 0.078947                &lt;NA&gt;                &lt;NA&gt;</code></pre>
 <p>We have found most big-data projects either require joining very many tables (something <code>rquery</code> join planners help with, please see <a href="https://github.com/WinVector/rquery/blob/master/extras/JoinController%2Emd">here</a> and <a href="https://github.com/WinVector/rquery/blob/master/extras/JoinController%2Emd">here</a>) or they require working with wide data-marts (where <code>rquery</code> query narrowing helps, please see <a href="https://github.com/WinVector/rquery/blob/master/extras/PerfTest%2Emd">here</a>).</p>
 <p>We can also stand <code>rquery</code> up on non-<code>DBI</code> sources such as <a href="https://github.com/WinVector/rquery/blob/master/extras/SparkR%2Emd"><code>SparkR</code></a> and also <a href="https://CRAN.R-project.org/package=data.table"><code>data.table</code></a>. The <code>data.table</code> adapter is being developed in the <a href="https://github.com/WinVector/rqdatatable"><code>rqdatatable</code></a> package, and can be <a href="http://www.win-vector.com/blog/2018/06/rqdatatable-rquery-powered-by-data-table/">quite fast</a>. Notice the examples in this mode all essentially use the same query pipeline, the user can choose where to apply it: in memory (<code>data.table</code>), in a <code>DBI</code> database (<code>PostgreSQL</code>, <code>Sparklyr</code>), and with even non-DBI systems (<code>SparkR</code>).</p>
 </div>

@@ -114,7 +114,7 @@
     
     
 <p><code>rquery</code> re-maps a number of symbols during <code>SQL</code> translation.</p>
-<p>During expression parsing the internal <code>rquery</code> function <code>tokenize_call_for_SQL()</code> implements the following re-mappings.</p>
+<p>During expression parsing the internal <code>rquery</code> function <code>tokenize_call_for_SQL()</code> implements the following re-mappings from <code>R</code> idioms to <code>SQL</code> notation.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"rquery"</span>)</a>
 <a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"wrapr"</span>)</a>
 <a class="sourceLine" id="cb1-3" data-line-number="3"></a>
@@ -188,6 +188,7 @@
 </tr>
 </tbody>
 </table>
+<p>Note: not all possible mappings are implemented. For example we currently do not re-map <code>%in%</code>, preferring the user to explicitly work with <a href="https://winvector.github.io/rquery/reference/set_indicator.html"><code><a href="../reference/set_indicator.html">set_indicator()</a></code></a> directly.</p>
 <p>In addition to this the database connectors can specify additional re-mappings. This can be found by building a formal connector and inspecting the re-mappings.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">raw_connection &lt;-<span class="st"> </span>DBI<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DBI/topics/dbConnect">dbConnect</a></span>(RSQLite<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/RSQLite/topics/SQLite">SQLite</a></span>(), <span class="st">":memory:"</span>)</a>
 <a class="sourceLine" id="cb2-2" data-line-number="2">RSQLite<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/RSQLite/topics/initExtension">initExtension</a></span>(raw_connection)</a>
@@ -225,7 +226,7 @@
 ##   `assessmentTotal`
 ##  FROM
 ##   `d`
-##  ) tsql_51705480087803934959_0000000000
+##  ) tsql_13059475037940910412_0000000000
 ## GROUP BY
 ##  `subjectID`</code></pre>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">ops <span class="op">%.&gt;%</span></a>
@@ -247,8 +248,29 @@
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">DBI<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DBI/topics/dbDisconnect">dbDisconnect</a></span>(raw_connection)</a></code></pre></div>
-<p>Additional function re-mappings can be specified by user code. One such example is re-writing <code><a href="https://www.rdocumentation.org/packages/base/topics/as.Date">as.Date(x)</a></code> as <code>to_date(date, "YYYY-MM-DD")</code> as seen in an example <a href="https://github.com/WinVector/rquery/blob/master/db_examples/RPostgres_date.md">here</a> (though we are looking at moving this service into <code>rquery</code>).</p>
+<p>Additional function re-mappings can be specified by user code. One such example is re-writing <code><a href="https://www.rdocumentation.org/packages/base/topics/as.Date">as.Date(x)</a></code> as <code>to_date(date, "YYYY-MM-DD")</code> as seen in an example <a href="https://github.com/WinVector/rquery/blob/master/db_examples/RPostgres_date.md">here</a>.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">rquery<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/rquery/topics/rq_function_mappings">rq_function_mappings</a></span>(db) <span class="op">%.&gt;%</span></a>
+<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</a></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">R_name</th>
+<th align="left">sql_mapping</th>
+<th align="left">simple_name_mapping</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">mean</td>
+<td align="left">avg</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">as.Date</td>
+<td align="left">to_date(.(3),‘YYYY-MM-DD’)</td>
+<td align="left">FALSE</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">DBI<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DBI/topics/dbDisconnect">dbDisconnect</a></span>(raw_connection)</a></code></pre></div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
