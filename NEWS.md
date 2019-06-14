@@ -1,7 +1,8 @@
 
-# rquery 1.3.4 2019/06/13
+# rquery 1.3.4 2019/06/14
 
  * Work on schema qualifications.
+ * Allow empty project.
  
 # rquery 1.3.3 2019/06/01
 
