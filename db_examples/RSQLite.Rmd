@@ -133,6 +133,15 @@ DBI::dbReadTable(db$connection, result$table_name) %.>%
   knitr::kable(.)
 ```
 
+`rqdatatable` can also execute collected operations.
+
+```{r rqdt}
+library("rqdatatable")
+
+rqdatatable::ex_data_table(collector, tables = list(d = d_local))
+```
+
+
 We can also diagram the calculation.
 
 ```{r}
