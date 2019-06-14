@@ -104,7 +104,7 @@
       <h1>R mapping</h1>
                         <h4 class="author">John Mount</h4>
             
-            <h4 class="date">2019-06-13</h4>
+            <h4 class="date">2019-06-14</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery/blob/master/vignettes/R_mapping.Rmd"><code>vignettes/R_mapping.Rmd</code></a></small>
       <div class="hidden name"><code>R_mapping.Rmd</code></div>
@@ -196,8 +196,16 @@
 <a class="sourceLine" id="cb2-4" data-line-number="4">  <span class="dt">connection =</span> raw_connection,</a>
 <a class="sourceLine" id="cb2-5" data-line-number="5">  <span class="dt">is_dbi =</span> <span class="ot">TRUE</span>,</a>
 <a class="sourceLine" id="cb2-6" data-line-number="6">  <span class="dt">connection_options =</span> <span class="kw"><a href="../reference/rq_connection_tests.html">rq_connection_tests</a></span>(raw_connection))</a>
-<a class="sourceLine" id="cb2-7" data-line-number="7">fn_name_map &lt;-<span class="st"> </span>db<span class="op">$</span>connection_options[[<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/paste">paste0</a></span>(<span class="st">"rquery."</span>, <span class="kw"><a href="../reference/rq_connection_name.html">rq_connection_name</a></span>(db), <span class="st">"."</span>, <span class="st">"fn_name_map"</span>)]]</a>
-<a class="sourceLine" id="cb2-8" data-line-number="8">fn_name_map</a></code></pre></div>
+<a class="sourceLine" id="cb2-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb2-8" data-line-number="8"><span class="co"># RSQLite has a non-standard modulo operator</span></a>
+<a class="sourceLine" id="cb2-9" data-line-number="9">db<span class="op">$</span>expr_map[[<span class="st">"MOD"</span>]] &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="kw"><a href="../reference/pre_sql_token.html">pre_sql_token</a></span>(<span class="st">"("</span>),</a>
+<a class="sourceLine" id="cb2-10" data-line-number="10">                           <span class="dv">3</span>,</a>
+<a class="sourceLine" id="cb2-11" data-line-number="11">                           <span class="kw"><a href="../reference/pre_sql_token.html">pre_sql_token</a></span>(<span class="st">"%"</span>),</a>
+<a class="sourceLine" id="cb2-12" data-line-number="12">                           <span class="dv">5</span>,</a>
+<a class="sourceLine" id="cb2-13" data-line-number="13">                           <span class="kw"><a href="../reference/pre_sql_token.html">pre_sql_token</a></span>(<span class="st">")"</span>))</a>
+<a class="sourceLine" id="cb2-14" data-line-number="14"></a>
+<a class="sourceLine" id="cb2-15" data-line-number="15">fn_name_map &lt;-<span class="st"> </span>db<span class="op">$</span>connection_options[[<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/paste">paste0</a></span>(<span class="st">"rquery."</span>, <span class="kw"><a href="../reference/rq_connection_name.html">rq_connection_name</a></span>(db), <span class="st">"."</span>, <span class="st">"fn_name_map"</span>)]]</a>
+<a class="sourceLine" id="cb2-16" data-line-number="16">fn_name_map</a></code></pre></div>
 <pre><code>##  mean 
 ## "avg"</code></pre>
 <p>We see above that “<code>mean</code>” is re-mapped to “<code>avg</code>”.</p>
@@ -206,8 +214,8 @@
 <a class="sourceLine" id="cb4-2" data-line-number="2">   <span class="st">"subjectID"</span>, <span class="st">"surveyCategory"</span>     , <span class="st">"assessmentTotal"</span>, <span class="st">"irrelevantCol1"</span>, <span class="st">"irrelevantCol2"</span> <span class="op">|</span></a>
 <a class="sourceLine" id="cb4-3" data-line-number="3"><span class="st">   </span>1L         , <span class="st">"withdrawal behavior"</span>, <span class="dv">5</span>                , <span class="st">"irrel1"</span>        , <span class="st">"irrel2"</span>         <span class="op">|</span></a>
 <a class="sourceLine" id="cb4-4" data-line-number="4"><span class="st">   </span>1L         , <span class="st">"positive re-framing"</span>, <span class="dv">2</span>                , <span class="st">"irrel1"</span>        , <span class="st">"irrel2"</span>         <span class="op">|</span></a>
-<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="st">   </span>2L         , <span class="st">"withdrawal behavior"</span>, <span class="dv">3</span>                , <span class="st">"irrel1"</span>        , <span class="st">"irrel2"</span>         <span class="op">|</span></a>
-<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="st">   </span>2L         , <span class="st">"positive re-framing"</span>, <span class="dv">4</span>                , <span class="st">"irrel1"</span>        , <span class="st">"irrel2"</span>         )</a>
+<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="st">   </span>3L         , <span class="st">"withdrawal behavior"</span>, <span class="dv">3</span>                , <span class="st">"irrel1"</span>        , <span class="st">"irrel2"</span>         <span class="op">|</span></a>
+<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="st">   </span>3L         , <span class="st">"positive re-framing"</span>, <span class="dv">4</span>                , <span class="st">"irrel1"</span>        , <span class="st">"irrel2"</span>         )</a>
 <a class="sourceLine" id="cb4-7" data-line-number="7">table_handle &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rq_copy_to.html">rq_copy_to</a></span>(db, <span class="st">'d'</span>,</a>
 <a class="sourceLine" id="cb4-8" data-line-number="8">            d_local,</a>
 <a class="sourceLine" id="cb4-9" data-line-number="9">            <span class="dt">temporary =</span> <span class="ot">TRUE</span>, </a>
@@ -226,7 +234,7 @@
 ##   `assessmentTotal`
 ##  FROM
 ##   `d`
-##  ) tsql_13059475037940910412_0000000000
+##  ) tsql_71847493414452874625_0000000000
 ## GROUP BY
 ##  `subjectID`</code></pre>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">ops <span class="op">%.&gt;%</span></a>
@@ -243,17 +251,17 @@
 <td align="right">3.5</td>
 </tr>
 <tr class="even">
-<td align="right">2</td>
+<td align="right">3</td>
 <td align="right">3.5</td>
 </tr>
 </tbody>
 </table>
-<p>Additional function re-mappings can be specified by user code. One such example is re-writing <code><a href="https://www.rdocumentation.org/packages/base/topics/as.Date">as.Date(x)</a></code> as <code>to_date(date, "YYYY-MM-DD")</code> as seen in an example <a href="https://github.com/WinVector/rquery/blob/master/db_examples/RPostgres_date.md">here</a>.</p>
+<p>Additional function re-mappings can be specified by user code. One such example is re-writing <code>MOD</code> as <code>%</code> for <code>RSQLite</code>.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">rquery<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/rquery/topics/rq_function_mappings">rq_function_mappings</a></span>(db) <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb9-2" data-line-number="2"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</a></code></pre></div>
 <table class="table">
 <thead><tr class="header">
-<th align="left">R_name</th>
+<th align="left">fn_name</th>
 <th align="left">sql_mapping</th>
 <th align="left">simple_name_mapping</th>
 </tr></thead>
@@ -265,12 +273,47 @@
 </tr>
 <tr class="even">
 <td align="left">as.Date</td>
-<td align="left">to_date(.(3),‘YYYY-MM-DD’)</td>
+<td align="left">to_date ( .(3) , ‘YYYY-MM-DD’ )</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="left">MOD</td>
+<td align="left">( .(3) % .(5) )</td>
 <td align="left">FALSE</td>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">DBI<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DBI/topics/dbDisconnect">dbDisconnect</a></span>(raw_connection)</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">table_handle <span class="op">%.&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/extend.html">extend</a></span>(., z <span class="op">:</span><span class="er">=</span><span class="st"> </span>subjectID <span class="op">%%</span><span class="st"> </span><span class="dv">3</span>) -&gt;<span class="st"> </span>ops</a>
+<a class="sourceLine" id="cb10-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(ops, db))</a></code></pre></div>
+<pre><code>## SELECT
+##  `subjectID`,
+##  `surveyCategory`,
+##  `assessmentTotal`,
+##  `irrelevantCol1`,
+##  `irrelevantCol2`,
+##  ( `subjectID` % 3 )  AS `z`
+## FROM (
+##  SELECT
+##   `subjectID`,
+##   `surveyCategory`,
+##   `assessmentTotal`,
+##   `irrelevantCol1`,
+##   `irrelevantCol2`
+##  FROM
+##   `d`
+##  ) tsql_75194285671280714514_0000000000</code></pre>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw"><a href="../reference/execute.html">execute</a></span>(db, ops)</a></code></pre></div>
+<pre><code>##   subjectID      surveyCategory assessmentTotal irrelevantCol1
+## 1         1 withdrawal behavior               5         irrel1
+## 2         1 positive re-framing               2         irrel1
+## 3         3 withdrawal behavior               3         irrel1
+## 4         3 positive re-framing               4         irrel1
+##   irrelevantCol2 z
+## 1         irrel2 1
+## 2         irrel2 1
+## 3         irrel2 0
+## 4         irrel2 0</code></pre>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1">DBI<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DBI/topics/dbDisconnect">dbDisconnect</a></span>(raw_connection)</a></code></pre></div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

@@ -148,7 +148,8 @@
 
     <pre class="usage"><span class='co'># S3 method for pre_sql_sub_expr</span>
 <span class='fu'><a href='pre_sql_to_query.html'>pre_sql_to_query</a></span>(<span class='no'>x</span>, <span class='no'>db_info</span>, <span class='no'>...</span>,
-  <span class='kw'>source_table</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>source_limit</span> <span class='kw'>=</span> <span class='fl'>NA_real_</span>, <span class='kw'>using</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+  <span class='kw'>source_table</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>source_limit</span> <span class='kw'>=</span> <span class='fl'>NA_real_</span>, <span class='kw'>using</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -176,6 +177,10 @@
     <tr>
       <th>using</th>
       <td><p>TBD</p></td>
+    </tr>
+    <tr>
+      <th>qualifiers</th>
+      <td><p>named ordered vector of strings carrying additional db hierarchy terms, such as schema.</p></td>
     </tr>
     </table>
     

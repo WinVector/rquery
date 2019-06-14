@@ -3,6 +3,7 @@
 
  * Work on schema qualifications.
  * Allow empty project.
+ * Better function re-mapping.
  
 # rquery 1.3.3 2019/06/01
 
