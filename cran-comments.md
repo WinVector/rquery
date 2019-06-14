@@ -21,8 +21,12 @@
 ### Windows
 
     devtools::build_win()
-    
-
+    * using R version 3.6.0 (2019-04-26)
+    * using platform: x86_64-w64-mingw32 (64-bit)
+    Status: OK
+    * using R Under development (unstable) (2019-06-11 r76694)
+    * using platform: x86_64-w64-mingw32 (64-bit)
+    Status: OK
 
 ## Reverse dependencies
 
