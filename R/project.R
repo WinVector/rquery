@@ -25,11 +25,14 @@ project_impl <- function(source, ...,
     groupby
   )))
   check_have_cols(have, required_cols, "rquery::project")
-  parts <- partition_assignments(parsed)
-  if(length(parts)>1) {
-    stop(paste("rquery:::project_impl can not use produced column names during a project"))
+  assignments <- list()
+  if(length(parsed)>0) {
+    parts <- partition_assignments(parsed)
+    if(length(parts)>1) {
+      stop(paste("rquery:::project_impl can not use produced column names during a project"))
+    }
+    assignments <- unpack_assignments(source, parsed)
   }
-  assignments <- unpack_assignments(source, parsed)
   # producing <- names(assignments)
   # overlap <- intersect(have, producing)
   # if(length(overlap)>0) {
@@ -101,7 +104,7 @@ aggregate_se <- project_se
 project_se.relop <- function(source, groupby, assignments,
                              env = parent.frame()) {
   force(env)
-  parsed <- parse_se(source, assignments, env = env)
+  parsed <- parse_se(source, assignments, env = env, allow_empty = TRUE)
   project_impl(source, groupby = groupby, parsed = parsed)
 }
 
@@ -185,7 +188,7 @@ project.relop <- function(source, groupby, ...,
   # http://adv-r.had.co.nz/Computing-on-the-language.html#substitute "Capturing unevaluated ..."
   exprs <-  eval(substitute(alist(...)))
   exprs <- lapply_bquote_to_langauge_list(exprs, env)
-  parsed <- parse_nse(source, exprs, env = env)
+  parsed <- parse_nse(source, exprs, env = env, allow_empty = TRUE)
   project_impl(source, groupby = groupby, parsed = parsed)
 }
 
