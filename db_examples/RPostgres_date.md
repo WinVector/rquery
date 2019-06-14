@@ -87,7 +87,7 @@ cat(to_sql(ops, db))
     ##   "date"
     ##  FROM
     ##   "testdate"
-    ##  ) tsql_07076266217990694448_0000000000
+    ##  ) tsql_90684675899976646004_0000000000
 
 ``` r
 execute(db, ops)  %.>%
@@ -103,10 +103,10 @@ rquery::rq_function_mappings(db) %.>%
   knitr::kable(.)
 ```
 
-| R\_name | sql\_mapping                | simple\_name\_mapping |
-| :------ | :-------------------------- | :-------------------- |
-| mean    | avg                         | TRUE                  |
-| as.Date | to\_date(.(3),‘YYYY-MM-DD’) | FALSE                 |
+| fn\_name | sql\_mapping                     | simple\_name\_mapping |
+| :------- | :------------------------------- | :-------------------- |
+| mean     | avg                              | TRUE                  |
+| as.Date  | to\_date ( .(3) , ‘YYYY-MM-DD’ ) | FALSE                 |
 
 ``` r
 DBI::dbDisconnect(raw_connection)

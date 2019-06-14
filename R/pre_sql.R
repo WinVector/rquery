@@ -180,12 +180,6 @@ pre_sql_to_query.pre_sql_token <- function (x,
                                     using = NULL,
                                     qualifiers = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::pre_sql_to_query.pre_sql_token")
-  if("rquery_db_info" %in% class(db_info)) {
-    tree_rewriter <- db_info[["tree_rewriter"]]
-    if(!is.null(tree_rewriter)) {
-      x <- tree_rewriter(x, db_info)
-    }
-  }
   if((!is.null(x$is_zero_argument_call)) && (x$is_zero_argument_call)) {
     val <- paste(as.character(x$value), collapse = " ")
     zero_arg_fn_map <- getDBOption(db_info, "zero_arg_fn_map")
@@ -252,12 +246,6 @@ pre_sql_to_query.pre_sql_sub_expr <- function (x,
                                        using = NULL,
                                        qualifiers = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::pre_sql_to_query.pre_sql_sub_expr")
-  if("rquery_db_info" %in% class(db_info)) {
-    tree_rewriter <- db_info[["tree_rewriter"]]
-    if(!is.null(tree_rewriter)) {
-      x <- tree_rewriter(x, db_info)
-    }
-  }
   terms <- lapply(x$toks,
                   function(ti) {
                     pre_sql_to_query(ti,

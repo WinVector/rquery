@@ -162,8 +162,15 @@ parse_nse <- function(source, exprs, env,
 # parsed_toks is sequence of pre_sql tokens
 redo_parse_quoting <- function(parsed, db_info) {
   n <- length(parsed)
+  tree_rewriter <- NULL
+  if("rquery_db_info" %in% class(db_info)) {
+    tree_rewriter <- db_info[["tree_rewriter"]]
+  }
   for(i in seq_len(n)) {
     pi <- parsed[[i]]
+    if(!is.null(tree_rewriter)) {
+      pi$parsed_toks <- tree_rewriter(pi$parsed_toks, db_info)
+    }
     pi$parsed <- pre_sql_to_query(pi$parsed_toks,
                           db_info = db_info)
     parsed[[i]] <- pi

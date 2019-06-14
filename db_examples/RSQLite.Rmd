@@ -20,26 +20,14 @@ db <- rquery_db_info(
   connection = raw_connection,
   is_dbi = TRUE,
   connection_options = rq_connection_tests(raw_connection))
-tree_rewriter <- function(x, db_info) {
-  if(("pre_sql_sub_expr" %in% class(x)) && 
-     (length(x$info$name) == 1) &&
-     (x$info$name == "modulo")) {
-    lhs <- x$toks[[3]]
-    rhs <- x$toks[[5]]
-    return(pre_sql_sub_expr(
-      list(pre_sql_token("("),
-           lhs,
-           pre_sql_token("%"),
-           rhs,
-           pre_sql_token(")")),
-      info=list(name = "user_replaced"))
-    )
-  }
-  x
-}
-# attach our tree-rewriter to the databse handle.
-# this handle now uses this re-writer.
-db$tree_rewriter <- tree_rewriter
+
+# RSQLite has a non-standard modulo operator
+db$expr_map[["MOD"]] <- list(pre_sql_token("("),
+                           3,
+                           pre_sql_token("%"),
+                           5,
+                           pre_sql_token(")"))
+
 
 tmps <- mk_tmp_name_source("ex")
 

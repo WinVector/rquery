@@ -1,5 +1,32 @@
 
 
+tree_rewriter <- function(x, db_info) {
+  expr_map <- db_info$expr_map
+  if("pre_sql_sub_expr" %in% class(x)) {
+    # first recurse
+    for(i in seq_len(length(x$toks))) {
+      x$toks[[i]] <- tree_rewriter(x$toks[[i]], db_info)
+    }
+    # now look for special cases
+    if(("pre_sql_token" %in% class(x$toks[[1]])) &&
+       (x$toks[[1]]$token_type == "function_name")) {
+      key <- x$toks[[1]][["value"]]
+      replacement <- expr_map[[key]]
+      if(!is.null(replacement)) {
+        x_translated <- x
+        x_translated$toks <- replacement
+        for(i in seq_len(length(replacement))) {
+          if(is.numeric(replacement[[i]])) {
+            x_translated$toks[[i]] <- x$toks[[replacement[[i]]]]
+          }
+        }
+        return(x_translated)
+      }
+    }
+  }
+  x
+}
+
 #' Build a db information stand-in
 #'
 #' @param ... force all arguments to be by name.
@@ -139,32 +166,7 @@ rquery_db_info <- function(...,
     pre_sql_token(")")
   )
   )
-  r$tree_rewriter <- function(x, db_info) {
-    expr_map <- db_info$expr_map
-    if("pre_sql_sub_expr" %in% class(x)) {
-      # first recurse
-      for(i in seq_len(length(x$toks))) {
-        x$toks[[i]] <- Recall(x$toks[[i]], db_info)
-      }
-      # now look for special cases
-      if(("pre_sql_token" %in% class(x$toks[[1]])) &&
-         (x$toks[[1]]$token_type == "function_name")) {
-        key <- x$toks[[1]][["value"]]
-        replacement <- expr_map[[key]]
-        if(!is.null(replacement)) {
-          x_translated <- x
-          x_translated$toks <- replacement
-          for(i in seq_len(length(replacement))) {
-            if(is.numeric(replacement[[i]])) {
-              x_translated$toks[[i]] <- x$toks[[replacement[[i]]]]
-            }
-          }
-          return(x_translated)
-        }
-      }
-    }
-    x
-  }
+  r$tree_rewriter <- tree_rewriter
   for(ni in names(overrides)) {
     r[[ni]] <- overrides[[ni]]
   }
@@ -216,14 +218,14 @@ rq_function_mappings <- function(db,
     stop("rquery::rq_function_mappings db must be of class rq_function_mappings")
   }
   # create zero row data.frame
-  mp <- data.frame(R_name = character(0),
+  mp <- data.frame(fn_name = character(0),
                    sql_mapping = character(0),
                    simple_name_mapping = logical(0),
                    stringsAsFactors = FALSE)
   # map in simple renamings
   fn_name_map <- db$connection_options[[paste0("rquery.", rq_connection_name(db), ".", "fn_name_map")]]
   if(length(fn_name_map)>0) {
-    fmp <- data.frame(R_name = names(fn_name_map),
+    fmp <- data.frame(fn_name = names(fn_name_map),
                       stringsAsFactors = FALSE)
     lst <- fn_name_map
     names(lst) <- NULL
@@ -234,7 +236,7 @@ rq_function_mappings <- function(db,
   # map in function re-writes
   expr_map <- db$expr_map
   if(length(expr_map)>0) {
-    emp <- data.frame(R_name = names(expr_map),
+    emp <- data.frame(fn_name = names(expr_map),
                       stringsAsFactors = FALSE)
     elst <- expr_map
     names(elst) <- NULL
@@ -248,7 +250,7 @@ rq_function_mappings <- function(db,
                           paste0(".(", elstij, ")")
                         }
                       }, character(1))
-      elsti <- paste(elsti, collapse = "")
+      elsti <- paste(elsti, collapse = " ")
       elst[[ei]] <- elsti
     }
     emp$sql_mapping <- elst

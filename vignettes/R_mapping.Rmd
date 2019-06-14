@@ -44,6 +44,14 @@ db <- rquery_db_info(
   connection = raw_connection,
   is_dbi = TRUE,
   connection_options = rq_connection_tests(raw_connection))
+
+# RSQLite has a non-standard modulo operator
+db$expr_map[["MOD"]] <- list(pre_sql_token("("),
+                           3,
+                           pre_sql_token("%"),
+                           5,
+                           pre_sql_token(")"))
+
 fn_name_map <- db$connection_options[[paste0("rquery.", rq_connection_name(db), ".", "fn_name_map")]]
 fn_name_map
 ```
@@ -57,8 +65,8 @@ d_local <- build_frame(
    "subjectID", "surveyCategory"     , "assessmentTotal", "irrelevantCol1", "irrelevantCol2" |
    1L         , "withdrawal behavior", 5                , "irrel1"        , "irrel2"         |
    1L         , "positive re-framing", 2                , "irrel1"        , "irrel2"         |
-   2L         , "withdrawal behavior", 3                , "irrel1"        , "irrel2"         |
-   2L         , "positive re-framing", 4                , "irrel1"        , "irrel2"         )
+   3L         , "withdrawal behavior", 3                , "irrel1"        , "irrel2"         |
+   3L         , "positive re-framing", 4                , "irrel1"        , "irrel2"         )
 table_handle <- rq_copy_to(db, 'd',
             d_local,
             temporary = TRUE, 
@@ -77,11 +85,17 @@ ops %.>%
   knitr::kable(.)
 ```
 
-Additional function re-mappings can be specified by user code.  One such example is re-writing `as.Date(x)` as `to_date(date, "YYYY-MM-DD")` as seen in an example [here](https://github.com/WinVector/rquery/blob/master/db_examples/RPostgres_date.md).
+Additional function re-mappings can be specified by user code.  One such example is re-writing `MOD` as `%` for `RSQLite`.
 
 ```{r}
 rquery::rq_function_mappings(db) %.>%
   knitr::kable(.)
+```
+
+```{r}
+table_handle %.>% extend(., z := subjectID %% 3) -> ops
+cat(to_sql(ops, db))
+execute(db, ops)
 ```
 
 

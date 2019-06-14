@@ -236,7 +236,7 @@ tokenize_call_for_SQL <- function(lexpr,
   if(is_inline_expr(lexpr)) {
     if(callName=="^") {
       res$parsed_toks <- pre_sql_sub_expr(
-        list(pre_sql_token("POWER"),
+        list(pre_sql_fn("POWER"),
              pre_sql_token("("),
              args[[1]]$parsed_toks,
              pre_sql_token(","),
@@ -247,7 +247,7 @@ tokenize_call_for_SQL <- function(lexpr,
     }
     if(callName=="%%") {
       res$parsed_toks <- pre_sql_sub_expr(
-        list(pre_sql_token("MOD"),
+        list(pre_sql_fn("MOD"),
              pre_sql_token("("),
              args[[1]]$parsed_toks,
              pre_sql_token(","),
