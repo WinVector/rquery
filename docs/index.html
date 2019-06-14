@@ -344,7 +344,7 @@
 <a class="sourceLine" id="cb16-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/class">class</a></span>(result)</a></code></pre></div>
 <pre><code>## [1] "relop_table_source" "relop"</code></pre>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">result</a></code></pre></div>
-<pre><code>## [1] "table(\"rquery_mat_31121314808519765537_0000000000\"; subjectID, diagnosis, probability)"</code></pre>
+<pre><code>## [1] "table(\"rquery_mat_58641628421926869060_0000000000\"; subjectID, diagnosis, probability)"</code></pre>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1">DBI<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DBI/topics/dbReadTable">dbReadTable</a></span>(db<span class="op">$</span>connection, result<span class="op">$</span>table_name) <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb20-2" data-line-number="2"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</a></code></pre></div>
 <table class="table table">
@@ -429,14 +429,14 @@
         "assessmentTotal"
        FROM
         "d" LIMIT 1000
-       ) tsql_38160529317910160509_0000000000
-      ) tsql_38160529317910160509_0000000001
-     ) tsql_38160529317910160509_0000000002
-   ) tsql_38160529317910160509_0000000003
+       ) tsql_98515046260015558613_0000000000
+      ) tsql_98515046260015558613_0000000001
+     ) tsql_98515046260015558613_0000000002
+   ) tsql_98515046260015558613_0000000003
    WHERE "row_number" &lt;= 1
-  ) tsql_38160529317910160509_0000000004
- ) tsql_38160529317910160509_0000000005
-) tsql_38160529317910160509_0000000006 ORDER BY "subjectID"</code></pre>
+  ) tsql_98515046260015558613_0000000004
+ ) tsql_98515046260015558613_0000000005
+) tsql_98515046260015558613_0000000006 ORDER BY "subjectID"</code></pre>
 <p>The query is large, but due to its regular structure it should be very amenable to query optimization.</p>
 <p>A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our <a href="https://github.com/WinVector/rquery/blob/master/extras/PerfTest%2Emd">initial experiments</a> show <code>rquery</code> narrowed queries to be twice as fast as un-narrowed <code>dplyr</code> on a synthetic problem simulating large disk-based queries. We think if we connected directly to <code>Spark</code>’s relational operators (avoiding the <code>SQL</code> layer) we may be able to achieve even faster performance.</p>
 <p>The above optimization is possible because the <code>rquery</code> representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query. For example:</p>
