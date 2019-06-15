@@ -20,7 +20,7 @@ library("wrapr")
 show_translation <- function(strings) {
   vapply(strings,
          function(si) {
-           format(rquery::tokenize_for_SQL(str2lang(si), colnames = NULL)$parsed_toks)
+           format(rquery::tokenize_for_SQL(parse(text = si, keep.source = FALSE)[[1]], colnames = NULL)$parsed_toks)
          }, character(1))
 }
 
@@ -93,9 +93,15 @@ rquery::rq_function_mappings(db) %.>%
 ```
 
 ```{r}
-table_handle %.>% extend(., z := subjectID %% 3) -> ops
+ops <- table_handle %.>% 
+  extend(., z := 1 + subjectID %% 3) %.>%
+  select_columns(., c("subjectID", "z"))
+                 
 cat(to_sql(ops, db))
-execute(db, ops)
+
+ops %.>%
+  execute(db, .) %.>%
+  knitr::kable(.)
 ```
 
 
