@@ -1,7 +1,7 @@
 
 # rquery 1.3.5 2019/06/15
 
- * Remote str2lang() from vignette (method is not in older R)
+ * Remove str2lang() from vignette (method is not in older R)
 
 # rquery 1.3.4 2019/06/14
 
