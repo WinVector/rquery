@@ -38,12 +38,16 @@ Note: not all possible mappings are implemented.  For example we currently do no
 In addition to this the database connectors can specify additional re-mappings. This can be found by building a formal connector and inspecting the re-mappings.
 
 ```{r}
-raw_connection <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-RSQLite::initExtension(raw_connection)
+have_RSQLite <- requireNamespace("RSQLite", quietly = TRUE)
+```
+
+```{r, eval=have_RSQLite}
+raw_RSQLite_connection <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+RSQLite::initExtension(raw_RSQLite_connection)
 db <- rquery_db_info(
-  connection = raw_connection,
+  connection = raw_RSQLite_connection,
   is_dbi = TRUE,
-  connection_options = rq_connection_tests(raw_connection))
+  connection_options = rq_connection_tests(raw_RSQLite_connection))
 
 # RSQLite has a non-standard modulo operator
 db$expr_map[["MOD"]] <- list(pre_sql_token("("),
@@ -60,7 +64,7 @@ We see above that "`mean`" is re-mapped to "`avg`".
 
 In all cases we can see what re-mappings happen by examining a query.
 
-```{r}
+```{r, eval=have_RSQLite}
 d_local <- build_frame(
    "subjectID", "surveyCategory"     , "assessmentTotal", "irrelevantCol1", "irrelevantCol2" |
    1L         , "withdrawal behavior", 5                , "irrel1"        , "irrel2"         |
@@ -87,12 +91,12 @@ ops %.>%
 
 Additional function re-mappings can be specified by user code.  One such example is re-writing `MOD` as `%` for `RSQLite`.
 
-```{r}
+```{r, eval=have_RSQLite}
 rquery::rq_function_mappings(db) %.>%
   knitr::kable(.)
 ```
 
-```{r}
+```{r, eval=have_RSQLite}
 ops <- table_handle %.>% 
   extend(., z := 1 + subjectID %% 3) %.>%
   select_columns(., c("subjectID", "z"))
@@ -105,7 +109,7 @@ ops %.>%
 ```
 
 
-```{r}
-DBI::dbDisconnect(raw_connection)
+```{r, eval=have_RSQLite}
+DBI::dbDisconnect(raw_RSQLite_connection)
 ```
 

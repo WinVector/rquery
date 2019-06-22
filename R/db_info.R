@@ -220,7 +220,7 @@ rq_function_mappings <- function(db,
   # create zero row data.frame
   mp <- data.frame(fn_name = character(0),
                    sql_mapping = character(0),
-                   simple_name_mapping = logical(0),
+                   mapping_source = character(0),
                    stringsAsFactors = FALSE)
   # map in simple renamings
   fn_name_map <- db$connection_options[[paste0("rquery.", rq_connection_name(db), ".", "fn_name_map")]]
@@ -230,8 +230,19 @@ rq_function_mappings <- function(db,
     lst <- fn_name_map
     names(lst) <- NULL
     fmp$sql_mapping <- lst
-    fmp$simple_name_mapping <- TRUE
+    fmp$mapping_source <- "fn_name_map"
     mp <- rbind(mp, fmp)
+  }
+  # zero argument function re-writes
+  zero_arg_fn_map <- getDBOption(db, "zero_arg_fn_map")
+  if(length(zero_arg_fn_map)>0) {
+    zmp <- data.frame(fn_name = names(zero_arg_fn_map),
+                      stringsAsFactors = FALSE)
+    lst <- zero_arg_fn_map
+    names(lst) <- NULL
+    zmp$sql_mapping <- lst
+    zmp$mapping_source <- "zero_arg_fn_map"
+    mp <- rbind(mp, zmp)
   }
   # map in function re-writes
   expr_map <- db$expr_map
@@ -254,7 +265,7 @@ rq_function_mappings <- function(db,
       elst[[ei]] <- elsti
     }
     emp$sql_mapping <- elst
-    emp$simple_name_mapping <- FALSE
+    emp$mapping_source <- "expr_map"
     mp <- rbind(mp, emp)
   }
   mp
