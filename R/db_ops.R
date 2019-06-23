@@ -608,7 +608,13 @@ rq_connection_advice <- function(db) {
     opts[[paste(c("rquery", cname, "control_rownames"), collapse = ".")]] <- FALSE
     opts[[paste(c("rquery", cname, "use_DBI_dbListFields"), collapse = ".")]] <- FALSE
     opts[[paste(c("rquery", cname, "use_DBI_dbRemoveTable"), collapse = ".")]] <- FALSE
+    opts[[paste(c("rquery", cname, "expr_map"), collapse = ".")]] <-
+      list("RAND" = list( # call is 1:RAND 2:( 3:)
+        pre_sql_fn("RANDOM"),
+        pre_sql_token("("),
+        pre_sql_token(")")))
   }
+  # TODO: sparkR support here instead of in https://github.com/WinVector/rquery/blob/master/db_examples/SparkR.md
   if(cname == "PostgreSQLConnection") { # RPostgreSQL::PostgreSQL()
     opts[[paste(c("rquery", cname, "use_DBI_dbListFields"), collapse = ".")]] <- FALSE
     opts[[paste(c("rquery", cname, "use_DBI_dbRemoveTable"), collapse = ".")]] <- FALSE

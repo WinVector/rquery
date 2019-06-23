@@ -84,7 +84,7 @@ ops %.>%
   knitr::kable(.)
 ```
 
-The basic mappings are stored in database option structures.
+The basic mappings are stored in database option structures, and depend on the database.  For example `MOD` is re-mapped back to `%` for `RSQLite`.
 
 ```{r, eval=have_RSQLite}
 rquery::rq_function_mappings(db) %.>%
