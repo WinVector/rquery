@@ -104,7 +104,7 @@
       <h1>R mapping</h1>
                         <h4 class="author">John Mount</h4>
             
-            <h4 class="date">2019-06-22</h4>
+            <h4 class="date">2019-06-23</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery/blob/master/vignettes/R_mapping.Rmd"><code>vignettes/R_mapping.Rmd</code></a></small>
       <div class="hidden name"><code>R_mapping.Rmd</code></div>
@@ -198,17 +198,10 @@
 <a class="sourceLine" id="cb3-5" data-line-number="5">  <span class="dt">is_dbi =</span> <span class="ot">TRUE</span>,</a>
 <a class="sourceLine" id="cb3-6" data-line-number="6">  <span class="dt">connection_options =</span> <span class="kw"><a href="../reference/rq_connection_tests.html">rq_connection_tests</a></span>(raw_RSQLite_connection))</a>
 <a class="sourceLine" id="cb3-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="co"># RSQLite has a non-standard modulo operator</span></a>
-<a class="sourceLine" id="cb3-9" data-line-number="9">db<span class="op">$</span>expr_map[[<span class="st">"MOD"</span>]] &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="kw"><a href="../reference/pre_sql_token.html">pre_sql_token</a></span>(<span class="st">"("</span>),</a>
-<a class="sourceLine" id="cb3-10" data-line-number="10">                           <span class="dv">3</span>,</a>
-<a class="sourceLine" id="cb3-11" data-line-number="11">                           <span class="kw"><a href="../reference/pre_sql_token.html">pre_sql_token</a></span>(<span class="st">"%"</span>),</a>
-<a class="sourceLine" id="cb3-12" data-line-number="12">                           <span class="dv">5</span>,</a>
-<a class="sourceLine" id="cb3-13" data-line-number="13">                           <span class="kw"><a href="../reference/pre_sql_token.html">pre_sql_token</a></span>(<span class="st">")"</span>))</a>
-<a class="sourceLine" id="cb3-14" data-line-number="14"></a>
-<a class="sourceLine" id="cb3-15" data-line-number="15">fn_name_map &lt;-<span class="st"> </span>db<span class="op">$</span>connection_options[[<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/paste">paste0</a></span>(<span class="st">"rquery."</span>, <span class="kw"><a href="../reference/rq_connection_name.html">rq_connection_name</a></span>(db), <span class="st">"."</span>, <span class="st">"fn_name_map"</span>)]]</a>
-<a class="sourceLine" id="cb3-16" data-line-number="16">fn_name_map</a></code></pre></div>
-<pre><code>##  mean 
-## "avg"</code></pre>
+<a class="sourceLine" id="cb3-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb3-9" data-line-number="9">fn_name_map &lt;-<span class="st"> </span>db<span class="op">$</span>connection_options[[<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/paste">paste0</a></span>(<span class="st">"rquery."</span>, <span class="kw"><a href="../reference/rq_connection_name.html">rq_connection_name</a></span>(db), <span class="st">"."</span>, <span class="st">"fn_name_map"</span>)]]</a>
+<a class="sourceLine" id="cb3-10" data-line-number="10">fn_name_map</a></code></pre></div>
+<pre><code>## NULL</code></pre>
 <p>We see above that “<code>mean</code>” is re-mapped to “<code>avg</code>”.</p>
 <p>In all cases we can see what re-mappings happen by examining a query.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">d_local &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/wrapr/topics/build_frame">build_frame</a></span>(</a>
@@ -216,12 +209,13 @@
 <a class="sourceLine" id="cb5-3" data-line-number="3"><span class="st">   </span>1L         , <span class="st">"withdrawal behavior"</span>, <span class="dv">5</span>                , <span class="st">"irrel1"</span>        , <span class="st">"irrel2"</span>         <span class="op">|</span></a>
 <a class="sourceLine" id="cb5-4" data-line-number="4"><span class="st">   </span>1L         , <span class="st">"positive re-framing"</span>, <span class="dv">2</span>                , <span class="st">"irrel1"</span>        , <span class="st">"irrel2"</span>         <span class="op">|</span></a>
 <a class="sourceLine" id="cb5-5" data-line-number="5"><span class="st">   </span>3L         , <span class="st">"withdrawal behavior"</span>, <span class="dv">3</span>                , <span class="st">"irrel1"</span>        , <span class="st">"irrel2"</span>         <span class="op">|</span></a>
-<a class="sourceLine" id="cb5-6" data-line-number="6"><span class="st">   </span>3L         , <span class="st">"positive re-framing"</span>, <span class="dv">4</span>                , <span class="st">"irrel1"</span>        , <span class="st">"irrel2"</span>         )</a>
-<a class="sourceLine" id="cb5-7" data-line-number="7">table_handle &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rq_copy_to.html">rq_copy_to</a></span>(db, <span class="st">'d'</span>,</a>
-<a class="sourceLine" id="cb5-8" data-line-number="8">            d_local,</a>
-<a class="sourceLine" id="cb5-9" data-line-number="9">            <span class="dt">temporary =</span> <span class="ot">TRUE</span>, </a>
-<a class="sourceLine" id="cb5-10" data-line-number="10">            <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb5-11" data-line-number="11"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(table_handle)</a></code></pre></div>
+<a class="sourceLine" id="cb5-6" data-line-number="6"><span class="st">   </span>3L         , <span class="st">"positive re-framing"</span>, <span class="dv">2</span>                , <span class="st">"irrel1"</span>        , <span class="st">"irrel2"</span>         <span class="op">|</span></a>
+<a class="sourceLine" id="cb5-7" data-line-number="7"><span class="st">   </span>3L         , <span class="st">"other"</span>              , <span class="dv">1</span>                , <span class="st">"irrel1"</span>        , <span class="st">"irrel2"</span>         )</a>
+<a class="sourceLine" id="cb5-8" data-line-number="8">table_handle &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rq_copy_to.html">rq_copy_to</a></span>(db, <span class="st">'d'</span>,</a>
+<a class="sourceLine" id="cb5-9" data-line-number="9">            d_local,</a>
+<a class="sourceLine" id="cb5-10" data-line-number="10">            <span class="dt">temporary =</span> <span class="ot">TRUE</span>, </a>
+<a class="sourceLine" id="cb5-11" data-line-number="11">            <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb5-12" data-line-number="12"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(table_handle)</a></code></pre></div>
 <pre><code>## [1] "table(`d`; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2)"</code></pre>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">ops &lt;-<span class="st"> </span>table_handle <span class="op">%.&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb7-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/project.html">project</a></span>(., </a>
@@ -235,7 +229,7 @@
 ##   `assessmentTotal`
 ##  FROM
 ##   `d`
-##  ) tsql_23563831607712219965_0000000000
+##  ) tsql_15841264015635198535_0000000000
 ## GROUP BY
 ##  `subjectID`</code></pre>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">ops <span class="op">%.&gt;%</span></a>
@@ -253,42 +247,100 @@
 </tr>
 <tr class="even">
 <td align="right">3</td>
-<td align="right">3.5</td>
+<td align="right">2.0</td>
 </tr>
 </tbody>
 </table>
-<p>Additional function re-mappings can be specified by user code. One such example is re-writing <code>MOD</code> as <code>%</code> for <code>RSQLite</code>.</p>
+<p>The basic mappings are stored in database option structures, and depend on the database. For example <code>MOD</code> is re-mapped back to <code>%</code> for <code>RSQLite</code>.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">rquery<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/rquery/topics/rq_function_mappings">rq_function_mappings</a></span>(db) <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb10-2" data-line-number="2"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</a></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">fn_name</th>
 <th align="left">sql_mapping</th>
-<th align="left">mapping_source</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">mean</td>
-<td align="left">avg</td>
-<td align="left">fn_name_map</td>
-</tr>
-<tr class="even">
 <td align="left">as.Date</td>
 <td align="left">to_date ( .(3) , ‘YYYY-MM-DD’ )</td>
-<td align="left">expr_map</td>
+</tr>
+<tr class="even">
+<td align="left">n</td>
+<td align="left">COUNT ( 1 )</td>
+</tr>
+<tr class="odd">
+<td align="left">mean</td>
+<td align="left">AVG ( .(3) )</td>
+</tr>
+<tr class="even">
+<td align="left">runif</td>
+<td align="left">ABS ( ( RANDOM ( ) % 268435456 ) / 268435455.0 )</td>
 </tr>
 <tr class="odd">
 <td align="left">MOD</td>
 <td align="left">( .(3) % .(5) )</td>
-<td align="left">expr_map</td>
 </tr>
 </tbody>
 </table>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">ops &lt;-<span class="st"> </span>table_handle <span class="op">%.&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/extend.html">extend</a></span>(., z <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>subjectID <span class="op">%%</span><span class="st"> </span><span class="dv">3</span>) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb11-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/select_columns.html">select_columns</a></span>(., <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"subjectID"</span>, <span class="st">"z"</span>))</a>
-<a class="sourceLine" id="cb11-4" data-line-number="4">                 </a>
-<a class="sourceLine" id="cb11-5" data-line-number="5"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(ops, db))</a></code></pre></div>
+<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/project.html">project</a></span>(., <span class="dt">groupby =</span> <span class="st">"subjectID"</span>,</a>
+<a class="sourceLine" id="cb11-3" data-line-number="3">          n <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="dv">5</span>, </a>
+<a class="sourceLine" id="cb11-4" data-line-number="4">          count <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">n</span>(),</a>
+<a class="sourceLine" id="cb11-5" data-line-number="5">          mean <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/mean">mean</a></span>(assessmentTotal)) <span class="op">%.&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb11-6" data-line-number="6"><span class="st">  </span><span class="kw"><a href="../reference/extend.html">extend</a></span>(., was_n <span class="op">:</span><span class="er">=</span><span class="st"> </span>n)</a>
+<a class="sourceLine" id="cb11-7" data-line-number="7">                 </a>
+<a class="sourceLine" id="cb11-8" data-line-number="8"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(ops, db))</a></code></pre></div>
+<pre><code>## SELECT
+##  `subjectID`,
+##  `n`,
+##  `count`,
+##  `mean`,
+##  `n`  AS `was_n`
+## FROM (
+##  SELECT `subjectID`, 5 AS `n`, COUNT ( 1 ) AS `count`, AVG ( `assessmentTotal` ) AS `mean` FROM (
+##   SELECT
+##    `subjectID`,
+##    `assessmentTotal`
+##   FROM
+##    `d`
+##   ) tsql_51502567415161483065_0000000000
+##  GROUP BY
+##   `subjectID`
+##  ) tsql_51502567415161483065_0000000001</code></pre>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">ops <span class="op">%.&gt;%</span></a>
+<a class="sourceLine" id="cb13-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/execute.html">execute</a></span>(db, .) <span class="op">%.&gt;%</span></a>
+<a class="sourceLine" id="cb13-3" data-line-number="3"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</a></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="right">subjectID</th>
+<th align="right">n</th>
+<th align="right">count</th>
+<th align="right">mean</th>
+<th align="right">was_n</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">5</td>
+<td align="right">2</td>
+<td align="right">3.5</td>
+<td align="right">5</td>
+</tr>
+<tr class="even">
+<td align="right">3</td>
+<td align="right">5</td>
+<td align="right">3</td>
+<td align="right">2.0</td>
+<td align="right">5</td>
+</tr>
+</tbody>
+</table>
+<p>Additional function re-mappings can be specified by user code. One such example is re-writing <code>MOD</code> as <code>%</code> for <code>RSQLite</code>.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1">ops &lt;-<span class="st"> </span>table_handle <span class="op">%.&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb14-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/extend.html">extend</a></span>(., z <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>subjectID <span class="op">%%</span><span class="st"> </span><span class="dv">3</span>) <span class="op">%.&gt;%</span></a>
+<a class="sourceLine" id="cb14-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/select_columns.html">select_columns</a></span>(., <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"subjectID"</span>, <span class="st">"z"</span>))</a>
+<a class="sourceLine" id="cb14-4" data-line-number="4">                 </a>
+<a class="sourceLine" id="cb14-5" data-line-number="5"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(ops, db))</a></code></pre></div>
 <pre><code>## SELECT
 ##  `subjectID`,
 ##  `z`
@@ -301,11 +353,11 @@
 ##    `subjectID`
 ##   FROM
 ##    `d`
-##   ) tsql_92960075906581991165_0000000000
-## ) tsql_92960075906581991165_0000000001</code></pre>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">ops <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb13-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/execute.html">execute</a></span>(db, .) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb13-3" data-line-number="3"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</a></code></pre></div>
+##   ) tsql_55960279556618958784_0000000000
+## ) tsql_55960279556618958784_0000000001</code></pre>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">ops <span class="op">%.&gt;%</span></a>
+<a class="sourceLine" id="cb16-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/execute.html">execute</a></span>(db, .) <span class="op">%.&gt;%</span></a>
+<a class="sourceLine" id="cb16-3" data-line-number="3"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</a></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">subjectID</th>
@@ -328,9 +380,13 @@
 <td align="right">3</td>
 <td align="right">1</td>
 </tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="right">1</td>
+</tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1">DBI<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DBI/topics/dbDisconnect">dbDisconnect</a></span>(raw_RSQLite_connection)</a></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">DBI<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DBI/topics/dbDisconnect">dbDisconnect</a></span>(raw_RSQLite_connection)</a></code></pre></div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
