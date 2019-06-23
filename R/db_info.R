@@ -234,6 +234,7 @@ rquery_default_db_info <- function() {
   rquery_db_info(identifier_quote_char = '"',
                  string_quote_char = "'",
                  is_dbi = FALSE,
+                 connection_options = rq_connection_advice(NULL),
                  db_methods = rquery_default_methods())
 }
 

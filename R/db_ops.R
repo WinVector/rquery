@@ -590,29 +590,46 @@ rq_connection_name <- function(db) {
 #' @export
 #'
 rq_connection_advice <- function(db) {
-  if(is.null(db)) {
-    stop("rquery::rq_connection_advice db was null")
-  }
   cname <- rq_connection_name(db)
   opts <- list()
+  expr_map <- list()
+  big_int <- 2^28
+  big_int_m_1 <- "268435455.0"
+  expr_map[["runif"]] <- list( # ingore args
+    pre_sql_fn("ABS"),
+    pre_sql_token("("),
+    pre_sql_fn("MOD"),
+    pre_sql_token("("),
+    pre_sql_fn("RANDOM"), pre_sql_token("("), pre_sql_token(")"),
+    pre_sql_token(","),
+    pre_sql_token(big_int),
+    pre_sql_token(")"),
+    pre_sql_token("/"),
+    pre_sql_token(big_int_m_1),
+    pre_sql_token(")"))
   if(cname=="SQLiteConnection") { # RSQLite
-    opts[[paste(c("rquery", cname, "expr_map"), collapse = ".")]] <-
-      list("MOD" = list(pre_sql_token("("),
-                                   3,
-                                   pre_sql_token("%"),
-                                   5,
-                                   pre_sql_token(")")))
+    expr_map[["MOD"]] <- list(pre_sql_token("("),
+                              3,
+                              pre_sql_token("%"),
+                              5,
+                              pre_sql_token(")"))
+    expr_map[["runif"]] <- list( # ingore args
+      pre_sql_fn("ABS"),
+      pre_sql_token("("),
+      pre_sql_token("("),
+      pre_sql_fn("RANDOM"), pre_sql_token("("), pre_sql_token(")"),
+      pre_sql_token("%"),
+      pre_sql_token(big_int),
+      pre_sql_token(")"),
+      pre_sql_token("/"),
+      pre_sql_token(big_int_m_1),
+      pre_sql_token(")"))
   }
   if(connection_is_sparklyr(db)) {
     opts[[paste(c("rquery", cname, "create_temporary"), collapse = ".")]] <- FALSE
     opts[[paste(c("rquery", cname, "control_rownames"), collapse = ".")]] <- FALSE
     opts[[paste(c("rquery", cname, "use_DBI_dbListFields"), collapse = ".")]] <- FALSE
     opts[[paste(c("rquery", cname, "use_DBI_dbRemoveTable"), collapse = ".")]] <- FALSE
-    opts[[paste(c("rquery", cname, "expr_map"), collapse = ".")]] <-
-      list("RAND" = list( # call is 1:RAND 2:( 3:)
-        pre_sql_fn("RANDOM"),
-        pre_sql_token("("),
-        pre_sql_token(")")))
   }
   # TODO: sparkR support here instead of in https://github.com/WinVector/rquery/blob/master/db_examples/SparkR.md
   if(cname == "PostgreSQLConnection") { # RPostgreSQL::PostgreSQL()
@@ -626,6 +643,7 @@ rq_connection_advice <- function(db) {
     opts[[paste(c("rquery", cname, "use_DBI_dbRemoveTable"), collapse = ".")]] <- FALSE
     opts[[paste(c("rquery", cname, "use_DBI_dbExistsTable"), collapse = ".")]] <- FALSE
   }
+  opts[[paste(c("rquery", cname, "expr_map"), collapse = ".")]] <- expr_map
   opts
 }
 
