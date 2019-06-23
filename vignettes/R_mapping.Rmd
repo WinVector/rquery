@@ -49,12 +49,6 @@ db <- rquery_db_info(
   is_dbi = TRUE,
   connection_options = rq_connection_tests(raw_RSQLite_connection))
 
-# RSQLite has a non-standard modulo operator
-db$expr_map[["MOD"]] <- list(pre_sql_token("("),
-                           3,
-                           pre_sql_token("%"),
-                           5,
-                           pre_sql_token(")"))
 
 fn_name_map <- db$connection_options[[paste0("rquery.", rq_connection_name(db), ".", "fn_name_map")]]
 fn_name_map

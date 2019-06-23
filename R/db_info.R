@@ -67,9 +67,11 @@ rquery_db_info <- function(...,
                            connection_options = list(),
                            db_methods = rquery_default_methods()) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::rquery_db_info")
+  force(connection_options)
   if("rquery_db_info" %in% class(connection)) {
     stop("rquery::rquery_db_info connection is already of class rquery_db_info")
   }
+  cname <- rq_connection_name(connection)
   if(is_dbi) {
     if(!requireNamespace("DBI", quietly = TRUE)) {
       stop("rquery::rquery_db_info requires the DBI package for is_dbi=TRUE")
@@ -78,6 +80,7 @@ rquery_db_info <- function(...,
   # does not handle quotes inside strings
   r <- list(
     connection = connection,
+    cname = cname,
     is_dbi = is_dbi,
     identifier_quote_char = identifier_quote_char,
     string_quote_char = string_quote_char,
@@ -192,9 +195,19 @@ rquery_db_info <- function(...,
       pre_sql_token(")"))
   )
   r$tree_rewriter <- tree_rewriter
+  # patch in suggested expression mappings
+  key <- paste(c("rquery", cname, "expr_map"), collapse = ".")
+  expr_map <- connection_options[[key]]
+  if(length(expr_map)>0) {
+    for(ni in names(expr_map)) {
+      r$expr_map[[ni]] <- expr_map[[ni]]
+    }
+  }
+  # patch in user overrides
   for(ni in names(overrides)) {
     r[[ni]] <- overrides[[ni]]
   }
+  # declare our class and return value
   class(r) <- "rquery_db_info"
   r
 }

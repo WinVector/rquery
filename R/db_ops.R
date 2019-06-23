@@ -551,6 +551,10 @@ rq_connection_name <- function(db) {
     return("NULL")
   }
   if("rquery_db_info" %in% class(db)) {
+    cname <- db$cname
+    if(!is.null(cname)) {
+      return(cname)
+    }
     db <- db$connection
   }
   if(is.null(db)) {
@@ -591,6 +595,14 @@ rq_connection_advice <- function(db) {
   }
   cname <- rq_connection_name(db)
   opts <- list()
+  if(cname=="SQLiteConnection") { # RSQLite
+    opts[[paste(c("rquery", cname, "expr_map"), collapse = ".")]] <-
+      list("MOD" = list(pre_sql_token("("),
+                                   3,
+                                   pre_sql_token("%"),
+                                   5,
+                                   pre_sql_token(")")))
+  }
   if(connection_is_sparklyr(db)) {
     opts[[paste(c("rquery", cname, "create_temporary"), collapse = ".")]] <- FALSE
     opts[[paste(c("rquery", cname, "control_rownames"), collapse = ".")]] <- FALSE
