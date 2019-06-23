@@ -70,7 +70,8 @@ d_local <- build_frame(
    1L         , "withdrawal behavior", 5                , "irrel1"        , "irrel2"         |
    1L         , "positive re-framing", 2                , "irrel1"        , "irrel2"         |
    3L         , "withdrawal behavior", 3                , "irrel1"        , "irrel2"         |
-   3L         , "positive re-framing", 4                , "irrel1"        , "irrel2"         )
+   3L         , "positive re-framing", 2                , "irrel1"        , "irrel2"         |
+   3L         , "other"              , 1                , "irrel1"        , "irrel2"         )
 table_handle <- rq_copy_to(db, 'd',
             d_local,
             temporary = TRUE, 
@@ -89,12 +90,28 @@ ops %.>%
   knitr::kable(.)
 ```
 
-Additional function re-mappings can be specified by user code.  One such example is re-writing `MOD` as `%` for `RSQLite`.
+The basic mappings are stored in database option structures.
 
 ```{r, eval=have_RSQLite}
 rquery::rq_function_mappings(db) %.>%
   knitr::kable(.)
 ```
+
+```{r, eval=have_RSQLite}
+ops <- table_handle %.>% 
+  project(., groupby = "subjectID",
+          n := 5, 
+          count := n(),
+          mean := mean(assessmentTotal))
+                 
+cat(to_sql(ops, db))
+
+ops %.>%
+  execute(db, .) %.>%
+  knitr::kable(.)
+```
+
+Additional function re-mappings can be specified by user code.  One such example is re-writing `MOD` as `%` for `RSQLite`.
 
 ```{r, eval=have_RSQLite}
 ops <- table_handle %.>% 

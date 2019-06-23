@@ -2,7 +2,22 @@
 
 tree_rewriter <- function(x, db_info) {
   expr_map <- db_info$expr_map
-  if("pre_sql_sub_expr" %in% class(x)) {
+  if(("pre_sql_sub_expr" %in% class(x)) && (length(x$toks)>0)) {
+    # special case: zero argument call (unfortunately stored differently)
+    if(isTRUE(x$toks[[1]]$is_zero_argument_call)) {
+      key <- x$toks[[1]][["value"]]
+      replacement <- expr_map[[key]]
+      if(!is.null(replacement)) {
+        x_translated <- x
+        x_translated$toks <- replacement
+        for(i in seq_len(length(replacement))) {
+          if(is.numeric(replacement[[i]])) {
+            x_translated$toks[[i]] <- x$toks[[replacement[[i]]]]
+          }
+        }
+        return(x_translated)
+      }
+    }
     # first recurse
     for(i in seq_len(length(x$toks))) {
       x$toks[[i]] <- tree_rewriter(x$toks[[i]], db_info)
@@ -157,14 +172,19 @@ rquery_db_info <- function(...,
       format(o, scientific = 11)
     }
   }
-  r$expr_map <- list("as.Date" = list( # call is 1:as.Date 2:( 3:date_col 4:)
-    pre_sql_fn("to_date"),
-    pre_sql_token("("),
-    3,  # the date column
-    pre_sql_token(","),
-    pre_sql_string("YYYY-MM-DD"),
-    pre_sql_token(")")
-  )
+  r$expr_map <- list(
+    "as.Date" = list( # call is 1:as.Date 2:( 3:date_col 4:)
+      pre_sql_fn("to_date"),
+      pre_sql_token("("),
+      3,  # the date column
+      pre_sql_token(","),
+      pre_sql_string("YYYY-MM-DD"),
+      pre_sql_token(")")),
+    "n" = list( # call is 1:n 2:( 3:)
+      pre_sql_fn("COUNT"),
+      pre_sql_token("("),
+      pre_sql_token("1"),
+      pre_sql_token(")"))
   )
   r$tree_rewriter <- tree_rewriter
   for(ni in names(overrides)) {

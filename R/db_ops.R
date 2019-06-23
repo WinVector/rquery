@@ -593,13 +593,15 @@ rq_connection_advice <- function(db) {
   opts <- list()
   opts[[paste(c("rquery", cname, "fn_name_map"), collapse = ".")]] <-
     c("mean" = "avg")
+  opts[[paste(c("rquery", cname, "zero_arg_fn_map"), collapse = ".")]] <- character(0)
   if(connection_is_sparklyr(db)) {
     opts[[paste(c("rquery", cname, "create_temporary"), collapse = ".")]] <- FALSE
     opts[[paste(c("rquery", cname, "control_rownames"), collapse = ".")]] <- FALSE
     opts[[paste(c("rquery", cname, "use_DBI_dbListFields"), collapse = ".")]] <- FALSE
     opts[[paste(c("rquery", cname, "use_DBI_dbRemoveTable"), collapse = ".")]] <- FALSE
     opts[[paste(c("rquery", cname, "zero_arg_fn_map"), collapse = ".")]] <-
-      c("random" = "rand")
+      c(opts[[paste(c("rquery", cname, "zero_arg_fn_map"), collapse = ".")]],
+        c("random" = "rand"))
   }
   if(cname == "PostgreSQLConnection") { # RPostgreSQL::PostgreSQL()
     opts[[paste(c("rquery", cname, "use_DBI_dbListFields"), collapse = ".")]] <- FALSE
