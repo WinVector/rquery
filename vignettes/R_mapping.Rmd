@@ -102,7 +102,8 @@ ops <- table_handle %.>%
   project(., groupby = "subjectID",
           n := 5, 
           count := n(),
-          mean := mean(assessmentTotal))
+          mean := mean(assessmentTotal)) %.>% 
+  extend(., was_n := n)
                  
 cat(to_sql(ops, db))
 
