@@ -180,19 +180,6 @@ pre_sql_to_query.pre_sql_token <- function (x,
                                     using = NULL,
                                     qualifiers = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::pre_sql_to_query.pre_sql_token")
-  if((!is.null(x$is_zero_argument_call)) && (x$is_zero_argument_call)) {
-    val <- paste(as.character(x$value), collapse = " ")
-    zero_arg_fn_map <- getDBOption(db_info, "zero_arg_fn_map")
-    if(!is.null(zero_arg_fn_map)) {
-      if(val %in% names(zero_arg_fn_map)) {
-        xlation <- zero_arg_fn_map[[val]]
-        if(!is.null(xlation)) {
-          val <- xlation
-        }
-      }
-    }
-    return(val)
-  }
   if(x$token_type == "column") {
     if((!is.null(source_table)) && (!is.na(source_table))) {
       return(paste(quote_table_name(db_info, source_table, qualifiers = qualifiers),
@@ -204,18 +191,6 @@ pre_sql_to_query.pre_sql_token <- function (x,
   }
   if(x$token_type == "string") {
     return(quote_string(db_info, paste(as.character(x$value), collapse = " ")))
-  }
-  if(x$token_type == "function_name") {
-    fn_name_map <- getDBOption(db_info, "fn_name_map")
-    if(!is.null(fn_name_map)) {
-      nm <- paste(as.character(x$value), collapse = " ")
-      if(nm %in% names(fn_name_map)) {
-        rp <- fn_name_map[[nm]]
-        if(!is.null(rp)) {
-          return(rp)
-        }
-      }
-    }
   }
   paste(as.character(x$value), collapse = " ")
 }
