@@ -1,5 +1,5 @@
 
-# rquery 1.3.5 2019/06/22
+# rquery 1.3.5 2019/06/23
 
  * Remove str2lang() from vignette (method is not in older R)
 
