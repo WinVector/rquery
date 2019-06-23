@@ -21,12 +21,6 @@ db <- rquery_db_info(
   is_dbi = TRUE,
   connection_options = rq_connection_tests(raw_connection))
 
-# RSQLite has a non-standard modulo operator
-db$expr_map[["MOD"]] <- list(pre_sql_token("("),
-                           3,
-                           pre_sql_token("%"),
-                           5,
-                           pre_sql_token(")"))
 
 
 tmps <- mk_tmp_name_source("ex")
