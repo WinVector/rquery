@@ -6,7 +6,8 @@
 \usage{
 rquery_db_info(..., connection = NULL, is_dbi = FALSE,
   identifier_quote_char = "\\"", string_quote_char = "'",
-  overrides = NULL, note = "", connection_options = list(),
+  overrides = NULL, note = "",
+  connection_options = rq_connection_advice(connection),
   db_methods = rquery_default_methods())
 }
 \arguments{

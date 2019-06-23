@@ -64,7 +64,7 @@ rquery_db_info <- function(...,
                            string_quote_char = "'",
                            overrides = NULL,
                            note = "",
-                           connection_options = list(),
+                           connection_options = rq_connection_advice(connection),
                            db_methods = rquery_default_methods()) {
   wrapr::stop_if_dot_args(substitute(list(...)), "rquery::rquery_db_info")
   force(connection_options)
@@ -231,7 +231,8 @@ print.rquery_db_info <- function(x, ...) {
 #' @export
 #'
 rquery_default_db_info <- function() {
-  rquery_db_info(identifier_quote_char = '"',
+  rquery_db_info(connection = NULL,
+                 identifier_quote_char = '"',
                  string_quote_char = "'",
                  is_dbi = FALSE,
                  connection_options = rq_connection_advice(NULL),
