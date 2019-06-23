@@ -595,7 +595,7 @@ rq_connection_advice <- function(db) {
   expr_map <- list()
   big_int <- 2^28
   big_int_m_1 <- "268435455.0"
-  expr_map[["runif"]] <- list( # ingore args
+  rand_expr <- list( # ingore args
     pre_sql_fn("ABS"),
     pre_sql_token("("),
     pre_sql_fn("MOD"),
@@ -613,7 +613,7 @@ rq_connection_advice <- function(db) {
                               pre_sql_token("%"),
                               5,
                               pre_sql_token(")"))
-    expr_map[["runif"]] <- list( # ingore args
+    rand_expr <- list( # ingore args
       pre_sql_fn("ABS"),
       pre_sql_token("("),
       pre_sql_token("("),
@@ -643,6 +643,7 @@ rq_connection_advice <- function(db) {
     opts[[paste(c("rquery", cname, "use_DBI_dbRemoveTable"), collapse = ".")]] <- FALSE
     opts[[paste(c("rquery", cname, "use_DBI_dbExistsTable"), collapse = ".")]] <- FALSE
   }
+  expr_map[["rand"]] <- rand_expr
   opts[[paste(c("rquery", cname, "expr_map"), collapse = ".")]] <- expr_map
   opts
 }

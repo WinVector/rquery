@@ -120,6 +120,26 @@ ops %.>%
   knitr::kable(.)
 ```
 
+`rqdatatable` also supplies some re-mappings (described [here](https://winvector.github.io/rqdatatable/articles/R_mapping.html)).  This can allow us to use a uniform notation for tasks such as random number generation to allow portable pipelines.
+
+```{r, eval=have_RSQLite}
+t <- rq_copy_to(db, "d", data.frame(x = 1:5),
+                temporary = TRUE, overwrite = TRUE)
+ops <- t %.>% extend(., r = rand())
+cat(to_sql(ops, db))
+execute(db, ops)
+```
+
+```{r}
+have_rqdatatable <- requireNamespace("rqdatatable", quietly = TRUE)
+```
+
+```{r, eval=have_rqdatatable}
+library("rqdatatable")
+
+data.frame(x = 1:3) %.>% ops
+```
+
 
 ```{r, eval=have_RSQLite}
 DBI::dbDisconnect(raw_RSQLite_connection)
