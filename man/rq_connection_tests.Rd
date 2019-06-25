@@ -21,7 +21,10 @@ named list of options
 \description{
 These settings are estimated by experiments.  This is not
 the full set of options- but just the ones tested here.
-Note: tests are currently run in the default schema.
+}
+\details{
+Note: tests are currently run in the default schema. Also it is normal to see some warning/error
+messages as different database capabilities are tested.
 }
 \examples{
 

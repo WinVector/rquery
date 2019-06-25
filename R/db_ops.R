@@ -669,7 +669,9 @@ brute_rm_table <- function(db, table_name,
 #'
 #' These settings are estimated by experiments.  This is not
 #' the full set of options- but just the ones tested here.
-#' Note: tests are currently run in the default schema.
+#'
+#' Note: tests are currently run in the default schema. Also it is normal to see some warning/error
+#' messages as different database capabilities are tested.
 #'
 #' @param db database connection handle.
 #' @param ... force later arguments to bind by name.
@@ -722,9 +724,13 @@ rq_connection_tests <- function(db,
   opts[[paste(c("rquery", cname, "control_temporary_view"), collapse = ".")]] <- FALSE
   opts[[paste(c("rquery", cname, "control_rownames"), collapse = ".")]] <- FALSE
   # Run config tests in addition to dealing with known cases
-  obscure_name <- wrapr::mk_tmp_name_source("rq_test")()
+  nm_source <- wrapr::mk_tmp_name_source("rq_test")
+  obscure_name <- nm_source()
   obscure_name_q <- quote_identifier(db, obscure_name)
+  obscure_name2 <- nm_source()
+  obscure_name2_q <- quote_identifier(db, obscure_name2)
   brute_rm_table(db, obscure_name)
+  brute_rm_table(db, obscure_name2)
   # see if we can turn off rownames
   tryCatch(
     {
@@ -806,17 +812,17 @@ rq_connection_tests <- function(db,
     },
     error = function(e) { e },
     warning = function(w) { w })
-  # # check on temporary view NOT CORRECT, NEED 2nd table name
-  # tryCatch(
-  #   {
-  #     DBI::dbGetQuery(connection, paste("CREATE TEMPORARY VIEW",
-  #                                       obscure_name_q,
-  #                                       "AS SELECT * FROM ",
-  #                                       obscure_name))
-  #     opts[[paste(c("rquery", cname, "control_temporary_view"), collapse = ".")]] <- TRUE
-  #   },
-  #   error = function(e) { e },
-  #   warning = function(w) { w })
+  # check on temporary view
+  tryCatch(
+    {
+      DBI::dbGetQuery(connection, paste("CREATE TEMPORARY VIEW",
+                                        obscure_name2_q,
+                                        "AS SELECT * FROM ",
+                                        obscure_name))
+      opts[[paste(c("rquery", cname, "control_temporary_view"), collapse = ".")]] <- TRUE
+    },
+    error = function(e) { e },
+    warning = function(w) { w })
   brute_rm_table(db, obscure_name)
   # see if NA columns masquerade as logical
   # (RSQLite has this property for some derived columns)
