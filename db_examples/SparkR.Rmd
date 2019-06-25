@@ -138,6 +138,9 @@ db <- rquery::rquery_db_info(
 db$quote_identifier <- function(x, id) {
   db$dbqi(id)
 }
+db$quote_table_name <- function(x, id, qualifiers = NULL) {
+  db$dbqi(id)
+}
 db$quote_string <- function(x, s) {
   db$dbqs(s)
 }
