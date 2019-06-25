@@ -110,10 +110,23 @@ rq_table_exists <- function(db, table_name,
   if(is.null(connection)) {
     stop("rquery::rq_table_exists db$connection was null")
   }
+  if(getDBOption(db, "use_INFORMATION_SCHEMA", FALSE, connection_options)) {
+    schema <- qualifiers[["schema"]]
+    if(is.null(schema)) {
+      schema = "public"
+    }
+    info <- DBI::dbGetQuery(connection,
+                            paste("SELECT * FROM INFORMATION_SCHEMA.TABLES where TABLE_NAME =",
+                                  quote_string(db, table_name),
+                                  "AND TABLE_SCHEMA =",
+                                  quote_string(db, schema), "LIMIT 1"))
+    return(nrow(info)>0)
+  }
   # Would like to just return DBI::dbExistsTable(db, table_name)
   if(getDBOption(db, "use_DBI_dbExistsTable", FALSE, connection_options) && requireNamespace("DBI", quietly = TRUE)) {
     return(DBI::dbExistsTable(connection, table_name))
   }
+  # brute force try to query table (can write error msgs, ugh)
   q <- paste0("SELECT * FROM ",
               q_table_name,
               " LIMIT 1")
@@ -122,9 +135,6 @@ rq_table_exists <- function(db, table_name,
     {
       v <- rq_get_query(db, q)
       if(is.null(v)) {
-        return(FALSE)
-      }
-      if(nrow(v)<1) {
         return(FALSE)
       }
       return(TRUE)
@@ -334,9 +344,15 @@ rq_remove_table <- function(db, table_name,
       if(getDBOption(db, "use_DBI_dbRemoveTable", FALSE, connection_options) && requireNamespace("DBI", quietly = TRUE)) {
         DBI::dbRemoveTable(connection, table_name)
       } else {
-        rq_execute(db,
-                   paste("DROP TABLE",
-                         q_table_name))
+        if(getDBOption(db, "use_DROP_TABLE_IF_EXISTS", FALSE, connection_options)) {
+          rq_execute(db,
+                     paste("DROP TABLE IF EXISTS",
+                           q_table_name))
+        } else {
+          rq_execute(db,
+                     paste("DROP TABLE",
+                           q_table_name))
+        }
       }
       return(TRUE)
     }
@@ -625,23 +641,23 @@ rq_connection_advice <- function(db) {
       pre_sql_token(big_int_m_1),
       pre_sql_token(")"))
   }
+  opts[[paste(c("rquery", cname, "use_DROP_TABLE_IF_EXISTS"), collapse = ".")]] <- TRUE
   if(connection_is_sparklyr(db)) {
     opts[[paste(c("rquery", cname, "create_temporary"), collapse = ".")]] <- FALSE
     opts[[paste(c("rquery", cname, "control_rownames"), collapse = ".")]] <- FALSE
     opts[[paste(c("rquery", cname, "use_DBI_dbListFields"), collapse = ".")]] <- FALSE
-    opts[[paste(c("rquery", cname, "use_DBI_dbRemoveTable"), collapse = ".")]] <- FALSE
   }
   # TODO: sparkR support here instead of in https://github.com/WinVector/rquery/blob/master/db_examples/SparkR.md
   if(cname == "PostgreSQLConnection") { # RPostgreSQL::PostgreSQL()
     opts[[paste(c("rquery", cname, "use_DBI_dbListFields"), collapse = ".")]] <- FALSE
-    opts[[paste(c("rquery", cname, "use_DBI_dbRemoveTable"), collapse = ".")]] <- FALSE
-    opts[[paste(c("rquery", cname, "use_DBI_dbExistsTable"), collapse = ".")]] <- FALSE # fails on some CREATE AS tables
+    #opts[[paste(c("rquery", cname, "use_DBI_dbExistsTable"), collapse = ".")]] <- FALSE # fails on some CREATE AS tables
+    opts[[paste(c("rquery", cname, "use_INFORMATION_SCHEMA"), collapse = ".")]] <- TRUE
   }
   if(cname =="PqConnection") { # RPostgres::Postgres()
     # schema issues
     opts[[paste(c("rquery", cname, "use_DBI_dbListFields"), collapse = ".")]] <- FALSE
-    opts[[paste(c("rquery", cname, "use_DBI_dbRemoveTable"), collapse = ".")]] <- FALSE
-    opts[[paste(c("rquery", cname, "use_DBI_dbExistsTable"), collapse = ".")]] <- FALSE
+    #opts[[paste(c("rquery", cname, "use_DBI_dbExistsTable"), collapse = ".")]] <- FALSE
+    opts[[paste(c("rquery", cname, "use_INFORMATION_SCHEMA"), collapse = ".")]] <- TRUE
   }
   expr_map[["rand"]] <- rand_expr
   opts[[paste(c("rquery", cname, "expr_map"), collapse = ".")]] <- expr_map
@@ -812,18 +828,18 @@ rq_connection_tests <- function(db,
     },
     error = function(e) { e },
     warning = function(w) { w })
-  # check on temporary view
-  tryCatch(
-    {
-      DBI::dbGetQuery(connection, paste("CREATE TEMPORARY VIEW",
-                                        obscure_name2_q,
-                                        "AS SELECT * FROM ",
-                                        obscure_name))
-      opts[[paste(c("rquery", cname, "control_temporary_view"), collapse = ".")]] <- TRUE
-    },
-    error = function(e) { e },
-    warning = function(w) { w })
-  brute_rm_table(db, obscure_name)
+  # # check on temporary view, note need to DROP VIEW to reinstate this test
+  # tryCatch(
+  #   {
+  #     DBI::dbGetQuery(connection, paste("CREATE TEMPORARY VIEW",
+  #                                       obscure_name2_q,
+  #                                       "AS SELECT * FROM ",
+  #                                       obscure_name))
+  #     opts[[paste(c("rquery", cname, "control_temporary_view"), collapse = ".")]] <- TRUE
+  #   },
+  #   error = function(e) { e },
+  #   warning = function(w) { w })
+  # brute_rm_table(db, obscure_name)
   # see if NA columns masquerade as logical
   # (RSQLite has this property for some derived columns)
   d <- data.frame(w= c(NA, 1L),

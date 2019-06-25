@@ -10,7 +10,7 @@ library("wrapr")
 packageVersion("rquery")
 ```
 
-    ## [1] '1.3.4'
+    ## [1] '1.3.5'
 
 ``` r
 raw_connection <- DBI::dbConnect(RPostgres::Postgres(),

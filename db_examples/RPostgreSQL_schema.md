@@ -10,7 +10,7 @@ library("wrapr")
 packageVersion("rquery")
 ```
 
-    ## [1] '1.3.4'
+    ## [1] '1.3.5'
 
 ``` r
 raw_connection <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
@@ -21,15 +21,6 @@ raw_connection <- DBI::dbConnect(RPostgreSQL::PostgreSQL(),
 
 
 dbopts <- rq_connection_tests(raw_connection)
-```
-
-    ## Error in postgresqlExecStatement(conn, statement, ...) : 
-    ##   RS-DBI driver: (could not Retrieve the result : ERROR:  relation "rq_test_28202707305737642415_0000000000" does not exist
-    ## LINE 1: SELECT * FROM "rq_test_28202707305737642415_0000000000" LIMI...
-    ##                       ^
-    ## )
-
-``` r
 db <- rquery_db_info(connection = raw_connection,
                      is_dbi = TRUE,
                      connection_options = dbopts)
