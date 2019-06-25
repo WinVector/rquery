@@ -104,7 +104,7 @@
       <h1>R mapping</h1>
                         <h4 class="author">John Mount</h4>
             
-            <h4 class="date">2019-06-23</h4>
+            <h4 class="date">2019-06-25</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery/blob/master/vignettes/R_mapping.Rmd"><code>vignettes/R_mapping.Rmd</code></a></small>
       <div class="hidden name"><code>R_mapping.Rmd</code></div>
@@ -229,7 +229,7 @@
 ##   `assessmentTotal`
 ##  FROM
 ##   `d`
-##  ) tsql_15841264015635198535_0000000000
+##  ) tsql_09327511824348225139_0000000000
 ## GROUP BY
 ##  `subjectID`</code></pre>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">ops <span class="op">%.&gt;%</span></a>
@@ -273,12 +273,12 @@
 <td align="left">AVG ( .(3) )</td>
 </tr>
 <tr class="even">
-<td align="left">runif</td>
-<td align="left">ABS ( ( RANDOM ( ) % 268435456 ) / 268435455.0 )</td>
-</tr>
-<tr class="odd">
 <td align="left">MOD</td>
 <td align="left">( .(3) % .(5) )</td>
+</tr>
+<tr class="odd">
+<td align="left">rand</td>
+<td align="left">ABS ( ( RANDOM ( ) % 268435456 ) / 268435455.0 )</td>
 </tr>
 </tbody>
 </table>
@@ -303,10 +303,10 @@
 ##    `assessmentTotal`
 ##   FROM
 ##    `d`
-##   ) tsql_51502567415161483065_0000000000
+##   ) tsql_51334705316008951516_0000000000
 ##  GROUP BY
 ##   `subjectID`
-##  ) tsql_51502567415161483065_0000000001</code></pre>
+##  ) tsql_51334705316008951516_0000000001</code></pre>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">ops <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb13-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/execute.html">execute</a></span>(db, .) <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb13-3" data-line-number="3"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</a></code></pre></div>
@@ -353,8 +353,8 @@
 ##    `subjectID`
 ##   FROM
 ##    `d`
-##   ) tsql_55960279556618958784_0000000000
-## ) tsql_55960279556618958784_0000000001</code></pre>
+##   ) tsql_94152147967896244752_0000000000
+## ) tsql_94152147967896244752_0000000001</code></pre>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">ops <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb16-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/execute.html">execute</a></span>(db, .) <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb16-3" data-line-number="3"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</a></code></pre></div>
@@ -386,6 +386,7 @@
 </tr>
 </tbody>
 </table>
+<p><code>rqdatatable</code> also supplies some re-mappings (described <a href="https://winvector.github.io/rqdatatable/articles/R_mapping.html">here</a>). This can allow us to use a uniform notation for tasks such as random number generation to allow portable pipelines.</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">DBI<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DBI/topics/dbDisconnect">dbDisconnect</a></span>(raw_RSQLite_connection)</a></code></pre></div>
   </div>
 

@@ -104,7 +104,7 @@
       <h1>rquery Introduction</h1>
                         <h4 class="author">John Mount, Win-Vector LLC</h4>
             
-            <h4 class="date">2019-06-23</h4>
+            <h4 class="date">2019-06-25</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery/blob/master/vignettes/rquery_intro.Rmd"><code>vignettes/rquery_intro.Rmd</code></a></small>
       <div class="hidden name"><code>rquery_intro.Rmd</code></div>
@@ -158,45 +158,10 @@
 ## $rquery.SQLiteConnection.check_logical_column_types
 ## [1] TRUE
 ## 
+## $rquery.SQLiteConnection.use_DROP_TABLE_IF_EXISTS
+## [1] TRUE
+## 
 ## $rquery.SQLiteConnection.expr_map
-## $rquery.SQLiteConnection.expr_map$runif
-## $rquery.SQLiteConnection.expr_map$runif[[1]]
-## [1] "ABS"
-## 
-## $rquery.SQLiteConnection.expr_map$runif[[2]]
-## [1] "("
-## 
-## $rquery.SQLiteConnection.expr_map$runif[[3]]
-## [1] "("
-## 
-## $rquery.SQLiteConnection.expr_map$runif[[4]]
-## [1] "RANDOM"
-## 
-## $rquery.SQLiteConnection.expr_map$runif[[5]]
-## [1] "("
-## 
-## $rquery.SQLiteConnection.expr_map$runif[[6]]
-## [1] ")"
-## 
-## $rquery.SQLiteConnection.expr_map$runif[[7]]
-## [1] "%"
-## 
-## $rquery.SQLiteConnection.expr_map$runif[[8]]
-## [1] "268435456"
-## 
-## $rquery.SQLiteConnection.expr_map$runif[[9]]
-## [1] ")"
-## 
-## $rquery.SQLiteConnection.expr_map$runif[[10]]
-## [1] "/"
-## 
-## $rquery.SQLiteConnection.expr_map$runif[[11]]
-## [1] "268435455.0"
-## 
-## $rquery.SQLiteConnection.expr_map$runif[[12]]
-## [1] ")"
-## 
-## 
 ## $rquery.SQLiteConnection.expr_map$MOD
 ## $rquery.SQLiteConnection.expr_map$MOD[[1]]
 ## [1] "("
@@ -211,6 +176,44 @@
 ## [1] 5
 ## 
 ## $rquery.SQLiteConnection.expr_map$MOD[[5]]
+## [1] ")"
+## 
+## 
+## $rquery.SQLiteConnection.expr_map$rand
+## $rquery.SQLiteConnection.expr_map$rand[[1]]
+## [1] "ABS"
+## 
+## $rquery.SQLiteConnection.expr_map$rand[[2]]
+## [1] "("
+## 
+## $rquery.SQLiteConnection.expr_map$rand[[3]]
+## [1] "("
+## 
+## $rquery.SQLiteConnection.expr_map$rand[[4]]
+## [1] "RANDOM"
+## 
+## $rquery.SQLiteConnection.expr_map$rand[[5]]
+## [1] "("
+## 
+## $rquery.SQLiteConnection.expr_map$rand[[6]]
+## [1] ")"
+## 
+## $rquery.SQLiteConnection.expr_map$rand[[7]]
+## [1] "%"
+## 
+## $rquery.SQLiteConnection.expr_map$rand[[8]]
+## [1] "268435456"
+## 
+## $rquery.SQLiteConnection.expr_map$rand[[9]]
+## [1] ")"
+## 
+## $rquery.SQLiteConnection.expr_map$rand[[10]]
+## [1] "/"
+## 
+## $rquery.SQLiteConnection.expr_map$rand[[11]]
+## [1] "268435455.0"
+## 
+## $rquery.SQLiteConnection.expr_map$rand[[12]]
 ## [1] ")"</code></pre>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/options">options</a></span>(dbopts)</a>
 <a class="sourceLine" id="cb4-2" data-line-number="2"></a>
@@ -273,7 +276,7 @@
 ##   `v`
 ##  FROM
 ##   `d`
-##  ) tsql_70089728019651172317_0000000000</code></pre>
+##  ) tsql_75675809031271036531_0000000000</code></pre>
 <p>The exact translation depends on the database (which is why <code><a href="../reference/to_sql.html">to_sql()</a></code> takes a database argument). Some care has to be taken as <code>SQL</code> types are different than <code>R</code> types (in particular for some databases logical types are not numeric).</p>
 <p>With a database that supplies window functions one can quickly work the “logistic scoring by hand” example from<br>
 from <a href="http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/">Let’s Have Some Sympathy For The Part-time R User</a>. This example worked with <code>rquery</code> code that works with both <code>PostgreSQL</code> and <code>Spark</code> can be found <a href="https://github.com/WinVector/rquery/blob/master/README.md">here</a>.</p>
@@ -367,14 +370,14 @@ from <a href="http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for
 ##         `assessmentTotal`
 ##        FROM
 ##         `d3`
-##        ) tsql_14664124880085542918_0000000000
-##       ) tsql_14664124880085542918_0000000001
-##      ) tsql_14664124880085542918_0000000002
-##    ) tsql_14664124880085542918_0000000003
+##        ) tsql_46655678695172036031_0000000000
+##       ) tsql_46655678695172036031_0000000001
+##      ) tsql_46655678695172036031_0000000002
+##    ) tsql_46655678695172036031_0000000003
 ##    WHERE `row_number` &lt;= 1
-##   ) tsql_14664124880085542918_0000000004
-##  ) tsql_14664124880085542918_0000000005
-## ) tsql_14664124880085542918_0000000006 ORDER BY `subjectID`</code></pre>
+##   ) tsql_46655678695172036031_0000000004
+##  ) tsql_46655678695172036031_0000000005
+## ) tsql_46655678695172036031_0000000006 ORDER BY `subjectID`</code></pre>
 <p>The above query is long, but actually quite performant.</p>
 <p>To see the query executed, please see <a href="https://github.com/WinVector/rquery/blob/master/README.md">here</a>.</p>
 </div>
@@ -486,7 +489,7 @@ from <a href="http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for
 ##   `e`
 ##  FROM
 ##   `d6`
-##  ) tsql_12405269941183502114_0000000000</code></pre>
+##  ) tsql_83776511221578738019_0000000000</code></pre>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" data-line-number="1"><span class="co"># longer pipeline</span></a>
 <a class="sourceLine" id="cb29-2" data-line-number="2">wn &lt;-<span class="st"> </span>wp <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb29-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/select_columns.html">select_columns</a></span>(., <span class="st">"res"</span>)</a>
@@ -506,8 +509,8 @@ from <a href="http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for
 ##    `b`
 ##   FROM
 ##    `d6`
-##   ) tsql_17177608355221539953_0000000000
-## ) tsql_17177608355221539953_0000000001</code></pre>
+##   ) tsql_48287544566798018153_0000000000
+## ) tsql_48287544566798018153_0000000001</code></pre>
 <p>A graph of the the effects of this kind of narrowing (for <code>dplyr</code> by hand as <code>dplyr</code> currently does not have the above type of automatic query analysis/optimization) shows the sensitivity to this optimization.</p>
 <blockquote>
 <p><img src="present-2.png"></p>

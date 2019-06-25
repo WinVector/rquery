@@ -33,8 +33,7 @@
 <meta property="og:title" content="Try and test database for some option settings. — rq_connection_tests" />
 
 <meta property="og:description" content="These settings are estimated by experiments.  This is not
-the full set of options- but just the ones tested here.
-Note: tests are currently run in the default schema." />
+the full set of options- but just the ones tested here." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -145,8 +144,7 @@ Note: tests are currently run in the default schema." />
     <div class="ref-description">
     
     <p>These settings are estimated by experiments.  This is not
-the full set of options- but just the ones tested here.
-Note: tests are currently run in the default schema.</p>
+the full set of options- but just the ones tested here.</p>
     
     </div>
 
@@ -176,6 +174,11 @@ Note: tests are currently run in the default schema.</p>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>named list of options</p>
+    
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>Note: tests are currently run in the default schema. Also it is normal to see some warning/error
+messages as different database capabilities are tested.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
@@ -220,45 +223,10 @@ Note: tests are currently run in the default schema.</p>
 #&gt; $rquery.SQLiteConnection.check_logical_column_types
 #&gt; [1] TRUE
 #&gt; 
+#&gt; $rquery.SQLiteConnection.use_DROP_TABLE_IF_EXISTS
+#&gt; [1] TRUE
+#&gt; 
 #&gt; $rquery.SQLiteConnection.expr_map
-#&gt; $rquery.SQLiteConnection.expr_map$runif
-#&gt; $rquery.SQLiteConnection.expr_map$runif[[1]]
-#&gt; [1] "ABS"
-#&gt; 
-#&gt; $rquery.SQLiteConnection.expr_map$runif[[2]]
-#&gt; [1] "("
-#&gt; 
-#&gt; $rquery.SQLiteConnection.expr_map$runif[[3]]
-#&gt; [1] "("
-#&gt; 
-#&gt; $rquery.SQLiteConnection.expr_map$runif[[4]]
-#&gt; [1] "RANDOM"
-#&gt; 
-#&gt; $rquery.SQLiteConnection.expr_map$runif[[5]]
-#&gt; [1] "("
-#&gt; 
-#&gt; $rquery.SQLiteConnection.expr_map$runif[[6]]
-#&gt; [1] ")"
-#&gt; 
-#&gt; $rquery.SQLiteConnection.expr_map$runif[[7]]
-#&gt; [1] "%"
-#&gt; 
-#&gt; $rquery.SQLiteConnection.expr_map$runif[[8]]
-#&gt; [1] "268435456"
-#&gt; 
-#&gt; $rquery.SQLiteConnection.expr_map$runif[[9]]
-#&gt; [1] ")"
-#&gt; 
-#&gt; $rquery.SQLiteConnection.expr_map$runif[[10]]
-#&gt; [1] "/"
-#&gt; 
-#&gt; $rquery.SQLiteConnection.expr_map$runif[[11]]
-#&gt; [1] "268435455.0"
-#&gt; 
-#&gt; $rquery.SQLiteConnection.expr_map$runif[[12]]
-#&gt; [1] ")"
-#&gt; 
-#&gt; 
 #&gt; $rquery.SQLiteConnection.expr_map$MOD
 #&gt; $rquery.SQLiteConnection.expr_map$MOD[[1]]
 #&gt; [1] "("
@@ -276,6 +244,44 @@ Note: tests are currently run in the default schema.</p>
 #&gt; [1] ")"
 #&gt; 
 #&gt; 
+#&gt; $rquery.SQLiteConnection.expr_map$rand
+#&gt; $rquery.SQLiteConnection.expr_map$rand[[1]]
+#&gt; [1] "ABS"
+#&gt; 
+#&gt; $rquery.SQLiteConnection.expr_map$rand[[2]]
+#&gt; [1] "("
+#&gt; 
+#&gt; $rquery.SQLiteConnection.expr_map$rand[[3]]
+#&gt; [1] "("
+#&gt; 
+#&gt; $rquery.SQLiteConnection.expr_map$rand[[4]]
+#&gt; [1] "RANDOM"
+#&gt; 
+#&gt; $rquery.SQLiteConnection.expr_map$rand[[5]]
+#&gt; [1] "("
+#&gt; 
+#&gt; $rquery.SQLiteConnection.expr_map$rand[[6]]
+#&gt; [1] ")"
+#&gt; 
+#&gt; $rquery.SQLiteConnection.expr_map$rand[[7]]
+#&gt; [1] "%"
+#&gt; 
+#&gt; $rquery.SQLiteConnection.expr_map$rand[[8]]
+#&gt; [1] "268435456"
+#&gt; 
+#&gt; $rquery.SQLiteConnection.expr_map$rand[[9]]
+#&gt; [1] ")"
+#&gt; 
+#&gt; $rquery.SQLiteConnection.expr_map$rand[[10]]
+#&gt; [1] "/"
+#&gt; 
+#&gt; $rquery.SQLiteConnection.expr_map$rand[[11]]
+#&gt; [1] "268435455.0"
+#&gt; 
+#&gt; $rquery.SQLiteConnection.expr_map$rand[[12]]
+#&gt; [1] ")"
+#&gt; 
+#&gt; 
 #&gt; </div><div class='input'>
 </div></pre>
   </div>
@@ -285,6 +291,8 @@ Note: tests are currently run in the default schema.</p>
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
+
+      <li><a href="#details">Details</a></li>
 
       <li><a href="#see-also">See also</a></li>
       
