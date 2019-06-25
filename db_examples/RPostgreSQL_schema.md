@@ -56,10 +56,6 @@ DBI::dbGetQuery(raw_connection, "SELECT * FROM test_schema.test_table")
     ## 1 j@example.com
 
 ``` r
-## Doesn't work yet.
-#rq_copy_to(db, "test_table", data.frame(x = 1), 
-#           qualifiers = c(schema = "test_schema"), temporary = FALSE)
-
 table_handle <- db_td(db, "test_table", qualifiers = c(schema = "test_schema"))
 
 print(table_handle)
@@ -73,6 +69,57 @@ execute(db, table_handle)
 
     ##           email
     ## 1 j@example.com
+
+``` r
+## Doesn't work yet. as DBI::dbWriteTable() doesn't seem to use schema in this case
+#rq_copy_to(db, "test_table", data.frame(x = 1), 
+#           qualifiers = c(schema = "test_schema"), temporary = FALSE)
+
+# exhibit schema issue
+# try with qualifiers
+DBI::dbWriteTable(raw_connection, "schema_example_1", data.frame(x = 1), 
+                  qualifiers = c(schema = "test_schema"),
+                  overwrite = TRUE)
+```
+
+    ## [1] TRUE
+
+``` r
+# try with unquoted name
+DBI::dbWriteTable(raw_connection, "test_schema.schema_example_2", data.frame(x = 1), 
+                  overwrite = TRUE)
+```
+
+    ## [1] TRUE
+
+``` r
+# try with quoted name
+DBI::dbWriteTable(raw_connection, '"test_schema"."schema_example_3"', data.frame(x = 1), 
+                  overwrite = TRUE)
+```
+
+    ## [1] TRUE
+
+``` r
+# try with quoted name
+DBI::dbWriteTable(raw_connection, "'test_schema'.'schema_example_4'", data.frame(x = 1), 
+                  overwrite = TRUE)
+```
+
+    ## [1] TRUE
+
+``` r
+# look for tables, notice all in public schema
+tab <- DBI::dbGetQuery(raw_connection, "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE '%schema_example_%'")
+knitr::kable(tab)
+```
+
+| table\_catalog | table\_schema | table\_name                         | table\_type | self\_referencing\_column\_name | reference\_generation | user\_defined\_type\_catalog | user\_defined\_type\_schema | user\_defined\_type\_name | is\_insertable\_into | is\_typed | commit\_action |
+| :------------- | :------------ | :---------------------------------- | :---------- | :------------------------------ | :-------------------- | :--------------------------- | :-------------------------- | :------------------------ | :------------------- | :-------- | :------------- |
+| johnmount      | public        | schema\_example\_1                  | BASE TABLE  | NA                              | NA                    | NA                           | NA                          | NA                        | YES                  | NO        | NA             |
+| johnmount      | public        | test\_schema.schema\_example\_2     | BASE TABLE  | NA                              | NA                    | NA                           | NA                          | NA                        | YES                  | NO        | NA             |
+| johnmount      | public        | “test\_schema”.“schema\_example\_3” | BASE TABLE  | NA                              | NA                    | NA                           | NA                          | NA                        | YES                  | NO        | NA             |
+| johnmount      | public        | ‘test\_schema’.’schema\_example\_4’ | BASE TABLE  | NA                              | NA                    | NA                           | NA                          | NA                        | YES                  | NO        | NA             |
 
 ``` r
 DBI::dbExecute(raw_connection, "DROP SCHEMA IF EXISTS test_schema CASCADE")
