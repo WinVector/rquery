@@ -1,0 +1,59 @@
+---
+title: "rand examples"
+output: github_document
+---
+
+Example of `rand` behaving similarly on local and remote data.
+
+```{r}
+library("rquery")
+library("wrapr")
+
+raw_connection <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+RSQLite::initExtension(raw_connection)
+db <- rquery_db_info(
+  connection = raw_connection,
+  is_dbi = TRUE,
+  connection_options = rq_connection_tests(raw_connection))
+
+t1l <- data.frame(a = c(1, 2), b = c(3, 4))
+t1r <- rq_copy_to(db, "t1r", t1l)
+
+ops <- t1r %.>%
+  extend(., r := rand())
+
+cat(format(ops))
+
+cat(to_sql(ops, db))
+
+execute(db, ops) %.>%
+  knitr::kable(.)
+```
+
+Note `RANDOM()` is not a safe command in `RSQLite` as it is re-calculated (and takes a new value) each place it is used.  Notice `r1 does not equal `r2`.
+
+```{r}
+q <- "SELECT r AS r1, r AS r2 FROM (
+           SELECT random() AS r FROM (
+            SELECT * from ( VALUES(1),(2) )
+          ) a
+       ) b"
+DBI::dbGetQuery(raw_connection, q) %.>%
+  knitr::kable(.)
+```
+
+```{r}
+DBI::dbDisconnect(raw_connection)
+```
+
+We can run the same code on in-memory `data.frame`s using `rqdatatable`.
+
+```{r}
+library("rqdatatable")
+
+t1l %.>% 
+  ops %.>%
+  knitr::kable(.)
+```
+
+
