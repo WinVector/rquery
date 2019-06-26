@@ -9,7 +9,7 @@
 #' @param a source to select from.
 #' @param b source to select from.
 #' @param ... force later arguments to bind by name
-#' @param by character, set of columns to match.
+#' @param by character, set of columns to match.  If by is a named character vector the right table will have columns renamed.
 #' @param jointype type of join ('INNER', 'LEFT', 'RIGHT', 'FULL').
 #' @param env environment to look to.
 #' @return natural_join node.
@@ -41,15 +41,6 @@
 #'                          jointype = "LEFT", by = 'key')
 #'   execute(my_db, optree) %.>%
 #'     print(.)
-#'
-#'   # full cross-product join
-#'   # (usually with jointype = "FULL", but "LEFT" is more
-#'   # compatible with rquery field merg semantics).
-#'   optree2 <- natural_join(d1, d2,
-#'                           jointype = "LEFT", by = NULL)
-#'   execute(my_db, optree2) %.>%
-#'     print(.)
-#'   # notice ALL non-"by" fields take coalese to left table.
 #'
 #'   DBI::dbDisconnect(my_db)
 #' }
@@ -105,6 +96,19 @@ natural_join.relop <- function(a, b,
   }
   if(!tables_are_consistent(a, b)) {
     stop("rquery::natural_join.relop all tables with matching names must be identical")
+  }
+  if((length(by)>0) && (length(names(by))>0)) { # see if we want to rename right table colums
+    rght <- as.character(by) # strip names
+    by <- names(by) # new naming
+    if(length(by)!=length(rght)) {
+      stop("rquery::natural_join.relop when `by` is a named vector the number of names must equal the number of values")
+    }
+    deltas <- by!=rght
+    if(sum(deltas)>0) {
+      cmap <- rght[deltas]
+      names(cmap) <- by[deltas]
+      b <- rquery::rename_columns(b, cmap, env = env)
+    }
   }
   usesa <- column_names(a)
   usesb <- column_names(b)

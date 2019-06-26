@@ -13,7 +13,7 @@ natural_join(a, b, ..., by, jointype = "INNER", env = parent.frame())
 
 \item{...}{force later arguments to bind by name}
 
-\item{by}{character, set of columns to match.}
+\item{by}{character, set of columns to match.  If by is a named character vector the right table will have columns renamed.}
 
 \item{jointype}{type of join ('INNER', 'LEFT', 'RIGHT', 'FULL').}
 
@@ -55,15 +55,6 @@ if(requireNamespace("DBI", quietly = TRUE) &&
                          jointype = "LEFT", by = 'key')
   execute(my_db, optree) \%.>\%
     print(.)
-
-  # full cross-product join
-  # (usually with jointype = "FULL", but "LEFT" is more
-  # compatible with rquery field merg semantics).
-  optree2 <- natural_join(d1, d2,
-                          jointype = "LEFT", by = NULL)
-  execute(my_db, optree2) \%.>\%
-    print(.)
-  # notice ALL non-"by" fields take coalese to left table.
 
   DBI::dbDisconnect(my_db)
 }
