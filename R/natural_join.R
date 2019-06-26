@@ -109,7 +109,7 @@ natural_join.relop <- function(a, b,
   usesa <- column_names(a)
   usesb <- column_names(b)
   common <- intersect(usesa, usesb)
-  if(!is.null(by)) {
+  if(length(by)>0) {
     bads <- setdiff(by, common)
     if(length(bads)>0) {
       stop(paste("rquery::natural_join.relop all tables must have all join keys, the following keys are not in some tables:",
