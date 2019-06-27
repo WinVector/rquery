@@ -49,6 +49,10 @@ drop_columns.relop <- function(source, drops,
   if(strict) {
     check_have_cols(have, drops, "rquery::drop_columns drops")
   }
+  removing <- setdiff(drops, have)
+  if(length(removing)<=0) {
+    return(source)
+  }
   remain <- setdiff(have, drops)
   if(length(remain)<=0) {
     stop("rquery::drop_columns.relop must keep at least one column")
