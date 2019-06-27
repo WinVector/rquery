@@ -21,7 +21,7 @@ drop_columns(source, drops, ..., strict = TRUE, env = parent.frame())
 drop columns node.
 }
 \description{
-Make a drop columns node (not a relational operation).
+Note: must keep at least one column.
 }
 \examples{
 
