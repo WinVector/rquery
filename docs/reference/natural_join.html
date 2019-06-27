@@ -66,7 +66,7 @@ are coalesced into a single column preferring the first or &quot;a&quot; table."
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.6</span>
       </span>
     </div>
 
@@ -171,7 +171,7 @@ are coalesced into a single column preferring the first or "a" table.</p>
     </tr>
     <tr>
       <th>by</th>
-      <td><p>character, set of columns to match.</p></td>
+      <td><p>character, set of columns to match.  If by is a named character vector the right table will have columns renamed.</p></td>
     </tr>
     <tr>
       <th>jointype</th>
@@ -216,30 +216,11 @@ are coalesced into a single column preferring the first or "a" table.</p>
   <span class='fu'><a href='execute.html'>execute</a></span>(<span class='no'>my_db</span>, <span class='no'>optree</span>) <span class='kw'>%.&gt;%</span>
     <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='no'>.</span>)
 
-  <span class='co'># full cross-product join</span>
-  <span class='co'># (usually with jointype = "FULL", but "LEFT" is more</span>
-  <span class='co'># compatible with rquery field merg semantics).</span>
-  <span class='no'>optree2</span> <span class='kw'>&lt;-</span> <span class='fu'>natural_join</span>(<span class='no'>d1</span>, <span class='no'>d2</span>,
-                          <span class='kw'>jointype</span> <span class='kw'>=</span> <span class='st'>"LEFT"</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
-  <span class='fu'><a href='execute.html'>execute</a></span>(<span class='no'>my_db</span>, <span class='no'>optree2</span>) <span class='kw'>%.&gt;%</span>
-    <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='no'>.</span>)
-  <span class='co'># notice ALL non-"by" fields take coalese to left table.</span>
-
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
 }</div><div class='output co'>#&gt;   key val val1 val2
 #&gt; 1   a   1   10   13
 #&gt; 2   b   2   11   14
-#&gt; 3   c   3   12   NA
-#&gt;   key val val1 val2
-#&gt; 1   a   1   10   13
-#&gt; 2   a   1   10   14
-#&gt; 3   a   1   10   15
-#&gt; 4   b   2   11   13
-#&gt; 5   b   2   11   14
-#&gt; 6   b   2   11   15
-#&gt; 7   c   3   12   13
-#&gt; 8   c   3   12   14
-#&gt; 9   c   3   12   15</div><div class='input'>
+#&gt; 3   c   3   12   NA</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
