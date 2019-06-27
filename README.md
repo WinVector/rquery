@@ -28,9 +28,10 @@ that favor database implementation. These include: capturing the entire
 calculation prior to doing any work (and using recursive methods to
 inspect this object, which can limit the calculation depth to under 1000
 steps at a time), preferring “tame column names” (which isn’t a bad idea
-in `R` anyway as columns and variables are often seen as cousins), and
-not preserving row or column order (or supporting numeric column
-indexing). Also, `rquery` does have a fast in-memory implementation:
+in `R` anyway as columns and variables are often seen as cousins), not
+preserving row or column order (or supporting numeric column indexing),
+and not supporting tables with no columns. Also, `rquery` does have a
+fast in-memory implementation:
 [`rqdatatable`](https://CRAN.R-project.org/package=rqdatatable) (thanks
 to the [`data.table`
 package](https://CRAN.R-project.org/package=data.table)), so one can in
@@ -346,7 +347,7 @@ class(result)
 result
 ```
 
-    ## [1] "table(\"rquery_mat_97200048356068998690_0000000000\"; subjectID, diagnosis, probability)"
+    ## [1] "table(\"rquery_mat_28410991720125682813_0000000000\"; subjectID, diagnosis, probability)"
 
 ``` r
 DBI::dbReadTable(db$connection, result$table_name) %.>%
@@ -426,14 +427,14 @@ cat(to_sql(dq, db, source_limit = 1000))
             "assessmentTotal"
            FROM
             "d" LIMIT 1000
-           ) tsql_69655217375515529566_0000000000
-          ) tsql_69655217375515529566_0000000001
-         ) tsql_69655217375515529566_0000000002
-       ) tsql_69655217375515529566_0000000003
+           ) tsql_76476081481187879846_0000000000
+          ) tsql_76476081481187879846_0000000001
+         ) tsql_76476081481187879846_0000000002
+       ) tsql_76476081481187879846_0000000003
        WHERE "row_number" <= 1
-      ) tsql_69655217375515529566_0000000004
-     ) tsql_69655217375515529566_0000000005
-    ) tsql_69655217375515529566_0000000006 ORDER BY "subjectID"
+      ) tsql_76476081481187879846_0000000004
+     ) tsql_76476081481187879846_0000000005
+    ) tsql_76476081481187879846_0000000006 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very
 amenable to query optimization.
