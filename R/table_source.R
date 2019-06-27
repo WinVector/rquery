@@ -10,7 +10,7 @@
 #' SQL optimizers likely make this zero-cost anyway.
 #'
 #' @param table_name character, name of table
-#' @param columns character, column names of table
+#' @param columns character, column names of table (non-empty and unique values).
 #' @param ... not used, force later argument to bind by name
 #' @param qualifiers optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.
 #' @param q_table_name optional character, qualified table name, note: has to be re-generated for different DB connections.
@@ -51,6 +51,12 @@ mk_td <- function(table_name, columns,
   }
   if(is.null(q_table_name)) {
     q_table_name <- table_name
+  }
+  if((length(columns)<=0) || (!is.character(columns))) {
+    stop("rquery::mk_td columns must be a non-empty character vector")
+  }
+  if(length(columns)!=length(unique(columns))) {
+    stop("rquery::mk_td columns must be unique")
   }
   r <- list(source = list(),
             table_name = table_name,

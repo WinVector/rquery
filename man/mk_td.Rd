@@ -13,7 +13,7 @@ table_source(table_name, columns, ..., qualifiers = NULL,
 \arguments{
 \item{table_name}{character, name of table}
 
-\item{columns}{character, column names of table}
+\item{columns}{character, column names of table (non-empty and unique values).}
 
 \item{...}{not used, force later argument to bind by name}
 
