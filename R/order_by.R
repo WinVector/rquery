@@ -56,6 +56,9 @@ orderby.relop <- function(source,
   force(env)
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::orderby.relop")
+  if(length(cols)<=0) {
+    return(source)
+  }
   if(length(setdiff(reverse, cols))>0) {
     stop("rquery::orderby.relop all reverse columns must be in cols list")
   }

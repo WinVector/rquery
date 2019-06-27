@@ -33,7 +33,7 @@ rename_columns.relop <- function(source, cmap,
                                  env = parent.frame()) {
   force(env)
   if(length(cmap)<=0) {
-    stop("rquery::rename_columns must rename at least 1 column")
+    return(source)
   }
   if(length(cmap)!=length(unique(as.character(cmap)))) {
     stop("rquery::rename_columns map values must be unique")
@@ -49,6 +49,10 @@ rename_columns.relop <- function(source, cmap,
   if(length(collisions)>0) {
     stop(paste("rquery::rename_columns rename collisions",
                paste(collisions, collapse = ", ")))
+  }
+  cmap <- cmap[names(cmap)!=cmap]
+  if(length(cmap)<=0) {
+    return(source)
   }
   r <- list(source = list(source),
             table_name = NULL,

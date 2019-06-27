@@ -170,7 +170,10 @@ extend_se.relop <- function(source, assignments,
   if(length(setdiff(reverse, c(orderby, partitionby)))>0) {
     stop("rquery::extend_se.relop all reverse columns must also be orderby or partitionby columns")
   }
-  parsed <- parse_se(source, assignments, env = env)
+  parsed <- parse_se(source, assignments, env = env, allow_empty = TRUE)
+  if(length(parsed)<=0) {
+    return(source)
+  }
   extend_impl_list(source = source,
                    parsed = parsed,
                    partitionby = partitionby,
@@ -274,7 +277,10 @@ extend.relop <- function(source,
   if(length(setdiff(reverse, c(orderby, partitionby)))>0) {
     stop("rquery::extend.relop all reverse columns must also be orderby or partitionby columns")
   }
-  parsed <- parse_nse(source, exprs, env = env)
+  parsed <- parse_nse(source, exprs, env = env, allow_empty = TRUE)
+  if(length(parsed)<=0) {
+    return(source)
+  }
   extend_impl_list(source = source,
                    parsed = parsed,
                    partitionby = partitionby,

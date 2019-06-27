@@ -41,7 +41,7 @@ drop_columns.relop <- function(source, drops,
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::drop_columns.relop")
   if(length(drops)<=0) {
-    stop("rquery::drop_columns must drop at least 1 column")
+    return(source)
   }
   if(strict) {
     have <- column_names(source)
@@ -66,7 +66,7 @@ drop_columns.data.frame <- function(source, drops,
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::drop_columns.data.frame")
   if(length(drops)<=0) {
-    stop("rquery::drop_columns must drop at least 1 column")
+    return(source)
   }
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- mk_td(tmp_name, colnames(source))
