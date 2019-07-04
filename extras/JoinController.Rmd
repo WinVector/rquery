@@ -7,7 +7,7 @@ output: github_document
 
 #### [`rquery`](https://github.com/WinVector/rquery) Join Controller
 
-This note describes a useful tool we call a "join controller" (and is part of our "[R and Big Data](http://www.win-vector.com/blog/tag/r-and-big-data/)" series, please see [here](http://www.win-vector.com/blog/2017/05/new-series-r-and-big-data-concentrating-on-spark-and-sparklyr/) for the introduction, and [here](https://github.com/WinVector/BigDataRStrata2017) for one our big data courses).
+This note describes a useful tool we call a "join controller" (and is part of our "[R and Big Data](http://www.win-vector.com/blog/tag/r-and-big-data/)" series, please see [here](http://www.win-vector.com/blog/2017/05/new-series-r-and-big-data-concentrating-on-spark-and-sparklyr/) for the introduction).
 
 When working on real world predictive modeling tasks in production, the ability to join data and document how you join data is paramount.  There are very strong reasons to organize production data in something resembling one of the [Codd normal forms](https://en.wikipedia.org/wiki/Database_normalization).  However, for machine learning we need a fully denormalized form (all columns populated into a single to ready to go row, no matter what their provenance, keying, or stride).
 

@@ -10,9 +10,7 @@ part of our “[R and Big
 Data](http://www.win-vector.com/blog/tag/r-and-big-data/)” series,
 please see
 [here](http://www.win-vector.com/blog/2017/05/new-series-r-and-big-data-concentrating-on-spark-and-sparklyr/)
-for the introduction, and
-[here](https://github.com/WinVector/BigDataRStrata2017) for one our big
-data courses).
+for the introduction).
 
 When working on real world predictive modeling tasks in production, the
 ability to join data and document how you join data is paramount. There
