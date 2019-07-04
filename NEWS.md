@@ -1,5 +1,5 @@
 
-# rquery 1.3.6 2019/06/26
+# rquery 1.3.6 2019/07/04
 
  * Rename before join.
  * Allow empty specifications in more situations.
