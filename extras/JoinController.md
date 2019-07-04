@@ -5,10 +5,11 @@ John Mount
 
 #### [`rquery`](https://github.com/WinVector/rquery) Join Controller
 
-This note describes a useful tool we call a “join controller” (and is
-part of our “[R and Big
-Data](http://www.win-vector.com/blog/tag/r-and-big-data/)” series,
-please see
+This note (an update of [our 2017
+article](http://www.win-vector.com/blog/2017/07/join-dependency-sorting/))
+describes a useful tool we call a “join controller” (and is part of our
+“[R and Big Data](http://www.win-vector.com/blog/tag/r-and-big-data/)”
+series, please see
 [here](http://www.win-vector.com/blog/2017/05/new-series-r-and-big-data-concentrating-on-spark-and-sparklyr/)
 for the introduction).
 
