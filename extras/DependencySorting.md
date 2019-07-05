@@ -295,3 +295,9 @@ join plan:
 ``` r
 DBI::dbDisconnect(raw_connection)
 ```
+
+Related work:
+
+  - [datamodelr](https://github.com/bergant/datamodelr)
+  - [polyply](https://github.com/russHyde/polyply)
+  - [dm](https://krlmlr.github.io/dm/)

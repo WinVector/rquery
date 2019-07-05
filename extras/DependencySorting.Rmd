@@ -143,3 +143,8 @@ And this is how we use tools to do the heavy lifting in building a left join pla
 DBI::dbDisconnect(raw_connection)
 ```
 
+Related work:
+
+  * [datamodelr](https://github.com/bergant/datamodelr)
+  * [polyply](https://github.com/russHyde/polyply)
+  * [dm](https://krlmlr.github.io/dm/)
