@@ -20,6 +20,9 @@ example_employee_date <- function(con) {
   if(!requireNamespace("DBI", quietly = TRUE)) {
     stop("rquery::example_employee_date requires the DBI package")
   }
+  if("rquery_db_info" %in% class(con)) {
+    con <- con$connection
+  }
   . <- NULL # Declare not an unbound varaible
   # note: employeeanddate is likely built as a cross-product
   #       join of an employee table and set of dates of interest

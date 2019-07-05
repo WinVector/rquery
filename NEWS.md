@@ -1,4 +1,8 @@
 
+# rquery 1.3.7 2019/07/05
+
+ * example_employee_date() now accepts a wrapped database handle.
+
 # rquery 1.3.6 2019/07/04
 
  * Rename before join.
