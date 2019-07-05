@@ -1,13 +1,12 @@
 ---
 title: "Join Controller"
 author: "John Mount"
-date: "`r Sys.Date()`"
 output: github_document
 ---
 
 #### [`rquery`](https://github.com/WinVector/rquery) Join Controller
 
-This note (an update of [our 2017 article](http://www.win-vector.com/blog/2017/07/join-dependency-sorting/)) describes a useful tool we call a "join controller" (and is part of our "[R and Big Data](http://www.win-vector.com/blog/tag/r-and-big-data/)" series, please see [here](http://www.win-vector.com/blog/2017/05/new-series-r-and-big-data-concentrating-on-spark-and-sparklyr/) for the introduction).
+This note (an update of [our 2017 article](http://www.win-vector.com/blog/2017/06/use-a-join-controller-to-document-your-work/)) and describes a useful tool we call a "join controller" (we discuss this further in our [dependency sorting note](https://github.com/WinVector/rquery/blob/master/extras/DependencySorting.md)).
 
 When working on real world predictive modeling tasks in production, the ability to join data and document how you join data is paramount.  There are very strong reasons to organize production data in something resembling one of the [Codd normal forms](https://en.wikipedia.org/wiki/Database_normalization).  However, for machine learning we need a fully denormalized form (all columns populated into a single to ready to go row, no matter what their provenance, keying, or stride).
 
@@ -29,7 +28,7 @@ This is easiest to explain through a concrete example, which is what we will do 
 
 First let's load the needed packages.
 
-```{r checpkgs}
+```{r checpkgs, include=FALSE}
 execute_vignette <- requireNamespace("RSQLite", quietly = TRUE) &&
   requireNamespace("DiagrammeR", quietly = TRUE) 
 ```
@@ -37,7 +36,6 @@ execute_vignette <- requireNamespace("RSQLite", quietly = TRUE) &&
 ```{r init, eval=execute_vignette}
 # load packages
 library("rquery")
-packageVersion("rquery")
 ```
 
 Now let's load some notional example data.  For our example we have:
@@ -50,28 +48,32 @@ The data is given below:
 
 ```{r data, eval=execute_vignette}
 # load notional example data
-my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-RSQLite::initExtension(my_db)
+raw_connection <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+RSQLite::initExtension(raw_connection)
+my_db <- rquery_db_info(
+  connection = raw_connection,
+  is_dbi = TRUE,
+  connection_options = rq_connection_tests(raw_connection))
+
 # example data
-DBI::dbWriteTable(my_db,
+DBI::dbWriteTable(raw_connection,
                   'meas1_train',
                   data.frame(id= c(1,1,2,2),
                              date= c(1,2,1,2),
                              weight= c(200, 180, 98, 120),
                              height= c(60, 54, 12, 14)))
-DBI::dbWriteTable(my_db,
+DBI::dbWriteTable(raw_connection,
                   'names_facts',
                   data.frame(id= seq_len(length(letters)),
                              name= letters,
                              stringsAsFactors=FALSE))
 
-DBI::dbWriteTable(my_db,
+DBI::dbWriteTable(raw_connection,
                   'meas2_train',
                   data.frame(pid= c(2,3),
                              date= c(2,2),
                              weight= c(105, 110),
                              width= 1))
-               
 ```
 
 An important (and very neglected) step in data science tasks is documenting roles of tables, especially their key-structure (which we also call "stride" in the sense it describes how you move from row to row).  `rquery::describe_tables()` is a function that builds an initial description of the tables.
@@ -129,7 +131,7 @@ The above key mapping could then be circulated to partners for comments and help
 
 Once we are satisfied with our description of tables we can build a join plan.  The join plan is an ordered sequence of left-joins.  
 
-In practice, when preparing data for predictive analytics or machine learning there is often a primary table that has exactly the set of rows you want to work over (especially when encountering production [star-schemas](https://en.wikipedia.org/wiki/Star_schema).  By starting joins from this table we can perform most of our transformations using only left-joins.  To keep things simple we have only supplied a join controller for this case.  This is obviously not the only join pattern needed; but it is the common one.
+In practice, when preparing data for predictive analytics or machine learning there is often a primary table that has exactly the set of rows you want to work over (especially when encountering production [star-schemas](https://en.wikipedia.org/wiki/Star_schema)).  By starting joins from this table we can perform most of our transformations using only left-joins.  To keep things simple we have only supplied a join controller for this case.  This is obviously not the only join pattern needed; but it is the common one.
 
 A join plan can now be built from our table descriptions:
 
@@ -199,6 +201,6 @@ Having to "join a bunch of tables to get the data into simple rows" is a common 
 
 ```{r cleanup, eval=execute_vignette}
 # cleanup
-DBI::dbDisconnect(my_db)
+DBI::dbDisconnect(raw_connection)
 ```
 

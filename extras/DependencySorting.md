@@ -1,12 +1,14 @@
 Join Dependency Sorting
 ================
 John Mount
-2019-07-04
+
+This note is an update of [our 2017
+article](http://www.win-vector.com/blog/2017/07/join-dependency-sorting/).
 
 Let’s discuss the task of left joining many tables from a data warehouse
 using [`R`](https://www.r-project.org) and a system called “a join
 controller” (last discussed
-[here](http://www.win-vector.com/blog/2017/06/use-a-join-controller-to-document-your-work/)).
+[here](https://github.com/WinVector/rquery/blob/master/extras/JoinController.md)).
 
 One of the great advantages to specifying complicated sequences of
 operations in data (rather than in code) is: it is often easier to
@@ -14,23 +16,12 @@ transform and extend data. Explicit rich data beats vague convention and
 complicated code.
 
 For example suppose we have a `DBI` `RSQLite` database handle in the
-variable `my_db` and we are using the following names for our tables in
-this database.
+variable `raw_connection` and we are using the following names for our
+tables in this database.
 
 ``` r
-execute_vignette <- requireNamespace("RSQLite", quietly = TRUE) &&
-  requireNamespace("igraph", quietly = TRUE) &&
-  requireNamespace("DiagrammeR", quietly = TRUE) 
-```
-
-``` r
-my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-RSQLite::initExtension(my_db)
-exDesc <- rquery:::example_employee_date(my_db)
-tableNames <- c('employeeanddate',
-                'revenue',
-                'activity',
-                'orgtable')
+raw_connection <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+RSQLite::initExtension(raw_connection)
 ```
 
 We can now use `rquery::describe_tables()` to get descriptions of these
@@ -38,12 +29,18 @@ tables *including* any declared primary key structure.
 
 ``` r
 library("rquery")
-packageVersion("rquery")
-```
 
-    ## [1] '1.3.6'
+my_db <- rquery_db_info(
+  connection = raw_connection,
+  is_dbi = TRUE,
+  connection_options = rq_connection_tests(raw_connection))
 
-``` r
+exDesc <- rquery:::example_employee_date(my_db$connection)
+tableNames <- c('employeeanddate',
+                'revenue',
+                'activity',
+                'orgtable')
+
 tDesc <- describe_tables(my_db, tableNames,
                          keyInspector = key_inspector_sqlite)
 
@@ -296,5 +293,5 @@ join plan:
 <!-- end list -->
 
 ``` r
-DBI::dbDisconnect(my_db)
+DBI::dbDisconnect(raw_connection)
 ```

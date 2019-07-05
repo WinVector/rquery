@@ -1,37 +1,43 @@
 ---
 title: "Join Dependency Sorting"
 author: "John Mount"
-date: "`r Sys.Date()`"
 output: github_document
 ---
 
-Let's discuss the task of left joining many tables from a data warehouse using [`R`](https://www.r-project.org) and a system called "a join controller" (last discussed [here](http://www.win-vector.com/blog/2017/06/use-a-join-controller-to-document-your-work/)).
+This note is an update of [our 2017 article](http://www.win-vector.com/blog/2017/07/join-dependency-sorting/).
+
+Let's discuss the task of left joining many tables from a data warehouse using [`R`](https://www.r-project.org) and a system called "a join controller" (last discussed [here](https://github.com/WinVector/rquery/blob/master/extras/JoinController.md)).
 
 One of the great advantages to specifying complicated sequences of operations in data (rather than in code) is: it is often easier to transform and extend data.  Explicit rich data beats vague convention and complicated code.
 
-For example suppose we have a `DBI` `RSQLite` database handle in the variable `my_db` and we are using the following names for our tables in this database.
+For example suppose we have a `DBI` `RSQLite` database handle in the variable `raw_connection` and we are using the following names for our tables in this database.
 
-```{r checpkgs}
+```{r checpkgs, include=FALSE}
 execute_vignette <- requireNamespace("RSQLite", quietly = TRUE) &&
   requireNamespace("igraph", quietly = TRUE) &&
   requireNamespace("DiagrammeR", quietly = TRUE) 
 ```
 
 ```{r tableNames, eval=execute_vignette}
-my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-RSQLite::initExtension(my_db)
-exDesc <- rquery:::example_employee_date(my_db)
-tableNames <- c('employeeanddate',
-                'revenue',
-                'activity',
-                'orgtable')
+raw_connection <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+RSQLite::initExtension(raw_connection)
 ```
 
 We can now use `rquery::describe_tables()` to get descriptions of these tables *including* any declared primary key structure.
 
 ```{r builddesc, eval=execute_vignette}
 library("rquery")
-packageVersion("rquery")
+
+my_db <- rquery_db_info(
+  connection = raw_connection,
+  is_dbi = TRUE,
+  connection_options = rq_connection_tests(raw_connection))
+
+exDesc <- rquery:::example_employee_date(my_db$connection)
+tableNames <- c('employeeanddate',
+                'revenue',
+                'activity',
+                'orgtable')
 
 tDesc <- describe_tables(my_db, tableNames,
                          keyInspector = key_inspector_sqlite)
@@ -134,6 +140,6 @@ And this is how we use tools to do the heavy lifting in building a left join pla
   * Finally `rquery::actualize_join_plan()` realizes the join plan as an `rquery` operation tree.
 
 ```{r cleanup, eval=execute_vignette}
-DBI::dbDisconnect(my_db)
+DBI::dbDisconnect(raw_connection)
 ```
 

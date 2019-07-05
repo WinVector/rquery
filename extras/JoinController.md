@@ -1,17 +1,14 @@
 Join Controller
 ================
 John Mount
-2019-07-04
 
 #### [`rquery`](https://github.com/WinVector/rquery) Join Controller
 
 This note (an update of [our 2017
-article](http://www.win-vector.com/blog/2017/07/join-dependency-sorting/))
-describes a useful tool we call a “join controller” (and is part of our
-“[R and Big Data](http://www.win-vector.com/blog/tag/r-and-big-data/)”
-series, please see
-[here](http://www.win-vector.com/blog/2017/05/new-series-r-and-big-data-concentrating-on-spark-and-sparklyr/)
-for the introduction).
+article](http://www.win-vector.com/blog/2017/06/use-a-join-controller-to-document-your-work/))
+and describes a useful tool we call a “join controller” (we discuss this
+further in our [dependency sorting
+note](https://github.com/WinVector/rquery/blob/master/extras/DependencySorting.md)).
 
 When working on real world predictive modeling tasks in production, the
 ability to join data and document how you join data is paramount. There
@@ -61,17 +58,9 @@ will do here.
 First let’s load the needed packages.
 
 ``` r
-execute_vignette <- requireNamespace("RSQLite", quietly = TRUE) &&
-  requireNamespace("DiagrammeR", quietly = TRUE) 
-```
-
-``` r
 # load packages
 library("rquery")
-packageVersion("rquery")
 ```
-
-    ## [1] '1.3.6'
 
 Now let’s load some notional example data. For our example we have:
 
@@ -88,22 +77,27 @@ The data is given below:
 
 ``` r
 # load notional example data
-my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
-RSQLite::initExtension(my_db)
+raw_connection <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+RSQLite::initExtension(raw_connection)
+my_db <- rquery_db_info(
+  connection = raw_connection,
+  is_dbi = TRUE,
+  connection_options = rq_connection_tests(raw_connection))
+
 # example data
-DBI::dbWriteTable(my_db,
+DBI::dbWriteTable(raw_connection,
                   'meas1_train',
                   data.frame(id= c(1,1,2,2),
                              date= c(1,2,1,2),
                              weight= c(200, 180, 98, 120),
                              height= c(60, 54, 12, 14)))
-DBI::dbWriteTable(my_db,
+DBI::dbWriteTable(raw_connection,
                   'names_facts',
                   data.frame(id= seq_len(length(letters)),
                              name= letters,
                              stringsAsFactors=FALSE))
 
-DBI::dbWriteTable(my_db,
+DBI::dbWriteTable(raw_connection,
                   'meas2_train',
                   data.frame(pid= c(2,3),
                              date= c(2,2),
@@ -218,7 +212,7 @@ plan. The join plan is an ordered sequence of left-joins.
 In practice, when preparing data for predictive analytics or machine
 learning there is often a primary table that has exactly the set of rows
 you want to work over (especially when encountering production
-[star-schemas](https://en.wikipedia.org/wiki/Star_schema). By starting
+[star-schemas](https://en.wikipedia.org/wiki/Star_schema)). By starting
 joins from this table we can perform most of our transformations using
 only left-joins. To keep things simple we have only supplied a join
 controller for this case. This is obviously not the only join pattern
@@ -393,5 +387,5 @@ task.
 
 ``` r
 # cleanup
-DBI::dbDisconnect(my_db)
+DBI::dbDisconnect(raw_connection)
 ```
