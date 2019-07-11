@@ -16,7 +16,7 @@ non_sql_node(source, ..., f_db = NULL, f_df = NULL, f_dt = NULL,
 
 \item{...}{force later arguments to bind by name}
 
-\item{f_db}{database implementation signature: f_db(db, incoming_table_name, outgoing_table_name, nd) (db being a database handle)}
+\item{f_db}{database implementation signature: f_db(db, incoming_table_name, outgoing_table_name, nd, ...) (db being a database handle)}
 
 \item{f_df}{data.frame implementation signature: f_df(data.frame, nd) (NULL defaults to taking from database).}
 

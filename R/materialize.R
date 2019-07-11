@@ -212,23 +212,25 @@ materialize_impl <- function(db,
         notes$node[[ii]] <- "sql"
         notes$sql[[ii]] <- sqli
         rq_execute(db, sqli)
-      } else {
+      } else if(("rquery_non_sql_step" %in% class(sqli))) {
         notes$node[[ii]] <- sqli$display_form
         notes$incoming_table_name[[ii]] <- sqli$incoming_table_name
         notes$outgoing_table_name[[ii]] <- sqli$outgoing_table_name
         if(!is.null(sqli$f)) {
           if(length(formals(sqli$f))>=4) {
-            sqli$f(db,
-                   sqli$incoming_table_name,
-                   sqli$outgoing_table_name,
-                   sqli)
+            sqli$f(db = db,
+                   incoming_table_name = sqli$incoming_table_name,
+                   outgoing_table_name = sqli$outgoing_table_name,
+                   nd = sqli)
           } else {
             # legacy signature
-            sqli$f(db,
-                   sqli$incoming_table_name,
-                   sqli$outgoing_table_name)
+            sqli$f(db = db,
+                   incoming_table_name = sqli$incoming_table_name,
+                   outgoing_table_name = sqli$outgoing_table_name)
           }
         }
+      } else {
+        stop("unknown step type in rquery::materialize_impl")
       }
       notes$end_time[[ii]] <- Sys.time()
     }

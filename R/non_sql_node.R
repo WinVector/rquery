@@ -12,7 +12,7 @@
 #'
 #' @param source source to work from (data.frame or relop node)
 #' @param ... force later arguments to bind by name
-#' @param f_db database implementation signature: f_db(db, incoming_table_name, outgoing_table_name, nd) (db being a database handle)
+#' @param f_db database implementation signature: f_db(db, incoming_table_name, outgoing_table_name, nd, ...) (db being a database handle)
 #' @param f_df data.frame implementation signature: f_df(data.frame, nd) (NULL defaults to taking from database).
 #' @param f_dt data.table implementation signature: f_dt(data.table, nd) (NULL defaults f_df).
 #' @param incoming_table_name character, name of incoming table

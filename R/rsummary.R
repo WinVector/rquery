@@ -546,7 +546,8 @@ rsummary_node <- function(source,
   f_db <- function(db,
                    incoming_table_name,
                    outgoing_table_name,
-                   nd = NULL) {
+                   nd = NULL,
+                   ...) {
     stable <- rsummary(db, incoming_table_name,
                        quartiles = quartiles)
     rq_copy_to(db,
