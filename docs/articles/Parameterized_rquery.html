@@ -30,7 +30,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.7</span>
       </span>
     </div>
 
@@ -104,7 +104,7 @@
       <h1>Parameterized rquery</h1>
                         <h4 class="author">John Mount, Win-Vector LLC</h4>
             
-            <h4 class="date">2019-07-04</h4>
+            <h4 class="date">2019-07-23</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery/blob/master/vignettes/Parameterized_rquery.Rmd"><code>vignettes/Parameterized_rquery.Rmd</code></a></small>
       <div class="hidden name"><code>Parameterized_rquery.Rmd</code></div>
@@ -234,11 +234,11 @@
 ##     `cyl`
 ##    FROM
 ##     `mtcars`
-##    ) tsql_66131529960068921243_0000000000
-##   ) tsql_66131529960068921243_0000000001
+##    ) tsql_56267487466210077124_0000000000
+##   ) tsql_56267487466210077124_0000000001
 ##  GROUP BY
 ##   `am`
-## ) tsql_66131529960068921243_0000000002 ORDER BY `am`</code></pre>
+## ) tsql_56267487466210077124_0000000002 ORDER BY `am`</code></pre>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1"><span class="co"># disconnect</span></a>
 <a class="sourceLine" id="cb21-2" data-line-number="2">DBI<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DBI/topics/dbDisconnect">dbDisconnect</a></span>(raw_connection)</a>
 <a class="sourceLine" id="cb21-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/rm">rm</a></span>(<span class="dt">list =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"raw_connection"</span>, <span class="st">"db"</span>))</a></code></pre></div>

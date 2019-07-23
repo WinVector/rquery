@@ -2,7 +2,7 @@ Package: rquery
 Type: Package
 Title: Relational Query Generator for Data Manipulation at Scale
 Version: 1.3.7
-Date: 2019-07-11
+Date: 2019-07-23
 Authors@R: c(
     person("John", "Mount", email = "jmount@win-vector.com", role = c("aut", "cre")),
     person(family = "Win-Vector LLC", role = c("cph"))
@@ -20,7 +20,7 @@ Description: A piped query generator based on Edgar F. Codd's relational
     or pipelines as observable objects (able to report both columns
     produced and columns used), optimized 'SQL' generation as an explicit
     user visible table modeling step, plus explicit query reasoning and checking.
-License: GPL-3
+License: GPL-2 | GPL-3
 Encoding: UTF-8
 Depends:
   R (>= 3.4.0)
