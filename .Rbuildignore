@@ -12,3 +12,4 @@
 ^_pkgdown\.yml$
 ^revdep$
 ^db_examples$
+^LICENSE$
