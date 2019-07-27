@@ -12,3 +12,5 @@ df_tmp/
 inst/doc
 revdep
 CRAN-RELEASE
+spark-warehouse
+
