@@ -20,9 +20,18 @@
 ### Windows
 
     rhub::check_for_cran()
-    
-    devtools::check_win_devel()
-
+    822#> * using R Under development (unstable) (2019-07-04 r76780)
+    823#> * using platform: x86_64-w64-mingw32 (64-bit)
+    824#> * using session charset: ISO8859-1
+    825#> * using option '--as-cran'
+    826#> * checking for file 'rquery/DESCRIPTION' ... OK
+    827#> * checking extension type ... Package
+    828#> * this is package 'rquery' version '1.3.7'
+    829#> * package encoding: UTF-8
+    830#> * checking CRAN incoming feasibility ... Note_to_CRAN_maintainers
+    831#> Maintainer: 'John Mount '
+    885#> * DONE
+    886#> Status: OK
 
 ## Reverse dependencies
 
