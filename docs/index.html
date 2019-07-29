@@ -216,7 +216,7 @@
 <p>Let’s work a non-trivial example: the <code>dplyr</code> pipeline from <a href="http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/">Let’s Have Some Sympathy For The Part-time R User</a>.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"rquery"</span>)</a>
 <a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"wrapr"</span>)</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">use_spark &lt;-<span class="st"> </span><span class="ot">TRUE</span></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3">use_spark &lt;-<span class="st"> </span><span class="ot">FALSE</span></a>
 <a class="sourceLine" id="cb1-4" data-line-number="4"></a>
 <a class="sourceLine" id="cb1-5" data-line-number="5"><span class="cf">if</span>(use_spark) {</a>
 <a class="sourceLine" id="cb1-6" data-line-number="6">  raw_connection &lt;-<span class="st"> </span>sparklyr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/sparklyr/topics/spark-connections">spark_connect</a></span>(<span class="dt">version=</span><span class="st">'2.2.0'</span>, </a>
@@ -226,8 +226,8 @@
 <a class="sourceLine" id="cb1-10" data-line-number="10">                      <span class="st">"create_options"</span>,</a>
 <a class="sourceLine" id="cb1-11" data-line-number="11">                      <span class="st">"USING PARQUET OPTIONS ('compression'='snappy')"</span>)</a>
 <a class="sourceLine" id="cb1-12" data-line-number="12">} <span class="cf">else</span> {</a>
-<a class="sourceLine" id="cb1-13" data-line-number="13">  driver &lt;-<span class="st"> </span>RPostgreSQL<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/RPostgreSQL/topics/PostgreSQL">PostgreSQL</a></span>()</a>
-<a class="sourceLine" id="cb1-14" data-line-number="14">  <span class="co">#driver &lt;- RPostgres::Postgres()</span></a>
+<a class="sourceLine" id="cb1-13" data-line-number="13">  <span class="co">#driver &lt;- RPostgres::Postgres()</span></a>
+<a class="sourceLine" id="cb1-14" data-line-number="14">  driver &lt;-<span class="st"> </span>RPostgreSQL<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/RPostgreSQL/topics/PostgreSQL">PostgreSQL</a></span>()</a>
 <a class="sourceLine" id="cb1-15" data-line-number="15">  raw_connection &lt;-<span class="st"> </span>DBI<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DBI/topics/dbConnect">dbConnect</a></span>(driver,</a>
 <a class="sourceLine" id="cb1-16" data-line-number="16">                          <span class="dt">host =</span> <span class="st">'localhost'</span>,</a>
 <a class="sourceLine" id="cb1-17" data-line-number="17">                          <span class="dt">port =</span> <span class="dv">5432</span>,</a>
@@ -251,7 +251,7 @@
 <a class="sourceLine" id="cb1-35" data-line-number="35">            d_local,</a>
 <a class="sourceLine" id="cb1-36" data-line-number="36">            <span class="dt">temporary =</span> <span class="ot">TRUE</span>, </a>
 <a class="sourceLine" id="cb1-37" data-line-number="37">            <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
-<pre><code>## [1] "table(`d`; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2)"</code></pre>
+<pre><code>## [1] "table(\"d\"; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2)"</code></pre>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># produce a hande to existing table</span></a>
 <a class="sourceLine" id="cb3-2" data-line-number="2">d &lt;-<span class="st"> </span><span class="kw"><a href="reference/db_td.html">db_td</a></span>(db, <span class="st">"d"</span>)</a></code></pre></div>
 <p>Note: in examples we use <code><a href="reference/rq_copy_to.html">rq_copy_to()</a></code> to create data. This is only for the purpose of having easy portable examples. With big data the data is usually already in the remote database or Spark system. The task is almost always to connect and work with this pre-existing remote data and the method to do this is <a href="https://winvector.github.io/rquery/reference/db_td.html"><code><a href="reference/db_td.html">db_td()</a></code></a>, which builds a reference to a remote table given the table name. The suggested pattern for working with remote tables is to get inputs via <a href="https://winvector.github.io/rquery/reference/db_td.html"><code><a href="reference/db_td.html">db_td()</a></code></a> and land remote results with <a href="https://winvector.github.io/rquery/reference/materialize.html"><code>materialze()</code></a>. To work with local data one can copy data from memory to the database with <a href="https://winvector.github.io/rquery/reference/rq_copy_to.html"><code><a href="reference/rq_copy_to.html">rq_copy_to()</a></code></a> and bring back results with <a href="https://winvector.github.io/rquery/reference/execute.html"><code><a href="reference/execute.html">execute()</a></code></a> (though be aware operation on remote non-memory data is <code>rquery</code>’s primary intent).</p>
@@ -259,14 +259,14 @@
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/class">class</a></span>(db)</a></code></pre></div>
 <pre><code>## [1] "rquery_db_info"</code></pre>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(db)</a></code></pre></div>
-<pre><code>## [1] "rquery_db_info(DBIConnection_spark_connection_spark_shell_connection, is_dbi=TRUE, note=\"\")"</code></pre>
+<pre><code>## [1] "rquery_db_info(PostgreSQLConnection, is_dbi=TRUE, note=\"\")"</code></pre>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/class">class</a></span>(d)</a></code></pre></div>
 <pre><code>## [1] "relop_table_source" "relop"</code></pre>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(d)</a></code></pre></div>
-<pre><code>## [1] "table(`d`; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2)"</code></pre>
+<pre><code>## [1] "table(\"d\"; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2)"</code></pre>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="co"># remote structure inspection</span></a>
 <a class="sourceLine" id="cb12-2" data-line-number="2"><span class="kw"><a href="reference/rstr.html">rstr</a></span>(db, d<span class="op">$</span>table_name)</a></code></pre></div>
-<pre><code>## table `d` rquery_db_info 
+<pre><code>## table "d" rquery_db_info 
 ##  nrow: 4 
 ## 'data.frame':    4 obs. of  5 variables:
 ##  $ subjectID      : int  1 1 2 2
@@ -343,7 +343,7 @@
 <a class="sourceLine" id="cb16-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/class">class</a></span>(result)</a></code></pre></div>
 <pre><code>## [1] "relop_table_source" "relop"</code></pre>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">result</a></code></pre></div>
-<pre><code>## [1] "table(`rquery_mat_15727473843952035589_0000000000`; subjectID, diagnosis, probability)"</code></pre>
+<pre><code>## [1] "table(\"rquery_mat_63632224420127268959_0000000000\"; subjectID, diagnosis, probability)"</code></pre>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1">DBI<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DBI/topics/dbReadTable">dbReadTable</a></span>(db<span class="op">$</span>connection, result<span class="op">$</span>table_name) <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb20-2" data-line-number="2"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</a></code></pre></div>
 <table class="table table">
@@ -396,46 +396,46 @@
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="reference/to_sql.html">to_sql</a></span>(dq, db, <span class="dt">source_limit =</span> <span class="dv">1000</span>))</a></code></pre></div>
 <pre><code>SELECT * FROM (
  SELECT
-  `subjectID`,
-  `diagnosis`,
-  `probability`
+  "subjectID",
+  "diagnosis",
+  "probability"
  FROM (
   SELECT
-   `subjectID` AS `subjectID`,
-   `surveyCategory` AS `diagnosis`,
-   `probability` AS `probability`
+   "subjectID" AS "subjectID",
+   "surveyCategory" AS "diagnosis",
+   "probability" AS "probability"
   FROM (
    SELECT * FROM (
     SELECT
-     `subjectID`,
-     `surveyCategory`,
-     `probability`,
-     row_number ( ) OVER (  PARTITION BY `subjectID` ORDER BY `probability` DESC, `surveyCategory` ) AS `row_number`
+     "subjectID",
+     "surveyCategory",
+     "probability",
+     row_number ( ) OVER (  PARTITION BY "subjectID" ORDER BY "probability" DESC, "surveyCategory" ) AS "row_number"
     FROM (
      SELECT
-      `subjectID`,
-      `surveyCategory`,
-      `probability` / sum ( `probability` ) OVER (  PARTITION BY `subjectID` ) AS `probability`
+      "subjectID",
+      "surveyCategory",
+      "probability" / sum ( "probability" ) OVER (  PARTITION BY "subjectID" ) AS "probability"
      FROM (
       SELECT
-       `subjectID`,
-       `surveyCategory`,
-       exp ( `assessmentTotal` * 0.237 )  AS `probability`
+       "subjectID",
+       "surveyCategory",
+       exp ( "assessmentTotal" * 0.237 )  AS "probability"
       FROM (
        SELECT
-        `subjectID`,
-        `surveyCategory`,
-        `assessmentTotal`
+        "subjectID",
+        "surveyCategory",
+        "assessmentTotal"
        FROM
-        `d` LIMIT 1000
-       ) tsql_77968692912230947864_0000000000
-      ) tsql_77968692912230947864_0000000001
-     ) tsql_77968692912230947864_0000000002
-   ) tsql_77968692912230947864_0000000003
-   WHERE `row_number` &lt;= 1
-  ) tsql_77968692912230947864_0000000004
- ) tsql_77968692912230947864_0000000005
-) tsql_77968692912230947864_0000000006 ORDER BY `subjectID`</code></pre>
+        "d" LIMIT 1000
+       ) tsql_14677818744109787145_0000000000
+      ) tsql_14677818744109787145_0000000001
+     ) tsql_14677818744109787145_0000000002
+   ) tsql_14677818744109787145_0000000003
+   WHERE "row_number" &lt;= 1
+  ) tsql_14677818744109787145_0000000004
+ ) tsql_14677818744109787145_0000000005
+) tsql_14677818744109787145_0000000006 ORDER BY "subjectID"</code></pre>
 <p>The query is large, but due to its regular structure it should be very amenable to query optimization.</p>
 <p>A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our <a href="https://github.com/WinVector/rquery/blob/master/extras/PerfTest%2Emd">initial experiments</a> show <code>rquery</code> narrowed queries to be twice as fast as un-narrowed <code>dplyr</code> on a synthetic problem simulating large disk-based queries. We think if we connected directly to <code>Spark</code>’s relational operators (avoiding the <code>SQL</code> layer) we may be able to achieve even faster performance.</p>
 <p>The above optimization is possible because the <code>rquery</code> representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query. For example:</p>
@@ -448,7 +448,7 @@
 ## [1] "subjectID"       "surveyCategory"  "assessmentTotal"</code></pre>
 <p>The additional record-keeping in the operator nodes allows checking and optimization (such as <a href="http://www.win-vector.com/blog/2017/12/how-to-greatly-speed-up-your-spark-queries/">query narrowing</a>). The flow itself is represented as follows:</p>
 <div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/format">format</a></span>(dq))</a></code></pre></div>
-<pre><code>table(`d`; 
+<pre><code>table("d"; 
   subjectID,
   surveyCategory,
   assessmentTotal,
@@ -514,12 +514,12 @@
 <a class="sourceLine" id="cb39-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="reference/rsummary_node.html">rsummary_node</a></span>(.) <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb39-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="reference/execute.html">execute</a></span>(db, .)</a></code></pre></div>
 <pre><code>##        column index     class nrows nna nunique       min       max
-## 1   subjectID     1   integer     2   0     NaN 1.0000000 2.0000000
-## 2   diagnosis     2 character     2   0       2       NaN       NaN
-## 3 probability     3   numeric     2   0     NaN 0.5589742 0.6706221
+## 1   subjectID     1   integer     2   0      NA 1.0000000 2.0000000
+## 2   diagnosis     2 character     2   0       2        NA        NA
+## 3 probability     3   numeric     2   0      NA 0.5589742 0.6706221
 ##        mean         sd              lexmin              lexmax
 ## 1 1.5000000 0.70710678                &lt;NA&gt;                &lt;NA&gt;
-## 2       NaN        NaN positive re-framing withdrawal behavior
+## 2        NA         NA positive re-framing withdrawal behavior
 ## 3 0.6147982 0.07894697                &lt;NA&gt;                &lt;NA&gt;</code></pre>
 <p>We have found most big-data projects either require joining very many tables (something <code>rquery</code> join planners help with, please see <a href="https://github.com/WinVector/rquery/blob/master/extras/JoinController%2Emd">here</a> and <a href="https://github.com/WinVector/rquery/blob/master/extras/JoinController%2Emd">here</a>) or they require working with wide data-marts (where <code>rquery</code> query narrowing helps, please see <a href="https://github.com/WinVector/rquery/blob/master/extras/PerfTest%2Emd">here</a>).</p>
 <p>We can also stand <code>rquery</code> up on non-<code>DBI</code> sources such as <a href="https://github.com/WinVector/rquery/blob/master/extras/SparkR%2Emd"><code>SparkR</code></a> and also <a href="https://CRAN.R-project.org/package=data.table"><code>data.table</code></a>. The <code>data.table</code> adapter is being developed in the <a href="https://github.com/WinVector/rqdatatable"><code>rqdatatable</code></a> package, and can be <a href="http://www.win-vector.com/blog/2018/06/rqdatatable-rquery-powered-by-data-table/">quite fast</a>. Notice the examples in this mode all essentially use the same query pipeline, the user can choose where to apply it: in memory (<code>data.table</code>), in a <code>DBI</code> database (<code>PostgreSQL</code>, <code>Sparklyr</code>), and with even non-DBI systems (<code>SparkR</code>).</p>

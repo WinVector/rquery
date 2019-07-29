@@ -96,7 +96,7 @@ from [Let’s Have Some Sympathy For The Part-time R User](http://www.win-vector
 ```{r ex, warning=FALSE, message=FALSE}
 library("rquery")
 library("wrapr")
-use_spark <- TRUE
+use_spark <- FALSE
 
 if(use_spark) {
   raw_connection <- sparklyr::spark_connect(version='2.2.0', 
@@ -106,8 +106,8 @@ if(use_spark) {
                       "create_options",
                       "USING PARQUET OPTIONS ('compression'='snappy')")
 } else {
-  driver <- RPostgreSQL::PostgreSQL()
   #driver <- RPostgres::Postgres()
+  driver <- RPostgreSQL::PostgreSQL()
   raw_connection <- DBI::dbConnect(driver,
                           host = 'localhost',
                           port = 5432,

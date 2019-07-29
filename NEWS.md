@@ -1,5 +1,5 @@
 
-# rquery 1.3.7 2019/07/23
+# rquery 1.3.7 2019/07/29
 
  * example_employee_date() now accepts a wrapped database handle.
  * move off legacy f_db signature.
