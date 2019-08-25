@@ -237,3 +237,50 @@ to_sql_relop_orderby <- function(
   c(subsql_list[-length(subsql_list)], q)
 }
 
+
+#' Make an orderby node (not a relational operation).
+#'
+#' Order a table by a set of columns (not general expressions) and
+#' limit number of rows in that order.
+#'
+#' Note: this is a relational operator in that it takes a table that
+#' is a relation (has unique rows) to a table that is still a relation.
+#' However, most relational systems do not preserve row order in storage or between
+#' operations.  So without the limit set this is not a useful operator except
+#' as a last step prior to pulling data to an in-memory \code{data.frame} (
+#' which does preserve row order).
+#'
+#'
+#' @param source source to select from.
+#' @param cols order by column names.
+#' @param ... force later arguments to be bound by name
+#' @param reverse character, which columns to reverse ordering of.
+#' @param limit number limit row count.
+#' @param env environment to look to.
+#' @return order_by node.
+#'
+#' @examples
+#'
+#' if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {
+#'   my_db <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+#'   d <- rq_copy_to(my_db, 'd',
+#'                    data.frame(AUC = 0.6, R2 = 0.2))
+#'   optree <- order_rows(d, cols = "AUC", reverse = "AUC", limit=4)
+#'   cat(format(optree))
+#'   sql <- to_sql(optree, my_db)
+#'   cat(sql)
+#'   print(DBI::dbGetQuery(my_db, sql))
+#'   DBI::dbDisconnect(my_db)
+#' }
+#'
+#' @export
+#'
+order_rows <- function(source,
+                       cols = NULL,
+                       ...,
+                       reverse = NULL,
+                       limit = NULL,
+                       env = parent.frame()) {
+  force(env)
+  UseMethod("orderby", source)
+}

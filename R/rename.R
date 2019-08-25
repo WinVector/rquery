@@ -97,7 +97,7 @@ column_names.relop_rename_columns <- function (x, ...) {
 
 #' @export
 format_node.relop_rename_columns <- function(node) {
-  paste0("rename(.,\n",
+  paste0("rename_columns(.,\n",
          "  ", gsub("\n", "\n  ",
                     wrapr::map_to_char(node$cmap, sep = "\n  "),
                     fixed = TRUE), ")",

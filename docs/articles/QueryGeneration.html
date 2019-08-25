@@ -30,7 +30,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.8</span>
       </span>
     </div>
 
@@ -104,7 +104,7 @@
       <h1>Query Generation</h1>
                         <h4 class="author">John Mount</h4>
             
-            <h4 class="date">2019-07-29</h4>
+            <h4 class="date">2019-08-25</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery/blob/master/vignettes/QueryGeneration.Rmd"><code>vignettes/QueryGeneration.Rmd</code></a></small>
       <div class="hidden name"><code>QueryGeneration.Rmd</code></div>
@@ -158,7 +158,7 @@
     rank := rank(),
     p= subjectID,
     o= "probability", "surveyCategory") %.&gt;%
-   rename(.,
+   rename_columns(.,
     c('diagnosis' = 'surveyCategory')) %.&gt;%
    select_rows(.,
      rank == count) %.&gt;%
@@ -199,13 +199,13 @@
          `assessmentTotal`
         FROM
          `d` LIMIT 1000
-        ) tsql_05789042871694733669_0000000000
-       ) tsql_05789042871694733669_0000000001
-     ) tsql_05789042871694733669_0000000002
-    ) tsql_05789042871694733669_0000000003
+        ) tsql_18810855760448747663_0000000000
+       ) tsql_18810855760448747663_0000000001
+     ) tsql_18810855760448747663_0000000002
+    ) tsql_18810855760448747663_0000000003
     WHERE `rank` = `count`
-   ) tsql_05789042871694733669_0000000004
-  ) tsql_05789042871694733669_0000000005 ORDER BY `subjectID`</code></pre>
+   ) tsql_18810855760448747663_0000000004
+  ) tsql_18810855760448747663_0000000005 ORDER BY `subjectID`</code></pre>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

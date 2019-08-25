@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.8</span>
       </span>
     </div>
 
@@ -234,7 +234,7 @@
 #&gt;   o= "probability" DESC, "surveyCategory" DESC) %.&gt;%
 #&gt;  select_rows(.,
 #&gt;    row_number &lt;= 1) %.&gt;%
-#&gt;  rename(.,
+#&gt;  rename_columns(.,
 #&gt;   c('diagnosis' = 'surveyCategory')) %.&gt;%
 #&gt;  select_columns(.,
 #&gt;    subjectID, diagnosis, probability) %.&gt;%

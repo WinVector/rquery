@@ -347,7 +347,7 @@ class(result)
 result
 ```
 
-    ## [1] "table(\"rquery_mat_47766550887162671753_0000000000\"; subjectID, diagnosis, probability)"
+    ## [1] "table(\"rquery_mat_20360072548296072886_0000000000\"; subjectID, diagnosis, probability)"
 
 ``` r
 DBI::dbReadTable(db$connection, result$table_name) %.>%
@@ -427,14 +427,14 @@ cat(to_sql(dq, db, source_limit = 1000))
             "assessmentTotal"
            FROM
             "d" LIMIT 1000
-           ) tsql_53786217086116035775_0000000000
-          ) tsql_53786217086116035775_0000000001
-         ) tsql_53786217086116035775_0000000002
-       ) tsql_53786217086116035775_0000000003
+           ) tsql_73335721596135232374_0000000000
+          ) tsql_73335721596135232374_0000000001
+         ) tsql_73335721596135232374_0000000002
+       ) tsql_73335721596135232374_0000000003
        WHERE "row_number" <= 1
-      ) tsql_53786217086116035775_0000000004
-     ) tsql_53786217086116035775_0000000005
-    ) tsql_53786217086116035775_0000000006 ORDER BY "subjectID"
+      ) tsql_73335721596135232374_0000000004
+     ) tsql_73335721596135232374_0000000005
+    ) tsql_73335721596135232374_0000000006 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very
 amenable to query optimization.
@@ -499,7 +499,7 @@ cat(format(dq))
       o= "probability" DESC, "surveyCategory") %.>%
      select_rows(.,
        row_number <= 1) %.>%
-     rename(.,
+     rename_columns(.,
       c('diagnosis' = 'surveyCategory')) %.>%
      select_columns(.,
        subjectID, diagnosis, probability) %.>%
