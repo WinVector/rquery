@@ -37,7 +37,6 @@ Suggests:
     DiagrammeR,
     knitr,
     rmarkdown,
-    yaml,
     RUnit
 LazyData: true
 RoxygenNote: 6.1.1
