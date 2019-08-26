@@ -10,6 +10,7 @@ The example being read comes from
 library(yaml)
 library(wrapr)
 library(rquery)
+library(rqdatatable)
 
 rep <- yaml.load_file("pipeline_yaml.txt")
 
@@ -153,11 +154,37 @@ cat(to_sql(ops, rquery_default_db_info()))
     ##         "assessmentTotal"
     ##        FROM
     ##         "d"
-    ##        ) tsql_74053799393378453715_0000000000
-    ##       ) tsql_74053799393378453715_0000000001
-    ##      ) tsql_74053799393378453715_0000000002
-    ##    ) tsql_74053799393378453715_0000000003
+    ##        ) tsql_82746747808779099212_0000000000
+    ##       ) tsql_82746747808779099212_0000000001
+    ##      ) tsql_82746747808779099212_0000000002
+    ##    ) tsql_82746747808779099212_0000000003
     ##    WHERE "row_number" = 1
-    ##   ) tsql_74053799393378453715_0000000004
-    ##  ) tsql_74053799393378453715_0000000005
-    ## ) tsql_74053799393378453715_0000000006 ORDER BY "subjectID"
+    ##   ) tsql_82746747808779099212_0000000004
+    ##  ) tsql_82746747808779099212_0000000005
+    ## ) tsql_82746747808779099212_0000000006 ORDER BY "subjectID"
+
+``` r
+d_local <- build_frame(
+   "subjectID", "surveyCategory"     , "assessmentTotal", "irrelevantCol1", "irrelevantCol2" |
+   1L         , "withdrawal behavior", 5                , "irrel1"        , "irrel2"         |
+   1L         , "positive re-framing", 2                , "irrel1"        , "irrel2"         |
+   2L         , "withdrawal behavior", 3                , "irrel1"        , "irrel2"         |
+   2L         , "positive re-framing", 4                , "irrel1"        , "irrel2"         )
+
+d_local %.>% 
+  ops %.>% 
+  knitr::kable(.)
+```
+
+| subjectID | diagnosis           | probability |
+| --------: | :------------------ | ----------: |
+|         1 | withdrawal behavior |   0.6706221 |
+|         2 | positive re-framing |   0.5589742 |
+
+``` r
+ops %.>%
+  op_diagram(.) %.>% 
+  DiagrammeR::grViz(.)
+```
+
+![](yaml_files/figure-gfm/diagram-1.png)<!-- -->

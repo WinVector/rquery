@@ -9,6 +9,7 @@ This is an example of `R` reading a `YAML` representation of a `Python` [`data_a
 library(yaml)
 library(wrapr)
 library(rquery)
+library(rqdatatable)
 
 rep <- yaml.load_file("pipeline_yaml.txt")
 
@@ -93,3 +94,22 @@ cat(format(ops))
 cat(to_sql(ops, rquery_default_db_info()))
 ```
 
+```{r}
+d_local <- build_frame(
+   "subjectID", "surveyCategory"     , "assessmentTotal", "irrelevantCol1", "irrelevantCol2" |
+   1L         , "withdrawal behavior", 5                , "irrel1"        , "irrel2"         |
+   1L         , "positive re-framing", 2                , "irrel1"        , "irrel2"         |
+   2L         , "withdrawal behavior", 3                , "irrel1"        , "irrel2"         |
+   2L         , "positive re-framing", 4                , "irrel1"        , "irrel2"         )
+
+d_local %.>% 
+  ops %.>% 
+  knitr::kable(.)
+```
+
+
+```{r diagram, fig.width=8, fig.height=8}
+ops %.>%
+  op_diagram(.) %.>% 
+  DiagrammeR::grViz(.)
+```
