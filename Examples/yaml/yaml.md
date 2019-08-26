@@ -102,8 +102,10 @@ cat(format(ops))
     ##  extend(.,
     ##   probability := exp(assessmentTotal * 0.237)) %.>%
     ##  extend(.,
-    ##   probability := probability / sum(probability),
+    ##   total := sum(probability),
     ##   p= subjectID) %.>%
+    ##  extend(.,
+    ##   probability := probability / total) %.>%
     ##  extend(.,
     ##   row_number := row_number(),
     ##   p= subjectID,
@@ -141,27 +143,34 @@ cat(to_sql(ops, rquery_default_db_info()))
     ##      SELECT
     ##       "subjectID",
     ##       "surveyCategory",
-    ##       "probability" / sum ( "probability" ) OVER (  PARTITION BY "subjectID" ) AS "probability"
+    ##       "probability" / "total"  AS "probability"
     ##      FROM (
     ##       SELECT
     ##        "subjectID",
     ##        "surveyCategory",
-    ##        exp ( "assessmentTotal" * 0.237 )  AS "probability"
+    ##        "probability",
+    ##        sum ( "probability" ) OVER (  PARTITION BY "subjectID" ) AS "total"
     ##       FROM (
     ##        SELECT
     ##         "subjectID",
     ##         "surveyCategory",
-    ##         "assessmentTotal"
-    ##        FROM
-    ##         "d"
-    ##        ) tsql_82746747808779099212_0000000000
-    ##       ) tsql_82746747808779099212_0000000001
-    ##      ) tsql_82746747808779099212_0000000002
-    ##    ) tsql_82746747808779099212_0000000003
+    ##         exp ( "assessmentTotal" * 0.237 )  AS "probability"
+    ##        FROM (
+    ##         SELECT
+    ##          "subjectID",
+    ##          "surveyCategory",
+    ##          "assessmentTotal"
+    ##         FROM
+    ##          "d"
+    ##         ) tsql_02609915120935452077_0000000000
+    ##        ) tsql_02609915120935452077_0000000001
+    ##       ) tsql_02609915120935452077_0000000002
+    ##      ) tsql_02609915120935452077_0000000003
+    ##    ) tsql_02609915120935452077_0000000004
     ##    WHERE "row_number" = 1
-    ##   ) tsql_82746747808779099212_0000000004
-    ##  ) tsql_82746747808779099212_0000000005
-    ## ) tsql_82746747808779099212_0000000006 ORDER BY "subjectID"
+    ##   ) tsql_02609915120935452077_0000000005
+    ##  ) tsql_02609915120935452077_0000000006
+    ## ) tsql_02609915120935452077_0000000007 ORDER BY "subjectID"
 
 ``` r
 d_local <- build_frame(
