@@ -16,7 +16,7 @@
   reverse: []
 - op: Extend
   ops:
-    probability: probability / probability.sum()
+    probability: probability / sum(probability)
   partition_by:
   - subjectID
   order_by: []

@@ -3,6 +3,8 @@ title: "yaml"
 output: github_document
 ---
 
+This is an example of `R` reading a `YAML` representation of a `Python` [`data_algebra`](https://github.com/WinVector/data_algebra) pipeline.  The example being read comes from [here](https://github.com/WinVector/data_algebra/blob/master/Examples/LogisticExample/ScoringExample.ipynb).
+
 ```{r}
 library(yaml)
 library(wrapr)

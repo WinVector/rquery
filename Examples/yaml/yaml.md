@@ -1,6 +1,11 @@
 yaml
 ================
 
+This is an example of `R` reading a `YAML` representation of a `Python`
+[`data_algebra`](https://github.com/WinVector/data_algebra) pipeline.
+The example being read comes from
+[here](https://github.com/WinVector/data_algebra/blob/master/Examples/LogisticExample/ScoringExample.ipynb).
+
 ``` r
 library(yaml)
 library(wrapr)
@@ -96,7 +101,7 @@ cat(format(ops))
     ##  extend(.,
     ##   probability := exp(assessmentTotal * 0.237)) %.>%
     ##  extend(.,
-    ##   probability := probability / probability.sum(),
+    ##   probability := probability / sum(probability),
     ##   p= subjectID) %.>%
     ##  extend(.,
     ##   row_number := row_number(),
@@ -135,7 +140,7 @@ cat(to_sql(ops, rquery_default_db_info()))
     ##      SELECT
     ##       "subjectID",
     ##       "surveyCategory",
-    ##       "probability" / probability.sum ( ) OVER (  PARTITION BY "subjectID" ) AS "probability"
+    ##       "probability" / sum ( "probability" ) OVER (  PARTITION BY "subjectID" ) AS "probability"
     ##      FROM (
     ##       SELECT
     ##        "subjectID",
@@ -148,11 +153,11 @@ cat(to_sql(ops, rquery_default_db_info()))
     ##         "assessmentTotal"
     ##        FROM
     ##         "d"
-    ##        ) tsql_24014652293611678115_0000000000
-    ##       ) tsql_24014652293611678115_0000000001
-    ##      ) tsql_24014652293611678115_0000000002
-    ##    ) tsql_24014652293611678115_0000000003
+    ##        ) tsql_74053799393378453715_0000000000
+    ##       ) tsql_74053799393378453715_0000000001
+    ##      ) tsql_74053799393378453715_0000000002
+    ##    ) tsql_74053799393378453715_0000000003
     ##    WHERE "row_number" = 1
-    ##   ) tsql_24014652293611678115_0000000004
-    ##  ) tsql_24014652293611678115_0000000005
-    ## ) tsql_24014652293611678115_0000000006 ORDER BY "subjectID"
+    ##   ) tsql_74053799393378453715_0000000004
+    ##  ) tsql_74053799393378453715_0000000005
+    ## ) tsql_74053799393378453715_0000000006 ORDER BY "subjectID"
