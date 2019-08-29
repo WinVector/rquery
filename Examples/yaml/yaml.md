@@ -11,85 +11,10 @@ library(yaml)
 library(wrapr)
 library(rquery)
 library(rqdatatable)
+source("R_fns.R")  # https://github.com/WinVector/rquery/blob/master/Examples/yaml/R_fns.R
 
 rep <- yaml.load_file("pipeline_yaml.txt")
-
-
-expr_map_to_expr_array <- function(emap) {
-  r = vapply(names(emap), function(k) paste0(k, " := ", emap[[k]]), character(1))
-  names(r) <- NULL
-  return(r)
-}
-
-convert_yaml_to_pipleline <- function(rep, source=NULL) {
-  if(is.null(names(rep))) {
-    # unnamed list, a pipleline
-    res <- convert_yaml_to_pipleline(rep[[1]])
-    for(i in seqi(2, length(rep))) {
-      res <- convert_yaml_to_pipleline(rep[[i]], source=res)
-    }
-    return(res)
-  } else {
-    # named list, a stage
-    op = rep$op
-    if(op=="TableDescription") {
-      return(mk_td(table_name = rep$table_name,
-                   columns = rep$column_names))
-    } else if(op=="Extend") {
-      return(extend_se(source, 
-                       assignments = expr_map_to_expr_array(rep$ops),
-                       partitionby = as.character(rep$partition_by),
-                       orderby = as.character(rep$order_by),
-                       reverse = as.character(rep$reverse)))
-    } else if(op=="SelectRows") {
-      return(select_rows_se(source,
-                            expr = rep$expr))
-    } else if(op=="SelectColumns") {
-      return(select_columns(source, columns=rep$columns))
-    } else if(op=="Rename") {
-      return(rename_columns(source, cmap=rep$column_remapping))  # TODO: see if map is dumped (or __repr__() call wrote a string)
-    } else if(op=="Order") {
-      return(orderby(source, cols=rep$order_columns, reverse=rep$reverse, limit=rep$limit))
-    } else {
-      stop("Unexpected node type: " + op) 
-    }
-  }
-} <- function(rep, source=NULL) {
-  if(is.null(names(rep))) {
-    # unnamed list, a pipleline
-    res <- convert_yaml_to_pipleline(rep[[1]])
-    for(i in seqi(2, length(res))) {
-      res <- convert_yaml_to_pipleline(rep[[i]], source=res)
-    }
-    return(res)
-  } else {
-    # named list, a stage
-    op = rep$op
-    if(op=="TableDescription") {
-      return(mk_td(table_name = rep$table_name,
-                   columns = rep$column_names))
-    } else if(op=="Extend") {
-      return(extend_se(source, 
-                       assignments = expr_map_to_expr_array(rep$ops),
-                       partitionby = as.character(rep$partition_by),
-                       orderby = as.character(rep$order_by),
-                       reverse = as.character(rep$reverse)))
-    } else if(op=="SelectRows") {
-      return(select_rows_se(source,
-                            expr = rep$expr))
-    } else if(op=="SelectColumns") {
-      return(select_columns(source, columns=rep$columns))
-    } else if(op=="Rename") {
-      return(rename_columns(source, cmap=rep$column_remapping))  # TODO: see if map is dumped (or __repr__() call wrote a string)
-    } else if(op=="Order") {
-      return(orderby(source, cols=rep$order_columns, reverse=rep$reverse, limit=rep$limit))
-    } else {
-      stop("Unexpected node type: " + op) 
-    }
-  }
-}
-
-ops <- convert_yaml_to_pipleline(rep)
+ops <- convert_yaml_to_pipeline(rep)
 cat(format(ops))
 ```
 
@@ -162,15 +87,15 @@ cat(to_sql(ops, rquery_default_db_info()))
     ##          "assessmentTotal"
     ##         FROM
     ##          "d"
-    ##         ) tsql_02609915120935452077_0000000000
-    ##        ) tsql_02609915120935452077_0000000001
-    ##       ) tsql_02609915120935452077_0000000002
-    ##      ) tsql_02609915120935452077_0000000003
-    ##    ) tsql_02609915120935452077_0000000004
+    ##         ) tsql_85593169951852758097_0000000000
+    ##        ) tsql_85593169951852758097_0000000001
+    ##       ) tsql_85593169951852758097_0000000002
+    ##      ) tsql_85593169951852758097_0000000003
+    ##    ) tsql_85593169951852758097_0000000004
     ##    WHERE "row_number" = 1
-    ##   ) tsql_02609915120935452077_0000000005
-    ##  ) tsql_02609915120935452077_0000000006
-    ## ) tsql_02609915120935452077_0000000007 ORDER BY "subjectID"
+    ##   ) tsql_85593169951852758097_0000000005
+    ##  ) tsql_85593169951852758097_0000000006
+    ## ) tsql_85593169951852758097_0000000007 ORDER BY "subjectID"
 
 ``` r
 d_local <- build_frame(
