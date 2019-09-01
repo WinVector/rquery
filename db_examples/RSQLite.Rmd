@@ -43,71 +43,34 @@ d <- db_td(db, "d")
 ```
 
 
-
-```{r calcm, warning=FALSE, message=FALSE}
-
-collector <- make_relop_list(tmps)
-
+```{r calc, warning=FALSE, message=FALSE}
 scale <- 0.237
 
-# convert assessmentTotal to unscaled proabilities
-dqp <- d %.>%
+dq <- d %.>%
   extend(.,
          probability :=
-           exp(assessmentTotal * scale)) %.>%
-  collector
-
-# total the probabilities per-group
-dqs <- dqp %.>%
-  project(., 
-          tot_prob := sum(probability),
-          groupby = 'subjectID') # could add a collector here to
-                                 # to avoid a self-join if RSQlite
-                                 # has a problem with that
-
-# join total back in and scale
-dqx <- natural_join(dqp, dqs,
-                    by = 'subjectID',
-                    jointype = 'LEFT') %.>%
-  extend(., 
-         probability := probability/tot_prob) %.>%
-  collector
-
-# find largest per subject probability
-mp <- dqx %.>%
-  project(., 
-          probability := max(probability),
-          groupby = 'subjectID') # could add a collector here to
-                                 # to avoid a self-join if RSQlite
-                                 # has a problem with that
-
-# join in by best score and probability per subject 
-# (to break ties)
-# and finish the scoring as before
-natural_join(mp, dqx,
-                   by = c("subjectID", "probability")) %.>%
-  project(., 
-          probability := max(probability), # pseudo aggregator
-          surveyCategory := min(surveyCategory),
-          groupby = 'subjectID') %.>%
+           exp(assessmentTotal * scale))  %.>% 
+  normalize_cols(.,
+                 "probability",
+                 partitionby = 'subjectID') %.>%
+  pick_top_k(.,
+             partitionby = 'subjectID',
+             orderby = c('probability', 'surveyCategory'),
+             reverse = c('probability')) %.>% 
   rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
   select_columns(., c('subjectID', 
                       'diagnosis', 
                       'probability')) %.>%
-  orderby(., cols = 'subjectID') %.>% 
-  collector
+  orderby(., cols = 'subjectID')
 ```
 
-We then build our result.
+(Note one can also use the named map builder alias `%:=%` if there is concern of aliasing with `data.table`'s definition of `:=`.)
 
-```{r materialize, warning=FALSE, message=FALSE}
-result <- collector %.>% db
-```
-
-
-And take a look.
+We then generate our result:
 
 ```{r res, warning=FALSE, message=FALSE}
+result <- materialize(db, dq)
+
 class(result)
 result
 
@@ -115,55 +78,55 @@ DBI::dbReadTable(db$connection, result$table_name) %.>%
   knitr::kable(.)
 ```
 
-`rqdatatable` can also execute collected operations.
+We see we have quickly reproduced the original result using the new database operators.  This means such a calculation could easily be performed at a "big data" scale (using a database or `Spark`; in this case we would not take the results back, but instead use `CREATE TABLE tname AS` to build a remote materialized view of the results).
 
-```{r rqdt}
+A bonus is, thanks to `data.table` and the `rqdatatable` packages we can run the exact same operator pipeline on local data.
+
+```{r localrun, warning=FALSE, message=FALSE}
 library("rqdatatable")
 
-rqdatatable::ex_data_table(collector, tables = list(d = d_local))
+d_local %.>% 
+  dq %.>%
+  knitr::kable(.)
+```
+
+Notice we applied the pipeline by piping data into it.  This ability is a feature of the [dot arrow pipe](https://journal.r-project.org/archive/2018/RJ-2018-042/index.html) we are using here.
+
+The actual `SQL` query that produces the database result is, in fact, quite involved:
+
+```{r q, comment=''}
+cat(to_sql(dq, db, source_limit = 1000))
+```
+
+The query is large, but due to its regular structure it should be very amenable to query optimization.
+
+A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our [initial experiments](https://github.com/WinVector/rquery/blob/master/extras/PerfTest%2Emd) show `rquery` narrowed queries to be twice as fast as un-narrowed `dplyr` on a synthetic problem simulating large disk-based queries.  We think if we connected directly to `Spark`'s relational operators (avoiding the `SQL` layer) we may be able to achieve even faster performance.
+
+The above optimization is possible because the `rquery` representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query.  For example:
+
+```{r qfacts}
+column_names(dq)
+
+tables_used(dq)
+
+columns_used(dq)
 ```
 
 
-We can also diagram the calculation.
+The additional record-keeping in the operator nodes allows checking and optimization (such as [query narrowing](http://www.win-vector.com/blog/2017/12/how-to-greatly-speed-up-your-spark-queries/)).  The flow itself is represented as follows:
 
-```{r}
-c(get_relop_list_stages(collector), list(result)) %.>%
-  op_diagram(., merge_tables = TRUE, show_table_columns = FALSE) %.>% 
+```{r pqp, comment=''}
+cat(format(dq))
+```
+
+```{r diagram, fig.width=8, fig.height=8}
+dq %.>%
+  op_diagram(., merge_tables = TRUE) %.>% 
   DiagrammeR::grViz(.) %.>%
   DiagrammeRsvg::export_svg(.) %.>%
   write(., file="RSQLite_diagram.svg")
 ```
 
+
 ![](RSQLite_diagram.svg)
 
-We can print the stages.
-
-```{r printops}
-collector
-```
-
-Or even print the enormous SQL required to implement the calculation.
-
-```{r printsql}
-for(stage in get_relop_list_stages(collector)) {
-  cat(paste0("\n-- ", stage$materialize_as, "\n"))
-  cat(paste0(to_sql(stage, db), ";\n\n"))
-}
-```
-
-Notice how each stage was limited to columns actually used in later stages.
-
-Some more discussion of the query explosion effect is available [here](https://github.com/WinVector/rquery/blob/master/extras/query_growth/query_growth.md).
-Some timings of the query explosing effect are available [here](https://github.com/WinVector/rquery/blob/master/extras/query_growth/time_dag.md).
-
-
-```{r cleanup}
-# clean up tmps
-intermediates <- tmps(dumpList = TRUE)
-for(ti in intermediates) {
-  rquery::rq_remove_table(db, ti)
-}
-
-DBI::dbDisconnect(raw_connection)
-rm(list = c("raw_connection", "db"))
-```

@@ -43,70 +43,34 @@ d <- db_td(db, "d")
 ```
 
 ``` r
-collector <- make_relop_list(tmps)
-
 scale <- 0.237
 
-# convert assessmentTotal to unscaled proabilities
-dqp <- d %.>%
+dq <- d %.>%
   extend(.,
          probability :=
-           exp(assessmentTotal * scale)) %.>%
-  collector
-
-# total the probabilities per-group
-dqs <- dqp %.>%
-  project(., 
-          tot_prob := sum(probability),
-          groupby = 'subjectID') # could add a collector here to
-                                 # to avoid a self-join if RSQlite
-                                 # has a problem with that
-
-# join total back in and scale
-dqx <- natural_join(dqp, dqs,
-                    by = 'subjectID',
-                    jointype = 'LEFT') %.>%
-  extend(., 
-         probability := probability/tot_prob) %.>%
-  collector
-
-# find largest per subject probability
-mp <- dqx %.>%
-  project(., 
-          probability := max(probability),
-          groupby = 'subjectID') # could add a collector here to
-                                 # to avoid a self-join if RSQlite
-                                 # has a problem with that
-
-# join in by best score and probability per subject 
-# (to break ties)
-# and finish the scoring as before
-natural_join(mp, dqx,
-                   by = c("subjectID", "probability")) %.>%
-  project(., 
-          probability := max(probability), # pseudo aggregator
-          surveyCategory := min(surveyCategory),
-          groupby = 'subjectID') %.>%
+           exp(assessmentTotal * scale))  %.>% 
+  normalize_cols(.,
+                 "probability",
+                 partitionby = 'subjectID') %.>%
+  pick_top_k(.,
+             partitionby = 'subjectID',
+             orderby = c('probability', 'surveyCategory'),
+             reverse = c('probability')) %.>% 
   rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
   select_columns(., c('subjectID', 
                       'diagnosis', 
                       'probability')) %.>%
-  orderby(., cols = 'subjectID') %.>% 
-  collector
+  orderby(., cols = 'subjectID')
 ```
 
-    ## [1] "table(ex_06629325664067217329_0000000002; subjectID, diagnosis, probability)"
+(Note one can also use the named map builder alias `%:=%` if there is
+concern of aliasing with `data.table`’s definition of `:=`.)
 
-We then build our result.
-
-``` r
-result <- collector %.>% db
-```
-
-And take a
-    look.
+We then generate our result:
 
 ``` r
+result <- materialize(db, dq)
+
 class(result)
 ```
 
@@ -116,7 +80,7 @@ class(result)
 result
 ```
 
-    ## [1] "table(`ex_06629325664067217329_0000000002`; subjectID, diagnosis, probability)"
+    ## [1] "table(`rquery_mat_40827193001928517693_0000000000`; subjectID, diagnosis, probability)"
 
 ``` r
 DBI::dbReadTable(db$connection, result$table_name) %.>%
@@ -128,186 +92,158 @@ DBI::dbReadTable(db$connection, result$table_name) %.>%
 |         1 | withdrawal behavior |   0.6706221 |
 |         2 | positive re-framing |   0.5589742 |
 
-`rqdatatable` can also execute collected operations.
+We see we have quickly reproduced the original result using the new
+database operators. This means such a calculation could easily be
+performed at a “big data” scale (using a database or `Spark`; in this
+case we would not take the results back, but instead use `CREATE TABLE
+tname AS` to build a remote materialized view of the results).
+
+A bonus is, thanks to `data.table` and the `rqdatatable` packages we can
+run the exact same operator pipeline on local data.
 
 ``` r
 library("rqdatatable")
 
-rqdatatable::ex_data_table(collector, tables = list(d = d_local))
+d_local %.>% 
+  dq %.>%
+  knitr::kable(.)
 ```
 
-    ##   subjectID           diagnosis probability
-    ## 1         1 withdrawal behavior   0.6706221
-    ## 2         2 positive re-framing   0.5589742
+| subjectID | diagnosis           | probability |
+| --------: | :------------------ | ----------: |
+|         1 | withdrawal behavior |   0.6706221 |
+|         2 | positive re-framing |   0.5589742 |
 
-We can also diagram the calculation.
+Notice we applied the pipeline by piping data into it. This ability is a
+feature of the [dot arrow
+pipe](https://journal.r-project.org/archive/2018/RJ-2018-042/index.html)
+we are using here.
+
+The actual `SQL` query that produces the database result is, in fact,
+quite involved:
 
 ``` r
-c(get_relop_list_stages(collector), list(result)) %.>%
-  op_diagram(., merge_tables = TRUE, show_table_columns = FALSE) %.>% 
+cat(to_sql(dq, db, source_limit = 1000))
+```
+
+    SELECT * FROM (
+     SELECT
+      `subjectID`,
+      `diagnosis`,
+      `probability`
+     FROM (
+      SELECT
+       `subjectID` AS `subjectID`,
+       `surveyCategory` AS `diagnosis`,
+       `probability` AS `probability`
+      FROM (
+       SELECT * FROM (
+        SELECT
+         `subjectID`,
+         `surveyCategory`,
+         `probability`,
+         row_number ( ) OVER (  PARTITION BY `subjectID` ORDER BY `probability` DESC, `surveyCategory` ) AS `row_number`
+        FROM (
+         SELECT
+          `subjectID`,
+          `surveyCategory`,
+          `probability` / sum ( `probability` ) OVER (  PARTITION BY `subjectID` ) AS `probability`
+         FROM (
+          SELECT
+           `subjectID`,
+           `surveyCategory`,
+           exp ( `assessmentTotal` * 0.237 )  AS `probability`
+          FROM (
+           SELECT
+            `subjectID`,
+            `surveyCategory`,
+            `assessmentTotal`
+           FROM
+            `d` LIMIT 1000
+           ) tsql_60675901566361948073_0000000000
+          ) tsql_60675901566361948073_0000000001
+         ) tsql_60675901566361948073_0000000002
+       ) tsql_60675901566361948073_0000000003
+       WHERE `row_number` <= 1
+      ) tsql_60675901566361948073_0000000004
+     ) tsql_60675901566361948073_0000000005
+    ) tsql_60675901566361948073_0000000006 ORDER BY `subjectID`
+
+The query is large, but due to its regular structure it should be very
+amenable to query optimization.
+
+A feature to notice is: the query was automatically restricted to just
+columns actually needed from the source table to complete the
+calculation. This has the possibility of decreasing data volume and
+greatly speeding up query performance. Our [initial
+experiments](https://github.com/WinVector/rquery/blob/master/extras/PerfTest%2Emd)
+show `rquery` narrowed queries to be twice as fast as un-narrowed
+`dplyr` on a synthetic problem simulating large disk-based queries. We
+think if we connected directly to `Spark`’s relational operators
+(avoiding the `SQL` layer) we may be able to achieve even faster
+performance.
+
+The above optimization is possible because the `rquery` representation
+is an intelligible tree of nodes, so we can interrogate the tree for
+facts about the query. For example:
+
+``` r
+column_names(dq)
+```
+
+    ## [1] "subjectID"   "diagnosis"   "probability"
+
+``` r
+tables_used(dq)
+```
+
+    ## [1] "d"
+
+``` r
+columns_used(dq)
+```
+
+    ## $d
+    ## [1] "subjectID"       "surveyCategory"  "assessmentTotal"
+
+The additional record-keeping in the operator nodes allows checking and
+optimization (such as [query
+narrowing](http://www.win-vector.com/blog/2017/12/how-to-greatly-speed-up-your-spark-queries/)).
+The flow itself is represented as follows:
+
+``` r
+cat(format(dq))
+```
+
+    table(`d`; 
+      subjectID,
+      surveyCategory,
+      assessmentTotal,
+      irrelevantCol1,
+      irrelevantCol2) %.>%
+     extend(.,
+      probability := exp(assessmentTotal * 0.237)) %.>%
+     extend(.,
+      probability := probability / sum(probability),
+      p= subjectID) %.>%
+     extend(.,
+      row_number := row_number(),
+      p= subjectID,
+      o= "probability" DESC, "surveyCategory") %.>%
+     select_rows(.,
+       row_number <= 1) %.>%
+     rename(.,
+      c('diagnosis' = 'surveyCategory')) %.>%
+     select_columns(.,
+       subjectID, diagnosis, probability) %.>%
+     orderby(., subjectID)
+
+``` r
+dq %.>%
+  op_diagram(., merge_tables = TRUE) %.>% 
   DiagrammeR::grViz(.) %.>%
   DiagrammeRsvg::export_svg(.) %.>%
   write(., file="RSQLite_diagram.svg")
 ```
 
-    ## Registered S3 methods overwritten by 'ggplot2':
-    ##   method         from 
-    ##   [.quosures     rlang
-    ##   c.quosures     rlang
-    ##   print.quosures rlang
-
 ![](RSQLite_diagram.svg)
-
-We can print the stages.
-
-``` r
-collector
-```
-
-    ## $ex_06629325664067217329_0000000000
-    ## [1] "table(`d`; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2) %.>% extend(., probability := exp(assessmentTotal * 0.237))"
-    ## 
-    ## $ex_06629325664067217329_0000000001
-    ## [1] "table(ex_06629325664067217329_0000000000; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2, probability) %.>% natural_join(., table(ex_06629325664067217329_0000000000; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2, probability) %.>% project(., tot_prob := sum(probability), g= subjectID), j= LEFT, by= subjectID) %.>% extend(., probability := probability / tot_prob)"
-    ## 
-    ## $ex_06629325664067217329_0000000002
-    ## [1] "table(ex_06629325664067217329_0000000001; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2, probability, tot_prob) %.>% project(., probability := max(probability), g= subjectID) %.>% natural_join(., table(ex_06629325664067217329_0000000001; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2, probability, tot_prob), j= INNER, by= subjectID, probability) %.>% project(., probability := max(probability), surveyCategory := min(surveyCategory), g= subjectID) %.>% rename(., c('diagnosis' = 'surveyCategory')) %.>% select_columns(., subjectID, diagnosis, probability) %.>% orderby(., subjectID)"
-
-Or even print the enormous SQL required to implement the calculation.
-
-``` r
-for(stage in get_relop_list_stages(collector)) {
-  cat(paste0("\n-- ", stage$materialize_as, "\n"))
-  cat(paste0(to_sql(stage, db), ";\n\n"))
-}
-```
-
-    ## 
-    ## -- ex_06629325664067217329_0000000000
-    ## SELECT
-    ##  `probability`,
-    ##  `subjectID`,
-    ##  `surveyCategory`
-    ## FROM (
-    ##  SELECT
-    ##   `subjectID`,
-    ##   `surveyCategory`,
-    ##   exp ( `assessmentTotal` * 0.237 )  AS `probability`
-    ##  FROM (
-    ##   SELECT
-    ##    `subjectID`,
-    ##    `surveyCategory`,
-    ##    `assessmentTotal`
-    ##   FROM
-    ##    `d`
-    ##   ) tsql_77837162068581038291_0000000000
-    ## ) tsql_77837162068581038291_0000000001
-    ## ;
-    ## 
-    ## 
-    ## -- ex_06629325664067217329_0000000001
-    ## SELECT
-    ##  `probability`,
-    ##  `subjectID`,
-    ##  `surveyCategory`
-    ## FROM (
-    ##  SELECT
-    ##   `subjectID`,
-    ##   `surveyCategory`,
-    ##   `probability` / `tot_prob`  AS `probability`
-    ##  FROM (
-    ##   SELECT
-    ##    COALESCE(`tsql_04690180748824630899_0000000001`.`subjectID`, `tsql_04690180748824630899_0000000002`.`subjectID`) AS `subjectID`,
-    ##    `tsql_04690180748824630899_0000000001`.`surveyCategory` AS `surveyCategory`,
-    ##    `tsql_04690180748824630899_0000000001`.`probability` AS `probability`,
-    ##    `tsql_04690180748824630899_0000000002`.`tot_prob` AS `tot_prob`
-    ##   FROM (
-    ##    SELECT
-    ##     `subjectID`,
-    ##     `surveyCategory`,
-    ##     `probability`
-    ##    FROM
-    ##     `ex_06629325664067217329_0000000000`
-    ##   ) `tsql_04690180748824630899_0000000001`
-    ##   LEFT JOIN (
-    ##    SELECT `subjectID`, sum ( `probability` ) AS `tot_prob` FROM (
-    ##     SELECT
-    ##      `subjectID`,
-    ##      `probability`
-    ##     FROM
-    ##      `ex_06629325664067217329_0000000000`
-    ##     ) tsql_04690180748824630899_0000000000
-    ##    GROUP BY
-    ##     `subjectID`
-    ##   ) `tsql_04690180748824630899_0000000002`
-    ##   ON
-    ##    `tsql_04690180748824630899_0000000001`.`subjectID` = `tsql_04690180748824630899_0000000002`.`subjectID`
-    ##   ) tsql_04690180748824630899_0000000003
-    ## ) tsql_04690180748824630899_0000000004
-    ## ;
-    ## 
-    ## 
-    ## -- ex_06629325664067217329_0000000002
-    ## SELECT * FROM (
-    ##  SELECT
-    ##   `subjectID`,
-    ##   `diagnosis`,
-    ##   `probability`
-    ##  FROM (
-    ##   SELECT
-    ##    `subjectID` AS `subjectID`,
-    ##    `probability` AS `probability`,
-    ##    `surveyCategory` AS `diagnosis`
-    ##   FROM (
-    ##    SELECT `subjectID`, max ( `probability` ) AS `probability`, min ( `surveyCategory` ) AS `surveyCategory` FROM (
-    ##     SELECT
-    ##      COALESCE(`tsql_94006728322232502380_0000000001`.`subjectID`, `tsql_94006728322232502380_0000000002`.`subjectID`) AS `subjectID`,
-    ##      COALESCE(`tsql_94006728322232502380_0000000001`.`probability`, `tsql_94006728322232502380_0000000002`.`probability`) AS `probability`,
-    ##      `tsql_94006728322232502380_0000000002`.`surveyCategory` AS `surveyCategory`
-    ##     FROM (
-    ##      SELECT `subjectID`, max ( `probability` ) AS `probability` FROM (
-    ##       SELECT
-    ##        `subjectID`,
-    ##        `probability`
-    ##       FROM
-    ##        `ex_06629325664067217329_0000000001`
-    ##       ) tsql_94006728322232502380_0000000000
-    ##      GROUP BY
-    ##       `subjectID`
-    ##     ) `tsql_94006728322232502380_0000000001`
-    ##     INNER JOIN (
-    ##      SELECT
-    ##       `subjectID`,
-    ##       `surveyCategory`,
-    ##       `probability`
-    ##      FROM
-    ##       `ex_06629325664067217329_0000000001`
-    ##     ) `tsql_94006728322232502380_0000000002`
-    ##     ON
-    ##      `tsql_94006728322232502380_0000000001`.`subjectID` = `tsql_94006728322232502380_0000000002`.`subjectID` AND `tsql_94006728322232502380_0000000001`.`probability` = `tsql_94006728322232502380_0000000002`.`probability`
-    ##     ) tsql_94006728322232502380_0000000003
-    ##    GROUP BY
-    ##     `subjectID`
-    ##   ) tsql_94006728322232502380_0000000004
-    ##  ) tsql_94006728322232502380_0000000005
-    ## ) tsql_94006728322232502380_0000000006 ORDER BY `subjectID`
-    ## ;
-
-Notice how each stage was limited to columns actually used in later
-stages.
-
-Some more discussion of the query explosion effect is available
-[here](https://github.com/WinVector/rquery/blob/master/extras/query_growth/query_growth.md).
-Some timings of the query explosing effect are available
-[here](https://github.com/WinVector/rquery/blob/master/extras/query_growth/time_dag.md).
-
-``` r
-# clean up tmps
-intermediates <- tmps(dumpList = TRUE)
-for(ti in intermediates) {
-  rquery::rq_remove_table(db, ti)
-}
-
-DBI::dbDisconnect(raw_connection)
-rm(list = c("raw_connection", "db"))
-```
