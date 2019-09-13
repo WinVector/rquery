@@ -39,7 +39,7 @@ cat(format(ops))
     ##    row_number == 1) %.>%
     ##  select_columns(.,
     ##    subjectID, surveyCategory, probability) %.>%
-    ##  rename_columns(.,
+    ##  rename(.,
     ##   c('diagnosis' = 'surveyCategory')) %.>%
     ##  orderby(., subjectID)
 
@@ -87,15 +87,15 @@ cat(to_sql(ops, rquery_default_db_info()))
     ##          "assessmentTotal"
     ##         FROM
     ##          "d"
-    ##         ) tsql_85593169951852758097_0000000000
-    ##        ) tsql_85593169951852758097_0000000001
-    ##       ) tsql_85593169951852758097_0000000002
-    ##      ) tsql_85593169951852758097_0000000003
-    ##    ) tsql_85593169951852758097_0000000004
+    ##         ) tsql_51659372499255731718_0000000000
+    ##        ) tsql_51659372499255731718_0000000001
+    ##       ) tsql_51659372499255731718_0000000002
+    ##      ) tsql_51659372499255731718_0000000003
+    ##    ) tsql_51659372499255731718_0000000004
     ##    WHERE "row_number" = 1
-    ##   ) tsql_85593169951852758097_0000000005
-    ##  ) tsql_85593169951852758097_0000000006
-    ## ) tsql_85593169951852758097_0000000007 ORDER BY "subjectID"
+    ##   ) tsql_51659372499255731718_0000000005
+    ##  ) tsql_51659372499255731718_0000000006
+    ## ) tsql_51659372499255731718_0000000007 ORDER BY "subjectID"
 
 ``` r
 d_local <- build_frame(
@@ -122,3 +122,7 @@ ops %.>%
 ```
 
 ![](yaml_files/figure-gfm/diagram-1.png)<!-- -->
+
+See also
+<https://github.com/WinVector/data_algebra/tree/master/Examples/LogisticExample>
+.

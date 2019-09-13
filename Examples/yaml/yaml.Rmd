@@ -38,3 +38,6 @@ ops %.>%
   op_diagram(.) %.>% 
   DiagrammeR::grViz(.)
 ```
+
+
+See also https://github.com/WinVector/data_algebra/tree/master/Examples/LogisticExample .
