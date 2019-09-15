@@ -37,7 +37,8 @@ Suggests:
     DiagrammeR,
     knitr,
     rmarkdown,
-    RUnit
+    RUnit,
+    yaml
 LazyData: true
 RoxygenNote: 6.1.1
 ByteCompile: true
