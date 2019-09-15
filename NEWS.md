@@ -1,5 +1,5 @@
 
-# rquery 1.3.8 2019/09/14
+# rquery 1.3.8 2019/09/15
 
  * YAML path.
  * Auto-register rqdatatable as default executor on load, if available.

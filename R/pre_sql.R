@@ -117,6 +117,14 @@ pre_sql_sub_expr <- function(terms, info = NULL) {
 }
 
 
+non_db_format_info <- function() {
+  rquery_db_info(connection = NULL,
+                 identifier_quote_char = '',
+                 string_quote_char = '"',
+                 is_dbi = FALSE,
+                 connection_options = rq_connection_advice(NULL),
+                 db_methods = rquery_default_methods())
+}
 
 #' Return SQL transform of tokens.
 #'
@@ -147,7 +155,7 @@ pre_sql_to_query <- function (x,
 #'
 #' @keywords internal
 format.pre_sql_token <- function(x, ...) {
-  pre_sql_to_query(x, rquery_default_db_info())
+  pre_sql_to_query(x, non_db_format_info())
 }
 
 #' @export
@@ -263,7 +271,7 @@ str_pre_sql_sub_expr <- function(x) {
 #' @keywords internal
 #'
 format.pre_sql_sub_expr <- function(x, ...) {
-  pre_sql_to_query(x, rquery_default_db_info())
+  pre_sql_to_query(x, non_db_format_info())
 }
 
 
