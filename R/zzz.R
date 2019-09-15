@@ -6,6 +6,7 @@
   opts <- options()
   our_defaults <- list(
     rquery.verbose = FALSE,
+    rquery.rquery_executor = NULL,
     rquery.rquery_db_executor = NULL
   )
   defs <- setdiff(names(our_defaults),

@@ -116,8 +116,13 @@ rquery_apply_to_data_frame <- function(d,
   }
   tabNames <- tables_used(optree)
   executor <- NULL
+  rquery.rquery_db_executor <- getOption("rquery.rquery_db_executor", default = NULL)
   if(allow_executor) {
     executor <- getOption("rquery.rquery_executor", default = NULL)
+    if(is.null(executor) && is.null(rquery.rquery_db_executor) &&
+       requireNamespace('rqdatatable', quietly = TRUE)) {
+       executor <- list(f = rqdatatable::ex_data_table, name = "rqdatable")
+    }
   }
   if(!is.null(executor)) {
     tables <- NULL
@@ -142,7 +147,6 @@ rquery_apply_to_data_frame <- function(d,
     return(res)
   }
   my_db <- NULL
-  rquery.rquery_db_executor <- getOption("rquery.rquery_db_executor", default = NULL)
   if(!is.null(rquery.rquery_db_executor)) {
     my_db <- rquery.rquery_db_executor$db
   }

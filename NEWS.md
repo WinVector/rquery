@@ -1,6 +1,8 @@
 
-# rquery 1.3.8 2019/08/25
+# rquery 1.3.8 2019/09/14
 
+ * YAML path.
+ * Auto-register rqdatatable as default executor on load, if available.
  * Alternate operator names.
 
 # rquery 1.3.7 2019/07/29
