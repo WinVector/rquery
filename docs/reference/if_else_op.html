@@ -8,11 +8,13 @@
 
 <title>Build a <code>relop</code> node simulating a per-row block-<code>if(){}else{}</code>. — if_else_op • rquery</title>
 
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
@@ -30,8 +32,8 @@
 
 
 
-<meta property="og:title" content="Build a <code>relop</code> node simulating a per-row block-<code>if(){}else{}</code>. — if_else_op" />
 
+<meta property="og:title" content="Build a <code>relop</code> node simulating a per-row block-<code>if(){}else{}</code>. — if_else_op" />
 <meta property="og:description" content="This device uses expression-ifelse(,,) to simulate the
 more powerful per-row block-if(){}else{}.  The difference is
 expression-ifelse(,,) can choose per-row what value to express,
@@ -45,6 +47,7 @@ the translation turns it into safe and efficient code suitable for
 execution either on data.frames or at a big data scale using
 RPostgreSQL or sparklyr." />
 <meta name="twitter:card" content="summary" />
+
 
 
 
@@ -126,7 +129,6 @@ RPostgreSQL or sparklyr." />
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/WinVector/rquery">
@@ -152,7 +154,6 @@ RPostgreSQL or sparklyr." />
     </div>
 
     <div class="ref-description">
-    
     <p>This device uses expression-<code><a href='https://www.rdocumentation.org/packages/base/topics/ifelse'>ifelse(,,)</a></code> to simulate the
 more powerful per-row block-<code>if(){}else{}</code>.  The difference is
 expression-<code><a href='https://www.rdocumentation.org/packages/base/topics/ifelse'>ifelse(,,)</a></code> can choose per-row what value to express,
@@ -165,12 +166,11 @@ The idea is the user can write legible code in this notation, and
 the translation turns it into safe and efficient code suitable for
 execution either on <code>data.frame</code>s or at a big data scale using
 <code>RPostgreSQL</code> or <code>sparklyr</code>.</p>
-    
     </div>
 
     <pre class="usage"><span class='fu'>if_else_op</span>(<span class='no'>source</span>, <span class='no'>testexpr</span>, <span class='no'>...</span>, <span class='kw'>thenexprs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>elseexprs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sys.parent'>parent.frame</a></span>())</pre>
-    
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -199,20 +199,17 @@ execution either on <code>data.frame</code>s or at a big data scale using
       <td><p>environment to look to.</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>operator tree or data.frame.</p>
-    
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>Note: <code>ifebtest_*</code>
 is a reserved column name for this procedure.</p>
-    
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='if_else_block.html'>if_else_block</a></code></p></div>
-    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
@@ -243,11 +240,11 @@ is a reserved column name for this procedure.</p>
   <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
 
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; table(`d`; 
-#&gt;   i,
-#&gt;   a,
-#&gt;   b,
-#&gt;   edited) %.&gt;%
+}</div><div class='output co'>#&gt; mk_td("`d`", c(
+#&gt;   "i",
+#&gt;   "a",
+#&gt;   "b",
+#&gt;   "edited")) %.&gt;%
 #&gt;  extend(.,
 #&gt;   ifebtest_1 := (a + b) &gt; 1) %.&gt;%
 #&gt;  extend(.,
@@ -305,13 +302,9 @@ is a reserved column name for this procedure.</p>
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
       <li><a href="#value">Value</a></li>
-
       <li><a href="#details">Details</a></li>
-
       <li><a href="#see-also">See also</a></li>
-      
       <li><a href="#examples">Examples</a></li>
     </ul>
 

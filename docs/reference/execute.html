@@ -8,11 +8,13 @@
 
 <title>Execute an operator tree, bringing back the result to memory. — execute • rquery</title>
 
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
@@ -30,10 +32,11 @@
 
 
 
-<meta property="og:title" content="Execute an operator tree, bringing back the result to memory. — execute" />
 
+<meta property="og:title" content="Execute an operator tree, bringing back the result to memory. — execute" />
 <meta property="og:description" content="Run the data query." />
 <meta name="twitter:card" content="summary" />
+
 
 
 
@@ -115,7 +118,6 @@
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/WinVector/rquery">
@@ -141,15 +143,13 @@
     </div>
 
     <div class="ref-description">
-    
     <p>Run the data query.</p>
-    
     </div>
 
     <pre class="usage"><span class='fu'>execute</span>(<span class='no'>source</span>, <span class='no'>optree</span>, <span class='no'>...</span>, <span class='kw'>limit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>source_limit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>allow_executor</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>temp_source</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/wrapr/topics/mk_tmp_name_source'>mk_tmp_name_source</a></span>(<span class='st'>"rquery_ex"</span>), <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sys.parent'>parent.frame</a></span>())</pre>
-    
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -194,15 +194,13 @@
       <td><p>environment to work in.</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>data.frame</p>
-    
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='materialize.html'>materialize</a></code>, <code><a href='db_td.html'>db_td</a></code>, <code><a href='to_sql.html'>to_sql</a></code>, <code><a href='rq_copy_to.html'>rq_copy_to</a></code>, <code><a href='mk_td.html'>mk_td</a></code></p></div>
-    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
@@ -226,10 +224,10 @@
 
   <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/options'>options</a></span>(<span class='no'>old_o</span>)
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; [1] "table(`d`; AUC, R2) %.&gt;% extend(., v := AUC + R2) %.&gt;% extend(., x := pmax(AUC, v))"
-#&gt; table(`d`; 
-#&gt;   AUC,
-#&gt;   R2) %.&gt;%
+}</div><div class='output co'>#&gt; [1] "mk_td(\"`d`\", c( \"AUC\", \"R2\")) %.&gt;% extend(., v := AUC + R2) %.&gt;% extend(., x := pmax(AUC, v))"
+#&gt; mk_td("`d`", c(
+#&gt;   "AUC",
+#&gt;   "R2")) %.&gt;%
 #&gt;  extend(.,
 #&gt;   v := AUC + R2) %.&gt;%
 #&gt;  extend(.,
@@ -244,11 +242,8 @@
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
       <li><a href="#value">Value</a></li>
-
       <li><a href="#see-also">See also</a></li>
-      
       <li><a href="#examples">Examples</a></li>
     </ul>
 

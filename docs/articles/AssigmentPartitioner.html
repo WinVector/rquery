@@ -104,7 +104,7 @@
       <h1>Assignment Partitioner</h1>
                         <h4 class="author">John Mount, Win-Vector LLC</h4>
             
-            <h4 class="date">2019-08-25</h4>
+            <h4 class="date">2019-09-15</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery/blob/master/vignettes/AssigmentPartitioner.Rmd"><code>vignettes/AssigmentPartitioner.Rmd</code></a></small>
       <div class="hidden name"><code>AssigmentPartitioner.Rmd</code></div>
@@ -224,13 +224,13 @@
 <a class="sourceLine" id="cb3-44" data-line-number="44">                    e_<span class="dv">1</span>, e_<span class="dv">2</span>))</a>
 <a class="sourceLine" id="cb3-45" data-line-number="45"></a>
 <a class="sourceLine" id="cb3-46" data-line-number="46"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/format">format</a></span>(plan))</a></code></pre></div>
-<pre><code>table(`example_table`; 
-  id,
-  rand_a,
-  rand_b,
-  rand_c,
-  rand_d,
-  rand_e) %.&gt;%
+<pre><code>mk_td("`example_table`", c(
+  "id",
+  "rand_a",
+  "rand_b",
+  "rand_c",
+  "rand_d",
+  "rand_e")) %.&gt;%
  extend(.,
   choice_a := rand_a &gt;= 0.5,
   choice_b := rand_b &gt;= 0.5,
@@ -248,8 +248,8 @@
   d_2 := ifelse(choice_d, "C", "T"),
   e_1 := ifelse(choice_e, "T", "C"),
   e_2 := ifelse(choice_e, "C", "T")) %.&gt;%
- select_columns(.,
-   id, a_1, a_2, b_1, b_2, c_1, c_2, d_1, d_2, e_1, e_2)</code></pre>
+ select_columns(., c(
+   "id", "a_1", "a_2", "b_1", "b_2", "c_1", "c_2", "d_1", "d_2", "e_1", "e_2"))</code></pre>
 <p>Notice <code><a href="../reference/extend_se.html">rquery::extend_se()</a></code> split the work into 3 unambiguous groups. The statements inside each group can now be executed in any order (or even in parallel) with no ambiguity of meaning or risk of error. The goal was: split into a small number of groups such that the observable execution semantics are very close to executing the original statements in order in completely separate groups (which is likely what a user intends).</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">sql &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(plan, my_db)</a>
 <a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(sql)</a></code></pre></div>
@@ -417,13 +417,13 @@ FROM (
 <a class="sourceLine" id="cb8-43" data-line-number="43">                    e_<span class="dv">1</span>, e_<span class="dv">2</span>))</a>
 <a class="sourceLine" id="cb8-44" data-line-number="44"></a>
 <a class="sourceLine" id="cb8-45" data-line-number="45"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/format">format</a></span>(plan2))</a></code></pre></div>
-<pre><code>table(`example_table`; 
-  id,
-  rand_a,
-  rand_b,
-  rand_c,
-  rand_d,
-  rand_e) %.&gt;%
+<pre><code>mk_td("`example_table`", c(
+  "id",
+  "rand_a",
+  "rand_b",
+  "rand_c",
+  "rand_d",
+  "rand_e")) %.&gt;%
  extend(.,
   choice := rand_a &gt;= 0.5) %.&gt;%
  extend(.,
@@ -449,8 +449,8 @@ FROM (
  extend(.,
   e_1 := ifelse(choice, "T", "C"),
   e_2 := ifelse(choice, "C", "T")) %.&gt;%
- select_columns(.,
-   id, a_1, a_2, b_1, b_2, c_1, c_2, d_1, d_2, e_1, e_2)</code></pre>
+ select_columns(., c(
+   "id", "a_1", "a_2", "b_1", "b_2", "c_1", "c_2", "d_1", "d_2", "e_1", "e_2"))</code></pre>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">sql2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(plan2, my_db)</a>
 <a class="sourceLine" id="cb10-2" data-line-number="2">DBI<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DBI/topics/dbGetQuery">dbGetQuery</a></span>(my_db, sql2) <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb10-3" data-line-number="3"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</a></code></pre></div>
@@ -528,6 +528,7 @@ FROM (
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+
       </div>
 
 </div>

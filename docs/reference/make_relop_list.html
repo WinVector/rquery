@@ -8,11 +8,13 @@
 
 <title>Create a new <code>rquery::relop</code> operator tree collector list — make_relop_list • rquery</title>
 
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
@@ -30,10 +32,11 @@
 
 
 
-<meta property="og:title" content="Create a new <code>rquery::relop</code> operator tree collector list — make_relop_list" />
 
+<meta property="og:title" content="Create a new <code>rquery::relop</code> operator tree collector list — make_relop_list" />
 <meta property="og:description" content="For how to use please see here https://github.com/WinVector/rquery/blob/master/extras/query_growth/query_growth.md." />
 <meta name="twitter:card" content="summary" />
+
 
 
 
@@ -115,7 +118,6 @@
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/WinVector/rquery">
@@ -141,13 +143,11 @@
     </div>
 
     <div class="ref-description">
-    
     <p>For how to use please see here <a href='https://github.com/WinVector/rquery/blob/master/extras/query_growth/query_growth.md'>https://github.com/WinVector/rquery/blob/master/extras/query_growth/query_growth.md</a>.</p>
-    
     </div>
 
     <pre class="usage"><span class='fu'>make_relop_list</span>(<span class='kw'>name_source</span> <span class='kw'>=</span> <span class='kw pkg'>wrapr</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/wrapr/topics/mk_tmp_name_source'>mk_tmp_name_source</a></span>(<span class='st'>"rqrol"</span>))</pre>
-    
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -156,15 +156,13 @@
       <td><p>a wrapr::mk_tmp_name_source()</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>a relop_list relop stage collector</p>
-    
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='add_relop.html'>add_relop</a></code>, <code><a href='get_relop_list_stages.html'>get_relop_list_stages</a></code>, <code><a href='materialize_relop_list_stages.html'>materialize_relop_list_stages</a></code></p></div>
-    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
@@ -173,7 +171,7 @@
   <span class='fu'><a href='extend.html'>extend</a></span>(<span class='no'>.</span>, <span class='no'>z</span> <span class='kw'>%:=%</span> <span class='no'>x</span> + <span class='no'>y</span>) <span class='kw'>%.&gt;%</span>
   <span class='no'>collector</span>
 <span class='fu'><a href='get_relop_list_stages.html'>get_relop_list_stages</a></span>(<span class='no'>collector</span>)</div><div class='output co'>#&gt; [[1]]
-#&gt; [1] "table(d; x, y) %.&gt;% extend(., z %:=% x + y)"
+#&gt; [1] "mk_td(\"d\", c( \"x\", \"y\")) %.&gt;% extend(., z %:=% x + y)"
 #&gt; </div><div class='input'>
 
 </div></pre>
@@ -182,11 +180,8 @@
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
       <li><a href="#value">Value</a></li>
-
       <li><a href="#see-also">See also</a></li>
-      
       <li><a href="#examples">Examples</a></li>
     </ul>
 

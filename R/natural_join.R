@@ -178,10 +178,10 @@ format.relop_natural_join <- function(x, ...) {
          " %.>%\n ",
          "natural_join(.,\n",
          "  ", b, ",\n",
-         "  j= ",
+         "  jointype = \"",
          x$jointype,
-         ", by= ",
-         paste(x$by, collapse = ", "),
+         "\", by = ",
+         wrapr::map_to_char(x$by),
          ")",
          "\n")
 }

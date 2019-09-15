@@ -70,9 +70,10 @@ column_names.relop_select_columns <- function (x, ...) {
 
 #' @export
 format_node.relop_select_columns <- function(node) {
-  paste0("select_columns(.,\n   ",
-         paste(node$columns, collapse = ", "),
-         ")",
+  cols <- paste0('"', node$columns, '"')
+  paste0("select_columns(., c(\n   ",
+         paste(cols, collapse = ", "),
+         "))",
          "\n")
 }
 

@@ -8,11 +8,13 @@
 
 <title>Build an optree pipeline that selects up to the top k rows from each group in the given order. — pick_top_k • rquery</title>
 
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
@@ -30,10 +32,11 @@
 
 
 
-<meta property="og:title" content="Build an optree pipeline that selects up to the top k rows from each group in the given order. — pick_top_k" />
 
+<meta property="og:title" content="Build an optree pipeline that selects up to the top k rows from each group in the given order. — pick_top_k" />
 <meta property="og:description" content="This is an example of building up a desired pre-prepared pipeline fragment from relop nodes." />
 <meta name="twitter:card" content="summary" />
+
 
 
 
@@ -115,7 +118,6 @@
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/WinVector/rquery">
@@ -141,16 +143,14 @@
     </div>
 
     <div class="ref-description">
-    
     <p>This is an example of building up a desired pre-prepared pipeline fragment from relop nodes.</p>
-    
     </div>
 
     <pre class="usage"><span class='fu'>pick_top_k</span>(<span class='no'>source</span>, <span class='no'>...</span>, <span class='kw'>partitionby</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>orderby</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>reverse</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>order_expression</span> <span class='kw'>=</span> <span class='st'>"row_number()"</span>,
   <span class='kw'>order_column</span> <span class='kw'>=</span> <span class='st'>"row_number"</span>, <span class='kw'>keep_order_column</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sys.parent'>parent.frame</a></span>())</pre>
-    
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -195,7 +195,7 @@
       <td><p>environment to look for values in.</p></td>
     </tr>
     </table>
-    
+
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
@@ -219,33 +219,38 @@
                       <span class='st'>'diagnosis'</span>,
                       <span class='st'>'probability'</span>)) <span class='kw'>%.&gt;%</span>
   <span class='fu'><a href='orderby.html'>orderby</a></span>(<span class='no'>.</span>, <span class='st'>'subjectID'</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cat'>cat</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/format'>format</a></span>(<span class='no'>optree</span>))</div><div class='output co'>#&gt; table(survey_table; 
-#&gt;   subjectID,
-#&gt;   surveyCategory,
-#&gt;   assessmentTotal) %.&gt;%
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cat'>cat</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/format'>format</a></span>(<span class='no'>optree</span>))</div><div class='output co'>#&gt; mk_td("survey_table", c(
+#&gt;   "subjectID",
+#&gt;   "surveyCategory",
+#&gt;   "assessmentTotal")) %.&gt;%
 #&gt;  extend(.,
 #&gt;   probability %:=% exp(assessmentTotal * 0.237)) %.&gt;%
 #&gt;  extend(.,
 #&gt;   probability := probability / sum(probability),
-#&gt;   p= subjectID) %.&gt;%
+#&gt;   partitionby = c('subjectID'),
+#&gt;   orderby = c(),
+#&gt;   reverse = c()) %.&gt;%
 #&gt;  extend(.,
 #&gt;   row_number := row_number(),
-#&gt;   p= subjectID,
-#&gt;   o= "probability" DESC, "surveyCategory" DESC) %.&gt;%
+#&gt;   partitionby = c('subjectID'),
+#&gt;   orderby = c('probability', 'surveyCategory'),
+#&gt;   reverse = c('probability', 'surveyCategory')) %.&gt;%
 #&gt;  select_rows(.,
 #&gt;    row_number &lt;= 1) %.&gt;%
 #&gt;  rename_columns(.,
 #&gt;   c('diagnosis' = 'surveyCategory')) %.&gt;%
-#&gt;  select_columns(.,
-#&gt;    subjectID, diagnosis, probability) %.&gt;%
-#&gt;  orderby(., subjectID)</div><div class='input'>
+#&gt;  select_columns(., c(
+#&gt;    "subjectID", "diagnosis", "probability")) %.&gt;%
+#&gt;  order_rows(.,
+#&gt;   c('subjectID'),
+#&gt;   reverse = c(),
+#&gt;   limit = NULL)</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-            
       <li><a href="#examples">Examples</a></li>
     </ul>
 

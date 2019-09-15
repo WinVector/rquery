@@ -104,7 +104,7 @@
       <h1>R mapping</h1>
                         <h4 class="author">John Mount</h4>
             
-            <h4 class="date">2019-08-25</h4>
+            <h4 class="date">2019-09-15</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery/blob/master/vignettes/R_mapping.Rmd"><code>vignettes/R_mapping.Rmd</code></a></small>
       <div class="hidden name"><code>R_mapping.Rmd</code></div>
@@ -216,7 +216,7 @@
 <a class="sourceLine" id="cb5-10" data-line-number="10">            <span class="dt">temporary =</span> <span class="ot">TRUE</span>, </a>
 <a class="sourceLine" id="cb5-11" data-line-number="11">            <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</a>
 <a class="sourceLine" id="cb5-12" data-line-number="12"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(table_handle)</a></code></pre></div>
-<pre><code>## [1] "table(`d`; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2)"</code></pre>
+<pre><code>## [1] "mk_td(\"`d`\", c( \"subjectID\", \"surveyCategory\", \"assessmentTotal\", \"irrelevantCol1\", \"irrelevantCol2\"))"</code></pre>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">ops &lt;-<span class="st"> </span>table_handle <span class="op">%.&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb7-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/project.html">project</a></span>(., </a>
 <a class="sourceLine" id="cb7-3" data-line-number="3">          avg_total <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">avg</span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Extremes">pmax</a></span>(<span class="dv">0</span>, assessmentTotal)),</a>
@@ -229,7 +229,7 @@
 ##   `assessmentTotal`
 ##  FROM
 ##   `d`
-##  ) tsql_74775999951253491808_0000000000
+##  ) tsql_43307467281058649410_0000000000
 ## GROUP BY
 ##  `subjectID`</code></pre>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">ops <span class="op">%.&gt;%</span></a>
@@ -303,10 +303,10 @@
 ##    `assessmentTotal`
 ##   FROM
 ##    `d`
-##   ) tsql_86150785079047785365_0000000000
+##   ) tsql_90480398076016728501_0000000000
 ##  GROUP BY
 ##   `subjectID`
-##  ) tsql_86150785079047785365_0000000001</code></pre>
+##  ) tsql_90480398076016728501_0000000001</code></pre>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">ops <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb13-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/execute.html">execute</a></span>(db, .) <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb13-3" data-line-number="3"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</a></code></pre></div>
@@ -353,8 +353,8 @@
 ##    `subjectID`
 ##   FROM
 ##    `d`
-##   ) tsql_52394546968109304236_0000000000
-## ) tsql_52394546968109304236_0000000001</code></pre>
+##   ) tsql_07449848915094168031_0000000000
+## ) tsql_07449848915094168031_0000000001</code></pre>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">ops <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb16-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/execute.html">execute</a></span>(db, .) <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb16-3" data-line-number="3"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</a></code></pre></div>
@@ -391,6 +391,7 @@
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+
       </div>
 
 </div>

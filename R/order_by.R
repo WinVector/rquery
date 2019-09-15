@@ -110,18 +110,10 @@ orderby.data.frame <- function(source,
 
 #' @export
 format_node.relop_orderby <- function(node) {
-  ot <- node$orderby
-  if(length(node$reverse)>0) {
-    ot[ot %in% node$reverse] <- paste0("desc(", ot[ot %in% node$reverse], ")")
-  }
-  paste0("orderby(., ",
-         ifelse(length(ot)>0,
-                paste(ot, collapse = ", "),
-                ""),
-         ifelse((length(node$limit)>0) && (length(node$orderby)>0),
-                paste0(", LIMIT ",
-                       format(ceiling(node$limit), scientific = FALSE)),
-                ""),
+  paste0("order_rows(.",
+         ",\n  ", wrapr::map_to_char(node$orderby),
+         ",\n  reverse = ", wrapr::map_to_char(node$reverse),
+         ",\n  limit = ", ifelse(is.null(node$limit), "NULL", node$limit),
          ")",
          "\n")
 }

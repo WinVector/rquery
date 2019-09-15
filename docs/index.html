@@ -252,7 +252,7 @@
 <a class="sourceLine" id="cb1-35" data-line-number="35">            d_local,</a>
 <a class="sourceLine" id="cb1-36" data-line-number="36">            <span class="dt">temporary =</span> <span class="ot">TRUE</span>, </a>
 <a class="sourceLine" id="cb1-37" data-line-number="37">            <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
-<pre><code>## [1] "table(\"d\"; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2)"</code></pre>
+<pre><code>## [1] "mk_td(\"\"d\"\", c( \"subjectID\", \"surveyCategory\", \"assessmentTotal\", \"irrelevantCol1\", \"irrelevantCol2\"))"</code></pre>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># produce a hande to existing table</span></a>
 <a class="sourceLine" id="cb3-2" data-line-number="2">d &lt;-<span class="st"> </span><span class="kw"><a href="reference/db_td.html">db_td</a></span>(db, <span class="st">"d"</span>)</a></code></pre></div>
 <p>Note: in examples we use <code><a href="reference/rq_copy_to.html">rq_copy_to()</a></code> to create data. This is only for the purpose of having easy portable examples. With big data the data is usually already in the remote database or Spark system. The task is almost always to connect and work with this pre-existing remote data and the method to do this is <a href="https://winvector.github.io/rquery/reference/db_td.html"><code><a href="reference/db_td.html">db_td()</a></code></a>, which builds a reference to a remote table given the table name. The suggested pattern for working with remote tables is to get inputs via <a href="https://winvector.github.io/rquery/reference/db_td.html"><code><a href="reference/db_td.html">db_td()</a></code></a> and land remote results with <a href="https://winvector.github.io/rquery/reference/materialize.html"><code>materialze()</code></a>. To work with local data one can copy data from memory to the database with <a href="https://winvector.github.io/rquery/reference/rq_copy_to.html"><code><a href="reference/rq_copy_to.html">rq_copy_to()</a></code></a> and bring back results with <a href="https://winvector.github.io/rquery/reference/execute.html"><code><a href="reference/execute.html">execute()</a></code></a> (though be aware operation on remote non-memory data is <code>rquery</code>’s primary intent).</p>
@@ -264,7 +264,7 @@
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/class">class</a></span>(d)</a></code></pre></div>
 <pre><code>## [1] "relop_table_source" "relop"</code></pre>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(d)</a></code></pre></div>
-<pre><code>## [1] "table(\"d\"; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2)"</code></pre>
+<pre><code>## [1] "mk_td(\"\"d\"\", c( \"subjectID\", \"surveyCategory\", \"assessmentTotal\", \"irrelevantCol1\", \"irrelevantCol2\"))"</code></pre>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="co"># remote structure inspection</span></a>
 <a class="sourceLine" id="cb12-2" data-line-number="2"><span class="kw"><a href="reference/rstr.html">rstr</a></span>(db, d<span class="op">$</span>table_name)</a></code></pre></div>
 <pre><code>## table "d" rquery_db_info 
@@ -344,7 +344,7 @@
 <a class="sourceLine" id="cb16-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/class">class</a></span>(result)</a></code></pre></div>
 <pre><code>## [1] "relop_table_source" "relop"</code></pre>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">result</a></code></pre></div>
-<pre><code>## [1] "table(\"rquery_mat_91813102181184846209_0000000000\"; subjectID, diagnosis, probability)"</code></pre>
+<pre><code>## [1] "mk_td(\"\"rquery_mat_96666548992152227699_0000000000\"\", c( \"subjectID\", \"diagnosis\", \"probability\"))"</code></pre>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1">DBI<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DBI/topics/dbReadTable">dbReadTable</a></span>(db<span class="op">$</span>connection, result<span class="op">$</span>table_name) <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb20-2" data-line-number="2"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(.)</a></code></pre></div>
 <table class="table table">
@@ -429,14 +429,14 @@
         "assessmentTotal"
        FROM
         "d" LIMIT 1000
-       ) tsql_03872534280888447553_0000000000
-      ) tsql_03872534280888447553_0000000001
-     ) tsql_03872534280888447553_0000000002
-   ) tsql_03872534280888447553_0000000003
+       ) tsql_59611354013295961763_0000000000
+      ) tsql_59611354013295961763_0000000001
+     ) tsql_59611354013295961763_0000000002
+   ) tsql_59611354013295961763_0000000003
    WHERE "row_number" &lt;= 1
-  ) tsql_03872534280888447553_0000000004
- ) tsql_03872534280888447553_0000000005
-) tsql_03872534280888447553_0000000006 ORDER BY "subjectID"</code></pre>
+  ) tsql_59611354013295961763_0000000004
+ ) tsql_59611354013295961763_0000000005
+) tsql_59611354013295961763_0000000006 ORDER BY "subjectID"</code></pre>
 <p>The query is large, but due to its regular structure it should be very amenable to query optimization.</p>
 <p>A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our <a href="https://github.com/WinVector/rquery/blob/master/extras/PerfTest%2Emd">initial experiments</a> show <code>rquery</code> narrowed queries to be twice as fast as un-narrowed <code>dplyr</code> on a synthetic problem simulating large disk-based queries. We think if we connected directly to <code>Spark</code>’s relational operators (avoiding the <code>SQL</code> layer) we may be able to achieve even faster performance.</p>
 <p>The above optimization is possible because the <code>rquery</code> representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query. For example:</p>
@@ -449,28 +449,34 @@
 ## [1] "subjectID"       "surveyCategory"  "assessmentTotal"</code></pre>
 <p>The additional record-keeping in the operator nodes allows checking and optimization (such as <a href="http://www.win-vector.com/blog/2017/12/how-to-greatly-speed-up-your-spark-queries/">query narrowing</a>). The flow itself is represented as follows:</p>
 <div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/format">format</a></span>(dq))</a></code></pre></div>
-<pre><code>table("d"; 
-  subjectID,
-  surveyCategory,
-  assessmentTotal,
-  irrelevantCol1,
-  irrelevantCol2) %.&gt;%
+<pre><code>mk_td(""d"", c(
+  "subjectID",
+  "surveyCategory",
+  "assessmentTotal",
+  "irrelevantCol1",
+  "irrelevantCol2")) %.&gt;%
  extend(.,
   probability := exp(assessmentTotal * 0.237)) %.&gt;%
  extend(.,
   probability := probability / sum(probability),
-  p= subjectID) %.&gt;%
+  partitionby = c('subjectID'),
+  orderby = c(),
+  reverse = c()) %.&gt;%
  extend(.,
   row_number := row_number(),
-  p= subjectID,
-  o= "probability" DESC, "surveyCategory") %.&gt;%
+  partitionby = c('subjectID'),
+  orderby = c('probability', 'surveyCategory'),
+  reverse = c('probability')) %.&gt;%
  select_rows(.,
    row_number &lt;= 1) %.&gt;%
  rename_columns(.,
   c('diagnosis' = 'surveyCategory')) %.&gt;%
- select_columns(.,
-   subjectID, diagnosis, probability) %.&gt;%
- orderby(., subjectID)</code></pre>
+ select_columns(., c(
+   "subjectID", "diagnosis", "probability")) %.&gt;%
+ order_rows(.,
+  c('subjectID'),
+  reverse = c(),
+  limit = NULL)</code></pre>
 <div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" data-line-number="1">dq <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb32-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="reference/op_diagram.html">op_diagram</a></span>(.) <span class="op">%.&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb32-3" data-line-number="3"><span class="st">  </span>DiagrammeR<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DiagrammeR/topics/grViz">grViz</a></span>(.)</a></code></pre></div>
@@ -571,6 +577,7 @@
 <li><a href="authors.html">All authors...</a></li>
 </ul>
 </div>
+
 
       </div>
 

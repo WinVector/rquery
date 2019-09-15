@@ -330,32 +330,28 @@ format_node.relop_extend <- function(node) {
   if(!is.null(node$display_form)) {
     return(node$display_form)
   }
-  pterms <- ""
-  if(length(node$partitionby)>0) {
-    pterms <- paste0(",\n  p= ",
-                     paste(node$partitionb, collapse = ", "))
-  }
-  oterms <- ""
-  ocols <- NULL
-  if(length(node$orderby)>0) {
-    ocols <- paste0("\"", node$orderby, "\"")
-    if(length(node$reverse)>0) {
-      ocols[node$orderby %in% node$reverse] <- paste(ocols[node$orderby %in% node$reverse], "DESC")
-    }
-  }
-  if(length(ocols)>0) {
-    oterms <- paste0(",\n  o= ",
-      paste(ocols, collapse = ", "))
-  }
   origTerms <- vapply(node$parsed,
                       function(pi) {
                         paste(as.character(pi$presentation), collapse = ' ')
                       }, character(1))
   aterms <- paste(origTerms, collapse = ",\n  ")
+  pterms <- ""
+  oterms <- ""
+  rterms <- ""
+  if(length(node$partitionby)>0) {
+    pterms <- paste0(",\n  partitionby = ", wrapr::map_to_char(node$partitionby))
+  }
+  if(length(node$partitionby)>0) {
+    oterms <- paste0(",\n  orderby = ", wrapr::map_to_char(node$orderby))
+  }
+  if(length(node$partitionby)>0) {
+    rterms <- paste0(",\n  reverse = ", wrapr::map_to_char(node$reverse))
+  }
   paste0("extend(.,\n  ",
          aterms,
          pterms,
          oterms,
+         rterms,
          ")",
          "\n")
 }

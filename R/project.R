@@ -220,8 +220,7 @@ format_node.relop_project <- function(node) {
   aterms <- paste(origTerms, collapse = ", ")
   paste0("project(., ",
          aterms,
-         ",\n  g= ",
-         paste(node$groupby, collapse = ", "),
+         ",\n  groupby = ", wrapr::map_to_char(node$groupby),
          ")",
          "\n")
 }

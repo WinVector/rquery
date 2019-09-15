@@ -8,11 +8,13 @@
 
 <title>Use one column to pick values from other columns. — lookup_by_column • rquery</title>
 
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
@@ -30,10 +32,11 @@
 
 
 
-<meta property="og:title" content="Use one column to pick values from other columns. — lookup_by_column" />
 
+<meta property="og:title" content="Use one column to pick values from other columns. — lookup_by_column" />
 <meta property="og:description" content="The pick column selects values from the columns it names (per-row)." />
 <meta name="twitter:card" content="summary" />
+
 
 
 
@@ -115,7 +118,6 @@
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/WinVector/rquery">
@@ -141,15 +143,13 @@
     </div>
 
     <div class="ref-description">
-    
     <p>The <code>pick</code> column selects values from the columns it names (per-row).</p>
-    
     </div>
 
     <pre class="usage"><span class='fu'>lookup_by_column</span>(<span class='no'>source</span>, <span class='no'>pick</span>, <span class='no'>result</span>, <span class='no'>...</span>,
   <span class='kw'>tmp_name_source</span> <span class='kw'>=</span> <span class='kw pkg'>wrapr</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/wrapr/topics/mk_tmp_name_source'>mk_tmp_name_source</a></span>(<span class='st'>"qn"</span>), <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>f_dt_factory</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
-    
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -186,7 +186,7 @@
       <td><p>optional signature f_dt_factory(pick, result) returns function with signature f_dt(d, nd) where d is a data.table.  The point is the function must come from a data.table enabled package. Please see <code><a href='https://www.rdocumentation.org/packages/rqdatatable/topics/make_dt_lookup_by_column'>rqdatatable::make_dt_lookup_by_column</a></code> for an example.</p></td>
     </tr>
     </table>
-    
+
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
@@ -216,10 +216,10 @@
      <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='no'>.</span>)
 
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>db</span>)
-}</div><div class='output co'>#&gt; table(`dRemote`; 
-#&gt;   x,
-#&gt;   y,
-#&gt;   choice) %.&gt;%
+}</div><div class='output co'>#&gt; mk_td("`dRemote`", c(
+#&gt;   "x",
+#&gt;   "y",
+#&gt;   "choice")) %.&gt;%
 #&gt;  non_sql_node(., lookup_by_column(.; choice, derived))
 #&gt;   derived x y choice
 #&gt; 1       1 1 5      x
@@ -233,7 +233,6 @@
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-            
       <li><a href="#examples">Examples</a></li>
     </ul>
 

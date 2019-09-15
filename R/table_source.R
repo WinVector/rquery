@@ -338,13 +338,13 @@ to_sql_relop_table_source <- function(
 #' @export
 format_node.relop_table_source <- function(node) {
   max_cols <- 20
-  cols <- node$columns
+  cols <- paste0('"', node$columns, '"')
   if(length(cols)>max_cols) {
     cols <- c(cols[seq_len(max_cols)], "...")
   }
-  paste0("table(", node$q_table_name, "; \n  ",
+  paste0("mk_td(\"", node$q_table_name, "\", c(\n  ",
          paste(cols, collapse = ",\n  "),
-         ")\n")
+         "))\n")
 }
 
 

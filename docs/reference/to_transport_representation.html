@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Return all primary key columns as guess at preferred primary keys for a SQLite handle. — key_inspector_sqlite • rquery</title>
+<title>Convert an rquery op diagram to a simple representation, appropriate for conversion to YAML. — to_transport_representation • rquery</title>
 
 
 <!-- jquery -->
@@ -33,8 +33,8 @@
 
 
 
-<meta property="og:title" content="Return all primary key columns as guess at preferred primary keys for a SQLite handle. — key_inspector_sqlite" />
-<meta property="og:description" content="Return all primary key columns as guess at preferred primary keys for a SQLite handle." />
+<meta property="og:title" content="Convert an rquery op diagram to a simple representation, appropriate for conversion to YAML. — to_transport_representation" />
+<meta property="og:description" content="Convert an rquery op diagram to a simple representation, appropriate for conversion to YAML." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -137,63 +137,36 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Return all primary key columns as guess at preferred primary keys for a SQLite handle.</h1>
-    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery/blob/master/R/join_controller.R'><code>R/join_controller.R</code></a></small>
-    <div class="hidden name"><code>key_inspector_sqlite.Rd</code></div>
+    <h1>Convert an rquery op diagram to a simple representation, appropriate for conversion to YAML.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery/blob/master/R/yaml.R'><code>R/yaml.R</code></a></small>
+    <div class="hidden name"><code>to_transport_representation.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Return all primary key columns as guess at preferred primary keys for a SQLite handle.</p>
+    <p>Convert an rquery op diagram to a simple representation, appropriate for conversion to YAML.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>key_inspector_sqlite</span>(<span class='no'>db</span>, <span class='no'>tablename</span>)</pre>
+    <pre class="usage"><span class='fu'>to_transport_representation</span>(<span class='no'>ops</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>db</th>
-      <td><p>database handle</p></td>
-    </tr>
-    <tr>
-      <th>tablename</th>
-      <td><p>character, name of table</p></td>
+      <th>ops</th>
+      <td><p>rquery operator dag</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>map of keys to keys</p>
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+    <p>represenation structure</p>
 
-    <div class='dont-index'><p><code>describe_tables</code></p></div>
-
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-<span class='kw'>if</span> (<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/ns-load'>requireNamespace</a></span>(<span class='st'>"DBI"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>&amp;&amp;</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/ns-load'>requireNamespace</a></span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
-  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/DBI/topics/dbConnect'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/RSQLite/topics/SQLite'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/DBI/topics/dbExecute'>dbExecute</a></span>(<span class='no'>my_db</span>, <span class='st'>"
-    CREATE TABLE orgtable (
-      eid TEXT,
-      date INTEGER,
-      dept TEXT,
-      location TEXT,
-    PRIMARY KEY (eid, date)
-    )
-    "</span>)
-  <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='fu'>key_inspector_sqlite</span>(<span class='no'>my_db</span>, <span class='st'>"orgtable"</span>))
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt;    eid   date 
-#&gt;  "eid" "date" </div><div class='input'>
-</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       <li><a href="#value">Value</a></li>
-      <li><a href="#see-also">See also</a></li>
-      <li><a href="#examples">Examples</a></li>
     </ul>
 
   </div>

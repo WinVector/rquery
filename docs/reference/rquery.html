@@ -8,11 +8,13 @@
 
 <title><code>rquery</code>: Relational Query Generator for Data Manipulation — rquery • rquery</title>
 
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
@@ -30,8 +32,8 @@
 
 
 
-<meta property="og:title" content="<code>rquery</code>: Relational Query Generator for Data Manipulation — rquery" />
 
+<meta property="og:title" content="<code>rquery</code>: Relational Query Generator for Data Manipulation — rquery" />
 <meta property="og:description" content="rquery supplies a piped query generator based on Edgar F. Codd's relational
 algebra and operator names (plus experience using SQL and dplyr at big data
 scale).  The design represents an attempt to make SQL more teachable by
@@ -42,6 +44,7 @@ produced and columns used), optimized SQL generation as an explicit
 user visible modeling step, and convenience methods for applying query
 trees to in-memory data.frames." />
 <meta name="twitter:card" content="summary" />
+
 
 
 
@@ -123,7 +126,6 @@ trees to in-memory data.frames." />
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/WinVector/rquery">
@@ -149,7 +151,6 @@ trees to in-memory data.frames." />
     </div>
 
     <div class="ref-description">
-    
     <p><code>rquery</code> supplies a piped query generator based on Edgar F. Codd's relational
 algebra and operator names (plus experience using <code>SQL</code> and <code>dplyr</code> at big data
 scale).  The design represents an attempt to make <code>SQL</code> more teachable by
@@ -159,10 +160,10 @@ or pipelines as observable objects (able to report both columns
 produced and columns used), optimized <code>SQL</code> generation as an explicit
 user visible modeling step, and convenience methods for applying query
 trees to in-memory data.frames.</p>
-    
     </div>
 
-        
+
+
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>Note: <code>rquery</code> is a "database first" design.  This means choices are made that
@@ -173,15 +174,13 @@ the calculation depth to under 1000 steps at a time), preferring "tame column na
  and not preserving row or column order (or supporting numeric column indexing).  Also,
  <code>rquery</code> does have a fast in-memory implementation: <code>rqdatatable</code>
  (thanks to the <code>data.table</code>, so one can in fact use `rquery` without a database.</p>
-    
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      
       <li><a href="#details">Details</a></li>
-          </ul>
+    </ul>
 
   </div>
 </div>

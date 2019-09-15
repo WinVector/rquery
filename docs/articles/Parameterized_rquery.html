@@ -104,7 +104,7 @@
       <h1>Parameterized rquery</h1>
                         <h4 class="author">John Mount, Win-Vector LLC</h4>
             
-            <h4 class="date">2019-08-25</h4>
+            <h4 class="date">2019-09-15</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery/blob/master/vignettes/Parameterized_rquery.Rmd"><code>vignettes/Parameterized_rquery.Rmd</code></a></small>
       <div class="hidden name"><code>Parameterized_rquery.Rmd</code></div>
@@ -177,15 +177,18 @@
 <p>We can display the pipeline in various forms.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="co"># print the operator sequence</span></a>
 <a class="sourceLine" id="cb8-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/format">format</a></span>(ops))</a></code></pre></div>
-<pre><code>## table(mtcars; 
-##   am,
-##   hp,
-##   cyl) %.&gt;%
+<pre><code>## mk_td("mtcars", c(
+##   "am",
+##   "hp",
+##   "cyl")) %.&gt;%
 ##  extend(.,
 ##   hp_per_cyl := hp / cyl) %.&gt;%
 ##  project(., mean_hp_per_cyl := mean(hp_per_cyl), group_count := count(hp_per_cyl),
-##   g= am) %.&gt;%
-##  orderby(., am)</code></pre>
+##   groupby = c('am')) %.&gt;%
+##  order_rows(.,
+##   c('am'),
+##   reverse = c(),
+##   limit = NULL)</code></pre>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="co"># draw the pipeline</span></a>
 <a class="sourceLine" id="cb10-2" data-line-number="2">ops <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb10-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/op_diagram.html">op_diagram</a></span>(.) <span class="op">%.&gt;%</span><span class="st"> </span></a>
@@ -207,7 +210,7 @@
 <a class="sourceLine" id="cb13-3" data-line-number="3">                         <span class="dt">temporary =</span> <span class="ot">TRUE</span>, </a>
 <a class="sourceLine" id="cb13-4" data-line-number="4">                         <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</a>
 <a class="sourceLine" id="cb13-5" data-line-number="5"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(tr)</a></code></pre></div>
-<pre><code>## [1] "table(`mtcars`; mpg, cyl, disp, hp, drat, wt, qsec, vs, am, gear, carb)"</code></pre>
+<pre><code>## [1] "mk_td(\"`mtcars`\", c( \"mpg\", \"cyl\", \"disp\", \"hp\", \"drat\", \"wt\", \"qsec\", \"vs\", \"am\", \"gear\", \"carb\"))"</code></pre>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="co"># materialize result remotely (without passing through R)</span></a>
 <a class="sourceLine" id="cb15-2" data-line-number="2">res &lt;-<span class="st"> </span><span class="kw"><a href="../reference/materialize.html">materialize</a></span>(db, ops)</a>
 <a class="sourceLine" id="cb15-3" data-line-number="3">DBI<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DBI/topics/dbReadTable">dbReadTable</a></span>(raw_connection, res<span class="op">$</span>table_name)</a></code></pre></div>
@@ -234,17 +237,18 @@
 ##     `cyl`
 ##    FROM
 ##     `mtcars`
-##    ) tsql_56737212803605577655_0000000000
-##   ) tsql_56737212803605577655_0000000001
+##    ) tsql_54095679416954478942_0000000000
+##   ) tsql_54095679416954478942_0000000001
 ##  GROUP BY
 ##   `am`
-## ) tsql_56737212803605577655_0000000002 ORDER BY `am`</code></pre>
+## ) tsql_54095679416954478942_0000000002 ORDER BY `am`</code></pre>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1"><span class="co"># disconnect</span></a>
 <a class="sourceLine" id="cb21-2" data-line-number="2">DBI<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/DBI/topics/dbDisconnect">dbDisconnect</a></span>(raw_connection)</a>
 <a class="sourceLine" id="cb21-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/rm">rm</a></span>(<span class="dt">list =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"raw_connection"</span>, <span class="st">"db"</span>))</a></code></pre></div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+
       </div>
 
 </div>
