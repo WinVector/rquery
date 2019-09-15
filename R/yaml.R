@@ -26,7 +26,7 @@ convert_yaml_to_pipeline <- function(rep, ..., source=NULL, env = parent.frame()
     }
     # unnamed list, a pipeline
     res <- convert_yaml_to_pipeline(rep[[1]], env = env)
-    for(i in seqi(2, length(rep))) {
+    for(i in wrapr::seqi(2, length(rep))) {
       res <- convert_yaml_to_pipeline(rep[[i]], source = res, env = env)
     }
     return(res)
@@ -79,3 +79,73 @@ convert_yaml_to_pipeline <- function(rep, ..., source=NULL, env = parent.frame()
     stop("Unexpected node type: " + op)
   }
 }
+
+
+to_transport_representation_step <- function(ops) {
+  if(is(ops, 'relop_table_source')) {
+    return(list(op = 'TableDescription',
+                table_name = ops$table_name,
+                column_names = ops$columns))
+  }
+  if(is(ops, 'relop_extend')) {
+    return(list(op = 'Extend',
+                ops = ops$assignments,
+                partition_by = ops$partitionby,
+                order_by = ops$orderby,
+                reverse = ops$reverse))
+  }
+  if(is(ops, 'relop_project')) {
+    return(list(op = 'Project',
+                ops = ops$assignments,
+                group_by = ops$groupby))
+  }
+  if(is(ops, 'relop_select_rows')) {
+    return(list(op = 'SelectRows',
+                expr = ops$expr))
+  }
+  if(is(ops, 'relop_select_columns')) {
+    return(list(op = 'SelectColumns',
+                columns = ops$columns))
+  }
+  # currently no drop_columns node in rquery, it is implemented as an appropriate select_columns()
+  if(is(ops, 'relop_rename_columns')) {
+    return(list(op = 'Rename',
+                olumn_remapping = ops$cmap))
+  }
+  if(is(ops, 'relop_orderby')) {
+    return(list(op = 'Order',
+                column_remapping = ops$cmap,
+                order_columns = ops$orderby,
+                reverse = ops$reverse))
+  }
+  if(is(ops, 'relop_natural_join')) {
+    b <- to_transport_representation(ops$source[[2]])
+    return(list(op = 'NaturalJoin',
+                b = b,
+                by = ops$by,
+                jointype = ops$jointype))
+  }
+  stop(paste("Unexpected op class:", paste(as.character(class(ops)), collapse = ', ')))
+}
+
+
+
+
+#' Convert an rquery op diagram to a simple representation, appropriate for conversion to YAML.
+#'
+#' @param ops rquery operator dag
+#' @return represenation structure
+#'
+#' @export
+#'
+to_transport_representation <- function(ops) {
+  # linearize primary pipe direction
+  steps = list(ops)
+  while(length(ops$source) > 0) {
+    ops = ops$source[[1]]
+    steps = c(list(ops), steps)
+  }
+  # encode
+  return(lapply(steps, to_transport_representation_step))
+}
+
