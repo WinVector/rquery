@@ -4,12 +4,16 @@
 \alias{convert_yaml_to_pipeline}
 \title{Convert a series of simple objects (from YAML deserializaton) to an rquery pipeline.}
 \usage{
-convert_yaml_to_pipeline(rep, source = NULL)
+convert_yaml_to_pipeline(rep, ..., source = NULL, env = parent.frame())
 }
 \arguments{
 \item{rep}{input objects}
 
+\item{...}{not use, force later arguments to bind by name}
+
 \item{source}{input rquery node}
+
+\item{env}{environment to evaluate in}
 }
 \value{
 rquery operator tree
