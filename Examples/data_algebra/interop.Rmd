@@ -46,8 +46,21 @@ ops <- mk_td("d", c(
 #   order_rows(., 'subjectID')
 
 ops_obj <- to_transport_representation(ops)
+
+convert_named_vectors_to_lists <- function(obj) {
+  if(is.list(obj)) {
+    return(lapply(obj, convert_named_vectors_to_lists)) # preserves names
+  }
+  if(is.vector(obj)) {
+    return(as.list(obj))
+  }
+  return(obj)
+}
+
+ops_obj <- convert_named_vectors_to_lists(ops_obj)
+
 print(ops_obj)
-ops_rep <- yaml::as.yaml(ops_obj, omap=TRUE)
+ops_rep <- yaml::as.yaml(ops_obj)
 ```
 
 
@@ -58,9 +71,8 @@ import data_algebra.yaml
 
 print(r.ops_obj)
 print(r.ops_rep)
+#ops = data_algebra.yaml.to_pipeline(r.ops_obj)
 #ops = data_algebra.yaml.to_pipeline(yaml.safe_load(r.ops_rep))
 #print(ops.to_python(pretty=True))
 ```
-
-Notice both object and yaml paths lose the names on the named vectors.
 

@@ -52,28 +52,61 @@ ops <- mk_td("d", c(
 #   order_rows(., 'subjectID')
 
 ops_obj <- to_transport_representation(ops)
+
+convert_named_vectors_to_lists <- function(obj) {
+  if(is.list(obj)) {
+    return(lapply(obj, convert_named_vectors_to_lists)) # preserves names
+  }
+  if(is.vector(obj)) {
+    return(as.list(obj))
+  }
+  return(obj)
+}
+
+ops_obj <- convert_named_vectors_to_lists(ops_obj)
+
 print(ops_obj)
 ```
 
     ## [[1]]
     ## [[1]]$op
+    ## [[1]]$op[[1]]
     ## [1] "TableDescription"
     ## 
+    ## 
     ## [[1]]$table_name
+    ## [[1]]$table_name[[1]]
     ## [1] "d"
     ## 
+    ## 
     ## [[1]]$column_names
-    ## [1] "subjectID"       "surveyCategory"  "assessmentTotal" "irrelevantCol1" 
-    ## [5] "irrelevantCol2" 
+    ## [[1]]$column_names[[1]]
+    ## [1] "subjectID"
+    ## 
+    ## [[1]]$column_names[[2]]
+    ## [1] "surveyCategory"
+    ## 
+    ## [[1]]$column_names[[3]]
+    ## [1] "assessmentTotal"
+    ## 
+    ## [[1]]$column_names[[4]]
+    ## [1] "irrelevantCol1"
+    ## 
+    ## [[1]]$column_names[[5]]
+    ## [1] "irrelevantCol2"
+    ## 
     ## 
     ## 
     ## [[2]]
     ## [[2]]$op
+    ## [[2]]$op[[1]]
     ## [1] "Extend"
     ## 
+    ## 
     ## [[2]]$ops
-    ##                       probability 
-    ## "exp ( assessmentTotal * 0.237 )" 
+    ## [[2]]$ops$probability
+    ## [1] "exp ( assessmentTotal * 0.237 )"
+    ## 
     ## 
     ## [[2]]$partition_by
     ## NULL
@@ -85,7 +118,7 @@ print(ops_obj)
     ## NULL
 
 ``` r
-ops_rep <- yaml::as.yaml(ops_obj, omap=TRUE)
+ops_rep <- yaml::as.yaml(ops_obj)
 ```
 
 ``` python
@@ -95,28 +128,29 @@ import data_algebra.yaml
 print(r.ops_obj)
 ```
 
-    ## [{'op': 'TableDescription', 'table_name': 'd', 'column_names': ['subjectID', 'surveyCategory', 'assessmentTotal', 'irrelevantCol1', 'irrelevantCol2']}, {'op': 'Extend', 'ops': 'exp ( assessmentTotal * 0.237 )', 'partition_by': None, 'order_by': None, 'reverse': None}]
+    ## [{'op': ['TableDescription'], 'table_name': ['d'], 'column_names': ['subjectID', 'surveyCategory', 'assessmentTotal', 'irrelevantCol1', 'irrelevantCol2']}, {'op': ['Extend'], 'ops': {'probability': 'exp ( assessmentTotal * 0.237 )'}, 'partition_by': None, 'order_by': None, 'reverse': None}]
 
 ``` python
 print(r.ops_rep)
+#ops = data_algebra.yaml.to_pipeline(r.ops_obj)
 #ops = data_algebra.yaml.to_pipeline(yaml.safe_load(r.ops_rep))
 #print(ops.to_python(pretty=True))
 ```
 
-    ## - !omap
-    ##   - op: TableDescription
-    ##   - table_name: d
-    ##   - column_names:
-    ##     - subjectID
-    ##     - surveyCategory
-    ##     - assessmentTotal
-    ##     - irrelevantCol1
-    ##     - irrelevantCol2
-    ## - !omap
-    ##   - op: Extend
-    ##   - ops: exp ( assessmentTotal * 0.237 )
-    ##   - partition_by: ~
-    ##   - order_by: ~
-    ##   - reverse: ~
-
-Notice both object and yaml paths lose the names on the named vectors.
+    ## - op:
+    ##   - TableDescription
+    ##   table_name:
+    ##   - d
+    ##   column_names:
+    ##   - subjectID
+    ##   - surveyCategory
+    ##   - assessmentTotal
+    ##   - irrelevantCol1
+    ##   - irrelevantCol2
+    ## - op:
+    ##   - Extend
+    ##   ops:
+    ##     probability: exp ( assessmentTotal * 0.237 )
+    ##   partition_by: ~
+    ##   order_by: ~
+    ##   reverse: ~
