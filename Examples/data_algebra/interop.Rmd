@@ -47,7 +47,7 @@ ops <- mk_td("d", c(
 
 ops_obj <- to_transport_representation(ops)
 print(ops_obj)
-ops_rep <- yaml::as.yaml(ops_obj)
+ops_rep <- yaml::as.yaml(ops_obj, omap=TRUE)
 ```
 
 
@@ -56,8 +56,11 @@ ops_rep <- yaml::as.yaml(ops_obj)
 import yaml
 import data_algebra.yaml
 
+print(r.ops_obj)
 print(r.ops_rep)
 #ops = data_algebra.yaml.to_pipeline(yaml.safe_load(r.ops_rep))
 #print(ops.to_python(pretty=True))
 ```
+
+Notice both object and yaml paths lose the names on the named vectors.
 
