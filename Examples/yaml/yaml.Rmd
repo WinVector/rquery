@@ -10,7 +10,6 @@ library(yaml)
 library(wrapr)
 library(rquery)
 library(rqdatatable)
-source("R_fns.R")  # https://github.com/WinVector/rquery/blob/master/Examples/yaml/R_fns.R
 
 rep <- yaml.load_file("pipeline_yaml.txt")
 ops <- convert_yaml_to_pipeline(rep)

@@ -1,0 +1,63 @@
+---
+title: "iterop"
+output: github_document
+---
+
+Example of moving an [`rquery`](https://winvector.github.io/rquery/) pipeline from `R` to `Python` [`data_algebra`](https://github.com/WinVector/data_algebra). Another example (from the `Python` point of view) can be found [here](https://github.com/WinVector/data_algebra/blob/master/Examples/LogisticExample/ScoringExample.ipynb).
+
+```{r}
+library(reticulate)
+use_condaenv("aiAcademy") 
+```
+
+```{r}
+library("rqdatatable")
+
+ops <- mk_td("d", c(
+  "subjectID",
+  "surveyCategory",
+  "assessmentTotal",
+  "irrelevantCol1",
+  "irrelevantCol2")) %.>%
+ extend(.,
+  probability %:=% exp(assessmentTotal * 0.237)) 
+
+# %.>%
+#  extend(.,
+#   total %:=% sum(probability),
+#   partitionby = c('subjectID'),
+#   orderby = c(),
+#   reverse = c()) %.>%
+#  extend(.,
+#   probability %:=% probability / total) %.>%
+#  extend(.,
+#   sort_key %:=% -(probability)) %.>%
+#  extend(.,
+#   row_number %:=% row_number(),
+#   partitionby = c('subjectID'),
+#   orderby = c('sort_key'),
+#   reverse = c()) %.>%
+#  select_rows(.,
+#    row_number == 1) %.>%
+#  select_columns(., c(
+#    "subjectID", "surveyCategory", "probability")) %.>%
+#  rename_columns(.,
+#   c('diagnosis' = 'surveyCategory')) %.>%
+#   order_rows(., 'subjectID')
+
+ops_obj <- to_transport_representation(ops)
+print(ops_obj)
+ops_rep <- yaml::as.yaml(ops_obj)
+```
+
+
+
+```{python}
+import yaml
+import data_algebra.yaml
+
+print(r.ops_rep)
+#ops = data_algebra.yaml.to_pipeline(yaml.safe_load(r.ops_rep))
+#print(ops.to_python(pretty=True))
+```
+

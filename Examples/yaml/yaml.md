@@ -11,37 +11,42 @@ library(yaml)
 library(wrapr)
 library(rquery)
 library(rqdatatable)
-source("R_fns.R")  # https://github.com/WinVector/rquery/blob/master/Examples/yaml/R_fns.R
 
 rep <- yaml.load_file("pipeline_yaml.txt")
 ops <- convert_yaml_to_pipeline(rep)
 cat(format(ops))
 ```
 
-    ## table(d; 
-    ##   subjectID,
-    ##   surveyCategory,
-    ##   assessmentTotal,
-    ##   irrelevantCol1,
-    ##   irrelevantCol2) %.>%
+    ## mk_td("d", c(
+    ##   "subjectID",
+    ##   "surveyCategory",
+    ##   "assessmentTotal",
+    ##   "irrelevantCol1",
+    ##   "irrelevantCol2")) %.>%
     ##  extend(.,
-    ##   probability := exp(assessmentTotal * 0.237)) %.>%
+    ##   probability %:=% exp(assessmentTotal * 0.237)) %.>%
     ##  extend(.,
-    ##   total := sum(probability),
-    ##   p= subjectID) %.>%
+    ##   total %:=% sum(probability),
+    ##   partitionby = c('subjectID'),
+    ##   orderby = c(),
+    ##   reverse = c()) %.>%
     ##  extend(.,
-    ##   probability := probability / total) %.>%
+    ##   probability %:=% probability / total) %.>%
     ##  extend(.,
-    ##   row_number := row_number(),
-    ##   p= subjectID,
-    ##   o= "probability" DESC, "surveyCategory") %.>%
+    ##   row_number %:=% row_number(),
+    ##   partitionby = c('subjectID'),
+    ##   orderby = c('probability', 'surveyCategory'),
+    ##   reverse = c('probability')) %.>%
     ##  select_rows(.,
     ##    row_number == 1) %.>%
-    ##  select_columns(.,
-    ##    subjectID, surveyCategory, probability) %.>%
-    ##  rename(.,
+    ##  select_columns(., c(
+    ##    "subjectID", "surveyCategory", "probability")) %.>%
+    ##  rename_columns(.,
     ##   c('diagnosis' = 'surveyCategory')) %.>%
-    ##  orderby(., subjectID)
+    ##  order_rows(.,
+    ##   c('subjectID'),
+    ##   reverse = c(),
+    ##   limit = NULL)
 
 ``` r
 cat(to_sql(ops, rquery_default_db_info()))
@@ -87,15 +92,15 @@ cat(to_sql(ops, rquery_default_db_info()))
     ##          "assessmentTotal"
     ##         FROM
     ##          "d"
-    ##         ) tsql_51659372499255731718_0000000000
-    ##        ) tsql_51659372499255731718_0000000001
-    ##       ) tsql_51659372499255731718_0000000002
-    ##      ) tsql_51659372499255731718_0000000003
-    ##    ) tsql_51659372499255731718_0000000004
+    ##         ) tsql_78992171733554272929_0000000000
+    ##        ) tsql_78992171733554272929_0000000001
+    ##       ) tsql_78992171733554272929_0000000002
+    ##      ) tsql_78992171733554272929_0000000003
+    ##    ) tsql_78992171733554272929_0000000004
     ##    WHERE "row_number" = 1
-    ##   ) tsql_51659372499255731718_0000000005
-    ##  ) tsql_51659372499255731718_0000000006
-    ## ) tsql_51659372499255731718_0000000007 ORDER BY "subjectID"
+    ##   ) tsql_78992171733554272929_0000000005
+    ##  ) tsql_78992171733554272929_0000000006
+    ## ) tsql_78992171733554272929_0000000007 ORDER BY "subjectID"
 
 ``` r
 d_local <- build_frame(
