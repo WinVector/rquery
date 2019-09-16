@@ -58,99 +58,59 @@ convert_named_vectors_to_lists <- function(obj) {
     return(lapply(obj, convert_named_vectors_to_lists)) # preserves names
   }
   if(is.vector(obj)) {
+    if(length(names(obj))<=0) {
+      return(obj)
+    }
     return(as.list(obj))
   }
   return(obj)
 }
 
 ops_obj <- convert_named_vectors_to_lists(ops_obj)
-
-print(ops_obj)
-```
-
-    ## [[1]]
-    ## [[1]]$op
-    ## [[1]]$op[[1]]
-    ## [1] "TableDescription"
-    ## 
-    ## 
-    ## [[1]]$table_name
-    ## [[1]]$table_name[[1]]
-    ## [1] "d"
-    ## 
-    ## 
-    ## [[1]]$column_names
-    ## [[1]]$column_names[[1]]
-    ## [1] "subjectID"
-    ## 
-    ## [[1]]$column_names[[2]]
-    ## [1] "surveyCategory"
-    ## 
-    ## [[1]]$column_names[[3]]
-    ## [1] "assessmentTotal"
-    ## 
-    ## [[1]]$column_names[[4]]
-    ## [1] "irrelevantCol1"
-    ## 
-    ## [[1]]$column_names[[5]]
-    ## [1] "irrelevantCol2"
-    ## 
-    ## 
-    ## 
-    ## [[2]]
-    ## [[2]]$op
-    ## [[2]]$op[[1]]
-    ## [1] "Extend"
-    ## 
-    ## 
-    ## [[2]]$ops
-    ## [[2]]$ops$probability
-    ## [1] "exp ( assessmentTotal * 0.237 )"
-    ## 
-    ## 
-    ## [[2]]$partition_by
-    ## NULL
-    ## 
-    ## [[2]]$order_by
-    ## NULL
-    ## 
-    ## [[2]]$reverse
-    ## NULL
-
-``` r
 ops_rep <- yaml::as.yaml(ops_obj)
 ```
+
+Object transfer.
+
+``` python
+import data_algebra.yaml
+
+r_parse_env = {'exp': lambda x: x.exp()}
+ops = data_algebra.yaml.to_pipeline(r.ops_obj, parse_env=r_parse_env)
+# #ops = data_algebra.yaml.to_pipeline(yaml.safe_load(r.ops_rep))
+print(ops.to_python(pretty=True))
+```
+
+    ## TableDescription(
+    ##     table_name="d",
+    ##     column_names=[
+    ##         "subjectID",
+    ##         "surveyCategory",
+    ##         "assessmentTotal",
+    ##         "irrelevantCol1",
+    ##         "irrelevantCol2",
+    ##     ],
+    ## ).extend({"probability": "(assessmentTotal * 0.237).exp()"})
+
+YAML transfer:
 
 ``` python
 import yaml
 import data_algebra.yaml
 
-print(r.ops_obj)
+r_parse_env = {'exp': lambda x: x.exp()}
+obj = yaml.safe_load(r.ops_rep)
+ops = data_algebra.yaml.to_pipeline(obj, parse_env=r_parse_env)
+print(ops.to_python(pretty=True))
 ```
 
-    ## [{'op': ['TableDescription'], 'table_name': ['d'], 'column_names': ['subjectID', 'surveyCategory', 'assessmentTotal', 'irrelevantCol1', 'irrelevantCol2']}, {'op': ['Extend'], 'ops': {'probability': 'exp ( assessmentTotal * 0.237 )'}, 'partition_by': None, 'order_by': None, 'reverse': None}]
-
-``` python
-print(r.ops_rep)
-#ops = data_algebra.yaml.to_pipeline(r.ops_obj)
-#ops = data_algebra.yaml.to_pipeline(yaml.safe_load(r.ops_rep))
-#print(ops.to_python(pretty=True))
-```
-
-    ## - op:
-    ##   - TableDescription
-    ##   table_name:
-    ##   - d
-    ##   column_names:
-    ##   - subjectID
-    ##   - surveyCategory
-    ##   - assessmentTotal
-    ##   - irrelevantCol1
-    ##   - irrelevantCol2
-    ## - op:
-    ##   - Extend
-    ##   ops:
-    ##     probability: exp ( assessmentTotal * 0.237 )
-    ##   partition_by: ~
-    ##   order_by: ~
-    ##   reverse: ~
+    ## TableDescription(
+    ##     table_name="d",
+    ##     column_names=[
+    ##         "subjectID",
+    ##         "surveyCategory",
+    ##         "assessmentTotal",
+    ##         "irrelevantCol1",
+    ##         "irrelevantCol2",
+    ##     ],
+    ## ).extend({"probability": "(assessmentTotal * 0.237).exp()"})
