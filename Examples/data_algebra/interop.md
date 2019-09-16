@@ -26,30 +26,28 @@ ops <- mk_td("d", c(
   "irrelevantCol1",
   "irrelevantCol2")) %.>%
  extend(.,
-  probability %:=% exp(assessmentTotal * 0.237)) 
-
-# %.>%
-#  extend(.,
-#   total %:=% sum(probability),
-#   partitionby = c('subjectID'),
-#   orderby = c(),
-#   reverse = c()) %.>%
-#  extend(.,
-#   probability %:=% probability / total) %.>%
-#  extend(.,
-#   sort_key %:=% -(probability)) %.>%
-#  extend(.,
-#   row_number %:=% row_number(),
-#   partitionby = c('subjectID'),
-#   orderby = c('sort_key'),
-#   reverse = c()) %.>%
-#  select_rows(.,
-#    row_number == 1) %.>%
-#  select_columns(., c(
-#    "subjectID", "surveyCategory", "probability")) %.>%
-#  rename_columns(.,
-#   c('diagnosis' = 'surveyCategory')) %.>%
-#   order_rows(., 'subjectID')
+  probability %:=% exp(assessmentTotal * 0.237)) %.>%
+ extend(.,
+  total %:=% sum(probability),
+  partitionby = c('subjectID'),
+  orderby = c(),
+  reverse = c()) %.>%
+ extend(.,
+  probability %:=% probability / total) %.>%
+ extend(.,
+  sort_key %:=% -(probability)) %.>%
+ # extend(.,
+ #  row_number %:=% row_number(),
+ #  partitionby = c('subjectID'),
+ #  orderby = c('sort_key'),
+ #  reverse = c()) %.>%
+ # select_rows(.,
+ #   row_number == 1) %.>%
+ select_columns(., c(
+   "subjectID", "surveyCategory", "probability")) %.>%
+ rename_columns(.,
+  c('diagnosis' = 'surveyCategory')) %.>%
+  order_rows(., 'subjectID')
 
 ops_obj <- to_transport_representation(ops)
 
@@ -75,7 +73,11 @@ Object transfer.
 ``` python
 import data_algebra.yaml
 
-r_parse_env = {'exp': lambda x: x.exp()}
+r_parse_env = {
+  'exp': lambda x: x.exp(),
+  'sum': lambda x: x.sum(),
+  'row_number': lambda: _row_number()
+}
 ops = data_algebra.yaml.to_pipeline(r.ops_obj, parse_env=r_parse_env)
 # #ops = data_algebra.yaml.to_pipeline(yaml.safe_load(r.ops_rep))
 print(ops.to_python(pretty=True))
@@ -90,7 +92,19 @@ print(ops.to_python(pretty=True))
     ##         "irrelevantCol1",
     ##         "irrelevantCol2",
     ##     ],
-    ## ).extend({"probability": "(assessmentTotal * 0.237).exp()"})
+    ## ).extend({"probability": "(assessmentTotal * 0.237).exp()"}).extend(
+    ##     {"total": "probability.sum()"}, partition_by=["subjectID"]
+    ## ).extend(
+    ##     {"probability": "probability / total"}
+    ## ).extend(
+    ##     {"sort_key": "-probability"}
+    ## ).select_columns(
+    ##     ["subjectID", "surveyCategory", "probability"]
+    ## ).rename_columns(
+    ##     {"diagnosis": "surveyCategory"}
+    ## ).order_rows(
+    ##     ["s", "u", "b", "j", "e", "c", "t", "I", "D"]
+    ## )
 
 YAML transfer:
 
@@ -98,7 +112,11 @@ YAML transfer:
 import yaml
 import data_algebra.yaml
 
-r_parse_env = {'exp': lambda x: x.exp()}
+r_parse_env = {
+  'exp': lambda x: x.exp(),
+  'sum': lambda x: x.sum(),
+  'row_number': lambda: _row_number()
+}
 obj = yaml.safe_load(r.ops_rep)
 ops = data_algebra.yaml.to_pipeline(obj, parse_env=r_parse_env)
 print(ops.to_python(pretty=True))
@@ -113,4 +131,16 @@ print(ops.to_python(pretty=True))
     ##         "irrelevantCol1",
     ##         "irrelevantCol2",
     ##     ],
-    ## ).extend({"probability": "(assessmentTotal * 0.237).exp()"})
+    ## ).extend({"probability": "(assessmentTotal * 0.237).exp()"}).extend(
+    ##     {"total": "probability.sum()"}, partition_by=["subjectID"]
+    ## ).extend(
+    ##     {"probability": "probability / total"}
+    ## ).extend(
+    ##     {"sort_key": "-probability"}
+    ## ).select_columns(
+    ##     ["subjectID", "surveyCategory", "probability"]
+    ## ).rename_columns(
+    ##     {"diagnosis": "surveyCategory"}
+    ## ).order_rows(
+    ##     ["s", "u", "b", "j", "e", "c", "t", "I", "D"]
+    ## )
