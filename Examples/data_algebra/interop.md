@@ -214,7 +214,9 @@ print(ops.to_python(pretty=True))
     ##         "irrelevantCol1",
     ##         "irrelevantCol2",
     ##     ],
-    ## ).extend({"probability": "(assessmentTotal * 0.237).exp()"}).extend(
+    ## ).extend(
+    ##     {"probability": "(assessmentTotal * 0.237).exp()"}
+    ## ).extend(
     ##     {"total": "probability.sum()"}, partition_by=["subjectID"]
     ## ).extend(
     ##     {"probability": "probability / total"}
@@ -252,7 +254,9 @@ print(ops.to_python(pretty=True))
     ##         "irrelevantCol1",
     ##         "irrelevantCol2",
     ##     ],
-    ## ).extend({"probability": "(assessmentTotal * 0.237).exp()"}).extend(
+    ## ).extend(
+    ##     {"probability": "(assessmentTotal * 0.237).exp()"}
+    ## ).extend(
     ##     {"total": "probability.sum()"}, partition_by=["subjectID"]
     ## ).extend(
     ##     {"probability": "probability / total"}
