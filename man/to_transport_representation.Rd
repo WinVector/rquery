@@ -4,10 +4,15 @@
 \alias{to_transport_representation}
 \title{Convert an rquery op diagram to a simple representation, appropriate for conversion to YAML.}
 \usage{
-to_transport_representation(ops)
+to_transport_representation(ops, ...,
+  convert_named_vectors_to_lists = TRUE)
 }
 \arguments{
 \item{ops}{rquery operator dag}
+
+\item{...}{not used, force later arguments to be by name}
+
+\item{convert_named_vectors_to_lists}{logical, if TRUE convert named vectors to lists}
 }
 \value{
 represenation structure

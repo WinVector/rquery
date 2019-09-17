@@ -143,6 +143,7 @@ select_rows.relop <- function(source, expr,
   check_have_cols(src_columns, required_cols, "rquery::select_rows.relop")
   assignments <- unpack_assignments(source, parsed,
                                     check_is_assignment = FALSE)
+  names(assignments) <- NULL
   parsed[[1]]$symbols_produced <- character(0)
   r <- list(source = list(source),
             table_name = NULL,

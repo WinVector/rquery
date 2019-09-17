@@ -1,4 +1,4 @@
-iterop
+interop
 ================
 
 Example of moving an [`rquery`](https://winvector.github.io/rquery/)
@@ -17,6 +17,12 @@ library("rqdatatable")
 ```
 
     ## Loading required package: rquery
+
+``` r
+packageVersion("rqdatatable")
+```
+
+    ## [1] '1.2.2'
 
 ``` r
 ops <- mk_td("d", c(
@@ -47,30 +53,89 @@ ops <- mk_td("d", c(
    "subjectID", "surveyCategory", "probability")) %.>%
  rename_columns(.,
   c('diagnosis' = 'surveyCategory')) %.>%
- order_rows(., 'subjectID')
+ order_rows(., 'subjectID', reverse='subjectID')
 
-print(ops)
+cat(format(ops))
 ```
 
-    ## [1] "mk_td(\"d\", c( \"subjectID\", \"surveyCategory\", \"assessmentTotal\", \"irrelevantCol1\", \"irrelevantCol2\")) %.>% extend(., probability %:=% exp(assessmentTotal * 0.237)) %.>% extend(., total %:=% sum(probability), partitionby = c('subjectID'), orderby = c(), reverse = c()) %.>% extend(., probability %:=% probability / total) %.>% extend(., sort_key %:=% -((probability))) %.>% extend(., row_number %:=% row_number(), partitionby = c('subjectID'), orderby = c('sort_key'), reverse = c()) %.>% select_rows(., row_number == 1) %.>% select_columns(., c( \"subjectID\", \"surveyCategory\", \"probability\")) %.>% rename_columns(., c('diagnosis' = 'surveyCategory')) %.>% order_rows(., c('subjectID'), reverse = c(), limit = NULL)"
+    ## mk_td("d", c(
+    ##   "subjectID",
+    ##   "surveyCategory",
+    ##   "assessmentTotal",
+    ##   "irrelevantCol1",
+    ##   "irrelevantCol2")) %.>%
+    ##  extend(.,
+    ##   probability %:=% exp(assessmentTotal * 0.237)) %.>%
+    ##  extend(.,
+    ##   total %:=% sum(probability),
+    ##   partitionby = c('subjectID'),
+    ##   orderby = c(),
+    ##   reverse = c()) %.>%
+    ##  extend(.,
+    ##   probability %:=% probability / total) %.>%
+    ##  extend(.,
+    ##   sort_key %:=% -((probability))) %.>%
+    ##  extend(.,
+    ##   row_number %:=% row_number(),
+    ##   partitionby = c('subjectID'),
+    ##   orderby = c('sort_key'),
+    ##   reverse = c()) %.>%
+    ##  select_rows(.,
+    ##    row_number == 1) %.>%
+    ##  select_columns(., c(
+    ##    "subjectID", "surveyCategory", "probability")) %.>%
+    ##  rename_columns(.,
+    ##   c('diagnosis' = 'surveyCategory')) %.>%
+    ##  order_rows(.,
+    ##   c('subjectID'),
+    ##   reverse = c('subjectID'),
+    ##   limit = NULL)
+
+Recover the pipeline from source code.
+
+``` r
+source <- format(ops)
+ops_back0 <- eval(parse(text = source))
+cat(format(ops_back0))
+```
+
+    ## mk_td("d", c(
+    ##   "subjectID",
+    ##   "surveyCategory",
+    ##   "assessmentTotal",
+    ##   "irrelevantCol1",
+    ##   "irrelevantCol2")) %.>%
+    ##  extend(.,
+    ##   probability %:=% exp(assessmentTotal * 0.237)) %.>%
+    ##  extend(.,
+    ##   total %:=% sum(probability),
+    ##   partitionby = c('subjectID'),
+    ##   orderby = c(),
+    ##   reverse = c()) %.>%
+    ##  extend(.,
+    ##   probability %:=% probability / total) %.>%
+    ##  extend(.,
+    ##   sort_key %:=% -(((probability)))) %.>%
+    ##  extend(.,
+    ##   row_number %:=% row_number(),
+    ##   partitionby = c('subjectID'),
+    ##   orderby = c('sort_key'),
+    ##   reverse = c()) %.>%
+    ##  select_rows(.,
+    ##    row_number == 1) %.>%
+    ##  select_columns(., c(
+    ##    "subjectID", "surveyCategory", "probability")) %.>%
+    ##  rename_columns(.,
+    ##   c('diagnosis' = 'surveyCategory')) %.>%
+    ##  order_rows(.,
+    ##   c('subjectID'),
+    ##   reverse = c('subjectID'),
+    ##   limit = NULL)
+
+Encode the pipeline.
 
 ``` r
 ops_obj <- to_transport_representation(ops)
-
-convert_named_vectors_to_lists <- function(obj) {
-  if(is.list(obj)) {
-    return(lapply(obj, convert_named_vectors_to_lists)) # preserves names
-  }
-  if(is.vector(obj)) {
-    if(length(names(obj))<=0) {
-      return(obj)
-    }
-    return(as.list(obj))
-  }
-  return(obj)
-}
-
-ops_obj <- convert_named_vectors_to_lists(ops_obj)
 ops_rep <- yaml::as.yaml(ops_obj)
 cat(ops_rep)
 ```
@@ -114,8 +179,7 @@ cat(ops_rep)
     ##   order_by: sort_key
     ##   reverse: ~
     ## - op: SelectRows
-    ##   expr:
-    ##     '': row_number = 1
+    ##   expr: row_number == 1
     ## - op: SelectColumns
     ##   columns:
     ##   - subjectID
@@ -127,9 +191,16 @@ cat(ops_rep)
     ## - op: Order
     ##   column_remapping: ~
     ##   order_columns: subjectID
-    ##   reverse: ~
+    ##   reverse: subjectID
 
-Object transfer.
+Recover from YAML.
+
+``` r
+rep_back1 <- yaml::yaml.load(ops_rep)
+ops_back1 <- convert_yaml_to_pipeline(rep_back1)
+```
+
+Object transfer from R to Python.
 
 ``` python
 import data_algebra.yaml
@@ -163,20 +234,15 @@ print(ops.to_python(pretty=True))
     ## ).rename_columns(
     ##     {"diagnosis": "surveyCategory"}
     ## ).order_rows(
-    ##     ["subjectID"]
+    ##     ["subjectID"], reverse=["subjectID"]
     ## )
 
-YAML transfer:
+YAML transfer from R to Python.
 
 ``` python
 import yaml
 import data_algebra.yaml
 
-r_parse_env = {
-  'exp': lambda x: x.exp(),
-  'sum': lambda x: x.sum(),
-  'row_number': lambda: _row_number()
-}
 obj = yaml.safe_load(r.ops_rep)
 ops = data_algebra.yaml.to_pipeline(obj, parse_env=data_algebra.expr.r_parse_env())
 print(ops.to_python(pretty=True))
@@ -206,5 +272,5 @@ print(ops.to_python(pretty=True))
     ## ).rename_columns(
     ##     {"diagnosis": "surveyCategory"}
     ## ).order_rows(
-    ##     ["subjectID"]
+    ##     ["subjectID"], reverse=["subjectID"]
     ## )

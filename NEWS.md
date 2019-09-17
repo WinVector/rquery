@@ -1,4 +1,8 @@
 
+# rquery 1.3.8 2019/09/16
+
+ * Tune yaml path.
+
 # rquery 1.3.8 2019/09/15
 
  * Add YAML path for operator trees.

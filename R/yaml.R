@@ -101,7 +101,7 @@ to_transport_representation_step <- function(ops) {
   }
   if(is(ops, 'relop_select_rows')) {
     return(list(op = 'SelectRows',
-                expr = ops$expr))
+                expr = ops$parsed[[1]]$presentation))
   }
   if(is(ops, 'relop_select_columns')) {
     return(list(op = 'SelectColumns',
@@ -134,11 +134,17 @@ to_transport_representation_step <- function(ops) {
 #' Convert an rquery op diagram to a simple representation, appropriate for conversion to YAML.
 #'
 #' @param ops rquery operator dag
+#' @param ... not used, force later arguments to be by name
+#' @param convert_named_vectors_to_lists logical, if TRUE convert named vectors to lists
 #' @return represenation structure
 #'
 #' @export
 #'
-to_transport_representation <- function(ops) {
+to_transport_representation <- function(ops,
+                                        ...,
+                                        convert_named_vectors_to_lists = TRUE) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::to_transport_representation")
   # linearize primary pipe direction
   steps = list(ops)
   while(length(ops$source) > 0) {
@@ -146,6 +152,22 @@ to_transport_representation <- function(ops) {
     steps = c(list(ops), steps)
   }
   # encode
-  return(lapply(steps, to_transport_representation_step))
+  res <- lapply(steps, to_transport_representation_step)
+  if(convert_named_vectors_to_lists) {
+    convert_named_vectors_to_lists_f <- function(obj) {
+      if(is.list(obj)) {
+        return(lapply(obj, convert_named_vectors_to_lists_f)) # preserves names
+      }
+      if(is.vector(obj)) {
+        if(length(names(obj))<=0) {
+          return(obj)
+        }
+        return(as.list(obj))
+      }
+      return(obj)
+    }
+    res <- convert_named_vectors_to_lists_f(res)
+  }
+  return(res)
 }
 

@@ -1,5 +1,5 @@
 ---
-title: "iterop"
+title: "interop"
 output: github_document
 ---
 
@@ -12,6 +12,7 @@ use_condaenv("aiAcademy")
 
 ```{r}
 library("rqdatatable")
+packageVersion("rqdatatable")
 
 ops <- mk_td("d", c(
   "subjectID",
@@ -41,33 +42,36 @@ ops <- mk_td("d", c(
    "subjectID", "surveyCategory", "probability")) %.>%
  rename_columns(.,
   c('diagnosis' = 'surveyCategory')) %.>%
- order_rows(., 'subjectID')
+ order_rows(., 'subjectID', reverse='subjectID')
 
-print(ops)
+cat(format(ops))
 ```
+
+Recover the pipeline from source code.
+
+```{r}
+source <- format(ops)
+ops_back0 <- eval(parse(text = source))
+cat(format(ops_back0))
+```
+
+Encode the pipeline.
 
 ```{r}
 ops_obj <- to_transport_representation(ops)
-
-convert_named_vectors_to_lists <- function(obj) {
-  if(is.list(obj)) {
-    return(lapply(obj, convert_named_vectors_to_lists)) # preserves names
-  }
-  if(is.vector(obj)) {
-    if(length(names(obj))<=0) {
-      return(obj)
-    }
-    return(as.list(obj))
-  }
-  return(obj)
-}
-
-ops_obj <- convert_named_vectors_to_lists(ops_obj)
 ops_rep <- yaml::as.yaml(ops_obj)
 cat(ops_rep)
 ```
 
-Object transfer.
+Recover from YAML.
+
+```{r}
+rep_back1 <- yaml::yaml.load(ops_rep)
+ops_back1 <- convert_yaml_to_pipeline(rep_back1)
+```
+
+
+Object transfer from R to Python.
 
 ```{python}
 import data_algebra.yaml
@@ -77,17 +81,12 @@ ops = data_algebra.yaml.to_pipeline(r.ops_obj, parse_env=data_algebra.expr.r_par
 print(ops.to_python(pretty=True))
 ```
 
-YAML transfer:
+YAML transfer from R to Python.
 
 ```{python}
 import yaml
 import data_algebra.yaml
 
-r_parse_env = {
-  'exp': lambda x: x.exp(),
-  'sum': lambda x: x.sum(),
-  'row_number': lambda: _row_number()
-}
 obj = yaml.safe_load(r.ops_rep)
 ops = data_algebra.yaml.to_pipeline(obj, parse_env=data_algebra.expr.r_parse_env())
 print(ops.to_python(pretty=True))
