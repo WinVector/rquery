@@ -13,16 +13,11 @@ use_condaenv("aiAcademy")
 ```
 
 ``` r
-library("rqdatatable")
+library("rquery")
+packageVersion("rquery")
 ```
 
-    ## Loading required package: rquery
-
-``` r
-packageVersion("rqdatatable")
-```
-
-    ## [1] '1.2.2'
+    ## [1] '1.3.9'
 
 ``` r
 ops <- mk_td("d", c(
@@ -41,7 +36,7 @@ ops <- mk_td("d", c(
  extend(.,
   probability %:=% probability / total) %.>%
  extend(.,
-  sort_key %:=% -(probability)) %.>%
+  sort_key %:=% -probability) %.>%
  extend(.,
   row_number %:=% row_number(),
   partitionby = c('subjectID'),
@@ -74,7 +69,7 @@ cat(format(ops))
     ##  extend(.,
     ##   probability %:=% probability / total) %.>%
     ##  extend(.,
-    ##   sort_key %:=% -((probability))) %.>%
+    ##   sort_key %:=% -(probability)) %.>%
     ##  extend(.,
     ##   row_number %:=% row_number(),
     ##   partitionby = c('subjectID'),
@@ -115,7 +110,7 @@ cat(format(ops_back0))
     ##  extend(.,
     ##   probability %:=% probability / total) %.>%
     ##  extend(.,
-    ##   sort_key %:=% -(((probability)))) %.>%
+    ##   sort_key %:=% -((probability))) %.>%
     ##  extend(.,
     ##   row_number %:=% row_number(),
     ##   partitionby = c('subjectID'),
@@ -168,7 +163,7 @@ cat(ops_rep)
     ##   reverse: ~
     ## - op: Extend
     ##   ops:
-    ##     sort_key: '- ( ( probability ) )'
+    ##     sort_key: '- ( probability )'
     ##   partition_by: ~
     ##   order_by: ~
     ##   reverse: ~

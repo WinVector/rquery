@@ -11,8 +11,8 @@ use_condaenv("aiAcademy")
 ```
 
 ```{r}
-library("rqdatatable")
-packageVersion("rqdatatable")
+library("rquery")
+packageVersion("rquery")
 
 ops <- mk_td("d", c(
   "subjectID",
@@ -30,7 +30,7 @@ ops <- mk_td("d", c(
  extend(.,
   probability %:=% probability / total) %.>%
  extend(.,
-  sort_key %:=% -(probability)) %.>%
+  sort_key %:=% -probability) %.>%
  extend(.,
   row_number %:=% row_number(),
   partitionby = c('subjectID'),
