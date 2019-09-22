@@ -66,7 +66,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.9</span>
       </span>
     </div>
 
@@ -146,7 +146,8 @@
     <p>Convert an rquery op diagram to a simple representation, appropriate for conversion to YAML.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>to_transport_representation</span>(<span class='no'>ops</span>)</pre>
+    <pre class="usage"><span class='fu'>to_transport_representation</span>(<span class='no'>ops</span>, <span class='no'>...</span>,
+  <span class='kw'>convert_named_vectors_to_lists</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -154,6 +155,14 @@
     <tr>
       <th>ops</th>
       <td><p>rquery operator dag</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>not used, force later arguments to be by name</p></td>
+    </tr>
+    <tr>
+      <th>convert_named_vectors_to_lists</th>
+      <td><p>logical, if TRUE convert named vectors to lists</p></td>
     </tr>
     </table>
 
