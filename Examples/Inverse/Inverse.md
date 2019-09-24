@@ -1,6 +1,11 @@
 Inverse
 ================
 
+Quick `R` example of the [`Keras` record transform
+example](http://winvector.github.io/FluidData/FluidDataReshapingWithCdata.html),
+for the `Python` version please see
+[here](https://github.com/WinVector/data_algebra/blob/master/Examples/Inverse/Inverse.md).
+
 ``` r
 library(wrapr)
 library(cdata)
