@@ -1,0 +1,42 @@
+---
+title: "Inverse"
+output: github_document
+---
+
+```{r}
+library(wrapr)
+library(cdata)
+
+df <- wrapr::build_frame(
+  "val_loss"  , "val_acc", "loss" , "acc" , "epoch" |
+    -0.377    , 0.8722   , -0.5067, 0.7852, 1       |
+    -0.2997   , 0.8895   , -0.3002, 0.904 , 2       |
+    -0.2964   , 0.8822   , -0.2166, 0.9303, 3       |
+    -0.2779   , 0.8899   , -0.1739, 0.9428, 4       |
+    -0.2843   , 0.8861   , -0.1411, 0.9545, 5       |
+    -0.312    , 0.8817   , -0.1136, 0.9656, 6       )
+
+print(df)
+
+controlTable <- wrapr::build_frame(
+  "measure"                     , "training", "validation" |
+    "minus binary cross entropy", "loss"    , "val_loss"   |
+    "accuracy"                  , "acc"     , "val_acc"    )
+
+xform <- rowrecs_to_blocks_spec(
+  controlTable = controlTable,
+  recordKeys = 'epoch') 
+
+print(xform)
+
+res <- df %.>% xform
+
+print(res)
+
+inverse <- t(xform)
+
+print(inverse)
+
+res %.>% inverse
+
+```
