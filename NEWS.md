@@ -1,8 +1,9 @@
 
-# rquery 1.3.9 2019/09/28
+# rquery 1.3.9 2019/09/29
 
  * Tune yaml path.
  * Fold consecutive select_columns nodes.
+ * Don't print quoted table name.
 
 # rquery 1.3.8 2019/09/15
 

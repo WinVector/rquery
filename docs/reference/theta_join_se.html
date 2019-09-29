@@ -200,11 +200,11 @@
   <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cat'>cat</a></span>(<span class='no'>sql</span>)
   <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/print'>print</a></span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/DBI/topics/dbGetQuery'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/DBI/topics/dbDisconnect'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; mk_td("`d1`", c(
+}</div><div class='output co'>#&gt; mk_td("d1", c(
 #&gt;   "AUC",
 #&gt;   "R2")) %.&gt;%
 #&gt;  theta_join(.,
-#&gt;   mk_td("`d2`", c(
+#&gt;   mk_td("d2", c(
 #&gt;     "AUC2",
 #&gt;     "R2")),
 #&gt;   j= INNER; on= rquery_thetajoin_condition_1 := AUC &gt;= AUC2)

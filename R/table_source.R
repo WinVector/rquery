@@ -342,7 +342,7 @@ format_node.relop_table_source <- function(node) {
   if(length(cols)>max_cols) {
     cols <- c(cols[seq_len(max_cols)], "...")
   }
-  paste0("mk_td(\"", node$q_table_name, "\", c(\n  ",
+  paste0("mk_td(\"", node$table_name, "\", c(\n  ",
          paste(cols, collapse = ",\n  "),
          "))\n")
 }
