@@ -40,7 +40,6 @@ select_columns.relop <- function(source, columns, env = parent.frame()) {
     return(source)
   }
   if(is(source, 'relop_select_columns')) {
-    columns = intersect(columns, have)
     source = source$source[[1]]
   }
   r <- list(source = list(source),
