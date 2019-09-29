@@ -1,7 +1,8 @@
 
-# rquery 1.3.9 2019/09/16
+# rquery 1.3.9 2019/09/28
 
  * Tune yaml path.
+ * Fold consecutive select_columns nodes.
 
 # rquery 1.3.8 2019/09/15
 

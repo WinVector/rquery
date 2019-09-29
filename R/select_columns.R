@@ -39,6 +39,10 @@ select_columns.relop <- function(source, columns, env = parent.frame()) {
   if(length(dropping)<=0) {
     return(source)
   }
+  if(is(source, 'relop_select_columns')) {
+    columns = intersect(columns, have)
+    source = source$source[[1]]
+  }
   r <- list(source = list(source),
             table_name = NULL,
             parsed = NULL,
