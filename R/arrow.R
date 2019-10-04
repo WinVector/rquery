@@ -1,0 +1,119 @@
+
+#' Data arrow
+#'
+#' A categorical arrow mapping a table to a table.
+#'
+#' @param pipeline pipeline with one source table
+#' @return relop_arrow wrapping of pipeline
+#'
+#' @export
+#'
+arrow <- function(pipeline) {
+  if(!('relop' %in% class(pipeline))) {
+    stop("expected pipeline to be of class relop")
+  }
+  cused <- columns_used(pipeline)
+  if(length(cused)!=1) {
+    stop("expected pipeline to use one table")
+  }
+  r <- list(
+    incoming_columns = cused[[1]],
+    outgoing_columns = colnames(pipeline),
+    pipeline = pipeline)
+  class(r) <- 'relop_arrow'
+  return(r)
+}
+
+#' @export
+format.relop_arrow <- function(x, ...) {
+  args <- list(...)
+  verbose <- FALSE
+  if('verbose' %in% names(args)) {
+    verbose <- args[['verbose']]
+  }
+  str <- paste0(
+    '[',
+    wrapr::map_to_char(x$incoming_columns),
+    ' ->\n ',
+    wrapr::map_to_char(x$outgoing_columns),
+    ']')
+  if(verbose) {
+    str <- paste0(str, "(\n", format(x$pipeline),  ")\n")
+  }
+  return(str)
+}
+
+#' @export
+print.relop_arrow <- function(x, ...) {
+  cat(format(x, ...))
+}
+
+setOldClass('relop_arrow')
+
+#' S4 dispatch method for apply_right.
+#'
+#' compose a data.frame and a relop_arrow class
+#'
+#' @param pipe_left_arg left argument
+#' @param pipe_right_arg pipe_right_arg argument
+#' @param pipe_environment environment to evaluate in
+#' @param left_arg_name name, if not NULL name of left argument.
+#' @param pipe_string character, name of pipe operator.
+#' @param right_arg_name name, if not NULL name of right argument.
+#' @return result
+#'
+#' @export
+setMethod(
+  "apply_right_S4",
+  signature = c("data.frame", "relop_arrow"),
+  definition = function(pipe_left_arg,
+                        pipe_right_arg,
+                        pipe_environment,
+                        left_arg_name,
+                        pipe_string,
+                        right_arg_name) {
+    return(pipe_left_arg[, pipe_right_arg$incoming_columns, drop = FALSE] %.>% pipe_right_arg$pipeline)
+  }
+)
+
+compose_arrows <- function(a, b) {
+  if(! ('relop_arrow' %in% class(a))) {
+    stop("expected a to be a relop_arrow")
+  }
+  if(! ('relop_arrow' %in% class(b))) {
+    stop("expected b to be a relop_arrow")
+  }
+  missing <- setdiff(b$incoming_columns, a$outgoing_columns)
+  if(length(missing)>0) {
+    stop(paste("missing required columns:", wrapr::map_to_char(missing)))
+  }
+  return(arrow(a$pipeline %.>% b$pipeline))
+}
+
+#' S4 dispatch method for apply_right.
+#'
+#' compose two relop_arrow classes
+#'
+#' @param pipe_left_arg left argument
+#' @param pipe_right_arg pipe_right_arg argument
+#' @param pipe_environment environment to evaluate in
+#' @param left_arg_name name, if not NULL name of left argument.
+#' @param pipe_string character, name of pipe operator.
+#' @param right_arg_name name, if not NULL name of right argument.
+#' @return result
+#'
+#' @export
+setMethod(
+  "apply_right_S4",
+  signature = c("relop_arrow", "relop_arrow"),
+  definition = function(pipe_left_arg,
+                        pipe_right_arg,
+                        pipe_environment,
+                        left_arg_name,
+                        pipe_string,
+                        right_arg_name) {
+    return(compose_arrows(pipe_left_arg, pipe_right_arg))
+  }
+)
+
+

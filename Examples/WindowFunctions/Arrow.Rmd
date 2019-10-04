@@ -1,0 +1,115 @@
+---
+title: "Arrow"
+output: github_document
+---
+
+```{r}
+library(wrapr)
+library(rquery)
+library(rqdatatable)
+
+d <- data.frame(
+    'g' = c(1, 2, 2, 3, 3, 3),
+    'x' = c(1, 4, 5, 7, 8, 9),
+    'v' = c(10, 40, 50, 70, 80, 90)
+)
+
+knitr::kable(d)
+```
+
+
+```{r}
+table_description <- local_td(d)
+
+d['irrelevant_column'] <- 1
+
+id_ops_a = table_description %.>%
+    project(., groupby='g') %.>%
+    extend(.,
+        ngroup := row_number())
+
+id_ops_b = table_description %.>%
+    natural_join(., b=id_ops_a, by='g', jointype='LEFT')
+
+a1 = arrow(id_ops_b)
+print(a1)
+```
+
+```{r}
+print(a1, verbose = TRUE)
+```
+
+```{r}
+shift <- data.table::shift
+
+ordered_ops = mk_td('d2', colnames(id_ops_b)) %.>%
+    extend(., 
+        row_number := row_number(),
+        v_shift := shift(v),
+    order_by='x',
+    partitionby='g')
+
+a2 = arrow(ordered_ops)
+print(a2)
+```
+
+```{r}
+print(a2, verbose = TRUE)
+```
+
+```{r}
+unordered_ops = mk_td('d3', colnames(ordered_ops)) %.>%
+    extend(.,
+        size := n(),
+        max_v := max(v),
+        min_v := min(v),
+        sum_v := sum(v),
+        mean_v := mean(v),
+    partitionby='g')
+
+
+a3 = arrow(unordered_ops)
+print(a3)
+```
+
+```{r}
+print(a3, verbose = TRUE)
+```
+
+
+```{r}
+d %.>% 
+  id_ops_b %.>% 
+  ordered_ops %.>% 
+  unordered_ops %.>%
+  knitr::kable(.)
+```
+
+```{r}
+d %.>% 
+  .(id_ops_b %.>% 
+  ordered_ops %.>% 
+  unordered_ops) %.>%
+  knitr::kable(.)
+```
+
+```{r}
+id_ops_b %.>% 
+  ordered_ops %.>% 
+  unordered_ops %.>% 
+  format %.>%
+  cat(.)
+```
+
+```{r}
+a1 %.>% a2 %.>% a3
+```
+
+
+```{r}
+d %.>% a1 %.>% a2 %.>% a3 %.>% knitr::kable(.)
+```
+
+```{r}
+d %.>% .(a1 %.>% a2 %.>% a3) %.>% knitr::kable(.)
+```
