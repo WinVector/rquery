@@ -46,7 +46,7 @@ ordered_ops = mk_td('d2', colnames(id_ops_b)) %.>%
     extend(., 
         row_number := row_number(),
         v_shift := shift(v),
-    order_by='x',
+    orderby='x',
     partitionby='g')
 
 a2 = arrow(ordered_ops)

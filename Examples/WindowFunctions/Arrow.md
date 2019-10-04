@@ -73,7 +73,7 @@ ordered_ops = mk_td('d2', colnames(id_ops_b)) %.>%
     extend(., 
         row_number := row_number(),
         v_shift := shift(v),
-    order_by='x',
+    orderby='x',
     partitionby='g')
 
 a2 = arrow(ordered_ops)
@@ -81,14 +81,14 @@ print(a2)
 ```
 
     ## [c('g', 'x', 'v', 'ngroup') ->
-    ##  c('g', 'x', 'v', 'ngroup', 'row_number', 'v_shift', 'order_by')]
+    ##  c('g', 'x', 'v', 'ngroup', 'row_number', 'v_shift')]
 
 ``` r
 print(a2, verbose = TRUE)
 ```
 
     ## [c('g', 'x', 'v', 'ngroup') ->
-    ##  c('g', 'x', 'v', 'ngroup', 'row_number', 'v_shift', 'order_by')](
+    ##  c('g', 'x', 'v', 'ngroup', 'row_number', 'v_shift')](
     ## mk_td("d2", c(
     ##   "g",
     ##   "x",
@@ -97,9 +97,8 @@ print(a2, verbose = TRUE)
     ##  extend(.,
     ##   row_number := row_number(),
     ##   v_shift := shift(v),
-    ##   order_by := "x",
     ##   partitionby = c('g'),
-    ##   orderby = c(),
+    ##   orderby = c('x'),
     ##   reverse = c())
     ## )
 
@@ -118,23 +117,22 @@ a3 = arrow(unordered_ops)
 print(a3)
 ```
 
-    ## [c('g', 'x', 'v', 'ngroup', 'row_number', 'v_shift', 'order_by') ->
-    ##  c('g', 'x', 'v', 'ngroup', 'row_number', 'v_shift', 'order_by', 'size', 'max_v', 'min_v', 'sum_v', 'mean_v')]
+    ## [c('g', 'x', 'v', 'ngroup', 'row_number', 'v_shift') ->
+    ##  c('g', 'x', 'v', 'ngroup', 'row_number', 'v_shift', 'size', 'max_v', 'min_v', 'sum_v', 'mean_v')]
 
 ``` r
 print(a3, verbose = TRUE)
 ```
 
-    ## [c('g', 'x', 'v', 'ngroup', 'row_number', 'v_shift', 'order_by') ->
-    ##  c('g', 'x', 'v', 'ngroup', 'row_number', 'v_shift', 'order_by', 'size', 'max_v', 'min_v', 'sum_v', 'mean_v')](
+    ## [c('g', 'x', 'v', 'ngroup', 'row_number', 'v_shift') ->
+    ##  c('g', 'x', 'v', 'ngroup', 'row_number', 'v_shift', 'size', 'max_v', 'min_v', 'sum_v', 'mean_v')](
     ## mk_td("d3", c(
     ##   "g",
     ##   "x",
     ##   "v",
     ##   "ngroup",
     ##   "row_number",
-    ##   "v_shift",
-    ##   "order_by")) %.>%
+    ##   "v_shift")) %.>%
     ##  extend(.,
     ##   size := n(),
     ##   max_v := max(v),
@@ -154,14 +152,14 @@ d %.>%
   knitr::kable(.)
 ```
 
-| g | x |  v | ngroup | row\_number | v\_shift | order\_by | size | max\_v | min\_v | sum\_v | mean\_v |
-| -: | -: | -: | -----: | ----------: | -------: | :-------- | ---: | -----: | -----: | -----: | ------: |
-| 1 | 1 | 10 |      1 |           1 |       NA | x         |    1 |     10 |     10 |     10 |      10 |
-| 2 | 4 | 40 |      2 |           1 |       NA | x         |    2 |     50 |     40 |     90 |      45 |
-| 2 | 5 | 50 |      2 |           2 |       40 | x         |    2 |     50 |     40 |     90 |      45 |
-| 3 | 7 | 70 |      3 |           1 |       NA | x         |    3 |     90 |     70 |    240 |      80 |
-| 3 | 8 | 80 |      3 |           2 |       70 | x         |    3 |     90 |     70 |    240 |      80 |
-| 3 | 9 | 90 |      3 |           3 |       80 | x         |    3 |     90 |     70 |    240 |      80 |
+| g | x |  v | ngroup | row\_number | v\_shift | size | max\_v | min\_v | sum\_v | mean\_v |
+| -: | -: | -: | -----: | ----------: | -------: | ---: | -----: | -----: | -----: | ------: |
+| 1 | 1 | 10 |      1 |           1 |       NA |    1 |     10 |     10 |     10 |      10 |
+| 2 | 4 | 40 |      2 |           1 |       NA |    2 |     50 |     40 |     90 |      45 |
+| 2 | 5 | 50 |      2 |           2 |       40 |    2 |     50 |     40 |     90 |      45 |
+| 3 | 7 | 70 |      3 |           1 |       NA |    3 |     90 |     70 |    240 |      80 |
+| 3 | 8 | 80 |      3 |           2 |       70 |    3 |     90 |     70 |    240 |      80 |
+| 3 | 9 | 90 |      3 |           3 |       80 |    3 |     90 |     70 |    240 |      80 |
 
 ``` r
 d %.>% 
@@ -171,14 +169,14 @@ d %.>%
   knitr::kable(.)
 ```
 
-| g |  v | x | ngroup | row\_number | v\_shift | order\_by | size | max\_v | min\_v | sum\_v | mean\_v |
-| -: | -: | -: | -----: | ----------: | -------: | :-------- | ---: | -----: | -----: | -----: | ------: |
-| 1 | 10 | 1 |      1 |           1 |       NA | x         |    1 |     10 |     10 |     10 |      10 |
-| 2 | 40 | 4 |      2 |           1 |       NA | x         |    2 |     50 |     40 |     90 |      45 |
-| 2 | 50 | 5 |      2 |           2 |       40 | x         |    2 |     50 |     40 |     90 |      45 |
-| 3 | 70 | 7 |      3 |           1 |       NA | x         |    3 |     90 |     70 |    240 |      80 |
-| 3 | 80 | 8 |      3 |           2 |       70 | x         |    3 |     90 |     70 |    240 |      80 |
-| 3 | 90 | 9 |      3 |           3 |       80 | x         |    3 |     90 |     70 |    240 |      80 |
+| g |  v | x | ngroup | row\_number | v\_shift | size | max\_v | min\_v | sum\_v | mean\_v |
+| -: | -: | -: | -----: | ----------: | -------: | ---: | -----: | -----: | -----: | ------: |
+| 1 | 10 | 1 |      1 |           1 |       NA |    1 |     10 |     10 |     10 |      10 |
+| 2 | 40 | 4 |      2 |           1 |       NA |    2 |     50 |     40 |     90 |      45 |
+| 2 | 50 | 5 |      2 |           2 |       40 |    2 |     50 |     40 |     90 |      45 |
+| 3 | 70 | 7 |      3 |           1 |       NA |    3 |     90 |     70 |    240 |      80 |
+| 3 | 80 | 8 |      3 |           2 |       70 |    3 |     90 |     70 |    240 |      80 |
+| 3 | 90 | 9 |      3 |           3 |       80 |    3 |     90 |     70 |    240 |      80 |
 
 ``` r
 id_ops_b %.>% 
@@ -205,9 +203,8 @@ id_ops_b %.>%
     ##  extend(.,
     ##   row_number := row_number(),
     ##   v_shift := shift(v),
-    ##   order_by := "x",
     ##   partitionby = c('g'),
-    ##   orderby = c(),
+    ##   orderby = c('x'),
     ##   reverse = c()) %.>%
     ##  extend(.,
     ##   size := n(),
@@ -224,30 +221,30 @@ a1 %.>% a2 %.>% a3
 ```
 
     ## [c('g', 'v', 'x') ->
-    ##  c('g', 'x', 'v', 'ngroup', 'row_number', 'v_shift', 'order_by', 'size', 'max_v', 'min_v', 'sum_v', 'mean_v')]
+    ##  c('g', 'x', 'v', 'ngroup', 'row_number', 'v_shift', 'size', 'max_v', 'min_v', 'sum_v', 'mean_v')]
 
 ``` r
 d %.>% a1 %.>% a2 %.>% a3 %.>% knitr::kable(.)
 ```
 
-| g | x |  v | ngroup | row\_number | v\_shift | order\_by | size | max\_v | min\_v | sum\_v | mean\_v |
-| -: | -: | -: | -----: | ----------: | -------: | :-------- | ---: | -----: | -----: | -----: | ------: |
-| 1 | 1 | 10 |      1 |           1 |       NA | x         |    1 |     10 |     10 |     10 |      10 |
-| 2 | 4 | 40 |      2 |           1 |       NA | x         |    2 |     50 |     40 |     90 |      45 |
-| 2 | 5 | 50 |      2 |           2 |       40 | x         |    2 |     50 |     40 |     90 |      45 |
-| 3 | 7 | 70 |      3 |           1 |       NA | x         |    3 |     90 |     70 |    240 |      80 |
-| 3 | 8 | 80 |      3 |           2 |       70 | x         |    3 |     90 |     70 |    240 |      80 |
-| 3 | 9 | 90 |      3 |           3 |       80 | x         |    3 |     90 |     70 |    240 |      80 |
+| g | x |  v | ngroup | row\_number | v\_shift | size | max\_v | min\_v | sum\_v | mean\_v |
+| -: | -: | -: | -----: | ----------: | -------: | ---: | -----: | -----: | -----: | ------: |
+| 1 | 1 | 10 |      1 |           1 |       NA |    1 |     10 |     10 |     10 |      10 |
+| 2 | 4 | 40 |      2 |           1 |       NA |    2 |     50 |     40 |     90 |      45 |
+| 2 | 5 | 50 |      2 |           2 |       40 |    2 |     50 |     40 |     90 |      45 |
+| 3 | 7 | 70 |      3 |           1 |       NA |    3 |     90 |     70 |    240 |      80 |
+| 3 | 8 | 80 |      3 |           2 |       70 |    3 |     90 |     70 |    240 |      80 |
+| 3 | 9 | 90 |      3 |           3 |       80 |    3 |     90 |     70 |    240 |      80 |
 
 ``` r
 d %.>% .(a1 %.>% a2 %.>% a3) %.>% knitr::kable(.)
 ```
 
-| g |  v | x | ngroup | row\_number | v\_shift | order\_by | size | max\_v | min\_v | sum\_v | mean\_v |
-| -: | -: | -: | -----: | ----------: | -------: | :-------- | ---: | -----: | -----: | -----: | ------: |
-| 1 | 10 | 1 |      1 |           1 |       NA | x         |    1 |     10 |     10 |     10 |      10 |
-| 2 | 40 | 4 |      2 |           1 |       NA | x         |    2 |     50 |     40 |     90 |      45 |
-| 2 | 50 | 5 |      2 |           2 |       40 | x         |    2 |     50 |     40 |     90 |      45 |
-| 3 | 70 | 7 |      3 |           1 |       NA | x         |    3 |     90 |     70 |    240 |      80 |
-| 3 | 80 | 8 |      3 |           2 |       70 | x         |    3 |     90 |     70 |    240 |      80 |
-| 3 | 90 | 9 |      3 |           3 |       80 | x         |    3 |     90 |     70 |    240 |      80 |
+| g |  v | x | ngroup | row\_number | v\_shift | size | max\_v | min\_v | sum\_v | mean\_v |
+| -: | -: | -: | -----: | ----------: | -------: | ---: | -----: | -----: | -----: | ------: |
+| 1 | 10 | 1 |      1 |           1 |       NA |    1 |     10 |     10 |     10 |      10 |
+| 2 | 40 | 4 |      2 |           1 |       NA |    2 |     50 |     40 |     90 |      45 |
+| 2 | 50 | 5 |      2 |           2 |       40 |    2 |     50 |     40 |     90 |      45 |
+| 3 | 70 | 7 |      3 |           1 |       NA |    3 |     90 |     70 |    240 |      80 |
+| 3 | 80 | 8 |      3 |           2 |       70 |    3 |     90 |     70 |    240 |      80 |
+| 3 | 90 | 9 |      3 |           3 |       80 |    3 |     90 |     70 |    240 |      80 |
