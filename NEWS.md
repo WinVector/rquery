@@ -1,7 +1,8 @@
 
-# rquery 1.3.9 2019/10/03
+# rquery 1.3.9 2019/10/05
 
  * Tune yaml path.
+ * Fix project signatures.
  * Fold consecutive select_columns nodes.
  * Don't print quoted table name.
  * Add arrow example.

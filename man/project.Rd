@@ -6,18 +6,18 @@
 \alias{aggregate_nse}
 \title{project data by grouping, and adding aggregate columns.}
 \usage{
-project(source, groupby, ..., env = parent.frame())
+project(source, ..., groupby = c(), env = parent.frame())
 
-project_nse(source, groupby, ..., env = parent.frame())
+project_nse(source, ..., groupby = c(), env = parent.frame())
 
-aggregate_nse(source, groupby, ..., env = parent.frame())
+aggregate_nse(source, ..., groupby = c(), env = parent.frame())
 }
 \arguments{
 \item{source}{source to select from.}
 
-\item{groupby}{grouping columns.}
-
 \item{...}{new column assignment expressions.}
+
+\item{groupby}{grouping columns.}
 
 \item{env}{environment to look for values in.}
 }

@@ -53,8 +53,9 @@ project_impl <- function(source, ...,
 #' project data by grouping, and adding aggregate columns.
 #'
 #' @param source source to select from.
-#' @param groupby grouping columns.
 #' @param assignments new column assignment expressions.
+#' @param ... not used, force later arguments to be by name
+#' @param groupby grouping columns.
 #' @param env environment to look for values in.
 #' @return project node.
 #'
@@ -90,7 +91,10 @@ project_impl <- function(source, ...,
 #'
 #' @export
 #'
-project_se <- function(source, groupby, assignments,
+project_se <- function(source,
+                       assignments,
+                       ...,
+                       groupby = c(),
                        env = parent.frame()) {
   force(env)
   UseMethod("project_se", source)
@@ -101,7 +105,10 @@ project_se <- function(source, groupby, assignments,
 aggregate_se <- project_se
 
 #' @export
-project_se.relop <- function(source, groupby, assignments,
+project_se.relop <- function(source,
+                             assignments,
+                             ...,
+                             groupby=c(),
                              env = parent.frame()) {
   force(env)
   parsed <- parse_se(source, assignments, env = env, allow_empty = TRUE)
@@ -109,12 +116,16 @@ project_se.relop <- function(source, groupby, assignments,
 }
 
 #' @export
-project_se.data.frame <- function(source, groupby, assignments,
+project_se.data.frame <- function(source,
+                                  assignments,
+                                  ...,
+                                  groupby=c(),
                                   env = parent.frame()) {
   force(env)
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- mk_td(tmp_name, colnames(source))
-  enode <- project_se(dnode, groupby, assignments,
+  enode <- project_se(dnode, assignments,
+                      groupby = groupby,
                       env = env)
   rquery_apply_to_data_frame(source, enode, env = env)
 }
@@ -127,8 +138,8 @@ project_se.data.frame <- function(source, groupby, assignments,
 #' project() uses bquote() .()-style escaping.
 #'
 #' @param source source to select from.
-#' @param groupby grouping columns.
 #' @param ... new column assignment expressions.
+#' @param groupby grouping columns.
 #' @param env environment to look for values in.
 #' @return project node.
 #'
@@ -164,8 +175,10 @@ project_se.data.frame <- function(source, groupby, assignments,
 #'
 #' @export
 #'
-project <- function(source, groupby, ...,
-                        env = parent.frame()) {
+project <- function(source,
+                    ...,
+                    groupby = c(),
+                    env = parent.frame()) {
   force(env)
   UseMethod("project", source)
 }
@@ -181,8 +194,10 @@ project_nse <- project
 aggregate_nse <- project
 
 #' @export
-project.relop <- function(source, groupby, ...,
-                              env = parent.frame()) {
+project.relop <- function(source,
+                          ...,
+                          groupby=c(),
+                          env = parent.frame()) {
   force(env)
   # Recommend way to caputre ... unevalauted from
   # http://adv-r.had.co.nz/Computing-on-the-language.html#substitute "Capturing unevaluated ..."
@@ -193,13 +208,16 @@ project.relop <- function(source, groupby, ...,
 }
 
 #' @export
-project.data.frame <- function(source, groupby, ...,
-                                   env = parent.frame()) {
+project.data.frame <- function(source,
+                               ...,
+                               groupby=c(),
+                               env = parent.frame()) {
   force(env)
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- mk_td(tmp_name, colnames(source))
-  enode <- project(dnode, groupby, ...,
-                       env = env)
+  enode <- project(dnode, ...,
+                   groupby = groupby,
+                   env = env)
   rquery_apply_to_data_frame(source, enode, env = env)
 }
 

@@ -5,16 +5,20 @@
 \alias{aggregate_se}
 \title{project data by grouping, and adding aggregate columns.}
 \usage{
-project_se(source, groupby, assignments, env = parent.frame())
+project_se(source, assignments, ..., groupby = c(),
+  env = parent.frame())
 
-aggregate_se(source, groupby, assignments, env = parent.frame())
+aggregate_se(source, assignments, ..., groupby = c(),
+  env = parent.frame())
 }
 \arguments{
 \item{source}{source to select from.}
 
-\item{groupby}{grouping columns.}
-
 \item{assignments}{new column assignment expressions.}
+
+\item{...}{not used, force later arguments to be by name}
+
+\item{groupby}{grouping columns.}
 
 \item{env}{environment to look for values in.}
 }
