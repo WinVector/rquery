@@ -1,6 +1,11 @@
 Arrow
 ================
 
+Example of data transforms as categorical arrows ([`R`
+version](https://github.com/WinVector/rquery/blob/master/Examples/Arrow/Arrow.md)
+[`Python`
+version](https://github.com/WinVector/data_algebra/blob/master/Examples/Arrow/Arrow.ipynb)).
+
 ``` r
 library(wrapr)
 library(rquery)
