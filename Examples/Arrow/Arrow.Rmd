@@ -58,8 +58,24 @@ print(a2)
 print(a2, verbose = TRUE)
 ```
 
+```{r, error=TRUE}
+a1 %.>% a2
+```
+
 ```{r}
-print(a1 %.>% a2)
+ordered_ops = mk_td('d2', colnames(id_ops_b)) %.>%
+    extend(., 
+        row_number := row_number(),
+        v_shift := shift(v),
+    orderby='x',
+    partitionby='g')
+
+a2 = arrow(ordered_ops)
+print(a2)
+```
+
+```{r}
+a1 %.>% a2
 ```
 
 ```{r}

@@ -50,6 +50,46 @@ print.relop_arrow <- function(x, ...) {
 
 setOldClass('relop_arrow')
 
+
+compose_arrows <- function(a, b, ..., strict=TRUE) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::compose_arrows")
+  if(! ('relop_arrow' %in% class(b))) {
+    stop("expected b to be a relop_arrow")
+  }
+  if('data.frame' %in% class(a)) {
+    missing <- setdiff(b$incoming_columns, colnames(a))
+    if(length(missing)>0) {
+      stop(paste("missing required columns:", wrapr::map_to_char(missing)))
+    }
+    excess <- setdiff(colnames(a), b$incoming_columns)
+    if(length(excess)>0) {
+      if(strict) {
+        stop(paste0("unexpected columns: ", paste(excess, collapse = ', ')))
+      }
+      a <- a[, b$incoming_columns, drop = FALSE]
+    }
+    res <- a %.>% b$pipeline
+    return(res)
+  }
+  if(! ('relop_arrow' %in% class(a))) {
+    stop("expected a to be a relop_arrow or data.frame")
+  }
+  missing <- setdiff(b$incoming_columns, a$outgoing_columns)
+  if(length(missing)>0) {
+    stop(paste("missing required columns:", wrapr::map_to_char(missing)))
+  }
+  excess <- setdiff(a$outgoing_columns, b$incoming_columns)
+  if(length(excess)>0) {
+    if(strict) {
+      stop(paste0("unexpected columns: ", paste(excess, collapse = ', ')))
+    }
+    return(arrow(a$pipeline %.>% select_columns(., columns=b$incoming_columns) %.>% b$pipeline))
+  }
+  return(arrow(a$pipeline %.>% b$pipeline))
+}
+
+
 #' S4 dispatch method for apply_right.
 #'
 #' compose a data.frame and a relop_arrow class
@@ -72,26 +112,10 @@ setMethod(
                         left_arg_name,
                         pipe_string,
                         right_arg_name) {
-    return(pipe_left_arg[, pipe_right_arg$incoming_columns, drop = FALSE] %.>% pipe_right_arg$pipeline)
+    return(compose_arrows(pipe_left_arg, pipe_right_arg, strict=TRUE))
   }
 )
 
-compose_arrows <- function(a, b) {
-  if(! ('relop_arrow' %in% class(a))) {
-    stop("expected a to be a relop_arrow")
-  }
-  if(! ('relop_arrow' %in% class(b))) {
-    stop("expected b to be a relop_arrow")
-  }
-  missing <- setdiff(b$incoming_columns, a$outgoing_columns)
-  if(length(missing)>0) {
-    stop(paste("missing required columns:", wrapr::map_to_char(missing)))
-  }
-  if(length(a$outgoing_columns) > length(b$incoming_columns)) {
-    return(arrow(a$pipeline %.>% select_columns(., columns=b$incoming_columns) %.>% b$pipeline))
-  }
-  return(arrow(a$pipeline %.>% b$pipeline))
-}
 
 #' S4 dispatch method for apply_right.
 #'
@@ -115,7 +139,7 @@ setMethod(
                         left_arg_name,
                         pipe_string,
                         right_arg_name) {
-    return(compose_arrows(pipe_left_arg, pipe_right_arg))
+    return(compose_arrows(pipe_left_arg, pipe_right_arg, strict=TRUE))
   }
 )
 

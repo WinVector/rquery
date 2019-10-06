@@ -254,6 +254,8 @@ rquery_default_db_info <- function() {
 rq_function_mappings <- function(db,
                                  ...,
                                  qualifiers = NULL) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::rq_function_mappings")
   if(!("rquery_db_info" %in% class(db))) {
     stop("rquery::rq_function_mappings db must be of class rq_function_mappings")
   }
