@@ -87,6 +87,9 @@ compose_arrows <- function(a, b) {
   if(length(missing)>0) {
     stop(paste("missing required columns:", wrapr::map_to_char(missing)))
   }
+  if(length(a$outgoing_columns) > length(b$incoming_columns)) {
+    return(arrow(a$pipeline %.>% select_columns(., columns=b$incoming_columns) %.>% b$pipeline))
+  }
   return(arrow(a$pipeline %.>% b$pipeline))
 }
 

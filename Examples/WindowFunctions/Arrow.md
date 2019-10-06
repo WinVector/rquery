@@ -27,29 +27,28 @@ knitr::kable(d)
 ``` r
 table_description <- local_td(d)
 
-d['irrelevant_column'] <- 1
-
 id_ops_a = table_description %.>%
     project(., groupby='g') %.>%
     extend(.,
         ngroup := row_number())
 
 id_ops_b = table_description %.>%
-    natural_join(., b=id_ops_a, by='g', jointype='LEFT')
+    natural_join(., b=id_ops_a, by='g', jointype='LEFT') %.>%
+    extend(., irrelevant_column := 1)
 
 a1 = arrow(id_ops_b)
 print(a1)
 ```
 
     ## [c('g', 'v', 'x') ->
-    ##  c('g', 'x', 'v', 'ngroup')]
+    ##  c('g', 'x', 'v', 'ngroup', 'irrelevant_column')]
 
 ``` r
 print(a1, verbose = TRUE)
 ```
 
     ## [c('g', 'v', 'x') ->
-    ##  c('g', 'x', 'v', 'ngroup')](
+    ##  c('g', 'x', 'v', 'ngroup', 'irrelevant_column')](
     ## mk_td("d", c(
     ##   "g",
     ##   "x",
@@ -63,13 +62,15 @@ print(a1, verbose = TRUE)
     ##     groupby = c('g')) %.>%
     ##    extend(.,
     ##     ngroup := row_number()),
-    ##   jointype = "LEFT", by = c('g'))
+    ##   jointype = "LEFT", by = c('g')) %.>%
+    ##  extend(.,
+    ##   irrelevant_column := 1)
     ## )
 
 ``` r
 shift <- data.table::shift
 
-ordered_ops = mk_td('d2', colnames(id_ops_b)) %.>%
+ordered_ops = mk_td('d2', setdiff(colnames(id_ops_b), 'irrelevant_column')) %.>%
     extend(., 
         row_number := row_number(),
         v_shift := shift(v),
@@ -94,6 +95,47 @@ print(a2, verbose = TRUE)
     ##   "x",
     ##   "v",
     ##   "ngroup")) %.>%
+    ##  extend(.,
+    ##   row_number := row_number(),
+    ##   v_shift := shift(v),
+    ##   partitionby = c('g'),
+    ##   orderby = c('x'),
+    ##   reverse = c())
+    ## )
+
+``` r
+print(a1 %.>% a2)
+```
+
+    ## [c('g', 'v', 'x') ->
+    ##  c('g', 'x', 'v', 'ngroup', 'row_number', 'v_shift')]
+
+``` r
+print(
+  a1 %.>% a2,
+  verbose = TRUE)
+```
+
+    ## [c('g', 'v', 'x') ->
+    ##  c('g', 'x', 'v', 'ngroup', 'row_number', 'v_shift')](
+    ## mk_td("d", c(
+    ##   "g",
+    ##   "x",
+    ##   "v")) %.>%
+    ##  natural_join(.,
+    ##   mk_td("d", c(
+    ##     "g",
+    ##     "x",
+    ##     "v")) %.>%
+    ##    project(., ,
+    ##     groupby = c('g')) %.>%
+    ##    extend(.,
+    ##     ngroup := row_number()),
+    ##   jointype = "LEFT", by = c('g')) %.>%
+    ##  extend(.,
+    ##   irrelevant_column := 1) %.>%
+    ##  select_columns(., c(
+    ##    "g", "x", "v", "ngroup")) %.>%
     ##  extend(.,
     ##   row_number := row_number(),
     ##   v_shift := shift(v),
@@ -169,14 +211,14 @@ d %.>%
   knitr::kable(.)
 ```
 
-| g |  v | x | ngroup | row\_number | v\_shift | size | max\_v | min\_v | sum\_v | mean\_v |
-| -: | -: | -: | -----: | ----------: | -------: | ---: | -----: | -----: | -----: | ------: |
-| 1 | 10 | 1 |      1 |           1 |       NA |    1 |     10 |     10 |     10 |      10 |
-| 2 | 40 | 4 |      2 |           1 |       NA |    2 |     50 |     40 |     90 |      45 |
-| 2 | 50 | 5 |      2 |           2 |       40 |    2 |     50 |     40 |     90 |      45 |
-| 3 | 70 | 7 |      3 |           1 |       NA |    3 |     90 |     70 |    240 |      80 |
-| 3 | 80 | 8 |      3 |           2 |       70 |    3 |     90 |     70 |    240 |      80 |
-| 3 | 90 | 9 |      3 |           3 |       80 |    3 |     90 |     70 |    240 |      80 |
+| g |  v | x | ngroup | irrelevant\_column | row\_number | v\_shift | size | max\_v | min\_v | sum\_v | mean\_v |
+| -: | -: | -: | -----: | -----------------: | ----------: | -------: | ---: | -----: | -----: | -----: | ------: |
+| 1 | 10 | 1 |      1 |                  1 |           1 |       NA |    1 |     10 |     10 |     10 |      10 |
+| 2 | 40 | 4 |      2 |                  1 |           1 |       NA |    2 |     50 |     40 |     90 |      45 |
+| 2 | 50 | 5 |      2 |                  1 |           2 |       40 |    2 |     50 |     40 |     90 |      45 |
+| 3 | 70 | 7 |      3 |                  1 |           1 |       NA |    3 |     90 |     70 |    240 |      80 |
+| 3 | 80 | 8 |      3 |                  1 |           2 |       70 |    3 |     90 |     70 |    240 |      80 |
+| 3 | 90 | 9 |      3 |                  1 |           3 |       80 |    3 |     90 |     70 |    240 |      80 |
 
 ``` r
 id_ops_b %.>% 
@@ -200,6 +242,8 @@ id_ops_b %.>%
     ##    extend(.,
     ##     ngroup := row_number()),
     ##   jointype = "LEFT", by = c('g')) %.>%
+    ##  extend(.,
+    ##   irrelevant_column := 1) %.>%
     ##  extend(.,
     ##   row_number := row_number(),
     ##   v_shift := shift(v),
@@ -240,11 +284,11 @@ d %.>% a1 %.>% a2 %.>% a3 %.>% knitr::kable(.)
 d %.>% .(a1 %.>% a2 %.>% a3) %.>% knitr::kable(.)
 ```
 
-| g |  v | x | ngroup | row\_number | v\_shift | size | max\_v | min\_v | sum\_v | mean\_v |
+| g | x |  v | ngroup | row\_number | v\_shift | size | max\_v | min\_v | sum\_v | mean\_v |
 | -: | -: | -: | -----: | ----------: | -------: | ---: | -----: | -----: | -----: | ------: |
-| 1 | 10 | 1 |      1 |           1 |       NA |    1 |     10 |     10 |     10 |      10 |
-| 2 | 40 | 4 |      2 |           1 |       NA |    2 |     50 |     40 |     90 |      45 |
-| 2 | 50 | 5 |      2 |           2 |       40 |    2 |     50 |     40 |     90 |      45 |
-| 3 | 70 | 7 |      3 |           1 |       NA |    3 |     90 |     70 |    240 |      80 |
-| 3 | 80 | 8 |      3 |           2 |       70 |    3 |     90 |     70 |    240 |      80 |
-| 3 | 90 | 9 |      3 |           3 |       80 |    3 |     90 |     70 |    240 |      80 |
+| 1 | 1 | 10 |      1 |           1 |       NA |    1 |     10 |     10 |     10 |      10 |
+| 2 | 4 | 40 |      2 |           1 |       NA |    2 |     50 |     40 |     90 |      45 |
+| 2 | 5 | 50 |      2 |           2 |       40 |    2 |     50 |     40 |     90 |      45 |
+| 3 | 7 | 70 |      3 |           1 |       NA |    3 |     90 |     70 |    240 |      80 |
+| 3 | 8 | 80 |      3 |           2 |       70 |    3 |     90 |     70 |    240 |      80 |
+| 3 | 9 | 90 |      3 |           3 |       80 |    3 |     90 |     70 |    240 |      80 |

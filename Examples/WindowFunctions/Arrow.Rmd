@@ -21,15 +21,14 @@ knitr::kable(d)
 ```{r}
 table_description <- local_td(d)
 
-d['irrelevant_column'] <- 1
-
 id_ops_a = table_description %.>%
     project(., groupby='g') %.>%
     extend(.,
         ngroup := row_number())
 
 id_ops_b = table_description %.>%
-    natural_join(., b=id_ops_a, by='g', jointype='LEFT')
+    natural_join(., b=id_ops_a, by='g', jointype='LEFT') %.>%
+    extend(., irrelevant_column := 1)
 
 a1 = arrow(id_ops_b)
 print(a1)
@@ -42,7 +41,7 @@ print(a1, verbose = TRUE)
 ```{r}
 shift <- data.table::shift
 
-ordered_ops = mk_td('d2', colnames(id_ops_b)) %.>%
+ordered_ops = mk_td('d2', setdiff(colnames(id_ops_b), 'irrelevant_column')) %.>%
     extend(., 
         row_number := row_number(),
         v_shift := shift(v),
@@ -56,6 +55,17 @@ print(a2)
 ```{r}
 print(a2, verbose = TRUE)
 ```
+
+```{r}
+print(a1 %.>% a2)
+```
+
+```{r}
+print(
+  a1 %.>% a2,
+  verbose = TRUE)
+```
+
 
 ```{r}
 unordered_ops = mk_td('d3', colnames(ordered_ops)) %.>%
