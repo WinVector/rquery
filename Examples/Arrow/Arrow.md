@@ -4,7 +4,7 @@ Arrow
 Example of data transforms as categorical arrows ([`R`
 version](https://github.com/WinVector/rquery/blob/master/Examples/Arrow/Arrow.md)
 [`Python`
-version](https://github.com/WinVector/rquery/blob/master/Examples/Arrow/Arrow.md)).
+version](https://github.com/WinVector/data_algebra/blob/master/Examples/Arrow/Arrow.md)).
 
 (For ideas on applying category theory to science and data, please see
 David I Spivak, *Category Theory for the Sciences*, MIT Press, 2014.)
