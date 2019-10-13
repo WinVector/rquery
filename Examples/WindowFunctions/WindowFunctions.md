@@ -203,8 +203,8 @@ cat(sql1)
     ##    `v`
     ##   FROM
     ##    `d`
-    ##   ) tsql_66217597165845365095_0000000000
-    ##  ) tsql_66217597165845365095_0000000001
+    ##   ) tsql_14455430260395709030_0000000000
+    ##  ) tsql_14455430260395709030_0000000001
 
 And we can execute this SQL either to materialize a remote result (which
 involves no data motion, as we send the SQL commands to the database,
