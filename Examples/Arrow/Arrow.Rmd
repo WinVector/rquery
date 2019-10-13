@@ -3,7 +3,7 @@ title: "Arrow"
 output: github_document
 ---
 
-Example of data transforms as categorical arrows ([`R` version](https://github.com/WinVector/rquery/blob/master/Examples/Arrow/Arrow.md) [`Python` version](https://github.com/WinVector/data_algebra/blob/master/Examples/Arrow/Arrow.md)).
+Example of data transforms as categorical arrows ([`R` version](https://github.com/WinVector/rquery/blob/master/Examples/Arrow/Arrow.md) [`Python` version](https://github.com/WinVector/rquery/blob/master/Examples/Arrow/Arrow.md)).
 
 (For ideas on applying category theory to science and data, please see David I Spivak, *Category Theory for the Sciences*, MIT Press, 2014.)
 
@@ -16,7 +16,7 @@ The objects of this category can be either of:
  * Sets of column names.
  * Maps of column names to column types (schema-like objects).
  
-I will take a liberty and call these objects (with or without types) "schemas."
+I will take a liberty and call these objects (with or without types) "single table schemas."
 
 Our setup is easiest to explain with an example.  Let's work an example in `Python`.
 
@@ -92,15 +92,25 @@ a1 = arrow(id_ops_b)
 print(a1)
 ```
 
-`a1` is an arrow in a category whose objects are sets of column names
-
-As is typical in category theory, there can be more than one arrow from a given object to given object.  Our particular arrow is more fully described as follows.
+`a1` is a categorical theory arrow, it has the usual domain (arrow base, or incoming object), and co-domain (arrow head, or outgoing object) in a category of single-table schemas.
 
 ```{r}
-print(a1, verbose = TRUE)
+# dom or domain
+a1$incoming_columns
 ```
 
-So our arrows are arrows in a category whose objects are sets of column names (or alternately maps from column names to column types).  These arrows also act on data frames that meet the required column pre conditions.
+```{r}
+# cod or co-domain
+a1$outgoing_columns
+```
+
+These are what are presented in the succinct presentation of the arrow.
+
+```{r}
+print(a1)
+```
+
+Arrows can be composed or applied by using the notation `d %.>% a1`. Note: we are not thinking of `%.>%` itself as an arrow, but as a symbol for composition of arrows.
 
 ```{r}
 d %.>%
@@ -108,9 +118,34 @@ d %.>%
   knitr::kable(.)
 ```
 
+As is typical in category theory, there can be more than one arrow from a given object to given object.  For example the following is a different arrow with the same start and end.
+
+```{r}
+a1b <- arrow(
+  table_description %.>%
+    extend(.,
+           ngroup := 0)
+)
+
+print(a1b)
+```
+
+However, the `a1b` arrow represents a different operation:
+
+```{r}
+d %.>%
+  a1b %.>%
+  knitr::kable(.)
+```
 
 
+```{r}
+print(a1, verbose = TRUE)
+```
 
+The arrows compose exactly when the pre-conditions meet the post conditions.  
+
+Here are two examples of violating the pre and post conditions.  The point is, the categorical conditions enforce the checking for us.  We can't compose arrows that don't match domain and range.  Up until now we have been setting things up to make the categorical machinery work, now this machinery will work for us and make the job of managing complex data transformations easier.
 
 ```{r}
 shift <- data.table::shift
@@ -180,10 +215,6 @@ print(
 ```{r}
 unordered_ops = mk_td('d3', colnames(ordered_ops)) %.>%
     extend(.,
-        size := n(),
-        max_v := max(v),
-        min_v := min(v),
-        sum_v := sum(v),
         mean_v := mean(v),
     partitionby='g')
 
@@ -197,71 +228,36 @@ a1 %.>% a2 %.>% a3
 ```
 
 ```{r}
-(a1 %.>% a2) %.>% a3
+ops1 <- (a1 %.>% a2) %.>% a3
+ops1
 ```
 
 ```{r}
-a1 %.>% (a2 %.>% a3)
+ops2 <- a1 %.>% .(a2 %.>% a3)
 ```
 
 All three compositions are in fact the same arrow.
 
 ```{r}
-print(
-  (a1 %.>% a2) %.>% a3,
-  verbose = TRUE)
-```
-
-```{r}
-print(
-  a1 %.>% (a2 %.>% a3),
-  verbose = TRUE)
-```
-
-The payoff is: we can use this composite arrow on data.
-
-Either with the arrow notation.
-
-```{r}
-d %.>% 
-  a1 %.>% 
-  a2 %.>% 
-  a3 %.>%
-  knitr::kable(.)
-```
-
-Or with the pipelines.
-
-
-```{r}
-d %.>% 
-  id_ops_b %.>% 
-  ordered_ops %.>% 
-  unordered_ops %.>%
+d %.>%
+  ops1 %.>% 
   knitr::kable(.)
 ```
 
 ```{r}
-d %.>% 
-  .(id_ops_b %.>% 
-  ordered_ops %.>% 
-  unordered_ops) %.>%
+d %.>%
+  ops2 %.>% 
   knitr::kable(.)
 ```
 
-```{r}
-# R default associates left to right so this is:
-# ((d >> a1) >> a2) >> a3
-a1 %.>% a2 %.>% a3
-```
-
-
-```{r}
-# the preferred notation, work in operator space
-d %.>% .(a1 %.>% a2 %.>% a3) %.>% knitr::kable(.)
-```
+The combination operator `%.>%` is fully associative over the combination of data and arrows.
 
 The underlying `rquery` steps compute and check very similar pre and post conditions, the arrow class is just making this look more explicitly like arrows moving through objects in category.
 
-There is more to be gotten from how the data relates to the schema descriptions.  I think we have that if we consider the arrows operating on data and the arrows operating on schemas we have a faithfull embedding (in the sense of Saunders Mac Lane *Categories for the Working Mathematician, 2nd Edition*, Springer, 1997, page 15) from data to schemas.
+The data arrows operate over three different value domains:
 
+ * their own arrow space (i.e. composition)
+ * data frames (transforming data)
+ * single table schemas (transforming single table schemas)
+
+I think we have that if we consider the arrows operating on data and the arrows operating on single table schemas we have a faithful embedding (in the sense of Saunders Mac Lane *Categories for the Working Mathematician, 2nd Edition*, Springer, 1997, page 15) from data to single table schemas.

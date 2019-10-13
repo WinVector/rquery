@@ -4,7 +4,7 @@ Arrow
 Example of data transforms as categorical arrows ([`R`
 version](https://github.com/WinVector/rquery/blob/master/Examples/Arrow/Arrow.md)
 [`Python`
-version](https://github.com/WinVector/data_algebra/blob/master/Examples/Arrow/Arrow.md)).
+version](https://github.com/WinVector/rquery/blob/master/Examples/Arrow/Arrow.md)).
 
 (For ideas on applying category theory to science and data, please see
 David I Spivak, *Category Theory for the Sciences*, MIT Press, 2014.)
@@ -29,7 +29,7 @@ The objects of this category can be either of:
   - Maps of column names to column types (schema-like objects).
 
 I will take a liberty and call these objects (with or without types)
-“schemas.”
+“single table schemas.”
 
 Our setup is easiest to explain with an example. Let’s work an example
 in `Python`.
@@ -151,11 +151,85 @@ print(a1)
     ## [c('g', 'i', 'v', 'x') ->
     ##  c('g', 'x', 'v', 'i', 'ngroup')]
 
-`a1` is an arrow in a category whose objects are sets of column names
+`a1` is a categorical theory arrow, it has the usual domain (arrow base,
+or incoming object), and co-domain (arrow head, or outgoing object) in a
+category of single-table schemas.
+
+``` r
+# dom or domain
+a1$incoming_columns
+```
+
+    ## [1] "g" "i" "v" "x"
+
+``` r
+# cod or co-domain
+a1$outgoing_columns
+```
+
+    ## [1] "g"      "x"      "v"      "i"      "ngroup"
+
+These are what are presented in the succinct presentation of the arrow.
+
+``` r
+print(a1)
+```
+
+    ## [c('g', 'i', 'v', 'x') ->
+    ##  c('g', 'x', 'v', 'i', 'ngroup')]
+
+Arrows can be composed or applied by using the notation `d %.>% a1`.
+Note: we are not thinking of `%.>%` itself as an arrow, but as a symbol
+for composition of arrows.
+
+``` r
+d %.>%
+  a1 %.>%
+  knitr::kable(.)
+```
+
+| g | i     |  v | x | ngroup |
+| :- | :---- | -: | -: | -----: |
+| a | TRUE  | 10 | 1 |      1 |
+| b | TRUE  | 40 | 4 |      2 |
+| b | FALSE | 50 | 5 |      2 |
+| c | FALSE | 70 | 7 |      3 |
+| c | FALSE | 80 | 8 |      3 |
+| c | FALSE | 90 | 9 |      3 |
 
 As is typical in category theory, there can be more than one arrow from
-a given object to given object. Our particular arrow is more fully
-described as follows.
+a given object to given object. For example the following is a different
+arrow with the same start and end.
+
+``` r
+a1b <- arrow(
+  table_description %.>%
+    extend(.,
+           ngroup := 0)
+)
+
+print(a1b)
+```
+
+    ## [c('g', 'x', 'v', 'i') ->
+    ##  c('g', 'x', 'v', 'i', 'ngroup')]
+
+However, the `a1b` arrow represents a different operation:
+
+``` r
+d %.>%
+  a1b %.>%
+  knitr::kable(.)
+```
+
+| g | x |  v | i     | ngroup |
+| :- | -: | -: | :---- | -----: |
+| a | 1 | 10 | TRUE  |      0 |
+| b | 4 | 40 | TRUE  |      0 |
+| b | 5 | 50 | FALSE |      0 |
+| c | 7 | 70 | FALSE |      0 |
+| c | 8 | 80 | FALSE |      0 |
+| c | 9 | 90 | FALSE |      0 |
 
 ``` r
 print(a1, verbose = TRUE)
@@ -181,25 +255,15 @@ print(a1, verbose = TRUE)
     ##   jointype = "LEFT", by = c('g'))
     ## )
 
-So our arrows are arrows in a category whose objects are sets of column
-names (or alternately maps from column names to column types). These
-arrows also act on data frames that meet the required column pre
+The arrows compose exactly when the pre-conditions meet the post
 conditions.
 
-``` r
-d %.>%
-  a1 %.>%
-  knitr::kable(.)
-```
-
-| g | i     |  v | x | ngroup |
-| :- | :---- | -: | -: | -----: |
-| a | TRUE  | 10 | 1 |      1 |
-| b | TRUE  | 40 | 4 |      2 |
-| b | FALSE | 50 | 5 |      2 |
-| c | FALSE | 70 | 7 |      3 |
-| c | FALSE | 80 | 8 |      3 |
-| c | FALSE | 90 | 9 |      3 |
+Here are two examples of violating the pre and post conditions. The
+point is, the categorical conditions enforce the checking for us. We
+can’t compose arrows that don’t match domain and range. Up until now
+we have been setting things up to make the categorical machinery work,
+now this machinery will work for us and make the job of managing complex
+data transformations easier.
 
 ``` r
 shift <- data.table::shift
@@ -311,10 +375,6 @@ print(
 ``` r
 unordered_ops = mk_td('d3', colnames(ordered_ops)) %.>%
     extend(.,
-        size := n(),
-        max_v := max(v),
-        min_v := min(v),
-        sum_v := sum(v),
         mean_v := mean(v),
     partitionby='g')
 
@@ -324,190 +384,74 @@ print(a3)
 ```
 
     ## [c('g', 'x', 'v', 'i', 'ngroup', 'row_number', 'v_shift') ->
-    ##  c('g', 'x', 'v', 'i', 'ngroup', 'row_number', 'v_shift', 'size', 'max_v', 'min_v', 'sum_v', 'mean_v')]
+    ##  c('g', 'x', 'v', 'i', 'ngroup', 'row_number', 'v_shift', 'mean_v')]
 
 ``` r
 a1 %.>% a2 %.>% a3
 ```
 
     ## [c('g', 'i', 'v', 'x') ->
-    ##  c('g', 'x', 'v', 'i', 'ngroup', 'row_number', 'v_shift', 'size', 'max_v', 'min_v', 'sum_v', 'mean_v')]
+    ##  c('g', 'x', 'v', 'i', 'ngroup', 'row_number', 'v_shift', 'mean_v')]
 
 ``` r
-(a1 %.>% a2) %.>% a3
+ops1 <- (a1 %.>% a2) %.>% a3
+ops1
 ```
 
     ## [c('g', 'i', 'v', 'x') ->
-    ##  c('g', 'x', 'v', 'i', 'ngroup', 'row_number', 'v_shift', 'size', 'max_v', 'min_v', 'sum_v', 'mean_v')]
+    ##  c('g', 'x', 'v', 'i', 'ngroup', 'row_number', 'v_shift', 'mean_v')]
 
 ``` r
-a1 %.>% (a2 %.>% a3)
+ops2 <- a1 %.>% .(a2 %.>% a3)
 ```
-
-    ## [c('g', 'x', 'v', 'i', 'ngroup') ->
-    ##  c('g', 'x', 'v', 'i', 'ngroup', 'row_number', 'v_shift', 'size', 'max_v', 'min_v', 'sum_v', 'mean_v')]
 
 All three compositions are in fact the same arrow.
 
 ``` r
-print(
-  (a1 %.>% a2) %.>% a3,
-  verbose = TRUE)
-```
-
-    ## [c('g', 'i', 'v', 'x') ->
-    ##  c('g', 'x', 'v', 'i', 'ngroup', 'row_number', 'v_shift', 'size', 'max_v', 'min_v', 'sum_v', 'mean_v')](
-    ## mk_td("d", c(
-    ##   "g",
-    ##   "x",
-    ##   "v",
-    ##   "i")) %.>%
-    ##  natural_join(.,
-    ##   mk_td("d", c(
-    ##     "g",
-    ##     "x",
-    ##     "v",
-    ##     "i")) %.>%
-    ##    project(., ,
-    ##     groupby = c('g')) %.>%
-    ##    extend(.,
-    ##     ngroup := row_number()),
-    ##   jointype = "LEFT", by = c('g')) %.>%
-    ##  extend(.,
-    ##   row_number := row_number(),
-    ##   v_shift := shift(v),
-    ##   partitionby = c('g'),
-    ##   orderby = c('x'),
-    ##   reverse = c()) %.>%
-    ##  extend(.,
-    ##   size := n(),
-    ##   max_v := max(v),
-    ##   min_v := min(v),
-    ##   sum_v := sum(v),
-    ##   mean_v := mean(v),
-    ##   partitionby = c('g'),
-    ##   orderby = c(),
-    ##   reverse = c())
-    ## )
-
-``` r
-print(
-  a1 %.>% (a2 %.>% a3),
-  verbose = TRUE)
-```
-
-    ## [c('g', 'x', 'v', 'i', 'ngroup') ->
-    ##  c('g', 'x', 'v', 'i', 'ngroup', 'row_number', 'v_shift', 'size', 'max_v', 'min_v', 'sum_v', 'mean_v')](
-    ## mk_td("d2", c(
-    ##   "g",
-    ##   "x",
-    ##   "v",
-    ##   "i",
-    ##   "ngroup")) %.>%
-    ##  extend(.,
-    ##   row_number := row_number(),
-    ##   v_shift := shift(v),
-    ##   partitionby = c('g'),
-    ##   orderby = c('x'),
-    ##   reverse = c()) %.>%
-    ##  extend(.,
-    ##   size := n(),
-    ##   max_v := max(v),
-    ##   min_v := min(v),
-    ##   sum_v := sum(v),
-    ##   mean_v := mean(v),
-    ##   partitionby = c('g'),
-    ##   orderby = c(),
-    ##   reverse = c())
-    ## )
-
-The payoff is: we can use this composite arrow on data.
-
-Either with the arrow notation.
-
-``` r
-d %.>% 
-  a1 %.>% 
-  a2 %.>% 
-  a3 %.>%
+d %.>%
+  ops1 %.>% 
   knitr::kable(.)
 ```
 
-| g | x |  v | i     | ngroup | row\_number | v\_shift | size | max\_v | min\_v | sum\_v | mean\_v |
-| :- | -: | -: | :---- | -----: | ----------: | -------: | ---: | -----: | -----: | -----: | ------: |
-| a | 1 | 10 | TRUE  |      1 |           1 |       NA |    1 |     10 |     10 |     10 |      10 |
-| b | 4 | 40 | TRUE  |      2 |           1 |       NA |    2 |     50 |     40 |     90 |      45 |
-| b | 5 | 50 | FALSE |      2 |           2 |       40 |    2 |     50 |     40 |     90 |      45 |
-| c | 7 | 70 | FALSE |      3 |           1 |       NA |    3 |     90 |     70 |    240 |      80 |
-| c | 8 | 80 | FALSE |      3 |           2 |       70 |    3 |     90 |     70 |    240 |      80 |
-| c | 9 | 90 | FALSE |      3 |           3 |       80 |    3 |     90 |     70 |    240 |      80 |
-
-Or with the pipelines.
+| g | i     |  v | x | ngroup | row\_number | v\_shift | mean\_v |
+| :- | :---- | -: | -: | -----: | ----------: | -------: | ------: |
+| a | TRUE  | 10 | 1 |      1 |           1 |       NA |      10 |
+| b | TRUE  | 40 | 4 |      2 |           1 |       NA |      45 |
+| b | FALSE | 50 | 5 |      2 |           2 |       40 |      45 |
+| c | FALSE | 70 | 7 |      3 |           1 |       NA |      80 |
+| c | FALSE | 80 | 8 |      3 |           2 |       70 |      80 |
+| c | FALSE | 90 | 9 |      3 |           3 |       80 |      80 |
 
 ``` r
-d %.>% 
-  id_ops_b %.>% 
-  ordered_ops %.>% 
-  unordered_ops %.>%
+d %.>%
+  ops2 %.>% 
   knitr::kable(.)
 ```
 
-| g | x |  v | i     | ngroup | row\_number | v\_shift | size | max\_v | min\_v | sum\_v | mean\_v |
-| :- | -: | -: | :---- | -----: | ----------: | -------: | ---: | -----: | -----: | -----: | ------: |
-| a | 1 | 10 | TRUE  |      1 |           1 |       NA |    1 |     10 |     10 |     10 |      10 |
-| b | 4 | 40 | TRUE  |      2 |           1 |       NA |    2 |     50 |     40 |     90 |      45 |
-| b | 5 | 50 | FALSE |      2 |           2 |       40 |    2 |     50 |     40 |     90 |      45 |
-| c | 7 | 70 | FALSE |      3 |           1 |       NA |    3 |     90 |     70 |    240 |      80 |
-| c | 8 | 80 | FALSE |      3 |           2 |       70 |    3 |     90 |     70 |    240 |      80 |
-| c | 9 | 90 | FALSE |      3 |           3 |       80 |    3 |     90 |     70 |    240 |      80 |
+| g | i     |  v | x | ngroup | row\_number | v\_shift | mean\_v |
+| :- | :---- | -: | -: | -----: | ----------: | -------: | ------: |
+| a | TRUE  | 10 | 1 |      1 |           1 |       NA |      10 |
+| b | TRUE  | 40 | 4 |      2 |           1 |       NA |      45 |
+| b | FALSE | 50 | 5 |      2 |           2 |       40 |      45 |
+| c | FALSE | 70 | 7 |      3 |           1 |       NA |      80 |
+| c | FALSE | 80 | 8 |      3 |           2 |       70 |      80 |
+| c | FALSE | 90 | 9 |      3 |           3 |       80 |      80 |
 
-``` r
-d %.>% 
-  .(id_ops_b %.>% 
-  ordered_ops %.>% 
-  unordered_ops) %.>%
-  knitr::kable(.)
-```
-
-| g | i     |  v | x | ngroup | row\_number | v\_shift | size | max\_v | min\_v | sum\_v | mean\_v |
-| :- | :---- | -: | -: | -----: | ----------: | -------: | ---: | -----: | -----: | -----: | ------: |
-| a | TRUE  | 10 | 1 |      1 |           1 |       NA |    1 |     10 |     10 |     10 |      10 |
-| b | TRUE  | 40 | 4 |      2 |           1 |       NA |    2 |     50 |     40 |     90 |      45 |
-| b | FALSE | 50 | 5 |      2 |           2 |       40 |    2 |     50 |     40 |     90 |      45 |
-| c | FALSE | 70 | 7 |      3 |           1 |       NA |    3 |     90 |     70 |    240 |      80 |
-| c | FALSE | 80 | 8 |      3 |           2 |       70 |    3 |     90 |     70 |    240 |      80 |
-| c | FALSE | 90 | 9 |      3 |           3 |       80 |    3 |     90 |     70 |    240 |      80 |
-
-``` r
-# R default associates left to right so this is:
-# ((d >> a1) >> a2) >> a3
-a1 %.>% a2 %.>% a3
-```
-
-    ## [c('g', 'i', 'v', 'x') ->
-    ##  c('g', 'x', 'v', 'i', 'ngroup', 'row_number', 'v_shift', 'size', 'max_v', 'min_v', 'sum_v', 'mean_v')]
-
-``` r
-# the preferred notation, work in operator space
-d %.>% .(a1 %.>% a2 %.>% a3) %.>% knitr::kable(.)
-```
-
-| g | i     |  v | x | ngroup | row\_number | v\_shift | size | max\_v | min\_v | sum\_v | mean\_v |
-| :- | :---- | -: | -: | -----: | ----------: | -------: | ---: | -----: | -----: | -----: | ------: |
-| a | TRUE  | 10 | 1 |      1 |           1 |       NA |    1 |     10 |     10 |     10 |      10 |
-| b | TRUE  | 40 | 4 |      2 |           1 |       NA |    2 |     50 |     40 |     90 |      45 |
-| b | FALSE | 50 | 5 |      2 |           2 |       40 |    2 |     50 |     40 |     90 |      45 |
-| c | FALSE | 70 | 7 |      3 |           1 |       NA |    3 |     90 |     70 |    240 |      80 |
-| c | FALSE | 80 | 8 |      3 |           2 |       70 |    3 |     90 |     70 |    240 |      80 |
-| c | FALSE | 90 | 9 |      3 |           3 |       80 |    3 |     90 |     70 |    240 |      80 |
+The combination operator `%.>%` is fully associative over the
+combination of data and arrows.
 
 The underlying `rquery` steps compute and check very similar pre and
 post conditions, the arrow class is just making this look more
 explicitly like arrows moving through objects in category.
 
-There is more to be gotten from how the data relates to the schema
-descriptions. I think we have that if we consider the arrows operating
-on data and the arrows operating on schemas we have a faithfull
-embedding (in the sense of Saunders Mac Lane *Categories for the Working
+The data arrows operate over three different value domains:
+
+  - their own arrow space (i.e. composition)
+  - data frames (transforming data)
+  - single table schemas (transforming single table schemas)
+
+I think we have that if we consider the arrows operating on data and the
+arrows operating on single table schemas we have a faithful embedding
+(in the sense of Saunders Mac Lane *Categories for the Working
 Mathematician, 2nd Edition*, Springer, 1997, page 15) from data to
-schemas.
+single table schemas.
