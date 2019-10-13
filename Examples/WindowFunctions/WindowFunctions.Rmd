@@ -43,6 +43,7 @@ ops <- table_description %.>%
   extend(., 
          row_number := row_number(),
          v_shift := shift(v),
+         cumsum_v := cumsum(v),
          orderby = 'x',
          partitionby = 'g') %.>%
   extend(., 
@@ -50,7 +51,7 @@ ops <- table_description %.>%
          size := n(),
          max_v := max(v),
          min_v := min(v),
-         sum_v := mean(v),
+         sum_v := sum(v),
          mean_v := mean(v),
          partitionby = 'g') 
 
@@ -59,6 +60,7 @@ d %.>%
   knitr::kable(.)
 ```
 
+Note: we are taking care in separating opeations beween the ordered block and un-ordered block. In databases, the presence of an order constraint in the window function often switches the operation to a cumulative mode.
 
 One of the benefits of `rquery` is the commands are saved in an object.
 
@@ -78,7 +80,7 @@ And these commands can be re-used and even exported to SQL (including large scal
 
 For a simple demonstration we will use small-scale SQL as realized in SQLite.
 
-Note: we are not demonstrating `shift` in the `R` `SQLite` example. However the [`Python` `SQLite` example](https://github.com/WinVector/data_algebra/blob/master/Examples/WindowFunctions/WindowFunctions.md) does have include this function.
+Note: we are not demonstrating `shift` or `cumsum` in the `R` `SQLite` example. However the [`Python` `SQLite` example](https://github.com/WinVector/data_algebra/blob/master/Examples/WindowFunctions/WindowFunctions.md) does have include this function.
 
 ```{r}
 raw_connection <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
@@ -92,6 +94,7 @@ ops_db <- table_description %.>%
   extend(., 
          row_number := row_number(),
          #v_shift := shift(v),
+         #cumsum_v := cumsum(v),
          orderby = 'x',
          partitionby = 'g') %.>%
   extend(., 
@@ -99,7 +102,7 @@ ops_db <- table_description %.>%
          size := n(),
          max_v := max(v),
          min_v := min(v),
-         sum_v := mean(v),
+         sum_v := sum(v),
          mean_v := mean(v),
          partitionby = 'g') 
 
@@ -178,6 +181,7 @@ all_ops <- id_ops_b %.>%
   extend(., 
          row_number := row_number(),
          #v_shift := shift(v),
+         #cumsum_v := cumsum(v),
          orderby = 'x',
          partitionby = 'g') %.>%
   extend(., 
@@ -185,7 +189,7 @@ all_ops <- id_ops_b %.>%
          size := n(),
          max_v := max(v),
          min_v := min(v),
-         sum_v := mean(v),
+         sum_v := sum(v),
          mean_v := mean(v),
          partitionby = 'g') 
 

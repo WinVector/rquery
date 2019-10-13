@@ -62,6 +62,7 @@ ops <- table_description %.>%
   extend(., 
          row_number := row_number(),
          v_shift := shift(v),
+         cumsum_v := cumsum(v),
          orderby = 'x',
          partitionby = 'g') %.>%
   extend(., 
@@ -69,7 +70,7 @@ ops <- table_description %.>%
          size := n(),
          max_v := max(v),
          min_v := min(v),
-         sum_v := mean(v),
+         sum_v := sum(v),
          mean_v := mean(v),
          partitionby = 'g') 
 
@@ -78,14 +79,19 @@ d %.>%
   knitr::kable(.)
 ```
 
-| g | x |  v | row\_number | v\_shift | ngroup | size | max\_v | min\_v | sum\_v | mean\_v |
-| :- | -: | -: | ----------: | -------: | -----: | ---: | -----: | -----: | -----: | ------: |
-| a | 1 | 10 |           1 |       NA |      1 |    1 |     10 |     10 |     10 |      10 |
-| b | 4 | 40 |           1 |       NA |      2 |    2 |     50 |     40 |     45 |      45 |
-| b | 5 | 50 |           2 |       40 |      2 |    2 |     50 |     40 |     45 |      45 |
-| c | 7 | 70 |           1 |       NA |      3 |    3 |     90 |     70 |     80 |      80 |
-| c | 8 | 80 |           2 |       70 |      3 |    3 |     90 |     70 |     80 |      80 |
-| c | 9 | 90 |           3 |       80 |      3 |    3 |     90 |     70 |     80 |      80 |
+| g | x |  v | row\_number | v\_shift | cumsum\_v | ngroup | size | max\_v | min\_v | sum\_v | mean\_v |
+| :- | -: | -: | ----------: | -------: | --------: | -----: | ---: | -----: | -----: | -----: | ------: |
+| a | 1 | 10 |           1 |       NA |        10 |      1 |    1 |     10 |     10 |     10 |      10 |
+| b | 4 | 40 |           1 |       NA |        40 |      2 |    2 |     50 |     40 |     90 |      45 |
+| b | 5 | 50 |           2 |       40 |        90 |      2 |    2 |     50 |     40 |     90 |      45 |
+| c | 7 | 70 |           1 |       NA |        70 |      3 |    3 |     90 |     70 |    240 |      80 |
+| c | 8 | 80 |           2 |       70 |       150 |      3 |    3 |     90 |     70 |    240 |      80 |
+| c | 9 | 90 |           3 |       80 |       240 |      3 |    3 |     90 |     70 |    240 |      80 |
+
+Note: we are taking care in separating opeations beween the ordered
+block and un-ordered block. In databases, the presence of an order
+constraint in the window function often switches the operation to a
+cumulative mode.
 
 One of the benefits of `rquery` is the commands are saved in an object.
 
@@ -100,6 +106,7 @@ cat(format(ops))
     ##  extend(.,
     ##   row_number := row_number(),
     ##   v_shift := shift(v),
+    ##   cumsum_v := cumsum(v),
     ##   partitionby = c('g'),
     ##   orderby = c('x'),
     ##   reverse = c()) %.>%
@@ -108,7 +115,7 @@ cat(format(ops))
     ##   size := n(),
     ##   max_v := max(v),
     ##   min_v := min(v),
-    ##   sum_v := mean(v),
+    ##   sum_v := sum(v),
     ##   mean_v := mean(v),
     ##   partitionby = c('g'),
     ##   orderby = c(),
@@ -130,8 +137,8 @@ large scale SQL such as PostgreSQL, Apache Spark, or Google Big Query).
 For a simple demonstration we will use small-scale SQL as realized in
 SQLite.
 
-Note: we are not demonstrating `shift` in the `R` `SQLite` example.
-However the [`Python` `SQLite`
+Note: we are not demonstrating `shift` or `cumsum` in the `R` `SQLite`
+example. However the [`Python` `SQLite`
 example](https://github.com/WinVector/data_algebra/blob/master/Examples/WindowFunctions/WindowFunctions.md)
 does have include this function.
 
@@ -147,6 +154,7 @@ ops_db <- table_description %.>%
   extend(., 
          row_number := row_number(),
          #v_shift := shift(v),
+         #cumsum_v := cumsum(v),
          orderby = 'x',
          partitionby = 'g') %.>%
   extend(., 
@@ -154,7 +162,7 @@ ops_db <- table_description %.>%
          size := n(),
          max_v := max(v),
          min_v := min(v),
-         sum_v := mean(v),
+         sum_v := sum(v),
          mean_v := mean(v),
          partitionby = 'g') 
 
@@ -180,7 +188,7 @@ cat(sql1)
     ##  COUNT ( 1 ) OVER (  PARTITION BY `g` ) AS `size`,
     ##  max ( `v` ) OVER (  PARTITION BY `g` ) AS `max_v`,
     ##  min ( `v` ) OVER (  PARTITION BY `g` ) AS `min_v`,
-    ##  AVG ( `v` ) OVER (  PARTITION BY `g` ) AS `sum_v`,
+    ##  sum ( `v` ) OVER (  PARTITION BY `g` ) AS `sum_v`,
     ##  AVG ( `v` ) OVER (  PARTITION BY `g` ) AS `mean_v`
     ## FROM (
     ##  SELECT
@@ -195,8 +203,8 @@ cat(sql1)
     ##    `v`
     ##   FROM
     ##    `d`
-    ##   ) tsql_42207674840487243953_0000000000
-    ##  ) tsql_42207674840487243953_0000000001
+    ##   ) tsql_66217597165845365095_0000000000
+    ##  ) tsql_66217597165845365095_0000000001
 
 And we can execute this SQL either to materialize a remote result (which
 involves no data motion, as we send the SQL commands to the database,
@@ -212,11 +220,11 @@ knitr::kable(res1_db)
 | g | x |  v | row\_number | size | max\_v | min\_v | sum\_v | mean\_v |
 | :- | -: | -: | ----------: | ---: | -----: | -----: | -----: | ------: |
 | a | 1 | 10 |           1 |    1 |     10 |     10 |     10 |      10 |
-| b | 4 | 40 |           1 |    2 |     50 |     40 |     45 |      45 |
-| b | 5 | 50 |           2 |    2 |     50 |     40 |     45 |      45 |
-| c | 7 | 70 |           1 |    3 |     90 |     70 |     80 |      80 |
-| c | 8 | 80 |           2 |    3 |     90 |     70 |     80 |      80 |
-| c | 9 | 90 |           3 |    3 |     90 |     70 |     80 |      80 |
+| b | 4 | 40 |           1 |    2 |     50 |     40 |     90 |      45 |
+| b | 5 | 50 |           2 |    2 |     50 |     40 |     90 |      45 |
+| c | 7 | 70 |           1 |    3 |     90 |     70 |    240 |      80 |
+| c | 8 | 80 |           2 |    3 |     90 |     70 |    240 |      80 |
+| c | 9 | 90 |           3 |    3 |     90 |     70 |    240 |      80 |
 
 Notice we didn’t calculate the group-id `rgroup` in the `SQL` version.
 This is because this is a much less common window function (and not
@@ -317,6 +325,7 @@ all_ops <- id_ops_b %.>%
   extend(., 
          row_number := row_number(),
          #v_shift := shift(v),
+         #cumsum_v := cumsum(v),
          orderby = 'x',
          partitionby = 'g') %.>%
   extend(., 
@@ -324,7 +333,7 @@ all_ops <- id_ops_b %.>%
          size := n(),
          max_v := max(v),
          min_v := min(v),
-         sum_v := mean(v),
+         sum_v := sum(v),
          mean_v := mean(v),
          partitionby = 'g') 
 
@@ -346,11 +355,11 @@ d %.>%
 | g |  v | x | ngroup | row\_number | size | max\_v | min\_v | sum\_v | mean\_v |
 | :- | -: | -: | -----: | ----------: | ---: | -----: | -----: | -----: | ------: |
 | a | 10 | 1 |      1 |           1 |    1 |     10 |     10 |     10 |      10 |
-| b | 40 | 4 |      2 |           1 |    2 |     50 |     40 |     45 |      45 |
-| b | 50 | 5 |      2 |           2 |    2 |     50 |     40 |     45 |      45 |
-| c | 70 | 7 |      3 |           1 |    3 |     90 |     70 |     80 |      80 |
-| c | 80 | 8 |      3 |           2 |    3 |     90 |     70 |     80 |      80 |
-| c | 90 | 9 |      3 |           3 |    3 |     90 |     70 |     80 |      80 |
+| b | 40 | 4 |      2 |           1 |    2 |     50 |     40 |     90 |      45 |
+| b | 50 | 5 |      2 |           2 |    2 |     50 |     40 |     90 |      45 |
+| c | 70 | 7 |      3 |           1 |    3 |     90 |     70 |    240 |      80 |
+| c | 80 | 8 |      3 |           2 |    3 |     90 |     70 |    240 |      80 |
+| c | 90 | 9 |      3 |           3 |    3 |     90 |     70 |    240 |      80 |
 
 Or in the database (via automatic `SQL` generation).
 
@@ -363,11 +372,11 @@ all_ops %.>%
 | g | x |  v | ngroup | row\_number | size | max\_v | min\_v | sum\_v | mean\_v |
 | :- | -: | -: | -----: | ----------: | ---: | -----: | -----: | -----: | ------: |
 | a | 1 | 10 |      1 |           1 |    1 |     10 |     10 |     10 |      10 |
-| b | 4 | 40 |      2 |           1 |    2 |     50 |     40 |     45 |      45 |
-| b | 5 | 50 |      2 |           2 |    2 |     50 |     40 |     45 |      45 |
-| c | 7 | 70 |      3 |           1 |    3 |     90 |     70 |     80 |      80 |
-| c | 8 | 80 |      3 |           2 |    3 |     90 |     70 |     80 |      80 |
-| c | 9 | 90 |      3 |           3 |    3 |     90 |     70 |     80 |      80 |
+| b | 4 | 40 |      2 |           1 |    2 |     50 |     40 |     90 |      45 |
+| b | 5 | 50 |      2 |           2 |    2 |     50 |     40 |     90 |      45 |
+| c | 7 | 70 |      3 |           1 |    3 |     90 |     70 |    240 |      80 |
+| c | 8 | 80 |      3 |           2 |    3 |     90 |     70 |    240 |      80 |
+| c | 9 | 90 |      3 |           3 |    3 |     90 |     70 |    240 |      80 |
 
 ``` r
 # clean up
