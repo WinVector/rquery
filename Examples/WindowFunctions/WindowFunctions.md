@@ -4,12 +4,17 @@ WindowFunctions
 John Mount October 13,
 2019
 
-[This](https://github.com/WinVector/data_algebra/blob/master/Examples/WindowFunctions/WindowFunctions.md)
+[This](https://github.com/WinVector/rquery/blob/master/Examples/WindowFunctions/WindowFunctions.md)
 is an tutorial on how to use window functions in either the `R`
 [`rquery`](https://github.com/WinVector/rquery) package, or in the
 `Python` [`data_algebra`](https://github.com/WinVector/data_algebra)
-package (`R` example [here](), `Python` example
+package (`R` example
+[here](https://github.com/WinVector/rquery/blob/master/Examples/WindowFunctions/WindowFunctions.md),
+`Python` example
 [here](https://github.com/WinVector/data_algebra/blob/master/Examples/WindowFunctions/WindowFunctions.md)).
+
+(Note: these examples require at least `rqdatatable` `1.2.3`, and
+`rquery` `1.3.9` which may not be up on CRAN yet.)
 
 The [`rquery`](https://github.com/WinVector/rquery) provides a
 simplified (though verbose) unified interface to Pandas and SQL data
@@ -190,8 +195,8 @@ cat(sql1)
     ##    `v`
     ##   FROM
     ##    `d`
-    ##   ) tsql_23115959802959697384_0000000000
-    ##  ) tsql_23115959802959697384_0000000001
+    ##   ) tsql_42207674840487243953_0000000000
+    ##  ) tsql_42207674840487243953_0000000001
 
 And we can execute this SQL either to materialize a remote result (which
 involves no data motion, as we send the SQL commands to the database,

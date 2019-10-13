@@ -6,7 +6,9 @@ output: github_document
 John Mount
 October 13, 2019
 
-[This](https://github.com/WinVector/data_algebra/blob/master/Examples/WindowFunctions/WindowFunctions.md) is an tutorial on how to use window functions in either the `R` [`rquery`](https://github.com/WinVector/rquery) package, or in the `Python` [`data_algebra`](https://github.com/WinVector/data_algebra) package (`R` example [here](), `Python` example [here](https://github.com/WinVector/data_algebra/blob/master/Examples/WindowFunctions/WindowFunctions.md)).
+[This](https://github.com/WinVector/rquery/blob/master/Examples/WindowFunctions/WindowFunctions.md) is an tutorial on how to use window functions in either the `R` [`rquery`](https://github.com/WinVector/rquery) package, or in the `Python` [`data_algebra`](https://github.com/WinVector/data_algebra) package (`R` example [here](https://github.com/WinVector/rquery/blob/master/Examples/WindowFunctions/WindowFunctions.md), `Python` example [here](https://github.com/WinVector/data_algebra/blob/master/Examples/WindowFunctions/WindowFunctions.md)).
+
+(Note: these examples require at least `rqdatatable` `1.2.3`, and `rquery` `1.3.9` which may not be up on CRAN yet.)
 
 
 The [`rquery`](https://github.com/WinVector/rquery) provides a simplified (though verbose) unified interface to Pandas and SQL data transforms, including windows functions. (Note: for a `Python` of this please see [here](https://github.com/WinVector/data_algebra/blob/master/Examples/WindowFunctions/WindowFunctions.md).)
