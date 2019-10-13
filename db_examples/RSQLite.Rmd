@@ -130,3 +130,8 @@ dq %.>%
 
 ![](RSQLite_diagram.svg)
 
+```{r}
+# clean up
+DBI::dbDisconnect(raw_connection)
+```
+

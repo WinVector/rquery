@@ -35,7 +35,7 @@ rq_copy_to(db, 'd',
             overwrite = TRUE)
 ```
 
-    ## [1] "table(`d`; subjectID, surveyCategory, assessmentTotal, irrelevantCol1, irrelevantCol2)"
+    ## [1] "mk_td(\"d\", c( \"subjectID\", \"surveyCategory\", \"assessmentTotal\", \"irrelevantCol1\", \"irrelevantCol2\"))"
 
 ``` r
 # produce a hande to existing table
@@ -80,7 +80,7 @@ class(result)
 result
 ```
 
-    ## [1] "table(`rquery_mat_40827193001928517693_0000000000`; subjectID, diagnosis, probability)"
+    ## [1] "mk_td(\"rquery_mat_26830388106340169446_0000000000\", c( \"subjectID\", \"diagnosis\", \"probability\"))"
 
 ``` r
 DBI::dbReadTable(db$connection, result$table_name) %.>%
@@ -160,14 +160,14 @@ cat(to_sql(dq, db, source_limit = 1000))
             `assessmentTotal`
            FROM
             `d` LIMIT 1000
-           ) tsql_60675901566361948073_0000000000
-          ) tsql_60675901566361948073_0000000001
-         ) tsql_60675901566361948073_0000000002
-       ) tsql_60675901566361948073_0000000003
+           ) tsql_08270245227387677524_0000000000
+          ) tsql_08270245227387677524_0000000001
+         ) tsql_08270245227387677524_0000000002
+       ) tsql_08270245227387677524_0000000003
        WHERE `row_number` <= 1
-      ) tsql_60675901566361948073_0000000004
-     ) tsql_60675901566361948073_0000000005
-    ) tsql_60675901566361948073_0000000006 ORDER BY `subjectID`
+      ) tsql_08270245227387677524_0000000004
+     ) tsql_08270245227387677524_0000000005
+    ) tsql_08270245227387677524_0000000006 ORDER BY `subjectID`
 
 The query is large, but due to its regular structure it should be very
 amenable to query optimization.
@@ -215,28 +215,34 @@ The flow itself is represented as follows:
 cat(format(dq))
 ```
 
-    table(`d`; 
-      subjectID,
-      surveyCategory,
-      assessmentTotal,
-      irrelevantCol1,
-      irrelevantCol2) %.>%
+    mk_td("d", c(
+      "subjectID",
+      "surveyCategory",
+      "assessmentTotal",
+      "irrelevantCol1",
+      "irrelevantCol2")) %.>%
      extend(.,
       probability := exp(assessmentTotal * 0.237)) %.>%
      extend(.,
       probability := probability / sum(probability),
-      p= subjectID) %.>%
+      partitionby = c('subjectID'),
+      orderby = c(),
+      reverse = c()) %.>%
      extend(.,
       row_number := row_number(),
-      p= subjectID,
-      o= "probability" DESC, "surveyCategory") %.>%
+      partitionby = c('subjectID'),
+      orderby = c('probability', 'surveyCategory'),
+      reverse = c('probability')) %.>%
      select_rows(.,
        row_number <= 1) %.>%
-     rename(.,
+     rename_columns(.,
       c('diagnosis' = 'surveyCategory')) %.>%
-     select_columns(.,
-       subjectID, diagnosis, probability) %.>%
-     orderby(., subjectID)
+     select_columns(., c(
+       "subjectID", "diagnosis", "probability")) %.>%
+     order_rows(.,
+      c('subjectID'),
+      reverse = c(),
+      limit = NULL)
 
 ``` r
 dq %.>%
@@ -247,3 +253,8 @@ dq %.>%
 ```
 
 ![](RSQLite_diagram.svg)
+
+``` r
+# clean up
+DBI::dbDisconnect(raw_connection)
+```
