@@ -4,7 +4,7 @@ Arrow
 Example of data transforms as categorical arrows ([`R`
 version](https://github.com/WinVector/rquery/blob/master/Examples/Arrow/Arrow.md)
 [`Python`
-version](https://github.com/WinVector/rquery/blob/master/Examples/Arrow/Arrow.md)).
+version](https://github.com/WinVector/data_algebra/blob/master/Examples/Arrow/Arrow.md)).
 
 (For ideas on applying category theory to science and data, please see
 David I Spivak, *Category Theory for the Sciences*, MIT Press, 2014.)
@@ -21,7 +21,7 @@ derived columns.
 
 An interesting point is: while the `rquery` operators are fairly
 generic: the operator pipelines that map a single table to a single
-table form a category over a nice set of objects.
+table form the arrows of a category over a nice set of objects.
 
 The objects of this category can be either of:
 
@@ -32,7 +32,7 @@ I will take a liberty and call these objects (with or without types)
 “single table schemas.”
 
 Our setup is easiest to explain with an example. Let’s work an example
-in `Python`.
+in `R`.
 
 First we import our packages and instantiate an example data frame.
 
@@ -179,7 +179,7 @@ print(a1)
     ##  c('g', 'x', 'v', 'i', 'ngroup')]
 
 The arrow has a more detailed presentation, which is the realization of
-the operator pipeline.
+the operator pipeline as code.
 
 ``` r
 print(a1, verbose = TRUE)
@@ -204,6 +204,11 @@ print(a1, verbose = TRUE)
     ##     ngroup := row_number()),
     ##   jointype = "LEFT", by = c('g'))
     ## )
+
+We can think of our arrows (or obvious mappings of them) as being able
+to be applied to: \* More arrows of the same type (composition). \* Data
+(action or application). \* Single table schemas (managing pre and post
+conditions).
 
 Arrows can be composed or applied by using the notation `d %.>% a1`.
 Note: we are not thinking of `%.>%` itself as an arrow, but as a symbol
@@ -246,7 +251,7 @@ print(a1b)
     ## [c('g', 'x', 'v', 'i') ->
     ##  c('g', 'x', 'v', 'i', 'ngroup')]
 
-However, the `a1b` arrow represents a different operation:
+However, the `a1b` arrow represents a different operation than `a1`:
 
 ``` r
 d %.>%
@@ -287,7 +292,7 @@ print(a1, verbose = TRUE)
     ##   jointype = "LEFT", by = c('g'))
     ## )
 
-The arrows compose exactly when the pre-conditions meet the post
+The arrows can be composed exactly when the pre-conditions meet the post
 conditions.
 
 Here are two examples of violating the pre and post conditions. The
@@ -404,6 +409,9 @@ print(
     ##   reverse = c())
     ## )
 
+We can add yet another set of operations to our pipeline: computing a
+per-group variable `mean`.
+
 ``` r
 unordered_ops = mk_td('d3', colnames(ordered_ops)) %.>%
     extend(.,
@@ -418,12 +426,18 @@ print(a3)
     ## [c('g', 'x', 'v', 'i', 'ngroup', 'row_number', 'v_shift') ->
     ##  c('g', 'x', 'v', 'i', 'ngroup', 'row_number', 'v_shift', 'mean_v')]
 
+The three arrows can form a composite pipeline that computes a number of
+interesting per-group statistics all at once.
+
 ``` r
 a1 %.>% a2 %.>% a3
 ```
 
     ## [c('g', 'i', 'v', 'x') ->
     ##  c('g', 'x', 'v', 'i', 'ngroup', 'row_number', 'v_shift', 'mean_v')]
+
+And, we the methods are fully associative (can be grouped in any
+sequence that is still in the original order).
 
 ``` r
 ops1 <- (a1 %.>% a2) %.>% a3
@@ -433,11 +447,17 @@ ops1
     ## [c('g', 'i', 'v', 'x') ->
     ##  c('g', 'x', 'v', 'i', 'ngroup', 'row_number', 'v_shift', 'mean_v')]
 
+(Note: we are using the `.()` notation to signal the expression `a2 %.>%
+a3` is to be evaluated *before* being treated as a step in the `wrapr`
+pipeline. This is required as this `R`-pipe has delayed evaluation of
+the right arguments.)
+
 ``` r
 ops2 <- a1 %.>% .(a2 %.>% a3)
 ```
 
-All three compositions are in fact the same arrow.
+All the compositions are in fact the same arrow, as we can see by using
+it on data.
 
 ``` r
 d %.>%

@@ -3,13 +3,13 @@ title: "Arrow"
 output: github_document
 ---
 
-Example of data transforms as categorical arrows ([`R` version](https://github.com/WinVector/rquery/blob/master/Examples/Arrow/Arrow.md) [`Python` version](https://github.com/WinVector/rquery/blob/master/Examples/Arrow/Arrow.md)).
+Example of data transforms as categorical arrows ([`R` version](https://github.com/WinVector/rquery/blob/master/Examples/Arrow/Arrow.md) [`Python` version](https://github.com/WinVector/data_algebra/blob/master/Examples/Arrow/Arrow.md)).
 
 (For ideas on applying category theory to science and data, please see David I Spivak, *Category Theory for the Sciences*, MIT Press, 2014.)
 
 The [R `rquery` package](https://github.com/WinVector/rquery/) supplies a number of operators for working with tabular data.  The operators are picked in reference to [Codd's relational algebra](https://en.wikipedia.org/wiki/Relational_algebra), though (as with [`SQL`](https://en.wikipedia.org/wiki/SQL)) we do not insist on table rows being unique. Many of the operations are simple: selecting rows, selecting columns, joining tables.  Two of the operations stand out: projecting or aggregating rows, and extending tables with new derived columns.
 
-An interesting point is: while the `rquery` operators are fairly generic: the operator pipelines that map a single table to a single table form a category over a nice set of objects.
+An interesting point is: while the `rquery` operators are fairly generic: the operator pipelines that map a single table to a single table form the arrows of a category over a nice set of objects.
 
 The objects of this category can be either of:
 
@@ -18,7 +18,7 @@ The objects of this category can be either of:
  
 I will take a liberty and call these objects (with or without types) "single table schemas."
 
-Our setup is easiest to explain with an example.  Let's work an example in `Python`.
+Our setup is easiest to explain with an example.  Let's work an example in `R`.
 
 First we import our packages and instantiate an example data frame.
 
@@ -110,11 +110,16 @@ These are what are presented in the succinct presentation of the arrow.
 print(a1)
 ```
 
-The arrow has a more detailed presentation, which is the realization of the operator pipeline.
+The arrow has a more detailed presentation, which is the realization of the operator pipeline as code.
 
 ```{r}
 print(a1, verbose = TRUE)
 ```
+
+We can think of our arrows (or obvious mappings of them) as being able to be applied to:
+  * More arrows of the same type (composition).
+  * Data (action or application).
+  * Single table schemas (managing pre and post conditions).
 
 Arrows can be composed or applied by using the notation `d %.>% a1`. Note: we are not thinking of `%.>%` itself as an arrow, but as a symbol for composition of arrows.
 
@@ -138,7 +143,7 @@ a1b <- arrow(
 print(a1b)
 ```
 
-However, the `a1b` arrow represents a different operation:
+However, the `a1b` arrow represents a different operation than `a1`:
 
 ```{r}
 d %.>%
@@ -151,7 +156,7 @@ d %.>%
 print(a1, verbose = TRUE)
 ```
 
-The arrows compose exactly when the pre-conditions meet the post conditions.  
+The arrows can be composed exactly when the pre-conditions meet the post conditions.  
 
 Here are two examples of violating the pre and post conditions.  The point is, the categorical conditions enforce the checking for us.  We can't compose arrows that don't match domain and range.  Up until now we have been setting things up to make the categorical machinery work, now this machinery will work for us and make the job of managing complex data transformations easier.
 
@@ -219,6 +224,7 @@ print(
   verbose = TRUE)
 ```
 
+We can add yet another set of operations to our pipeline: computing a per-group variable `mean`.
 
 ```{r}
 unordered_ops = mk_td('d3', colnames(ordered_ops)) %.>%
@@ -231,20 +237,26 @@ a3 = arrow(unordered_ops)
 print(a3)
 ```
 
+The three arrows can form a composite pipeline that computes a number of interesting per-group statistics all at once.
+
 ```{r}
 a1 %.>% a2 %.>% a3
 ```
+
+And, we the methods are fully associative (can be grouped in any sequence that is still in the original order). 
 
 ```{r}
 ops1 <- (a1 %.>% a2) %.>% a3
 ops1
 ```
 
+(Note: we are using the `.()` notation to  signal the expression `a2 %.>% a3` is to be evaluated *before* being treated as a step in the `wrapr` pipeline.  This is required as this `R`-pipe has delayed evaluation of the right arguments.)
+
 ```{r}
 ops2 <- a1 %.>% .(a2 %.>% a3)
 ```
 
-All three compositions are in fact the same arrow.
+All the compositions are in fact the same arrow, as we can see by using it on data.
 
 ```{r}
 d %.>%
