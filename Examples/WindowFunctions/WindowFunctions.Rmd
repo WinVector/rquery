@@ -1,0 +1,217 @@
+---
+title: "WindowFunctions"
+output: github_document
+---
+
+John Mount
+October 13, 2019
+
+[This](https://github.com/WinVector/data_algebra/blob/master/Examples/WindowFunctions/WindowFunctions.md) is an tutorial on how to use window functions in either the `R` [`rquery`](https://github.com/WinVector/rquery) package, or in the `Python` [`data_algebra`](https://github.com/WinVector/data_algebra) package (`R` example [here](), `Python` example [here](https://github.com/WinVector/data_algebra/blob/master/Examples/WindowFunctions/WindowFunctions.md)).
+
+
+The [`rquery`](https://github.com/WinVector/rquery) provides a simplified (though verbose) unified interface to Pandas and SQL data transforms, including windows functions. (Note: for a `Python` of this please see [here](https://github.com/WinVector/data_algebra/blob/master/Examples/WindowFunctions/WindowFunctions.md).)
+
+Let's work an example. First bring in our packages.
+
+```{r}
+library(wrapr)
+library(rquery)
+library(rqdatatable)
+```
+
+Now some example data.
+
+```{r}
+d <- data.frame(
+  g = c('a', 'b', 'b', 'c', 'c', 'c'),
+  x = c(1, 4, 5, 7, 8, 9),
+  v = c(10, 40, 50, 70, 80, 90),
+  stringsAsFactors = FALSE)
+
+knitr::kable(d)
+```
+
+And we can run a number of ordered and un-ordered window functions (the distinction is given by if there is an `orderby` argument present).
+
+```{r}
+table_description = local_td(d)
+shift <- data.table::shift
+
+ops <- table_description %.>%
+  extend(., 
+         row_number := row_number(),
+         v_shift := shift(v),
+         orderby = 'x',
+         partitionby = 'g') %.>%
+  extend(., 
+         ngroup := ngroup(),
+         size := n(),
+         max_v := max(v),
+         min_v := min(v),
+         sum_v := mean(v),
+         mean_v := mean(v),
+         partitionby = 'g') 
+
+d %.>%
+  ops %.>%
+  knitr::kable(.)
+```
+
+
+One of the benefits of `rquery` is the commands are saved in an object.
+
+```{r}
+cat(format(ops))
+```
+
+We can also present a diagram of the operator chain.
+
+```{r}
+ops %.>%
+  op_diagram(.) %.>% 
+  DiagrammeR::grViz(.)
+```
+
+And these commands can be re-used and even exported to SQL (including large scale SQL such as PostgreSQL, Apache Spark, or Google Big Query).
+
+For a simple demonstration we will use small-scale SQL as realized in SQLite.
+
+Note: we are not demonstrating `shift` in the `R` `SQLite` example. However the [`Python` `SQLite` example](https://github.com/WinVector/data_algebra/blob/master/Examples/WindowFunctions/WindowFunctions.md) does have include this function.
+
+```{r}
+raw_connection <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+RSQLite::initExtension(raw_connection)
+db <- rquery_db_info(
+  connection = raw_connection,
+  is_dbi = TRUE,
+  connection_options = rq_connection_tests(raw_connection))
+
+ops_db <- table_description %.>%
+  extend(., 
+         row_number := row_number(),
+         #v_shift := shift(v),
+         orderby = 'x',
+         partitionby = 'g') %.>%
+  extend(., 
+         # ngroup := ngroup(),
+         size := n(),
+         max_v := max(v),
+         min_v := min(v),
+         sum_v := mean(v),
+         mean_v := mean(v),
+         partitionby = 'g') 
+
+rq_copy_to(db, 'd',
+           d,
+           temporary = TRUE, 
+           overwrite = TRUE)
+
+sql1 <- to_sql(ops_db, db)
+
+cat(sql1)
+```
+
+And we can execute this SQL either to materialize a remote result (which involves no data motion, as we send the SQL commands to the database, not move the data to/from R), or to bring a result back from the database to R.
+
+```{r}
+res1_db <- execute(db, ops_db)
+
+knitr::kable(res1_db)
+```
+
+Notice we didn't calculate the group-id `rgroup` in the `SQL` version.  This is because this is a much less common window function (and not often used in applications). This is also only interesting when we are using a composite key (else the single key column is already the per-group id). So not all data_algebra pipelines can run in all environments. However, we can compute (arbitrary) group IDs in a domain independent manner as follows.
+
+
+```{r}
+id_ops_a = table_description %.>%
+  project(.,
+          groupby = 'g') %.>%
+  extend(.,
+         ngroup:= row_number(),
+         orderby = 'g')
+
+id_ops_b = table_description %.>%
+    natural_join(.,
+                 id_ops_a, by = 'g', jointype = 'LEFT')
+
+cat(format(id_ops_b))
+```
+
+Here we land the result in the database, without moving data through R.
+
+```{r}
+table_2 <- materialize(db, id_ops_b, 'remote_result')
+
+table_2
+```
+
+And we later copy it over to look at.
+
+```{r}
+res2_db <- execute(db, table_2)
+
+knitr::kable(res2_db)
+```
+
+And we can use the same pipeline in R.
+
+```{r}
+d %.>% 
+  id_ops_b %.>%
+  knitr::kable(.)
+```
+
+And we can diagram the group labeling operation.
+
+```{r}
+id_ops_b %.>%
+  op_diagram(., merge_tables = TRUE) %.>% 
+  DiagrammeR::grViz(.)
+```
+
+Or all the steps in one sequence.
+
+```{r}
+all_ops <- id_ops_b %.>%
+  extend(., 
+         row_number := row_number(),
+         #v_shift := shift(v),
+         orderby = 'x',
+         partitionby = 'g') %.>%
+  extend(., 
+         # ngroup := ngroup(),
+         size := n(),
+         max_v := max(v),
+         min_v := min(v),
+         sum_v := mean(v),
+         mean_v := mean(v),
+         partitionby = 'g') 
+
+all_ops %.>%
+  op_diagram(., merge_tables = TRUE) %.>% 
+  DiagrammeR::grViz(.)
+```
+
+
+And we can run this whole sequence with `data.table`.
+
+```{r}
+d %.>% 
+  all_ops %.>%
+  knitr::kable(.)
+```
+
+Or in the database (via automatic `SQL` generation).
+
+```{r}
+all_ops %.>%
+  execute(db, .) %.>%
+  knitr::kable(.)
+```
+
+
+```{r}
+# clean up
+DBI::dbDisconnect(raw_connection)
+```
+
