@@ -110,6 +110,12 @@ These are what are presented in the succinct presentation of the arrow.
 print(a1)
 ```
 
+The arrow has a more detailed presentation, which is the realization of the operator pipeline.
+
+```{r}
+print(a1, verbose = TRUE)
+```
+
 Arrows can be composed or applied by using the notation `d %.>% a1`. Note: we are not thinking of `%.>%` itself as an arrow, but as a symbol for composition of arrows.
 
 ```{r}
@@ -117,6 +123,8 @@ d %.>%
   a1 %.>%
   knitr::kable(.)
 ```
+
+Up until now we have been showing how we work to obey the category theory axioms.  From here on we look at what does category theory do for us.  What it does is check correct composition and ensure full associativity of operations.
 
 As is typical in category theory, there can be more than one arrow from a given object to given object.  For example the following is a different arrow with the same start and end.
 

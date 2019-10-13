@@ -178,6 +178,33 @@ print(a1)
     ## [c('g', 'i', 'v', 'x') ->
     ##  c('g', 'x', 'v', 'i', 'ngroup')]
 
+The arrow has a more detailed presentation, which is the realization of
+the operator pipeline.
+
+``` r
+print(a1, verbose = TRUE)
+```
+
+    ## [c('g', 'i', 'v', 'x') ->
+    ##  c('g', 'x', 'v', 'i', 'ngroup')](
+    ## mk_td("d", c(
+    ##   "g",
+    ##   "x",
+    ##   "v",
+    ##   "i")) %.>%
+    ##  natural_join(.,
+    ##   mk_td("d", c(
+    ##     "g",
+    ##     "x",
+    ##     "v",
+    ##     "i")) %.>%
+    ##    project(., ,
+    ##     groupby = c('g')) %.>%
+    ##    extend(.,
+    ##     ngroup := row_number()),
+    ##   jointype = "LEFT", by = c('g'))
+    ## )
+
 Arrows can be composed or applied by using the notation `d %.>% a1`.
 Note: we are not thinking of `%.>%` itself as an arrow, but as a symbol
 for composition of arrows.
@@ -196,6 +223,11 @@ d %.>%
 | c | FALSE | 70 | 7 |      3 |
 | c | FALSE | 80 | 8 |      3 |
 | c | FALSE | 90 | 9 |      3 |
+
+Up until now we have been showing how we work to obey the category
+theory axioms. From here on we look at what does category theory do for
+us. What it does is check correct composition and ensure full
+associativity of operations.
 
 As is typical in category theory, there can be more than one arrow from
 a given object to given object. For example the following is a different
