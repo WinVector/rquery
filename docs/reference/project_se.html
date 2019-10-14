@@ -150,9 +150,11 @@
     <p>project data by grouping, and adding aggregate columns.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>project_se</span>(<span class='no'>source</span>, <span class='no'>groupby</span>, <span class='no'>assignments</span>, <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span>())
+    <pre class="usage"><span class='fu'>project_se</span>(<span class='no'>source</span>, <span class='no'>assignments</span>, <span class='no'>...</span>, <span class='kw'>groupby</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(),
+  <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span>())
 
-<span class='fu'>aggregate_se</span>(<span class='no'>source</span>, <span class='no'>groupby</span>, <span class='no'>assignments</span>, <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span>())</pre>
+<span class='fu'>aggregate_se</span>(<span class='no'>source</span>, <span class='no'>assignments</span>, <span class='no'>...</span>, <span class='kw'>groupby</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(),
+  <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span>())</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -162,12 +164,16 @@
       <td><p>source to select from.</p></td>
     </tr>
     <tr>
-      <th>groupby</th>
-      <td><p>grouping columns.</p></td>
-    </tr>
-    <tr>
       <th>assignments</th>
       <td><p>new column assignment expressions.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>not used, force later arguments to be by name</p></td>
+    </tr>
+    <tr>
+      <th>groupby</th>
+      <td><p>grouping columns.</p></td>
     </tr>
     <tr>
       <th>env</th>

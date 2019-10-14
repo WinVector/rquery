@@ -1,5 +1,5 @@
 
-# rquery 1.3.9 2019/10/06
+# rquery 1.3.9 2019/10/13
 
  * Tune yaml path.
  * Fix project signatures.

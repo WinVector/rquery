@@ -80,7 +80,7 @@ And these commands can be re-used and even exported to SQL (including large scal
 
 For a simple demonstration we will use small-scale SQL as realized in SQLite.
 
-Note: we are not demonstrating `shift` or `cumsum` in the `R` `SQLite` example. However the [`Python` `SQLite` example](https://github.com/WinVector/data_algebra/blob/master/Examples/WindowFunctions/WindowFunctions.md) does have include this function.
+Note: we are not demonstrating `shift` in the `R` `SQLite` example. However the [`Python` `SQLite` example](https://github.com/WinVector/data_algebra/blob/master/Examples/WindowFunctions/WindowFunctions.md) does have include this function.
 
 ```{r}
 raw_connection <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
@@ -94,7 +94,7 @@ ops_db <- table_description %.>%
   extend(., 
          row_number := row_number(),
          #v_shift := shift(v),
-         #cumsum_v := cumsum(v),
+         cumsum_v := cumsum(v),
          orderby = 'x',
          partitionby = 'g') %.>%
   extend(., 
@@ -181,7 +181,7 @@ all_ops <- id_ops_b %.>%
   extend(., 
          row_number := row_number(),
          #v_shift := shift(v),
-         #cumsum_v := cumsum(v),
+         cumsum_v := cumsum(v),
          orderby = 'x',
          partitionby = 'g') %.>%
   extend(., 

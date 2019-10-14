@@ -192,6 +192,11 @@ rquery_db_info <- function(...,
       pre_sql_fn("AVG"),
       pre_sql_token("("),
       3, # the value column
+      pre_sql_token(")")),
+    "cumsum" = list( # call is 1:n 2:( 3:value 4:)
+      pre_sql_fn("SUM"),
+      pre_sql_token("("),
+      3, # the value column
       pre_sql_token(")"))
   )
   r$tree_rewriter <- tree_rewriter
