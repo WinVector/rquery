@@ -1,0 +1,75 @@
+---
+title: "JoinArrow"
+output: github_document
+---
+
+Converting a join to a an arrow ([`R` version](https://github.com/WinVector/rquery/blob/master/Examples/Arrow/JoinArrow.md), [`Python` version](https://github.com/WinVector/data_algebra/blob/master/Examples/Arrow/JoinArrow.md)).
+
+```{r}
+library(wrapr)
+library(rquery)
+library(rqdatatable)
+```
+
+```{r}
+d1 <- wrapr::build_frame(
+   "key"  , "x" |
+     "a"  , 1   |
+     "b"  , 2   )
+
+knitr::kable(d1)
+```
+
+
+```{r}
+table_1_description <- local_td(d1, name='d1')
+
+table_1_description
+```
+
+
+```{r}
+d2 <- wrapr::build_frame(
+   "key"  , "y" |
+     "b"  , 3   |
+     "c"  , 4   )
+
+knitr::kable(d2)
+```
+
+```{r}
+table_2_description <- local_td(d2, name='d2')
+
+table_2_description
+```
+
+
+```{r}
+ops <- table_1_description %.>%
+    natural_join(.,
+        b=table_2_description, 
+        by='key',
+        jointype='FULL')
+```
+
+```{r}
+arrow_1 = arrow(ops, free_table_key = table_1_description$table_name)
+
+print(arrow_1)
+```
+
+```{r}
+arrow_2 = arrow(ops, free_table_key = table_2_description$table_name)
+
+print(arrow_2)
+```
+
+```{r}
+res <- ex_data_table(
+  arrow_1$pipeline,
+  tables = list(
+    d1 = d1,
+    d2 = d2))
+
+knitr::kable(res)
+```

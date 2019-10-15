@@ -11,8 +11,17 @@ find_all_tables <- function(op_tree) {
   found
 }
 
-replace_all_table_sources <- function(op_tree, repl) {
+replace_all_table_sources <- function(op_tree,
+                                      repl,
+                                      ...,
+                                      table_key = NULL) {
+  wrapr::stop_if_dot_args(substitute(list(...)), "rquery:::replace_all_table_sources")
   if("relop_table_source" %in% class(op_tree)) {
+    if(length(table_key) > 0) {
+      if(op_tree$table_name != table_key) {
+        return(op_tree)
+      }
+    }
     missing <- setdiff(column_names(op_tree), column_names(repl))
     if(length(missing)>0) {
       stop(paste("rquery node replacement must include columns:",
@@ -22,7 +31,8 @@ replace_all_table_sources <- function(op_tree, repl) {
   }
   for(i in seq_len(length(op_tree$source))) {
     op_tree$source[[i]] <- replace_all_table_sources(op_tree$source[[i]],
-                                                     repl)
+                                                     repl,
+                                                     table_key = table_key)
   }
   op_tree
 }

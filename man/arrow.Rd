@@ -4,10 +4,14 @@
 \alias{arrow}
 \title{Data arrow}
 \usage{
-arrow(pipeline)
+arrow(pipeline, ..., free_table_key = NULL)
 }
 \arguments{
 \item{pipeline}{pipeline with one source table}
+
+\item{...}{not used, force later argument to be referred to by name.}
+
+\item{free_table_key}{name of table to consider free (input) to the pipeline}
 }
 \value{
 relop_arrow wrapping of pipeline

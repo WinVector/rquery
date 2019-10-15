@@ -4,20 +4,35 @@
 #' A categorical arrow mapping a table to a table.
 #'
 #' @param pipeline pipeline with one source table
+#' @param ... not used, force later argument to be referred to by name.
+#' @param free_table_key name of table to consider free (input) to the pipeline
 #' @return relop_arrow wrapping of pipeline
 #'
 #' @export
 #'
-arrow <- function(pipeline) {
+arrow <- function(pipeline, ..., free_table_key=NULL) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::arrow")
   if(!('relop' %in% class(pipeline))) {
     stop("expected pipeline to be of class relop")
   }
   cused <- columns_used(pipeline)
-  if(length(cused)!=1) {
-    stop("expected pipeline to use one table")
+  if(length(free_table_key)>0) {
+    if( (!is.character(free_table_key)) || (length(free_table_key)!=1)) {
+      stop("free_table_key must be a scalar string (or NULL)")
+    }
+    if(!(free_table_key %in% names(cused))) {
+      stop("free_table_key must be the name of an incoming table")
+    }
+  } else {
+    if(length(cused)!=1) {
+      stop("expected pipeline to use one table")
+    }
+    free_table_key = names(cused)[[1]]
   }
   r <- list(
-    incoming_columns = cused[[1]],
+    free_table_key = free_table_key,
+    incoming_columns = cused[[free_table_key]],
     outgoing_columns = colnames(pipeline),
     pipeline = pipeline)
   class(r) <- 'relop_arrow'
@@ -86,7 +101,8 @@ compose_arrows <- function(a, b, ..., strict=TRUE) {
     }
     return(arrow(a$pipeline %.>% select_columns(., columns=b$incoming_columns) %.>% b$pipeline))
   }
-  return(arrow(a$pipeline %.>% b$pipeline))
+  composite <- replace_all_table_sources(b$pipeline, a$pipeline, table_key = b$free_table_key)
+  return(arrow(composite))
 }
 
 
