@@ -276,8 +276,6 @@ The underlying `rquery` steps compute and check very similar pre and post condit
 
 The data arrows operate over three different value domains:
 
- * their own arrow space (i.e. composition)
- * data frames (transforming data)
  * single table schemas (transforming single table schemas)
-
-I think we have that if we consider the arrows operating on data and the arrows operating on single table schemas we have a faithful embedding (in the sense of Saunders Mac Lane *Categories for the Working Mathematician, 2nd Edition*, Springer, 1997, page 15) from data to single table schemas.
+ * their own arrow space (i.e. composition)
+ * data frames (transforming data as an action)
