@@ -105,3 +105,13 @@ knitr::kable(res)
 | a   |  1 | NA |
 | b   |  2 |  3 |
 | c   | NA |  4 |
+
+More on the categorical arrow treatment of data transformations can be
+found
+[here](https://github.com/WinVector/rquery/blob/master/Examples/Arrow/Arrow.md).
+
+(Examples of advanced inter-operation between the [`R` `rquery`
+package](https://github.com/WinVector/rquery/) and the [`Python`
+`data_algebra` package](https://github.com/WinVector/data_algebra) and
+`SQL` can be found
+[here](https://github.com/WinVector/data_algebra/blob/master/Examples/LogisticExample/ScoringExample.md).)
