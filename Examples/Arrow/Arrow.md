@@ -148,8 +148,12 @@ a1 = arrow(id_ops_b)
 print(a1)
 ```
 
-    ## [c('g', 'i', 'v', 'x') ->
-    ##  c('g', 'x', 'v', 'i', 'ngroup')]
+    ## [
+    ##  'd':
+    ##  c('g', 'i', 'v', 'x')
+    ##    ->
+    ##  c('g', 'x', 'v', 'i', 'ngroup')
+    ## ]
 
 `a1` is a categorical theory arrow, it has the usual domain (arrow base,
 or incoming object), and co-domain (arrow head, or outgoing object) in a
@@ -175,8 +179,12 @@ These are what are presented in the succinct presentation of the arrow.
 print(a1)
 ```
 
-    ## [c('g', 'i', 'v', 'x') ->
-    ##  c('g', 'x', 'v', 'i', 'ngroup')]
+    ## [
+    ##  'd':
+    ##  c('g', 'i', 'v', 'x')
+    ##    ->
+    ##  c('g', 'x', 'v', 'i', 'ngroup')
+    ## ]
 
 The arrow has a more detailed presentation, which is the realization of
 the operator pipeline as code.
@@ -185,9 +193,8 @@ the operator pipeline as code.
 print(a1, verbose = TRUE)
 ```
 
-    ## [c('g', 'i', 'v', 'x') ->
-    ##  c('g', 'x', 'v', 'i', 'ngroup')](
-    ## mk_td("d", c(
+    ## arrow(
+    ##  mk_td("d", c(
     ##   "g",
     ##   "x",
     ##   "v",
@@ -203,7 +210,8 @@ print(a1, verbose = TRUE)
     ##    extend(.,
     ##     ngroup := row_number()),
     ##   jointype = "LEFT", by = c('g'))
-    ## )
+    ## ,
+    ##  free_table_key = 'd')
 
 We can think of our arrows (or obvious mappings of them) as being able
 to be applied to: \* More arrows of the same type (composition). \* Data
@@ -248,8 +256,12 @@ a1b <- arrow(
 print(a1b)
 ```
 
-    ## [c('g', 'x', 'v', 'i') ->
-    ##  c('g', 'x', 'v', 'i', 'ngroup')]
+    ## [
+    ##  'd':
+    ##  c('g', 'x', 'v', 'i')
+    ##    ->
+    ##  c('g', 'x', 'v', 'i', 'ngroup')
+    ## ]
 
 However, the `a1b` arrow represents a different operation than `a1`:
 
@@ -267,30 +279,6 @@ d %.>%
 | c | 7 | 70 | FALSE |      0 |
 | c | 8 | 80 | FALSE |      0 |
 | c | 9 | 90 | FALSE |      0 |
-
-``` r
-print(a1, verbose = TRUE)
-```
-
-    ## [c('g', 'i', 'v', 'x') ->
-    ##  c('g', 'x', 'v', 'i', 'ngroup')](
-    ## mk_td("d", c(
-    ##   "g",
-    ##   "x",
-    ##   "v",
-    ##   "i")) %.>%
-    ##  natural_join(.,
-    ##   mk_td("d", c(
-    ##     "g",
-    ##     "x",
-    ##     "v",
-    ##     "i")) %.>%
-    ##    project(., ,
-    ##     groupby = c('g')) %.>%
-    ##    extend(.,
-    ##     ngroup := row_number()),
-    ##   jointype = "LEFT", by = c('g'))
-    ## )
 
 The arrows can be composed exactly when the pre-conditions meet the post
 conditions.
@@ -317,8 +305,12 @@ a2 = arrow(ordered_ops)
 print(a2)
 ```
 
-    ## [c('g', 'x', 'v', 'ngroup') ->
-    ##  c('g', 'x', 'v', 'ngroup', 'row_number', 'v_shift')]
+    ## [
+    ##  'd2':
+    ##  c('g', 'x', 'v', 'ngroup')
+    ##    ->
+    ##  c('g', 'x', 'v', 'ngroup', 'row_number', 'v_shift')
+    ## ]
 
 ``` r
 a1 %.>% a2
@@ -339,8 +331,12 @@ a2 = arrow(ordered_ops)
 print(a2)
 ```
 
-    ## [c('g', 'x', 'v', 'i', 'ngroup', 'q') ->
-    ##  c('g', 'x', 'v', 'i', 'ngroup', 'q', 'row_number', 'v_shift')]
+    ## [
+    ##  'd2':
+    ##  c('g', 'x', 'v', 'i', 'ngroup', 'q')
+    ##    ->
+    ##  c('g', 'x', 'v', 'i', 'ngroup', 'q', 'row_number', 'v_shift')
+    ## ]
 
 ``` r
 a1 %.>% a2
@@ -367,47 +363,35 @@ a2 = arrow(ordered_ops)
 print(a2)
 ```
 
-    ## [c('g', 'x', 'v', 'i', 'ngroup') ->
-    ##  c('g', 'x', 'v', 'i', 'ngroup', 'row_number', 'v_shift')]
+    ## [
+    ##  'd2':
+    ##  c('g', 'x', 'v', 'i', 'ngroup')
+    ##    ->
+    ##  c('g', 'x', 'v', 'i', 'ngroup', 'row_number', 'v_shift')
+    ## ]
 
 ``` r
 a1 %.>% a2
 ```
 
-    ## [c('g', 'i', 'v', 'x') ->
-    ##  c('g', 'x', 'v', 'i', 'ngroup', 'row_number', 'v_shift')]
+    ## [
+    ##  'd':
+    ##  c('g', 'i', 'v', 'x')
+    ##    ->
+    ##  c('g', 'x', 'v', 'i', 'ngroup', 'row_number', 'v_shift')
+    ## ]
 
 ``` r
 print(
-  a1 %.>% a2,
-  verbose = TRUE)
+  a1 %.>% a2)
 ```
 
-    ## [c('g', 'i', 'v', 'x') ->
-    ##  c('g', 'x', 'v', 'i', 'ngroup', 'row_number', 'v_shift')](
-    ## mk_td("d", c(
-    ##   "g",
-    ##   "x",
-    ##   "v",
-    ##   "i")) %.>%
-    ##  natural_join(.,
-    ##   mk_td("d", c(
-    ##     "g",
-    ##     "x",
-    ##     "v",
-    ##     "i")) %.>%
-    ##    project(., ,
-    ##     groupby = c('g')) %.>%
-    ##    extend(.,
-    ##     ngroup := row_number()),
-    ##   jointype = "LEFT", by = c('g')) %.>%
-    ##  extend(.,
-    ##   row_number := row_number(),
-    ##   v_shift := shift(v),
-    ##   partitionby = c('g'),
-    ##   orderby = c('x'),
-    ##   reverse = c())
-    ## )
+    ## [
+    ##  'd':
+    ##  c('g', 'i', 'v', 'x')
+    ##    ->
+    ##  c('g', 'x', 'v', 'i', 'ngroup', 'row_number', 'v_shift')
+    ## ]
 
 We can add yet another set of operations to our pipeline: computing a
 per-group variable `mean`.
@@ -423,8 +407,12 @@ a3 = arrow(unordered_ops)
 print(a3)
 ```
 
-    ## [c('g', 'x', 'v', 'i', 'ngroup', 'row_number', 'v_shift') ->
-    ##  c('g', 'x', 'v', 'i', 'ngroup', 'row_number', 'v_shift', 'mean_v')]
+    ## [
+    ##  'd3':
+    ##  c('g', 'x', 'v', 'i', 'ngroup', 'row_number', 'v_shift')
+    ##    ->
+    ##  c('g', 'x', 'v', 'i', 'ngroup', 'row_number', 'v_shift', 'mean_v')
+    ## ]
 
 The three arrows can form a composite pipeline that computes a number of
 interesting per-group statistics all at once.
@@ -433,8 +421,12 @@ interesting per-group statistics all at once.
 a1 %.>% a2 %.>% a3
 ```
 
-    ## [c('g', 'i', 'v', 'x') ->
-    ##  c('g', 'x', 'v', 'i', 'ngroup', 'row_number', 'v_shift', 'mean_v')]
+    ## [
+    ##  'd':
+    ##  c('g', 'i', 'v', 'x')
+    ##    ->
+    ##  c('g', 'x', 'v', 'i', 'ngroup', 'row_number', 'v_shift', 'mean_v')
+    ## ]
 
 And, we the methods are fully associative (can be grouped in any
 sequence that is still in the original order).
@@ -444,8 +436,12 @@ ops1 <- (a1 %.>% a2) %.>% a3
 ops1
 ```
 
-    ## [c('g', 'i', 'v', 'x') ->
-    ##  c('g', 'x', 'v', 'i', 'ngroup', 'row_number', 'v_shift', 'mean_v')]
+    ## [
+    ##  'd':
+    ##  c('g', 'i', 'v', 'x')
+    ##    ->
+    ##  c('g', 'x', 'v', 'i', 'ngroup', 'row_number', 'v_shift', 'mean_v')
+    ## ]
 
 (Note: we are using the `.()` notation to signal the expression `a2 %.>%
 a3` is to be evaluated *before* being treated as a step in the `wrapr`

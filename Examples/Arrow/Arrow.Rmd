@@ -151,11 +151,6 @@ d %.>%
   knitr::kable(.)
 ```
 
-
-```{r}
-print(a1, verbose = TRUE)
-```
-
 The arrows can be composed exactly when the pre-conditions meet the post conditions.  
 
 Here are two examples of violating the pre and post conditions.  The point is, the categorical conditions enforce the checking for us.  We can't compose arrows that don't match domain and range.  Up until now we have been setting things up to make the categorical machinery work, now this machinery will work for us and make the job of managing complex data transformations easier.
@@ -220,8 +215,7 @@ a1 %.>% a2
 
 ```{r}
 print(
-  a1 %.>% a2,
-  verbose = TRUE)
+  a1 %.>% a2)
 ```
 
 We can add yet another set of operations to our pipeline: computing a per-group variable `mean`.

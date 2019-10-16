@@ -46,14 +46,17 @@ format.relop_arrow <- function(x, ...) {
   if('verbose' %in% names(args)) {
     verbose <- args[['verbose']]
   }
+  if(!verbose) {
   str <- paste0(
-    '[',
+    '[\n ', sQuote(x$free_table_key), ":\n ",
     wrapr::map_to_char(x$incoming_columns),
-    ' ->\n ',
+    '\n   ->\n ',
     wrapr::map_to_char(x$outgoing_columns),
-    ']')
-  if(verbose) {
-    str <- paste0(str, "(\n", format(x$pipeline),  ")\n")
+    '\n]')
+  } else {
+    str <- paste0("arrow(\n ", format(x$pipeline),  ",\n ",
+                  "free_table_key = ", sQuote(x$free_table_key),
+                  ")\n")
   }
   return(str)
 }

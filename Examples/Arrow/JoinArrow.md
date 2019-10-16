@@ -70,8 +70,12 @@ arrow_1 = arrow(ops, free_table_key = table_1_description$table_name)
 print(arrow_1)
 ```
 
-    ## [c('key', 'x') ->
-    ##  c('key', 'x', 'y')]
+    ## [
+    ##  'd1':
+    ##  c('key', 'x')
+    ##    ->
+    ##  c('key', 'x', 'y')
+    ## ]
 
 ``` r
 arrow_2 = arrow(ops, free_table_key = table_2_description$table_name)
@@ -79,8 +83,12 @@ arrow_2 = arrow(ops, free_table_key = table_2_description$table_name)
 print(arrow_2)
 ```
 
-    ## [c('key', 'y') ->
-    ##  c('key', 'x', 'y')]
+    ## [
+    ##  'd2':
+    ##  c('key', 'y')
+    ##    ->
+    ##  c('key', 'x', 'y')
+    ## ]
 
 ``` r
 res <- ex_data_table(
