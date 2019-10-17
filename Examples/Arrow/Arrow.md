@@ -498,7 +498,7 @@ The data arrows operate over three different value domains:
   - their own arrow space (i.e. composition)
   - data frames (transforming data as an action)
 
-An example of treating a 2-argument data operation (such as a join) can
+An example of treating a 2-argument data operation (such as a join) as an arrow can
 be found
 [here](https://github.com/WinVector/rquery/blob/master/Examples/Arrow/JoinArrow.md).
 
