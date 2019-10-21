@@ -63,8 +63,7 @@ mk_td <- function(table_name, columns,
             q_table_name = q_table_name,
             parsed = NULL,
             columns = columns,
-            qualifiers = qualifiers,
-            data = NULL)
+            qualifiers = qualifiers)
   r <- relop_decorate("relop_table_source", r)
   r
 }
@@ -343,15 +342,9 @@ format_node.relop_table_source <- function(node) {
   if(length(cols)>max_cols) {
     cols <- c(cols[seq_len(max_cols)], "...")
   }
-  data_str = ""
-  if(!is.null(node$data)) {
-    data_str = ",\n  data=DATA"
-  }
   paste0("mk_td(\"", node$table_name, "\", c(\n  ",
          paste(cols, collapse = ",\n  "),
-         ")",
-         data_str,
-         ")\n")
+         "))\n")
 }
 
 
