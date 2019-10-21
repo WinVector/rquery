@@ -25,7 +25,7 @@ Encoding: UTF-8
 Depends:
   R (>= 3.4.0)
 Imports:
-  wrapr (>= 1.8.8),
+  wrapr (>= 1.9.2),
   utils,
   stats,
   methods
