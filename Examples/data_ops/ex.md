@@ -9,10 +9,23 @@ library(rqdatatable)
 
 ``` r
 d <- data.frame(x = 1:3, y = 4:6)
-d %.>%
-  wrap(.) %.>%
-  extend(., z := x + y) %.>%
-  ex(.) %.>%
+ops <- wrap(d) %.>%
+  extend(., z := x + y)
+
+print(ops)
+```
+
+    ## [mk_td("d", c(
+    ##   "x",
+    ##   "y")) %.>%
+    ##  extend(.,
+    ##   z := x + y)
+    ## ](
+    ##  d)
+
+``` r
+ops %.>%
+  ex %.>%
   knitr::kable(.)
 ```
 
