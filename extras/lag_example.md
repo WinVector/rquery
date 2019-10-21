@@ -39,14 +39,18 @@ ops <- rh %.>%
 cat(format(ops))
 ```
 
-    ## table("dat"; 
-    ##   purchase_date,
-    ##   product) %.>%
+    ## mk_td("dat", c(
+    ##   "purchase_date",
+    ##   "product")) %.>%
     ##  extend(.,
     ##   z := LAG(purchase_date, 1, NULL),
-    ##   p= product,
-    ##   o= "purchase_date") %.>%
-    ##  orderby(., product, purchase_date)
+    ##   partitionby = c('product'),
+    ##   orderby = c('purchase_date'),
+    ##   reverse = c()) %.>%
+    ##  order_rows(.,
+    ##   c('product', 'purchase_date'),
+    ##   reverse = c(),
+    ##   limit = NULL)
 
 ``` r
 ops %.>%
@@ -65,8 +69,8 @@ ops %.>%
     ##    "product"
     ##   FROM
     ##    "dat"
-    ##   ) tsql_07356867390669918379_0000000000
-    ## ) tsql_07356867390669918379_0000000001 ORDER BY "product", "purchase_date"
+    ##   ) tsql_54253887843810751466_0000000000
+    ## ) tsql_54253887843810751466_0000000001 ORDER BY "product", "purchase_date"
 
 ``` r
 #DBI::dbGetQuery(raw_connection, to_sql(ops, db))
@@ -165,6 +169,5 @@ DBI::dbDisconnect(raw_connection)
 
     ## [1] TRUE
 
-`data.table` methodology from here: <https://stackoverflow.com/questions/26291988/how-to-create-a-lag-variable-within-each-group>
-
-Maybe a Janus\_node solution.
+`data.table` methodology from here:
+<https://stackoverflow.com/questions/26291988/how-to-create-a-lag-variable-within-each-group>

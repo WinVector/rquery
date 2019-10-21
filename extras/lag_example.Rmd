@@ -92,7 +92,3 @@ DBI::dbDisconnect(raw_connection)
 
 
 `data.table` methodology from here: https://stackoverflow.com/questions/26291988/how-to-create-a-lag-variable-within-each-group
-
-Maybe a Janus_node solution.
-
-
