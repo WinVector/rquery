@@ -1,6 +1,6 @@
 ---
 title: "ex Example"
-output: html_document
+output: github_document
 ---
 
 ```{r}
