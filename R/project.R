@@ -27,9 +27,13 @@ project_impl <- function(source, ...,
   check_have_cols(have, required_cols, "rquery::project")
   assignments <- list()
   if(length(parsed)>0) {
+    produced <- vapply(parsed, function(pi) pi$symbols_produced, character(1))
+    if(length(produced)!=length(unique(produced))) {
+      stop("rquery:::project_impl can not produce the same column twice in a project")
+    }
     parts <- partition_assignments(parsed)
     if(length(parts)>1) {
-      stop(paste("rquery:::project_impl can not use produced column names during a project"))
+      stop("rquery:::project_impl can not use produced columns during a project")
     }
     assignments <- unpack_assignments(source, parsed)
   }

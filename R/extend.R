@@ -90,6 +90,10 @@ extend_impl_list <- function(source, parsed,
   if(length(setdiff(reverse, c(orderby, partitionby)))>0) {
     stop("rquery::extend_impl_list all reverse columns must also be orderby or partitionby columns")
   }
+  produced <- vapply(parsed, function(pi) pi$symbols_produced, character(1))
+  if(length(produced)!=length(unique(produced))) {
+    warning("rquery:::extend_impl_list assigned same column more than once in an extend")
+  }
   parts <- partition_assignments(parsed)
   ndchain <- source
   for(parti in parts) {
