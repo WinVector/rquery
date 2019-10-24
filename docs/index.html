@@ -218,7 +218,7 @@
 <a class="sourceLine" id="cb1-3" data-line-number="3">use_spark &lt;-<span class="st"> </span><span class="ot">FALSE</span></a>
 <a class="sourceLine" id="cb1-4" data-line-number="4"></a>
 <a class="sourceLine" id="cb1-5" data-line-number="5"><span class="cf">if</span>(use_spark) {</a>
-<a class="sourceLine" id="cb1-6" data-line-number="6">  raw_connection &lt;-<span class="st"> </span>sparklyr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/sparklyr/man/spark-connections.html">spark_connect</a></span>(<span class="dt">version=</span><span class="st">'2.2.0'</span>, </a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">  raw_connection &lt;-<span class="st"> </span>sparklyr<span class="op">::</span><span class="kw">spark_connect</span>(<span class="dt">version=</span><span class="st">'2.2.0'</span>, </a>
 <a class="sourceLine" id="cb1-7" data-line-number="7">                                   <span class="dt">master =</span> <span class="st">"local"</span>)</a>
 <a class="sourceLine" id="cb1-8" data-line-number="8">  cname &lt;-<span class="st"> </span><span class="kw"><a href="reference/rq_connection_name.html">rq_connection_name</a></span>(raw_connection)</a>
 <a class="sourceLine" id="cb1-9" data-line-number="9">  rquery<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/rquery/man/setDBOption.html">setDBOption</a></span>(raw_connection, </a>
@@ -250,29 +250,29 @@
 <a class="sourceLine" id="cb1-35" data-line-number="35">            d_local,</a>
 <a class="sourceLine" id="cb1-36" data-line-number="36">            <span class="dt">temporary =</span> <span class="ot">TRUE</span>, </a>
 <a class="sourceLine" id="cb1-37" data-line-number="37">            <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co">## [1] "mk_td(\"d\", c( \"subjectID\", \"surveyCategory\", \"assessmentTotal\", \"irrelevantCol1\", \"irrelevantCol2\"))"</span></a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">## [1] "mk_td(\"d\", c( \"subjectID\", \"surveyCategory\", \"assessmentTotal\", \"irrelevantCol1\", \"irrelevantCol2\"))"</a></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># produce a hande to existing table</span></a>
 <a class="sourceLine" id="cb3-2" data-line-number="2">d &lt;-<span class="st"> </span><span class="kw"><a href="reference/db_td.html">db_td</a></span>(db, <span class="st">"d"</span>)</a></code></pre></div>
 <p>Note: in examples we use <code><a href="reference/rq_copy_to.html">rq_copy_to()</a></code> to create data. This is only for the purpose of having easy portable examples. With big data the data is usually already in the remote database or Spark system. The task is almost always to connect and work with this pre-existing remote data and the method to do this is <a href="https://winvector.github.io/rquery/reference/db_td.html"><code><a href="reference/db_td.html">db_td()</a></code></a>, which builds a reference to a remote table given the table name. The suggested pattern for working with remote tables is to get inputs via <a href="https://winvector.github.io/rquery/reference/db_td.html"><code><a href="reference/db_td.html">db_td()</a></code></a> and land remote results with <a href="https://winvector.github.io/rquery/reference/materialize.html"><code>materialze()</code></a>. To work with local data one can copy data from memory to the database with <a href="https://winvector.github.io/rquery/reference/rq_copy_to.html"><code><a href="reference/rq_copy_to.html">rq_copy_to()</a></code></a> and bring back results with <a href="https://winvector.github.io/rquery/reference/execute.html"><code><a href="reference/execute.html">execute()</a></code></a> (though be aware operation on remote non-memory data is <code>rquery</code>’s primary intent).</p>
 <p>First we show the Spark/database version of the original example data:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/class.html">class</a></span>(db)</a></code></pre></div>
-<div class="sourceCode" id="cb5"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co">## [1] "rquery_db_info"</span></a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">## [1] "rquery_db_info"</a></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/print.html">print</a></span>(db)</a></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="co">## [1] "rquery_db_info(PostgreSQLConnection, is_dbi=TRUE, note=\"\")"</span></a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">## [1] "rquery_db_info(PostgreSQLConnection, is_dbi=TRUE, note=\"\")"</a></code></pre></div>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/class.html">class</a></span>(d)</a></code></pre></div>
-<div class="sourceCode" id="cb9"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="co">## [1] "relop_table_source" "relop"</span></a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">## [1] "relop_table_source" "relop"</a></code></pre></div>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/print.html">print</a></span>(d)</a></code></pre></div>
-<div class="sourceCode" id="cb11"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="co">## [1] "mk_td(\"d\", c( \"subjectID\", \"surveyCategory\", \"assessmentTotal\", \"irrelevantCol1\", \"irrelevantCol2\"))"</span></a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">## [1] "mk_td(\"d\", c( \"subjectID\", \"surveyCategory\", \"assessmentTotal\", \"irrelevantCol1\", \"irrelevantCol2\"))"</a></code></pre></div>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="co"># remote structure inspection</span></a>
 <a class="sourceLine" id="cb12-2" data-line-number="2"><span class="kw"><a href="reference/rstr.html">rstr</a></span>(db, d<span class="op">$</span>table_name)</a></code></pre></div>
-<div class="sourceCode" id="cb13"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="co">## table "d" rquery_db_info </span></a>
-<a class="sourceLine" id="cb13-2" data-line-number="2"><span class="co">##  nrow: 4 </span></a>
-<a class="sourceLine" id="cb13-3" data-line-number="3"><span class="co">## 'data.frame':    4 obs. of  5 variables:</span></a>
-<a class="sourceLine" id="cb13-4" data-line-number="4"><span class="co">##  $ subjectID      : int  1 1 2 2</span></a>
-<a class="sourceLine" id="cb13-5" data-line-number="5"><span class="co">##  $ surveyCategory : chr  "withdrawal behavior" "positive re-framing" "withdrawal behavior" "positive re-framing"</span></a>
-<a class="sourceLine" id="cb13-6" data-line-number="6"><span class="co">##  $ assessmentTotal: num  5 2 3 4</span></a>
-<a class="sourceLine" id="cb13-7" data-line-number="7"><span class="co">##  $ irrelevantCol1 : chr  "irrel1" "irrel1" "irrel1" "irrel1"</span></a>
-<a class="sourceLine" id="cb13-8" data-line-number="8"><span class="co">##  $ irrelevantCol2 : chr  "irrel2" "irrel2" "irrel2" "irrel2"</span></a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">## table "d" rquery_db_info </a>
+<a class="sourceLine" id="cb13-2" data-line-number="2">##  nrow: 4 </a>
+<a class="sourceLine" id="cb13-3" data-line-number="3">## 'data.frame':    4 obs. of  5 variables:</a>
+<a class="sourceLine" id="cb13-4" data-line-number="4">##  $ subjectID      : int  1 1 2 2</a>
+<a class="sourceLine" id="cb13-5" data-line-number="5">##  $ surveyCategory : chr  "withdrawal behavior" "positive re-framing" "withdrawal behavior" "positive re-framing"</a>
+<a class="sourceLine" id="cb13-6" data-line-number="6">##  $ assessmentTotal: num  5 2 3 4</a>
+<a class="sourceLine" id="cb13-7" data-line-number="7">##  $ irrelevantCol1 : chr  "irrel1" "irrel1" "irrel1" "irrel1"</a>
+<a class="sourceLine" id="cb13-8" data-line-number="8">##  $ irrelevantCol2 : chr  "irrel2" "irrel2" "irrel2" "irrel2"</a></code></pre></div>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="co"># or execute the table representation to bring back data</span></a>
 <a class="sourceLine" id="cb14-2" data-line-number="2">d <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb14-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="reference/execute.html">execute</a></span>(db, .) <span class="op">%.&gt;%</span></a>
@@ -340,9 +340,9 @@
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">result &lt;-<span class="st"> </span><span class="kw"><a href="reference/materialize.html">materialize</a></span>(db, dq)</a>
 <a class="sourceLine" id="cb16-2" data-line-number="2"></a>
 <a class="sourceLine" id="cb16-3" data-line-number="3"><span class="kw"><a href="https://rdrr.io/r/base/class.html">class</a></span>(result)</a></code></pre></div>
-<div class="sourceCode" id="cb17"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="co">## [1] "relop_table_source" "relop"</span></a></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">## [1] "relop_table_source" "relop"</a></code></pre></div>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">result</a></code></pre></div>
-<div class="sourceCode" id="cb19"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="co">## [1] "mk_td(\"rquery_mat_43987280730372034973_0000000000\", c( \"subjectID\", \"diagnosis\", \"probability\"))"</span></a></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1">## [1] "mk_td(\"rquery_mat_43987280730372034973_0000000000\", c( \"subjectID\", \"diagnosis\", \"probability\"))"</a></code></pre></div>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1">DBI<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/DBI/man/dbReadTable.html">dbReadTable</a></span>(db<span class="op">$</span>connection, result<span class="op">$</span>table_name) <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb20-2" data-line-number="2"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(.)</a></code></pre></div>
 <table class="table">
@@ -439,12 +439,12 @@
 <p>A feature to notice is: the query was automatically restricted to just columns actually needed from the source table to complete the calculation. This has the possibility of decreasing data volume and greatly speeding up query performance. Our <a href="https://github.com/WinVector/rquery/blob/master/extras/PerfTest%2Emd">initial experiments</a> show <code>rquery</code> narrowed queries to be twice as fast as un-narrowed <code>dplyr</code> on a synthetic problem simulating large disk-based queries. We think if we connected directly to <code>Spark</code>’s relational operators (avoiding the <code>SQL</code> layer) we may be able to achieve even faster performance.</p>
 <p>The above optimization is possible because the <code>rquery</code> representation is an intelligible tree of nodes, so we can interrogate the tree for facts about the query. For example:</p>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1"><span class="kw"><a href="reference/column_names.html">column_names</a></span>(dq)</a></code></pre></div>
-<div class="sourceCode" id="cb25"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="co">## [1] "subjectID"   "diagnosis"   "probability"</span></a></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1">## [1] "subjectID"   "diagnosis"   "probability"</a></code></pre></div>
 <div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="kw"><a href="reference/tables_used.html">tables_used</a></span>(dq)</a></code></pre></div>
-<div class="sourceCode" id="cb27"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1"><span class="co">## [1] "d"</span></a></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1">## [1] "d"</a></code></pre></div>
 <div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1"><span class="kw"><a href="reference/columns_used.html">columns_used</a></span>(dq)</a></code></pre></div>
-<div class="sourceCode" id="cb29"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" data-line-number="1"><span class="co">## $d</span></a>
-<a class="sourceLine" id="cb29-2" data-line-number="2"><span class="co">## [1] "subjectID"       "surveyCategory"  "assessmentTotal"</span></a></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" data-line-number="1">## $d</a>
+<a class="sourceLine" id="cb29-2" data-line-number="2">## [1] "subjectID"       "surveyCategory"  "assessmentTotal"</a></code></pre></div>
 <p>The additional record-keeping in the operator nodes allows checking and optimization (such as <a href="http://www.win-vector.com/blog/2017/12/how-to-greatly-speed-up-your-spark-queries/">query narrowing</a>). The flow itself is represented as follows:</p>
 <div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/format.html">format</a></span>(dq))</a></code></pre></div>
 <div class="sourceCode" id="cb31"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" data-line-number="1"><span class="kw"><a href="reference/mk_td.html">mk_td</a></span>(<span class="st">"d"</span>, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(</a>
@@ -481,51 +481,51 @@
 <p><img src="https://github.com/WinVector/rquery/raw/master/tools/pipe_diagram.png"></p>
 <p><code>rquery</code> also includes a number of useful utilities (both as nodes and as functions).</p>
 <div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" data-line-number="1"><span class="kw"><a href="reference/quantile_cols.html">quantile_cols</a></span>(db, <span class="st">"d"</span>)</a></code></pre></div>
-<div class="sourceCode" id="cb34"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb34-1" data-line-number="1"><span class="co">##   quantile_probability subjectID      surveyCategory assessmentTotal</span></a>
-<a class="sourceLine" id="cb34-2" data-line-number="2"><span class="co">## 1                 0.00         1 positive re-framing               2</span></a>
-<a class="sourceLine" id="cb34-3" data-line-number="3"><span class="co">## 2                 0.25         1 positive re-framing               2</span></a>
-<a class="sourceLine" id="cb34-4" data-line-number="4"><span class="co">## 3                 0.50         1 positive re-framing               3</span></a>
-<a class="sourceLine" id="cb34-5" data-line-number="5"><span class="co">## 4                 0.75         2 withdrawal behavior               4</span></a>
-<a class="sourceLine" id="cb34-6" data-line-number="6"><span class="co">## 5                 1.00         2 withdrawal behavior               5</span></a>
-<a class="sourceLine" id="cb34-7" data-line-number="7"><span class="co">##   irrelevantCol1 irrelevantCol2</span></a>
-<a class="sourceLine" id="cb34-8" data-line-number="8"><span class="co">## 1         irrel1         irrel2</span></a>
-<a class="sourceLine" id="cb34-9" data-line-number="9"><span class="co">## 2         irrel1         irrel2</span></a>
-<a class="sourceLine" id="cb34-10" data-line-number="10"><span class="co">## 3         irrel1         irrel2</span></a>
-<a class="sourceLine" id="cb34-11" data-line-number="11"><span class="co">## 4         irrel1         irrel2</span></a>
-<a class="sourceLine" id="cb34-12" data-line-number="12"><span class="co">## 5         irrel1         irrel2</span></a></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb34-1" data-line-number="1">##   quantile_probability subjectID      surveyCategory assessmentTotal</a>
+<a class="sourceLine" id="cb34-2" data-line-number="2">## 1                 0.00         1 positive re-framing               2</a>
+<a class="sourceLine" id="cb34-3" data-line-number="3">## 2                 0.25         1 positive re-framing               2</a>
+<a class="sourceLine" id="cb34-4" data-line-number="4">## 3                 0.50         1 positive re-framing               3</a>
+<a class="sourceLine" id="cb34-5" data-line-number="5">## 4                 0.75         2 withdrawal behavior               4</a>
+<a class="sourceLine" id="cb34-6" data-line-number="6">## 5                 1.00         2 withdrawal behavior               5</a>
+<a class="sourceLine" id="cb34-7" data-line-number="7">##   irrelevantCol1 irrelevantCol2</a>
+<a class="sourceLine" id="cb34-8" data-line-number="8">## 1         irrel1         irrel2</a>
+<a class="sourceLine" id="cb34-9" data-line-number="9">## 2         irrel1         irrel2</a>
+<a class="sourceLine" id="cb34-10" data-line-number="10">## 3         irrel1         irrel2</a>
+<a class="sourceLine" id="cb34-11" data-line-number="11">## 4         irrel1         irrel2</a>
+<a class="sourceLine" id="cb34-12" data-line-number="12">## 5         irrel1         irrel2</a></code></pre></div>
 <div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" data-line-number="1"><span class="kw"><a href="reference/rsummary.html">rsummary</a></span>(db, <span class="st">"d"</span>)</a></code></pre></div>
-<div class="sourceCode" id="cb36"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb36-1" data-line-number="1"><span class="co">##            column index     class nrows nna nunique min max mean        sd</span></a>
-<a class="sourceLine" id="cb36-2" data-line-number="2"><span class="co">## 1       subjectID     1   integer     4   0      NA   1   2  1.5 0.5773503</span></a>
-<a class="sourceLine" id="cb36-3" data-line-number="3"><span class="co">## 2  surveyCategory     2 character     4   0       2  NA  NA   NA        NA</span></a>
-<a class="sourceLine" id="cb36-4" data-line-number="4"><span class="co">## 3 assessmentTotal     3   numeric     4   0      NA   2   5  3.5 1.2909944</span></a>
-<a class="sourceLine" id="cb36-5" data-line-number="5"><span class="co">## 4  irrelevantCol1     4 character     4   0       1  NA  NA   NA        NA</span></a>
-<a class="sourceLine" id="cb36-6" data-line-number="6"><span class="co">## 5  irrelevantCol2     5 character     4   0       1  NA  NA   NA        NA</span></a>
-<a class="sourceLine" id="cb36-7" data-line-number="7"><span class="co">##                lexmin              lexmax</span></a>
-<a class="sourceLine" id="cb36-8" data-line-number="8"><span class="co">## 1                &lt;NA&gt;                &lt;NA&gt;</span></a>
-<a class="sourceLine" id="cb36-9" data-line-number="9"><span class="co">## 2 positive re-framing withdrawal behavior</span></a>
-<a class="sourceLine" id="cb36-10" data-line-number="10"><span class="co">## 3                &lt;NA&gt;                &lt;NA&gt;</span></a>
-<a class="sourceLine" id="cb36-11" data-line-number="11"><span class="co">## 4              irrel1              irrel1</span></a>
-<a class="sourceLine" id="cb36-12" data-line-number="12"><span class="co">## 5              irrel2              irrel2</span></a></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb36-1" data-line-number="1">##            column index     class nrows nna nunique min max mean        sd</a>
+<a class="sourceLine" id="cb36-2" data-line-number="2">## 1       subjectID     1   integer     4   0      NA   1   2  1.5 0.5773503</a>
+<a class="sourceLine" id="cb36-3" data-line-number="3">## 2  surveyCategory     2 character     4   0       2  NA  NA   NA        NA</a>
+<a class="sourceLine" id="cb36-4" data-line-number="4">## 3 assessmentTotal     3   numeric     4   0      NA   2   5  3.5 1.2909944</a>
+<a class="sourceLine" id="cb36-5" data-line-number="5">## 4  irrelevantCol1     4 character     4   0       1  NA  NA   NA        NA</a>
+<a class="sourceLine" id="cb36-6" data-line-number="6">## 5  irrelevantCol2     5 character     4   0       1  NA  NA   NA        NA</a>
+<a class="sourceLine" id="cb36-7" data-line-number="7">##                lexmin              lexmax</a>
+<a class="sourceLine" id="cb36-8" data-line-number="8">## 1                &lt;NA&gt;                &lt;NA&gt;</a>
+<a class="sourceLine" id="cb36-9" data-line-number="9">## 2 positive re-framing withdrawal behavior</a>
+<a class="sourceLine" id="cb36-10" data-line-number="10">## 3                &lt;NA&gt;                &lt;NA&gt;</a>
+<a class="sourceLine" id="cb36-11" data-line-number="11">## 4              irrel1              irrel1</a>
+<a class="sourceLine" id="cb36-12" data-line-number="12">## 5              irrel2              irrel2</a></code></pre></div>
 <div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb37-1" data-line-number="1">dq <span class="op">%.&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb37-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="reference/quantile_node.html">quantile_node</a></span>(.) <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb37-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="reference/execute.html">execute</a></span>(db, .)</a></code></pre></div>
-<div class="sourceCode" id="cb38"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb38-1" data-line-number="1"><span class="co">##   quantile_probability subjectID           diagnosis probability</span></a>
-<a class="sourceLine" id="cb38-2" data-line-number="2"><span class="co">## 1                 0.00         1 positive re-framing   0.5589742</span></a>
-<a class="sourceLine" id="cb38-3" data-line-number="3"><span class="co">## 2                 0.25         1 positive re-framing   0.5589742</span></a>
-<a class="sourceLine" id="cb38-4" data-line-number="4"><span class="co">## 3                 0.50         1 positive re-framing   0.5589742</span></a>
-<a class="sourceLine" id="cb38-5" data-line-number="5"><span class="co">## 4                 0.75         2 withdrawal behavior   0.6706221</span></a>
-<a class="sourceLine" id="cb38-6" data-line-number="6"><span class="co">## 5                 1.00         2 withdrawal behavior   0.6706221</span></a></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb38-1" data-line-number="1">##   quantile_probability subjectID           diagnosis probability</a>
+<a class="sourceLine" id="cb38-2" data-line-number="2">## 1                 0.00         1 positive re-framing   0.5589742</a>
+<a class="sourceLine" id="cb38-3" data-line-number="3">## 2                 0.25         1 positive re-framing   0.5589742</a>
+<a class="sourceLine" id="cb38-4" data-line-number="4">## 3                 0.50         1 positive re-framing   0.5589742</a>
+<a class="sourceLine" id="cb38-5" data-line-number="5">## 4                 0.75         2 withdrawal behavior   0.6706221</a>
+<a class="sourceLine" id="cb38-6" data-line-number="6">## 5                 1.00         2 withdrawal behavior   0.6706221</a></code></pre></div>
 <div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" data-line-number="1">dq <span class="op">%.&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb39-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="reference/rsummary_node.html">rsummary_node</a></span>(.) <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb39-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="reference/execute.html">execute</a></span>(db, .)</a></code></pre></div>
-<div class="sourceCode" id="cb40"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb40-1" data-line-number="1"><span class="co">##        column index     class nrows nna nunique       min       max</span></a>
-<a class="sourceLine" id="cb40-2" data-line-number="2"><span class="co">## 1   subjectID     1   integer     2   0      NA 1.0000000 2.0000000</span></a>
-<a class="sourceLine" id="cb40-3" data-line-number="3"><span class="co">## 2   diagnosis     2 character     2   0       2        NA        NA</span></a>
-<a class="sourceLine" id="cb40-4" data-line-number="4"><span class="co">## 3 probability     3   numeric     2   0      NA 0.5589742 0.6706221</span></a>
-<a class="sourceLine" id="cb40-5" data-line-number="5"><span class="co">##        mean         sd              lexmin              lexmax</span></a>
-<a class="sourceLine" id="cb40-6" data-line-number="6"><span class="co">## 1 1.5000000 0.70710678                &lt;NA&gt;                &lt;NA&gt;</span></a>
-<a class="sourceLine" id="cb40-7" data-line-number="7"><span class="co">## 2        NA         NA positive re-framing withdrawal behavior</span></a>
-<a class="sourceLine" id="cb40-8" data-line-number="8"><span class="co">## 3 0.6147982 0.07894697                &lt;NA&gt;                &lt;NA&gt;</span></a></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb40-1" data-line-number="1">##        column index     class nrows nna nunique       min       max</a>
+<a class="sourceLine" id="cb40-2" data-line-number="2">## 1   subjectID     1   integer     2   0      NA 1.0000000 2.0000000</a>
+<a class="sourceLine" id="cb40-3" data-line-number="3">## 2   diagnosis     2 character     2   0       2        NA        NA</a>
+<a class="sourceLine" id="cb40-4" data-line-number="4">## 3 probability     3   numeric     2   0      NA 0.5589742 0.6706221</a>
+<a class="sourceLine" id="cb40-5" data-line-number="5">##        mean         sd              lexmin              lexmax</a>
+<a class="sourceLine" id="cb40-6" data-line-number="6">## 1 1.5000000 0.70710678                &lt;NA&gt;                &lt;NA&gt;</a>
+<a class="sourceLine" id="cb40-7" data-line-number="7">## 2        NA         NA positive re-framing withdrawal behavior</a>
+<a class="sourceLine" id="cb40-8" data-line-number="8">## 3 0.6147982 0.07894697                &lt;NA&gt;                &lt;NA&gt;</a></code></pre></div>
 <p>We have found most big-data projects either require joining very many tables (something <code>rquery</code> join planners help with, please see <a href="https://github.com/WinVector/rquery/blob/master/extras/JoinController%2Emd">here</a> and <a href="https://github.com/WinVector/rquery/blob/master/extras/JoinController%2Emd">here</a>) or they require working with wide data-marts (where <code>rquery</code> query narrowing helps, please see <a href="https://github.com/WinVector/rquery/blob/master/extras/PerfTest%2Emd">here</a>).</p>
 <p>We can also stand <code>rquery</code> up on non-<code>DBI</code> sources such as <a href="https://github.com/WinVector/rquery/blob/master/extras/SparkR%2Emd"><code>SparkR</code></a> and also <a href="https://CRAN.R-project.org/package=data.table"><code>data.table</code></a>. The <code>data.table</code> adapter is being developed in the <a href="https://github.com/WinVector/rqdatatable"><code>rqdatatable</code></a> package, and can be <a href="http://www.win-vector.com/blog/2018/06/rqdatatable-rquery-powered-by-data-table/">quite fast</a>. Notice the examples in this mode all essentially use the same query pipeline, the user can choose where to apply it: in memory (<code>data.table</code>), in a <code>DBI</code> database (<code>PostgreSQL</code>, <code>Sparklyr</code>), and with even non-DBI systems (<code>SparkR</code>).</p>
 </div>

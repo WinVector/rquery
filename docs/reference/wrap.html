@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Data arrow — arrow • rquery</title>
+<title>Wrap a data frame for later execution. — wrap • rquery</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,9 @@
 
 
 
-<meta property="og:title" content="Data arrow — arrow" />
-<meta property="og:description" content="A categorical arrow mapping a table to a table." />
+<meta property="og:title" content="Wrap a data frame for later execution. — wrap" />
+<meta property="og:description" content="Create a table description that includes the actual data.  Prevents wastefull table copies in
+immediate pipelines.  Used with ex()." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -141,44 +142,61 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Data arrow</h1>
-    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery/blob/master/R/arrow.R'><code>R/arrow.R</code></a></small>
-    <div class="hidden name"><code>arrow.Rd</code></div>
+    <h1>Wrap a data frame for later execution.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery/blob/master/R/wrap_ex.R'><code>R/wrap_ex.R</code></a></small>
+    <div class="hidden name"><code>wrap.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>A categorical arrow mapping a table to a table.</p>
+    <p>Create a table description that includes the actual data.  Prevents wastefull table copies in
+immediate pipelines.  Used with <code><a href='ex.html'>ex()</a></code>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>arrow</span>(<span class='no'>pipeline</span>, <span class='no'>...</span>, <span class='kw'>free_table_key</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>wrap</span>(<span class='no'>d</span>, <span class='no'>...</span>, <span class='kw'>table_name</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span>())</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>pipeline</th>
-      <td><p>pipeline with one source table</p></td>
+      <th>d</th>
+      <td><p>data.frame</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>not used, force later argument to be referred to by name.</p></td>
+      <td><p>not used, force later argument to be referred by name</p></td>
     </tr>
     <tr>
-      <th>free_table_key</th>
-      <td><p>name of table to consider free (input) to the pipeline</p></td>
+      <th>table_name</th>
+      <td><p>character, name of table</p></td>
+    </tr>
+    <tr>
+      <th>env</th>
+      <td><p>environment to work in.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>relop_arrow wrapping of pipeline</p>
+    <p>a table description, with data attached</p>
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'>
+ <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>3</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='fl'>4</span>:<span class='fl'>6</span>)
+ <span class='no'>d</span> <span class='kw'>%.&gt;%</span>
+   <span class='fu'>wrap</span>(<span class='no'>.</span>) <span class='kw'>%.&gt;%</span>
+   <span class='fu'><a href='extend.html'>extend</a></span>(<span class='no'>.</span>, <span class='no'>z</span> <span class='kw'>:=</span> <span class='no'>x</span> + <span class='no'>y</span>) <span class='kw'>%.&gt;%</span>
+   <span class='fu'><a href='ex.html'>ex</a></span>(<span class='no'>.</span>)</div><div class='output co'>#&gt;    x y z
+#&gt; 1: 1 4 5
+#&gt; 2: 2 5 7
+#&gt; 3: 3 6 9</div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       <li><a href="#value">Value</a></li>
+      <li><a href="#examples">Examples</a></li>
     </ul>
 
   </div>

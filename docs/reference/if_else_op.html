@@ -244,7 +244,7 @@ is a reserved column name for this procedure.</p>
   <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/DBI/man/dbGetQuery.html'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
 
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/DBI/man/dbDisconnect.html'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; mk_td("d", c(
+}</div><div class='output co'>#&gt; <span class='warning'>Warning: rquery:::extend_impl_list assigned same column more than once in an extend</span></div><div class='output co'>#&gt; mk_td("d", c(
 #&gt;   "i",
 #&gt;   "a",
 #&gt;   "b",
@@ -285,9 +285,9 @@ is a reserved column name for this procedure.</p>
 #&gt;     `edited`
 #&gt;    FROM
 #&gt;     `d`
-#&gt;    ) tsql_27164569251995728005_0000000000
-#&gt;   ) tsql_27164569251995728005_0000000001
-#&gt;  ) tsql_27164569251995728005_0000000002
+#&gt;    ) tsql_58024244100795104657_0000000000
+#&gt;   ) tsql_58024244100795104657_0000000001
+#&gt;  ) tsql_58024244100795104657_0000000002
 #&gt;     i a b ifebtest_1 edited
 #&gt; 1   1 0 0          0      0
 #&gt; 2   2 0 1          0      0
