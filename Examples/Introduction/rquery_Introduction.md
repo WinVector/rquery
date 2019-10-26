@@ -51,7 +51,7 @@ methods that scales from in-memory scale up through big data scale (to
 just about anything that supplies a sufficiently powerful `SQL`
 interface, such as PostgreSQL, Apache Spark, or Google BigQuery).
 
-But lets keep things simple and work through these families of data
+We will work through simple examples/demonstrations of the `rquery` data
 manipulation operators.
 
 ## `rquery` operators
@@ -282,7 +282,7 @@ d %.>%
 ### Combining results between two `data.frame`s
 
 To combine multiple tables in `rquery` one uses what we call the
-`natural_join` operator. In the `rquery` `natural_join` tables are
+`natural_join` operator. In the `rquery` `natural_join`, rows are
 matched by column keys and any two columns with the same name are
 *coalesced* (meaning the first table with a non-missing values supplies
 the answer). This is easiest to demonstrate with an example.
