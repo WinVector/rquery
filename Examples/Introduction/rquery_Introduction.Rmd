@@ -5,7 +5,7 @@ output: github_document
 
 ## Introduction
 
-[`rquery`](https://github.com/WinVector/rquery) is a data wrangling system designed to express complex data manipulation as a series of simple data transforms. This is in the spirit of `R`'s `base::transform()`, or `dplyr`'s `dplyr::mutate()`.  The operators themselves follow the selections in Codd's relational algebra, with the addition of the traditional `SQL` "window functions."  More on the background and context of `rquery` can be found [here](https://github.com/WinVector/rquery/blob/master/Examples/old_readme/README.md).
+[`rquery`](https://github.com/WinVector/rquery) is a data wrangling system designed to express complex data manipulation as a series of simple data transforms. This is in the spirit of `R`'s `base::transform()`, or `dplyr`'s `dplyr::mutate()` and uses a pipe in the style popularized in `R` with `magrittr`.  The operators themselves follow the selections in Codd's relational algebra, with the addition of the traditional `SQL` "window functions."  More on the background and context of `rquery` can be found [here](https://github.com/WinVector/rquery/blob/master/Examples/old_readme/README.md).
 
 In transform formulations data manipulation is written as transformations that produce new `data.frame`s, instead of as alterations of a primary data structure (as is the case with `data.table`).  Transform system *can* use more space and time than in-place methods. However, in our opinion, transform systems have a number of pedagogical advantages.
 

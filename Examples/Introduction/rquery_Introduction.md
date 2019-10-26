@@ -6,10 +6,11 @@ Introduction to `rquery`
 [`rquery`](https://github.com/WinVector/rquery) is a data wrangling
 system designed to express complex data manipulation as a series of
 simple data transforms. This is in the spirit of `R`’s
-`base::transform()`, or `dplyr`’s `dplyr::mutate()`. The operators
-themselves follow the selections in Codd’s relational algebra, with the
-addition of the traditional `SQL` “window functions.” More on the
-background and context of `rquery` can be found
+`base::transform()`, or `dplyr`’s `dplyr::mutate()` and uses a pipe in
+the style popularized in `R` with `magrittr`. The operators themselves
+follow the selections in Codd’s relational algebra, with the addition of
+the traditional `SQL` “window functions.” More on the background and
+context of `rquery` can be found
 [here](https://github.com/WinVector/rquery/blob/master/Examples/old_readme/README.md).
 
 In transform formulations data manipulation is written as
