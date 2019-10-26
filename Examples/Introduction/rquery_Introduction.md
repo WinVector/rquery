@@ -447,6 +447,20 @@ d %.>%
 | 1 | 4 | 7 |
 | 2 | 3 | 8 |
 
+What we are trying to illustrate above: there is a continum of notations
+possible between:
+
+  - Working over values with explicit intermediate variables.
+  - Working over values with a pipeline.
+  - Working over operators with a pipeline.
+
+Being able to see these as all related gives some flexibility in
+decomposing problems into solutions. We have some more advanced notes on
+the differnces in working modalities [here](TODO:%20link%20to%20modes)
+and [here](TODO:%20link%20to%20arrows).
+
+## Python
+
 The [`data_algebra`](TODO:%20link) Python package supplies a nearly
 identical system for working with data in Python.
 

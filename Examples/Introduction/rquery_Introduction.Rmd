@@ -284,6 +284,16 @@ d %.>%
   knitr::kable(.)
 ```
 
+What we are trying to illustrate above: there is a continum of notations possible between:
+
+ * Working over values with explicit intermediate variables.
+ * Working over values with a pipeline.
+ * Working over operators with a pipeline.
+
+Being able to see these as all related gives some flexibility in decomposing problems into solutions.  We have some more advanced notes on the differnces in working modalities [here](TODO: link to modes) and [here](TODO: link to arrows).
+
+## Python
+
 The [`data_algebra`](TODO: link) Python package supplies a nearly identical system for working with data in Python.
 
 

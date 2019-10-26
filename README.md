@@ -110,10 +110,6 @@ The primary relational operators
     This operator produces a new column indicating set membership of a
     named column.
 
-(Note `rquery` prior to version `1.2.1` used a `_nse()` suffix yielding
-commands such as `extend_nse()` instead of the newer `extend()` shown
-here).
-
 The primary non-relational (traditional `SQL`) operators
     are:
 
@@ -350,7 +346,7 @@ class(result)
 result
 ```
 
-    ## [1] "mk_td(\"rquery_mat_43987280730372034973_0000000000\", c( \"subjectID\", \"diagnosis\", \"probability\"))"
+    ## [1] "mk_td(\"rquery_mat_55486134512257216654_0000000000\", c( \"subjectID\", \"diagnosis\", \"probability\"))"
 
 ``` r
 DBI::dbReadTable(db$connection, result$table_name) %.>%
@@ -430,14 +426,14 @@ cat(to_sql(dq, db, source_limit = 1000))
             "assessmentTotal"
            FROM
             "d" LIMIT 1000
-           ) tsql_96563131307362959234_0000000000
-          ) tsql_96563131307362959234_0000000001
-         ) tsql_96563131307362959234_0000000002
-       ) tsql_96563131307362959234_0000000003
+           ) tsql_79871207525346622049_0000000000
+          ) tsql_79871207525346622049_0000000001
+         ) tsql_79871207525346622049_0000000002
+       ) tsql_79871207525346622049_0000000003
        WHERE "row_number" <= 1
-      ) tsql_96563131307362959234_0000000004
-     ) tsql_96563131307362959234_0000000005
-    ) tsql_96563131307362959234_0000000006 ORDER BY "subjectID"
+      ) tsql_79871207525346622049_0000000004
+     ) tsql_79871207525346622049_0000000005
+    ) tsql_79871207525346622049_0000000006 ORDER BY "subjectID"
 
 The query is large, but due to its regular structure it should be very
 amenable to query optimization.

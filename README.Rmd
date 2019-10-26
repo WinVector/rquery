@@ -48,7 +48,6 @@ The primary relational operators include:
   * [`rename_columns()`](https://winvector.github.io/rquery/reference/rename_columns.html).  This operator renames sets of columns.
   * [`set_indicator()`](https://winvector.github.io/rquery/reference/set_indicator.html). This operator produces a new column indicating set membership of a named column.
 
-(Note `rquery` prior to version `1.2.1` used a `_nse()` suffix yielding commands such as `extend_nse()` instead of the newer `extend()` shown here).
   
 The primary non-relational (traditional `SQL`) operators are:
 
