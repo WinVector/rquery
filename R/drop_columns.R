@@ -49,7 +49,7 @@ drop_columns.relop <- function(source, drops,
   if(strict) {
     check_have_cols(have, drops, "rquery::drop_columns drops")
   }
-  removing <- setdiff(drops, have)
+  removing <- intersect(drops, have)
   if(length(removing)<=0) {
     return(source)
   }

@@ -8,6 +8,7 @@
  * Add arrow example.
  * Add wrap/ex pattern.
  * Remove relop_list paths.
+ * Fix drop_columns shortcut.
 
 # rquery 1.3.8 2019/09/15
 

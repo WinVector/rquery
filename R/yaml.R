@@ -108,6 +108,10 @@ to_transport_representation_step <- function(ops) {
                 columns = ops$columns))
   }
   # currently no drop_columns node in rquery, it is implemented as an appropriate select_columns()
+  if(is(ops, 'relop_drop_columns')) {
+    return(list(op = 'SelectColumns',
+                columns = ops$columns))
+  }
   if(is(ops, 'relop_rename_columns')) {
     return(list(op = 'Rename',
                 column_remapping = ops$cmap))

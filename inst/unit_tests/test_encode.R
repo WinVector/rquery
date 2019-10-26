@@ -1,6 +1,6 @@
 
 test_encode <- function() {
-  ops <- mk_td("test_table", c("a", "b", "c", "d")) %.>%
+  ops0 <- mk_td("test_table", c("a", "b", "c", "d")) %.>%
     extend(., zz = a + b, dd = a - b) %.>%
     select_rows(., zz > 3) %.>%
     select_columns(., c('zz', 'a', 'c', 'd')) %.>%
@@ -9,10 +9,19 @@ test_encode <- function() {
     rename_columns(., c('qq' = 'a')) %.>%
     order_rows(., c('c')) %.>%
     natural_join(., mk_td("t2", c("a", "b", "c", "d")), by="c")
+  ops <- mk_td("test_table", c("a", "b", "c", "d")) %.>%
+    extend(., zz = a + b, dd = a - b) %.>%
+    select_rows(., zz > 3) %.>%
+    select_columns(., c('zz', 'a', 'c', 'd')) %.>%
+    project(., d = max(d), m = min(c), groupby = c("a", "c")) %.>%
+    select_columns(., c("a", "c", "m")) %.>%
+    rename_columns(., c('qq' = 'a')) %.>%
+    order_rows(., c('c')) %.>%
+    natural_join(., mk_td("t2", c("a", "b", "c", "d")), by="c")
   s1 <- format(ops)
   s1 <- gsub("%:=%", ":=", s1, fixed=TRUE)
 
-  rep <- to_transport_representation(ops)
+  rep <- to_transport_representation(ops0)
   ops_back <- convert_yaml_to_pipeline(rep)
   s2 <- format(ops_back)
   s2 <- gsub("%:=%", ":=", s2, fixed=TRUE)
