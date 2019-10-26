@@ -7,15 +7,17 @@ Introduction to `rquery`
 system designed to express complex data manipulation as a series of data
 transforms. This is in the spirit of `R`’s `base::transform()`, or
 `dplyr`’s `dplyr::mutate()`. The operators themselves follow the
-selections in Codd’s relational algebra. More on the background and
-context of `rquery` can be found
-[here](TODO:%20link%20to%20CRAN%20intro%20vignette).
+selections in Codd’s relational algebra, with the addition of the
+traditional `SQL` “window functions.” More on the background and context
+of `rquery` can be found
+[here](https://github.com/WinVector/rquery/blob/master/Examples/old_readme/README.md).
 
-In these formulations data manipulation is written as transformations
-that produce new `data.frame`s, instead of as alterations of a primary
-data structure (as is the case with `data.table`). This system uses more
-space and time. However, in our opinion, it has a number of pedagogical
-advantages.
+In transform formulations data manipulation is written as
+transformations that produce new `data.frame`s, instead of as
+alterations of a primary data structure (as is the case with
+`data.table`). Transform system *can* use more space and time than
+in-place methods. However, in our opinion, transform systems have a
+number of pedagogical advantages.
 
 In `rquery`’s case the primary set of data operators is as follows:
 
@@ -39,7 +41,7 @@ These operations break into a small number of themes:
   - Aggregating or summarizing data.
   - Combining results between two `data.frame`s.
   - General conversion of record layouts (supplied by the [`cdata`
-    package](\(https://github.com/WinVector/cdata\)).
+    package](https://github.com/WinVector/cdata)).
 
 The point is: Codd worked out that a great number of data
 transformations can be decomposed into a small number of the above
@@ -81,10 +83,8 @@ knitr::kable(d)
 | 1 | 4 | 7 |
 | 2 | 3 | 8 |
 
-And the operations are easy to demonstrate.
-
-For example `drop_columns` works as follows, it creates a new
-`data.frame` without certain columns.
+For example: `drop_columns` works as follows. `drop_columns` creates a
+new `data.frame` without certain columns.
 
 ``` r
 library(rquery)
@@ -118,7 +118,8 @@ d %.>%
 | 1 |
 | 2 |
 
-Notice the first argument is an explicit “dot” in `wrapr` pipe notation.
+Notice the first argument is an explicit “dot” in [`wrapr` pipe
+notation](https://journal.r-project.org/archive/2018/RJ-2018-042/index.html).
 
 `select_columns`’s action is also obvious from example.
 
@@ -203,9 +204,10 @@ use `:=` to keep column assignment clearly distinguishable from argument
 binding.
 
 `extend` allows for very powerful per-group operations akin to what
-`SQL` calls [“window functions”](TODO:%20link). When the optional
-`partitionby` argument is set to a vector of column names then aggregate
-calculations can be performed per-group. For example.
+[`SQL`](TODO:%20Wikipedia%20link) calls [“window
+functions”](TODO:%20Wikipedia%20link). When the optional `partitionby`
+argument is set to a vector of column names then aggregate calculations
+can be performed per-group. For example.
 
 ``` r
 shift <- data.table::shift
@@ -233,7 +235,7 @@ Notice the aggregates were performed per-partition (specified by
 `orderby` for windowed operations that depend on row order\!).
 
 More on the window functions can be found
-[here](TODO:%20link%20to%20Window%20fns%20tutorial).
+[here](https://github.com/WinVector/rquery/blob/master/Examples/WindowFunctions/WindowFunctions.md).
 
 ### Aggregating or summarizing data
 
@@ -258,13 +260,29 @@ d %.>%
 | 1 |      5 |     2 |
 | 2 |      3 |     1 |
 
+Notice we only get one row for each unique combination of the grouping
+variables. We can also aggregate into a single row by not specifying any
+`groupby` columns.
+
+``` r
+d %.>%
+  project(.,
+         max_y := max(y),
+         count := n()) %.>%
+  knitr::kable(.)
+```
+
+| max\_y | count |
+| -----: | ----: |
+|      5 |     3 |
+
 ### Combining results between two `data.frame`s
 
-To combine multiple tables in `rquery` one uses the `natural_join`
-operator. In the `rquery` `natural_join` tables are matched by column
-keys and any two columns with the same name are *coalesced* (meaning the
-first table with a non-missing values supplies the answer). This is
-easiest to demonstrate with an example.
+To combine multiple tables in `rquery` one uses what we call the
+`natural_join` operator. In the `rquery` `natural_join` tables are
+matched by column keys and any two columns with the same name are
+*coalesced* (meaning the first table with a non-missing values supplies
+the answer). This is easiest to demonstrate with an example.
 
 Let’s set up new example tables.
 
@@ -329,14 +347,14 @@ it is missing.”
 
 ### General conversion of record layouts
 
-Record transformation is “simple one you get it”. However, we suggest
+Record transformation is “simple once you get it”. However, we suggest
 reading up on that as a separate topic
 [here](https://github.com/WinVector/cdata).
 
 ## Composing operations
 
 We could, of course, perform complicated data manipulation by sequencing
-`rquery` operations. For example to select one row with maximal `y`
+`rquery` operations. For example to select one row with minimal `y`
 per-`x` group we could work in steps as follows.
 
 ``` r
@@ -359,7 +377,7 @@ knitr::kable(.)
 
 The above discipline has the advantage that it is easy to debug, as we
 can run line by line and inspect intermediate values. We can even use
-the [Bizarrow pipe](TODO:%20link) to make this look like a pipeline of
+the [Bizarro pipe](TODO:%20link) to make this look like a pipeline of
 operations.
 
 ``` r
@@ -369,9 +387,9 @@ d ->.;
          partitionby = 'x',
          orderby = c('y', 'z')) ->.;
   select_rows(.,
-              row_number == 1) ->.;
+              row_number == 1)  ->.;
   drop_columns(.,
-               "row_number") ->.;
+               "row_number")    ->.;
   knitr::kable(.)
 ```
 
@@ -380,9 +398,11 @@ d ->.;
 | 1 | 4 | 7 |
 | 2 | 3 | 8 |
 
-Or we can use the `wrapr` pipe on the data, which we call “immediate
-mode” (for more on modes please see
-[here](TODO:%20link%20to%20modes%20note)).
+Or we can use the [`wrapr`
+pipe](https://journal.r-project.org/archive/2018/RJ-2018-042/index.html)
+on the data, which we call “immediate mode” (for more on modes please
+see
+[here](https://github.com/WinVector/rquery/blob/master/Examples/Modes/Modes.md)).
 
 ``` r
 d %.>%
@@ -447,8 +467,8 @@ d %.>%
 | 1 | 4 | 7 |
 | 2 | 3 | 8 |
 
-What we are trying to illustrate above: there is a continum of notations
-possible between:
+What we are trying to illustrate above: there is a continuum of
+notations possible between:
 
   - Working over values with explicit intermediate variables.
   - Working over values with a pipeline.
@@ -456,13 +476,10 @@ possible between:
 
 Being able to see these as all related gives some flexibility in
 decomposing problems into solutions. We have some more advanced notes on
-the differnces in working modalities [here](TODO:%20link%20to%20modes)
-and [here](TODO:%20link%20to%20arrows).
-
-## Python
-
-The [`data_algebra`](TODO:%20link) Python package supplies a nearly
-identical system for working with data in Python.
+the differences in working modalities
+[here](https://github.com/WinVector/rquery/blob/master/Examples/Modes/Modes.md)
+and
+[here](https://github.com/WinVector/rquery/blob/master/Examples/Arrow/Arrow.md).
 
 ## Conclusion
 
@@ -470,11 +487,20 @@ identical system for working with data in Python.
 Codd’s relational algebra and experience with pipelined data transforms
 (such as `base::transform()`, `dplyr`, and `data.table`).
 
-For in-memory situations `rquery` uses `data.table` as it implementation
-(through the small adapter package `rqdatatable`) and is routinely
-faster than any other `R` data manipulation system *except* `data.table`
-itself.
+For in-memory situations `rquery` uses `data.table` as the
+implementation provider (through the small adapter package
+`rqdatatable`) and is routinely faster than any other `R` data
+manipulation system *except* `data.table` itself.
 
 For bigger than memory situations `rquery` can translate to any
 sufficiently powerful `SQL` dialect, allowing `rquery` pipelines to be
-executed on PostgeSQL, Apache Spark, or Google BigQuery.
+executed on PostgreSQL, Apache Spark, or Google BigQuery.
+
+In addition the
+[`data_algebra`](https://github.com/WinVector/data_algebra) Python
+package supplies a nearly identical system for working with data in
+Python. The two systems can even [share data manipulation code between
+each
+other](https://github.com/WinVector/rquery/blob/master/Examples/yaml/yaml.md)
+(allowing very powerful R/Python inter-operation or helping port
+projects from one to the other).
