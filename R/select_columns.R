@@ -74,9 +74,9 @@ column_names.relop_select_columns <- function (x, ...) {
 #' @export
 format_node.relop_select_columns <- function(node) {
   cols <- paste0('"', node$columns, '"')
-  paste0("select_columns(., c(\n   ",
-         paste(cols, collapse = ", "),
-         "))",
+  paste0("select_columns(., \n    ",
+         wrapr::map_to_char(node$columns),
+         ")",
          "\n")
 }
 

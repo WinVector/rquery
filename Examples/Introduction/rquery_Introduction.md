@@ -4,12 +4,12 @@ Introduction to `rquery`
 ## Introduction
 
 [`rquery`](https://github.com/WinVector/rquery) is a data wrangling
-system designed to express complex data manipulation as a series of data
-transforms. This is in the spirit of `R`’s `base::transform()`, or
-`dplyr`’s `dplyr::mutate()`. The operators themselves follow the
-selections in Codd’s relational algebra, with the addition of the
-traditional `SQL` “window functions.” More on the background and context
-of `rquery` can be found
+system designed to express complex data manipulation as a series of
+simple data transforms. This is in the spirit of `R`’s
+`base::transform()`, or `dplyr`’s `dplyr::mutate()`. The operators
+themselves follow the selections in Codd’s relational algebra, with the
+addition of the traditional `SQL` “window functions.” More on the
+background and context of `rquery` can be found
 [here](https://github.com/WinVector/rquery/blob/master/Examples/old_readme/README.md).
 
 In transform formulations data manipulation is written as
@@ -142,7 +142,8 @@ The simple row operations are:
   - `select_rows`
   - `order_rows`
 
-`select_rows` keeps the set of rows that meet a given predicate.
+`select_rows` keeps the set of rows that meet a given predicate
+expression.
 
 ``` r
 d %.>%
@@ -229,10 +230,11 @@ d %.>%
 | 1 | 5 | 6 |      5 |        7 |           2 |        13 |
 | 2 | 3 | 8 |      3 |       NA |           1 |         8 |
 
-Notice the aggregates were performed per-partition (specified by
-`partitionby`) and in the order determined by the `orderby` argument
-(without the `orderby` argument order is not guaranteed, so always set
-`orderby` for windowed operations that depend on row order\!).
+Notice the aggregates were performed per-partition (a set of rows with
+matching partition key values, specified by `partitionby`) and in the
+order determined by the `orderby` argument (without the `orderby`
+argument order is not guaranteed, so always set `orderby` for windowed
+operations that depend on row order\!).
 
 More on the window functions can be found
 [here](https://github.com/WinVector/rquery/blob/master/Examples/WindowFunctions/WindowFunctions.md).
@@ -411,9 +413,9 @@ d %.>%
          partitionby = 'x',
          orderby = c('y', 'z')) %.>%
   select_rows(.,
-              row_number == 1) %.>%
+              row_number == 1)  %.>%
   drop_columns(.,
-               "row_number") %.>%
+               "row_number")    %.>%
   knitr::kable(.)
 ```
 
@@ -422,8 +424,8 @@ d %.>%
 | 1 | 4 | 7 |
 | 2 | 3 | 8 |
 
-However, `rquery` operators can act on `rquery` pipelines in place of
-data. We can write our operations as follows:
+`rquery` operators can also act on `rquery` pipelines istead of acting
+on data. We can write our operations as follows:
 
 ``` r
 ops <- local_td(d) %.>%
@@ -432,7 +434,7 @@ ops <- local_td(d) %.>%
          partitionby = 'x',
          orderby = c('y', 'z')) %.>%
   select_rows(.,
-              row_number == 1) %.>%
+              row_number == 1)  %.>%
   drop_columns(.,
                "row_number")
 
@@ -451,10 +453,11 @@ cat(format(ops))
     ##  select_rows(.,
     ##    row_number == 1) %.>%
     ##  drop_columns(.,
-    ##    row_number)
+    ##    c('row_number'))
 
 And we can re-use this pipeline, both on local data and to generate
-`SQL` to be run in remote databases.
+`SQL` to be run in remote databases. Applying this operator pipeline to
+our `data.frame` `d` is performed as follows.
 
 ``` r
 d %.>% 
