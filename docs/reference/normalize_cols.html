@@ -221,8 +221,8 @@
 #&gt;    row_number &lt;= 1) %.&gt;%
 #&gt;  rename_columns(.,
 #&gt;   c('diagnosis' = 'surveyCategory')) %.&gt;%
-#&gt;  select_columns(., c(
-#&gt;    "subjectID", "diagnosis", "probability")) %.&gt;%
+#&gt;  select_columns(., 
+#&gt;     c('subjectID', 'diagnosis', 'probability')) %.&gt;%
 #&gt;  order_rows(.,
 #&gt;   c('subjectID'),
 #&gt;   reverse = c(),

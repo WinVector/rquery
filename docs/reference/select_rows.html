@@ -195,8 +195,8 @@
 #&gt;   "z")) %.&gt;%
 #&gt;  select_rows(.,
 #&gt;    AUC &gt;= 0.5) %.&gt;%
-#&gt;  select_columns(., c(
-#&gt;    "R2"))
+#&gt;  select_columns(., 
+#&gt;     c('R2'))
 #&gt; SELECT
 #&gt;  `R2`
 #&gt; FROM (
@@ -206,9 +206,9 @@
 #&gt;    `R2`
 #&gt;   FROM
 #&gt;    `d`
-#&gt;  ) tsql_11090134104390167605_0000000000
+#&gt;  ) tsql_29579461050526240931_0000000000
 #&gt;  WHERE `AUC` &gt;= 0.5
-#&gt; ) tsql_11090134104390167605_0000000001
+#&gt; ) tsql_29579461050526240931_0000000001
 #&gt;    R2
 #&gt; 1 0.2</div><div class='input'>
 </div></pre>

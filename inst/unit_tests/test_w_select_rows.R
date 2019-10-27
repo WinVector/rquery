@@ -5,13 +5,15 @@ test_w_select_rows <- function() {
 
   ops <- wrap(d) %.>%
     select_rows(., x>2)
-  res <- ex(ops)
+  if(requireNamespace('rqdatatable', quietly = TRUE)) {
+     res <- ex(ops)
 
-  expect <- wrapr::build_frame(
-    "x"  , "y" |
-      3L , 6L  )
+     expect <- wrapr::build_frame(
+       "x"  , "y" |
+       3L , 6L  )
 
-  RUnit::checkTrue(wrapr::check_equiv_frames(res, expect))
+     RUnit::checkTrue(wrapr::check_equiv_frames(res, expect))
+  }
 
   invisible(NULL)
 }

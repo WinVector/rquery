@@ -106,7 +106,7 @@
       <h1>Assignment Partitioner</h1>
                         <h4 class="author">John Mount, Win-Vector LLC</h4>
             
-            <h4 class="date">2019-10-23</h4>
+            <h4 class="date">2019-10-26</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery/blob/master/vignettes/AssigmentPartitioner.Rmd"><code>vignettes/AssigmentPartitioner.Rmd</code></a></small>
       <div class="hidden name"><code>AssigmentPartitioner.Rmd</code></div>
@@ -250,8 +250,8 @@
   d_2 := ifelse(choice_d, "C", "T"),
   e_1 := ifelse(choice_e, "T", "C"),
   e_2 := ifelse(choice_e, "C", "T")) %.&gt;%
- select_columns(., c(
-   "id", "a_1", "a_2", "b_1", "b_2", "c_1", "c_2", "d_1", "d_2", "e_1", "e_2"))</code></pre>
+ select_columns(., 
+    c('id', 'a_1', 'a_2', 'b_1', 'b_2', 'c_1', 'c_2', 'd_1', 'd_2', 'e_1', 'e_2'))</code></pre>
 <p>Notice <code><a href="../reference/extend_se.html">rquery::extend_se()</a></code> split the work into 3 unambiguous groups. The statements inside each group can now be executed in any order (or even in parallel) with no ambiguity of meaning or risk of error. The goal was: split into a small number of groups such that the observable execution semantics are very close to executing the original statements in order in completely separate groups (which is likely what a user intends).</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">sql &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(plan, my_db)</a>
 <a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(sql)</a></code></pre></div>
@@ -298,9 +298,9 @@ FROM (
     `rand_e`
    FROM
     `example_table`
-   ) tsql_53272849086359897594_0000000000
-  ) tsql_53272849086359897594_0000000001
-) tsql_53272849086359897594_0000000002</code></pre>
+   ) tsql_59110515983599244008_0000000000
+  ) tsql_59110515983599244008_0000000001
+) tsql_59110515983599244008_0000000002</code></pre>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">DBI<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/DBI/man/dbGetQuery.html">dbGetQuery</a></span>(my_db, sql) <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb7-2" data-line-number="2"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(.)</a></code></pre></div>
 <table class="table">
@@ -453,8 +453,8 @@ once in an extend</code></pre>
  extend(.,
   e_1 := ifelse(choice, "T", "C"),
   e_2 := ifelse(choice, "C", "T")) %.&gt;%
- select_columns(., c(
-   "id", "a_1", "a_2", "b_1", "b_2", "c_1", "c_2", "d_1", "d_2", "e_1", "e_2"))</code></pre>
+ select_columns(., 
+    c('id', 'a_1', 'a_2', 'b_1', 'b_2', 'c_1', 'c_2', 'd_1', 'd_2', 'e_1', 'e_2'))</code></pre>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1">sql2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(plan2, my_db)</a>
 <a class="sourceLine" id="cb12-2" data-line-number="2">DBI<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/DBI/man/dbGetQuery.html">dbGetQuery</a></span>(my_db, sql2) <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb12-3" data-line-number="3"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(.)</a></code></pre></div>

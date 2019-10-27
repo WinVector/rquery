@@ -25,8 +25,10 @@ test_arrow_vbind <- function() {
   str <- format(ops)
   RUnit::checkTrue(length(grep('scale', str, fixed = TRUE))==0)
   RUnit::checkTrue(length(grep('t', str, fixed = TRUE))==1)
-  res <- ex(ops)
-  RUnit::checkTrue(is.data.frame(res))
+  if(requireNamespace('rqdatatable', quietly = TRUE)) {
+    res <- ex(ops)
+    RUnit::checkTrue(is.data.frame(res))
+  }
 
   invisible(NULL)
 }

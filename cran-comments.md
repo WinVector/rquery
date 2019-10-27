@@ -4,7 +4,7 @@
 
 ### OSX (local machine using --as-cran from the command line)
 
-    * using R version 3.6.0 (2019-04-26)
+    R CMD check --as-cran rquery_1.3.9.tar.gz
     * using R version 3.6.0 (2019-04-26)
     * using platform: x86_64-apple-darwin15.6.0 (64-bit)
     * using session charset: UTF-8
@@ -20,7 +20,7 @@
 ### Windows
 
     rhub::check_for_cran()
-    836#> * using R Under development (unstable) (2019-09-18 r77193)
+    836#> * using R Under development (unstable) (2019-10-19 r77318)
     837#> * using platform: x86_64-w64-mingw32 (64-bit)
     838#> * using session charset: ISO8859-1
     839#> * using option '--as-cran'

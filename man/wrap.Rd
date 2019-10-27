@@ -24,10 +24,12 @@ immediate pipelines.  Used with \code{ex()}.
 }
 \examples{
 
+if(requireNamespace('rqdatatable')) {
  d <- data.frame(x = 1:3, y = 4:6)
  d \%.>\%
    wrap(.) \%.>\%
    extend(., z := x + y) \%.>\%
    ex(.)
+}
 
 }

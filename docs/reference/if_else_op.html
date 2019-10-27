@@ -256,49 +256,57 @@ is a reserved column name for this procedure.</p>
 #&gt;   b := ifelse(ifebtest_1, 0, b),
 #&gt;   edited := ifelse(ifebtest_1, 1, edited)) %.&gt;%
 #&gt;  extend(.,
-#&gt;   edited := ifelse(!(ifebtest_1), 0, edited))
+#&gt;   edited := ifelse(!(ifebtest_1), 0, edited)) %.&gt;%
+#&gt;  drop_columns(.,
+#&gt;    c('ifebtest_1'))
 #&gt; SELECT
 #&gt;  `i`,
 #&gt;  `a`,
 #&gt;  `b`,
-#&gt;  `ifebtest_1`,
-#&gt;  ( CASE WHEN ( ( NOT ( `ifebtest_1` ) ) ) THEN ( 0 ) WHEN NOT ( ( NOT ( `ifebtest_1` ) ) ) THEN ( `edited` ) ELSE NULL END )  AS `edited`
+#&gt;  `edited`
 #&gt; FROM (
 #&gt;  SELECT
 #&gt;   `i`,
-#&gt;   `ifebtest_1`,
-#&gt;   ( CASE WHEN ( `ifebtest_1` ) THEN ( 0 ) WHEN NOT ( `ifebtest_1` ) THEN ( `a` ) ELSE NULL END )  AS `a`,
-#&gt;   ( CASE WHEN ( `ifebtest_1` ) THEN ( 0 ) WHEN NOT ( `ifebtest_1` ) THEN ( `b` ) ELSE NULL END )  AS `b`,
-#&gt;   ( CASE WHEN ( `ifebtest_1` ) THEN ( 1 ) WHEN NOT ( `ifebtest_1` ) THEN ( `edited` ) ELSE NULL END )  AS `edited`
+#&gt;   `a`,
+#&gt;   `b`,
+#&gt;   ( CASE WHEN ( ( NOT ( `ifebtest_1` ) ) ) THEN ( 0 ) WHEN NOT ( ( NOT ( `ifebtest_1` ) ) ) THEN ( `edited` ) ELSE NULL END )  AS `edited`
 #&gt;  FROM (
 #&gt;   SELECT
 #&gt;    `i`,
-#&gt;    `a`,
-#&gt;    `b`,
-#&gt;    `edited`,
-#&gt;    ( `a` + `b` ) &gt; 1  AS `ifebtest_1`
+#&gt;    `ifebtest_1`,
+#&gt;    ( CASE WHEN ( `ifebtest_1` ) THEN ( 0 ) WHEN NOT ( `ifebtest_1` ) THEN ( `a` ) ELSE NULL END )  AS `a`,
+#&gt;    ( CASE WHEN ( `ifebtest_1` ) THEN ( 0 ) WHEN NOT ( `ifebtest_1` ) THEN ( `b` ) ELSE NULL END )  AS `b`,
+#&gt;    ( CASE WHEN ( `ifebtest_1` ) THEN ( 1 ) WHEN NOT ( `ifebtest_1` ) THEN ( `edited` ) ELSE NULL END )  AS `edited`
 #&gt;   FROM (
 #&gt;    SELECT
 #&gt;     `i`,
 #&gt;     `a`,
 #&gt;     `b`,
-#&gt;     `edited`
-#&gt;    FROM
-#&gt;     `d`
-#&gt;    ) tsql_58024244100795104657_0000000000
-#&gt;   ) tsql_58024244100795104657_0000000001
-#&gt;  ) tsql_58024244100795104657_0000000002
-#&gt;     i a b ifebtest_1 edited
-#&gt; 1   1 0 0          0      0
-#&gt; 2   2 0 1          0      0
-#&gt; 3   3 1 0          0      0
-#&gt; 4   4 0 0          1      1
-#&gt; 5   5 0 0          1      1
-#&gt; 6   6 0 0          1      1
-#&gt; 7   7 0 0          1      1
-#&gt; 8   8 0 0          1      1
-#&gt; 9   9 0 0          1      1
-#&gt; 10 10 0 0          1      1</div><div class='input'>
+#&gt;     `edited`,
+#&gt;     ( `a` + `b` ) &gt; 1  AS `ifebtest_1`
+#&gt;    FROM (
+#&gt;     SELECT
+#&gt;      `i`,
+#&gt;      `a`,
+#&gt;      `b`,
+#&gt;      `edited`
+#&gt;     FROM
+#&gt;      `d`
+#&gt;     ) tsql_47205981759382612935_0000000000
+#&gt;    ) tsql_47205981759382612935_0000000001
+#&gt;   ) tsql_47205981759382612935_0000000002
+#&gt; ) tsql_47205981759382612935_0000000003
+#&gt;     i a b edited
+#&gt; 1   1 0 0      0
+#&gt; 2   2 0 1      0
+#&gt; 3   3 1 0      0
+#&gt; 4   4 0 0      1
+#&gt; 5   5 0 0      1
+#&gt; 6   6 0 0      1
+#&gt; 7   7 0 0      1
+#&gt; 8   8 0 0      1
+#&gt; 9   9 0 0      1
+#&gt; 10 10 0 0      1</div><div class='input'>
 
 </div></pre>
   </div>

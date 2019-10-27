@@ -188,8 +188,8 @@
 }</div><div class='output co'>#&gt; mk_td("d", c(
 #&gt;   "AUC",
 #&gt;   "R2")) %.&gt;%
-#&gt;  select_columns(., c(
-#&gt;    "AUC"))
+#&gt;  select_columns(., 
+#&gt;     c('AUC'))
 #&gt; SELECT
 #&gt;  `AUC`
 #&gt; FROM (
@@ -197,7 +197,7 @@
 #&gt;   `AUC`
 #&gt;  FROM
 #&gt;   `d`
-#&gt; ) tsql_56746092371016672756_0000000000
+#&gt; ) tsql_40123369363802790611_0000000000
 #&gt;   AUC
 #&gt; 1 0.6</div><div class='input'>
 </div></pre>

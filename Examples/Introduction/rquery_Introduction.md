@@ -206,10 +206,10 @@ use `:=` to keep column assignment clearly distinguishable from argument
 binding.
 
 `extend` allows for very powerful per-group operations akin to what
-[`SQL`](TODO:%20Wikipedia%20link) calls [“window
-functions”](TODO:%20Wikipedia%20link). When the optional `partitionby`
-argument is set to a vector of column names then aggregate calculations
-can be performed per-group. For example.
+[`SQL`](https://en.wikipedia.org/wiki/SQL) calls [“window
+functions”](https://en.wikipedia.org/wiki/SQL_window_function). When
+the optional `partitionby` argument is set to a vector of column names
+then aggregate calculations can be performed per-group. For example.
 
 ``` r
 shift <- data.table::shift
@@ -380,8 +380,9 @@ knitr::kable(.)
 
 The above discipline has the advantage that it is easy to debug, as we
 can run line by line and inspect intermediate values. We can even use
-the [Bizarro pipe](TODO:%20link) to make this look like a pipeline of
-operations.
+the [Bizarro
+pipe](http://www.win-vector.com/blog/2017/01/using-the-bizarro-pipe-to-debug-magrittr-pipelines-in-r/)
+to make this look like a pipeline of operations.
 
 ``` r
 d ->.;
@@ -425,7 +426,7 @@ d %.>%
 | 1 | 4 | 7 |
 | 2 | 3 | 8 |
 
-`rquery` operators can also act on `rquery` pipelines istead of acting
+`rquery` operators can also act on `rquery` pipelines instead of acting
 on data. We can write our operations as follows:
 
 ``` r

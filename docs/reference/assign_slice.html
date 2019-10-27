@@ -220,41 +220,49 @@ is a reserved column name for this procedure.</p>
 #&gt;   ifebtest_1 := r &lt; 0.5) %.&gt;%
 #&gt;  extend(.,
 #&gt;   a := ifelse(ifebtest_1, 2, a),
-#&gt;   b := ifelse(ifebtest_1, 2, b))
+#&gt;   b := ifelse(ifebtest_1, 2, b)) %.&gt;%
+#&gt;  drop_columns(.,
+#&gt;    c('ifebtest_1'))
 #&gt; SELECT
 #&gt;  `i`,
-#&gt;  `r`,
-#&gt;  `ifebtest_1`,
-#&gt;  ( CASE WHEN ( `ifebtest_1` ) THEN ( 2 ) WHEN NOT ( `ifebtest_1` ) THEN ( `a` ) ELSE NULL END )  AS `a`,
-#&gt;  ( CASE WHEN ( `ifebtest_1` ) THEN ( 2 ) WHEN NOT ( `ifebtest_1` ) THEN ( `b` ) ELSE NULL END )  AS `b`
+#&gt;  `a`,
+#&gt;  `b`,
+#&gt;  `r`
 #&gt; FROM (
 #&gt;  SELECT
 #&gt;   `i`,
-#&gt;   `a`,
-#&gt;   `b`,
 #&gt;   `r`,
-#&gt;   `r` &lt; 0.5  AS `ifebtest_1`
+#&gt;   ( CASE WHEN ( `ifebtest_1` ) THEN ( 2 ) WHEN NOT ( `ifebtest_1` ) THEN ( `a` ) ELSE NULL END )  AS `a`,
+#&gt;   ( CASE WHEN ( `ifebtest_1` ) THEN ( 2 ) WHEN NOT ( `ifebtest_1` ) THEN ( `b` ) ELSE NULL END )  AS `b`
 #&gt;  FROM (
 #&gt;   SELECT
 #&gt;    `i`,
 #&gt;    `a`,
 #&gt;    `b`,
-#&gt;    `r`
-#&gt;   FROM
-#&gt;    `d`
-#&gt;   ) tsql_78089537568529824711_0000000000
-#&gt;  ) tsql_78089537568529824711_0000000001
-#&gt;     i         r ifebtest_1 a b
-#&gt; 1   1 0.8056800          0 0 0
-#&gt; 2   2 0.8140513          0 0 1
-#&gt; 3   3 0.4039110          1 2 2
-#&gt; 4   4 0.2184310          1 2 2
-#&gt; 5   5 0.4183614          1 2 2
-#&gt; 6   6 0.6688707          0 1 1
-#&gt; 7   7 0.5076503          0 1 1
-#&gt; 8   8 0.6603593          0 1 1
-#&gt; 9   9 0.5117913          0 1 1
-#&gt; 10 10 0.8355524          0 1 1</div><div class='input'>
+#&gt;    `r`,
+#&gt;    `r` &lt; 0.5  AS `ifebtest_1`
+#&gt;   FROM (
+#&gt;    SELECT
+#&gt;     `i`,
+#&gt;     `a`,
+#&gt;     `b`,
+#&gt;     `r`
+#&gt;    FROM
+#&gt;     `d`
+#&gt;    ) tsql_09643026056975031549_0000000000
+#&gt;   ) tsql_09643026056975031549_0000000001
+#&gt; ) tsql_09643026056975031549_0000000002
+#&gt;     i a b         r
+#&gt; 1   1 2 2 0.2369776
+#&gt; 2   2 0 1 0.9062973
+#&gt; 3   3 1 0 0.8188730
+#&gt; 4   4 1 1 0.6998294
+#&gt; 5   5 2 2 0.2200003
+#&gt; 6   6 1 1 0.7279909
+#&gt; 7   7 2 2 0.2170845
+#&gt; 8   8 2 2 0.4562302
+#&gt; 9   9 2 2 0.3327998
+#&gt; 10 10 1 1 0.5683527</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

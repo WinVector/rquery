@@ -277,11 +277,13 @@ order_rows.wrapped_relop <- function(source,
 #'
 #' @examples
 #'
+#' if(requireNamespace('rqdatatable')) {
 #'  d <- data.frame(x = 1:3, y = 4:6)
 #'  d %.>%
 #'    wrap(.) %.>%
 #'    extend(., z := x + y) %.>%
 #'    ex(.)
+#' }
 #'
 #' @export
 #'
@@ -332,11 +334,13 @@ wrap.data.frame <- function(d,
 #'
 #' @examples
 #'
+#' if(requireNamespace('rqdatatable')) {
 #'  d <- data.frame(x = 1:3, y = 4:6)
 #'  d %.>%
 #'    wrap(.) %.>%
 #'    extend(., z := x + y) %.>%
 #'    ex(.)
+#' }
 #'
 #' @export
 #'
