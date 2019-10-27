@@ -5,7 +5,9 @@ output: github_document
 
 [`rqdatatable`](https://github.com/WinVector/rqdatatable)/[`rquery`](https://github.com/WinVector/rquery) is designed to have a number of different modes of use.  The primary intended one the considered mode of building up a pipelines from a description of the tables to be acted on.
 
-As our example, lets start with the following example data.
+(Note the `R`/`rquery` version of this example can be found [here](https://github.com/WinVector/rquery/blob/master/Examples/Modes/Modes.md), and the `Python`/`data_algebra` version can be found [here](https://github.com/WinVector/data_algebra/blob/master/Examples/Modes/Modes.md).)
+
+For our example, lets start with the following example data.
 
 ```{r}
 d <- data.frame(

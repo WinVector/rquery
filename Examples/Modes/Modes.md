@@ -6,7 +6,12 @@ is designed to have a number of different modes of use. The primary
 intended one the considered mode of building up a pipelines from a
 description of the tables to be acted on.
 
-As our example, lets start with the following example data.
+(Note the `R`/`rquery` version of this example can be found
+[here](https://github.com/WinVector/rquery/blob/master/Examples/Modes/Modes.md),
+and the `Python`/`data_algebra` version can be found
+[here](https://github.com/WinVector/data_algebra/blob/master/Examples/Modes/Modes.md).)
+
+For our example, lets start with the following example data.
 
 ``` r
 d <- data.frame(
@@ -330,10 +335,10 @@ print(timings)
 
     ## Unit: milliseconds
     ##              expr      min       lq      mean   median        uq       max
-    ##   rquery_compiled 616.6470 641.2185  691.7500 665.4975  746.9114  818.6258
-    ##  rquery_immediate 810.5923 922.7914 1036.9230 964.8026 1137.7349 1466.3925
-    ##    rquery_wrapped 643.4293 686.7460  763.3003 745.0626  820.7949  878.3681
-    ##        data.table 484.3947 523.5561  567.5336 545.8624  614.2712  696.6354
+    ##   rquery_compiled 443.9422 576.3907  633.1094 641.1864  727.6849  764.1443
+    ##  rquery_immediate 774.5613 911.2138 1004.4783 961.7143 1124.9654 1313.7420
+    ##    rquery_wrapped 533.7828 570.3755  669.2920 675.6945  757.5306  819.7974
+    ##        data.table 421.9441 538.1256  565.1605 573.3069  608.2024  683.9469
     ##  neval
     ##     10
     ##     10
