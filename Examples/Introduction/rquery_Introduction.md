@@ -13,9 +13,9 @@ the traditional `SQL` “window functions.” More on the background and
 context of `rquery` can be found
 [here](https://github.com/WinVector/rquery/blob/master/Examples/old_readme/README.md).
 
-The `R`/`rquery` version of this introuction is
+The `R`/`rquery` version of this introduction is
 [here](https://github.com/WinVector/rquery/blob/master/Examples/Introduction/rquery_Introduction.md),
-and the `Python`/`data_algebra` version of this introduciton is
+and the `Python`/`data_algebra` version of this introduction is
 [here](https://github.com/WinVector/data_algebra/blob/master/Examples/Introduction/data_algebra_Introduction.md).
 
 In transform formulations data manipulation is written as
