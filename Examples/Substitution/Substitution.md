@@ -86,6 +86,23 @@ d %.>%
 | 1 | 7 | 6 |
 | 1 | 8 | 7 |
 
+And the method can also be used with project.
+
+``` r
+d %.>%
+  wrap %.>%
+  select_rows(.,
+              .(condition_variable) == 1) %.>%
+  project(.,
+         .(new_value_variable) := max(.(old_value_variable))) %.>%
+  ex %.>%
+  knitr::kable(.)
+```
+
+| y |
+| -: |
+| 7 |
+
 Note: `rquery` `1.3.9` has an issue with `bquote`/`.()` substitution in
 “imediate mode”, but we are fixing that now.
 
