@@ -88,6 +88,17 @@ d %.>%
   knitr::kable(.)
 ```
 
+`rename_columns` is given as name-assignments of the form `'new_name' = 'old_name'`:
+
+```{r}
+d %.>%
+  rename_columns(., 
+                 c('x_new_name' = 'x', 
+                   'y_new_name' = 'y')
+                 ) %.>%
+  knitr::kable(.)
+```
+
 ### Simple row operations (selecting and re-ordering rows)
 
 The simple row operations are:
@@ -102,6 +113,8 @@ d %.>%
   select_rows(., x == 1) %.>%
   knitr::kable(.)
 ```
+
+Notes on how to use a variable to specify column names in `select_rows` can be found [here](https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md).
 
 
 `order_rows` re-orders rows by a selection of column names (and allows reverse ordering by naming which columns to reverse in the optional `reverse` argument).  Multiple columns can be selected in the order, each column breaking ties in the earlier comparisons.
@@ -150,7 +163,8 @@ d %.>%
 
 Notice the aggregates were performed per-partition (a set of rows with matching partition key values, specified by `partitionby`) and in the order determined by the `orderby` argument (without the `orderby` argument order is not guaranteed, so always set `orderby` for windowed operations that depend on row order!).
 
-More on the window functions can be found [here](https://github.com/WinVector/rquery/blob/master/Examples/WindowFunctions/WindowFunctions.md).
+More on the window functions can be found [here](https://github.com/WinVector/rquery/blob/master/Examples/WindowFunctions/WindowFunctions.md). Notes on how to use a variable to specify column names in `extend` can be found [here](https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md).
+
 
 
 ### Aggregating or summarizing data
@@ -180,6 +194,7 @@ d %.>%
   knitr::kable(.)
 ```
 
+Notes on how to use a variable to specify column names in `project` can be found [here](https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md).
 
 ### Combining results between two `data.frame`s
 
