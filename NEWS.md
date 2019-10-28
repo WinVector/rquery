@@ -1,4 +1,8 @@
 
+# rquery 1.4.0 2019/10/28
+
+ * Fix name substitution in immediate mode.
+
 # rquery 1.3.9 2019/10/26
 
  * Tune yaml path.

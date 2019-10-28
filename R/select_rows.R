@@ -89,7 +89,7 @@ select_rows_se.data.frame <- function(source, expr,
 
 #' Make a select rows node.
 #'
-#' select_rows() uses bquote() .()-style escaping.
+#' Supports bquote() .()-style name abstraction (please see here: \url{https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md}).
 #'
 #' @param source source to select from.
 #' @param expr expression to select rows.
@@ -158,7 +158,7 @@ select_rows.relop <- function(source, expr,
 select_rows.data.frame <- function(source, expr,
                             env = parent.frame()) {
   force(env)
-  exprq <- substitute(expr)
+  exprq <- do.call(bquote, list(substitute(expr), where = env), envir = env)
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- mk_td(tmp_name, colnames(source))
   enode <- select_rows_se(dnode, rquery_deparse(exprq),

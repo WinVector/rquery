@@ -9,9 +9,12 @@ output: github_document
 [`rquery`](https://winvector.github.io/rquery/) is a piped query generator based on [Codd's relational algebra](https://en.wikipedia.org/wiki/Relational_algebra) (updated to reflect lessons learned from working with [`R`](https://www.r-project.org), [`SQL`](https://en.wikipedia.org/wiki/SQL), and [`dplyr`]( https://CRAN.R-project.org/package=dplyr) at big data scale in production).  
 
 
+
 ## Introduction
 
 [`rquery`](https://github.com/WinVector/rquery) is a data wrangling system designed to express complex data manipulation as a series of simple data transforms. This is in the spirit of `R`'s `base::transform()`, or `dplyr`'s `dplyr::mutate()` and uses a pipe in the style popularized in `R` with `magrittr`.  The operators themselves follow the selections in Codd's relational algebra, with the addition of the traditional `SQL` "window functions."  More on the background and context of `rquery` can be found [here](https://github.com/WinVector/rquery/blob/master/Examples/old_readme/README.md).
+
+The `R`/`rquery` version of this introduction is [here](https://github.com/WinVector/rquery/blob/master/Examples/Introduction/rquery_Introduction.md), and the `Python`/`data_algebra` version of this introduction is [here](https://github.com/WinVector/data_algebra/blob/master/Examples/Introduction/data_algebra_Introduction.md).
 
 In transform formulations data manipulation is written as transformations that produce new `data.frame`s, instead of as alterations of a primary data structure (as is the case with `data.table`).  Transform system *can* use more space and time than in-place methods. However, in our opinion, transform systems have a number of pedagogical advantages.
 
@@ -92,6 +95,17 @@ d %.>%
   knitr::kable(.)
 ```
 
+`rename_columns` is given as name-assignments of the form `'new_name' = 'old_name'`:
+
+```{r}
+d %.>%
+  rename_columns(., 
+                 c('x_new_name' = 'x', 
+                   'y_new_name' = 'y')
+                 ) %.>%
+  knitr::kable(.)
+```
+
 ### Simple row operations (selecting and re-ordering rows)
 
 The simple row operations are:
@@ -106,6 +120,8 @@ d %.>%
   select_rows(., x == 1) %.>%
   knitr::kable(.)
 ```
+
+Notes on how to use a variable to specify column names in `select_rows` can be found [here](https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md).
 
 
 `order_rows` re-orders rows by a selection of column names (and allows reverse ordering by naming which columns to reverse in the optional `reverse` argument).  Multiple columns can be selected in the order, each column breaking ties in the earlier comparisons.
@@ -154,7 +170,8 @@ d %.>%
 
 Notice the aggregates were performed per-partition (a set of rows with matching partition key values, specified by `partitionby`) and in the order determined by the `orderby` argument (without the `orderby` argument order is not guaranteed, so always set `orderby` for windowed operations that depend on row order!).
 
-More on the window functions can be found [here](https://github.com/WinVector/rquery/blob/master/Examples/WindowFunctions/WindowFunctions.md).
+More on the window functions can be found [here](https://github.com/WinVector/rquery/blob/master/Examples/WindowFunctions/WindowFunctions.md). Notes on how to use a variable to specify column names in `extend` can be found [here](https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md).
+
 
 
 ### Aggregating or summarizing data
@@ -184,6 +201,7 @@ d %.>%
   knitr::kable(.)
 ```
 
+Notes on how to use a variable to specify column names in `project` can be found [here](https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md).
 
 ### Combining results between two `data.frame`s
 
@@ -317,6 +335,8 @@ For in-memory situations `rquery` uses `data.table` as the implementation provid
 For bigger than memory situations `rquery` can translate to any sufficiently powerful `SQL` dialect, allowing `rquery` pipelines to be executed on PostgreSQL, Apache Spark, or Google BigQuery.
 
 In addition the [`data_algebra`](https://github.com/WinVector/data_algebra) Python package supplies a nearly identical system for working with data in Python. The two systems can even [share data manipulation code between each other](https://github.com/WinVector/rquery/blob/master/Examples/yaml/yaml.md) (allowing very powerful R/Python inter-operation or helping port projects from one to the other).
+
+
 
 # Note
 

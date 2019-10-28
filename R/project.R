@@ -139,7 +139,7 @@ project_se.data.frame <- function(source,
 
 #' project data by grouping, and adding aggregate columns.
 #'
-#' project() uses bquote() .()-style escaping.
+#' Supports bquote() .()-style name abstraction (please see here: \url{https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md}).
 #'
 #' @param source source to select from.
 #' @param ... new column assignment expressions.

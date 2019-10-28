@@ -34,7 +34,9 @@ Create a node similar to a Codd extend relational operator (add derived columns)
 }
 \details{
 Partitionby and orderby can only be used with a database that supports window-functions
-(such as PostgreSQL, Spark, and so on).  extend() used bquote() .()-style abstraction.
+(such as PostgreSQL, Spark, and so on).
+
+Supports bquote() .()-style name abstraction (please see here: \url{https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md}).
 }
 \examples{
 

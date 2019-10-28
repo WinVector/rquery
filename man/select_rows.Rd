@@ -20,7 +20,7 @@ select_rows_nse(source, expr, env = parent.frame())
 select rows node.
 }
 \description{
-select_rows() uses bquote() .()-style escaping.
+Supports bquote() .()-style name abstraction (please see here: \url{https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md}).
 }
 \examples{
 

@@ -25,7 +25,7 @@ aggregate_nse(source, ..., groupby = c(), env = parent.frame())
 project node.
 }
 \description{
-project() uses bquote() .()-style escaping.
+Supports bquote() .()-style name abstraction (please see here: \url{https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md}).
 }
 \examples{
 

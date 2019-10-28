@@ -24,6 +24,11 @@ the traditional `SQL` “window functions.” More on the background and
 context of `rquery` can be found
 [here](https://github.com/WinVector/rquery/blob/master/Examples/old_readme/README.md).
 
+The `R`/`rquery` version of this introduction is
+[here](https://github.com/WinVector/rquery/blob/master/Examples/Introduction/rquery_Introduction.md),
+and the `Python`/`data_algebra` version of this introduction is
+[here](https://github.com/WinVector/data_algebra/blob/master/Examples/Introduction/data_algebra_Introduction.md).
+
 In transform formulations data manipulation is written as
 transformations that produce new `data.frame`s, instead of as
 alterations of a primary data structure (as is the case with
@@ -147,6 +152,24 @@ d %.>%
 | 1 | 4 |
 | 2 | 3 |
 
+`rename_columns` is given as name-assignments of the form `'new_name' =
+'old_name'`:
+
+``` r
+d %.>%
+  rename_columns(., 
+                 c('x_new_name' = 'x', 
+                   'y_new_name' = 'y')
+                 ) %.>%
+  knitr::kable(.)
+```
+
+| x\_new\_name | y\_new\_name | z |
+| -----------: | -----------: | -: |
+|            1 |            5 | 6 |
+|            1 |            4 | 7 |
+|            2 |            3 | 8 |
+
 ### Simple row operations (selecting and re-ordering rows)
 
 The simple row operations are:
@@ -167,6 +190,10 @@ d %.>%
 | -: | -: | -: |
 | 1 | 5 | 6 |
 | 1 | 4 | 7 |
+
+Notes on how to use a variable to specify column names in `select_rows`
+can be found
+[here](https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md).
 
 `order_rows` re-orders rows by a selection of column names (and allows
 reverse ordering by naming which columns to reverse in the optional
@@ -250,6 +277,9 @@ operations that depend on row order\!).
 
 More on the window functions can be found
 [here](https://github.com/WinVector/rquery/blob/master/Examples/WindowFunctions/WindowFunctions.md).
+Notes on how to use a variable to specify column names in `extend` can
+be found
+[here](https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md).
 
 ### Aggregating or summarizing data
 
@@ -289,6 +319,10 @@ d %.>%
 | max\_y | count |
 | -----: | ----: |
 |      5 |     3 |
+
+Notes on how to use a variable to specify column names in `project` can
+be found
+[here](https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md).
 
 ### Combining results between two `data.frame`s
 

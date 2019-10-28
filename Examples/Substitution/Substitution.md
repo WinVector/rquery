@@ -104,7 +104,7 @@ d %.>%
 | 7 |
 
 Note: `rquery` `1.3.9` has an issue with `bquote`/`.()` substitution in
-“imediate mode”, but we are fixing that now.
+“imediate mode”. We have fixed that in later versions.
 
 ``` r
 d %.>%
@@ -115,7 +115,20 @@ d %.>%
   knitr::kable(.)
 ```
 
-    ## Warning in warn_about_filter_conditions(parsed): rquery::select_rows:
-    ## expression .(x) == 1 refers to no columns (so is a constant)
+| x | y | z |
+| -: | -: | -: |
+| 1 | 7 | 6 |
+| 1 | 8 | 7 |
 
-    ## Error in check_have_cols(src_columns, required_cols, "rquery::select_rows_se.relop"): rquery::select_rows_se.relop unknown columns condition_variable
+``` r
+d %.>%
+  select_rows(.,
+              .(condition_variable) == 1) %.>%
+  project(.,
+         .(new_value_variable) := max(.(old_value_variable))) %.>%
+  knitr::kable(.)
+```
+
+| y |
+| -: |
+| 7 |
