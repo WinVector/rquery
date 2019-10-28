@@ -41,3 +41,29 @@ d %.>%
   knitr::kable(.)
 ```
 
+This also works in the `wrap`/`ex` pattern.
+
+```{r}
+d %.>%
+  wrap %.>%
+  select_rows(.,
+              .(condition_variable) == 1) %.>%
+  extend(.,
+         .(new_value_variable) := .(old_value_variable) + 1) %.>%
+  ex %.>%
+  knitr::kable(.)
+```
+
+Note: `rquery` `1.3.9` has an issue with `bquote`/`.()` substitution in "imediate mode", but we are fixing that now.
+
+```{r, error=TRUE}
+d %.>%
+  select_rows(.,
+              .(condition_variable) == 1) %.>%
+  extend(.,
+         .(new_value_variable) := .(old_value_variable) + 1) %.>%
+  knitr::kable(.)
+```
+
+
+
