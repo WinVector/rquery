@@ -44,7 +44,6 @@ RSQLite::initExtension(db)
 
 # adapt to database
 dbopts <- rq_connection_tests(db)
-print(dbopts)
 options(dbopts)
 
 # register database

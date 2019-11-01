@@ -1,7 +1,8 @@
 
-# rquery 1.4.0 2019/10/28
+# rquery 1.4.0 2019/11/01
 
  * Fix name substitution in immediate mode.
+ * Deal with bound variable types.
 
 # rquery 1.3.9 2019/10/26
 

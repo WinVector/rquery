@@ -428,9 +428,18 @@ tokenize_for_SQL_r <- function(lexpr,
                     envir = env,
                     ifnotfound = list(NULL),
                     inherits = TRUE)[[1]]
+    if((length(v)<1) || ("function" %in% class(v))) {
+      res$free_symbols <- lexpr
+      res$parsed_toks <- pre_sql_token(paste(as.character(lexpr), collapse = " "))
+      return(res)
+    }
     if(length(v)==1) {
-      if(is.character(v)) {
-        res$parsed_toks <- pre_sql_string(v)
+      if(is.na(v)) {
+        res$parsed_toks <- pre_sql_token("NA")
+        return(res)
+      }
+      if(is.character(v) || is.factor(v)) {
+        res$parsed_toks <- pre_sql_string(as.character(v))
         return(res)
       }
       if(is.numeric(v)) {
@@ -438,9 +447,18 @@ tokenize_for_SQL_r <- function(lexpr,
         res$parsed_toks <- pre_sql_token(paste(as.character(v), collapse = " "))
         return(res)
       }
-      # TODO: think about logical?
-      # finding functions in the env is a to avoid problem here
+      if(is.logical(v)) {
+        res$parsed_toks <- pre_sql_token(paste(as.character(v), collapse = " "))
+        return(res)
+      }
     }
+    # # # ISSUE: would like to throw here, but knitr during pkg build seems to define
+    # # # saw this in block 319 of vignettes rquery_intro.Rmd
+    # # # a complex structure called "res" that interferes with this code in vignettes!
+    # if(length(v)>1) {
+    #   stop(paste0("error: symbol lookup on ", lexpr, " is not a scalar value"))
+    # }
+    # binding to functions in the env is a problem we want to avoid here
     res$free_symbols <- lexpr
     # fall back
     res$parsed_toks <- pre_sql_token(paste(as.character(lexpr), collapse = " "))

@@ -8,7 +8,7 @@ package = "rquery"
 date()
 ```
 
-    ## [1] "Mon Oct 28 07:36:42 2019"
+    ## [1] "Fri Nov  1 14:45:57 2019"
 
 ``` r
 packageVersion(package)
@@ -18,6 +18,7 @@ packageVersion(package)
 
 ``` r
 parallelCluster <- NULL
+ncores <- 0
 # # parallel doesn't work due to https://github.com/r-lib/liteq/issues/22
 #ncores <- parallel::detectCores()
 #parallelCluster <- parallel::makeCluster(ncores)
@@ -33,7 +34,7 @@ setwd(td)
 print(td)
 ```
 
-    ## [1] "/var/folders/7q/h_jp2vj131g5799gfnpzhdp80000gn/T//Rtmp7eh51g"
+    ## [1] "/var/folders/7q/h_jp2vj131g5799gfnpzhdp80000gn/T//RtmpuvoYVk"
 
 ``` r
 options(repos = c(CRAN="https://cloud.r-project.org"))
@@ -58,9 +59,9 @@ if(!is.null(parallelCluster)) {
 }
 ```
 
-    ## cdata_1.1.2 started at 2019-10-28 07:36:50 success at 2019-10-28 07:37:41 (1/0/0) 
-    ## rqdatatable_1.2.3 started at 2019-10-28 07:37:41 success at 2019-10-28 07:38:13 (2/0/0) 
-    ## WVPlots_1.2.1 started at 2019-10-28 07:38:13 success at 2019-10-28 07:40:10 (3/0/0)
+    ## cdata_1.1.3 started at 2019-11-01 14:46:00 success at 2019-11-01 14:46:32 (1/0/0) 
+    ## rqdatatable_1.2.3 started at 2019-11-01 14:46:32 success at 2019-11-01 14:47:03 (2/0/0) 
+    ## WVPlots_1.2.1 started at 2019-11-01 14:47:03 success at 2019-11-01 14:48:30 (3/0/0)
 
     ## [1] id     title  status
     ## <0 rows> (or 0-length row.names)
@@ -70,8 +71,8 @@ summariseQueue(package=package, directory=td)
 ```
 
     ## Test of rquery had 3 successes, 0 failures, and 0 skipped packages. 
-    ## Ran from 2019-10-28 07:36:50 to 2019-10-28 07:40:10 for 3.333 mins 
-    ## Average of 66.667 secs relative to 66.824 secs using 1 runners
+    ## Ran from 2019-11-01 14:46:00 to 2019-11-01 14:48:30 for 2.5 mins 
+    ## Average of 50 secs relative to 49.891 secs using 1 runners
     ## 
     ## Failed packages:   
     ## 

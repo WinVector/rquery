@@ -6,16 +6,17 @@ test_calc_warnings <- function() {
     y = 4:6
   )
 
-  saw_w <- NULL
-  tryCatch({
-    ops <- local_td(d) %.>%
-      extend(.,
-             x := 1,
-             x := 2)
-  },
-  warning = function(w) { saw_w <<- w }
-  )
-  RUnit::checkTrue(!is.null(saw_w))
+  # # not warning here any more, as if_else uses this construction
+  # saw_w <- NULL
+  # tryCatch({
+  #   ops <- local_td(d) %.>%
+  #     extend(.,
+  #            x := 1,
+  #            x := 2)
+  # },
+  # warning = function(w) { saw_w <<- w }
+  # )
+  # RUnit::checkTrue(!is.null(saw_w))
 
   RUnit::checkException({
     ops <- local_td(d) %.>%
