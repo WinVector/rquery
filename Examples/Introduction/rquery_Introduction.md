@@ -35,6 +35,7 @@ In `rquery`’s case the primary set of data operators is as follows:
   - `extend`
   - `project`
   - `natural_join`
+  - `concat_rows`
   - `convert_records` (supplied by the [`cdata`
     package](https://github.com/WinVector/cdata)).
 
@@ -315,11 +316,17 @@ be found
 
 ### Combining results between two `data.frame`s
 
-To combine multiple tables in `rquery` one uses what we call the
-`natural_join` operator. In the `rquery` `natural_join`, rows are
-matched by column keys and any two columns with the same name are
-*coalesced* (meaning the first table with a non-missing values supplies
-the answer). This is easiest to demonstrate with an example.
+To combine multiple tables in `rquery` one uses one of:
+
+  - `natural_join`
+  - `concat_rows`
+
+#### `natural join`
+
+In the `rquery` `natural_join`, rows are matched by column keys and any
+two columns with the same name are *coalesced* (meaning the first table
+with a non-missing values supplies the answer). This is easiest to
+demonstrate with an example.
 
 Let’s set up new example tables.
 
@@ -382,7 +389,163 @@ projects. Notice columns with matching names are coalesced into each
 other, which we interpret as “take the value from the left table, unless
 it is missing.”
 
+#### `natural join`
+
+Another way to combine compatible tables is to concatinate rows.
+
+``` r
+d_a <- data.frame(
+  'k'= c('a', 'a', 'b'),
+  'x'= c(1, NA, 3),
+  'y'= c(1, NA, NA),
+  stringsAsFactors = FALSE)
+
+knitr::kable(d_a)
+```
+
+| k |  x |  y |
+| :- | -: | -: |
+| a |  1 |  1 |
+| a | NA | NA |
+| b |  3 | NA |
+
+``` r
+d_b <- data.frame(
+  'k'= c(NA, 'a', 'b'),
+  'x'= c(NA, 9, 3),
+  'y'= c(NA, 2, NA),
+  stringsAsFactors = FALSE)
+
+knitr::kable(d_b)
+```
+
+| k  |  x |  y |
+| :- | -: | -: |
+| NA | NA | NA |
+| a  |  9 |  2 |
+| b  |  3 | NA |
+
+Note: not implemented yet.
+
+``` r
+ops <- local_td(d_a, name = 'd_a') %.>%
+  concat_rows(., local(d_b, name = 'd_b'))
+
+execute(list('d_a' = da, 'd_b' = d_b),
+        ops) %.>%
+  knitr::kable(.)
+```
+
 ### General conversion of record layouts
+
+Record transformation is re-shaping one (possibly multi-row) record
+layout to another (possibly multi-row) record layout.
+
+We can use an in-pipe version.
+
+``` r
+library(cdata)
+
+iris_small <- data.frame(
+    'Sepal.Length'= c(5.1, 4.9, 4.7),
+    'Sepal.Width'= c(3.5, 3.0, 3.2),
+    'Petal.Length'= c(1.4, 1.4, 1.3),
+    'Petal.Width'= c(0.2, 0.2, 0.2),
+    'Species'= c('setosa', 'setosa', 'setosa'),
+    'id'= c(0, 1, 2),
+    stringAsFactors = FALSE)
+
+knitr::kable(iris_small)
+```
+
+| Sepal.Length | Sepal.Width | Petal.Length | Petal.Width | Species | id | stringAsFactors |
+| -----------: | ----------: | -----------: | ----------: | :------ | -: | :-------------- |
+|          5.1 |         3.5 |          1.4 |         0.2 | setosa  |  0 | FALSE           |
+|          4.9 |         3.0 |          1.4 |         0.2 | setosa  |  1 | FALSE           |
+|          4.7 |         3.2 |          1.3 |         0.2 | setosa  |  2 | FALSE           |
+
+``` r
+control_table <- wrapr::build_frame(
+   "Part"   , "Measure", "Value"        |
+     "Sepal", "Length" , "Sepal.Length" |
+     "Sepal", "Width"  , "Sepal.Width"  |
+     "Petal", "Length" , "Petal.Length" |
+     "Petal", "Width"  , "Petal.Width"  )
+
+ops <- local_td(iris_small, name = 'iris_small') %.>%
+  rowrecs_to_blocks(., 
+                    control_table, 
+                    controlTableKeys = c('Part', 'Measure'))
+
+format(ops)
+```
+
+    ## [1] "mk_td(\"iris_small\", c(\n  \"Sepal.Length\",\n  \"Sepal.Width\",\n  \"Petal.Length\",\n  \"Petal.Width\",\n  \"Species\",\n  \"id\",\n  \"stringAsFactors\")) %.>%\n non_sql_node(., rowrecs_to_blocks(.))\n"
+
+``` r
+iris_small %.>% ops
+```
+
+    ##      Part Measure Value
+    ##  1: Sepal  Length   5.1
+    ##  2: Sepal   Width   3.5
+    ##  3: Petal  Length   1.4
+    ##  4: Petal   Width   0.2
+    ##  5: Sepal  Length   4.9
+    ##  6: Sepal   Width   3.0
+    ##  7: Petal  Length   1.4
+    ##  8: Petal   Width   0.2
+    ##  9: Sepal  Length   4.7
+    ## 10: Sepal   Width   3.2
+    ## 11: Petal  Length   1.3
+    ## 12: Petal   Width   0.2
+
+Or a more stand-alone version.
+
+``` r
+xform <- rowrecs_to_blocks_spec(
+  control_table,
+  controlTableKeys = c('Part', 'Measure'))
+
+print(xform)
+```
+
+    ## {
+    ##  row_record <- wrapr::qchar_frame(
+    ##    "Sepal.Length"  , "Sepal.Width", "Petal.Length", "Petal.Width" |
+    ##      Sepal.Length  , Sepal.Width  , Petal.Length  , Petal.Width   )
+    ##  row_keys <- c()
+    ## 
+    ##  # becomes
+    ## 
+    ##  block_record <- wrapr::qchar_frame(
+    ##    "Part"   , "Measure", "Value"      |
+    ##      "Sepal", "Length" , Sepal.Length |
+    ##      "Sepal", "Width"  , Sepal.Width  |
+    ##      "Petal", "Length" , Petal.Length |
+    ##      "Petal", "Width"  , Petal.Width  )
+    ##  block_keys <- c('Part', 'Measure')
+    ## 
+    ##  # args: c(checkNames = TRUE, checkKeys = FALSE, strict = FALSE, allow_rqdatatable = TRUE)
+    ## }
+
+``` r
+iris_small %.>% xform
+```
+
+    ##     Part Measure Value
+    ## 1  Sepal  Length   5.1
+    ## 2  Sepal   Width   3.5
+    ## 3  Petal  Length   1.4
+    ## 4  Petal   Width   0.2
+    ## 5  Sepal  Length   4.9
+    ## 6  Sepal   Width   3.0
+    ## 7  Petal  Length   1.4
+    ## 8  Petal   Width   0.2
+    ## 9  Sepal  Length   4.7
+    ## 10 Sepal   Width   3.2
+    ## 11 Petal  Length   1.3
+    ## 12 Petal   Width   0.2
 
 Record transformation is “simple once you get it”. However, we suggest
 reading up on that as a separate topic

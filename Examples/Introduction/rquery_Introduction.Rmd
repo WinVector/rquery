@@ -21,6 +21,7 @@ In `rquery`'s case the primary set of data operators is as follows:
  * `extend`
  * `project`
  * `natural_join`
+ * `concat_rows`
  * `convert_records` (supplied by the [`cdata` package](https://github.com/WinVector/cdata)).
 
 These operations break into a small number of themes:
@@ -198,7 +199,14 @@ Notes on how to use a variable to specify column names in `project` can be found
 
 ### Combining results between two `data.frame`s
 
-To combine multiple tables in `rquery` one uses what we call the `natural_join` operator.  In the `rquery` `natural_join`, rows are matched by column keys and any two columns with the same name are *coalesced* (meaning the first table with a non-missing values supplies the answer).  This is easiest to demonstrate with an example.
+To combine multiple tables in `rquery` one uses one of: 
+
+ * `natural_join`
+ * `concat_rows`
+ 
+#### `natural join`
+
+In the `rquery` `natural_join`, rows are matched by column keys and any two columns with the same name are *coalesced* (meaning the first table with a non-missing values supplies the answer).  This is easiest to demonstrate with an example.
 
 Let's set up new example tables.
 
@@ -234,8 +242,97 @@ natural_join(d_left, d_right,
 
 In a left-join (as above) if the right-table has unique keys then we get a table with the same structure as the left-table- but with more information per row.  This is a very useful type of join in data science projects.  Notice columns with matching names are coalesced into each other, which we interpret as "take the value from the left table, unless it is missing."
 
+#### `natural join`
+
+Another way to combine compatible tables is to concatinate rows.
+
+```{r}
+d_a <- data.frame(
+  'k'= c('a', 'a', 'b'),
+  'x'= c(1, NA, 3),
+  'y'= c(1, NA, NA),
+  stringsAsFactors = FALSE)
+
+knitr::kable(d_a)
+```
+
+```{r}
+d_b <- data.frame(
+  'k'= c(NA, 'a', 'b'),
+  'x'= c(NA, 9, 3),
+  'y'= c(NA, 2, NA),
+  stringsAsFactors = FALSE)
+
+knitr::kable(d_b)
+```
+
+Note: not implemented yet.
+
+```{r, eval=FALSE}
+ops <- local_td(d_a, name = 'd_a') %.>%
+  concat_rows(., local(d_b, name = 'd_b'))
+
+execute(list('d_a' = da, 'd_b' = d_b),
+        ops) %.>%
+  knitr::kable(.)
+```
+
 
 ### General conversion of record layouts
+
+Record transformation is re-shaping one (possibly multi-row) record layout to another (possibly multi-row) record layout.
+
+We can use an in-pipe version.
+
+```{r}
+library(cdata)
+
+iris_small <- data.frame(
+    'Sepal.Length'= c(5.1, 4.9, 4.7),
+    'Sepal.Width'= c(3.5, 3.0, 3.2),
+    'Petal.Length'= c(1.4, 1.4, 1.3),
+    'Petal.Width'= c(0.2, 0.2, 0.2),
+    'Species'= c('setosa', 'setosa', 'setosa'),
+    'id'= c(0, 1, 2),
+    stringAsFactors = FALSE)
+
+knitr::kable(iris_small)
+```
+
+```{r}
+control_table <- wrapr::build_frame(
+   "Part"   , "Measure", "Value"        |
+     "Sepal", "Length" , "Sepal.Length" |
+     "Sepal", "Width"  , "Sepal.Width"  |
+     "Petal", "Length" , "Petal.Length" |
+     "Petal", "Width"  , "Petal.Width"  )
+
+ops <- local_td(iris_small, name = 'iris_small') %.>%
+  rowrecs_to_blocks(., 
+                    control_table, 
+                    controlTableKeys = c('Part', 'Measure'))
+
+format(ops)
+```
+
+```{r}
+iris_small %.>% ops
+```
+
+Or a more stand-alone version.
+
+```{r}
+xform <- rowrecs_to_blocks_spec(
+  control_table,
+  controlTableKeys = c('Part', 'Measure'))
+
+print(xform)
+```
+
+```{r}
+iris_small %.>% xform
+```
+
 
 Record transformation is "simple once you get it".  However, we suggest reading up on that as a separate topic [here](https://github.com/WinVector/cdata).
 
