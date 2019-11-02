@@ -35,7 +35,7 @@ unionall <- function(sources,
   ns <- length(sources)
   if((!is.data.frame(sources[[1]])) &&
      (!("relop" %in% class(sources[[1]])))) {
-    stop("rquery::unionall sources[[1]] must be a data.frame of of class relop.")
+    stop("rquery::unionall sources[[1]] must be a data.frame or of class relop.")
   }
   cols <- column_names(sources[[1]])
   for(i in 2:ns) {
@@ -118,7 +118,19 @@ column_names.relop_unionall <- function (x, ...) {
 #' @export
 columns_used.relop_unionall <- function (x, ...,
                                           using = NULL) {
-  columns_used(x$source[[1]], using = using)
+  cu <- list()
+  for(si in x$source) {
+    cui <- columns_used(si, using = using)
+    for(k in names(cui)) {
+      old <- cu[[k]]
+      if(is.null(old)) {
+        cu[[k]] <- cui[[k]]
+      } else {
+        cu[[k]] <- union(old, cui[[k]])
+      }
+    }
+  }
+  cu
 }
 
 

@@ -2,6 +2,7 @@
 # rquery 1.4.0 2019/11/01
 
  * Fix name substitution in immediate mode.
+ * Fix union_all.
  * Deal with bound variable types.
 
 # rquery 1.3.9 2019/10/26

@@ -21,7 +21,7 @@ In `rquery`'s case the primary set of data operators is as follows:
  * `extend`
  * `project`
  * `natural_join`
- * `concat_rows`
+ * `unionall`
  * `convert_records` (supplied by the [`cdata` package](https://github.com/WinVector/cdata)).
 
 These operations break into a small number of themes:
@@ -202,9 +202,9 @@ Notes on how to use a variable to specify column names in `project` can be found
 To combine multiple tables in `rquery` one uses one of: 
 
  * `natural_join`
- * `concat_rows`
+ * `unionall`
  
-#### `natural join`
+#### `natural_join`
 
 In the `rquery` `natural_join`, rows are matched by column keys and any two columns with the same name are *coalesced* (meaning the first table with a non-missing values supplies the answer).  This is easiest to demonstrate with an example.
 
@@ -242,9 +242,9 @@ natural_join(d_left, d_right,
 
 In a left-join (as above) if the right-table has unique keys then we get a table with the same structure as the left-table- but with more information per row.  This is a very useful type of join in data science projects.  Notice columns with matching names are coalesced into each other, which we interpret as "take the value from the left table, unless it is missing."
 
-#### `natural join`
+#### `unionall`
 
-Another way to combine compatible tables is to concatinate rows.
+Another way to combine compatible tables is to concatinate rows with `unionall`.
 
 ```{r}
 d_a <- data.frame(
@@ -266,13 +266,13 @@ d_b <- data.frame(
 knitr::kable(d_b)
 ```
 
-Note: not implemented yet.
 
 ```{r, eval=FALSE}
-ops <- local_td(d_a, name = 'd_a') %.>%
-  concat_rows(., local(d_b, name = 'd_b'))
+ops <- unionall(list(
+  local_td(d_a, name = 'd_a'),
+  local_td(d_b, name = 'd_b')))
 
-execute(list('d_a' = da, 'd_b' = d_b),
+execute(list('d_a' = d_a, 'd_b' = d_b),
         ops) %.>%
   knitr::kable(.)
 ```
@@ -316,7 +316,9 @@ format(ops)
 ```
 
 ```{r}
-iris_small %.>% ops
+iris_small %.>% 
+  ops %.>%
+  knitr::kable(.)
 ```
 
 Or a more stand-alone version.
@@ -330,7 +332,9 @@ print(xform)
 ```
 
 ```{r}
-iris_small %.>% xform
+iris_small %.>% 
+  xform %.>%
+  knitr::kable(.)
 ```
 
 

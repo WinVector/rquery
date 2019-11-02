@@ -35,7 +35,7 @@ In `rquery`’s case the primary set of data operators is as follows:
   - `extend`
   - `project`
   - `natural_join`
-  - `concat_rows`
+  - `unionall`
   - `convert_records` (supplied by the [`cdata`
     package](https://github.com/WinVector/cdata)).
 
@@ -319,9 +319,9 @@ be found
 To combine multiple tables in `rquery` one uses one of:
 
   - `natural_join`
-  - `concat_rows`
+  - `unionall`
 
-#### `natural join`
+#### `natural_join`
 
 In the `rquery` `natural_join`, rows are matched by column keys and any
 two columns with the same name are *coalesced* (meaning the first table
@@ -389,9 +389,10 @@ projects. Notice columns with matching names are coalesced into each
 other, which we interpret as “take the value from the left table, unless
 it is missing.”
 
-#### `natural join`
+#### `unionall`
 
-Another way to combine compatible tables is to concatinate rows.
+Another way to combine compatible tables is to concatinate rows with
+`unionall`.
 
 ``` r
 d_a <- data.frame(
@@ -425,13 +426,12 @@ knitr::kable(d_b)
 | a  |  9 |  2 |
 | b  |  3 | NA |
 
-Note: not implemented yet.
-
 ``` r
-ops <- local_td(d_a, name = 'd_a') %.>%
-  concat_rows(., local(d_b, name = 'd_b'))
+ops <- unionall(list(
+  local_td(d_a, name = 'd_a'),
+  local_td(d_b, name = 'd_b')))
 
-execute(list('d_a' = da, 'd_b' = d_b),
+execute(list('d_a' = d_a, 'd_b' = d_b),
         ops) %.>%
   knitr::kable(.)
 ```
@@ -483,22 +483,25 @@ format(ops)
     ## [1] "mk_td(\"iris_small\", c(\n  \"Sepal.Length\",\n  \"Sepal.Width\",\n  \"Petal.Length\",\n  \"Petal.Width\",\n  \"Species\",\n  \"id\",\n  \"stringAsFactors\")) %.>%\n non_sql_node(., rowrecs_to_blocks(.))\n"
 
 ``` r
-iris_small %.>% ops
+iris_small %.>% 
+  ops %.>%
+  knitr::kable(.)
 ```
 
-    ##      Part Measure Value
-    ##  1: Sepal  Length   5.1
-    ##  2: Sepal   Width   3.5
-    ##  3: Petal  Length   1.4
-    ##  4: Petal   Width   0.2
-    ##  5: Sepal  Length   4.9
-    ##  6: Sepal   Width   3.0
-    ##  7: Petal  Length   1.4
-    ##  8: Petal   Width   0.2
-    ##  9: Sepal  Length   4.7
-    ## 10: Sepal   Width   3.2
-    ## 11: Petal  Length   1.3
-    ## 12: Petal   Width   0.2
+| Part  | Measure | Value |
+| :---- | :------ | ----: |
+| Sepal | Length  |   5.1 |
+| Sepal | Width   |   3.5 |
+| Petal | Length  |   1.4 |
+| Petal | Width   |   0.2 |
+| Sepal | Length  |   4.9 |
+| Sepal | Width   |   3.0 |
+| Petal | Length  |   1.4 |
+| Petal | Width   |   0.2 |
+| Sepal | Length  |   4.7 |
+| Sepal | Width   |   3.2 |
+| Petal | Length  |   1.3 |
+| Petal | Width   |   0.2 |
 
 Or a more stand-alone version.
 
@@ -530,22 +533,25 @@ print(xform)
     ## }
 
 ``` r
-iris_small %.>% xform
+iris_small %.>% 
+  xform %.>%
+  knitr::kable(.)
 ```
 
-    ##     Part Measure Value
-    ## 1  Sepal  Length   5.1
-    ## 2  Sepal   Width   3.5
-    ## 3  Petal  Length   1.4
-    ## 4  Petal   Width   0.2
-    ## 5  Sepal  Length   4.9
-    ## 6  Sepal   Width   3.0
-    ## 7  Petal  Length   1.4
-    ## 8  Petal   Width   0.2
-    ## 9  Sepal  Length   4.7
-    ## 10 Sepal   Width   3.2
-    ## 11 Petal  Length   1.3
-    ## 12 Petal   Width   0.2
+| Part  | Measure | Value |
+| :---- | :------ | ----: |
+| Sepal | Length  |   5.1 |
+| Sepal | Width   |   3.5 |
+| Petal | Length  |   1.4 |
+| Petal | Width   |   0.2 |
+| Sepal | Length  |   4.9 |
+| Sepal | Width   |   3.0 |
+| Petal | Length  |   1.4 |
+| Petal | Width   |   0.2 |
+| Sepal | Length  |   4.7 |
+| Sepal | Width   |   3.2 |
+| Petal | Length  |   1.3 |
+| Petal | Width   |   0.2 |
 
 Record transformation is “simple once you get it”. However, we suggest
 reading up on that as a separate topic
