@@ -493,10 +493,19 @@ execute <- function(source,
   # as order is not well define in materialized tables
   if(length(intersect(c("relop_orderby", "relop_order_expr"),
                        class(optree)))>0) {
-    ref <- ref  %.>%
-      orderby(.,
-              cols = optree$orderby,
-              reverse = optree$reverse)
+    if(length(intersect("relop_orderby",
+                        class(optree)))>0) {
+      # relop_orderby
+      ref <- ref  %.>%
+        orderby(.,
+                cols = optree$orderby,
+                reverse = optree$reverse)
+    } else {
+      # relop_order_expr
+      ref <- ref  %.>%
+        order_expr_se(.,
+                      expr = optree$parsed_toks$parsed)
+    }
   }
   sql <- to_sql(ref, db, limit = limit)
   res <- rq_get_query(db, sql)
