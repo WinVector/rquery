@@ -4,6 +4,7 @@
  * Fix name substitution in immediate mode.
  * Fix union_all.
  * Deal with bound variable types.
+ * Deal with degenerate partition in extend.
 
 # rquery 1.3.9 2019/10/26
 

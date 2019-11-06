@@ -13,6 +13,7 @@
 #' @param orderby ordering (in window function) terms.
 #' @param reverse reverse order (in window function)
 #' @param display_form chacter presentation form
+#' @param windowed logial, if TRUE we are in a window function situation
 #' @return extend node.
 #'
 #'
@@ -23,9 +24,20 @@ extend_impl <- function(source, parsed,
                         partitionby = NULL,
                         orderby = NULL,
                         reverse = NULL,
-                        display_form = NULL) {
+                        display_form = NULL,
+                        windowed = FALSE) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery:::extend_impl")
+  if(length(partitionby)>0) {
+    if(!windowed) {
+      stop("rquery::extend_impl partionby non-trivial, but windowed==FALSE")
+    }
+  }
+  if(length(orderby)>0) {
+    if(!windowed) {
+      stop("rquery::extend_impl orderby non-trivial, but windowed==FALSE")
+    }
+  }
   if(length(partitionby)!=length(unique(partitionby))) {
     stop("rquery:::extend_impl duplicatge partitionby columns")
   }
@@ -35,8 +47,8 @@ extend_impl <- function(source, parsed,
   if(length(orderby)!=length(unique(orderby))) {
     stop("rquery:::extend_impl duplicatge orderby columns")
   }
-  if(length(setdiff(reverse, c(orderby, partitionby)))>0) {
-    stop("rquery::extend_imp all reverse columns must also be orderby or partitionby columns")
+  if(length(setdiff(reverse, orderby))>0) {
+    stop("rquery::extend_imp all reverse columns must also be orderby columns")
   }
   src_columns <- column_names(source)
   required_cols <- sort(unique(c(
@@ -57,7 +69,8 @@ extend_impl <- function(source, parsed,
             required_cols = required_cols,
             columns_produced = names(assignments),
             src_columns = src_columns,
-            display_form = display_form)
+            display_form = display_form,
+            windowed = windowed)
   r <- relop_decorate("relop_extend", r)
   r
 }
@@ -87,8 +100,13 @@ extend_impl_list <- function(source, parsed,
                              display_form = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery:::extend_impl_list")
-  if(length(setdiff(reverse, c(orderby, partitionby)))>0) {
-    stop("rquery::extend_impl_list all reverse columns must also be orderby or partitionby columns")
+  windowed = (length(orderby)>0) || (length(partitionby)>0)
+  if(is.numeric(partitionby)) {
+    partitionby = NULL
+    windowed = TRUE
+  }
+  if(length(setdiff(reverse, orderby))>0) {
+    stop("rquery::extend_impl_list all reverse columns must also be orderby columns")
   }
   produced <- vapply(parsed, function(pi) pi$symbols_produced, character(1))
   # if(length(produced)!=length(unique(produced))) {
@@ -102,7 +120,8 @@ extend_impl_list <- function(source, parsed,
                            partitionby = partitionby,
                            orderby = orderby,
                            reverse = reverse,
-                           display_form = display_form)
+                           display_form = display_form,
+                           windowed = windowed)
   }
   ndchain
 }
@@ -276,7 +295,7 @@ extend.relop <- function(source,
                              display_form = NULL,
                              env = parent.frame()) {
   force(env)
-  # Recommend way to caputre ... unevalauted from
+  # Recommend way to capture ... unevalauted from
   # http://adv-r.had.co.nz/Computing-on-the-language.html#substitute "Capturing unevaluated ..."
   exprs <-  eval(substitute(alist(...)))
   exprs <- lapply_bquote_to_langauge_list(exprs, env)
@@ -344,8 +363,12 @@ format_node.relop_extend <- function(node) {
   pterms <- ""
   oterms <- ""
   rterms <- ""
-  if(length(node$partitionby)>0) {
-    pterms <- paste0(",\n  partitionby = ", wrapr::map_to_char(node$partitionby))
+  if(node$windowed) {
+    if(length(node$partitionby)>0) {
+      pterms <- paste0(",\n  partitionby = ", wrapr::map_to_char(node$partitionby))
+    } else {
+      pterms <- paste0(",\n  partitionby = 1")
+    }
   }
   if(length(node$partitionby)>0) {
     oterms <- paste0(",\n  orderby = ", wrapr::map_to_char(node$orderby))
@@ -473,7 +496,7 @@ to_sql_relop_extend <- function(
   derived <- NULL
   if(length(re_assignments)>0) {
     windowTerm <- ""
-    if((length(x$partitionby)>0) || (length(x$orderby)>0)) {
+    if(x$windowed) {
       windowTerm <- "OVER ( "
       if(length(x$partitionby)>0) {
         pcols <- vapply(x$partitionby,

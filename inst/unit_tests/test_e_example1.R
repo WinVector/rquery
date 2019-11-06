@@ -23,7 +23,13 @@ test_e_example1 <- function() {
   y <- NULL  # don't look undefined
   ops1 = table_desc %.>%
     extend(.,
-           y_mean := mean(y))
+           y_mean := mean(y),
+           partitionby = 1)
+
+  str1 <- format(ops1)
+  str2 <- format(eval(str1))
+  RUnit::checkEquals(str1, str2)
+  RUnit::checkEquals(length(grep('partitionby\\s*=\\s*1', str1)), 1)
 
   if(requireNamespace('rqdatatable', quietly = TRUE)) {
     # res1 <- d %.>% ops1
@@ -34,7 +40,6 @@ test_e_example1 <- function() {
 
   if(requireNamespace('DBI', quietly = TRUE) &&
      requireNamespace('RSQLite', quietly = TRUE)) {
-
     raw_connection <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
     RSQLite::initExtension(raw_connection)
     db <- rquery_db_info(

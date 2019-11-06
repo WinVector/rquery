@@ -32,7 +32,7 @@ test_grouped_running_op <- function() {
                        running_y_sum = cumsum(y),
                        partitionby = "x",
                        orderby = "y",
-                       reverse = c("x", "y"))
+                       reverse = c("y"))
     sql2 <- to_sql(ops2, db_handle)
 
     DBI::dbDisconnect(raw_connection)
