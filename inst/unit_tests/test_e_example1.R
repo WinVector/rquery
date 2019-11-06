@@ -61,6 +61,12 @@ test_e_example1 <- function() {
     RUnit::checkTrue(rquery:::rquery_check_equiv_frames(expect1, res1db, tolerance = 1e-3))
   }
 
+  # yaml path
+  xport <- to_transport_representation(ops1)
+  ops_back <- convert_yaml_to_pipeline(xport)
+  str3 <- format(ops_back)
+  str3 <- gsub('%:=%', ':=', str3, fixed=TRUE)
+  RUnit::checkEquals(str1, str2)
 
   invisible(NULL)
 }

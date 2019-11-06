@@ -135,6 +135,9 @@ extend_impl_list <- function(source, parsed,
 #' Partitionby and orderby can only be used with a database that supports window-functions
 #' (such as PostgreSQL, Spark and so on).
 #'
+#' Note: if any window/aggregation functions are present then at least one of partitionby or orderby
+#' must be non empty.  For this purpose partitionby=1 is allowed and means "single partition on the constant 1."
+#'
 #' @param source source to select from.
 #' @param assignments new column assignment expressions.
 #' @param ... force later arguments to bind by name
@@ -241,6 +244,9 @@ extend_se.data.frame <- function(source, assignments,
 #' (such as PostgreSQL, Spark, and so on).
 #'
 #' Supports bquote() .()-style name abstraction (please see here: \url{https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md}).
+#'
+#' Note: if any window/aggregation functions are present then at least one of partitionby or orderby
+#' must be non empty.  For this purpose partitionby=1 is allowed and means "single partition on the constant 1."
 #'
 #' @param source source to select from.
 #' @param ... new column assignment expressions.

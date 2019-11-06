@@ -9,7 +9,7 @@ convert_yaml_to_pipeline(rep, ..., source = NULL, env = parent.frame())
 \arguments{
 \item{rep}{input objects}
 
-\item{...}{not use, force later arguments to bind by name}
+\item{...}{not used, force later arguments to bind by name}
 
 \item{source}{input rquery node}
 

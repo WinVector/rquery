@@ -9,7 +9,7 @@ expr_map_to_expr_array <- function(emap) {
 #' Convert a series of simple objects (from YAML deserializaton) to an rquery pipeline.
 #'
 #' @param rep input objects
-#' @param ... not use, force later arguments to bind by name
+#' @param ... not used, force later arguments to bind by name
 #' @param source input rquery node
 #' @param env environment to evaluate in
 #' @return rquery operator tree
@@ -44,9 +44,15 @@ convert_yaml_to_pipeline <- function(rep, ..., source=NULL, env = parent.frame()
       stop("Expected source to not be NULL")
     }
     if(op=="Extend") {
+      partitionby = rep$partition_by
+      if(is.numeric(partitionby)) {
+        partitionby = 1L
+      } else {
+        partitionby = as.character(partitionby)
+      }
       return(extend_se(source,
                        assignments = expr_map_to_expr_array(rep$ops),
-                       partitionby = as.character(rep$partition_by),
+                       partitionby = partitionby,
                        orderby = as.character(rep$order_by),
                        reverse = as.character(rep$reverse)))
     }
@@ -88,9 +94,13 @@ to_transport_representation_step <- function(ops) {
                 column_names = ops$columns))
   }
   if(is(ops, 'relop_extend')) {
+    partition_by = ops$partitionby
+    if(ops$windowed) {
+      partition_by <- 1L
+    }
     return(list(op = 'Extend',
                 ops = ops$assignments,
-                partition_by = ops$partitionby,
+                partition_by = partition_by,
                 order_by = ops$orderby,
                 reverse = ops$reverse))
   }
