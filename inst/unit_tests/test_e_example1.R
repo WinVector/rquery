@@ -1,50 +1,6 @@
 
-
-# TODO: switch to wrapr::check_equiv_frames
-rquery_check_equiv_frames <- function(d1, d2,
-                               ...,
-                               tolerance = sqrt(.Machine$double.eps)) {
-  if( (!is.data.frame(d1)) != (!is.data.frame(d2)) ) {
-    return(FALSE)
-  }
-  d1 <- data.frame(d1)
-  d2 <- data.frame(d2)
-  if((nrow(d1)!=nrow(d2)) || (ncol(d1)!=ncol(d2))) {
-    return(FALSE)
-  }
-  cols <- sort(colnames(d1))
-  c2 <- sort(colnames(d2))
-  if(!isTRUE(all.equal(cols, c2))) {
-    return(FALSE)
-  }
-  d1 <- d1[, cols, drop=FALSE]
-  d1 <- d1[wrapr::orderv(d1), , drop=FALSE]
-  rownames(d1) <- NULL
-  d2 <- d2[, cols, drop=FALSE]
-  d2 <- d2[wrapr::orderv(d2), , drop=FALSE]
-  rownames(d2) <- NULL
-  for(c in cols) {
-    c1 <- d1[[c]]
-    c2 <- d2[[c]]
-    if(is.numeric(c1) != is.numeric(c2)) {
-      return(FALSE)
-    }
-    if(is.numeric(c1)) {
-      if(!isTRUE(all.equal(c1, c2, tolerance=tolerance))) {
-        return(FALSE)
-      }
-    } else {
-      if(!isTRUE(all.equal(c1, c2))) {
-        return(FALSE)
-      }
-    }
-  }
-  return(TRUE)
-}
-
-
 test_e_example1 <- function() {
-  # confir implementation can detect window functions
+  # confirm implementation can detect window functions
   d <- data.frame(
     'x_s'= c('s_03', 's_04', 's_02', 's_01', 's_03', 's_01'),
     'x_n'= c('n_13', 'n_48', 'n_77', 'n_29', 'n_91', 'n_93'),
@@ -62,6 +18,9 @@ test_e_example1 <- function() {
       "s_03", "n_91", -0.124 , -0.1303333  |
       "s_01", "n_93", 0.306  , -0.1303333  )
 
+  `:=` <- NULL  # don't look undefined
+  y_mean <- NULL  # don't look undefined
+  y <- NULL  # don't look undefined
   ops1 = table_desc %.>%
     extend(.,
            y_mean := mean(y))
@@ -70,7 +29,7 @@ test_e_example1 <- function() {
     # res1 <- d %.>% ops1
     res1 <- rqdatatable::ex_data_table(ops1, tables = list('d' = d))
     # RUnit::checkTrue(wrapr::check_equiv_frames(expect1, res1, tolerance = 1e-3))
-    RUnit::checkTrue(rquery_check_equiv_frames(expect1, res1, tolerance = 1e-3))
+    RUnit::checkTrue(rquery:::rquery_check_equiv_frames(expect1, res1, tolerance = 1e-3))
   }
 
   if(requireNamespace('DBI', quietly = TRUE) &&
@@ -94,7 +53,7 @@ test_e_example1 <- function() {
     DBI::dbDisconnect(raw_connection)
 
     # RUnit::checkTrue(wrapr::check_equiv_frames(expect1, res1db, tolerance = 1e-3))
-    RUnit::checkTrue(rquery_check_equiv_frames(expect1, res1db, tolerance = 1e-3))
+    RUnit::checkTrue(rquery:::rquery_check_equiv_frames(expect1, res1db, tolerance = 1e-3))
   }
 
 
