@@ -7,8 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>rquery Substitution • rquery</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="rquery Substitution">
 <meta property="og:description" content="">
 <meta name="twitter:card" content="summary">
@@ -30,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.0</span>
       </span>
     </div>
 
@@ -38,7 +39,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -85,7 +86,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/WinVector/rquery">
-    <span class="fa fa-github fa-lg"></span>
+    <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -98,13 +99,14 @@
 <!--/.navbar -->
 
       
+
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1>rquery Substitution</h1>
                         <h4 class="author">John Mount, Win-Vector LLC</h4>
             
-            <h4 class="date">2019-09-29</h4>
+            <h4 class="date">2019-11-16</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery/blob/master/vignettes/rquery_substitution.Rmd"><code>vignettes/rquery_substitution.Rmd</code></a></small>
       <div class="hidden name"><code>rquery_substitution.Rmd</code></div>
@@ -120,16 +122,16 @@
 <a href="#stringscharacter-versus-namessymbols" class="anchor"></a>strings/character versus names/symbols</h2>
 <p>Let’s take a look at this through small examples. First let’s take a look at the difference between strings and symbols in <code>R</code>.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">col_string &lt;-<span class="st"> "x"</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">col_name &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/name">as.name</a></span>(col_string)</a></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/str">str</a></span>(col_string)</a></code></pre></div>
+<a class="sourceLine" id="cb1-2" data-line-number="2">col_name &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/name.html">as.name</a></span>(col_string)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(col_string)</a></code></pre></div>
 <pre><code>##  chr "x"</code></pre>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/str">str</a></span>(col_name)</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(col_name)</a></code></pre></div>
 <pre><code>##  symbol x</code></pre>
 <p>Notice, in <code>R</code> a string is different than a symbol.</p>
 <p>We can see this difference in <code>rquery</code> where an un-quoted <code>x</code> is treated as a symbol (and therefore is translated to a database column) and a quoted entity is treated as a string (and therefore is translated to a literal or constant, not to a column).</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(<span class="st">"rquery"</span>)</a>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"rquery"</span>)</a>
 <a class="sourceLine" id="cb6-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb6-3" data-line-number="3">d &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/data.frame">data.frame</a></span>(<span class="dt">x =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">'a'</span>, <span class="st">'b'</span>),</a>
+<a class="sourceLine" id="cb6-3" data-line-number="3">d &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="dt">x =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'a'</span>, <span class="st">'b'</span>),</a>
 <a class="sourceLine" id="cb6-4" data-line-number="4">                <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>)</a>
 <a class="sourceLine" id="cb6-5" data-line-number="5"></a>
 <a class="sourceLine" id="cb6-6" data-line-number="6">d_rep &lt;-<span class="st"> </span><span class="kw"><a href="../reference/local_td.html">local_td</a></span>(d)</a>
@@ -140,34 +142,34 @@
 <a class="sourceLine" id="cb7-2" data-line-number="2"><span class="co"># probaly not the query we intend as the</span></a>
 <a class="sourceLine" id="cb7-3" data-line-number="3"><span class="co"># result is going to be empty independent</span></a>
 <a class="sourceLine" id="cb7-4" data-line-number="4"><span class="co"># of the data.</span></a>
-<a class="sourceLine" id="cb7-5" data-line-number="5"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(</a>
-<a class="sourceLine" id="cb7-6" data-line-number="6">  d_rep <span class="op">%.&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/select_rows.html">select_rows</a></span>(., <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/NA">is.na</a></span>(<span class="st">'x'</span>)),</a>
+<a class="sourceLine" id="cb7-5" data-line-number="5"><span class="kw"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(</a>
+<a class="sourceLine" id="cb7-6" data-line-number="6">  d_rep <span class="op">%.&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/select_rows.html">select_rows</a></span>(., <span class="kw"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span>(<span class="st">'x'</span>)),</a>
 <a class="sourceLine" id="cb7-7" data-line-number="7">  db_info))</a></code></pre></div>
-<pre><code>## Warning in warn_about_filter_conditions(parsed): rquery::select_rows:
-## expression is.na("x") refers to no columns (so is a constant)</code></pre>
+<pre><code>## Warning in warn_about_filter_conditions(parsed): rquery::select_rows: expression
+## is.na("x") refers to no columns (so is a constant)</code></pre>
 <pre><code>## SELECT * FROM (
 ##  SELECT
 ##   __IDENTIFIER__x__IDENTIFIER__
 ##  FROM
 ##   __IDENTIFIER__d__IDENTIFIER__
-## ) tsql_02209668884099117611_0000000000
+## ) tsql_39152957297639342312_0000000000
 ## WHERE ( ( __STRING_CONSTANT__x__STRING_CONSTANT__ ) IS NULL )</code></pre>
 <p>We take careful note what is marked as “<code>__IDENTIFIER__</code>”, versus what is marked as “<code>__STRING_CONSTANT__</code>”. Notice “<code>__IDENTIFIER__</code>” is used in the <code>SQL</code> for table names and column name, and “<code>__STRING_CONSTANT__</code>” is used for string constants. The above query is probably not what a user intended as we are checking if a user supplied string constant is <code>NA</code>, which is not interesting.</p>
 <p>Likely the correct query omits the quote marks from the <code>x</code>.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="co"># direct use, comparing to a column</span></a>
-<a class="sourceLine" id="cb10-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(</a>
-<a class="sourceLine" id="cb10-3" data-line-number="3">  d_rep <span class="op">%.&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/select_rows.html">select_rows</a></span>(., <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/NA">is.na</a></span>(x)),</a>
+<a class="sourceLine" id="cb10-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(</a>
+<a class="sourceLine" id="cb10-3" data-line-number="3">  d_rep <span class="op">%.&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/select_rows.html">select_rows</a></span>(., <span class="kw"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span>(x)),</a>
 <a class="sourceLine" id="cb10-4" data-line-number="4">  db_info))</a></code></pre></div>
 <pre><code>## SELECT * FROM (
 ##  SELECT
 ##   __IDENTIFIER__x__IDENTIFIER__
 ##  FROM
 ##   __IDENTIFIER__d__IDENTIFIER__
-## ) tsql_13329886707708739349_0000000000
+## ) tsql_80486700473622611371_0000000000
 ## WHERE ( ( __IDENTIFIER__x__IDENTIFIER__ ) IS NULL )</code></pre>
 <p>In the above query we are now comparing an identifier to <code>NULL</code>, which is how <code>SQL</code> expresses comparing the contents of the column named to <code>NULL</code> in a row by row fashion (a useful query).</p>
 <p>Or combing the two ideas. We check which rows of the column <code>x</code> have the value <code>"a"</code> as follows.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(</a>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(</a>
 <a class="sourceLine" id="cb12-2" data-line-number="2">  d_rep <span class="op">%.&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/select_rows.html">select_rows</a></span>(., x <span class="op">==</span><span class="st"> 'a'</span>),</a>
 <a class="sourceLine" id="cb12-3" data-line-number="3">  db_info))</a></code></pre></div>
 <pre><code>## SELECT * FROM (
@@ -175,119 +177,119 @@
 ##   __IDENTIFIER__x__IDENTIFIER__
 ##  FROM
 ##   __IDENTIFIER__d__IDENTIFIER__
-## ) tsql_94275923073168660195_0000000000
+## ) tsql_32384767505247019564_0000000000
 ## WHERE __IDENTIFIER__x__IDENTIFIER__ = __STRING_CONSTANT__a__STRING_CONSTANT__</code></pre>
 </div>
 <div id="wraprlet-substitution" class="section level2">
 <h2 class="hasAnchor">
-<a href="#wraprlet-substitution" class="anchor"></a><code><a href="https://www.rdocumentation.org/packages/wrapr/topics/let">wrapr::let()</a></code> substitution</h2>
-<p><code><a href="https://www.rdocumentation.org/packages/wrapr/topics/let">wrapr::let()</a></code> substitution is designed only to substitute in names as if the user had typed them. It is deliberately not designed to deal with other value substitutions (such as strings, integers, or floating point values). This is intentional and to keep <code><a href="https://www.rdocumentation.org/packages/wrapr/topics/let">wrapr::let()</a></code> to one job: adapting NSE (Non-standard interfaces) to accept names as values.</p>
-<p><code><a href="https://www.rdocumentation.org/packages/wrapr/topics/let">wrapr::let()</a></code>’s principle is that there is no reason for <code><a href="https://www.rdocumentation.org/packages/wrapr/topics/let">wrapr::let()</a></code> to ever substitute in a value (such as a string or an integer) as normal evaluation of variable names in environments already supplies a better way to do that. The only thing that is hard to substitute in are new symbols, so <code><a href="https://www.rdocumentation.org/packages/wrapr/topics/let">wrapr::let()</a></code> has code to make sure it is doing only that.</p>
-<p>Accordingly <code><a href="https://www.rdocumentation.org/packages/wrapr/topics/let">wrapr::let()</a></code> treats both names/symbols and strings as symbols.</p>
+<a href="#wraprlet-substitution" class="anchor"></a><code>wrapr::let()</code> substitution</h2>
+<p><code><a href="https://rdrr.io/pkg/wrapr/man/let.html">wrapr::let()</a></code> substitution is designed only to substitute in names as if the user had typed them. It is deliberately not designed to deal with other value substitutions (such as strings, integers, or floating point values). This is intentional and to keep <code><a href="https://rdrr.io/pkg/wrapr/man/let.html">wrapr::let()</a></code> to one job: adapting NSE (Non-standard interfaces) to accept names as values.</p>
+<p><code><a href="https://rdrr.io/pkg/wrapr/man/let.html">wrapr::let()</a></code>’s principle is that there is no reason for <code><a href="https://rdrr.io/pkg/wrapr/man/let.html">wrapr::let()</a></code> to ever substitute in a value (such as a string or an integer) as normal evaluation of variable names in environments already supplies a better way to do that. The only thing that is hard to substitute in are new symbols, so <code><a href="https://rdrr.io/pkg/wrapr/man/let.html">wrapr::let()</a></code> has code to make sure it is doing only that.</p>
+<p>Accordingly <code><a href="https://rdrr.io/pkg/wrapr/man/let.html">wrapr::let()</a></code> treats both names/symbols and strings as symbols.</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="co"># Let substitution treats all substitutions as source-text</span></a>
 <a class="sourceLine" id="cb14-2" data-line-number="2"><span class="co"># so strings and names are as if the user had typed them</span></a>
 <a class="sourceLine" id="cb14-3" data-line-number="3"><span class="co"># in and behave as names (becoming the name of a column).</span></a>
-<a class="sourceLine" id="cb14-4" data-line-number="4"><span class="kw"><a href="https://www.rdocumentation.org/packages/wrapr/topics/let">let</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dt">COL_STRING =</span> col_string),</a>
-<a class="sourceLine" id="cb14-5" data-line-number="5">    <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(d_rep <span class="op">%.&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/select_rows.html">select_rows</a></span>(., <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/NA">is.na</a></span>(COL_STRING)),</a>
+<a class="sourceLine" id="cb14-4" data-line-number="4"><span class="kw"><a href="https://rdrr.io/pkg/wrapr/man/let.html">let</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dt">COL_STRING =</span> col_string),</a>
+<a class="sourceLine" id="cb14-5" data-line-number="5">    <span class="kw"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(d_rep <span class="op">%.&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/select_rows.html">select_rows</a></span>(., <span class="kw"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span>(COL_STRING)),</a>
 <a class="sourceLine" id="cb14-6" data-line-number="6">               db_info)))</a></code></pre></div>
 <pre><code>## SELECT * FROM (
 ##  SELECT
 ##   __IDENTIFIER__x__IDENTIFIER__
 ##  FROM
 ##   __IDENTIFIER__d__IDENTIFIER__
-## ) tsql_91297158986473365680_0000000000
+## ) tsql_79311862450833791839_0000000000
 ## WHERE ( ( __IDENTIFIER__x__IDENTIFIER__ ) IS NULL )</code></pre>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="co"># Let substitution treats all substitutions as source-text</span></a>
 <a class="sourceLine" id="cb16-2" data-line-number="2"><span class="co"># so strings and names are as if the user had typed them</span></a>
 <a class="sourceLine" id="cb16-3" data-line-number="3"><span class="co"># in and behave as names (becoming the name of a column).</span></a>
-<a class="sourceLine" id="cb16-4" data-line-number="4"><span class="kw"><a href="https://www.rdocumentation.org/packages/wrapr/topics/let">let</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dt">COL_NAME =</span> col_name),</a>
-<a class="sourceLine" id="cb16-5" data-line-number="5">    <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(d_rep <span class="op">%.&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/select_rows.html">select_rows</a></span>(., <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/NA">is.na</a></span>(COL_NAME)),</a>
+<a class="sourceLine" id="cb16-4" data-line-number="4"><span class="kw"><a href="https://rdrr.io/pkg/wrapr/man/let.html">let</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dt">COL_NAME =</span> col_name),</a>
+<a class="sourceLine" id="cb16-5" data-line-number="5">    <span class="kw"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(d_rep <span class="op">%.&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/select_rows.html">select_rows</a></span>(., <span class="kw"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span>(COL_NAME)),</a>
 <a class="sourceLine" id="cb16-6" data-line-number="6">               db_info)))</a></code></pre></div>
 <pre><code>## SELECT * FROM (
 ##  SELECT
 ##   __IDENTIFIER__x__IDENTIFIER__
 ##  FROM
 ##   __IDENTIFIER__d__IDENTIFIER__
-## ) tsql_93101597343760740499_0000000000
+## ) tsql_31389274196753921310_0000000000
 ## WHERE ( ( __IDENTIFIER__x__IDENTIFIER__ ) IS NULL )</code></pre>
-<p><code><a href="https://www.rdocumentation.org/packages/wrapr/topics/let">wrapr::let()</a></code>’s operating assumption is: if the user was using <code><a href="https://www.rdocumentation.org/packages/wrapr/topics/let">wrapr::let()</a></code> the user was intending a symbol, regardless if they specify that symbol using a string or a symbol type. This means the user doesn’t have to maintain the distinction between string representations of names and symbol representations of names when using <code><a href="https://www.rdocumentation.org/packages/wrapr/topics/let">wrapr::let()</a></code>. And again, for substituting string-values in: there are already much better ways, such as <code>R</code> evaluation itself (as we show below).</p>
+<p><code><a href="https://rdrr.io/pkg/wrapr/man/let.html">wrapr::let()</a></code>’s operating assumption is: if the user was using <code><a href="https://rdrr.io/pkg/wrapr/man/let.html">wrapr::let()</a></code> the user was intending a symbol, regardless if they specify that symbol using a string or a symbol type. This means the user doesn’t have to maintain the distinction between string representations of names and symbol representations of names when using <code><a href="https://rdrr.io/pkg/wrapr/man/let.html">wrapr::let()</a></code>. And again, for substituting string-values in: there are already much better ways, such as <code>R</code> evaluation itself (as we show below).</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">value_we_want &lt;-<span class="st"> "a"</span></a>
 <a class="sourceLine" id="cb18-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb18-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/wrapr/topics/let">let</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dt">COL_NAME =</span> col_name),</a>
-<a class="sourceLine" id="cb18-4" data-line-number="4">    <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(d_rep <span class="op">%.&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/select_rows.html">select_rows</a></span>(., COL_NAME <span class="op">==</span><span class="st"> </span>value_we_want),</a>
+<a class="sourceLine" id="cb18-3" data-line-number="3"><span class="kw"><a href="https://rdrr.io/pkg/wrapr/man/let.html">let</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dt">COL_NAME =</span> col_name),</a>
+<a class="sourceLine" id="cb18-4" data-line-number="4">    <span class="kw"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(d_rep <span class="op">%.&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/select_rows.html">select_rows</a></span>(., COL_NAME <span class="op">==</span><span class="st"> </span>value_we_want),</a>
 <a class="sourceLine" id="cb18-5" data-line-number="5">               db_info)))</a></code></pre></div>
 <pre><code>## SELECT * FROM (
 ##  SELECT
 ##   __IDENTIFIER__x__IDENTIFIER__
 ##  FROM
 ##   __IDENTIFIER__d__IDENTIFIER__
-## ) tsql_91730169068453774490_0000000000
+## ) tsql_74829109755232431639_0000000000
 ## WHERE __IDENTIFIER__x__IDENTIFIER__ = __STRING_CONSTANT__a__STRING_CONSTANT__</code></pre>
-<p>By assuming more about user intent <code><a href="https://www.rdocumentation.org/packages/wrapr/topics/let">wrapr::let()</a></code> can smooth over inessential differences for the user.</p>
+<p>By assuming more about user intent <code><a href="https://rdrr.io/pkg/wrapr/man/let.html">wrapr::let()</a></code> can smooth over inessential differences for the user.</p>
 </div>
 <div id="basebquote-substitution" class="section level2">
 <h2 class="hasAnchor">
-<a href="#basebquote-substitution" class="anchor"></a><code><a href="https://www.rdocumentation.org/packages/base/topics/bquote">base::bquote()</a></code> substitution</h2>
-<p><code><a href="https://www.rdocumentation.org/packages/base/topics/bquote">bquote()</a></code> substitution on the other hand is designed to substitute arbitrary values into un-executed language objects. This is the usual general definition of quasi-quotation, and is an emergent behavior. That we see the behavior one would expect by simply composing existing <code>R</code> language features. <code><a href="https://www.rdocumentation.org/packages/base/topics/bquote">bquote()</a></code> is what you get when you write reasonable code and then accept the resulting behavior as reasonable (even if the resulting behavior may or may not have been your first choice). This is in fact also a good design principle.</p>
-<p>In this case the emergent behavior is: strings are treated as string constants, and names/symbols are treated as column names. That is the consequences of the substitution performed by <code><a href="https://www.rdocumentation.org/packages/base/topics/bquote">bquote()</a></code> is a function of the type of what is being substituted in. This actually makes sense, but it is something the user has to learn.</p>
-<p><code>rquery</code> can use <code><a href="https://www.rdocumentation.org/packages/base/topics/bquote">bquote()</a></code> substitution two ways: through its own NSE methods, or through <a href="https://winvector.github.io/wrapr/reference/qe.html"><code>wrapr:qe()</code></a> (<code>wrapr</code> quote expression). Both work the same: they treat names/symbols as column names, and character/strings as string constants. So users must express their intent by passing in the correct type.</p>
+<a href="#basebquote-substitution" class="anchor"></a><code>base::bquote()</code> substitution</h2>
+<p><code><a href="https://rdrr.io/r/base/bquote.html">bquote()</a></code> substitution on the other hand is designed to substitute arbitrary values into un-executed language objects. This is the usual general definition of quasi-quotation, and is an emergent behavior. That we see the behavior one would expect by simply composing existing <code>R</code> language features. <code><a href="https://rdrr.io/r/base/bquote.html">bquote()</a></code> is what you get when you write reasonable code and then accept the resulting behavior as reasonable (even if the resulting behavior may or may not have been your first choice). This is in fact also a good design principle.</p>
+<p>In this case the emergent behavior is: strings are treated as string constants, and names/symbols are treated as column names. That is the consequences of the substitution performed by <code><a href="https://rdrr.io/r/base/bquote.html">bquote()</a></code> is a function of the type of what is being substituted in. This actually makes sense, but it is something the user has to learn.</p>
+<p><code>rquery</code> can use <code><a href="https://rdrr.io/r/base/bquote.html">bquote()</a></code> substitution two ways: through its own NSE methods, or through <a href="https://winvector.github.io/wrapr/reference/qe.html"><code>wrapr:qe()</code></a> (<code>wrapr</code> quote expression). Both work the same: they treat names/symbols as column names, and character/strings as string constants. So users must express their intent by passing in the correct type.</p>
 <p>Here are examples to show the differences. In all cases substitution is triggered by the <code>.()</code>-notation.</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="co"># bquote substitution on string type: col_string </span></a>
 <a class="sourceLine" id="cb20-2" data-line-number="2"><span class="co"># is taken to represent a string constant, not</span></a>
 <a class="sourceLine" id="cb20-3" data-line-number="3"><span class="co"># the name of a column.</span></a>
-<a class="sourceLine" id="cb20-4" data-line-number="4"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(d_rep <span class="op">%.&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/select_rows.html">select_rows</a></span>(., <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/NA">is.na</a></span>(.(col_string))),</a>
+<a class="sourceLine" id="cb20-4" data-line-number="4"><span class="kw"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(d_rep <span class="op">%.&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/select_rows.html">select_rows</a></span>(., <span class="kw"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span>(.(col_string))),</a>
 <a class="sourceLine" id="cb20-5" data-line-number="5">           db_info))</a></code></pre></div>
-<pre><code>## Warning in warn_about_filter_conditions(parsed): rquery::select_rows:
-## expression is.na("x") refers to no columns (so is a constant)</code></pre>
+<pre><code>## Warning in warn_about_filter_conditions(parsed): rquery::select_rows: expression
+## is.na("x") refers to no columns (so is a constant)</code></pre>
 <pre><code>## SELECT * FROM (
 ##  SELECT
 ##   __IDENTIFIER__x__IDENTIFIER__
 ##  FROM
 ##   __IDENTIFIER__d__IDENTIFIER__
-## ) tsql_94916026397403818714_0000000000
+## ) tsql_38085841111806796445_0000000000
 ## WHERE ( ( __STRING_CONSTANT__x__STRING_CONSTANT__ ) IS NULL )</code></pre>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="co"># bquote substitution on name type: col_name </span></a>
 <a class="sourceLine" id="cb23-2" data-line-number="2"><span class="co"># is taken to represent a column name.</span></a>
-<a class="sourceLine" id="cb23-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(d_rep <span class="op">%.&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/select_rows.html">select_rows</a></span>(., <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/NA">is.na</a></span>(.(col_name))),</a>
+<a class="sourceLine" id="cb23-3" data-line-number="3"><span class="kw"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(d_rep <span class="op">%.&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/select_rows.html">select_rows</a></span>(., <span class="kw"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span>(.(col_name))),</a>
 <a class="sourceLine" id="cb23-4" data-line-number="4">           db_info))</a></code></pre></div>
 <pre><code>## SELECT * FROM (
 ##  SELECT
 ##   __IDENTIFIER__x__IDENTIFIER__
 ##  FROM
 ##   __IDENTIFIER__d__IDENTIFIER__
-## ) tsql_26062207901683638821_0000000000
+## ) tsql_40713006419581946977_0000000000
 ## WHERE ( ( __IDENTIFIER__x__IDENTIFIER__ ) IS NULL )</code></pre>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="co"># bquote substitution on string type: col_string </span></a>
 <a class="sourceLine" id="cb25-2" data-line-number="2"><span class="co"># is taken to represent a string constant, not</span></a>
 <a class="sourceLine" id="cb25-3" data-line-number="3"><span class="co"># the name of a column.</span></a>
-<a class="sourceLine" id="cb25-4" data-line-number="4"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(d_rep <span class="op">%.&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/select_rows_se.html">select_rows_se</a></span>(., <span class="kw"><a href="https://www.rdocumentation.org/packages/wrapr/topics/qe">qe</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/NA">is.na</a></span>(.(col_string)))),</a>
+<a class="sourceLine" id="cb25-4" data-line-number="4"><span class="kw"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(d_rep <span class="op">%.&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/select_rows_se.html">select_rows_se</a></span>(., <span class="kw"><a href="https://rdrr.io/pkg/wrapr/man/qe.html">qe</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span>(.(col_string)))),</a>
 <a class="sourceLine" id="cb25-5" data-line-number="5">           db_info))</a></code></pre></div>
-<pre><code>## Warning in warn_about_filter_conditions(parsed): rquery::select_rows:
-## expression is.na("x") refers to no columns (so is a constant)</code></pre>
+<pre><code>## Warning in warn_about_filter_conditions(parsed): rquery::select_rows: expression
+## is.na("x") refers to no columns (so is a constant)</code></pre>
 <pre><code>## SELECT * FROM (
 ##  SELECT
 ##   __IDENTIFIER__x__IDENTIFIER__
 ##  FROM
 ##   __IDENTIFIER__d__IDENTIFIER__
-## ) tsql_72225877263609857811_0000000000
+## ) tsql_80395810124243742983_0000000000
 ## WHERE ( ( __STRING_CONSTANT__x__STRING_CONSTANT__ ) IS NULL )</code></pre>
 <div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1"><span class="co"># bquote substitution on name type: col_name </span></a>
 <a class="sourceLine" id="cb28-2" data-line-number="2"><span class="co"># is taken to represent a column name.</span></a>
-<a class="sourceLine" id="cb28-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(d_rep <span class="op">%.&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/select_rows_se.html">select_rows_se</a></span>(., <span class="kw"><a href="https://www.rdocumentation.org/packages/wrapr/topics/qe">qe</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/NA">is.na</a></span>(.(col_name)))),</a>
+<a class="sourceLine" id="cb28-3" data-line-number="3"><span class="kw"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(<span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(d_rep <span class="op">%.&gt;%</span><span class="st"> </span><span class="kw"><a href="../reference/select_rows_se.html">select_rows_se</a></span>(., <span class="kw"><a href="https://rdrr.io/pkg/wrapr/man/qe.html">qe</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span>(.(col_name)))),</a>
 <a class="sourceLine" id="cb28-4" data-line-number="4">           db_info))</a></code></pre></div>
 <pre><code>## SELECT * FROM (
 ##  SELECT
 ##   __IDENTIFIER__x__IDENTIFIER__
 ##  FROM
 ##   __IDENTIFIER__d__IDENTIFIER__
-## ) tsql_60874540072787498499_0000000000
+## ) tsql_02067996393798838925_0000000000
 ## WHERE ( ( __IDENTIFIER__x__IDENTIFIER__ ) IS NULL )</code></pre>
 </div>
 <div id="conclusion" class="section level2">
 <h2 class="hasAnchor">
 <a href="#conclusion" class="anchor"></a>Conclusion</h2>
-<p><code><a href="https://www.rdocumentation.org/packages/wrapr/topics/let">wrapr::let()</a></code> behavior is an example of a forced design: a desirable effect is identified (in this case the ability to substitute in names from variables) and the implementation guarantees this effect. Because the implementation is attempting complete control of semantics we can precisely determine user visible effects. We can bend the implementation to our teaching. <code><a href="https://www.rdocumentation.org/packages/wrapr/topics/let">wrapr::let()</a></code> is working <em>around</em> the <code>R</code> language, but deliberately doing so in a very narrow way (we are not re-implementing all of the evaluation path!).</p>
-<p><code><a href="https://www.rdocumentation.org/packages/base/topics/bquote">base::bquote()</a></code> behavior is an example of an emergent design: the code that is natural to get the desired functionality is written, and the exact consequences and details of the implementation are derived from the underlying language semantics. Because the implementation is not trying to work <em>around</em> the underlying language the semantics tend to be good and compatible with other parts of the language.</p>
+<p><code><a href="https://rdrr.io/pkg/wrapr/man/let.html">wrapr::let()</a></code> behavior is an example of a forced design: a desirable effect is identified (in this case the ability to substitute in names from variables) and the implementation guarantees this effect. Because the implementation is attempting complete control of semantics we can precisely determine user visible effects. We can bend the implementation to our teaching. <code><a href="https://rdrr.io/pkg/wrapr/man/let.html">wrapr::let()</a></code> is working <em>around</em> the <code>R</code> language, but deliberately doing so in a very narrow way (we are not re-implementing all of the evaluation path!).</p>
+<p><code><a href="https://rdrr.io/r/base/bquote.html">base::bquote()</a></code> behavior is an example of an emergent design: the code that is natural to get the desired functionality is written, and the exact consequences and details of the implementation are derived from the underlying language semantics. Because the implementation is not trying to work <em>around</em> the underlying language the semantics tend to be good and compatible with other parts of the language.</p>
 <p>Both strategies are valid and have their advantages. I feel this in contrast to systems that re-implement very many (or even every) step of expression representation and evaluation. Once one overrides and re-implements all aspects of representation and evaluation one has two incompatible languages (the original and the overridden) bolted together to great confusion.</p>
 </div>
   </div>
@@ -299,8 +301,8 @@
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
 <li><a href="#stringscharacter-versus-namessymbols">strings/character versus names/symbols</a></li>
-      <li><a href="#wraprlet-substitution"><code><a href="https://www-rdocumentation-org/packages/wrapr/topics/let">wrapr::let()</a></code> substitution</a></li>
-      <li><a href="#basebquote-substitution"><code><a href="https://www-rdocumentation-org/packages/base/topics/bquote">base::bquote()</a></code> substitution</a></li>
+      <li><a href="#wraprlet-substitution"><code>wrapr::let()</code> substitution</a></li>
+      <li><a href="#basebquote-substitution"><code>base::bquote()</code> substitution</a></li>
       <li><a href="#conclusion">Conclusion</a></li>
       </ul>
 </div>
@@ -309,17 +311,20 @@
 </div>
 
 
+
       <footer><div class="copyright">
   <p>Developed by John Mount.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
+
       </footer>
 </div>
 
   
+
 
   </body>
 </html>
