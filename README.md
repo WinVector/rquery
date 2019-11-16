@@ -518,6 +518,52 @@ d %.>%
 | 1 | 4 | 7 |
 | 2 | 3 | 8 |
 
+And for `SQL` we have the following.
+
+``` r
+raw_connection <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+RSQLite::initExtension(raw_connection)
+db <- rquery_db_info(
+  connection = raw_connection,
+  is_dbi = TRUE,
+  connection_options = rq_connection_tests(raw_connection))
+
+cat(to_sql(ops, db))
+```
+
+    ## SELECT
+    ##  `x`,
+    ##  `y`,
+    ##  `z`
+    ## FROM (
+    ##  SELECT * FROM (
+    ##   SELECT
+    ##    `x`,
+    ##    `y`,
+    ##    `z`,
+    ##    row_number ( ) OVER (  PARTITION BY `x` ORDER BY `y`, `z` ) AS `row_number`
+    ##   FROM (
+    ##    SELECT
+    ##     `x`,
+    ##     `y`,
+    ##     `z`
+    ##    FROM
+    ##     `d`
+    ##    ) tsql_29529843672221404723_0000000000
+    ##  ) tsql_29529843672221404723_0000000001
+    ##  WHERE `row_number` = 1
+    ## ) tsql_29529843672221404723_0000000002
+
+``` r
+# clean up
+DBI::dbDisconnect(raw_connection)
+```
+
+For more `SQL` examples, please see
+[here](https://github.com/WinVector/rquery/tree/master/db_examples).
+
+## Pipeline principles
+
 What we are trying to illustrate above: there is a continuum of
 notations possible between:
 

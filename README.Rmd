@@ -318,6 +318,27 @@ d %.>%
   knitr::kable(.)
 ```
 
+And for `SQL` we have the following.
+
+```{r}
+raw_connection <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+RSQLite::initExtension(raw_connection)
+db <- rquery_db_info(
+  connection = raw_connection,
+  is_dbi = TRUE,
+  connection_options = rq_connection_tests(raw_connection))
+
+cat(to_sql(ops, db))
+
+# clean up
+DBI::dbDisconnect(raw_connection)
+```
+
+For more `SQL` examples, please see [here](https://github.com/WinVector/rquery/tree/master/db_examples).
+
+## Pipeline principles
+
+
 What we are trying to illustrate above: there is a continuum of notations possible between:
 
  * Working over values with explicit intermediate variables.
