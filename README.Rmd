@@ -71,6 +71,7 @@ For example: `drop_columns` works as follows. `drop_columns` creates a new `data
 
 ```{r}
 library(rquery)
+library(rqdatatable)
 
 drop_columns(d, c('y', 'z'))
 ```

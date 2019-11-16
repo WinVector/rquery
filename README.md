@@ -105,6 +105,7 @@ new `data.frame` without certain columns.
 
 ``` r
 library(rquery)
+library(rqdatatable)
 
 drop_columns(d, c('y', 'z'))
 ```

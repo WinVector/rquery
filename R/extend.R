@@ -1,4 +1,20 @@
 
+try_merge_parsed_exprs <- function(p1, p2) {
+  used_1 <- unlist(lapply(p1, function(pi) { pi$symbols_used }), recursive = TRUE, use.names = FALSE)
+  produced_1 <- unlist(lapply(p1, function(pi) { pi$symbols_produced }), recursive = TRUE, use.names = FALSE)
+  used_2 <- unlist(lapply(p2, function(pi) { pi$symbols_used }), recursive = TRUE, use.names = FALSE)
+  produced_2 <- unlist(lapply(p2, function(pi) { pi$symbols_produced }), recursive = TRUE, use.names = FALSE)
+  if(length(intersect(produced_1, produced_2)) > 0) {
+    return(NULL)
+  }
+  if(length(intersect(used_1, produced_2)) > 0) {
+    return(NULL)
+  }
+  if(length(intersect(produced_1, used_2)) > 0) {
+    return(NULL)
+  }
+  c(p1, p2)
+}
 
 
 #' Extend data by adding more columns.
@@ -28,6 +44,9 @@ extend_impl <- function(source, parsed,
                         windowed = FALSE) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery:::extend_impl")
+  if(length(parsed) <=0 ) {
+    return(source)
+  }
   if(length(partitionby)>0) {
     if(!windowed) {
       stop("rquery::extend_impl partionby non-trivial, but windowed==FALSE")
@@ -58,6 +77,23 @@ extend_impl <- function(source, parsed,
     orderby
   )))
   check_have_cols(src_columns, required_cols, "rquery::extend")
+  if(("relop_extend" %in% class(source)) && is.null(display_form)) {
+    # see if we can merge nodes
+    if( (windowed == source$windowed) &&
+        isTRUE(all.equal(partitionby, source$partitionby)) &&
+        isTRUE(all.equal(orderby, source$orderby)) &&
+        isTRUE(all.equal(reverse, source$reverse)) ) {
+      parsed_merged <- try_merge_parsed_exprs(source$parsed, parsed)
+      if(length(parsed_merged) > 0) {
+        return(extend_impl(source = source$source[[1]], parsed = parsed_merged,
+                           partitionby = partitionby,
+                           orderby = orderby,
+                           reverse = reverse,
+                           display_form = NULL,
+                           windowed = windowed))
+      }
+    }
+  }
   assignments <- unpack_assignments(source, parsed)
   r <- list(source = list(source),
             table_name = NULL,
