@@ -4,9 +4,12 @@
 \alias{materialize_node}
 \title{Create a materialize node.}
 \usage{
-materialize_node(source,
-  table_name = (wrapr::mk_tmp_name_source("rquerymn"))(), ...,
-  qualifiers = NULL)
+materialize_node(
+  source,
+  table_name = (wrapr::mk_tmp_name_source("rquerymn"))(),
+  ...,
+  qualifiers = NULL
+)
 }
 \arguments{
 \item{source}{source to work from (relop node)}

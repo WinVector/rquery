@@ -5,11 +5,23 @@
 \alias{rlook}
 \title{Quick look at remote data}
 \usage{
-rstr(my_db, tableName, ..., displayRows = 10, countRows = TRUE,
-  qualifiers = NULL)
+rstr(
+  my_db,
+  tableName,
+  ...,
+  displayRows = 10,
+  countRows = TRUE,
+  qualifiers = NULL
+)
 
-rlook(my_db, tableName, ..., displayRows = 10, countRows = TRUE,
-  qualifiers = NULL)
+rlook(
+  my_db,
+  tableName,
+  ...,
+  displayRows = 10,
+  countRows = TRUE,
+  qualifiers = NULL
+)
 }
 \arguments{
 \item{my_db}{database handle}

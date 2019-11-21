@@ -4,8 +4,14 @@
 \alias{if_else_op}
 \title{Build a \code{relop} node simulating a per-row block-\code{if(){}else{}}.}
 \usage{
-if_else_op(source, testexpr, ..., thenexprs = NULL, elseexprs = NULL,
-  env = parent.frame())
+if_else_op(
+  source,
+  testexpr,
+  ...,
+  thenexprs = NULL,
+  elseexprs = NULL,
+  env = parent.frame()
+)
 }
 \arguments{
 \item{source}{optree relop node or data.frame.}

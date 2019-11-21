@@ -5,8 +5,14 @@
 \title{Execute pipeline treating pipe_left_arg as local data to
 be copied into database.}
 \usage{
-\method{apply_right}{relop}(pipe_left_arg, pipe_right_arg,
-  pipe_environment, left_arg_name, pipe_string, right_arg_name)
+\method{apply_right}{relop}(
+  pipe_left_arg,
+  pipe_right_arg,
+  pipe_environment,
+  left_arg_name,
+  pipe_string,
+  right_arg_name
+)
 }
 \arguments{
 \item{pipe_left_arg}{left argument.}

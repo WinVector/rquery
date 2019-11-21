@@ -4,8 +4,7 @@
 \alias{to_transport_representation}
 \title{Convert an rquery op diagram to a simple representation, appropriate for conversion to YAML.}
 \usage{
-to_transport_representation(ops, ...,
-  convert_named_vectors_to_lists = TRUE)
+to_transport_representation(ops, ..., convert_named_vectors_to_lists = TRUE)
 }
 \arguments{
 \item{ops}{rquery operator dag}

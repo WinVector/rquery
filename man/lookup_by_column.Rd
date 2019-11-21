@@ -4,9 +4,16 @@
 \alias{lookup_by_column}
 \title{Use one column to pick values from other columns.}
 \usage{
-lookup_by_column(source, pick, result, ...,
-  tmp_name_source = wrapr::mk_tmp_name_source("qn"), temporary = TRUE,
-  qualifiers = NULL, f_dt_factory = NULL)
+lookup_by_column(
+  source,
+  pick,
+  result,
+  ...,
+  tmp_name_source = wrapr::mk_tmp_name_source("qn"),
+  temporary = TRUE,
+  qualifiers = NULL,
+  f_dt_factory = NULL
+)
 }
 \arguments{
 \item{source}{source to select from (relop or data.frame).}

@@ -4,8 +4,14 @@
 \alias{expand_grid}
 \title{Cross product vectors in database.}
 \usage{
-expand_grid(db, values, ..., temporary = TRUE,
-  table_name = (wrapr::mk_tmp_name_source("eg"))(), qualifiers = NULL)
+expand_grid(
+  db,
+  values,
+  ...,
+  temporary = TRUE,
+  table_name = (wrapr::mk_tmp_name_source("eg"))(),
+  qualifiers = NULL
+)
 }
 \arguments{
 \item{db}{database handle}

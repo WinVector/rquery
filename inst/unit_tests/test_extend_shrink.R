@@ -12,7 +12,13 @@ test_extend_shrink <- function() {
     extend(., y = 1) %.>%
     extend(., y = 2)
 
-  RUnit::checkTrue("relop_extend" %in% class(ops2$source[[1]]))
+  RUnit::checkTrue("relop_table_source" %in% class(ops2$source[[1]]))
+
+  ops3 <- local_td(d) %.>%
+    extend(., y = 1) %.>%
+    extend(., y = y + 1)
+
+  RUnit::checkTrue("relop_extend" %in% class(ops3$source[[1]]))
 
   invisible(NULL)
 }

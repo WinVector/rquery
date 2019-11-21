@@ -4,8 +4,13 @@
 \alias{actualize_join_plan}
 \title{Execute an ordered sequence of left joins.}
 \usage{
-actualize_join_plan(columnJoinPlan, ..., jointype = "LEFT",
-  add_ind_cols = FALSE, checkColClasses = FALSE)
+actualize_join_plan(
+  columnJoinPlan,
+  ...,
+  jointype = "LEFT",
+  add_ind_cols = FALSE,
+  checkColClasses = FALSE
+)
 }
 \arguments{
 \item{columnJoinPlan}{columns to join, from \code{\link{build_join_plan}} (and likely altered by user).  Note: no column names must intersect with names of the form \code{table_CLEANEDTABNAME_present}.}

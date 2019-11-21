@@ -1,5 +1,33 @@
 
 try_merge_parsed_exprs <- function(p1, p2) {
+  # see if we can remove any results in p1
+  produced_1 <- unlist(lapply(p1, function(pi) { pi$symbols_produced }), recursive = TRUE, use.names = FALSE)
+  produced_2 <- unlist(lapply(p2, function(pi) { pi$symbols_produced }), recursive = TRUE, use.names = FALSE)
+  common_results <- intersect(produced_1, produced_2)
+  if(length(common_results)>0) {
+    # make our condition that neigher set of expressions use any produced columns
+    p1_common <- p1[vapply(p1, function(pi) { pi$symbols_produced %in% common_results }, logical(1))]
+    p2_common <- p2[vapply(p2, function(pi) { pi$symbols_produced %in% common_results }, logical(1))]
+    used_common_1 <- unlist(lapply(p1_common, function(pi) { pi$symbols_used }), recursive = TRUE, use.names = FALSE)
+    produced_common_1 <- unlist(lapply(p1_common, function(pi) { pi$symbols_produced }), recursive = TRUE, use.names = FALSE)
+    used_common_2 <- unlist(lapply(p2_common, function(pi) { pi$symbols_used }), recursive = TRUE, use.names = FALSE)
+    produced_common_2 <- unlist(lapply(p2_common, function(pi) { pi$symbols_produced }), recursive = TRUE, use.names = FALSE)
+    if(length(intersect(used_common_1, produced_2)) > 0) {
+      return(NULL)
+    }
+    if(length(intersect(used_common_1, produced_1)) > 0) {
+      return(NULL)
+    }
+    if(length(intersect(produced_1, used_common_2)) > 0) {
+      return(NULL)
+    }
+    if(length(intersect(produced_2, used_common_2)) > 0) {
+      return(NULL)
+    }
+    # can remove p1 common portions
+    p1 <- p1[vapply(p1, function(pi) { !(pi$symbols_produced %in% common_results) }, logical(1))]
+  }
+  # check disjointness conditions, that will allows us to merge
   used_1 <- unlist(lapply(p1, function(pi) { pi$symbols_used }), recursive = TRUE, use.names = FALSE)
   produced_1 <- unlist(lapply(p1, function(pi) { pi$symbols_produced }), recursive = TRUE, use.names = FALSE)
   used_2 <- unlist(lapply(p2, function(pi) { pi$symbols_used }), recursive = TRUE, use.names = FALSE)

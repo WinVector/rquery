@@ -5,11 +5,9 @@
 \alias{aggregate_se}
 \title{project data by grouping, and adding aggregate columns.}
 \usage{
-project_se(source, assignments, ..., groupby = c(),
-  env = parent.frame())
+project_se(source, assignments, ..., groupby = c(), env = parent.frame())
 
-aggregate_se(source, assignments, ..., groupby = c(),
-  env = parent.frame())
+aggregate_se(source, assignments, ..., groupby = c(), env = parent.frame())
 }
 \arguments{
 \item{source}{source to select from.}

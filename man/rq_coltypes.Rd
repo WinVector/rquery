@@ -4,8 +4,14 @@
 \alias{rq_coltypes}
 \title{Get column types by example values as a data.frame.}
 \usage{
-rq_coltypes(db, table_name, ..., qualifiers = NULL,
-  prefer_not_NA = FALSE, force_check = FALSE)
+rq_coltypes(
+  db,
+  table_name,
+  ...,
+  qualifiers = NULL,
+  prefer_not_NA = FALSE,
+  force_check = FALSE
+)
 }
 \arguments{
 \item{db}{Connection handle.}

@@ -4,9 +4,16 @@
 \alias{sql_node}
 \title{Make a general SQL node.}
 \usage{
-sql_node(source, exprs, ..., mods = NULL, orig_columns = TRUE,
-  expand_braces = TRUE, translate_quotes = TRUE,
-  env = parent.frame())
+sql_node(
+  source,
+  exprs,
+  ...,
+  mods = NULL,
+  orig_columns = TRUE,
+  expand_braces = TRUE,
+  translate_quotes = TRUE,
+  env = parent.frame()
+)
 }
 \arguments{
 \item{source}{source to work from.}

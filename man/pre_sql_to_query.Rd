@@ -4,8 +4,15 @@
 \alias{pre_sql_to_query}
 \title{Return SQL transform of tokens.}
 \usage{
-pre_sql_to_query(x, db_info, ..., source_table = NULL,
-  source_limit = NA_real_, using = NULL, qualifiers = NULL)
+pre_sql_to_query(
+  x,
+  db_info,
+  ...,
+  source_table = NULL,
+  source_limit = NA_real_,
+  using = NULL,
+  qualifiers = NULL
+)
 }
 \arguments{
 \item{x}{parsed tokens.}

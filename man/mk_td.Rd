@@ -7,8 +7,7 @@
 \usage{
 mk_td(table_name, columns, ..., qualifiers = NULL, q_table_name = NULL)
 
-table_source(table_name, columns, ..., qualifiers = NULL,
-  q_table_name = NULL)
+table_source(table_name, columns, ..., qualifiers = NULL, q_table_name = NULL)
 }
 \arguments{
 \item{table_name}{character, name of table}

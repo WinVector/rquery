@@ -4,8 +4,13 @@
 \alias{rsummary_node}
 \title{Create an rsumary relop operator node.}
 \usage{
-rsummary_node(source, ..., quartiles = FALSE,
-  tmp_name_source = wrapr::mk_tmp_name_source("sn"), temporary = TRUE)
+rsummary_node(
+  source,
+  ...,
+  quartiles = FALSE,
+  tmp_name_source = wrapr::mk_tmp_name_source("sn"),
+  temporary = TRUE
+)
 }
 \arguments{
 \item{source}{incoming source (relop node or data.frame).}

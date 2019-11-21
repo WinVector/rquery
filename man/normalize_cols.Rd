@@ -4,8 +4,7 @@
 \alias{normalize_cols}
 \title{Build an optree pipeline that normalizes a set of columns so each column sums to one in each partition.}
 \usage{
-normalize_cols(source, columns, ..., partitionby = NULL,
-  env = parent.frame())
+normalize_cols(source, columns, ..., partitionby = NULL, env = parent.frame())
 }
 \arguments{
 \item{source}{relop tree or data.frame source.}

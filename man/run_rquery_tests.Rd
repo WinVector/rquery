@@ -4,11 +4,18 @@
 \alias{run_rquery_tests}
 \title{Run rquery package tests.}
 \usage{
-run_rquery_tests(..., verbose = TRUE, package_test_dirs = "unit_tests",
-  test_dirs = character(0), stop_on_issue = TRUE,
-  stop_if_no_tests = TRUE, require_RUnit_attached = FALSE,
-  require_pkg_attached = TRUE, rngKind = "Mersenne-Twister",
-  rngNormalKind = "Inversion")
+run_rquery_tests(
+  ...,
+  verbose = TRUE,
+  package_test_dirs = "unit_tests",
+  test_dirs = character(0),
+  stop_on_issue = TRUE,
+  stop_if_no_tests = TRUE,
+  require_RUnit_attached = FALSE,
+  require_pkg_attached = TRUE,
+  rngKind = "Mersenne-Twister",
+  rngNormalKind = "Inversion"
+)
 }
 \arguments{
 \item{...}{not used, force later arguments to bind by name.}

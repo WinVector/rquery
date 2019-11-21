@@ -5,11 +5,25 @@
 \alias{extend_nse}
 \title{Extend data by adding more columns.}
 \usage{
-extend(source, ..., partitionby = NULL, orderby = NULL,
-  reverse = NULL, display_form = NULL, env = parent.frame())
+extend(
+  source,
+  ...,
+  partitionby = NULL,
+  orderby = NULL,
+  reverse = NULL,
+  display_form = NULL,
+  env = parent.frame()
+)
 
-extend_nse(source, ..., partitionby = NULL, orderby = NULL,
-  reverse = NULL, display_form = NULL, env = parent.frame())
+extend_nse(
+  source,
+  ...,
+  partitionby = NULL,
+  orderby = NULL,
+  reverse = NULL,
+  display_form = NULL,
+  env = parent.frame()
+)
 }
 \arguments{
 \item{source}{source to select from.}

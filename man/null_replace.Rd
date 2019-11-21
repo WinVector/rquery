@@ -4,8 +4,7 @@
 \alias{null_replace}
 \title{Create a null_replace node.}
 \usage{
-null_replace(src, cols, value, ..., note_col = NULL,
-  env = parent.frame())
+null_replace(src, cols, value, ..., note_col = NULL, env = parent.frame())
 }
 \arguments{
 \item{src}{relop or data.frame data source.}

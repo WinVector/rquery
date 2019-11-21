@@ -4,12 +4,23 @@
 \alias{non_sql_node}
 \title{Wrap a non-SQL node.}
 \usage{
-non_sql_node(source, ..., f_db = NULL, f_df = NULL, f_dt = NULL,
-  incoming_table_name, incoming_qualifiers = NULL, outgoing_table_name,
-  outgoing_qualifiers = NULL, columns_produced,
-  display_form = "non_sql_node", orig_columns = TRUE,
-  temporary = TRUE, check_result_details = TRUE,
-  env = parent.frame())
+non_sql_node(
+  source,
+  ...,
+  f_db = NULL,
+  f_df = NULL,
+  f_dt = NULL,
+  incoming_table_name,
+  incoming_qualifiers = NULL,
+  outgoing_table_name,
+  outgoing_qualifiers = NULL,
+  columns_produced,
+  display_form = "non_sql_node",
+  orig_columns = TRUE,
+  temporary = TRUE,
+  check_result_details = TRUE,
+  env = parent.frame()
+)
 }
 \arguments{
 \item{source}{source to work from (data.frame or relop node)}

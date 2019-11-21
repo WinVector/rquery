@@ -4,8 +4,14 @@
 \alias{order_rows}
 \title{Make an orderby node (not a relational operation).}
 \usage{
-order_rows(source, cols = NULL, ..., reverse = NULL, limit = NULL,
-  env = parent.frame())
+order_rows(
+  source,
+  cols = NULL,
+  ...,
+  reverse = NULL,
+  limit = NULL,
+  env = parent.frame()
+)
 }
 \arguments{
 \item{source}{source to select from.}

@@ -4,9 +4,18 @@
 \alias{execute}
 \title{Execute an operator tree, bringing back the result to memory.}
 \usage{
-execute(source, optree, ..., limit = NULL, source_limit = NULL,
-  overwrite = TRUE, temporary = TRUE, allow_executor = TRUE,
-  temp_source = mk_tmp_name_source("rquery_ex"), env = parent.frame())
+execute(
+  source,
+  optree,
+  ...,
+  limit = NULL,
+  source_limit = NULL,
+  overwrite = TRUE,
+  temporary = TRUE,
+  allow_executor = TRUE,
+  temp_source = mk_tmp_name_source("rquery_ex"),
+  env = parent.frame()
+)
 }
 \arguments{
 \item{source}{data.frame or database connecton (rquery_db_info class or DBI connections preferred).}

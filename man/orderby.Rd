@@ -4,8 +4,14 @@
 \alias{orderby}
 \title{Make an orderby node (not a relational operation).}
 \usage{
-orderby(source, cols = NULL, ..., reverse = NULL, limit = NULL,
-  env = parent.frame())
+orderby(
+  source,
+  cols = NULL,
+  ...,
+  reverse = NULL,
+  limit = NULL,
+  env = parent.frame()
+)
 }
 \arguments{
 \item{source}{source to select from.}

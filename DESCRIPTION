@@ -2,7 +2,7 @@ Package: rquery
 Type: Package
 Title: Relational Query Generator for Data Manipulation at Scale
 Version: 1.4.0
-Date: 2019-11-16
+Date: 2019-11-21
 Authors@R: c(
     person("John", "Mount", email = "jmount@win-vector.com", role = c("aut", "cre")),
     person(family = "Win-Vector LLC", role = c("cph"))
@@ -40,6 +40,6 @@ Suggests:
     RUnit,
     yaml
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.0
 ByteCompile: true
 VignetteBuilder: knitr

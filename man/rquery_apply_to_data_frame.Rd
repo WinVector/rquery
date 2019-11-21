@@ -4,8 +4,15 @@
 \alias{rquery_apply_to_data_frame}
 \title{Execute optree in an environment where d is the only data.}
 \usage{
-rquery_apply_to_data_frame(d, optree, ..., limit = NULL,
-  source_limit = NULL, allow_executor = TRUE, env = parent.frame())
+rquery_apply_to_data_frame(
+  d,
+  optree,
+  ...,
+  limit = NULL,
+  source_limit = NULL,
+  allow_executor = TRUE,
+  env = parent.frame()
+)
 }
 \arguments{
 \item{d}{data.frame or named list of data.frames.}

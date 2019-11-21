@@ -5,10 +5,16 @@
 \title{Compute quantiles over non-NULL values
 (without interpolation, needs a database with window functions).}
 \usage{
-quantile_node(source, cols = NULL, ...,
-  probs_name = "quantile_probability", probs = seq(0, 1, 0.25),
-  tmp_name_source = wrapr::mk_tmp_name_source("qn"), temporary = TRUE,
-  qualifiers = NULL)
+quantile_node(
+  source,
+  cols = NULL,
+  ...,
+  probs_name = "quantile_probability",
+  probs = seq(0, 1, 0.25),
+  tmp_name_source = wrapr::mk_tmp_name_source("qn"),
+  temporary = TRUE,
+  qualifiers = NULL
+)
 }
 \arguments{
 \item{source}{source to select from (relop or data.frame).}

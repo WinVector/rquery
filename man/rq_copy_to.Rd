@@ -4,8 +4,16 @@
 \alias{rq_copy_to}
 \title{Copy local R table to remote data handle.}
 \usage{
-rq_copy_to(db, table_name, d, ..., qualifiers = NULL,
-  overwrite = FALSE, temporary = TRUE, rowidcolumn = NULL)
+rq_copy_to(
+  db,
+  table_name,
+  d,
+  ...,
+  qualifiers = NULL,
+  overwrite = FALSE,
+  temporary = TRUE,
+  rowidcolumn = NULL
+)
 }
 \arguments{
 \item{db}{database connection handle.}

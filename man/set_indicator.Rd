@@ -4,8 +4,15 @@
 \alias{set_indicator}
 \title{Make a set indicator node.}
 \usage{
-set_indicator(source, rescol, testcol, testvalues, ...,
-  translate_quotes = FALSE, env = parent.frame())
+set_indicator(
+  source,
+  rescol,
+  testcol,
+  testvalues,
+  ...,
+  translate_quotes = FALSE,
+  env = parent.frame()
+)
 }
 \arguments{
 \item{source}{source to select from.}

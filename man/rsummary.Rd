@@ -4,8 +4,15 @@
 \alias{rsummary}
 \title{Compute usable summary of columns of remote table.}
 \usage{
-rsummary(db, tableName, ..., countUniqueNum = FALSE, quartiles = FALSE,
-  cols = NULL, qualifiers = NULL)
+rsummary(
+  db,
+  tableName,
+  ...,
+  countUniqueNum = FALSE,
+  quartiles = FALSE,
+  cols = NULL,
+  qualifiers = NULL
+)
 }
 \arguments{
 \item{db}{database connection.}

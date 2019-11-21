@@ -7,8 +7,6 @@
 pre_sql_fn(value)
 }
 \arguments{
-\item{value}{function tname}
-
 \item{value}{character, token string}
 }
 \value{

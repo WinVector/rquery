@@ -4,9 +4,17 @@
 \alias{materialize}
 \title{Materialize an optree as a table.}
 \usage{
-materialize(db, optree, table_name = mk_tmp_name_source("rquery_mat")(),
-  ..., limit = NULL, source_limit = NULL, overwrite = TRUE,
-  temporary = FALSE, qualifiers = NULL)
+materialize(
+  db,
+  optree,
+  table_name = mk_tmp_name_source("rquery_mat")(),
+  ...,
+  limit = NULL,
+  source_limit = NULL,
+  overwrite = TRUE,
+  temporary = FALSE,
+  qualifiers = NULL
+)
 }
 \arguments{
 \item{db}{database connecton (rquery_db_info class or DBI connections preferred).}

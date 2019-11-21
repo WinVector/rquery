@@ -4,9 +4,13 @@
 \alias{local_td}
 \title{Construct a table description of a local data.frame.}
 \usage{
-local_td(d, ..., name = NULL,
+local_td(
+  d,
+  ...,
+  name = NULL,
   name_source = wrapr::mk_tmp_name_source("rqltd"),
-  env = parent.frame())
+  env = parent.frame()
+)
 }
 \arguments{
 \item{d}{data.frame or name of data.frame to use as a data source.}

@@ -4,8 +4,7 @@
 \alias{op_diagram}
 \title{Build a diagram of a optree pipeline.}
 \usage{
-op_diagram(optree, ..., merge_tables = FALSE,
-  show_table_columns = TRUE)
+op_diagram(optree, ..., merge_tables = FALSE, show_table_columns = TRUE)
 }
 \arguments{
 \item{optree}{operation tree pipeline (or list of such).}

@@ -4,10 +4,18 @@
 \alias{pick_top_k}
 \title{Build an optree pipeline that selects up to the top k rows from each group in the given order.}
 \usage{
-pick_top_k(source, ..., partitionby = NULL, orderby = NULL,
-  reverse = NULL, k = 1L, order_expression = "row_number()",
-  order_column = "row_number", keep_order_column = TRUE,
-  env = parent.frame())
+pick_top_k(
+  source,
+  ...,
+  partitionby = NULL,
+  orderby = NULL,
+  reverse = NULL,
+  k = 1L,
+  order_expression = "row_number()",
+  order_column = "row_number",
+  keep_order_column = TRUE,
+  env = parent.frame()
+)
 }
 \arguments{
 \item{source}{relop tree or data.frame source.}

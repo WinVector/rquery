@@ -4,9 +4,15 @@
 \alias{pre_sql_to_query.pre_sql_sub_expr}
 \title{Convert a pre_sql token object to SQL query text.}
 \usage{
-\method{pre_sql_to_query}{pre_sql_sub_expr}(x, db_info, ...,
-  source_table = NULL, source_limit = NA_real_, using = NULL,
-  qualifiers = NULL)
+\method{pre_sql_to_query}{pre_sql_sub_expr}(
+  x,
+  db_info,
+  ...,
+  source_table = NULL,
+  source_limit = NA_real_,
+  using = NULL,
+  qualifiers = NULL
+)
 }
 \arguments{
 \item{x}{the pre_sql token}

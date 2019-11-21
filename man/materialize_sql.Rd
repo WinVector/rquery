@@ -4,8 +4,15 @@
 \alias{materialize_sql}
 \title{Materialize a user supplied SQL statement as a table.}
 \usage{
-materialize_sql(db, sql, table_name = mk_tmp_name_source("rqms")(), ...,
-  overwrite = TRUE, temporary = FALSE, qualifiers = NULL)
+materialize_sql(
+  db,
+  sql,
+  table_name = mk_tmp_name_source("rqms")(),
+  ...,
+  overwrite = TRUE,
+  temporary = FALSE,
+  qualifiers = NULL
+)
 }
 \arguments{
 \item{db}{database connecton (rquery_db_info class or DBI connections preferred).}

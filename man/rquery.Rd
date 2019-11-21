@@ -3,7 +3,6 @@
 \docType{package}
 \name{rquery}
 \alias{rquery}
-\alias{rquery-package}
 \title{\code{rquery}: Relational Query Generator for Data Manipulation}
 \description{
 \code{rquery} supplies a piped query generator based on Edgar F. Codd's relational
