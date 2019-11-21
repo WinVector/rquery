@@ -15,26 +15,12 @@
     * package encoding: UTF-8
     * checking CRAN incoming feasibility ... NOTE
     Maintainer: ‘John Mount <jmount@win-vector.com>’
-    Days since last update: 5
     Number of updates in past 6 months: 7
     Status: 1 NOTE
 
 ### Windows
 
     rhub::check_for_cran()
-     857#> * using R Under development (unstable) (2019-10-19 r77318)
-     858#> * using platform: x86_64-w64-mingw32 (64-bit)
-     859#> * using session charset: ISO8859-1
-     860#> * using option '--as-cran'
-     861#> * checking for file 'rquery/DESCRIPTION' ... OK
-     862#> * checking extension type ... Package
-     863#> * this is package 'rquery' version '1.4.0'
-     864#> * package encoding: UTF-8
-     865#> * checking CRAN incoming feasibility ... NOTE
-     866#> Maintainer: 'John Mount '
-     867#> Days since last update: 5
-     868#> Number of updates in past 6 months: 7
-     924#> Status: 1 NOTE
 
 ## Reverse dependencies
 

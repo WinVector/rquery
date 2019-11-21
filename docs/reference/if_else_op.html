@@ -172,8 +172,14 @@ execution either on <code>data.frame</code>s or at a big data scale using
 <code>RPostgreSQL</code> or <code>sparklyr</code>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>if_else_op</span>(<span class='no'>source</span>, <span class='no'>testexpr</span>, <span class='no'>...</span>, <span class='kw'>thenexprs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>elseexprs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span>())</pre>
+    <pre class="usage"><span class='fu'>if_else_op</span>(
+  <span class='no'>source</span>,
+  <span class='no'>testexpr</span>,
+  <span class='no'>...</span>,
+  <span class='kw'>thenexprs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>elseexprs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span>()
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">

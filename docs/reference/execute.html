@@ -150,9 +150,18 @@
     <p>Run the data query.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>execute</span>(<span class='no'>source</span>, <span class='no'>optree</span>, <span class='no'>...</span>, <span class='kw'>limit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>source_limit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>allow_executor</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>temp_source</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/wrapr/man/mk_tmp_name_source.html'>mk_tmp_name_source</a></span>(<span class='st'>"rquery_ex"</span>), <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span>())</pre>
+    <pre class="usage"><span class='fu'>execute</span>(
+  <span class='no'>source</span>,
+  <span class='no'>optree</span>,
+  <span class='no'>...</span>,
+  <span class='kw'>limit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>source_limit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>allow_executor</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>temp_source</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/wrapr/man/mk_tmp_name_source.html'>mk_tmp_name_source</a></span>(<span class='st'>"rquery_ex"</span>),
+  <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span>()
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">

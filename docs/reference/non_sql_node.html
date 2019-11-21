@@ -160,12 +160,23 @@ so can be expensive and should be used sparingly.  Finally their
 result can only be used once in a pipeline (else they will try to clobber their own result).</p>
     </div>
 
-    <pre class="usage"><span class='fu'>non_sql_node</span>(<span class='no'>source</span>, <span class='no'>...</span>, <span class='kw'>f_db</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>f_df</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>f_dt</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='no'>incoming_table_name</span>, <span class='kw'>incoming_qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>outgoing_table_name</span>,
-  <span class='kw'>outgoing_qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>columns_produced</span>,
-  <span class='kw'>display_form</span> <span class='kw'>=</span> <span class='st'>"non_sql_node"</span>, <span class='kw'>orig_columns</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>check_result_details</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span>())</pre>
+    <pre class="usage"><span class='fu'>non_sql_node</span>(
+  <span class='no'>source</span>,
+  <span class='no'>...</span>,
+  <span class='kw'>f_db</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>f_df</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>f_dt</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='no'>incoming_table_name</span>,
+  <span class='kw'>incoming_qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='no'>outgoing_table_name</span>,
+  <span class='kw'>outgoing_qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='no'>columns_produced</span>,
+  <span class='kw'>display_form</span> <span class='kw'>=</span> <span class='st'>"non_sql_node"</span>,
+  <span class='kw'>orig_columns</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>check_result_details</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span>()
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">

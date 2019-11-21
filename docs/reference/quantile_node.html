@@ -153,10 +153,16 @@
     <p>Please see <a href='https://github.com/WinVector/rquery/blob/master/extras/Summary_Example.md'>https://github.com/WinVector/rquery/blob/master/extras/Summary_Example.md</a> for an example.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>quantile_node</span>(<span class='no'>source</span>, <span class='kw'>cols</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>,
-  <span class='kw'>probs_name</span> <span class='kw'>=</span> <span class='st'>"quantile_probability"</span>, <span class='kw'>probs</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>0.25</span>),
-  <span class='kw'>tmp_name_source</span> <span class='kw'>=</span> <span class='kw pkg'>wrapr</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/wrapr/man/mk_tmp_name_source.html'>mk_tmp_name_source</a></span>(<span class='st'>"qn"</span>), <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>quantile_node</span>(
+  <span class='no'>source</span>,
+  <span class='kw'>cols</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='no'>...</span>,
+  <span class='kw'>probs_name</span> <span class='kw'>=</span> <span class='st'>"quantile_probability"</span>,
+  <span class='kw'>probs</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>0.25</span>),
+  <span class='kw'>tmp_name_source</span> <span class='kw'>=</span> <span class='kw pkg'>wrapr</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/wrapr/man/mk_tmp_name_source.html'>mk_tmp_name_source</a></span>(<span class='st'>"qn"</span>),
+  <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">

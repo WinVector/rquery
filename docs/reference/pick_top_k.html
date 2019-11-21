@@ -150,10 +150,18 @@
     <p>This is an example of building up a desired pre-prepared pipeline fragment from relop nodes.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>pick_top_k</span>(<span class='no'>source</span>, <span class='no'>...</span>, <span class='kw'>partitionby</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>orderby</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>reverse</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>order_expression</span> <span class='kw'>=</span> <span class='st'>"row_number()"</span>,
-  <span class='kw'>order_column</span> <span class='kw'>=</span> <span class='st'>"row_number"</span>, <span class='kw'>keep_order_column</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span>())</pre>
+    <pre class="usage"><span class='fu'>pick_top_k</span>(
+  <span class='no'>source</span>,
+  <span class='no'>...</span>,
+  <span class='kw'>partitionby</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>orderby</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>reverse</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>1L</span>,
+  <span class='kw'>order_expression</span> <span class='kw'>=</span> <span class='st'>"row_number()"</span>,
+  <span class='kw'>order_column</span> <span class='kw'>=</span> <span class='st'>"row_number"</span>,
+  <span class='kw'>keep_order_column</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span>()
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">

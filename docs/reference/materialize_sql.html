@@ -150,8 +150,15 @@
     <p>Run the data query with a CREATE TABLE AS .</p>
     </div>
 
-    <pre class="usage"><span class='fu'>materialize_sql</span>(<span class='no'>db</span>, <span class='no'>sql</span>, <span class='kw'>table_name</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/wrapr/man/mk_tmp_name_source.html'>mk_tmp_name_source</a></span>(<span class='st'>"rqms"</span>)(), <span class='no'>...</span>,
-  <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>materialize_sql</span>(
+  <span class='no'>db</span>,
+  <span class='no'>sql</span>,
+  <span class='kw'>table_name</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/wrapr/man/mk_tmp_name_source.html'>mk_tmp_name_source</a></span>(<span class='st'>"rqms"</span>)(),
+  <span class='no'>...</span>,
+  <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
