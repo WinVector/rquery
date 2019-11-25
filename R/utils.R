@@ -112,6 +112,7 @@ parse_nse <- function(source, exprs, env,
                       allow_empty = FALSE) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery:::parse_nse")
+  force(env)
   n <- length(exprs)
   if(n<=0) {
     if(allow_empty) {
@@ -133,6 +134,16 @@ parse_nse <- function(source, exprs, env,
       }
     }
     ei <- exprs[[i]]
+    # make sure LHS of := forms are evaluated early
+    if(is.call(ei) && (as.character(ei[[1]]) %in% c(":=", "%:=%"))) {
+      ni = ei[[2]]
+      if(is.call(ni)) {
+        ni = paste(as.character(eval(ni, envi=env, enclos=env)), collapse = ' ')
+      } else {
+        ni = paste(as.character(ni, collapse = ' '), collapse = ' ')
+      }
+      ei = ei[[3]]
+    }
     pi <- tokenize_for_SQL(ei,
                         colnames = have,
                         env = env)

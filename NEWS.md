@@ -1,8 +1,9 @@
 
-# rquery 1.4.0 2019/11/24
+# rquery 1.4.0 2019/11/25
 
  * Fix name substitution in immediate mode.
  * Fix union_all.
+ * Deal with early LHS eval.
  * Deal with bound variable types.
  * Deal with degenerate partition in extend.
  * Work on operator composition shortcuts.
