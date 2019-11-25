@@ -134,8 +134,9 @@ parse_nse <- function(source, exprs, env,
       }
     }
     ei <- exprs[[i]]
-    # make sure LHS of := forms are evaluated early
-    if(is.call(ei) && (as.character(ei[[1]]) %in% c(":=", "%:=%"))) {
+    # make sure LHS of := forms are evaluated early in some cases
+    # (even without .())
+    if(is.null(ni) && is.call(ei) && (as.character(ei[[1]]) %in% c(":=", "%:=%"))) {
       ni = ei[[2]]
       if(is.call(ni)) {
         ni = paste(as.character(eval(ni, envir=env, enclos=env)), collapse = ' ')

@@ -3,7 +3,7 @@
 
  * Fix name substitution in immediate mode.
  * Fix union_all.
- * Deal with early LHS eval.
+ * Allow ad-hoc (not-bquote) early LHS eval.
  * Deal with bound variable types.
  * Deal with degenerate partition in extend.
  * Work on operator composition shortcuts.
