@@ -138,9 +138,9 @@ parse_nse <- function(source, exprs, env,
     if(is.call(ei) && (as.character(ei[[1]]) %in% c(":=", "%:=%"))) {
       ni = ei[[2]]
       if(is.call(ni)) {
-        ni = paste(as.character(eval(ni, envi=env, enclos=env)), collapse = ' ')
+        ni = paste(as.character(eval(ni, envir=env, enclos=env)), collapse = ' ')
       } else {
-        ni = paste(as.character(ni, collapse = ' '), collapse = ' ')
+        ni = paste(as.character(ni), collapse = ' ')
       }
       ei = ei[[3]]
     }
