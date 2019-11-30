@@ -205,7 +205,7 @@
 #&gt;   "surveyCategory",
 #&gt;   "assessmentTotal")) %.&gt;%
 #&gt;  extend(.,
-#&gt;   probability %:=% exp(assessmentTotal * 0.237)) %.&gt;%
+#&gt;   probability := exp(assessmentTotal * 0.237)) %.&gt;%
 #&gt;  extend(.,
 #&gt;   probability := probability / sum(probability),
 #&gt;   partitionby = c('subjectID'),

@@ -1,5 +1,5 @@
 
-# rquery 1.4.0 2019/11/28
+# rquery 1.4.0 2019/11/30
 
  * Fix name substitution in immediate mode.
  * Fix union_all.
