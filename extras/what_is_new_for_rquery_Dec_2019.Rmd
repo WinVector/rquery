@@ -1,0 +1,157 @@
+---
+title: "What is new for rquery December 2019"
+output: github_document
+---
+
+Our goal has been to make [`rquery`](https://github.com/WinVector/rquery) the best query generation system for [`R`](https://www.r-project.org) (and to make [`data_algebra`](https://github.com/WinVector/data_algebra) the best query generator for [`Python`](https://www.python.org)).
+
+Lets see what `rquery` is good at, and what new features are making `rquery` better.
+
+The idea is: the query is a first [class citizen](https://en.wikipedia.org/wiki/First-class_citizen) that we can use to design and optimize queries prior to translating them into a data transform [action](https://ncatlab.org/nlab/show/action) via [`data.table`](https://CRAN.R-project.org/package=data.table), [`SQL`](https://en.wikipedia.org/wiki/SQL), [`Pandas`](https://pandas.pydata.org), or other realizations.
+
+For quite a while `rquery` has had query-narrowing.  Columns that are not used in the calculation are eliminated early.  Here is an example.
+
+```{r}
+library(rquery)
+
+ops <- mk_td(
+  "d", 
+  c("col1", "col2", "col3")) %.>%
+  extend(., sum23 := col2 + col3) %.>%
+  select_columns(., 'sum23')
+
+cat(format(ops))
+```
+
+The above query (or operator [DAG](https://en.wikipedia.org/wiki/Directed_acyclic_graph)) represents working with a table that has columns `col1`, `col2`, `col3`.  The example is specifying adding a new derived column named `sum23` and then limiting down to only this new column.  We've tried to use operator names that evoke [operator names used by Codd](https://en.wikipedia.org/wiki/Relational_algebra).
+
+An important point is: the query is bound to a description of a data frame (or a schema), not bound to any one data frame.  Thus we can re-use the query on new data.
+
+The record-keeping in the query knows that only columns `col2` and `col2` are used.
+
+```{r}
+columns_used(ops)
+```
+
+This allows "query narrowing" where the unused columns are not specified in intermediate queries. This is easiest to see if we convert the query to `SQL`.
+
+```{r}
+ops %.>%
+  to_sql(
+    ., 
+    rquery::rquery_default_db_info()) %.>%
+  cat(.)
+```
+
+Notice `col1` is never referred to. This can be handy when working with tables with hundreds of columns.
+
+And, using [`rqdatatable`]( https://CRAN.R-project.org/package=rqdatatable) we can use [`data.table`](https://CRAN.R-project.org/package=data.table) as another data action implementation.
+
+```{r}
+library(rqdatatable)
+
+data.frame(col1 = 1, col2 = 2, col3 = 3) %.>%
+  ops %.>%
+  knitr::kable(.)
+```
+
+
+`rquery` now also has query-shortening.  Some dead-values can be eliminated during query construction, before any calculations are attempted.
+
+```{r}
+ops <- mk_td(
+  "example_table", 
+  c("col1", "col2", "col3")) %.>%
+  extend(., sum23 := col2 + col3) %.>%
+  extend(., x := 1) %.>%
+  extend(., x := 2) %.>%
+  extend(., x := 3) %.>%
+  extend(., x := 4) %.>%
+  extend(., x := 5) %.>%
+  select_columns(., c('x', 'sum23'))
+
+cat(format(ops))
+```
+
+Obviously nobody would construct such a bad query, but it is nice that some of the "ick" is optimized automatically.
+
+Both of the above optimizations are deliberately conservative.  They are implemented to be correct (not give incorrect results), but are not necessarily super aggressive in eliminating all redundancy.
+
+It is a bit long and technical. But both of these optimizations are easy due to the use of category theoretic ideas in the design of the `rquery` and `data_algebra` packages (I am working on some notes on this [here](https://github.com/WinVector/data_algebra/blob/master/Examples/Arrow/CDesign.md)).  
+
+The short form is: the `rquery`/`data_algebra` operators have an interpretation in a nice category over table [schemas](https://en.wikipedia.org/wiki/Database_schema).  The schema objects give us pre-condition and post-condition record keeping which enforces correct query composition and query narrowing.  The generality of arrow composition gives us the freedom to place optimizations in the composition step. This gives us more options then systems that are restricted to list-concatenation or function composition/abstraction as their notion of composition.  It also lets us enforce and check conditions early.
+
+`rquery` performs most of its checking during query construction.  This can catch errors early and save a lot of development time.
+
+```{r, error=TRUE}
+ops_bad <- mk_td(
+  "example_table", 
+  c("col1", "col2", "col3")) %.>%
+  extend(., sum23 := col2_MISSPELLED + col3)
+```
+
+Notice an error was raised during query construction.  We didn't have to wait to supply data or translate to `SQL`.
+
+Let's take a look at the `SQL` translation of our final example query.
+
+```{r}
+ops %.>%
+  to_sql(
+    ., 
+    rquery::rquery_default_db_info()) %.>%
+  cat(.)
+```
+
+There are some more things we would wish optimized away, such as both the inner and outer select. But the `SQL` is reasonably short, due to the intermediate stages that were optimized out of the original query. Later versions of the system will pick these up, and likely these are also easy for downstream `SQL` optimizers to eliminate.
+
+An important point: optimizations performed during query construction are shared among all back-ends: `data.table`, `SQL`, and `Pandas`.
+
+Please consider giving `rquery` a try.
+
+<hr>
+
+<h2>Appendix</h2>
+
+We often get asked "why bother with `rquery`, given [`dplyr`](https://CRAN.R-project.org/package=dplyr) was first."  I'd say: if you are happy with `dplyr` don't worry about `rquery`.  Though I would add: you really owe it to yourself to check out [`data.table`](https://CRAN.R-project.org/package=data.table), it is by far the best data manipulation system in `R`.
+
+However, let's take a look how [`dbplyr`](https://CRAN.R-project.org/package=dbplyr) generates a similar `SQL` query.
+
+```{r}
+library(dplyr)
+packageVersion("dplyr")
+library(dbplyr)
+packageVersion("dbplyr")
+
+con <- DBI::dbConnect(RSQLite::SQLite(), 
+                      ":memory:")
+copy_to(
+  con, 
+  data.frame(col1 = 1, col2 = 2, col3 = 3), 
+  name = 'd')
+
+tbl(con, 'd') %>%
+  mutate(sum23 := col2 + col3) %>%
+  mutate(x := 1) %>%
+  mutate(x := 2) %>%
+  mutate(x := 3) %>%
+  mutate(x := 4) %>%
+  mutate(x := 5) %>%
+  select(x, sum23) %>%
+  show_query()
+```
+
+The `dplyr` `SQL` query appears to have neither query narrowing nor query shortening.  Again, a downstream `SQL` optimizer may be able to eliminate these steps (or it may not). However, it also would be desirable to have these sort of eliminations available when using [`data.table`](https://CRAN.R-project.org/package=data.table) through [`dtplyr`](https://CRAN.R-project.org/package=dtplyr).
+
+Also, `dbplyr` does not seem to catch errors until `compute()` or `print()` are called.
+
+```{r}
+tbl(con, 'd') %>%
+  mutate(sum23 := col2_MISSPELLED + col3) %>%
+  show_query()
+```
+
+The above `SQL` refers to a non-existent column `col2_MISSPELLED`. The query construction and `SQL` generation steps did not signal any error.  Depending on how many queries and steps are before this, this could delay finding this mistake by quite a while (especially when using a high latency `SQL` engine such as [`Apache Spark`](https://spark.apache.org)).
+
+```{r}
+DBI::dbDisconnect(con)
+```
