@@ -1,4 +1,4 @@
-pandoc: 2.2.1
+pandoc: 2.3.1
 pkgdown: 1.4.1
 pkgdown_sha: ~
 articles:
@@ -8,6 +8,7 @@ articles:
   QueryGeneration: QueryGeneration.html
   R_mapping: R_mapping.html
   rquery_intro: rquery_intro.html
+  rquery_many_columns: rquery_many_columns.html
   rquery_substitution: rquery_substitution.html
   sql_quoting: sql_quoting.html
 

@@ -1,0 +1,161 @@
+---
+title: "rquery Many Columns"
+author: "John Mount, Win-Vector LLC"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{rquery Many Columns}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+A common data manipulation need is: applying the same operation to a number of columns.
+
+In the [`rquery`](https://github.com/WinVector/rquery) [`R`](https://www.r-project.org) package we strongly recommend using value-oriented (or standard evaluation) for this task.
+
+Here is what this looks like.
+
+For our data lets build a simple data set similar to `mtcars`:
+
+```{r}
+library(wrapr)
+library(rquery)
+have_rqdatatable <- requireNamespace('rqdatatable', quietly = TRUE)
+
+example_data <- wrapr::build_frame(
+   "mpg"  , "cyl", "disp",  "car"               |
+     21   , 6    , 160   ,  "Mazda RX4"         |
+     21   , 6    , 160   ,  "Mazda RX4 Wag"     |
+     22.8 , 4    , 108   ,  "Datsun 710"        |
+     21.4 , 6    , 258   ,  "Hornet 4 Drive"    |
+     18.7 , 8    , 360   ,  "Hornet Sportabout" |
+     18.1 , 6    , 225   ,  "Valiant"           )
+
+knitr::kable(example_data)
+```
+
+Now suppose for a number of columns we wish to perform a calculation, such centering it with respect to the grand average.
+
+This is easily handled by first specifying the set of variables we wish to work with.
+
+```{r}
+vars <- setdiff(colnames(example_data), 'car')
+
+print(vars)
+```
+
+Now we build up what we want as a name-vector of strings using the [`:=` named map builder](https://winvector.github.io/wrapr/articles/named_map_builder.html). 
+
+```{r}
+expressions <- vars := paste0(vars, ' - mean(', vars, ')')
+
+print(expressions)
+```
+
+The idea is: the `:=` operator fits into `R` idiom by looking very much like a vectorized version of "names get assigned expressions".
+
+These expressions can then be used in an `rquery` pipeline using the `_se`-variant of `extend()`: `extend_se()`.
+
+```{r}
+ops <- local_td(example_data) %.>%
+  extend_se(., expressions)
+
+cat(format(ops))
+```
+
+And this operator pipeline is ready to use (assuming we have `rqdatatable` available):
+
+```{r}
+if(have_rqdatatable) {
+  example_data %.>%
+    ops %.>%
+    knitr::kable(.)
+}
+```
+
+The expression construction can also be done inside the `extend_se()` operator.
+
+```{r}
+ops <- local_td(example_data) %.>%
+  extend_se(., vars := paste0(vars, ' - mean(', vars, ')'))
+
+cat(format(ops))
+```
+
+The point is: we use standard `R` tools to build up the lists of names and operations.  We are not restricted to any single argument manipulation grammar.
+
+For example we could build all interaction terms as follows.
+
+```{r}
+combos <- t(combn(vars, 2))
+interactions <- 
+  paste0(combos[, 1], '_', combos[, 2]) := 
+  paste0(combos[, 1], ' * ', combos[, 2])
+
+ops <- local_td(example_data) %.>%
+  extend_se(., interactions)
+
+cat(format(ops))
+```
+
+What we can do is limited only by the power of `R` itself.
+
+It is a critical advantage to work with sets of variables as standard values. Bringing in a whole theory of un-evaluated expressions can in fact be less-powerful than working with values.
+
+Note: we also supply an alias for `:=` as `%:=%` for those that don't want to confuse this assignment with how the symbol is used in `data.table`.  Take care that `:=` has the precedence-level of an assignment and `%:=%` has the precedence-level of a user defined operator.
+
+As, as always, our queries can be used on data.
+
+```{r}
+if(have_rqdatatable) {
+  example_data %.>%
+    ops %.>%
+    knitr::kable(.)
+}
+```
+
+
+Or even in a database.
+
+```{r}
+have_db <- requireNamespace("DBI", quietly = TRUE) && 
+  requireNamespace("RSQLite", quietly = TRUE)
+
+if(have_db) {
+  raw_connection <- DBI::dbConnect(RSQLite::SQLite(), 
+                                   ":memory:")
+  RSQLite::initExtension(raw_connection)
+  db <- rquery_db_info(
+    connection = raw_connection,
+    is_dbi = TRUE,
+    connection_options = rq_connection_tests(raw_connection))
+  
+  rq_copy_to(db, 'example_data',
+             example_data,
+             temporary = TRUE, 
+             overwrite = TRUE)
+  
+  sql <- to_sql(ops, db)
+  
+  cat(format(sql))
+}
+```
+
+
+```{r}
+if(have_db) {
+  res_table <- materialize(db, ops)
+  DBI::dbReadTable(raw_connection, res_table$table_name) %.>%
+    knitr::kable(.)
+}
+```
+
+
+```{r}
+if(have_db) {
+  DBI::dbDisconnect(raw_connection)
+}
+```
+
+
+

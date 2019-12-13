@@ -1,4 +1,8 @@
 
+# rquery 1.4.1 2019/12/13
+
+ * Add many values vignette.
+
 # rquery 1.4.0 2019/11/30
 
  * Fix name substitution in immediate mode.
