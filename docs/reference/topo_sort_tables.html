@@ -186,7 +186,7 @@ Please see <code>vignette('DependencySorting', package = 'rquery')</code> and <c
   <span class='co'>#       join of an employee table and set of dates of interest</span>
   <span class='co'>#       before getting to the join controller step.  We call</span>
   <span class='co'>#       such a table "row control" or "experimental design."</span>
-  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/DBI/man/dbConnect.html'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/RSQLite/man/SQLite.html'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
+  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/RSQLite/man/SQLite.html'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
   <span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/RSQLite/man/initExtension.html'>initExtension</a></span>(<span class='no'>my_db</span>)
   <span class='no'>tDesc</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='example_employee_date.html'>example_employee_date</a></span>(<span class='no'>my_db</span>)
   <span class='no'>columnJoinPlan</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='build_join_plan.html'>build_join_plan</a></span>(<span class='no'>tDesc</span>, <span class='kw'>check</span><span class='kw'>=</span> <span class='fl'>FALSE</span>)
@@ -200,7 +200,7 @@ Please see <code>vignette('DependencySorting', package = 'rquery')</code> and <c
   <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span>(<span class='st'>'problems:'</span>,
               <span class='fu'><a href='inspect_join_plan.html'>inspect_join_plan</a></span>(<span class='no'>tDesc</span>, <span class='no'>sorted</span>$<span class='no'>columnJoinPlan</span>)))
   <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>sorted</span>$<span class='no'>dependencyGraph</span>))
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/DBI/man/dbDisconnect.html'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
+  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbDisconnect.html'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
   <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw'>NULL</span>
 }</div><div class='output co'>#&gt; [1] "problems: key col(s) ( dept ) not contained in result cols of previous table(s) for table: revenue"
 #&gt; [1] "problems: "</div><div class='img'><img src='topo_sort_tables-1.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; NULL</div><div class='input'>

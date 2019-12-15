@@ -92,15 +92,18 @@ interactions <-
   paste0(combos[, 1], '_', combos[, 2]) := 
   paste0(combos[, 1], ' * ', combos[, 2])
 
+print(interactions)
+```
+
+
+```{r}
 ops <- local_td(example_data) %.>%
   extend_se(., interactions)
 
 cat(format(ops))
 ```
 
-What we can do is limited only by the power of `R` itself.
-
-It is a critical advantage to work with sets of variables as standard values. Bringing in a whole theory of un-evaluated expressions can in fact be less-powerful than working with values.
+It is a critical advantage to work with sets of variables as standard values. In this case what we can do is limited only by the power of `R` itself.
 
 Note: we also supply an alias for `:=` as `%:=%` for those that don't want to confuse this assignment with how the symbol is used in `data.table`.  Take care that `:=` has the precedence-level of an assignment and `%:=%` has the precedence-level of a user defined operator.
 
@@ -156,6 +159,3 @@ if(have_db) {
   DBI::dbDisconnect(raw_connection)
 }
 ```
-
-
-

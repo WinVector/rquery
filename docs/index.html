@@ -736,7 +736,7 @@
 </tbody>
 </table>
 <p>And for <code>SQL</code> we have the following.</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1">raw_connection &lt;-<span class="st"> </span>DBI<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/DBI/man/dbConnect.html">dbConnect</a></span>(RSQLite<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/RSQLite/man/SQLite.html">SQLite</a></span>(), <span class="st">":memory:"</span>)</a>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1">raw_connection &lt;-<span class="st"> </span>DBI<span class="op">::</span><span class="kw"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span>(RSQLite<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/RSQLite/man/SQLite.html">SQLite</a></span>(), <span class="st">":memory:"</span>)</a>
 <a class="sourceLine" id="cb22-2" data-line-number="2">RSQLite<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/RSQLite/man/initExtension.html">initExtension</a></span>(raw_connection)</a>
 <a class="sourceLine" id="cb22-3" data-line-number="3">db &lt;-<span class="st"> </span><span class="kw"><a href="reference/rquery_db_info.html">rquery_db_info</a></span>(</a>
 <a class="sourceLine" id="cb22-4" data-line-number="4">  <span class="dt">connection =</span> raw_connection,</a>
@@ -767,7 +767,7 @@
 <a class="sourceLine" id="cb23-21" data-line-number="21"><span class="co">##  WHERE `row_number` = 1</span></a>
 <a class="sourceLine" id="cb23-22" data-line-number="22"><span class="co">## ) tsql_30049600341243761078_0000000002</span></a></code></pre></div>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1"><span class="co"># clean up</span></a>
-<a class="sourceLine" id="cb24-2" data-line-number="2">DBI<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/DBI/man/dbDisconnect.html">dbDisconnect</a></span>(raw_connection)</a></code></pre></div>
+<a class="sourceLine" id="cb24-2" data-line-number="2">DBI<span class="op">::</span><span class="kw"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html">dbDisconnect</a></span>(raw_connection)</a></code></pre></div>
 <p>For more <code>SQL</code> examples, please see <a href="https://github.com/WinVector/rquery/tree/master/db_examples">here</a>.</p>
 </div>
 <div id="pipeline-principles" class="section level2">

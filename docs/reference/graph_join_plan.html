@@ -191,7 +191,7 @@
   <span class='co'>#       join of an employee table and set of dates of interest</span>
   <span class='co'>#       before getting to the join controller step.  We call</span>
   <span class='co'>#       such a table "row control" or "experimental design."</span>
-  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/DBI/man/dbConnect.html'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/RSQLite/man/SQLite.html'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
+  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/RSQLite/man/SQLite.html'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
   <span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/RSQLite/man/initExtension.html'>initExtension</a></span>(<span class='no'>my_db</span>)
   <span class='no'>tDesc</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='example_employee_date.html'>example_employee_date</a></span>(<span class='no'>my_db</span>)
   <span class='co'># fix order by hand, please see rquery::topo_sort_tables for</span>
@@ -210,7 +210,7 @@
   <span class='kw'>if</span>(<span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"DiagrammeR"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
     <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='kw pkg'>DiagrammeR</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/DiagrammeR/man/grViz.html'>grViz</a></span>(<span class='no'>diagramSpec</span>))
   }
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/DBI/man/dbDisconnect.html'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
+  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbDisconnect.html'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
   <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw'>NULL</span>
 }</div><div class='output co'>#&gt; [1] "problems: "</div><div class='input'>
 </div></pre>
