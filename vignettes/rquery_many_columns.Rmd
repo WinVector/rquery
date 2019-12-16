@@ -82,6 +82,8 @@ ops <- local_td(example_data) %.>%
 cat(format(ops))
 ```
 
+Note: the above is only a notional example to demonstrate the operations; for supervised machine learning we would probably use <code>base::scale()</code>, which saves the learned centering for later re-use on new data.
+
 The point is: we use standard `R` tools to build up the lists of names and operations.  We are not restricted to any single argument manipulation grammar.
 
 For example we could build all interaction terms as follows.
