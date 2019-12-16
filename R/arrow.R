@@ -6,11 +6,15 @@
 #' @param pipeline pipeline with one source table
 #' @param ... not used, force later argument to be referred to by name.
 #' @param free_table_key name of table to consider free (input) to the pipeline
+#' @param strict logical, if TRUE excess columns are considered an error
 #' @return relop_arrow wrapping of pipeline
 #'
 #' @export
 #'
-arrow <- function(pipeline, ..., free_table_key=NULL) {
+arrow <- function(pipeline,
+                  ...,
+                  free_table_key=NULL,
+                  strict=FALSE) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::arrow")
   if(!('relop' %in% class(pipeline))) {
@@ -34,7 +38,8 @@ arrow <- function(pipeline, ..., free_table_key=NULL) {
     free_table_key = free_table_key,
     incoming_columns = cused[[free_table_key]],
     outgoing_columns = colnames(pipeline),
-    pipeline = pipeline)
+    pipeline = pipeline,
+    strict = strict)
   class(r) <- 'relop_arrow'
   return(r)
 }
@@ -69,7 +74,7 @@ print.relop_arrow <- function(x, ...) {
 setOldClass('relop_arrow')
 
 
-compose_arrows <- function(a, b, ..., strict=TRUE) {
+compose_arrows <- function(a, b) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::compose_arrows")
   if(! ('relop_arrow' %in% class(b))) {
@@ -82,9 +87,6 @@ compose_arrows <- function(a, b, ..., strict=TRUE) {
     }
     excess <- setdiff(colnames(a), b$incoming_columns)
     if(length(excess)>0) {
-      if(strict) {
-        stop(paste0("unexpected columns: ", paste(excess, collapse = ', ')))
-      }
       a <- a[, b$incoming_columns, drop = FALSE]
     }
     res <- a %.>% b$pipeline
@@ -99,7 +101,7 @@ compose_arrows <- function(a, b, ..., strict=TRUE) {
   }
   excess <- setdiff(a$outgoing_columns, b$incoming_columns)
   if(length(excess)>0) {
-    if(strict) {
+    if(a$strict) {
       stop(paste0("unexpected columns: ", paste(excess, collapse = ', ')))
     }
     return(arrow(a$pipeline %.>% select_columns(., columns=b$incoming_columns) %.>% b$pipeline))
@@ -131,7 +133,7 @@ setMethod(
                         left_arg_name,
                         pipe_string,
                         right_arg_name) {
-    return(compose_arrows(pipe_left_arg, pipe_right_arg, strict=TRUE))
+    return(compose_arrows(pipe_left_arg, pipe_right_arg))
   }
 )
 
@@ -158,7 +160,7 @@ setMethod(
                         left_arg_name,
                         pipe_string,
                         right_arg_name) {
-    return(compose_arrows(pipe_left_arg, pipe_right_arg, strict=TRUE))
+    return(compose_arrows(pipe_left_arg, pipe_right_arg))
   }
 )
 

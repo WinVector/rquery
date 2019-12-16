@@ -4,7 +4,7 @@
 \alias{arrow}
 \title{Data arrow}
 \usage{
-arrow(pipeline, ..., free_table_key = NULL)
+arrow(pipeline, ..., free_table_key = NULL, strict = FALSE)
 }
 \arguments{
 \item{pipeline}{pipeline with one source table}
@@ -12,6 +12,8 @@ arrow(pipeline, ..., free_table_key = NULL)
 \item{...}{not used, force later argument to be referred to by name.}
 
 \item{free_table_key}{name of table to consider free (input) to the pipeline}
+
+\item{strict}{logical, if TRUE excess columns are considered an error}
 }
 \value{
 relop_arrow wrapping of pipeline

@@ -153,7 +153,7 @@
     <p>A categorical arrow mapping a table to a table.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>arrow</span>(<span class='no'>pipeline</span>, <span class='no'>...</span>, <span class='kw'>free_table_key</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>arrow</span>(<span class='no'>pipeline</span>, <span class='no'>...</span>, <span class='kw'>free_table_key</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>strict</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -169,6 +169,10 @@
     <tr>
       <th>free_table_key</th>
       <td><p>name of table to consider free (input) to the pipeline</p></td>
+    </tr>
+    <tr>
+      <th>strict</th>
+      <td><p>logical, if TRUE excess columns are considered an error</p></td>
     </tr>
     </table>
 
