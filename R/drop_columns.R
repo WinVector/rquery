@@ -28,7 +28,7 @@
 #'
 drop_columns <- function(source, drops,
                          ...,
-                         strict = TRUE,
+                         strict = FALSE,
                          env = parent.frame()) {
   force(env)
   UseMethod("drop_columns", source)
@@ -37,7 +37,7 @@ drop_columns <- function(source, drops,
 #' @export
 drop_columns.relop <- function(source, drops,
                                ...,
-                               strict = TRUE,
+                               strict = FALSE,
                                env = parent.frame()) {
   force(env)
   wrapr::stop_if_dot_args(substitute(list(...)),
@@ -70,7 +70,7 @@ drop_columns.relop <- function(source, drops,
 #' @export
 drop_columns.data.frame <- function(source, drops,
                                     ...,
-                                    strict = TRUE,
+                                    strict = FALSE,
                                     env = parent.frame()) {
   force(env)
   wrapr::stop_if_dot_args(substitute(list(...)),

@@ -4,7 +4,7 @@
 \alias{drop_columns}
 \title{Make a drop columns node (not a relational operation).}
 \usage{
-drop_columns(source, drops, ..., strict = TRUE, env = parent.frame())
+drop_columns(source, drops, ..., strict = FALSE, env = parent.frame())
 }
 \arguments{
 \item{source}{source to drop columns from.}
