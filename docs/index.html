@@ -201,10 +201,10 @@
 <a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(rqdatatable)</a>
 <a class="sourceLine" id="cb2-3" data-line-number="3"></a>
 <a class="sourceLine" id="cb2-4" data-line-number="4"><span class="kw"><a href="reference/drop_columns.html">drop_columns</a></span>(d, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'y'</span>, <span class="st">'z'</span>))</a></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co">##    x</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="co">## 1: 1</span></a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="co">## 2: 1</span></a>
-<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="co">## 3: 2</span></a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">##    x</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">## 1: 1</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">## 2: 1</a>
+<a class="sourceLine" id="cb3-4" data-line-number="4">## 3: 2</a></code></pre></div>
 <p>In all cases the first argument of a <code>rquery</code> operator is either the data to be processed, or an earlier <code>rquery</code> pipeline to be extended. We will take about composing <code>rquery</code> operations after we work through examples of all of the basic operations.</p>
 <p>We can write the above in piped notation (using the <a href="https://journal.r-project.org/archive/2018/RJ-2018-042/index.html"><code>wrapr</code> pipe</a> in this case):</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">d <span class="op">%.&gt;%</span></a>
@@ -699,19 +699,19 @@
 <a class="sourceLine" id="cb19-9" data-line-number="9">               <span class="st">"row_number"</span>)</a>
 <a class="sourceLine" id="cb19-10" data-line-number="10"></a>
 <a class="sourceLine" id="cb19-11" data-line-number="11"><span class="kw"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/format.html">format</a></span>(ops))</a></code></pre></div>
-<div class="sourceCode" id="cb20"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="co">## mk_td("d", c(</span></a>
-<a class="sourceLine" id="cb20-2" data-line-number="2"><span class="co">##   "x",</span></a>
-<a class="sourceLine" id="cb20-3" data-line-number="3"><span class="co">##   "y",</span></a>
-<a class="sourceLine" id="cb20-4" data-line-number="4"><span class="co">##   "z")) %.&gt;%</span></a>
-<a class="sourceLine" id="cb20-5" data-line-number="5"><span class="co">##  extend(.,</span></a>
-<a class="sourceLine" id="cb20-6" data-line-number="6"><span class="co">##   row_number := row_number(),</span></a>
-<a class="sourceLine" id="cb20-7" data-line-number="7"><span class="co">##   partitionby = c('x'),</span></a>
-<a class="sourceLine" id="cb20-8" data-line-number="8"><span class="co">##   orderby = c('y', 'z'),</span></a>
-<a class="sourceLine" id="cb20-9" data-line-number="9"><span class="co">##   reverse = c()) %.&gt;%</span></a>
-<a class="sourceLine" id="cb20-10" data-line-number="10"><span class="co">##  select_rows(.,</span></a>
-<a class="sourceLine" id="cb20-11" data-line-number="11"><span class="co">##    row_number == 1) %.&gt;%</span></a>
-<a class="sourceLine" id="cb20-12" data-line-number="12"><span class="co">##  drop_columns(.,</span></a>
-<a class="sourceLine" id="cb20-13" data-line-number="13"><span class="co">##    c('row_number'))</span></a></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1">## mk_td("d", c(</a>
+<a class="sourceLine" id="cb20-2" data-line-number="2">##   "x",</a>
+<a class="sourceLine" id="cb20-3" data-line-number="3">##   "y",</a>
+<a class="sourceLine" id="cb20-4" data-line-number="4">##   "z")) %.&gt;%</a>
+<a class="sourceLine" id="cb20-5" data-line-number="5">##  extend(.,</a>
+<a class="sourceLine" id="cb20-6" data-line-number="6">##   row_number := row_number(),</a>
+<a class="sourceLine" id="cb20-7" data-line-number="7">##   partitionby = c('x'),</a>
+<a class="sourceLine" id="cb20-8" data-line-number="8">##   orderby = c('y', 'z'),</a>
+<a class="sourceLine" id="cb20-9" data-line-number="9">##   reverse = c()) %.&gt;%</a>
+<a class="sourceLine" id="cb20-10" data-line-number="10">##  select_rows(.,</a>
+<a class="sourceLine" id="cb20-11" data-line-number="11">##    row_number == 1) %.&gt;%</a>
+<a class="sourceLine" id="cb20-12" data-line-number="12">##  drop_columns(.,</a>
+<a class="sourceLine" id="cb20-13" data-line-number="13">##    c('row_number'))</a></code></pre></div>
 <p>And we can re-use this pipeline, both on local data and to generate <code>SQL</code> to be run in remote databases. Applying this operator pipeline to our <code>data.frame</code> <code>d</code> is performed as follows.</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1">d <span class="op">%.&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb21-2" data-line-number="2"><span class="st">  </span>ops <span class="op">%.&gt;%</span></a>
@@ -736,36 +736,36 @@
 </tbody>
 </table>
 <p>And for <code>SQL</code> we have the following.</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1">raw_connection &lt;-<span class="st"> </span>DBI<span class="op">::</span><span class="kw"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span>(RSQLite<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/RSQLite/man/SQLite.html">SQLite</a></span>(), <span class="st">":memory:"</span>)</a>
-<a class="sourceLine" id="cb22-2" data-line-number="2">RSQLite<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/RSQLite/man/initExtension.html">initExtension</a></span>(raw_connection)</a>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1">raw_connection &lt;-<span class="st"> </span>DBI<span class="op">::</span><span class="kw"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span>(RSQLite<span class="op">::</span><span class="kw"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html">SQLite</a></span>(), <span class="st">":memory:"</span>)</a>
+<a class="sourceLine" id="cb22-2" data-line-number="2">RSQLite<span class="op">::</span><span class="kw"><a href="https://rsqlite.r-dbi.org/reference/initExtension.html">initExtension</a></span>(raw_connection)</a>
 <a class="sourceLine" id="cb22-3" data-line-number="3">db &lt;-<span class="st"> </span><span class="kw"><a href="reference/rquery_db_info.html">rquery_db_info</a></span>(</a>
 <a class="sourceLine" id="cb22-4" data-line-number="4">  <span class="dt">connection =</span> raw_connection,</a>
 <a class="sourceLine" id="cb22-5" data-line-number="5">  <span class="dt">is_dbi =</span> <span class="ot">TRUE</span>,</a>
 <a class="sourceLine" id="cb22-6" data-line-number="6">  <span class="dt">connection_options =</span> <span class="kw"><a href="reference/rq_connection_tests.html">rq_connection_tests</a></span>(raw_connection))</a>
 <a class="sourceLine" id="cb22-7" data-line-number="7"></a>
 <a class="sourceLine" id="cb22-8" data-line-number="8"><span class="kw"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(<span class="kw"><a href="reference/to_sql.html">to_sql</a></span>(ops, db))</a></code></pre></div>
-<div class="sourceCode" id="cb23"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="co">## SELECT</span></a>
-<a class="sourceLine" id="cb23-2" data-line-number="2"><span class="co">##  `x`,</span></a>
-<a class="sourceLine" id="cb23-3" data-line-number="3"><span class="co">##  `y`,</span></a>
-<a class="sourceLine" id="cb23-4" data-line-number="4"><span class="co">##  `z`</span></a>
-<a class="sourceLine" id="cb23-5" data-line-number="5"><span class="co">## FROM (</span></a>
-<a class="sourceLine" id="cb23-6" data-line-number="6"><span class="co">##  SELECT * FROM (</span></a>
-<a class="sourceLine" id="cb23-7" data-line-number="7"><span class="co">##   SELECT</span></a>
-<a class="sourceLine" id="cb23-8" data-line-number="8"><span class="co">##    `x`,</span></a>
-<a class="sourceLine" id="cb23-9" data-line-number="9"><span class="co">##    `y`,</span></a>
-<a class="sourceLine" id="cb23-10" data-line-number="10"><span class="co">##    `z`,</span></a>
-<a class="sourceLine" id="cb23-11" data-line-number="11"><span class="co">##    row_number ( ) OVER (  PARTITION BY `x` ORDER BY `y`, `z` ) AS `row_number`</span></a>
-<a class="sourceLine" id="cb23-12" data-line-number="12"><span class="co">##   FROM (</span></a>
-<a class="sourceLine" id="cb23-13" data-line-number="13"><span class="co">##    SELECT</span></a>
-<a class="sourceLine" id="cb23-14" data-line-number="14"><span class="co">##     `x`,</span></a>
-<a class="sourceLine" id="cb23-15" data-line-number="15"><span class="co">##     `y`,</span></a>
-<a class="sourceLine" id="cb23-16" data-line-number="16"><span class="co">##     `z`</span></a>
-<a class="sourceLine" id="cb23-17" data-line-number="17"><span class="co">##    FROM</span></a>
-<a class="sourceLine" id="cb23-18" data-line-number="18"><span class="co">##     `d`</span></a>
-<a class="sourceLine" id="cb23-19" data-line-number="19"><span class="co">##    ) tsql_30049600341243761078_0000000000</span></a>
-<a class="sourceLine" id="cb23-20" data-line-number="20"><span class="co">##  ) tsql_30049600341243761078_0000000001</span></a>
-<a class="sourceLine" id="cb23-21" data-line-number="21"><span class="co">##  WHERE `row_number` = 1</span></a>
-<a class="sourceLine" id="cb23-22" data-line-number="22"><span class="co">## ) tsql_30049600341243761078_0000000002</span></a></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1">## SELECT</a>
+<a class="sourceLine" id="cb23-2" data-line-number="2">##  `x`,</a>
+<a class="sourceLine" id="cb23-3" data-line-number="3">##  `y`,</a>
+<a class="sourceLine" id="cb23-4" data-line-number="4">##  `z`</a>
+<a class="sourceLine" id="cb23-5" data-line-number="5">## FROM (</a>
+<a class="sourceLine" id="cb23-6" data-line-number="6">##  SELECT * FROM (</a>
+<a class="sourceLine" id="cb23-7" data-line-number="7">##   SELECT</a>
+<a class="sourceLine" id="cb23-8" data-line-number="8">##    `x`,</a>
+<a class="sourceLine" id="cb23-9" data-line-number="9">##    `y`,</a>
+<a class="sourceLine" id="cb23-10" data-line-number="10">##    `z`,</a>
+<a class="sourceLine" id="cb23-11" data-line-number="11">##    row_number ( ) OVER (  PARTITION BY `x` ORDER BY `y`, `z` ) AS `row_number`</a>
+<a class="sourceLine" id="cb23-12" data-line-number="12">##   FROM (</a>
+<a class="sourceLine" id="cb23-13" data-line-number="13">##    SELECT</a>
+<a class="sourceLine" id="cb23-14" data-line-number="14">##     `x`,</a>
+<a class="sourceLine" id="cb23-15" data-line-number="15">##     `y`,</a>
+<a class="sourceLine" id="cb23-16" data-line-number="16">##     `z`</a>
+<a class="sourceLine" id="cb23-17" data-line-number="17">##    FROM</a>
+<a class="sourceLine" id="cb23-18" data-line-number="18">##     `d`</a>
+<a class="sourceLine" id="cb23-19" data-line-number="19">##    ) tsql_30049600341243761078_0000000000</a>
+<a class="sourceLine" id="cb23-20" data-line-number="20">##  ) tsql_30049600341243761078_0000000001</a>
+<a class="sourceLine" id="cb23-21" data-line-number="21">##  WHERE `row_number` = 1</a>
+<a class="sourceLine" id="cb23-22" data-line-number="22">## ) tsql_30049600341243761078_0000000002</a></code></pre></div>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1"><span class="co"># clean up</span></a>
 <a class="sourceLine" id="cb24-2" data-line-number="2">DBI<span class="op">::</span><span class="kw"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html">dbDisconnect</a></span>(raw_connection)</a></code></pre></div>
 <p>For more <code>SQL</code> examples, please see <a href="https://github.com/WinVector/rquery/tree/master/db_examples">here</a>.</p>
