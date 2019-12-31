@@ -214,7 +214,7 @@ is a reserved column name for this procedure.</p>
 <span class='kw'>if</span> (<span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"DBI"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>&amp;&amp;</span> <span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
   <span class='co'># Example: clear one of a or b in any row where both are set.</span>
   <span class='co'># Land random selections early to avoid SQLite bug.</span>
-  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
+  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/RSQLite/man/SQLite.html'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
   <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(
     <span class='no'>my_db</span>,
     <span class='st'>'d'</span>,
@@ -302,22 +302,22 @@ is a reserved column name for this procedure.</p>
 #&gt;    `edited`
 #&gt;   FROM
 #&gt;    `d`
-#&gt;   ) tsql_58024244100795104657_0000000000
-#&gt;  ) tsql_58024244100795104657_0000000001
+#&gt;   ) tsql_15036360598188002298_0000000000
+#&gt;  ) tsql_15036360598188002298_0000000001
 #&gt;     i          r ifebtest_2 ifebtest_1 a b edited
-#&gt; 1   1 0.20366439          0          0 0 0      0
-#&gt; 2   2 0.25698292          0          0 0 1      0
-#&gt; 3   3 0.61400560          0          1 1 0      0
-#&gt; 4   4 0.44149919          1          0 1 0      1
-#&gt; 5   5 0.31559469          1          0 1 0      1
-#&gt; 6   6 0.10131376          1          0 1 0      1
-#&gt; 7   7 0.27264620          1          0 1 0      1
-#&gt; 8   8 0.65369940          1          1 0 1      1
-#&gt; 9   9 0.92787010          1          1 0 1      1
-#&gt; 10 10 0.02662467          1          0 1 0      1
-#&gt;                    r1                   r2
-#&gt; 1 2110292572835811124  7861238912215217910
-#&gt; 2  779890399230848941 -8793133598947948306</div><div class='input'>
+#&gt; 1   1 0.34011924          0          0 0 0      0
+#&gt; 2   2 0.62736599          0          1 0 1      0
+#&gt; 3   3 0.82491540          0          1 1 0      0
+#&gt; 4   4 0.14511538          1          0 1 0      1
+#&gt; 5   5 0.96713913          1          1 0 1      1
+#&gt; 6   6 0.08603899          1          0 1 0      1
+#&gt; 7   7 0.24046123          1          0 1 0      1
+#&gt; 8   8 0.63888373          1          1 0 1      1
+#&gt; 9   9 0.50339508          1          1 0 1      1
+#&gt; 10 10 0.25052326          1          0 1 0      1
+#&gt;                     r1                   r2
+#&gt; 1 -6168283787234832990 -7753952380489124682
+#&gt; 2 -3690555459220486510  2255085151027129582</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

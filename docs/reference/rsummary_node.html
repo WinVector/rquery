@@ -203,8 +203,8 @@
                   <span class='kw'>y</span><span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>factor</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>3</span>,<span class='fl'>5</span>,<span class='fl'>NA</span>)),
                   <span class='kw'>z</span><span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'a'</span>,<span class='fl'>NA</span>,<span class='st'>'a'</span>),
                   <span class='kw'>stringsAsFactors</span><span class='kw'>=</span><span class='fl'>FALSE</span>)
-  <span class='no'>db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
-  <span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://rsqlite.r-dbi.org/reference/initExtension.html'>initExtension</a></span>(<span class='no'>db</span>)
+  <span class='no'>db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/RSQLite/man/SQLite.html'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
+  <span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/RSQLite/man/initExtension.html'>initExtension</a></span>(<span class='no'>db</span>)
   <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(<span class='no'>db</span>, <span class='st'>"dRemote"</span>, <span class='no'>d</span>,
               <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
               <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
@@ -231,13 +231,13 @@
 #&gt;   v := ifelse(x &gt; 2, "x", "y")) %.&gt;%
 #&gt;  non_sql_node(., rsummary_node(.))
 #&gt; [[1]]
-#&gt; [1] "CREATE TEMPORARY TABLE `sn_23012829786491164338_0000000000`  AS  SELECT\n  `p`,\n  `s`,\n  `w`,\n  `x`,\n  `y`,\n  `z`,\n  ( CASE WHEN ( `x` &gt; 2 ) THEN ( 'x' ) WHEN NOT ( `x` &gt; 2 ) THEN ( 'y' ) ELSE NULL END )  AS `v`\n FROM (\n  SELECT\n   `p`,\n   `s`,\n   `w`,\n   `x`,\n   `y`,\n   `z`\n  FROM\n   `dRemote`\n  ) tsql_26490355639477894239_0000000000\n"
+#&gt; [1] "CREATE TEMPORARY TABLE `sn_47079433102167490679_0000000000`  AS  SELECT\n  `p`,\n  `s`,\n  `w`,\n  `x`,\n  `y`,\n  `z`,\n  ( CASE WHEN ( `x` &gt; 2 ) THEN ( 'x' ) WHEN NOT ( `x` &gt; 2 ) THEN ( 'y' ) ELSE NULL END )  AS `v`\n FROM (\n  SELECT\n   `p`,\n   `s`,\n   `w`,\n   `x`,\n   `y`,\n   `z`\n  FROM\n   `dRemote`\n  ) tsql_38289099612809831642_0000000000\n"
 #&gt; 
 #&gt; [[2]]
 #&gt; [1] "non SQL step:  rsummary_node(.)"
 #&gt; 
 #&gt; [[3]]
-#&gt; [1] " SELECT\n  `column`,\n  `index`,\n  `class`,\n  `nrows`,\n  `nna`,\n  `nunique`,\n  `min`,\n  `max`,\n  `mean`,\n  `sd`,\n  `lexmin`,\n  `lexmax`\n FROM\n  `sn_23012829786491164338_0000000001`\n"
+#&gt; [1] " SELECT\n  `column`,\n  `index`,\n  `class`,\n  `nrows`,\n  `nna`,\n  `nunique`,\n  `min`,\n  `max`,\n  `mean`,\n  `sd`,\n  `lexmin`,\n  `lexmax`\n FROM\n  `sn_47079433102167490679_0000000001`\n"
 #&gt; 
 #&gt;   column index     class nrows nna nunique min max mean        sd lexmin lexmax
 #&gt; 1      p     1   integer     3   1      NA   0   1  0.5 0.7071068   &lt;NA&gt;   &lt;NA&gt;

@@ -183,8 +183,8 @@
     <pre class="examples"><div class='input'>
 <span class='co'># WARNING: example tries to change rquery.rquery_db_executor option to RSQLite and back.</span>
 <span class='kw'>if</span> (<span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"DBI"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>&amp;&amp;</span> <span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
-  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
-  <span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://rsqlite.r-dbi.org/reference/initExtension.html'>initExtension</a></span>(<span class='no'>my_db</span>)
+  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/RSQLite/man/SQLite.html'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
+  <span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/RSQLite/man/initExtension.html'>initExtension</a></span>(<span class='no'>my_db</span>)
   <span class='no'>old_o</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='st'>"rquery.rquery_db_executor"</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>db</span> <span class='kw'>=</span> <span class='no'>my_db</span>)))
 
   <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(<span class='no'>my_db</span>, <span class='st'>'d'</span>,
@@ -234,7 +234,7 @@
 #&gt;   `cat`
 #&gt;  FROM
 #&gt;   `d`
-#&gt; ) tsql_28426236547927107171_0000000000
+#&gt; ) tsql_79698385903890247208_0000000000
 #&gt;   AUC  R2 delta  cat
 #&gt; 1  NA 2.0     3    a
 #&gt; 2 1.5 1.9     3 &lt;NA&gt;
@@ -252,7 +252,7 @@
 #&gt;   `cat`
 #&gt;  FROM
 #&gt;   `d`
-#&gt; ) tsql_19856072411131566096_0000000000
+#&gt; ) tsql_20461373864036248039_0000000000
 #&gt; SELECT
 #&gt;  `AUC` + 1 + `delta` AS `AUC`,
 #&gt;  `R2` + 1 + `delta` AS `R2`,
@@ -266,7 +266,7 @@
 #&gt;   `cat`
 #&gt;  FROM
 #&gt;   `d`
-#&gt; ) tsql_02643628456323874007_0000000000</div><div class='input'>
+#&gt; ) tsql_06149483351358306404_0000000000</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
