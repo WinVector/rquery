@@ -16,11 +16,11 @@ orderby(
 \arguments{
 \item{source}{source to select from.}
 
-\item{cols}{order by column names.}
+\item{cols}{order by named columns ascending.}
 
 \item{...}{force later arguments to be bound by name}
 
-\item{reverse}{character, which columns to reverse ordering of.}
+\item{reverse}{character, which columns to reverse ordering of top descending.}
 
 \item{limit}{number limit row count.}
 

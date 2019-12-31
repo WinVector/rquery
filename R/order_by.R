@@ -13,9 +13,9 @@
 #'
 #'
 #' @param source source to select from.
-#' @param cols order by column names.
+#' @param cols order by named columns ascending.
 #' @param ... force later arguments to be bound by name
-#' @param reverse character, which columns to reverse ordering of.
+#' @param reverse character, which columns to reverse ordering of top descending.
 #' @param limit number limit row count.
 #' @param env environment to look to.
 #' @return order_by node.
@@ -244,9 +244,9 @@ to_sql_relop_orderby <- function(
 #'
 #'
 #' @param source source to select from.
-#' @param cols order by column names.
+#' @param cols order by columns ascending.
 #' @param ... force later arguments to be bound by name
-#' @param reverse character, which columns to reverse ordering of.
+#' @param reverse character, which columns to reverse ordering of to descending.
 #' @param limit number limit row count.
 #' @param env environment to look to.
 #' @return order_by node.
