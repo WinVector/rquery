@@ -9,7 +9,7 @@ order_expr_se(source, expr, env = parent.frame())
 \arguments{
 \item{source}{source to select from.}
 
-\item{expr}{expression to order_expr.}
+\item{expr}{expression to order_expr in ascending order.}
 
 \item{env}{environment to look for values in.}
 }

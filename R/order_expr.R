@@ -2,7 +2,7 @@
 #' Make a order_expr node.
 #'
 #' @param source source to select from.
-#' @param expr expression to order_expr.
+#' @param expr expression to order_expr in ascending order.
 #' @param env environment to look for values in.
 #' @return select columns node.
 #'

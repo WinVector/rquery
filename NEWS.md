@@ -1,9 +1,10 @@
 
-# rquery 1.4.1 2019/12/23
+# rquery 1.4.1 2019/12/31
 
  * Add many values vignette.
  * Move to non-strict arrows.
  * Make drop columns not strict.
+ * Better order documentation.
 
 # rquery 1.4.0 2019/11/30
 

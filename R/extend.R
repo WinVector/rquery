@@ -54,8 +54,8 @@ try_merge_parsed_exprs <- function(p1, p2) {
 #' @param parsed parsed assignment expressions.
 #' @param ... force later arguments to bind by name
 #' @param partitionby partitioning (window function) terms.
-#' @param orderby ordering (in window function) terms.
-#' @param reverse reverse order (in window function)
+#' @param orderby ascending ordering (in window function) terms.
+#' @param reverse which columns to reverse order to descending (in window function)
 #' @param display_form chacter presentation form
 #' @param windowed logial, if TRUE we are in a window function situation
 #' @return extend node.
