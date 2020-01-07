@@ -1,5 +1,5 @@
 
-# rquery 1.4.1 2019/12/31
+# rquery 1.4.1 2020/01/07
 
  * Add many values vignette.
  * Move to non-strict arrows.

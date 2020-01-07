@@ -214,7 +214,7 @@ is a reserved column name for this procedure.</p>
 <span class='kw'>if</span> (<span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"DBI"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>&amp;&amp;</span> <span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
   <span class='co'># Example: clear one of a or b in any row where both are set.</span>
   <span class='co'># Land random selections early to avoid SQLite bug.</span>
-  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/RSQLite/man/SQLite.html'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
+  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
   <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(
     <span class='no'>my_db</span>,
     <span class='st'>'d'</span>,
@@ -315,9 +315,9 @@ is a reserved column name for this procedure.</p>
 #&gt; 8   8 0.63888373          1          1 0 1      1
 #&gt; 9   9 0.50339508          1          1 0 1      1
 #&gt; 10 10 0.25052326          1          0 1 0      1
-#&gt;                     r1                  r2
-#&gt; 1  8089931096456310652 -865705889548181209
-#&gt; 2 -1075029570914286023 1301487945932104126</div><div class='input'>
+#&gt;                    r1                  r2
+#&gt; 1 8026516516232812058 1555845787095678888
+#&gt; 2 1606148598964741816 4930766925413403599</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
