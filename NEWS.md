@@ -1,4 +1,8 @@
 
+# rquery 1.4.2 2020/01/12
+
+ * Set minimum suggested rqdatatable version.
+
 # rquery 1.4.1 2020/01/07
 
  * Add many values vignette.
