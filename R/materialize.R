@@ -39,10 +39,8 @@ materialize_sql_statement <- function(db, sql, table_name,
                temporary = temporary,
                qualifiers = qualifiers))
     }
-    q_table_name <- db$quote_table_name(db, table_name, qualifiers = qualifiers)
-  } else {
-    q_table_name <- quote_table_name(db, table_name, qualifiers = qualifiers)
   }
+  q_table_name <- quote_table_name(db, table_name, qualifiers = qualifiers)
   # work on the general case
   if(isTRUE(temporary)) {
     create_temp <- getDBOption(db, "create_temporary", NULL)
