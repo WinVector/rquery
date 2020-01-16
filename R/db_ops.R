@@ -103,7 +103,7 @@ rq_table_exists <- function(db, table_name,
     }
     connection_options <- db$connection_options
     connection <- db$connection
-    q_table_name <- db$quote_table_name(db, table_name, qualifiers = qualifiers)
+    q_table_name <- quote_table_name(db, table_name, qualifiers = qualifiers)
   } else {
     q_table_name <- quote_table_name(db, table_name, qualifiers = qualifiers)
   }
@@ -173,7 +173,7 @@ rq_colnames <- function(db, table_name,
     }
     connection_options <- db$connection_options
     connection <- db$connection
-    q_table_name <- db$quote_table_name(db, table_name, qualifiers = qualifiers)
+    q_table_name <- quote_table_name(db, table_name, qualifiers = qualifiers)
   } else {
     q_table_name <- quote_table_name(db, table_name, qualifiers = qualifiers)
   }
@@ -270,7 +270,7 @@ rq_coltypes <- function(db, table_name,
     }
     connection_options <- db$connection_options
     connection <- db$connection
-    q_table_name <- db$quote_table_name(db, table_name, qualifiers = qualifiers)
+    q_table_name <- quote_table_name(db, table_name, qualifiers = qualifiers)
   } else {
     q_table_name <- quote_table_name(db, table_name, qualifiers = qualifiers)
   }
@@ -332,7 +332,7 @@ rq_remove_table <- function(db, table_name,
     }
     connection_options <- db$connection_options
     connection <- db$connection
-    q_table_name <- db$quote_table_name(db, table_name, qualifiers = qualifiers)
+    q_table_name <- quote_table_name(db, table_name, qualifiers = qualifiers)
   } else {
     q_table_name <- quote_table_name(db, table_name, qualifiers = qualifiers)
   }
@@ -532,7 +532,7 @@ rq_nrow <- function(db, table_name,
     if(!is.null(f)) {
       return(f(db, table_name, qualifiers = qualifiers))
     }
-    q_table_name <- db$quote_table_name(db, table_name, qualifiers = qualifiers)
+    q_table_name <- quote_table_name(db, table_name, qualifiers = qualifiers)
   } else {
     q_table_name <- quote_table_name(db, table_name, qualifiers = qualifiers)
   }
