@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.2</span>
       </span>
     </div>
 
@@ -233,7 +233,7 @@
 #&gt;     "AUC",
 #&gt;     "D")),
 #&gt;   jointype = "INNER", by = c('AUC'))
-#&gt; [1] "SELECT\n COALESCE(`tsql_72160250405868971721_0000000000`.`AUC`, `tsql_72160250405868971721_0000000001`.`AUC`) AS `AUC`,\n `tsql_72160250405868971721_0000000000`.`R2` AS `R2`,\n `tsql_72160250405868971721_0000000001`.`D` AS `D`\nFROM (\n SELECT\n  `AUC`,\n  `R2`\n FROM\n  `d1`\n) `tsql_72160250405868971721_0000000000`\nINNER JOIN (\n SELECT\n  `AUC`,\n  `D`\n FROM\n  `d2`\n) `tsql_72160250405868971721_0000000001`\nON\n `tsql_72160250405868971721_0000000000`.`AUC` = `tsql_72160250405868971721_0000000001`.`AUC`\n"</div><div class='input'>
+#&gt; [1] "SELECT\n COALESCE(`tsql_82192608752851832108_0000000000`.`AUC`, `tsql_82192608752851832108_0000000001`.`AUC`) AS `AUC`,\n `tsql_82192608752851832108_0000000000`.`R2` AS `R2`,\n `tsql_82192608752851832108_0000000001`.`D` AS `D`\nFROM (\n SELECT\n  `AUC`,\n  `R2`\n FROM\n  `d1`\n) `tsql_82192608752851832108_0000000000`\nINNER JOIN (\n SELECT\n  `AUC`,\n  `D`\n FROM\n  `d2`\n) `tsql_82192608752851832108_0000000001`\nON\n `tsql_82192608752851832108_0000000000`.`AUC` = `tsql_82192608752851832108_0000000001`.`AUC`\n"</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

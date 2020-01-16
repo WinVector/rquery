@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.2</span>
       </span>
     </div>
 
@@ -196,7 +196,7 @@
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
 <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='fl'>1</span>)
-<span class='fu'>local_td</span>(<span class='no'>d</span>)</div><div class='output co'>#&gt; [1] "mk_td(\"d\", c( \"x\"))"</div><div class='input'><span class='fu'>local_td</span>(<span class='st'>"d"</span>)</div><div class='output co'>#&gt; [1] "mk_td(\"d\", c( \"x\"))"</div><div class='input'><span class='fu'>local_td</span>(<span class='fu'><a href='https://rdrr.io/r/base/name.html'>as.name</a></span>(<span class='st'>"d"</span>))</div><div class='output co'>#&gt; [1] "mk_td(\"d\", c( \"x\"))"</div><div class='input'><span class='fu'>local_td</span>(<span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='fl'>1</span>))</div><div class='output co'>#&gt; [1] "mk_td(\"rqltd_89198494311314937102_0000000000\", c( \"x\"))"</div><div class='input'><span class='no'>d</span> <span class='kw'>%.&gt;%</span> <span class='no'>local_td</span> <span class='co'># needs wrapr 1.5.0 or newer to capture name</span></div><div class='output co'>#&gt; [1] "mk_td(\"d\", c( \"x\"))"</div><div class='input'>
+<span class='fu'>local_td</span>(<span class='no'>d</span>)</div><div class='output co'>#&gt; [1] "mk_td(\"d\", c( \"x\"))"</div><div class='input'><span class='fu'>local_td</span>(<span class='st'>"d"</span>)</div><div class='output co'>#&gt; [1] "mk_td(\"d\", c( \"x\"))"</div><div class='input'><span class='fu'>local_td</span>(<span class='fu'><a href='https://rdrr.io/r/base/name.html'>as.name</a></span>(<span class='st'>"d"</span>))</div><div class='output co'>#&gt; [1] "mk_td(\"d\", c( \"x\"))"</div><div class='input'><span class='fu'>local_td</span>(<span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='fl'>1</span>))</div><div class='output co'>#&gt; [1] "mk_td(\"rqltd_03271645692519957280_0000000000\", c( \"x\"))"</div><div class='input'><span class='no'>d</span> <span class='kw'>%.&gt;%</span> <span class='no'>local_td</span> <span class='co'># needs wrapr 1.5.0 or newer to capture name</span></div><div class='output co'>#&gt; [1] "mk_td(\"d\", c( \"x\"))"</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

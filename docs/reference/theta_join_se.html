@@ -69,7 +69,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.2</span>
       </span>
     </div>
 
@@ -223,24 +223,24 @@
 #&gt;     "R2")),
 #&gt;   j= INNER; on= rquery_thetajoin_condition_1 := AUC &gt;= AUC2)
 #&gt; SELECT
-#&gt;  `tsql_31464855244757155948_0000000000`.`AUC` AS `AUC`,
-#&gt;  `tsql_31464855244757155948_0000000000`.`R2` AS `R2_a`,
-#&gt;  `tsql_31464855244757155948_0000000001`.`R2` AS `R2_b`,
-#&gt;  `tsql_31464855244757155948_0000000001`.`AUC2` AS `AUC2`
+#&gt;  `tsql_67709598154854038265_0000000000`.`AUC` AS `AUC`,
+#&gt;  `tsql_67709598154854038265_0000000000`.`R2` AS `R2_a`,
+#&gt;  `tsql_67709598154854038265_0000000001`.`R2` AS `R2_b`,
+#&gt;  `tsql_67709598154854038265_0000000001`.`AUC2` AS `AUC2`
 #&gt; FROM (
 #&gt;  SELECT
 #&gt;   `AUC`,
 #&gt;   `R2`
 #&gt;  FROM
 #&gt;   `d1`
-#&gt; ) `tsql_31464855244757155948_0000000000`
+#&gt; ) `tsql_67709598154854038265_0000000000`
 #&gt; INNER JOIN (
 #&gt;  SELECT
 #&gt;   `AUC2`,
 #&gt;   `R2`
 #&gt;  FROM
 #&gt;   `d2`
-#&gt; ) `tsql_31464855244757155948_0000000001` ON AUC &gt;= AUC2
+#&gt; ) `tsql_67709598154854038265_0000000001` ON AUC &gt;= AUC2
 #&gt;   AUC R2_a R2_b AUC2
 #&gt; 1 0.6  0.2  0.3  0.4</div><div class='input'>
 </div></pre>

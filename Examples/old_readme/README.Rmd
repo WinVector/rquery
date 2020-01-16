@@ -35,6 +35,7 @@ There are many prior relational algebra inspired specialized query languages.  J
   * [`LINQ`](https://msdn.microsoft.com/en-us/library/bb308959.aspx) ~2007.
   * [`pandas`](http://pandas.pydata.org) ~2008.
   * [`dplyr`](http://dplyr.tidyverse.org) ~2014.
+  * [`Apache Calcite`](https://calcite.apache.org) ~2014.
  
 `rquery` is realized as a thin translation to an underlying `SQL` provider.  We are trying to put the Codd relational operators front and center (using the original naming, and back-porting `SQL` progress such as window functions to the appropriate relational operator).
 
@@ -97,10 +98,10 @@ from [Let’s Have Some Sympathy For The Part-time R User](http://www.win-vector
 ```{r ex, warning=FALSE, message=FALSE}
 library("rquery")
 library("wrapr")
-use_spark <- FALSE
+use_spark <- TRUE
 
 if(use_spark) {
-  raw_connection <- sparklyr::spark_connect(version='2.2.0', 
+  raw_connection <- sparklyr::spark_connect( 
                                    master = "local")
   cname <- rq_connection_name(raw_connection)
   rquery::setDBOption(raw_connection, 

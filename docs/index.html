@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.2</span>
       </span>
     </div>
 
@@ -762,10 +762,10 @@
 <a class="sourceLine" id="cb23-16" data-line-number="16"><span class="co">##     `z`</span></a>
 <a class="sourceLine" id="cb23-17" data-line-number="17"><span class="co">##    FROM</span></a>
 <a class="sourceLine" id="cb23-18" data-line-number="18"><span class="co">##     `d`</span></a>
-<a class="sourceLine" id="cb23-19" data-line-number="19"><span class="co">##    ) tsql_30049600341243761078_0000000000</span></a>
-<a class="sourceLine" id="cb23-20" data-line-number="20"><span class="co">##  ) tsql_30049600341243761078_0000000001</span></a>
+<a class="sourceLine" id="cb23-19" data-line-number="19"><span class="co">##    ) tsql_46580769615114461940_0000000000</span></a>
+<a class="sourceLine" id="cb23-20" data-line-number="20"><span class="co">##  ) tsql_46580769615114461940_0000000001</span></a>
 <a class="sourceLine" id="cb23-21" data-line-number="21"><span class="co">##  WHERE `row_number` = 1</span></a>
-<a class="sourceLine" id="cb23-22" data-line-number="22"><span class="co">## ) tsql_30049600341243761078_0000000002</span></a></code></pre></div>
+<a class="sourceLine" id="cb23-22" data-line-number="22"><span class="co">## ) tsql_46580769615114461940_0000000002</span></a></code></pre></div>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1"><span class="co"># clean up</span></a>
 <a class="sourceLine" id="cb24-2" data-line-number="2">DBI<span class="op">::</span><span class="kw"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html">dbDisconnect</a></span>(raw_connection)</a></code></pre></div>
 <p>For more <code>SQL</code> examples, please see <a href="https://github.com/WinVector/rquery/tree/master/db_examples">here</a>.</p>
@@ -789,6 +789,36 @@
 <p>For bigger than memory situations <code>rquery</code> can translate to any sufficiently powerful <code>SQL</code> dialect, allowing <code>rquery</code> pipelines to be executed on PostgreSQL, Apache Spark, or Google BigQuery.</p>
 <p>In addition the <a href="https://github.com/WinVector/data_algebra"><code>data_algebra</code></a> Python package supplies a nearly identical system for working with data in Python. The two systems can even <a href="https://github.com/WinVector/rquery/blob/master/Examples/yaml/yaml.md">share data manipulation code between each other</a> (allowing very powerful R/Python inter-operation or helping port projects from one to the other).</p>
 </div>
+</div>
+<div id="background" class="section level1">
+<h1 class="hasAnchor">
+<a href="#background" class="anchor"></a>Background</h1>
+<p>There are many prior relational algebra inspired specialized query languages. Just a few include:</p>
+<ul>
+<li>
+<a href="https://en.wikipedia.org/wiki/Alpha_(programming_language)"><code>Alpha</code></a> ~1971.</li>
+<li>
+<code>ISBL</code> / Information system based language ~1973</li>
+<li>
+<a href="https://en.wikipedia.org/wiki/QUEL_query_languages"><code>QUEL</code></a> ~1974.</li>
+<li>
+<a href="https://en.wikipedia.org/wiki/IBM_System_R"><code>IBM System R</code></a> ~1974.</li>
+<li>
+<a href="https://en.wikipedia.org/wiki/SQL"><code>SQL</code></a> ~1974.</li>
+<li>
+<a href="https://en.wikipedia.org/wiki/D_(data_language_specification)#Tutorial_D"><code>Tutorial D</code></a> ~1994.</li>
+<li>
+<a href="http://r-datatable.com/"><code>data.table</code></a> ~2006.</li>
+<li>
+<a href="https://msdn.microsoft.com/en-us/library/bb308959.aspx"><code>LINQ</code></a> ~2007.</li>
+<li>
+<a href="http://pandas.pydata.org"><code>pandas</code></a> ~2008.</li>
+<li>
+<a href="http://dplyr.tidyverse.org"><code>dplyr</code></a> ~2014.</li>
+<li>
+<a href="https://calcite.apache.org"><code>Apache Calcite</code></a> ~2014.</li>
+</ul>
+<p><code>rquery</code> is realized as a thin translation to an underlying <code>SQL</code> provider. We are trying to put the Codd relational operators front and center (using the original naming, and back-porting <code>SQL</code> progress such as window functions to the appropriate relational operator).</p>
 </div>
 <div id="note" class="section level1">
 <h1 class="hasAnchor">

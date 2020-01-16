@@ -549,10 +549,10 @@ cat(to_sql(ops, db))
     ##     `z`
     ##    FROM
     ##     `d`
-    ##    ) tsql_30049600341243761078_0000000000
-    ##  ) tsql_30049600341243761078_0000000001
+    ##    ) tsql_46580769615114461940_0000000000
+    ##  ) tsql_46580769615114461940_0000000001
     ##  WHERE `row_number` = 1
-    ## ) tsql_30049600341243761078_0000000002
+    ## ) tsql_46580769615114461940_0000000002
 
 ``` r
 # clean up
@@ -601,6 +601,33 @@ each
 other](https://github.com/WinVector/rquery/blob/master/Examples/yaml/yaml.md)
 (allowing very powerful R/Python inter-operation or helping port
 projects from one to the other).
+
+# Background
+
+There are many prior relational algebra inspired specialized query
+languages. Just a few
+    include:
+
+  - [`Alpha`](https://en.wikipedia.org/wiki/Alpha_\(programming_language\))
+    ~1971.
+  - `ISBL` / Information system based language ~1973
+  - [`QUEL`](https://en.wikipedia.org/wiki/QUEL_query_languages) ~1974.
+  - [`IBM System R`](https://en.wikipedia.org/wiki/IBM_System_R) ~1974.
+  - [`SQL`](https://en.wikipedia.org/wiki/SQL) ~1974.
+  - [`Tutorial
+    D`](https://en.wikipedia.org/wiki/D_\(data_language_specification\)#Tutorial_D)
+    ~1994.
+  - [`data.table`](http://r-datatable.com/) ~2006.
+  - [`LINQ`](https://msdn.microsoft.com/en-us/library/bb308959.aspx)
+    ~2007.
+  - [`pandas`](http://pandas.pydata.org) ~2008.
+  - [`dplyr`](http://dplyr.tidyverse.org) ~2014.
+  - [`Apache Calcite`](https://calcite.apache.org) ~2014.
+
+`rquery` is realized as a thin translation to an underlying `SQL`
+provider. We are trying to put the Codd relational operators front and
+center (using the original naming, and back-porting `SQL` progress such
+as window functions to the appropriate relational operator).
 
 # Note
 

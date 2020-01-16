@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.2</span>
       </span>
     </div>
 
@@ -109,7 +109,7 @@
       <h1>rquery Many Columns</h1>
                         <h4 class="author">John Mount, Win-Vector LLC</h4>
             
-            <h4 class="date">2020-01-07</h4>
+            <h4 class="date">2020-01-15</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery/blob/master/vignettes/rquery_many_columns.Rmd"><code>vignettes/rquery_many_columns.Rmd</code></a></small>
       <div class="hidden name"><code>rquery_many_columns.Rmd</code></div>
@@ -412,7 +412,7 @@
 ##   `car`
 ##  FROM
 ##   `example_data`
-##  ) tsql_31468564852951569430_0000000000</code></pre>
+##  ) tsql_84451335732128080157_0000000000</code></pre>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="cf">if</span>(have_db) {</a>
 <a class="sourceLine" id="cb18-2" data-line-number="2">  res_table &lt;-<span class="st"> </span><span class="kw"><a href="../reference/materialize.html">materialize</a></span>(db, ops)</a>
 <a class="sourceLine" id="cb18-3" data-line-number="3">  DBI<span class="op">::</span><span class="kw"><a href="https://dbi.r-dbi.org/reference/dbReadTable.html">dbReadTable</a></span>(raw_connection, res_table<span class="op">$</span>table_name) <span class="op">%.&gt;%</span></a>
