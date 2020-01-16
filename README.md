@@ -1,6 +1,9 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+[![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/rquery)](https://cran.r-project.org/package=rquery)
+[![status](https://tinyverse.netlify.com/badge/rquery)](https://CRAN.R-project.org/package=rquery)
+
 # `rquery`
 
 [`rquery`](https://winvector.github.io/rquery/) is a piped query
@@ -549,10 +552,10 @@ cat(to_sql(ops, db))
     ##     `z`
     ##    FROM
     ##     `d`
-    ##    ) tsql_46580769615114461940_0000000000
-    ##  ) tsql_46580769615114461940_0000000001
+    ##    ) tsql_36251475914729678432_0000000000
+    ##  ) tsql_36251475914729678432_0000000001
     ##  WHERE `row_number` = 1
-    ## ) tsql_46580769615114461940_0000000002
+    ## ) tsql_36251475914729678432_0000000002
 
 ``` r
 # clean up

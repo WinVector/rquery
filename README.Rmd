@@ -4,6 +4,10 @@ output: github_document
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/rquery)](https://cran.r-project.org/package=rquery)
+[![status](https://tinyverse.netlify.com/badge/rquery)](https://CRAN.R-project.org/package=rquery)
+
+
 # `rquery`
 
 [`rquery`](https://winvector.github.io/rquery/) is a piped query generator based on [Codd's relational algebra](https://en.wikipedia.org/wiki/Relational_algebra) (updated to reflect lessons learned from working with [`R`](https://www.r-project.org), [`SQL`](https://en.wikipedia.org/wiki/SQL), and [`dplyr`]( https://CRAN.R-project.org/package=dplyr) at big data scale in production).  
