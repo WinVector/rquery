@@ -1,6 +1,7 @@
 
-# rquery 1.4.2 2020/01/12
+# rquery 1.4.2 2020/01/17
 
+ * Work on query generation and clean up db adaptor path.
  * Set minimum suggested rqdatatable version.
 
 # rquery 1.4.1 2020/01/07
