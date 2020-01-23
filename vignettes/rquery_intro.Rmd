@@ -33,10 +33,12 @@ run_vignette <- requireNamespace("DBI", quietly = TRUE) &&
   requireNamespace("RSQLite", quietly = TRUE)
 ```
 
-```{r setup, eval=run_vignette}
+```{r import}
 library("rquery")
 library("wrapr")
+```
 
+```{r setup, eval=run_vignette}
 # example database connection
 db <- DBI::dbConnect(RSQLite::SQLite(),
                      ":memory:")
@@ -59,7 +61,7 @@ the name of a table and expected columns.  Any local data or database
 table that has at least the set of columns named in the table description
 can be used in a given `rquery` pipeline.
 
-```{r tabledescr1}
+```{r tabledescr1, eval=run_vignette}
 # copy in example data
 rq_copy_to(
   db, 'd',

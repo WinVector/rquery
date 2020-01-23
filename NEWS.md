@@ -1,4 +1,8 @@
 
+# rquery 1.4.3 2020/01/23
+
+ * Work on noSuggests issue.
+
 # rquery 1.4.2 2020/01/17
 
  * Work on query generation and clean up db adaptor path.
