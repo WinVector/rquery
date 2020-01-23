@@ -86,13 +86,13 @@ extend_impl <- function(source, parsed,
     }
   }
   if(length(partitionby)!=length(unique(partitionby))) {
-    stop("rquery:::extend_impl duplicatge partitionby columns")
+    stop("rquery:::extend_impl duplicate partitionby columns")
   }
   if(length(reverse)!=length(unique(reverse))) {
-    stop("rquery:::extend_impl duplicatge reverse columns")
+    stop("rquery:::extend_impl duplicate reverse columns")
   }
   if(length(orderby)!=length(unique(orderby))) {
-    stop("rquery:::extend_impl duplicatge orderby columns")
+    stop("rquery:::extend_impl duplicate orderby columns")
   }
   if(length(setdiff(reverse, orderby))>0) {
     stop("rquery::extend_imp all reverse columns must also be orderby columns")

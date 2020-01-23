@@ -16,7 +16,7 @@ project_impl <- function(source, ...,
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery:::project_impl")
   if(length(groupby)!=length(unique(groupby))) {
-    stop("rquery:::project_impl duplicatge groupby columns")
+    stop("rquery:::project_impl duplicate groupby columns")
   }
   have <- column_names(source)
   required_cols <- sort(unique(c(
