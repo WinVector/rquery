@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.3</span>
       </span>
     </div>
 
@@ -109,7 +109,7 @@
       <h1>R mapping</h1>
                         <h4 class="author">John Mount</h4>
             
-            <h4 class="date">2020-01-17</h4>
+            <h4 class="date">2020-01-27</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery/blob/master/vignettes/R_mapping.Rmd"><code>vignettes/R_mapping.Rmd</code></a></small>
       <div class="hidden name"><code>R_mapping.Rmd</code></div>
@@ -234,7 +234,7 @@
 ##   `assessmentTotal`
 ##  FROM
 ##   `d`
-##  ) tsql_64202811897702596464_0000000000
+##  ) tsql_64040627093869923404_0000000000
 ## GROUP BY
 ##  `subjectID`</code></pre>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">ops <span class="op">%.&gt;%</span></a>
@@ -316,10 +316,10 @@
 ##    `assessmentTotal`
 ##   FROM
 ##    `d`
-##   ) tsql_04293888122741746274_0000000000
+##   ) tsql_73036143096922282917_0000000000
 ##  GROUP BY
 ##   `subjectID`
-##  ) tsql_04293888122741746274_0000000001</code></pre>
+##  ) tsql_73036143096922282917_0000000001</code></pre>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">ops <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb13-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/execute.html">execute</a></span>(db, .) <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb13-3" data-line-number="3"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(.)</a></code></pre></div>
@@ -366,8 +366,8 @@
 ##    `subjectID`
 ##   FROM
 ##    `d`
-##   ) tsql_09534990201115559991_0000000000
-## ) tsql_09534990201115559991_0000000001</code></pre>
+##   ) tsql_53808660550337488200_0000000000
+## ) tsql_53808660550337488200_0000000001</code></pre>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">ops <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb16-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/execute.html">execute</a></span>(db, .) <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb16-3" data-line-number="3"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(.)</a></code></pre></div>

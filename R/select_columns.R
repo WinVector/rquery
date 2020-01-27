@@ -36,7 +36,7 @@ select_columns.relop <- function(source, columns, env = parent.frame()) {
   have <- column_names(source)
   check_have_cols(have, columns, "rquery::select_columns columns")
   dropping <- setdiff(have, columns)
-  if(length(dropping)<=0) {
+  if((length(dropping)<=0) && (isTRUE(all.equal(have, columns)))) {
     return(source)
   }
   if(is(source, 'relop_select_columns')) {

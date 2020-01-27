@@ -1,7 +1,9 @@
 
-# rquery 1.4.3 2020/01/23
+# rquery 1.4.3 2020/01/27
 
  * Work on noSuggests issue.
+ * Better error message on named argument function.
+ * Don't optimize out select_columns as often.
 
 # rquery 1.4.2 2020/01/17
 
