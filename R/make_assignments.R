@@ -54,7 +54,6 @@ make_assignments <- function(columns, funs,
     combos$result_name <- paste0(combos$column, sep, combos$fn_name)
   }
   combos$fn_impl <- funs[combos$fn_name]
-  n <- nrow(combos)
   res <- paste0(combos$fn_impl, "(", combos$column, ")")
   names(res) <- combos$result_name
   res

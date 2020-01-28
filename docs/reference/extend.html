@@ -213,7 +213,8 @@
 
     <p>Partitionby and orderby can only be used with a database that supports window-functions
 (such as PostgreSQL, Spark, and so on).</p>
-<p>Supports bquote() .()-style name abstraction (please see here: <a href='https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md'>https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md</a>).</p>
+<p>Supports <code><a href='https://rdrr.io/r/base/bquote.html'>bquote()</a></code> <code>.()</code>-style name abstraction with the extenson that <code>-</code> promotes strings to names
+(please see here: <a href='https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md'>https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md</a>).</p>
 <p>Note: if any window/aggregation functions are present then at least one of partitionby or orderby
 must be non empty.  For this purpose partitionby=1 is allowed and means "single partition on the constant 1."</p>
 
