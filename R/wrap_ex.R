@@ -132,14 +132,6 @@ natural_join.wrapped_relop <- function(a, b,
 }
 
 
-lapply_bquote_to_langauge_list <- function(ll, env) {
-  force(env)
-  lapply(ll,
-         function(li) {
-           do.call(bquote, list(expr = li, where = env), envir = env)
-         })
-}
-
 
 #' @export
 #' @keywords internal

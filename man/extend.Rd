@@ -50,7 +50,8 @@ Create a node similar to a Codd extend relational operator (add derived columns)
 Partitionby and orderby can only be used with a database that supports window-functions
 (such as PostgreSQL, Spark, and so on).
 
-Supports bquote() .()-style name abstraction (please see here: \url{https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md}).
+Supports \code{bquote()} \code{.()}-style name abstraction with the extenson that \code{-} promotes strings to names
+(please see here: \url{https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md}).
 
 Note: if any window/aggregation functions are present then at least one of partitionby or orderby
 must be non empty.  For this purpose partitionby=1 is allowed and means "single partition on the constant 1."
