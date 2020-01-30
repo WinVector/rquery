@@ -1,4 +1,8 @@
 
+
+#' @importFrom wrapr %.>% %:=% mk_tmp_name_source
+NULL
+
 #' build a map of original column names to unambiguous column names.
 #'
 #' Principles: non-colliding columns keep their original names.

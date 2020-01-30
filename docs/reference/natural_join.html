@@ -203,14 +203,14 @@ are coalesced into a single column preferring the first or "a" table.</p>
 
   <span class='no'>d1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(
     <span class='no'>my_db</span>, <span class='st'>'d1'</span>,
-    <span class='fu'><a href='https://rdrr.io/pkg/wrapr/man/build_frame.html'>build_frame</a></span>(
+    <span class='fu'>build_frame</span>(
       <span class='st'>"key"</span>, <span class='st'>"val"</span>, <span class='st'>"val1"</span> <span class='kw'>|</span>
         <span class='st'>"a"</span>  , <span class='fl'>1</span>  ,  <span class='fl'>10</span>    <span class='kw'>|</span>
         <span class='st'>"b"</span>  , <span class='fl'>2</span>  ,  <span class='fl'>11</span>    <span class='kw'>|</span>
         <span class='st'>"c"</span>  , <span class='fl'>3</span>  ,  <span class='fl'>12</span>    ))
   <span class='no'>d2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(
     <span class='no'>my_db</span>, <span class='st'>'d2'</span>,
-    <span class='fu'><a href='https://rdrr.io/pkg/wrapr/man/build_frame.html'>build_frame</a></span>(
+    <span class='fu'>build_frame</span>(
       <span class='st'>"key"</span>, <span class='st'>"val"</span>, <span class='st'>"val2"</span> <span class='kw'>|</span>
         <span class='st'>"a"</span>  , <span class='fl'>5</span>  ,  <span class='fl'>13</span>    <span class='kw'>|</span>
         <span class='st'>"b"</span>  , <span class='fl'>6</span>  ,  <span class='fl'>14</span>    <span class='kw'>|</span>

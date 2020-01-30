@@ -8,13 +8,13 @@ package = "rquery"
 date()
 ```
 
-    ## [1] "Fri Jan 17 08:17:25 2020"
+    ## [1] "Thu Jan 30 10:32:11 2020"
 
 ``` r
 packageVersion(package)
 ```
 
-    ## [1] '1.4.2'
+    ## [1] '1.4.3'
 
 ``` r
 parallelCluster <- NULL
@@ -34,7 +34,7 @@ setwd(td)
 print(td)
 ```
 
-    ## [1] "/var/folders/7q/h_jp2vj131g5799gfnpzhdp80000gn/T//Rtmpd4528P"
+    ## [1] "/var/folders/7q/h_jp2vj131g5799gfnpzhdp80000gn/T//RtmpYosipn"
 
 ``` r
 options(repos = c(CRAN="https://cloud.r-project.org"))
@@ -59,9 +59,9 @@ if(!is.null(parallelCluster)) {
 }
 ```
 
-    ## cdata_1.1.4 started at 2020-01-17 08:17:28 success at 2020-01-17 08:18:05 (1/0/0) 
-    ## rqdatatable_1.2.5 started at 2020-01-17 08:18:05 success at 2020-01-17 08:18:30 (2/0/0) 
-    ## WVPlots_1.2.2 started at 2020-01-17 08:18:31 success at 2020-01-17 08:19:57 (3/0/0)
+    ## cdata_1.1.5 started at 2020-01-30 10:32:14 success at 2020-01-30 10:32:54 (1/0/0) 
+    ## rqdatatable_1.2.6 started at 2020-01-30 10:32:54 success at 2020-01-30 10:33:25 (2/0/0) 
+    ## WVPlots_1.2.3 started at 2020-01-30 10:33:25 success at 2020-01-30 10:34:48 (3/0/0)
 
     ## [1] id     title  status
     ## <0 rows> (or 0-length row.names)
@@ -71,8 +71,8 @@ summariseQueue(package=package, directory=td)
 ```
 
     ## Test of rquery had 3 successes, 0 failures, and 0 skipped packages. 
-    ## Ran from 2020-01-17 08:17:28 to 2020-01-17 08:19:57 for 2.483 mins 
-    ## Average of 49.667 secs relative to 49.623 secs using 1 runners
+    ## Ran from 2020-01-30 10:32:14 to 2020-01-30 10:34:48 for 2.567 mins 
+    ## Average of 51.333 secs relative to 51.453 secs using 1 runners
     ## 
     ## Failed packages:   
     ## 

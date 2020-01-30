@@ -195,19 +195,19 @@
                               <span class='kw'>stringsAsFactors</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>))
 
   <span class='co'># example</span>
-  <span class='no'>op_tree</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span> <span class='fu'>sql_expr_set</span>(<span class='no'>.</span>, <span class='fu'><a href='https://rdrr.io/pkg/wrapr/man/qc.html'>qc</a></span>(<span class='no'>AUC</span>, <span class='no'>R2</span>), <span class='st'>". + 1"</span>)
+  <span class='no'>op_tree</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span> <span class='fu'>sql_expr_set</span>(<span class='no'>.</span>, <span class='fu'>qc</span>(<span class='no'>AUC</span>, <span class='no'>R2</span>), <span class='st'>". + 1"</span>)
   <span class='fu'><a href='https://rdrr.io/r/base/cat.html'>cat</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/format.html'>format</a></span>(<span class='no'>op_tree</span>))
   <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>op_tree</span>, <span class='no'>my_db</span>)
   <span class='fu'><a href='https://rdrr.io/r/base/cat.html'>cat</a></span>(<span class='no'>sql</span>)
   <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbGetQuery.html'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
 
   <span class='co'># ex2 names (but not marked as names)</span>
-  <span class='no'>op_tree2</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span> <span class='fu'>sql_expr_set</span>(<span class='no'>.</span>, <span class='fu'><a href='https://rdrr.io/pkg/wrapr/man/qc.html'>qc</a></span>(<span class='no'>AUC</span>, <span class='no'>R2</span>),
+  <span class='no'>op_tree2</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span> <span class='fu'>sql_expr_set</span>(<span class='no'>.</span>, <span class='fu'>qc</span>(<span class='no'>AUC</span>, <span class='no'>R2</span>),
      <span class='st'>". + 1 + delta"</span>)
   <span class='fu'><a href='https://rdrr.io/r/base/cat.html'>cat</a></span>(<span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>op_tree2</span>, <span class='no'>my_db</span>))
 
   <span class='co'># ex3 names (also so marked)</span>
-  <span class='no'>op_tree3</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span> <span class='fu'>sql_expr_set</span>(<span class='no'>.</span>, <span class='fu'><a href='https://rdrr.io/pkg/wrapr/man/qc.html'>qc</a></span>(<span class='no'>AUC</span>, <span class='no'>R2</span>),
+  <span class='no'>op_tree3</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span> <span class='fu'>sql_expr_set</span>(<span class='no'>.</span>, <span class='fu'>qc</span>(<span class='no'>AUC</span>, <span class='no'>R2</span>),
      <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='st'>". + 1 +"</span>, <span class='fu'><a href='https://rdrr.io/r/base/name.html'>as.name</a></span>(<span class='st'>"delta"</span>)))
   <span class='fu'><a href='https://rdrr.io/r/base/cat.html'>cat</a></span>(<span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>op_tree3</span>, <span class='no'>my_db</span>))
 

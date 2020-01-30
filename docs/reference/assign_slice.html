@@ -203,8 +203,8 @@ is a reserved column name for this procedure.</p>
 
   <span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span>
     <span class='fu'>assign_slice</span>(<span class='no'>.</span>,
-                 <span class='kw'>testexpr</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/wrapr/man/qe.html'>qe</a></span>(<span class='no'>r</span><span class='kw'>&lt;</span><span class='fl'>0.5</span>),
-                 <span class='kw'>columns</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/wrapr/man/qc.html'>qc</a></span>(<span class='no'>a</span>, <span class='no'>b</span>),
+                 <span class='kw'>testexpr</span> <span class='kw'>=</span> <span class='fu'>qe</span>(<span class='no'>r</span><span class='kw'>&lt;</span><span class='fl'>0.5</span>),
+                 <span class='kw'>columns</span> <span class='kw'>=</span> <span class='fu'>qc</span>(<span class='no'>a</span>, <span class='no'>b</span>),
                  <span class='kw'>value</span> <span class='kw'>=</span> <span class='fl'>2</span>)
   <span class='fu'><a href='https://rdrr.io/r/base/cat.html'>cat</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/format.html'>format</a></span>(<span class='no'>optree</span>))
 

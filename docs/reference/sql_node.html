@@ -260,13 +260,13 @@
 
   <span class='co'># sql_node also allows marking variable in quoted expressions</span>
   <span class='no'>ops</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span>
-     <span class='fu'>sql_node</span>(<span class='no'>.</span>, <span class='fu'><a href='https://rdrr.io/pkg/wrapr/man/qae.html'>qae</a></span>(<span class='kw'>sqrt_v1</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>sqrt</a></span>(<span class='no'>.</span>[<span class='no'>v1</span>])))
+     <span class='fu'>sql_node</span>(<span class='no'>.</span>, <span class='fu'>qae</span>(<span class='kw'>sqrt_v1</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>sqrt</a></span>(<span class='no'>.</span>[<span class='no'>v1</span>])))
   <span class='fu'><a href='execute.html'>execute</a></span>(<span class='no'>my_db</span>, <span class='no'>ops</span>) <span class='kw'>%.&gt;%</span>
      <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='no'>.</span>)
   <span class='co'># marking variables allows for error-checking of column names</span>
   <span class='fu'><a href='https://rdrr.io/r/base/conditions.html'>tryCatch</a></span>({
     <span class='no'>ops</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span>
-      <span class='fu'>sql_node</span>(<span class='no'>.</span>, <span class='fu'><a href='https://rdrr.io/pkg/wrapr/man/qae.html'>qae</a></span>(<span class='kw'>sqrt_v1</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>sqrt</a></span>(<span class='no'>.</span>[<span class='no'>v1_misspellled</span>])))
+      <span class='fu'>sql_node</span>(<span class='no'>.</span>, <span class='fu'>qae</span>(<span class='kw'>sqrt_v1</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>sqrt</a></span>(<span class='no'>.</span>[<span class='no'>v1_misspellled</span>])))
     },
     <span class='kw'>error</span> <span class='kw'>=</span> <span class='kw'>function</span>(<span class='no'>e</span>) {<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='no'>e</span>)})
 

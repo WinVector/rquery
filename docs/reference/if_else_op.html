@@ -240,11 +240,11 @@ is a reserved column name for this procedure.</p>
 
   <span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span>
     <span class='fu'>if_else_op</span>(<span class='no'>.</span>,
-               <span class='kw'>testexpr</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/wrapr/man/qe.html'>qe</a></span>((<span class='no'>a</span>+<span class='no'>b</span>)<span class='kw'>&gt;</span><span class='fl'>1</span>),
-               <span class='kw'>thenexprs</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/wrapr/man/qae.html'>qae</a></span>(<span class='no'>a</span> <span class='kw'>%:=%</span> <span class='fl'>0</span>,
+               <span class='kw'>testexpr</span> <span class='kw'>=</span> <span class='fu'>qe</span>((<span class='no'>a</span>+<span class='no'>b</span>)<span class='kw'>&gt;</span><span class='fl'>1</span>),
+               <span class='kw'>thenexprs</span> <span class='kw'>=</span> <span class='fu'>qae</span>(<span class='no'>a</span> <span class='kw'>%:=%</span> <span class='fl'>0</span>,
                                <span class='no'>b</span> <span class='kw'>%:=%</span> <span class='fl'>0</span>,
                                <span class='no'>edited</span> <span class='kw'>%:=%</span> <span class='fl'>1</span>),
-               <span class='kw'>elseexprs</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/pkg/wrapr/man/qae.html'>qae</a></span>(<span class='no'>edited</span> <span class='kw'>%:=%</span> <span class='fl'>0</span>))
+               <span class='kw'>elseexprs</span> <span class='kw'>=</span> <span class='fu'>qae</span>(<span class='no'>edited</span> <span class='kw'>%:=%</span> <span class='fl'>0</span>))
   <span class='fu'><a href='https://rdrr.io/r/base/cat.html'>cat</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/format.html'>format</a></span>(<span class='no'>optree</span>))
 
   <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>optree</span>, <span class='no'>my_db</span>)
