@@ -25,7 +25,7 @@ aggregate_nse(source, ..., groupby = c(), env = parent.frame())
 project node.
 }
 \description{
-Supports \code{bquote()} \code{.()}-style name abstraction with the extenson that \code{-} promotes strings to names
+Supports \code{bquote()} \code{.()}-style name abstraction including \code{.(-)} notation to promote strings to names
 (please see here: \url{https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md}).
 }
 \examples{

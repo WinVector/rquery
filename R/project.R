@@ -139,7 +139,7 @@ project_se.data.frame <- function(source,
 
 #' project data by grouping, and adding aggregate columns.
 #'
-#' Supports \code{bquote()} \code{.()}-style name abstraction with the extenson that \code{-} promotes strings to names
+#' Supports \code{bquote()} \code{.()}-style name abstraction including \code{.(-)} notation to promote strings to names
 #' (please see here: \url{https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md}).
 #'
 #' @param source source to select from.

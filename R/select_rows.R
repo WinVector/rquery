@@ -89,7 +89,8 @@ select_rows_se.data.frame <- function(source, expr,
 
 #' Make a select rows node.
 #'
-#' Supports bquote() .()-style name abstraction (please see here: \url{https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md}).
+#' Supports \code{bquote()} \code{.()}-style name abstraction including \code{.(-)} notation to promote strings to names
+#' (please see here: \url{https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md}).
 #'
 #' @param source source to select from.
 #' @param expr expression to select rows.

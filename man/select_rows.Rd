@@ -20,7 +20,8 @@ select_rows_nse(source, expr, env = parent.frame())
 select rows node.
 }
 \description{
-Supports bquote() .()-style name abstraction (please see here: \url{https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md}).
+Supports \code{bquote()} \code{.()}-style name abstraction including \code{.(-)} notation to promote strings to names
+(please see here: \url{https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md}).
 }
 \examples{
 

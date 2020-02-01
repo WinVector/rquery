@@ -1,5 +1,5 @@
 
-# rquery 1.4.3 2020/01/30
+# rquery 1.4.3 2020/02/01
 
  * Work on noSuggests issue.
  * Better error message on named argument function.
