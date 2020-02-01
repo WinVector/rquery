@@ -34,7 +34,11 @@ knitr::kable(d)
 
 ``` r
 library("rquery")
+```
 
+    ## Loading required package: wrapr
+
+``` r
 condition_variable <- as.name('x')
 new_value_variable <- as.name('y')
 old_value_variable <- as.name('z')
@@ -56,6 +60,8 @@ cat(format(ops))
     ##    x == 1) %.>%
     ##  extend(.,
     ##   y := z + 1)
+
+And we can execute the operations as follows.
 
 ``` r
 d %.>% 
@@ -103,32 +109,49 @@ d %.>%
 | -: |
 | 7 |
 
-Note: `rquery` `1.3.9` has an issue with `bquote`/`.()` substitution in
-“imediate mode”. We have fixed that in later versions.
+We want to avoid using strings instead of names, as strings don’t always
+give us the expected result. `rquery` tries to work around and catch
+many of these cases. For example:
 
 ``` r
-d %.>%
+condition_name <- 'x'
+
+ops2 <- local_td(d) %.>%
   select_rows(.,
-              .(condition_variable) == 1) %.>%
-  extend(.,
-         .(new_value_variable) := .(old_value_variable) + 1) %.>%
-  knitr::kable(.)
+              .(condition_name) == 1)
 ```
 
-| x | y | z |
-| -: | -: | -: |
-| 1 | 7 | 6 |
-| 1 | 8 | 7 |
+    ## Warning in warn_about_filter_conditions(parsed): rquery::select_rows: expression
+    ## "x" == 1 refers to no columns (so is a constant)
 
 ``` r
-d %.>%
-  select_rows(.,
-              .(condition_variable) == 1) %.>%
-  project(.,
-         .(new_value_variable) := max(.(old_value_variable))) %.>%
-  knitr::kable(.)
+cat(format(ops2))
 ```
 
-| y |
-| -: |
-| 7 |
+    ## mk_td("d", c(
+    ##   "x",
+    ##   "y",
+    ##   "z")) %.>%
+    ##  select_rows(.,
+    ##    "x" == 1)
+
+New to `rquery` `1.4.3` we have a new “`-` to strip off quotes” feature.
+What this is: `.(-v)` converts `v` from a character type to a name.
+Meaning we don’t have to use the `as.name()` calls if we don’t want to.
+
+``` r
+condition_name <- 'x'
+
+ops3 <- local_td(d) %.>%
+  select_rows(.,
+              .(-condition_name) == 1)
+
+cat(format(ops3))
+```
+
+    ## mk_td("d", c(
+    ##   "x",
+    ##   "y",
+    ##   "z")) %.>%
+    ##  select_rows(.,
+    ##    x == 1)
