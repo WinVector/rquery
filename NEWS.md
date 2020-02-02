@@ -1,5 +1,5 @@
 
-# rquery 1.4.4 2020/02/01
+# rquery 1.4.4 2020/02/02
 
  * Isolate bquote a bit more.
 
