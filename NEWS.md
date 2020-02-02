@@ -1,4 +1,8 @@
 
+# rquery 1.4.4 2020/02/01
+
+ * Isolate bquote a bit more.
+
 # rquery 1.4.3 2020/02/01
 
  * Work on noSuggests issue.
