@@ -331,7 +331,7 @@ setOldClass("rquery_db_info")
 #' @param right_arg_name name, if not NULL name of right argument.
 #' @return result
 #'
-#' @importMethodsFrom wrapr ApplyTo apply_right_S4
+#' @importMethodsFrom wrapr apply_right_S4
 #' @export
 setMethod(
   "apply_right_S4",
