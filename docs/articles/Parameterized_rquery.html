@@ -201,7 +201,7 @@
 <p><img src="parameterized_rquery.png"></p>
 <p>The same example in a database.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="co"># connect to a database</span></a>
-<a class="sourceLine" id="cb11-2" data-line-number="2">raw_connection &lt;-<span class="st"> </span>DBI<span class="op">::</span><span class="kw"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span>(RSQLite<span class="op">::</span><span class="kw"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html">SQLite</a></span>(), <span class="st">":memory:"</span>)</a>
+<a class="sourceLine" id="cb11-2" data-line-number="2">raw_connection &lt;-<span class="st"> </span>DBI<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/DBI/man/dbConnect.html">dbConnect</a></span>(RSQLite<span class="op">::</span><span class="kw"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html">SQLite</a></span>(), <span class="st">":memory:"</span>)</a>
 <a class="sourceLine" id="cb11-3" data-line-number="3"></a>
 <a class="sourceLine" id="cb11-4" data-line-number="4"><span class="co"># build a representation of the database connection</span></a>
 <a class="sourceLine" id="cb11-5" data-line-number="5">dbopts &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rq_connection_tests.html">rq_connection_tests</a></span>(raw_connection)</a>
@@ -218,7 +218,7 @@
 <pre><code>## [1] "mk_td(\"mtcars\", c( \"mpg\", \"cyl\", \"disp\", \"hp\", \"drat\", \"wt\", \"qsec\", \"vs\", \"am\", \"gear\", \"carb\"))"</code></pre>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="co"># materialize result remotely (without passing through R)</span></a>
 <a class="sourceLine" id="cb15-2" data-line-number="2">res &lt;-<span class="st"> </span><span class="kw"><a href="../reference/materialize.html">materialize</a></span>(db, ops)</a>
-<a class="sourceLine" id="cb15-3" data-line-number="3">DBI<span class="op">::</span><span class="kw"><a href="https://dbi.r-dbi.org/reference/dbReadTable.html">dbReadTable</a></span>(raw_connection, res<span class="op">$</span>table_name)</a></code></pre></div>
+<a class="sourceLine" id="cb15-3" data-line-number="3">DBI<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/DBI/man/dbReadTable.html">dbReadTable</a></span>(raw_connection, res<span class="op">$</span>table_name)</a></code></pre></div>
 <pre><code>##   am mean_hp_per_cyl group_count
 ## 1  0        22.71491          19
 ## 2  1        23.41987          13</code></pre>
@@ -242,13 +242,13 @@
 ##     `cyl`
 ##    FROM
 ##     `mtcars`
-##    ) tsql_24021701700115642081_0000000000
-##   ) tsql_24021701700115642081_0000000001
+##    ) tsql_95512006217173974197_0000000000
+##   ) tsql_95512006217173974197_0000000001
 ##  GROUP BY
 ##   `am`
-## ) tsql_24021701700115642081_0000000002 ORDER BY `am`</code></pre>
+## ) tsql_95512006217173974197_0000000002 ORDER BY `am`</code></pre>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1"><span class="co"># disconnect</span></a>
-<a class="sourceLine" id="cb21-2" data-line-number="2">DBI<span class="op">::</span><span class="kw"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html">dbDisconnect</a></span>(raw_connection)</a>
+<a class="sourceLine" id="cb21-2" data-line-number="2">DBI<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/DBI/man/dbDisconnect.html">dbDisconnect</a></span>(raw_connection)</a>
 <a class="sourceLine" id="cb21-3" data-line-number="3"><span class="kw"><a href="https://rdrr.io/r/base/rm.html">rm</a></span>(<span class="dt">list =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"raw_connection"</span>, <span class="st">"db"</span>))</a></code></pre></div>
   </div>
 

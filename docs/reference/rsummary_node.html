@@ -203,7 +203,7 @@
                   <span class='kw'>y</span><span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>factor</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>3</span>,<span class='fl'>5</span>,<span class='fl'>NA</span>)),
                   <span class='kw'>z</span><span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'a'</span>,<span class='fl'>NA</span>,<span class='st'>'a'</span>),
                   <span class='kw'>stringsAsFactors</span><span class='kw'>=</span><span class='fl'>FALSE</span>)
-  <span class='no'>db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
+  <span class='no'>db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/DBI/man/dbConnect.html'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
   <span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://rsqlite.r-dbi.org/reference/initExtension.html'>initExtension</a></span>(<span class='no'>db</span>)
   <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(<span class='no'>db</span>, <span class='st'>"dRemote"</span>, <span class='no'>d</span>,
               <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
@@ -217,9 +217,9 @@
   <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>ops</span>, <span class='no'>db</span>))
 
   <span class='no'>reshdl</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='materialize.html'>materialize</a></span>(<span class='no'>db</span>, <span class='no'>ops</span>)
-  <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbGetQuery.html'>dbGetQuery</a></span>(<span class='no'>db</span>, <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>reshdl</span>, <span class='no'>db</span>)))
+  <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/DBI/man/dbGetQuery.html'>dbGetQuery</a></span>(<span class='no'>db</span>, <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>reshdl</span>, <span class='no'>db</span>)))
 
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbDisconnect.html'>dbDisconnect</a></span>(<span class='no'>db</span>)
+  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/DBI/man/dbDisconnect.html'>dbDisconnect</a></span>(<span class='no'>db</span>)
 }</div><div class='output co'>#&gt; mk_td("dRemote", c(
 #&gt;   "p",
 #&gt;   "s",

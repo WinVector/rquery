@@ -132,12 +132,12 @@
 <a class="sourceLine" id="cb4-4" data-line-number="4"><span class="cf">for</span>(group <span class="cf">in</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'a'</span>, <span class="st">'b'</span>, <span class="st">'c'</span>, <span class="st">'d'</span>, <span class="st">'e'</span>)) {</a>
 <a class="sourceLine" id="cb4-5" data-line-number="5">  d[[<span class="kw"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="st">"rand_"</span>, group)]] &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(d))</a>
 <a class="sourceLine" id="cb4-6" data-line-number="6">}</a>
-<a class="sourceLine" id="cb4-7" data-line-number="7">my_db &lt;-<span class="st"> </span>DBI<span class="op">::</span><span class="kw"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span>(RSQLite<span class="op">::</span><span class="kw"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html">SQLite</a></span>(), </a>
+<a class="sourceLine" id="cb4-7" data-line-number="7">my_db &lt;-<span class="st"> </span>DBI<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/DBI/man/dbConnect.html">dbConnect</a></span>(RSQLite<span class="op">::</span><span class="kw"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html">SQLite</a></span>(), </a>
 <a class="sourceLine" id="cb4-8" data-line-number="8">                        <span class="st">":memory:"</span>)</a>
 <a class="sourceLine" id="cb4-9" data-line-number="9">d1 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rq_copy_to.html">rq_copy_to</a></span>(my_db, <span class="st">"example_table"</span>, d)</a>
 <a class="sourceLine" id="cb4-10" data-line-number="10">d1 <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb4-11" data-line-number="11"><span class="st">  </span><span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(., my_db) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb4-12" data-line-number="12"><span class="st">  </span>DBI<span class="op">::</span><span class="kw"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html">dbGetQuery</a></span>(my_db, .) <span class="op">%.&gt;%</span></a>
+<a class="sourceLine" id="cb4-12" data-line-number="12"><span class="st">  </span>DBI<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/DBI/man/dbGetQuery.html">dbGetQuery</a></span>(my_db, .) <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb4-13" data-line-number="13"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(.)</a></code></pre></div>
 <table class="table">
 <thead><tr class="header">
@@ -304,7 +304,7 @@ FROM (
    ) tsql_59110515983599244008_0000000000
   ) tsql_59110515983599244008_0000000001
 ) tsql_59110515983599244008_0000000002</code></pre>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">DBI<span class="op">::</span><span class="kw"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html">dbGetQuery</a></span>(my_db, sql) <span class="op">%.&gt;%</span></a>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">DBI<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/DBI/man/dbGetQuery.html">dbGetQuery</a></span>(my_db, sql) <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb9-2" data-line-number="2"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(.)</a></code></pre></div>
 <table class="table">
 <thead><tr class="header">
@@ -457,7 +457,7 @@ FROM (
  select_columns(., 
     c('id', 'a_1', 'a_2', 'b_1', 'b_2', 'c_1', 'c_2', 'd_1', 'd_2', 'e_1', 'e_2'))</code></pre>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1">sql2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/to_sql.html">to_sql</a></span>(plan2, my_db)</a>
-<a class="sourceLine" id="cb12-2" data-line-number="2">DBI<span class="op">::</span><span class="kw"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html">dbGetQuery</a></span>(my_db, sql2) <span class="op">%.&gt;%</span></a>
+<a class="sourceLine" id="cb12-2" data-line-number="2">DBI<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/DBI/man/dbGetQuery.html">dbGetQuery</a></span>(my_db, sql2) <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb12-3" data-line-number="3"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(.)</a></code></pre></div>
 <table class="table">
 <thead><tr class="header">
@@ -529,7 +529,7 @@ FROM (
 </tbody>
 </table>
 <p>Notice the returned tables are identical (as they should be, <a href="https://github.com/WinVector/rquery/blob/master/extras/AssigmentPartitioner.md#dplyr-example">which is not always the case for database backed <code>dplyr</code></a>).</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">DBI<span class="op">::</span><span class="kw"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html">dbDisconnect</a></span>(my_db)</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">DBI<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/DBI/man/dbDisconnect.html">dbDisconnect</a></span>(my_db)</a></code></pre></div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
