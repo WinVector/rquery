@@ -8,7 +8,7 @@ package = "rquery"
 date()
 ```
 
-    ## [1] "Sat Feb  1 17:01:33 2020"
+    ## [1] "Sun Feb 16 09:53:52 2020"
 
 ``` r
 packageVersion(package)
@@ -34,7 +34,7 @@ setwd(td)
 print(td)
 ```
 
-    ## [1] "/var/folders/7q/h_jp2vj131g5799gfnpzhdp80000gn/T//Rtmp4x45Hp"
+    ## [1] "/var/folders/7q/h_jp2vj131g5799gfnpzhdp80000gn/T//Rtmp8onN2P"
 
 ``` r
 options(repos = c(CRAN="https://cloud.r-project.org"))
@@ -59,15 +59,32 @@ if(!is.null(parallelCluster)) {
 }
 ```
 
-    ## Error in checkForRemoteErrors(val): one node produced an error: database is locked
+    ## [[1]]
+    ##   id   title  status
+    ## 1  3 WVPlots WORKING
+    ## 
+    ## [[2]]
+    ##   id   title  status
+    ## 1  1   cdata WORKING
+    ## 2  3 WVPlots WORKING
+    ## 
+    ## [[3]]
+    ## [1] id     title  status
+    ## <0 rows> (or 0-length row.names)
+    ## 
+    ## [[4]]
+    ##   id       title  status
+    ## 1  1       cdata WORKING
+    ## 2  2 rqdatatable WORKING
+    ## 3  3     WVPlots WORKING
 
 ``` r
 summariseQueue(package=package, directory=td)
 ```
 
     ## Test of rquery had 3 successes, 0 failures, and 0 skipped packages. 
-    ## Ran from 2020-02-01 17:01:40 to 2020-02-01 17:03:17 for 1.617 mins 
-    ## Average of 32.333 secs relative to 60.553 secs using 3 runners
+    ## Ran from 2020-02-16 09:54:00 to 2020-02-16 09:56:17 for 2.283 mins 
+    ## Average of 45.667 secs relative to 82.96 secs using 3 runners
     ## 
     ## Failed packages:   
     ## 
