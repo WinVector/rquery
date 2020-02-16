@@ -557,10 +557,10 @@ cat(to_sql(ops, db))
     ##     `z`
     ##    FROM
     ##     `d`
-    ##    ) tsql_43048563927819666397_0000000000
-    ##  ) tsql_43048563927819666397_0000000001
+    ##    ) tsql_96950317224445136915_0000000000
+    ##  ) tsql_96950317224445136915_0000000001
     ##  WHERE `row_number` = 1
-    ## ) tsql_43048563927819666397_0000000002
+    ## ) tsql_96950317224445136915_0000000002
 
 ``` r
 # clean up
@@ -641,11 +641,14 @@ Some related work includes:
 
   - [`data.table`](http://r-datatable.com)
   - [`disk.frame`](https://github.com/xiaodaigh/disk.frame)
+  - [`dbplyr`](https://dbplyr.tidyverse.org)
   - [`dplyr`](https://dplyr.tidyverse.org)
   - [`dtplyr`](https://github.com/tidyverse/dtplyr)
   - [`maditr`](https://github.com/gdemin/maditr)
   - [`nc`](https://github.com/tdhock/nc)
   - [`rqdatatable`](https://github.com/WinVector/rqdatatable)
+  - [`SparkR`](https://CRAN.R-project.org/package=SparkR)
+  - [`sparklyr`](https://spark.rstudio.com)
   - [`sqldf`](https://github.com/ggrothendieck/sqldf)
   - [`table.express`](https://github.com/asardaes/table.express)
   - [`tidyfast`](https://github.com/TysonStanley/tidyfast)
