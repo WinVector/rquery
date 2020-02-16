@@ -557,10 +557,10 @@ cat(to_sql(ops, db))
     ##     `z`
     ##    FROM
     ##     `d`
-    ##    ) tsql_56160843117836055810_0000000000
-    ##  ) tsql_56160843117836055810_0000000001
+    ##    ) tsql_43048563927819666397_0000000000
+    ##  ) tsql_43048563927819666397_0000000001
     ##  WHERE `row_number` = 1
-    ## ) tsql_56160843117836055810_0000000002
+    ## ) tsql_43048563927819666397_0000000002
 
 ``` r
 # clean up
@@ -637,7 +637,7 @@ provider. We are trying to put the Codd relational operators front and
 center (using the original naming, and back-porting `SQL` progress such
 as window functions to the appropriate relational operator).
 
-Related work includes:
+Some related work includes:
 
   - [`data.table`](http://r-datatable.com)
   - [`disk.frame`](https://github.com/xiaodaigh/disk.frame)
@@ -645,14 +645,14 @@ Related work includes:
   - [`dtplyr`](https://github.com/tidyverse/dtplyr)
   - [`maditr`](https://github.com/gdemin/maditr)
   - [`nc`](https://github.com/tdhock/nc)
-  - [`rquery`](https://github.com/WinVector/rquery)
+  - [`rqdatatable`](https://github.com/WinVector/rqdatatable)
   - [`sqldf`](https://github.com/ggrothendieck/sqldf)
   - [`table.express`](https://github.com/asardaes/table.express)
-  - [`tidydt`](https://github.com/markfairbanks/tidydt)
   - [`tidyfast`](https://github.com/TysonStanley/tidyfast)
   - [`tidyquery`](https://github.com/ianmcook/tidyquery)
   - [`tidyr`](https://tidyr.tidyverse.org)
-  - [`tidytable`](https://github.com/markfairbanks/tidytable)
+  - [`tidytable`](https://github.com/markfairbanks/tidytable) (formerly
+    `gdt`/`tidydt`)
 
 # Installing
 

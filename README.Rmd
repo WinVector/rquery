@@ -380,7 +380,7 @@ There are many prior relational algebra inspired specialized query languages.  J
  
 `rquery` is realized as a thin translation to an underlying `SQL` provider.  We are trying to put the Codd relational operators front and center (using the original naming, and back-porting `SQL` progress such as window functions to the appropriate relational operator).
 
-Related work includes:
+Some related work includes:
 
  * [`data.table`](http://r-datatable.com)
  * [`disk.frame`](https://github.com/xiaodaigh/disk.frame)
@@ -388,14 +388,13 @@ Related work includes:
  * [`dtplyr`](https://github.com/tidyverse/dtplyr)
  * [`maditr`](https://github.com/gdemin/maditr)
  * [`nc`](https://github.com/tdhock/nc)
- * [`rquery`](https://github.com/WinVector/rquery)
+ * [`rqdatatable`](https://github.com/WinVector/rqdatatable)
  * [`sqldf`](https://github.com/ggrothendieck/sqldf)
  * [`table.express`](https://github.com/asardaes/table.express)
- * [`tidydt`](https://github.com/markfairbanks/tidydt)
  * [`tidyfast`](https://github.com/TysonStanley/tidyfast)
  * [`tidyquery`](https://github.com/ianmcook/tidyquery)
  * [`tidyr`](https://tidyr.tidyverse.org)
- * [`tidytable`](https://github.com/markfairbanks/tidytable)
+ * [`tidytable`](https://github.com/markfairbanks/tidytable) (formerly `gdt`/`tidydt`)
 
 
 # Installing

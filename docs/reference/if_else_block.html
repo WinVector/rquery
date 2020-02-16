@@ -214,7 +214,7 @@ is a reserved column name for this procedure.</p>
 <span class='kw'>if</span> (<span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"DBI"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>&amp;&amp;</span> <span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
   <span class='co'># Example: clear one of a or b in any row where both are set.</span>
   <span class='co'># Land random selections early to avoid SQLite bug.</span>
-  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/DBI/man/dbConnect.html'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
+  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
   <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(
     <span class='no'>my_db</span>,
     <span class='st'>'d'</span>,
@@ -241,7 +241,7 @@ is a reserved column name for this procedure.</p>
   <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>optree</span>, <span class='no'>my_db</span>)
   <span class='fu'><a href='https://rdrr.io/r/base/cat.html'>cat</a></span>(<span class='no'>sql</span>)
 
-  <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/DBI/man/dbGetQuery.html'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
+  <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbGetQuery.html'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
 
   <span class='co'># Why we need to land the random selection early</span>
   <span class='co'># for SQLIte:</span>
@@ -250,9 +250,9 @@ is a reserved column name for this procedure.</p>
              SELECT * from ( VALUES(1),(2) )
           ) a
        ) b"</span>
-  <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/DBI/man/dbGetQuery.html'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>q</span>))
+  <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbGetQuery.html'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>q</span>))
 
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/DBI/man/dbDisconnect.html'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
+  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbDisconnect.html'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
 }</div><div class='output co'>#&gt;                                             ifebtest_2 
 #&gt;                                          "(a + b) &gt; 1" 
 #&gt;                                             ifebtest_1 
@@ -316,8 +316,8 @@ is a reserved column name for this procedure.</p>
 #&gt; 9   9 0.437340783          1          0 1 0      1
 #&gt; 10 10 0.530409487          1          1 0 1      1
 #&gt;                     r1                   r2
-#&gt; 1 -5255810410303679886  -370334306915946465
-#&gt; 2  1747899329188049844 -9121979891818532097</div><div class='input'>
+#&gt; 1  8676264122323522970 -5583579374050563976
+#&gt; 2 -6943616886807606615    37728373918356518</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
