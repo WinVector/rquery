@@ -1,5 +1,5 @@
 
-# rquery 1.4.4 2020/02/09
+# rquery 1.4.4 2020/02/18
 
  * Isolate bquote a bit more.
  * Don't import ApplyTo.

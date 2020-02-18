@@ -8,7 +8,7 @@ package = "rquery"
 date()
 ```
 
-    ## [1] "Sun Feb 16 09:53:52 2020"
+    ## [1] "Tue Feb 18 08:07:20 2020"
 
 ``` r
 packageVersion(package)
@@ -34,7 +34,7 @@ setwd(td)
 print(td)
 ```
 
-    ## [1] "/var/folders/7q/h_jp2vj131g5799gfnpzhdp80000gn/T//Rtmp8onN2P"
+    ## [1] "/var/folders/7q/h_jp2vj131g5799gfnpzhdp80000gn/T//Rtmpu3bYOp"
 
 ``` r
 options(repos = c(CRAN="https://cloud.r-project.org"))
@@ -83,8 +83,8 @@ summariseQueue(package=package, directory=td)
 ```
 
     ## Test of rquery had 3 successes, 0 failures, and 0 skipped packages. 
-    ## Ran from 2020-02-16 09:54:00 to 2020-02-16 09:56:17 for 2.283 mins 
-    ## Average of 45.667 secs relative to 82.96 secs using 3 runners
+    ## Ran from 2020-02-18 08:07:26 to 2020-02-18 08:09:05 for 1.65 mins 
+    ## Average of 33 secs relative to 61.636 secs using 3 runners
     ## 
     ## Failed packages:   
     ## 
