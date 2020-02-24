@@ -557,10 +557,10 @@ cat(to_sql(ops, db))
     ##     `z`
     ##    FROM
     ##     `d`
-    ##    ) tsql_01277139158959309293_0000000000
-    ##  ) tsql_01277139158959309293_0000000001
+    ##    ) tsql_89587001255482599974_0000000000
+    ##  ) tsql_89587001255482599974_0000000001
     ##  WHERE `row_number` = 1
-    ## ) tsql_01277139158959309293_0000000002
+    ## ) tsql_89587001255482599974_0000000002
 
 ``` r
 # clean up
@@ -652,6 +652,7 @@ Some related work includes:
   - [`sqldf`](https://github.com/ggrothendieck/sqldf)
   - [`table.express`](https://github.com/asardaes/table.express)
   - [`tidyfast`](https://github.com/TysonStanley/tidyfast)
+  - [`tidyfst`](https://github.com/hope-data-science/tidyfst)
   - [`tidyquery`](https://github.com/ianmcook/tidyquery)
   - [`tidyr`](https://tidyr.tidyverse.org)
   - [`tidytable`](https://github.com/markfairbanks/tidytable) (formerly
