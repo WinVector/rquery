@@ -389,6 +389,7 @@ Some related work includes:
  * [`dtplyr`](https://github.com/tidyverse/dtplyr)
  * [`maditr`](https://github.com/gdemin/maditr)
  * [`nc`](https://github.com/tdhock/nc)
+ * [`poorman`](https://github.com/nathaneastwood/poorman)
  * [`rqdatatable`](https://github.com/WinVector/rqdatatable)
  * [`SparkR`]( https://CRAN.R-project.org/package=SparkR)
  * [`sparklyr`](https://spark.rstudio.com)

@@ -557,10 +557,10 @@ cat(to_sql(ops, db))
     ##     `z`
     ##    FROM
     ##     `d`
-    ##    ) tsql_89587001255482599974_0000000000
-    ##  ) tsql_89587001255482599974_0000000001
+    ##    ) tsql_29701742865426451528_0000000000
+    ##  ) tsql_29701742865426451528_0000000001
     ##  WHERE `row_number` = 1
-    ## ) tsql_89587001255482599974_0000000002
+    ## ) tsql_29701742865426451528_0000000002
 
 ``` r
 # clean up
@@ -646,6 +646,7 @@ Some related work includes:
   - [`dtplyr`](https://github.com/tidyverse/dtplyr)
   - [`maditr`](https://github.com/gdemin/maditr)
   - [`nc`](https://github.com/tdhock/nc)
+  - [`poorman`](https://github.com/nathaneastwood/poorman)
   - [`rqdatatable`](https://github.com/WinVector/rqdatatable)
   - [`SparkR`](https://CRAN.R-project.org/package=SparkR)
   - [`sparklyr`](https://spark.rstudio.com)
