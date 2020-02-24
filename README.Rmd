@@ -395,6 +395,7 @@ Some related work includes:
  * [`sqldf`](https://github.com/ggrothendieck/sqldf)
  * [`table.express`](https://github.com/asardaes/table.express)
  * [`tidyfast`](https://github.com/TysonStanley/tidyfast)
+ * [`tidyfst`](https://github.com/hope-data-science/tidyfst)
  * [`tidyquery`](https://github.com/ianmcook/tidyquery)
  * [`tidyr`](https://tidyr.tidyverse.org)
  * [`tidytable`](https://github.com/markfairbanks/tidytable) (formerly `gdt`/`tidydt`)
