@@ -18,7 +18,7 @@ dbi_table(db, table_name, ..., qualifiers = NULL, limit_was = 6L)
 
 \item{qualifiers}{optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.}
 
-\item{limit_was}{optional, row limit used to produce head_sample.}
+\item{limit_was}{optional, row limit used to produce head_sample.  If NULL no head_sample is produced and rq_colnames is used to get column names.}
 }
 \value{
 a relop representation of the data

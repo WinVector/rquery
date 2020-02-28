@@ -103,7 +103,7 @@ table_source <- mk_td
 #' @param table_name name of table
 #' @param ... not used, force later argument to bind by name
 #' @param qualifiers optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.
-#' @param limit_was optional, row limit used to produce head_sample.
+#' @param limit_was optional, row limit used to produce head_sample.  If NULL no head_sample is produced and rq_colnames is used to get column names.
 #' @return a relop representation of the data
 #'
 #' @seealso \code{\link{mk_td}}, \code{\link{local_td}}, \code{\link{rq_copy_to}}, \code{\link{materialize}}, \code{\link{execute}}, \code{\link{to_sql}}
@@ -138,7 +138,7 @@ db_td <- function(db, table_name,
                   qualifiers = NULL,
                   limit_was = 6L) {
   q_table_name <- quote_table_name(db, table_name, qualifiers = qualifiers)
-  if(length(limit_was) == 1) {
+  if((length(limit_was) == 1) && getDBOption(db, "rquery_sample_on_db_td", TRUE)) {
     head_sample = rq_head(db, table_name, qualifiers = qualifiers)
     columns = colnames(head_sample)
   } else {
