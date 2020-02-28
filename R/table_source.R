@@ -14,6 +14,8 @@
 #' @param ... not used, force later argument to bind by name
 #' @param qualifiers optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.
 #' @param q_table_name optional character, qualified table name, note: has to be re-generated for different DB connections.
+#' @param head_sample optional, head_sample of table as an example
+#' @param limit_was optional, row limit used to produce head_sample.
 #' @return a relop representation of the data
 #'
 #' @seealso \code{\link{db_td}}, \code{\link{local_td}}
@@ -43,7 +45,9 @@
 mk_td <- function(table_name, columns,
                   ...,
                   qualifiers = NULL,
-                  q_table_name = NULL) {
+                  q_table_name = NULL,
+                  head_sample = NULL,
+                  limit_was = NULL) {
   wrapr::stop_if_dot_args(substitute(list(...)),
                           "rquery::mk_td")
   if(is.null(table_name)) {
@@ -58,12 +62,20 @@ mk_td <- function(table_name, columns,
   if(length(columns)!=length(unique(columns))) {
     stop("rquery::mk_td columns must be unique")
   }
+  if(!is.null(head_sample)) {
+    diff = setdiff(union(columns, colnames(head_sample)), intersect(columns, colnames(head_sample)))
+    if(length(diff) > 0) {
+      stop(paste("wrapr::mk_td columns and colnames(head_sample) disagree", paste(diff, collapse = ', ')))
+    }
+  }
   r <- list(source = list(),
             table_name = table_name,
             q_table_name = q_table_name,
             parsed = NULL,
             columns = columns,
-            qualifiers = qualifiers)
+            qualifiers = qualifiers,
+            head_sample = head_sample,
+            limit_was = limit_was)
   r <- relop_decorate("relop_table_source", r)
   r
 }
@@ -91,6 +103,7 @@ table_source <- mk_td
 #' @param table_name name of table
 #' @param ... not used, force later argument to bind by name
 #' @param qualifiers optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.
+#' @param limit_was optional, row limit used to produce head_sample.
 #' @return a relop representation of the data
 #'
 #' @seealso \code{\link{mk_td}}, \code{\link{local_td}}, \code{\link{rq_copy_to}}, \code{\link{materialize}}, \code{\link{execute}}, \code{\link{to_sql}}
@@ -122,12 +135,23 @@ table_source <- mk_td
 #'
 db_td <- function(db, table_name,
                   ...,
-                  qualifiers = NULL) {
+                  qualifiers = NULL,
+                  limit_was = 6L) {
   q_table_name <- quote_table_name(db, table_name, qualifiers = qualifiers)
+  if(length(limit_was) == 1) {
+    head_sample = rq_head(db, table_name, qualifiers = qualifiers)
+    columns = colnames(head_sample)
+  } else {
+    head_sample = NULL
+    limit_was = NULL
+    columns = rq_colnames(db, table_name, qualifiers = qualifiers)
+  }
   mk_td(table_name = table_name,
-        columns = rq_colnames(db, table_name, qualifiers = qualifiers),
+        columns = columns,
         q_table_name = q_table_name,
-        qualifiers = qualifiers)
+        qualifiers = qualifiers,
+        head_sample = head_sample,
+        limit_was = limit_was)
 }
 
 #' @describeIn db_td old name for db_td
@@ -185,13 +209,19 @@ local_td.data.frame <- function(d,
       table_name = name_source()
     }
   }
+  d <- as.data.frame(d)
+  rownames(d) <- NULL
+  row_limit = 6L
   mk_td(table_name = table_name,
-        columns = colnames(d))
+        columns = colnames(d),
+        head_sample = utils::head(d, n = row_limit),
+        limit_was = row_limit)
 }
 
 #' @export
 local_td.character <- function(d,
                                ...,
+                               name = NULL,
                                name_source = wrapr::mk_tmp_name_source("rqltd"),
                                env = parent.frame()) {
   force(env)
@@ -202,14 +232,18 @@ local_td.character <- function(d,
   if(!is.data.frame(d)) {
     stop("rquery::local_td.character: argument d must be a string that resolves to a data.frame")
   }
+  row_limit = 6L
   mk_td(table_name = table_name,
-        columns = colnames(d))
+        columns = colnames(d),
+        head_sample = utils::head(d, n = row_limit),
+        limit_was = row_limit)
 }
 
 
 #' @export
 local_td.name <- function(d,
                           ...,
+                          name = NULL,
                           name_source = wrapr::mk_tmp_name_source("rqltd"),
                           env = parent.frame()) {
   force(env)
@@ -220,8 +254,11 @@ local_td.name <- function(d,
   if(!is.data.frame(d)) {
     stop("rquery::local_td.name: argument d must be a name that resolves to a data.frame")
   }
+  row_limit = 6L
   mk_td(table_name = table_name,
-        columns = colnames(d))
+        columns = colnames(d),
+        head_sample = utils::head(d, n = row_limit),
+        limit_was = row_limit)
 }
 
 
@@ -346,5 +383,17 @@ format_node.relop_table_source <- function(node) {
          paste(cols, collapse = ",\n  "),
          "))\n")
 }
+
+
+#' @export
+print.relop <- function(x, ...) {
+  txt <- format(x)
+  txt <- trimws(gsub("[ \t\r\n]+", " ", txt), which = "both")
+  print(txt, ...)
+  if(!is.null(x$head_sample)) {
+    print(x$head_sample)
+  }
+}
+
 
 

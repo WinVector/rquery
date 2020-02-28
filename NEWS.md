@@ -1,7 +1,8 @@
 
-# rquery 1.4.5 2020/02/24
+# rquery 1.4.5 2020/02/27
 
  * Add more related work links.
+ * More info in table handle.
 
 # rquery 1.4.4 2020/02/18
 

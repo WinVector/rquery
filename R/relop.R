@@ -223,11 +223,6 @@ format_node <- function(node) {
   UseMethod("format_node", node)
 }
 
-#' @export
-as.character.relop <- function(x, ...) {
-  wrapr::stop_if_dot_args(substitute(list(...)), "as.character.relop")
-  format_node(x)
-}
 
 #' @export
 format.relop <- function(x, ...) {
@@ -253,4 +248,29 @@ format.relop <- function(x, ...) {
                 trimws(ndstr, which = "both"),
                 "\n"))
 }
+
+
+
+#' @export
+print.relop <- function(x, ...) {
+  txt <- format(x)
+  txt <- trimws(gsub("[ \t\r\n]+", " ", txt), which = "both")
+  print(txt, ...)
+}
+
+
+#' @export
+summary.relop <- function(object, ...) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::summary.relop")
+  format(object)
+}
+
+#' @export
+as.character.relop <- function (x, ...) {
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::as.character.relop")
+  format(x)
+}
+
 

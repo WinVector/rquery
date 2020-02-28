@@ -5,9 +5,25 @@
 \alias{table_source}
 \title{Make a table description directly.}
 \usage{
-mk_td(table_name, columns, ..., qualifiers = NULL, q_table_name = NULL)
+mk_td(
+  table_name,
+  columns,
+  ...,
+  qualifiers = NULL,
+  q_table_name = NULL,
+  head_sample = NULL,
+  limit_was = NULL
+)
 
-table_source(table_name, columns, ..., qualifiers = NULL, q_table_name = NULL)
+table_source(
+  table_name,
+  columns,
+  ...,
+  qualifiers = NULL,
+  q_table_name = NULL,
+  head_sample = NULL,
+  limit_was = NULL
+)
 }
 \arguments{
 \item{table_name}{character, name of table}
@@ -19,6 +35,10 @@ table_source(table_name, columns, ..., qualifiers = NULL, q_table_name = NULL)
 \item{qualifiers}{optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.}
 
 \item{q_table_name}{optional character, qualified table name, note: has to be re-generated for different DB connections.}
+
+\item{head_sample}{optional, head_sample of table as an example}
+
+\item{limit_was}{optional, row limit used to produce head_sample.}
 }
 \value{
 a relop representation of the data

@@ -5,9 +5,9 @@
 \alias{dbi_table}
 \title{Construct a table description from a database source.}
 \usage{
-db_td(db, table_name, ..., qualifiers = NULL)
+db_td(db, table_name, ..., qualifiers = NULL, limit_was = 6L)
 
-dbi_table(db, table_name, ..., qualifiers = NULL)
+dbi_table(db, table_name, ..., qualifiers = NULL, limit_was = 6L)
 }
 \arguments{
 \item{db}{database connection}
@@ -17,6 +17,8 @@ dbi_table(db, table_name, ..., qualifiers = NULL)
 \item{...}{not used, force later argument to bind by name}
 
 \item{qualifiers}{optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.}
+
+\item{limit_was}{optional, row limit used to produce head_sample.}
 }
 \value{
 a relop representation of the data

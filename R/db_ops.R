@@ -34,6 +34,48 @@ rq_get_query <- function(db, q) {
 }
 
 
+#' Get head of db table
+#'
+#' @param db Connection handle
+#' @param table_name character table name
+#' @param ... not used, force later argument to bind by name
+#' @param qualifiers optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.
+#' @param limit integer, how many rows to take
+#' @return first few rows
+#'
+#' @export
+#'
+rq_head <- function(db, table_name,
+                    ...,
+                    qualifiers = NULL,
+                    limit = 6L) {
+  if(is.null(db)) {
+    stop("rquery::rq_head db was null")
+  }
+  wrapr::stop_if_dot_args(substitute(list(...)),
+                          "rquery::rq_head")
+  # first shot- see if it is a db info with function overrriden
+  connection <- db
+  connection_options <- NULL
+  if("rquery_db_info" %in% class(db)) {
+    connection_options <- db$connection_options
+    connection <- db$connection
+    q_table_name <- quote_table_name(db, table_name, qualifiers = qualifiers)
+  } else {
+    q_table_name <- quote_table_name(db, table_name, qualifiers = qualifiers)
+  }
+  if(is.null(connection)) {
+    stop("rquery::rq_colnames db$connection was null")
+  }
+  # below is going to have issues to R-column name conversion!
+  q <- paste0("SELECT * FROM ",
+              q_table_name,
+              " LIMIT ", as.character(limit))
+  rq_get_query(db, q)
+}
+
+
+
 #' Execute a query, typically an update that is not supposed to return results.
 #'
 #' @param db database connection handle
