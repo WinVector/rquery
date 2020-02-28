@@ -392,6 +392,9 @@ print.relop <- function(x, ...) {
   print(txt, ...)
   if(!is.null(x$head_sample)) {
     print(x$head_sample)
+    if(nrow(x$head_sample) >= x$limit_was) {
+      cat(" ...")
+    }
   }
 }
 
