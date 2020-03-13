@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Materialize a user supplied SQL statement as a table. — materialize_sql • rquery</title>
+<title>Get head of db table — rq_head • rquery</title>
 
 
 <!-- jquery -->
@@ -35,8 +35,8 @@
 
 
 
-<meta property="og:title" content="Materialize a user supplied SQL statement as a table. — materialize_sql" />
-<meta property="og:description" content="Run the data query with a CREATE TABLE AS ." />
+<meta property="og:title" content="Get head of db table — rq_head" />
+<meta property="og:description" content="Get head of db table" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -144,92 +144,52 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Materialize a user supplied SQL statement as a table.</h1>
-    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery/blob/master/R/materialize.R'><code>R/materialize.R</code></a></small>
-    <div class="hidden name"><code>materialize_sql.Rd</code></div>
+    <h1>Get head of db table</h1>
+    <small class="dont-index">Source: <a href='https://github.com/WinVector/rquery/blob/master/R/db_ops.R'><code>R/db_ops.R</code></a></small>
+    <div class="hidden name"><code>rq_head.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Run the data query with a CREATE TABLE AS .</p>
+    <p>Get head of db table</p>
     </div>
 
-    <pre class="usage"><span class='fu'>materialize_sql</span>(
-  <span class='no'>db</span>,
-  <span class='no'>sql</span>,
-  <span class='kw'>table_name</span> <span class='kw'>=</span> <span class='fu'>mk_tmp_name_source</span>(<span class='st'>"rqms"</span>)(),
-  <span class='no'>...</span>,
-  <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
-)</pre>
+    <pre class="usage"><span class='fu'>rq_head</span>(<span class='no'>db</span>, <span class='no'>table_name</span>, <span class='no'>...</span>, <span class='kw'>qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>limit</span> <span class='kw'>=</span> <span class='fl'>6L</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>db</th>
-      <td><p>database connecton (rquery_db_info class or DBI connections preferred).</p></td>
-    </tr>
-    <tr>
-      <th>sql</th>
-      <td><p>character, user supplied SQL statement.</p></td>
+      <td><p>Connection handle</p></td>
     </tr>
     <tr>
       <th>table_name</th>
-      <td><p>character, name of table to create.</p></td>
+      <td><p>character table name</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>force later arguments to bind by name.</p></td>
-    </tr>
-    <tr>
-      <th>overwrite</th>
-      <td><p>logical if TRUE drop an previous table.</p></td>
-    </tr>
-    <tr>
-      <th>temporary</th>
-      <td><p>logical if TRUE try to create a temporary table.</p></td>
+      <td><p>not used, force later argument to bind by name</p></td>
     </tr>
     <tr>
       <th>qualifiers</th>
       <td><p>optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.</p></td>
     </tr>
+    <tr>
+      <th>limit</th>
+      <td><p>integer, how many rows to take</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>table description</p>
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+    <p>first few rows</p>
 
-    <div class='dont-index'><p><code><a href='db_td.html'>db_td</a></code>, <code><a href='materialize.html'>materialize</a></code>, <code><a href='to_sql.html'>to_sql</a></code>, <code><a href='rq_copy_to.html'>rq_copy_to</a></code>, <code><a href='mk_td.html'>mk_td</a></code></p></div>
-
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-<span class='kw'>if</span> (<span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"DBI"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>&amp;&amp;</span> <span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
-  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
-
-  <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(<span class='no'>my_db</span>, <span class='st'>'d'</span>,
-                   <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>0.6</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>0.2</span>),
-                   <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
-  <span class='no'>t</span> <span class='kw'>&lt;-</span> <span class='fu'>materialize_sql</span>(<span class='no'>my_db</span>, <span class='st'>"SELECT AUC, R2, AUC - R2 AS d FROM d"</span>)
-  <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='no'>t</span>)
-  <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='fu'><a href='execute.html'>execute</a></span>(<span class='no'>my_db</span>, <span class='no'>t</span>))
-
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbDisconnect.html'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; [1] "mk_td(\"rqms_47936395055157526764_0000000000\", c( \"AUC\", \"R2\", \"d\"))"
-#&gt;   AUC  R2   d
-#&gt; 1 0.6 0.2 0.4
-#&gt;   AUC  R2   d
-#&gt; 1 0.6 0.2 0.4</div><div class='input'>
-</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       <li><a href="#value">Value</a></li>
-      <li><a href="#see-also">See also</a></li>
-      <li><a href="#examples">Examples</a></li>
     </ul>
 
   </div>

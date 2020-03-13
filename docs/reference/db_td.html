@@ -155,9 +155,9 @@ strategy) needed to represent data from a remote table." />
 strategy) needed to represent data from a remote table.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>db_td</span>(<span class='no'>db</span>, <span class='no'>table_name</span>, <span class='no'>...</span>, <span class='kw'>qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
+    <pre class="usage"><span class='fu'>db_td</span>(<span class='no'>db</span>, <span class='no'>table_name</span>, <span class='no'>...</span>, <span class='kw'>qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>limit_was</span> <span class='kw'>=</span> <span class='fl'>6L</span>)
 
-<span class='fu'>dbi_table</span>(<span class='no'>db</span>, <span class='no'>table_name</span>, <span class='no'>...</span>, <span class='kw'>qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+<span class='fu'>dbi_table</span>(<span class='no'>db</span>, <span class='no'>table_name</span>, <span class='no'>...</span>, <span class='kw'>qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>limit_was</span> <span class='kw'>=</span> <span class='fl'>6L</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -177,6 +177,10 @@ strategy) needed to represent data from a remote table.</p>
     <tr>
       <th>qualifiers</th>
       <td><p>optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.</p></td>
+    </tr>
+    <tr>
+      <th>limit_was</th>
+      <td><p>optional, row limit used to produce head_sample.  If NULL no head_sample is produced and rq_colnames is used to get column names.</p></td>
     </tr>
     </table>
 
@@ -222,6 +226,8 @@ which builds a reference to a remote table given the table name.</p>
   <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbGetQuery.html'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql2</span>))
   <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbDisconnect.html'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
 }</div><div class='output co'>#&gt; [1] "mk_td(\"d\", c( \"AUC\", \"R2\"))"
+#&gt;   AUC  R2
+#&gt; 1 0.6 0.2
 #&gt; SELECT
 #&gt;  `AUC`,
 #&gt;  `R2`

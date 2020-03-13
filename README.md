@@ -557,10 +557,10 @@ cat(to_sql(ops, db))
     ##     `z`
     ##    FROM
     ##     `d`
-    ##    ) tsql_70211014040433974035_0000000000
-    ##  ) tsql_70211014040433974035_0000000001
+    ##    ) tsql_38310476903940177213_0000000000
+    ##  ) tsql_38310476903940177213_0000000001
     ##  WHERE `row_number` = 1
-    ## ) tsql_70211014040433974035_0000000002
+    ## ) tsql_38310476903940177213_0000000002
 
 ``` r
 # clean up
@@ -604,13 +604,7 @@ executed on PostgreSQL, Apache Spark, or Google BigQuery.
 In addition the
 [`data_algebra`](https://github.com/WinVector/data_algebra) Python
 package supplies a nearly identical system for working with data in
-Python. The two systems can even [share data manipulation code between
-each
-other](https://github.com/WinVector/rquery/blob/master/Examples/yaml/yaml.md)
-(allowing very powerful R/Python inter-operation or helping port
-projects from one to the other).
-
-# Background
+Python. \# Background
 
 There are many prior relational algebra inspired specialized query
 languages. Just a few

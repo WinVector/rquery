@@ -342,7 +342,6 @@ For more `SQL` examples, please see [here](https://github.com/WinVector/rquery/t
 
 ## Pipeline principles
 
-
 What we are trying to illustrate above: there is a continuum of notations possible between:
 
  * Working over values with explicit intermediate variables.
@@ -360,8 +359,7 @@ For in-memory situations `rquery` uses `data.table` as the implementation provid
 
 For bigger than memory situations `rquery` can translate to any sufficiently powerful `SQL` dialect, allowing `rquery` pipelines to be executed on PostgreSQL, Apache Spark, or Google BigQuery.
 
-In addition the [`data_algebra`](https://github.com/WinVector/data_algebra) Python package supplies a nearly identical system for working with data in Python. The two systems can even [share data manipulation code between each other](https://github.com/WinVector/rquery/blob/master/Examples/yaml/yaml.md) (allowing very powerful R/Python inter-operation or helping port projects from one to the other).
-
+In addition the [`data_algebra`](https://github.com/WinVector/data_algebra) Python package supplies a nearly identical system for working with data in Python. 
 # Background
 
 There are many prior relational algebra inspired specialized query languages.  Just a few include:

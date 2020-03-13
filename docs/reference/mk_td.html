@@ -153,9 +153,25 @@
     <p>Build minimal structures (table name and column names) needed to represent data from a remote table.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>mk_td</span>(<span class='no'>table_name</span>, <span class='no'>columns</span>, <span class='no'>...</span>, <span class='kw'>qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>q_table_name</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
+    <pre class="usage"><span class='fu'>mk_td</span>(
+  <span class='no'>table_name</span>,
+  <span class='no'>columns</span>,
+  <span class='no'>...</span>,
+  <span class='kw'>qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>q_table_name</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>head_sample</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>limit_was</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
+)
 
-<span class='fu'>table_source</span>(<span class='no'>table_name</span>, <span class='no'>columns</span>, <span class='no'>...</span>, <span class='kw'>qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>q_table_name</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+<span class='fu'>table_source</span>(
+  <span class='no'>table_name</span>,
+  <span class='no'>columns</span>,
+  <span class='no'>...</span>,
+  <span class='kw'>qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>q_table_name</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>head_sample</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>limit_was</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -179,6 +195,14 @@
     <tr>
       <th>q_table_name</th>
       <td><p>optional character, qualified table name, note: has to be re-generated for different DB connections.</p></td>
+    </tr>
+    <tr>
+      <th>head_sample</th>
+      <td><p>optional, head_sample of table as an example</p></td>
+    </tr>
+    <tr>
+      <th>limit_was</th>
+      <td><p>optional, row limit used to produce head_sample.</p></td>
     </tr>
     </table>
 

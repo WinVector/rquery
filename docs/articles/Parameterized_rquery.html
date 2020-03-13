@@ -109,7 +109,7 @@
       <h1>Parameterized rquery</h1>
                         <h4 class="author">John Mount, Win-Vector LLC</h4>
             
-            <h4 class="date">2020-02-24</h4>
+            <h4 class="date">2020-03-13</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery/blob/master/vignettes/Parameterized_rquery.Rmd"><code>vignettes/Parameterized_rquery.Rmd</code></a></small>
       <div class="hidden name"><code>Parameterized_rquery.Rmd</code></div>
@@ -215,7 +215,15 @@
 <a class="sourceLine" id="cb13-3" data-line-number="3">                         <span class="dt">temporary =</span> <span class="ot">TRUE</span>, </a>
 <a class="sourceLine" id="cb13-4" data-line-number="4">                         <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</a>
 <a class="sourceLine" id="cb13-5" data-line-number="5"><span class="kw"><a href="https://rdrr.io/r/base/print.html">print</a></span>(tr)</a></code></pre></div>
-<pre><code>## [1] "mk_td(\"mtcars\", c( \"mpg\", \"cyl\", \"disp\", \"hp\", \"drat\", \"wt\", \"qsec\", \"vs\", \"am\", \"gear\", \"carb\"))"</code></pre>
+<pre><code>## [1] "mk_td(\"mtcars\", c( \"mpg\", \"cyl\", \"disp\", \"hp\", \"drat\", \"wt\", \"qsec\", \"vs\", \"am\", \"gear\", \"carb\"))"
+##    mpg cyl disp  hp drat    wt  qsec vs am gear carb
+## 1 21.0   6  160 110 3.90 2.620 16.46  0  1    4    4
+## 2 21.0   6  160 110 3.90 2.875 17.02  0  1    4    4
+## 3 22.8   4  108  93 3.85 2.320 18.61  1  1    4    1
+## 4 21.4   6  258 110 3.08 3.215 19.44  1  0    3    1
+## 5 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2
+## 6 18.1   6  225 105 2.76 3.460 20.22  1  0    3    1
+##  ...</code></pre>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="co"># materialize result remotely (without passing through R)</span></a>
 <a class="sourceLine" id="cb15-2" data-line-number="2">res &lt;-<span class="st"> </span><span class="kw"><a href="../reference/materialize.html">materialize</a></span>(db, ops)</a>
 <a class="sourceLine" id="cb15-3" data-line-number="3">DBI<span class="op">::</span><span class="kw"><a href="https://dbi.r-dbi.org/reference/dbReadTable.html">dbReadTable</a></span>(raw_connection, res<span class="op">$</span>table_name)</a></code></pre></div>
@@ -242,11 +250,11 @@
 ##     `cyl`
 ##    FROM
 ##     `mtcars`
-##    ) tsql_50561763209329061830_0000000000
-##   ) tsql_50561763209329061830_0000000001
+##    ) tsql_46011369468524367840_0000000000
+##   ) tsql_46011369468524367840_0000000001
 ##  GROUP BY
 ##   `am`
-## ) tsql_50561763209329061830_0000000002 ORDER BY `am`</code></pre>
+## ) tsql_46011369468524367840_0000000002 ORDER BY `am`</code></pre>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1"><span class="co"># disconnect</span></a>
 <a class="sourceLine" id="cb21-2" data-line-number="2">DBI<span class="op">::</span><span class="kw"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html">dbDisconnect</a></span>(raw_connection)</a>
 <a class="sourceLine" id="cb21-3" data-line-number="3"><span class="kw"><a href="https://rdrr.io/r/base/rm.html">rm</a></span>(<span class="dt">list =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"raw_connection"</span>, <span class="st">"db"</span>))</a></code></pre></div>

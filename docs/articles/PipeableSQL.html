@@ -109,7 +109,7 @@
       <h1>Pipeable SQL</h1>
                         <h4 class="author">John Mount</h4>
             
-            <h4 class="date">2020-02-24</h4>
+            <h4 class="date">2020-03-13</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery/blob/master/vignettes/PipeableSQL.Rmd"><code>vignettes/PipeableSQL.Rmd</code></a></small>
       <div class="hidden name"><code>PipeableSQL.Rmd</code></div>
@@ -235,7 +235,11 @@
 <a class="sourceLine" id="cb6-6" data-line-number="6">  <span class="kw"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="dt">v =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>, <span class="dv">-5</span>, <span class="dv">3</span>)),</a>
 <a class="sourceLine" id="cb6-7" data-line-number="7">  <span class="dt">temporary =</span> <span class="ot">FALSE</span>,</a>
 <a class="sourceLine" id="cb6-8" data-line-number="8">  <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
-<pre><code>## [1] "mk_td(\"d\", c( \"v\"))"</code></pre>
+<pre><code>## [1] "mk_td(\"d\", c( \"v\"))"
+##    v
+## 1  1
+## 2 -5
+## 3  3</code></pre>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="co"># produce a hande to existing table</span></a>
 <a class="sourceLine" id="cb8-2" data-line-number="2">d &lt;-<span class="st"> </span><span class="kw"><a href="../reference/db_td.html">db_td</a></span>(db, <span class="st">"d"</span>)</a></code></pre></div>
 <p><code>d</code> is a “table description” which is just the name of a table and the names of expected columns. <code>d</code> does not store data or a database reference (making it safe to serialize/de-serialize). All <code>rquery</code> operation trees or pipelines must start either with a table description or a <code>data.frame</code>. We will discuss table descriptions later.</p>
@@ -302,8 +306,8 @@ FROM (
    `v`
   FROM
    `d`
- ) tsql_22162002599384061683_0000000000
-) tsql_22162002599384061683_0000000001</code></pre>
+ ) tsql_12995156620322117513_0000000000
+) tsql_12995156620322117513_0000000001</code></pre>
 <p>Notice the above translations did not add identifier quotes to our use of “<code>v</code>” in “<code>ABS(v)</code>”. This is because the <code>SQL</code> expression is not parsed in <code>R</code>. If we want to identify terms as variables we can wrap them with <code><a href="https://rdrr.io/r/base/name.html">as.name()</a></code> or <code><a href="https://rdrr.io/r/base/substitute.html">quote()</a></code> to get the quoting (and other variable oriented features). The extra <code>SELECT</code> step to pull data from the inner table is used by <code>rquery</code> for important column narrowing steps, and can actually improve query performance.</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">op_tree &lt;-<span class="st"> </span>d <span class="op">%.&gt;%</span></a>
 <a class="sourceLine" id="cb17-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/sql_node.html">sql_node</a></span>(., <span class="st">"absv"</span> <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="st">"ABS("</span>, <span class="kw"><a href="https://rdrr.io/r/base/substitute.html">quote</a></span>(v), <span class="st">")"</span>))) <span class="op">%.&gt;%</span></a>
@@ -322,8 +326,8 @@ FROM (
    `v`
   FROM
    `d`
- ) tsql_69664578525275083794_0000000000
-) tsql_69664578525275083794_0000000001</code></pre>
+ ) tsql_58260067318792791526_0000000000
+) tsql_58260067318792791526_0000000001</code></pre>
 <p>The <code><a href="https://rdrr.io/r/base/list.html">list(list())</a></code> notation is how we say in <code>R</code> that we have a single element list (i.e. one expression) that is built up as a list of terms. The marking notation is cumbersome, but is not needed when we move on to relation nodes, which are parsed in <code>R</code> and can spot identifiers without additional help.</p>
 <p><code>op_tree</code> itself is a an object with its own presentation format:</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/format.html">format</a></span>(op_tree))</a></code></pre></div>
@@ -449,7 +453,7 @@ FROM (
 ##   `v3`
 ##  FROM
 ##   `d2`
-## ) tsql_22209775960080480025_0000000000</code></pre>
+## ) tsql_95768373025856368106_0000000000</code></pre>
 <div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb44-1" data-line-number="1"><span class="co"># execute</span></a>
 <a class="sourceLine" id="cb44-2" data-line-number="2"><span class="kw"><a href="../reference/execute.html">execute</a></span>(db, op_tree_count_null)</a></code></pre></div>
 <pre><code>##   v3 num_missing v1   v2
@@ -498,7 +502,7 @@ FROM (
 ##   `v3`
 ##  FROM
 ##   `d2`
-## ) tsql_67951378806107281781_0000000000</code></pre>
+## ) tsql_71403177758472752775_0000000000</code></pre>
 <div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb52-1" data-line-number="1"><span class="kw"><a href="../reference/execute.html">execute</a></span>(db, s_tree)</a></code></pre></div>
 <pre><code>##   v1   v2 v3 v1_isNA v2_isNA v3_isNA
 ## 1  1 &lt;NA&gt; NA       0       1       1
@@ -622,9 +626,9 @@ FROM (
 ##    "sales"
 ##   FROM
 ##    "df"
-##  ) tsql_28740789215936080288_0000000000
+##  ) tsql_44928900763410222910_0000000000
 ##  WHERE "trans_date" &lt;= str_to_date ( '2017-04-02' , '%Y-%m-%d' )
-## ) tsql_28740789215936080288_0000000001 GROUP BY cust</code></pre>
+## ) tsql_44928900763410222910_0000000001 GROUP BY cust</code></pre>
 <p>The <code>.[]</code>-notation is just signalling to <code>rquery</code> which symbols are column names (without requiring <code>rquery</code> to fully parse the <code>SQL</code> fragments). The <code>rquery</code> relational nodes get this sort of checking without any additional notation as they do fully parse the <code>R</code> expressions prior to any <code>SQL</code> translation.</p>
 <p>We can combine <code>.()</code> and <code>.[]</code> for even more powerful expressions such as the following.</p>
 <div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb64-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"rquery"</span>)</a>
@@ -661,9 +665,9 @@ FROM (
 ##    "sales"
 ##   FROM
 ##    "df"
-##  ) tsql_02196470540403927103_0000000000
+##  ) tsql_32173075836619805997_0000000000
 ##  WHERE "trans_date" &lt;= str_to_date ( '2017-04-02' , '%Y-%m-%d' )
-## ) tsql_02196470540403927103_0000000001 GROUP BY cust</code></pre>
+## ) tsql_32173075836619805997_0000000001 GROUP BY cust</code></pre>
 </div>
 <div id="conclusion" class="section level1">
 <h1 class="hasAnchor">
