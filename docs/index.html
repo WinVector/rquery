@@ -6,10 +6,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Relational Query Generator for Data Manipulation at Scale • rquery</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
+<script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="Relational Query Generator for Data Manipulation at Scale">
 <meta property="og:description" content="A piped query generator based on Edgar F. Codds relational
     algebra, and on production experience using SQL and dplyr at big data
@@ -21,13 +22,12 @@
     or pipelines as observable objects (able to report both columns
     produced and columns used), optimized SQL' generation as an explicit
     user visible table modeling step, plus explicit query reasoning and checking.">
-<meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
-<body>
+<body data-spy="scroll" data-target="#toc">
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -97,10 +97,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/WinVector/rquery">
-    <span class="fab fa fab fa-github fa-lg"></span>
-     
-  </a>
+  <a href="https://win-vector.com/">Sponsor: Win-Vector LLC</a>
 </li>
       </ul>
 </div>
@@ -166,13 +163,13 @@
 </ul>
 <p>These operations are easy to demonstrate.</p>
 <p>We set up some simple data.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">d &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">  <span class="dt">x =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>),</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">  <span class="dt">y =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">5</span>, <span class="dv">4</span>, <span class="dv">3</span>),</a>
-<a class="sourceLine" id="cb1-4" data-line-number="4">  <span class="dt">z =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">6</span>, <span class="dv">7</span>, <span class="dv">8</span>)</a>
-<a class="sourceLine" id="cb1-5" data-line-number="5">)</a>
-<a class="sourceLine" id="cb1-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb1-7" data-line-number="7">knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(d)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="r"><span class="no">d</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(
+  <span class="kw">x</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">2</span>),
+  <span class="kw">y</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">5</span>, <span class="fl">4</span>, <span class="fl">3</span>),
+  <span class="kw">z</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">6</span>, <span class="fl">7</span>, <span class="fl">8</span>)
+)
+
+<span class="kw pkg">knitr</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(<span class="no">d</span>)</pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">x</th>
@@ -198,20 +195,20 @@
 </tbody>
 </table>
 <p>For example: <code>drop_columns</code> works as follows. <code>drop_columns</code> creates a new <code>data.frame</code> without certain columns.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(rquery)</a></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co">## Loading required package: wrapr</span></a></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(rqdatatable)</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw"><a href="reference/drop_columns.html">drop_columns</a></span>(d, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'y'</span>, <span class="st">'z'</span>))</a></code></pre></div>
-<div class="sourceCode" id="cb5"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co">##   x</span></a>
-<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="co">## 1 1</span></a>
-<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="co">## 2 1</span></a>
-<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="co">## 3 2</span></a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">rquery</span>)</pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co">## Loading required package: wrapr</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">rqdatatable</span>)
+
+<span class="fu"><a href="reference/drop_columns.html">drop_columns</a></span>(<span class="no">d</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'y'</span>, <span class="st">'z'</span>))</pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="co">##   x</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="co">## 1 1</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="co">## 2 1</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="co">## 3 2</span></span></code></pre></div>
 <p>In all cases the first argument of a <code>rquery</code> operator is either the data to be processed, or an earlier <code>rquery</code> pipeline to be extended. We will take about composing <code>rquery</code> operations after we work through examples of all of the basic operations.</p>
 <p>We can write the above in piped notation (using the <a href="https://journal.r-project.org/archive/2018/RJ-2018-042/index.html"><code>wrapr</code> pipe</a> in this case):</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">d <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="reference/drop_columns.html">drop_columns</a></span>(., <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'y'</span>, <span class="st">'z'</span>)) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb6-3" data-line-number="3"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(.)</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="r"><span class="no">d</span> <span class="kw">%.&gt;%</span>
+  <span class="fu"><a href="reference/drop_columns.html">drop_columns</a></span>(<span class="no">.</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'y'</span>, <span class="st">'z'</span>)) <span class="kw">%.&gt;%</span>
+  <span class="kw pkg">knitr</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(<span class="no">.</span>)</pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">x</th>
@@ -230,9 +227,9 @@
 </table>
 <p>Notice the first argument is an explicit “dot” in <a href="https://journal.r-project.org/archive/2018/RJ-2018-042/index.html"><code>wrapr</code> pipe notation</a>.</p>
 <p><code>select_columns</code>’s action is also obvious from example.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">d <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="reference/select_columns.html">select_columns</a></span>(., <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'x'</span>, <span class="st">'y'</span>)) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb7-3" data-line-number="3"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(.)</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="r"><span class="no">d</span> <span class="kw">%.&gt;%</span>
+  <span class="fu"><a href="reference/select_columns.html">select_columns</a></span>(<span class="no">.</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'x'</span>, <span class="st">'y'</span>)) <span class="kw">%.&gt;%</span>
+  <span class="kw pkg">knitr</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(<span class="no">.</span>)</pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">x</th>
@@ -254,12 +251,12 @@
 </tbody>
 </table>
 <p><code>rename_columns</code> is given as name-assignments of the form <code>'new_name' = 'old_name'</code>:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">d <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="reference/rename_columns.html">rename_columns</a></span>(., </a>
-<a class="sourceLine" id="cb8-3" data-line-number="3">                 <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'x_new_name'</span> =<span class="st"> 'x'</span>, </a>
-<a class="sourceLine" id="cb8-4" data-line-number="4">                   <span class="st">'y_new_name'</span> =<span class="st"> 'y'</span>)</a>
-<a class="sourceLine" id="cb8-5" data-line-number="5">                 ) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb8-6" data-line-number="6"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(.)</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="r"><span class="no">d</span> <span class="kw">%.&gt;%</span>
+  <span class="fu"><a href="reference/rename_columns.html">rename_columns</a></span>(<span class="no">.</span>,
+                 <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'x_new_name'</span> <span class="kw">=</span> <span class="st">'x'</span>,
+                   <span class="st">'y_new_name'</span> <span class="kw">=</span> <span class="st">'y'</span>)
+                 ) <span class="kw">%.&gt;%</span>
+  <span class="kw pkg">knitr</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(<span class="no">.</span>)</pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">x_new_name</th>
@@ -294,9 +291,9 @@
 <li><code>order_rows</code></li>
 </ul>
 <p><code>select_rows</code> keeps the set of rows that meet a given predicate expression.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">d <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="reference/select_rows.html">select_rows</a></span>(., x <span class="op">==</span><span class="st"> </span><span class="dv">1</span>) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb9-3" data-line-number="3"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(.)</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="r"><span class="no">d</span> <span class="kw">%.&gt;%</span>
+  <span class="fu"><a href="reference/select_rows.html">select_rows</a></span>(<span class="no">.</span>, <span class="no">x</span> <span class="kw">==</span> <span class="fl">1</span>) <span class="kw">%.&gt;%</span>
+  <span class="kw pkg">knitr</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(<span class="no">.</span>)</pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">x</th>
@@ -318,11 +315,11 @@
 </table>
 <p>Notes on how to use a variable to specify column names in <code>select_rows</code> can be found <a href="https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md">here</a>.</p>
 <p><code>order_rows</code> re-orders rows by a selection of column names (and allows reverse ordering by naming which columns to reverse in the optional <code>reverse</code> argument). Multiple columns can be selected in the order, each column breaking ties in the earlier comparisons.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">d <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb10-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="reference/order_rows.html">order_rows</a></span>(., </a>
-<a class="sourceLine" id="cb10-3" data-line-number="3">             <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'x'</span>, <span class="st">'y'</span>),</a>
-<a class="sourceLine" id="cb10-4" data-line-number="4">             <span class="dt">reverse =</span> <span class="st">'x'</span>) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb10-5" data-line-number="5"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(.)</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="r"><span class="no">d</span> <span class="kw">%.&gt;%</span>
+  <span class="fu"><a href="reference/order_rows.html">order_rows</a></span>(<span class="no">.</span>,
+             <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'x'</span>, <span class="st">'y'</span>),
+             <span class="kw">reverse</span> <span class="kw">=</span> <span class="st">'x'</span>) <span class="kw">%.&gt;%</span>
+  <span class="kw pkg">knitr</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(<span class="no">.</span>)</pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">x</th>
@@ -357,9 +354,9 @@
 <li><code>extend</code></li>
 </ul>
 <p><code>extend</code> accepts arbitrary expressions to create new columns (or replace existing ones). For example:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">d <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="reference/extend.html">extend</a></span>(., zzz <span class="op">:</span><span class="er">=</span><span class="st"> </span>y <span class="op">/</span><span class="st"> </span>x) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb11-3" data-line-number="3"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(.)</a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="r"><span class="no">d</span> <span class="kw">%.&gt;%</span>
+  <span class="fu"><a href="reference/extend.html">extend</a></span>(<span class="no">.</span>, <span class="no">zzz</span> <span class="kw">:=</span> <span class="no">y</span> / <span class="no">x</span>) <span class="kw">%.&gt;%</span>
+  <span class="kw pkg">knitr</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(<span class="no">.</span>)</pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">x</th>
@@ -390,17 +387,17 @@
 </table>
 <p>We can use <code>=</code> or <code>:=</code> for column assignment. In these examples we will use <code>:=</code> to keep column assignment clearly distinguishable from argument binding.</p>
 <p><code>extend</code> allows for very powerful per-group operations akin to what <a href="https://en.wikipedia.org/wiki/SQL"><code>SQL</code></a> calls <a href="https://en.wikipedia.org/wiki/SQL_window_function">“window functions”</a>. When the optional <code>partitionby</code> argument is set to a vector of column names then aggregate calculations can be performed per-group. For example.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1">shift &lt;-<span class="st"> </span>data.table<span class="op">::</span>shift</a>
-<a class="sourceLine" id="cb12-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb12-3" data-line-number="3">d <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb12-4" data-line-number="4"><span class="st">  </span><span class="kw"><a href="reference/extend.html">extend</a></span>(.,</a>
-<a class="sourceLine" id="cb12-5" data-line-number="5">         max_y <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(y),</a>
-<a class="sourceLine" id="cb12-6" data-line-number="6">         shift_z <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">shift</span>(z),</a>
-<a class="sourceLine" id="cb12-7" data-line-number="7">         row_number <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">row_number</span>(),</a>
-<a class="sourceLine" id="cb12-8" data-line-number="8">         cumsum_z <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/cumsum.html">cumsum</a></span>(z),</a>
-<a class="sourceLine" id="cb12-9" data-line-number="9">         <span class="dt">partitionby =</span> <span class="st">'x'</span>,</a>
-<a class="sourceLine" id="cb12-10" data-line-number="10">         <span class="dt">orderby =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'y'</span>, <span class="st">'z'</span>)) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb12-11" data-line-number="11"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(.)</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="r"><span class="no">shift</span> <span class="kw">&lt;-</span> <span class="kw pkg">data.table</span><span class="kw ns">::</span><span class="no"><a href="https://Rdatatable.gitlab.io/data.table/reference/shift.html">shift</a></span>
+
+<span class="no">d</span> <span class="kw">%.&gt;%</span>
+  <span class="fu"><a href="reference/extend.html">extend</a></span>(<span class="no">.</span>,
+         <span class="no">max_y</span> <span class="kw">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">y</span>),
+         <span class="no">shift_z</span> <span class="kw">:=</span> <span class="fu">shift</span>(<span class="no">z</span>),
+         <span class="no">row_number</span> <span class="kw">:=</span> <span class="fu">row_number</span>(),
+         <span class="no">cumsum_z</span> <span class="kw">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/cumsum.html">cumsum</a></span>(<span class="no">z</span>),
+         <span class="kw">partitionby</span> <span class="kw">=</span> <span class="st">'x'</span>,
+         <span class="kw">orderby</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'y'</span>, <span class="st">'z'</span>)) <span class="kw">%.&gt;%</span>
+  <span class="kw pkg">knitr</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(<span class="no">.</span>)</pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">x</th>
@@ -452,12 +449,12 @@
 <li><code>project</code></li>
 </ul>
 <p><code>project</code> performs per-group calculations, and returns only the grouping columns (specified by <code>groupby</code>) and derived aggregates. For example:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">d <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb13-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="reference/project.html">project</a></span>(.,</a>
-<a class="sourceLine" id="cb13-3" data-line-number="3">         max_y <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(y),</a>
-<a class="sourceLine" id="cb13-4" data-line-number="4">         count <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">n</span>(),</a>
-<a class="sourceLine" id="cb13-5" data-line-number="5">         <span class="dt">groupby =</span> <span class="st">'x'</span>) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb13-6" data-line-number="6"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(.)</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="r"><span class="no">d</span> <span class="kw">%.&gt;%</span>
+  <span class="fu"><a href="reference/project.html">project</a></span>(<span class="no">.</span>,
+         <span class="no">max_y</span> <span class="kw">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">y</span>),
+         <span class="no">count</span> <span class="kw">:=</span> <span class="fu">n</span>(),
+         <span class="kw">groupby</span> <span class="kw">=</span> <span class="st">'x'</span>) <span class="kw">%.&gt;%</span>
+  <span class="kw pkg">knitr</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(<span class="no">.</span>)</pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">x</th>
@@ -478,11 +475,11 @@
 </tbody>
 </table>
 <p>Notice we only get one row for each unique combination of the grouping variables. We can also aggregate into a single row by not specifying any <code>groupby</code> columns.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1">d <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb14-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="reference/project.html">project</a></span>(.,</a>
-<a class="sourceLine" id="cb14-3" data-line-number="3">         max_y <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(y),</a>
-<a class="sourceLine" id="cb14-4" data-line-number="4">         count <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">n</span>()) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb14-5" data-line-number="5"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(.)</a></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="r"><span class="no">d</span> <span class="kw">%.&gt;%</span>
+  <span class="fu"><a href="reference/project.html">project</a></span>(<span class="no">.</span>,
+         <span class="no">max_y</span> <span class="kw">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span>(<span class="no">y</span>),
+         <span class="no">count</span> <span class="kw">:=</span> <span class="fu">n</span>()) <span class="kw">%.&gt;%</span>
+  <span class="kw pkg">knitr</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(<span class="no">.</span>)</pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">max_y</th>
@@ -495,19 +492,19 @@
 </table>
 <p>Notes on how to use a variable to specify column names in <code>project</code> can be found <a href="https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md">here</a>.</p>
 </div>
-<div id="combining-results-between-two-data-frames" class="section level3">
+<div id="combining-results-between-two-dataframes" class="section level3">
 <h3 class="hasAnchor">
-<a href="#combining-results-between-two-data-frames" class="anchor"></a>Combining results between two <code>data.frame</code>s</h3>
+<a href="#combining-results-between-two-dataframes" class="anchor"></a>Combining results between two <code>data.frame</code>s</h3>
 <p>To combine multiple tables in <code>rquery</code> one uses what we call the <code>natural_join</code> operator. In the <code>rquery</code> <code>natural_join</code>, rows are matched by column keys and any two columns with the same name are <em>coalesced</em> (meaning the first table with a non-missing values supplies the answer). This is easiest to demonstrate with an example.</p>
 <p>Let’s set up new example tables.</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">d_left &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(</a>
-<a class="sourceLine" id="cb15-2" data-line-number="2">  <span class="dt">k =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'a'</span>, <span class="st">'a'</span>, <span class="st">'b'</span>),</a>
-<a class="sourceLine" id="cb15-3" data-line-number="3">  <span class="dt">x =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>, <span class="ot">NA</span>, <span class="dv">3</span>),</a>
-<a class="sourceLine" id="cb15-4" data-line-number="4">  <span class="dt">y =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>, <span class="ot">NA</span>, <span class="ot">NA</span>),</a>
-<a class="sourceLine" id="cb15-5" data-line-number="5">  <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span></a>
-<a class="sourceLine" id="cb15-6" data-line-number="6">)</a>
-<a class="sourceLine" id="cb15-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb15-8" data-line-number="8">knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(d_left)</a></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="r"><span class="no">d_left</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(
+  <span class="kw">k</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'a'</span>, <span class="st">'a'</span>, <span class="st">'b'</span>),
+  <span class="kw">x</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">NA</span>, <span class="fl">3</span>),
+  <span class="kw">y</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">NA</span>, <span class="fl">NA</span>),
+  <span class="kw">stringsAsFactors</span> <span class="kw">=</span> <span class="fl">FALSE</span>
+)
+
+<span class="kw pkg">knitr</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(<span class="no">d_left</span>)</pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">k</th>
@@ -532,13 +529,13 @@
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">d_right &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(</a>
-<a class="sourceLine" id="cb16-2" data-line-number="2">  <span class="dt">k =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'a'</span>, <span class="st">'b'</span>, <span class="st">'q'</span>),</a>
-<a class="sourceLine" id="cb16-3" data-line-number="3">  <span class="dt">y =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">30</span>),</a>
-<a class="sourceLine" id="cb16-4" data-line-number="4">  <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span></a>
-<a class="sourceLine" id="cb16-5" data-line-number="5">)</a>
-<a class="sourceLine" id="cb16-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb16-7" data-line-number="7">knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(d_right)</a></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="r"><span class="no">d_right</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(
+  <span class="kw">k</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'a'</span>, <span class="st">'b'</span>, <span class="st">'q'</span>),
+  <span class="kw">y</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">10</span>, <span class="fl">20</span>, <span class="fl">30</span>),
+  <span class="kw">stringsAsFactors</span> <span class="kw">=</span> <span class="fl">FALSE</span>
+)
+
+<span class="kw pkg">knitr</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(<span class="no">d_right</span>)</pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">k</th>
@@ -560,10 +557,10 @@
 </tbody>
 </table>
 <p>To perform a join we specify which set of columns our our row-matching conditions (using the <code>by</code> argument) and what type of join we want (using the <code>jointype</code> argument). For example we can use <code>jointype = 'LEFT'</code> to augment our <code>d_left</code> table with additional values from <code>d_right</code>.</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="kw"><a href="reference/natural_join.html">natural_join</a></span>(d_left, d_right,</a>
-<a class="sourceLine" id="cb17-2" data-line-number="2">             <span class="dt">by =</span> <span class="st">'k'</span>,</a>
-<a class="sourceLine" id="cb17-3" data-line-number="3">             <span class="dt">jointype =</span> <span class="st">'LEFT'</span>) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb17-4" data-line-number="4"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(.)</a></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="r"><span class="fu"><a href="reference/natural_join.html">natural_join</a></span>(<span class="no">d_left</span>, <span class="no">d_right</span>,
+             <span class="kw">by</span> <span class="kw">=</span> <span class="st">'k'</span>,
+             <span class="kw">jointype</span> <span class="kw">=</span> <span class="st">'LEFT'</span>) <span class="kw">%.&gt;%</span>
+  <span class="kw pkg">knitr</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(<span class="no">.</span>)</pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">k</th>
@@ -600,16 +597,16 @@
 <h2 class="hasAnchor">
 <a href="#composing-operations" class="anchor"></a>Composing operations</h2>
 <p>We could, of course, perform complicated data manipulation by sequencing <code>rquery</code> operations. For example to select one row with minimal <code>y</code> per-<code>x</code> group we could work in steps as follows.</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">. &lt;-<span class="st"> </span>d</a>
-<a class="sourceLine" id="cb18-2" data-line-number="2">. &lt;-<span class="st"> </span><span class="kw"><a href="reference/extend.html">extend</a></span>(.,</a>
-<a class="sourceLine" id="cb18-3" data-line-number="3">            row_number <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">row_number</span>(),</a>
-<a class="sourceLine" id="cb18-4" data-line-number="4">            <span class="dt">partitionby =</span> <span class="st">'x'</span>,</a>
-<a class="sourceLine" id="cb18-5" data-line-number="5">            <span class="dt">orderby =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'y'</span>, <span class="st">'z'</span>))</a>
-<a class="sourceLine" id="cb18-6" data-line-number="6">. &lt;-<span class="st"> </span><span class="kw"><a href="reference/select_rows.html">select_rows</a></span>(.,</a>
-<a class="sourceLine" id="cb18-7" data-line-number="7">                 row_number <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb18-8" data-line-number="8">. &lt;-<span class="st"> </span><span class="kw"><a href="reference/drop_columns.html">drop_columns</a></span>(.,</a>
-<a class="sourceLine" id="cb18-9" data-line-number="9">                  <span class="st">"row_number"</span>)</a>
-<a class="sourceLine" id="cb18-10" data-line-number="10">knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(.)</a></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="r"><span class="no">.</span> <span class="kw">&lt;-</span> <span class="no">d</span>
+<span class="no">.</span> <span class="kw">&lt;-</span> <span class="fu"><a href="reference/extend.html">extend</a></span>(<span class="no">.</span>,
+            <span class="no">row_number</span> <span class="kw">:=</span> <span class="fu">row_number</span>(),
+            <span class="kw">partitionby</span> <span class="kw">=</span> <span class="st">'x'</span>,
+            <span class="kw">orderby</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'y'</span>, <span class="st">'z'</span>))
+<span class="no">.</span> <span class="kw">&lt;-</span> <span class="fu"><a href="reference/select_rows.html">select_rows</a></span>(<span class="no">.</span>,
+                 <span class="no">row_number</span> <span class="kw">==</span> <span class="fl">1</span>)
+<span class="no">.</span> <span class="kw">&lt;-</span> <span class="fu"><a href="reference/drop_columns.html">drop_columns</a></span>(<span class="no">.</span>,
+                  <span class="st">"row_number"</span>)
+<span class="kw pkg">knitr</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(<span class="no">.</span>)</pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">x</th>
@@ -629,17 +626,17 @@
 </tr>
 </tbody>
 </table>
-<p>The above discipline has the advantage that it is easy to debug, as we can run line by line and inspect intermediate values. We can even use the <a href="http://www.win-vector.com/blog/2017/01/using-the-bizarro-pipe-to-debug-magrittr-pipelines-in-r/">Bizarro pipe</a> to make this look like a pipeline of operations.</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1">d -&gt;.;</a>
-<a class="sourceLine" id="cb19-2" data-line-number="2">  <span class="kw"><a href="reference/extend.html">extend</a></span>(.,</a>
-<a class="sourceLine" id="cb19-3" data-line-number="3">         row_number <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">row_number</span>(),</a>
-<a class="sourceLine" id="cb19-4" data-line-number="4">         <span class="dt">partitionby =</span> <span class="st">'x'</span>,</a>
-<a class="sourceLine" id="cb19-5" data-line-number="5">         <span class="dt">orderby =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'y'</span>, <span class="st">'z'</span>)) -&gt;.;</a>
-<a class="sourceLine" id="cb19-6" data-line-number="6">  <span class="kw"><a href="reference/select_rows.html">select_rows</a></span>(.,</a>
-<a class="sourceLine" id="cb19-7" data-line-number="7">              row_number <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)  -&gt;.;</a>
-<a class="sourceLine" id="cb19-8" data-line-number="8">  <span class="kw"><a href="reference/drop_columns.html">drop_columns</a></span>(.,</a>
-<a class="sourceLine" id="cb19-9" data-line-number="9">               <span class="st">"row_number"</span>)    -&gt;.;</a>
-<a class="sourceLine" id="cb19-10" data-line-number="10">  knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(.)</a></code></pre></div>
+<p>The above discipline has the advantage that it is easy to debug, as we can run line by line and inspect intermediate values. We can even use the <a href="https://win-vector.com/2017/01/29/using-the-bizarro-pipe-to-debug-magrittr-pipelines-in-r/">Bizarro pipe</a> to make this look like a pipeline of operations.</p>
+<div class="sourceCode" id="cb19"><pre class="r"><span class="no">d</span> <span class="kw">-&gt;</span><span class="no">.</span>;
+  <span class="fu"><a href="reference/extend.html">extend</a></span>(<span class="no">.</span>,
+         <span class="no">row_number</span> <span class="kw">:=</span> <span class="fu">row_number</span>(),
+         <span class="kw">partitionby</span> <span class="kw">=</span> <span class="st">'x'</span>,
+         <span class="kw">orderby</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'y'</span>, <span class="st">'z'</span>)) <span class="kw">-&gt;</span><span class="no">.</span>;
+  <span class="fu"><a href="reference/select_rows.html">select_rows</a></span>(<span class="no">.</span>,
+              <span class="no">row_number</span> <span class="kw">==</span> <span class="fl">1</span>)  <span class="kw">-&gt;</span><span class="no">.</span>;
+  <span class="fu"><a href="reference/drop_columns.html">drop_columns</a></span>(<span class="no">.</span>,
+               <span class="st">"row_number"</span>)    <span class="kw">-&gt;</span><span class="no">.</span>;
+  <span class="kw pkg">knitr</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(<span class="no">.</span>)</pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">x</th>
@@ -660,16 +657,16 @@
 </tbody>
 </table>
 <p>Or we can use the <a href="https://journal.r-project.org/archive/2018/RJ-2018-042/index.html"><code>wrapr</code> pipe</a> on the data, which we call “immediate mode” (for more on modes please see <a href="https://github.com/WinVector/rquery/blob/master/Examples/Modes/Modes.md">here</a>).</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1">d <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb20-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="reference/extend.html">extend</a></span>(.,</a>
-<a class="sourceLine" id="cb20-3" data-line-number="3">         row_number <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">row_number</span>(),</a>
-<a class="sourceLine" id="cb20-4" data-line-number="4">         <span class="dt">partitionby =</span> <span class="st">'x'</span>,</a>
-<a class="sourceLine" id="cb20-5" data-line-number="5">         <span class="dt">orderby =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'y'</span>, <span class="st">'z'</span>)) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb20-6" data-line-number="6"><span class="st">  </span><span class="kw"><a href="reference/select_rows.html">select_rows</a></span>(.,</a>
-<a class="sourceLine" id="cb20-7" data-line-number="7">              row_number <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)  <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb20-8" data-line-number="8"><span class="st">  </span><span class="kw"><a href="reference/drop_columns.html">drop_columns</a></span>(.,</a>
-<a class="sourceLine" id="cb20-9" data-line-number="9">               <span class="st">"row_number"</span>)    <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb20-10" data-line-number="10"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(.)</a></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="r"><span class="no">d</span> <span class="kw">%.&gt;%</span>
+  <span class="fu"><a href="reference/extend.html">extend</a></span>(<span class="no">.</span>,
+         <span class="no">row_number</span> <span class="kw">:=</span> <span class="fu">row_number</span>(),
+         <span class="kw">partitionby</span> <span class="kw">=</span> <span class="st">'x'</span>,
+         <span class="kw">orderby</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'y'</span>, <span class="st">'z'</span>)) <span class="kw">%.&gt;%</span>
+  <span class="fu"><a href="reference/select_rows.html">select_rows</a></span>(<span class="no">.</span>,
+              <span class="no">row_number</span> <span class="kw">==</span> <span class="fl">1</span>)  <span class="kw">%.&gt;%</span>
+  <span class="fu"><a href="reference/drop_columns.html">drop_columns</a></span>(<span class="no">.</span>,
+               <span class="st">"row_number"</span>)    <span class="kw">%.&gt;%</span>
+  <span class="kw pkg">knitr</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(<span class="no">.</span>)</pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">x</th>
@@ -690,34 +687,34 @@
 </tbody>
 </table>
 <p><code>rquery</code> operators can also act on <code>rquery</code> pipelines instead of acting on data. We can write our operations as follows:</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1">ops &lt;-<span class="st"> </span><span class="kw"><a href="reference/local_td.html">local_td</a></span>(d) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb21-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="reference/extend.html">extend</a></span>(.,</a>
-<a class="sourceLine" id="cb21-3" data-line-number="3">         row_number <span class="op">:</span><span class="er">=</span><span class="st"> </span><span class="kw">row_number</span>(),</a>
-<a class="sourceLine" id="cb21-4" data-line-number="4">         <span class="dt">partitionby =</span> <span class="st">'x'</span>,</a>
-<a class="sourceLine" id="cb21-5" data-line-number="5">         <span class="dt">orderby =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'y'</span>, <span class="st">'z'</span>)) <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb21-6" data-line-number="6"><span class="st">  </span><span class="kw"><a href="reference/select_rows.html">select_rows</a></span>(.,</a>
-<a class="sourceLine" id="cb21-7" data-line-number="7">              row_number <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)  <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb21-8" data-line-number="8"><span class="st">  </span><span class="kw"><a href="reference/drop_columns.html">drop_columns</a></span>(.,</a>
-<a class="sourceLine" id="cb21-9" data-line-number="9">               <span class="st">"row_number"</span>)</a>
-<a class="sourceLine" id="cb21-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb21-11" data-line-number="11"><span class="kw"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/format.html">format</a></span>(ops))</a></code></pre></div>
-<div class="sourceCode" id="cb22"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="co">## mk_td("d", c(</span></a>
-<a class="sourceLine" id="cb22-2" data-line-number="2"><span class="co">##   "x",</span></a>
-<a class="sourceLine" id="cb22-3" data-line-number="3"><span class="co">##   "y",</span></a>
-<a class="sourceLine" id="cb22-4" data-line-number="4"><span class="co">##   "z")) %.&gt;%</span></a>
-<a class="sourceLine" id="cb22-5" data-line-number="5"><span class="co">##  extend(.,</span></a>
-<a class="sourceLine" id="cb22-6" data-line-number="6"><span class="co">##   row_number := row_number(),</span></a>
-<a class="sourceLine" id="cb22-7" data-line-number="7"><span class="co">##   partitionby = c('x'),</span></a>
-<a class="sourceLine" id="cb22-8" data-line-number="8"><span class="co">##   orderby = c('y', 'z'),</span></a>
-<a class="sourceLine" id="cb22-9" data-line-number="9"><span class="co">##   reverse = c()) %.&gt;%</span></a>
-<a class="sourceLine" id="cb22-10" data-line-number="10"><span class="co">##  select_rows(.,</span></a>
-<a class="sourceLine" id="cb22-11" data-line-number="11"><span class="co">##    row_number == 1) %.&gt;%</span></a>
-<a class="sourceLine" id="cb22-12" data-line-number="12"><span class="co">##  drop_columns(.,</span></a>
-<a class="sourceLine" id="cb22-13" data-line-number="13"><span class="co">##    c('row_number'))</span></a></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="r"><span class="no">ops</span> <span class="kw">&lt;-</span> <span class="fu"><a href="reference/local_td.html">local_td</a></span>(<span class="no">d</span>) <span class="kw">%.&gt;%</span>
+  <span class="fu"><a href="reference/extend.html">extend</a></span>(<span class="no">.</span>,
+         <span class="no">row_number</span> <span class="kw">:=</span> <span class="fu">row_number</span>(),
+         <span class="kw">partitionby</span> <span class="kw">=</span> <span class="st">'x'</span>,
+         <span class="kw">orderby</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'y'</span>, <span class="st">'z'</span>)) <span class="kw">%.&gt;%</span>
+  <span class="fu"><a href="reference/select_rows.html">select_rows</a></span>(<span class="no">.</span>,
+              <span class="no">row_number</span> <span class="kw">==</span> <span class="fl">1</span>)  <span class="kw">%.&gt;%</span>
+  <span class="fu"><a href="reference/drop_columns.html">drop_columns</a></span>(<span class="no">.</span>,
+               <span class="st">"row_number"</span>)
+
+<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/format.html">format</a></span>(<span class="no">ops</span>))</pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="co">## mk_td("d", c(</span></span>
+<span id="cb22-2"><a href="#cb22-2"></a><span class="co">##   "x",</span></span>
+<span id="cb22-3"><a href="#cb22-3"></a><span class="co">##   "y",</span></span>
+<span id="cb22-4"><a href="#cb22-4"></a><span class="co">##   "z")) %.&gt;%</span></span>
+<span id="cb22-5"><a href="#cb22-5"></a><span class="co">##  extend(.,</span></span>
+<span id="cb22-6"><a href="#cb22-6"></a><span class="co">##   row_number := row_number(),</span></span>
+<span id="cb22-7"><a href="#cb22-7"></a><span class="co">##   partitionby = c('x'),</span></span>
+<span id="cb22-8"><a href="#cb22-8"></a><span class="co">##   orderby = c('y', 'z'),</span></span>
+<span id="cb22-9"><a href="#cb22-9"></a><span class="co">##   reverse = c()) %.&gt;%</span></span>
+<span id="cb22-10"><a href="#cb22-10"></a><span class="co">##  select_rows(.,</span></span>
+<span id="cb22-11"><a href="#cb22-11"></a><span class="co">##    row_number == 1) %.&gt;%</span></span>
+<span id="cb22-12"><a href="#cb22-12"></a><span class="co">##  drop_columns(.,</span></span>
+<span id="cb22-13"><a href="#cb22-13"></a><span class="co">##    c('row_number'))</span></span></code></pre></div>
 <p>And we can re-use this pipeline, both on local data and to generate <code>SQL</code> to be run in remote databases. Applying this operator pipeline to our <code>data.frame</code> <code>d</code> is performed as follows.</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1">d <span class="op">%.&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb23-2" data-line-number="2"><span class="st">  </span>ops <span class="op">%.&gt;%</span></a>
-<a class="sourceLine" id="cb23-3" data-line-number="3"><span class="st">  </span>knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(.)</a></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="r"><span class="no">d</span> <span class="kw">%.&gt;%</span>
+  <span class="no">ops</span> <span class="kw">%.&gt;%</span>
+  <span class="kw pkg">knitr</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(<span class="no">.</span>)</pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">x</th>
@@ -738,38 +735,38 @@
 </tbody>
 </table>
 <p>And for <code>SQL</code> we have the following.</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1">raw_connection &lt;-<span class="st"> </span>DBI<span class="op">::</span><span class="kw"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span>(RSQLite<span class="op">::</span><span class="kw"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html">SQLite</a></span>(), <span class="st">":memory:"</span>)</a>
-<a class="sourceLine" id="cb24-2" data-line-number="2">RSQLite<span class="op">::</span><span class="kw"><a href="https://rsqlite.r-dbi.org/reference/initExtension.html">initExtension</a></span>(raw_connection)</a>
-<a class="sourceLine" id="cb24-3" data-line-number="3">db &lt;-<span class="st"> </span><span class="kw"><a href="reference/rquery_db_info.html">rquery_db_info</a></span>(</a>
-<a class="sourceLine" id="cb24-4" data-line-number="4">  <span class="dt">connection =</span> raw_connection,</a>
-<a class="sourceLine" id="cb24-5" data-line-number="5">  <span class="dt">is_dbi =</span> <span class="ot">TRUE</span>,</a>
-<a class="sourceLine" id="cb24-6" data-line-number="6">  <span class="dt">connection_options =</span> <span class="kw"><a href="reference/rq_connection_tests.html">rq_connection_tests</a></span>(raw_connection))</a>
-<a class="sourceLine" id="cb24-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb24-8" data-line-number="8"><span class="kw"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(<span class="kw"><a href="reference/to_sql.html">to_sql</a></span>(ops, db))</a></code></pre></div>
-<div class="sourceCode" id="cb25"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="co">## SELECT</span></a>
-<a class="sourceLine" id="cb25-2" data-line-number="2"><span class="co">##  `x`,</span></a>
-<a class="sourceLine" id="cb25-3" data-line-number="3"><span class="co">##  `y`,</span></a>
-<a class="sourceLine" id="cb25-4" data-line-number="4"><span class="co">##  `z`</span></a>
-<a class="sourceLine" id="cb25-5" data-line-number="5"><span class="co">## FROM (</span></a>
-<a class="sourceLine" id="cb25-6" data-line-number="6"><span class="co">##  SELECT * FROM (</span></a>
-<a class="sourceLine" id="cb25-7" data-line-number="7"><span class="co">##   SELECT</span></a>
-<a class="sourceLine" id="cb25-8" data-line-number="8"><span class="co">##    `x`,</span></a>
-<a class="sourceLine" id="cb25-9" data-line-number="9"><span class="co">##    `y`,</span></a>
-<a class="sourceLine" id="cb25-10" data-line-number="10"><span class="co">##    `z`,</span></a>
-<a class="sourceLine" id="cb25-11" data-line-number="11"><span class="co">##    row_number ( ) OVER (  PARTITION BY `x` ORDER BY `y`, `z` ) AS `row_number`</span></a>
-<a class="sourceLine" id="cb25-12" data-line-number="12"><span class="co">##   FROM (</span></a>
-<a class="sourceLine" id="cb25-13" data-line-number="13"><span class="co">##    SELECT</span></a>
-<a class="sourceLine" id="cb25-14" data-line-number="14"><span class="co">##     `x`,</span></a>
-<a class="sourceLine" id="cb25-15" data-line-number="15"><span class="co">##     `y`,</span></a>
-<a class="sourceLine" id="cb25-16" data-line-number="16"><span class="co">##     `z`</span></a>
-<a class="sourceLine" id="cb25-17" data-line-number="17"><span class="co">##    FROM</span></a>
-<a class="sourceLine" id="cb25-18" data-line-number="18"><span class="co">##     `d`</span></a>
-<a class="sourceLine" id="cb25-19" data-line-number="19"><span class="co">##    ) tsql_38310476903940177213_0000000000</span></a>
-<a class="sourceLine" id="cb25-20" data-line-number="20"><span class="co">##  ) tsql_38310476903940177213_0000000001</span></a>
-<a class="sourceLine" id="cb25-21" data-line-number="21"><span class="co">##  WHERE `row_number` = 1</span></a>
-<a class="sourceLine" id="cb25-22" data-line-number="22"><span class="co">## ) tsql_38310476903940177213_0000000002</span></a></code></pre></div>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="co"># clean up</span></a>
-<a class="sourceLine" id="cb26-2" data-line-number="2">DBI<span class="op">::</span><span class="kw"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html">dbDisconnect</a></span>(raw_connection)</a></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="r"><span class="no">raw_connection</span> <span class="kw">&lt;-</span> <span class="kw pkg">DBI</span><span class="kw ns">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span>(<span class="kw pkg">RSQLite</span><span class="kw ns">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html">SQLite</a></span>(), <span class="st">":memory:"</span>)
+<span class="kw pkg">RSQLite</span><span class="kw ns">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/initExtension.html">initExtension</a></span>(<span class="no">raw_connection</span>)
+<span class="no">db</span> <span class="kw">&lt;-</span> <span class="fu"><a href="reference/rquery_db_info.html">rquery_db_info</a></span>(
+  <span class="kw">connection</span> <span class="kw">=</span> <span class="no">raw_connection</span>,
+  <span class="kw">is_dbi</span> <span class="kw">=</span> <span class="fl">TRUE</span>,
+  <span class="kw">connection_options</span> <span class="kw">=</span> <span class="fu"><a href="reference/rq_connection_tests.html">rq_connection_tests</a></span>(<span class="no">raw_connection</span>))
+
+<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(<span class="fu"><a href="reference/to_sql.html">to_sql</a></span>(<span class="no">ops</span>, <span class="no">db</span>))</pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a><span class="co">## SELECT</span></span>
+<span id="cb25-2"><a href="#cb25-2"></a><span class="co">##  `x`,</span></span>
+<span id="cb25-3"><a href="#cb25-3"></a><span class="co">##  `y`,</span></span>
+<span id="cb25-4"><a href="#cb25-4"></a><span class="co">##  `z`</span></span>
+<span id="cb25-5"><a href="#cb25-5"></a><span class="co">## FROM (</span></span>
+<span id="cb25-6"><a href="#cb25-6"></a><span class="co">##  SELECT * FROM (</span></span>
+<span id="cb25-7"><a href="#cb25-7"></a><span class="co">##   SELECT</span></span>
+<span id="cb25-8"><a href="#cb25-8"></a><span class="co">##    `x`,</span></span>
+<span id="cb25-9"><a href="#cb25-9"></a><span class="co">##    `y`,</span></span>
+<span id="cb25-10"><a href="#cb25-10"></a><span class="co">##    `z`,</span></span>
+<span id="cb25-11"><a href="#cb25-11"></a><span class="co">##    row_number ( ) OVER (  PARTITION BY `x` ORDER BY `y`, `z` ) AS `row_number`</span></span>
+<span id="cb25-12"><a href="#cb25-12"></a><span class="co">##   FROM (</span></span>
+<span id="cb25-13"><a href="#cb25-13"></a><span class="co">##    SELECT</span></span>
+<span id="cb25-14"><a href="#cb25-14"></a><span class="co">##     `x`,</span></span>
+<span id="cb25-15"><a href="#cb25-15"></a><span class="co">##     `y`,</span></span>
+<span id="cb25-16"><a href="#cb25-16"></a><span class="co">##     `z`</span></span>
+<span id="cb25-17"><a href="#cb25-17"></a><span class="co">##    FROM</span></span>
+<span id="cb25-18"><a href="#cb25-18"></a><span class="co">##     `d`</span></span>
+<span id="cb25-19"><a href="#cb25-19"></a><span class="co">##    ) tsql_19344905918764440115_0000000000</span></span>
+<span id="cb25-20"><a href="#cb25-20"></a><span class="co">##  ) tsql_19344905918764440115_0000000001</span></span>
+<span id="cb25-21"><a href="#cb25-21"></a><span class="co">##  WHERE `row_number` = 1</span></span>
+<span id="cb25-22"><a href="#cb25-22"></a><span class="co">## ) tsql_19344905918764440115_0000000002</span></span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="r"><span class="co"># clean up</span>
+<span class="kw pkg">DBI</span><span class="kw ns">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html">dbDisconnect</a></span>(<span class="no">raw_connection</span>)</pre></div>
 <p>For more <code>SQL</code> examples, please see <a href="https://github.com/WinVector/rquery/tree/master/db_examples">here</a>.</p>
 </div>
 <div id="pipeline-principles" class="section level2">
@@ -805,20 +802,20 @@
 <li>
 <a href="https://en.wikipedia.org/wiki/D_(data_language_specification)#Tutorial_D"><code>Tutorial D</code></a> ~1994.</li>
 <li>
-<a href="http://r-datatable.com/"><code>data.table</code></a> ~2006.</li>
+<a href="https://rdatatable.gitlab.io/data.table/"><code>data.table</code></a> ~2006.</li>
 <li>
-<a href="https://msdn.microsoft.com/en-us/library/bb308959.aspx"><code>LINQ</code></a> ~2007.</li>
+<a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/"><code>LINQ</code></a> ~2007.</li>
 <li>
-<a href="http://pandas.pydata.org"><code>pandas</code></a> ~2008.</li>
+<a href="https://pandas.pydata.org"><code>pandas</code></a> ~2008.</li>
 <li>
-<a href="http://dplyr.tidyverse.org"><code>dplyr</code></a> ~2014.</li>
+<a href="https://dplyr.tidyverse.org"><code>dplyr</code></a> ~2014.</li>
 <li>
 <a href="https://calcite.apache.org"><code>Apache Calcite</code></a> ~2014.</li>
 </ul>
 <p><code>rquery</code> is realized as a thin translation to an underlying <code>SQL</code> provider. We are trying to put the Codd relational operators front and center (using the original naming, and back-porting <code>SQL</code> progress such as window functions to the appropriate relational operator).</p>
 <p>Some related work includes:</p>
 <ul>
-<li><a href="http://r-datatable.com"><code>data.table</code></a></li>
+<li><a href="https://rdatatable.gitlab.io/data.table/"><code>data.table</code></a></li>
 <li><a href="https://github.com/xiaodaigh/disk.frame"><code>disk.frame</code></a></li>
 <li><a href="https://dbplyr.tidyverse.org"><code>dbplyr</code></a></li>
 <li><a href="https://dplyr.tidyverse.org"><code>dplyr</code></a></li>
@@ -854,13 +851,13 @@
 
   </div>
 
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
 <h2>Links</h2>
 <ul class="list-unstyled">
 <li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=rquery">https://​cloud.r-project.org/​package=rquery</a>
 </li>
-<li>Browse source code at <br><a href="https://github.com/WinVector/rquery">https://​github.com/​WinVector/​rquery</a>
+<li>Browse source code at <br><a href="https://github.com/WinVector/rquery/">https://​github.com/​WinVector/​rquery/​</a>
 </li>
 <li>Report a bug at <br><a href="https://github.com/WinVector/rquery/issues">https://​github.com/​WinVector/​rquery/​issues</a>
 </li>
@@ -898,7 +895,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

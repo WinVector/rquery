@@ -491,7 +491,7 @@ cat(to_sql(ops, rquery::rquery_default_db_info()))
 
 # Conclusion
 
-`rquery` is new package, but it is already proving to be correct (avoiding [known data processing issues](http://www.win-vector.com/blog/2018/01/advisory-on-multiple-assignment-dplyrmutate-on-databases/)) and [performant](http://www.win-vector.com/blog/2018/01/advisory-on-multiple-assignment-dplyrmutate-on-databases/).
+`rquery` is new package, but it is already proving to be correct (avoiding [known data processing issues](https://win-vector.com/2018/01/21/advisory-on-multiple-assignment-dplyrmutate-on-databases/)) and performant.
 For working with `R` at a big data scale (say using `PostgreSQL` or `Spark`)
 `rquery` is the right specialized tool for specifying data manipulation.
 

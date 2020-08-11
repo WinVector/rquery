@@ -110,7 +110,7 @@ The primary non-relational (traditional `SQL`) operators are:
   * [`orderby()`](https://winvector.github.io/rquery/reference/orderby.html). Row order is not a concept in the relational algebra (and also not maintained in most `SQL` implementations). This operator is only useful when used with its `limit=` option, or as the last step as data comes out of the relation store and is moved to `R` (where row-order is usually maintained).
 
 The above list (and especially naming) are chosen to first match Codd's relational concepts (`project`, `select`, `rename`, `join`, aggregation), `SQL` naming 
-conventions.  Notice this covers the [primary `dplyr` operators](http://dplyr.tidyverse.org) `mutate()` (Codd's `extend`), `select()` (not relational), `filter()` 
+conventions.  Notice this covers the [primary `dplyr` operators](https://dplyr.tidyverse.org) `mutate()` (Codd's `extend`), `select()` (not relational), `filter()` 
 (Codd's `select`, represented in `SQL` by "`WHERE`"), `summarise()` (Codd's `project` or aggregate concepts, triggered in `SQL` by "`GROUP BY`"), `arrange()` (not a 
 relational concept, implemented in `SQL` by "ORDER BY").  This correspondence is due to Codd's ideas and `SQL` driving data engineering 
 thinking for almost the last 50 years (both with and without credit or citation).
@@ -133,7 +133,7 @@ databases logical types are not numeric).
 
 With a database that supplies window 
 functions one can quickly work the "logistic scoring by hand" example from  
-from [Let’s Have Some Sympathy For The Part-time R User](http://www.win-vector.com/blog/2017/08/lets-have-some-sympathy-for-the-part-time-r-user/).
+from [Let’s Have Some Sympathy For The Part-time R User](https://win-vector.com/2017/08/04/lets-have-some-sympathy-for-the-part-time-r-user/).
 This example worked with `rquery` code that works with both `PostgreSQL` and `Spark` can be found [here](https://github.com/WinVector/rquery/blob/master/README.md).
 
 We can demonstrate the pipeline, but the `SQLite` database we are using in this vignette
@@ -260,7 +260,7 @@ cat(format(ot))
 
 Notice the dependent assignment was moved into its own extend block.
 This sort of transform is critical in getting correct results from `SQL`
-([here](http://www.win-vector.com/blog/2018/01/advisory-on-multiple-assignment-dplyrmutate-on-databases/) is an example of what can happen when one does not correctly mitigate this issue).
+([here](https://win-vector.com/2018/01/21/advisory-on-multiple-assignment-dplyrmutate-on-databases/) is an example of what can happen when one does not correctly mitigate this issue).
 
 A node that uses the assignment partitioning and re-ordering is the 
 [`if_else_block()`](https://winvector.github.io/rquery/reference/if_else_block.html) which can
@@ -309,7 +309,7 @@ and database based `dplyr`
 
 > <img src="runtimes_1.png">
 >
-> (Figure from: [here](http://www.win-vector.com/blog/2018/01/rquery-fast-data-manipulation-in-r/).)
+> (Figure from: [here](https://win-vector.com/2018/01/09/rquery-fast-data-manipulation-in-r/).)
 
 In addition `rquery` includes automatic column narrowing: where only columns
 used to construct the final result are pulled from initial tables.  This feature
@@ -343,12 +343,12 @@ to this optimization.
 > <img src="present-2.png">
 >
 > (Figure from: [here](https://github.com/WinVector/rquery/blob/master/extras/PerfTest.md), please see also 
-[here](http://www.win-vector.com/blog/2017/12/how-to-greatly-speed-up-your-spark-queries/).)
+[here](https://win-vector.com/2017/12/20/how-to-greatly-speed-up-your-spark-queries/).)
 
 
 # Conclusion
 
-`rquery` is new package, but it is already proving to be correct (avoiding [known data processing issues](http://www.win-vector.com/blog/2018/01/advisory-on-multiple-assignment-dplyrmutate-on-databases/)) and [performant](http://www.win-vector.com/blog/2018/01/advisory-on-multiple-assignment-dplyrmutate-on-databases/).
+`rquery` is new package, but it is already proving to be correct (avoiding [known data processing issues](https://win-vector.com/2018/01/21/advisory-on-multiple-assignment-dplyrmutate-on-databases/)) and performant.
 For working with `R` at a big data scale (say using `PostgreSQL` or `Spark`)
 `rquery` is the right specialized tool for specifying data manipulation.
 

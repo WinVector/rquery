@@ -435,7 +435,7 @@ knitr::kable(.)
 The above discipline has the advantage that it is easy to debug, as we
 can run line by line and inspect intermediate values. We can even use
 the [Bizarro
-pipe](http://www.win-vector.com/blog/2017/01/using-the-bizarro-pipe-to-debug-magrittr-pipelines-in-r/)
+pipe](https://win-vector.com/2017/01/29/using-the-bizarro-pipe-to-debug-magrittr-pipelines-in-r/)
 to make this look like a pipeline of operations.
 
 ``` r
@@ -557,10 +557,10 @@ cat(to_sql(ops, db))
     ##     `z`
     ##    FROM
     ##     `d`
-    ##    ) tsql_38310476903940177213_0000000000
-    ##  ) tsql_38310476903940177213_0000000001
+    ##    ) tsql_19344905918764440115_0000000000
+    ##  ) tsql_19344905918764440115_0000000001
     ##  WHERE `row_number` = 1
-    ## ) tsql_38310476903940177213_0000000002
+    ## ) tsql_19344905918764440115_0000000002
 
 ``` r
 # clean up
@@ -607,24 +607,23 @@ package supplies a nearly identical system for working with data in
 Python. \# Background
 
 There are many prior relational algebra inspired specialized query
-languages. Just a few
-    include:
+languages. Just a few include:
 
   - [`Alpha`](https://en.wikipedia.org/wiki/Alpha_\(programming_language\))
-    ~1971.
-  - `ISBL` / Information system based language ~1973
-  - [`QUEL`](https://en.wikipedia.org/wiki/QUEL_query_languages) ~1974.
-  - [`IBM System R`](https://en.wikipedia.org/wiki/IBM_System_R) ~1974.
-  - [`SQL`](https://en.wikipedia.org/wiki/SQL) ~1974.
+    \~1971.
+  - `ISBL` / Information system based language \~1973
+  - [`QUEL`](https://en.wikipedia.org/wiki/QUEL_query_languages) \~1974.
+  - [`IBM System R`](https://en.wikipedia.org/wiki/IBM_System_R) \~1974.
+  - [`SQL`](https://en.wikipedia.org/wiki/SQL) \~1974.
   - [`Tutorial
     D`](https://en.wikipedia.org/wiki/D_\(data_language_specification\)#Tutorial_D)
-    ~1994.
-  - [`data.table`](http://r-datatable.com/) ~2006.
-  - [`LINQ`](https://msdn.microsoft.com/en-us/library/bb308959.aspx)
-    ~2007.
-  - [`pandas`](http://pandas.pydata.org) ~2008.
-  - [`dplyr`](http://dplyr.tidyverse.org) ~2014.
-  - [`Apache Calcite`](https://calcite.apache.org) ~2014.
+    \~1994.
+  - [`data.table`](https://rdatatable.gitlab.io/data.table/) \~2006.
+  - [`LINQ`](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/)
+    \~2007.
+  - [`pandas`](https://pandas.pydata.org) \~2008.
+  - [`dplyr`](https://dplyr.tidyverse.org) \~2014.
+  - [`Apache Calcite`](https://calcite.apache.org) \~2014.
 
 `rquery` is realized as a thin translation to an underlying `SQL`
 provider. We are trying to put the Codd relational operators front and
@@ -633,7 +632,7 @@ as window functions to the appropriate relational operator).
 
 Some related work includes:
 
-  - [`data.table`](http://r-datatable.com)
+  - [`data.table`](https://rdatatable.gitlab.io/data.table/)
   - [`disk.frame`](https://github.com/xiaodaigh/disk.frame)
   - [`dbplyr`](https://dbplyr.tidyverse.org)
   - [`dplyr`](https://dplyr.tidyverse.org)

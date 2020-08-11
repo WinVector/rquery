@@ -1,5 +1,5 @@
-pandoc: 2.3.1
-pkgdown: 1.4.1
+pandoc: 2.7.3
+pkgdown: 1.5.1
 pkgdown_sha: ~
 articles:
   AssigmentPartitioner: AssigmentPartitioner.html
@@ -11,4 +11,5 @@ articles:
   rquery_many_columns: rquery_many_columns.html
   rquery_substitution: rquery_substitution.html
   sql_quoting: sql_quoting.html
+last_built: 2020-08-11T17:07Z
 

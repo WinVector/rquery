@@ -101,7 +101,7 @@ DBI::dbGetQuery(my_db, sql) %.>%
   knitr::kable(.)
 ```
 
-A straightforward method (with no statement re-ordering) of splitting into non-dependent groups would have to split the mutate at each first use of a new value: yielding more mutate stages.  For why a low number of execution stages is important please see [here](http://winvector.github.io/FluidData/partition_mutate.html). 
+A straightforward method (with no statement re-ordering) of splitting into non-dependent groups would have to split the mutate at each first use of a new value: yielding more mutate stages.  For why a low number of execution stages is important please see [here](https://winvector.github.io/FluidData/partition_mutate.html). 
 
 Note: re-using variable variable names does limit the planner's ability to efficiently partition the the statement.  The planner still emits safe and correct code, but unless it were to be allowed to introduce new variable names it must break sequences in more places.  We show this effect below:
 
