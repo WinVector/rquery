@@ -19,7 +19,7 @@ describe_tables(db, tablenames, ..., keyInspector = key_inspector_all_cols)
 table describing the data.
 }
 \description{
-Please see \url{http://www.win-vector.com/blog/2017/05/managing-spark-data-handles-in-r/} for details.
+Please see \url{https://win-vector.com/2017/05/26/managing-spark-data-handles-in-r/} for details.
 Note: one usually needs to alter the keys column which is just populated with all columns.
 }
 \details{

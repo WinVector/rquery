@@ -223,7 +223,7 @@ key_inspector_postgresql <- function(db, tablename) {
 
 #' Build a nice description of a table.
 #'
-#' Please see \url{http://www.win-vector.com/blog/2017/05/managing-spark-data-handles-in-r/} for details.
+#' Please see \url{https://win-vector.com/2017/05/26/managing-spark-data-handles-in-r/} for details.
 #' Note: one usually needs to alter the keys column which is just populated with all columns.
 #'
 #' Please see \code{vignette('DependencySorting', package = 'rquery')} and \code{vignette('joinController', package= 'rquery')} for more details.

@@ -409,7 +409,7 @@
 ##   `car`
 ##  FROM
 ##   `example_data`
-##  ) tsql_92754086553858733821_0000000000</code></pre>
+##  ) tsql_41959849612956842925_0000000000</code></pre>
 <div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="kw">if</span>(<span class="no">have_db</span>) {
   <span class="no">res_table</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/materialize.html">materialize</a></span>(<span class="no">db</span>, <span class="no">ops</span>)
   <span class="kw pkg">DBI</span><span class="kw ns">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbReadTable.html">dbReadTable</a></span>(<span class="no">raw_connection</span>, <span class="no">res_table</span>$<span class="no">table_name</span>) <span class="kw">%.&gt;%</span>
