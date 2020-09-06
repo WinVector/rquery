@@ -154,12 +154,12 @@
     </div>
 
     <pre class="usage"><span class='fu'>expand_grid</span>(
-  <span class='no'>db</span>,
-  <span class='no'>values</span>,
-  <span class='no'>...</span>,
-  <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>table_name</span> <span class='kw'>=</span> (<span class='kw pkg'>wrapr</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/wrapr/man/mk_tmp_name_source.html'>mk_tmp_name_source</a></span>(<span class='st'>"eg"</span>))(),
-  <span class='kw'>qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
+  <span class='kw'>db</span>,
+  <span class='kw'>values</span>,
+  <span class='kw'>...</span>,
+  temporary = <span class='fl'>TRUE</span>,
+  table_name = (<span class='kw'>wrapr</span>::<span class='fu'><a href='https://winvector.github.io/wrapr//reference/mk_tmp_name_source.html'>mk_tmp_name_source</a></span>(<span class='st'>"eg"</span>))(),
+  qualifiers = <span class='kw'>NULL</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -197,15 +197,16 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='kw'>if</span> (<span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"DBI"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>&amp;&amp;</span>
-    <span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
-  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
-  <span class='no'>values</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>nums</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>3</span>, <span class='kw'>lets</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"a"</span>, <span class='st'>"b"</span>))
-  <span class='no'>res</span> <span class='kw'>&lt;-</span> <span class='fu'>expand_grid</span>(<span class='no'>my_db</span>, <span class='no'>values</span>)
-  <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='no'>res</span>)
-  <span class='fu'><a href='execute.html'>execute</a></span>(<span class='no'>my_db</span>, <span class='no'>res</span>)
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbDisconnect.html'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; [1] "mk_td(\"eg_00892937746018721342_0000000000\", c( \"nums\", \"lets\"))"
+<span class='co'>if</span> (<span class='fu'><a href='#base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"DBI"</span>, quietly = <span class='fl'>TRUE</span>) <span class='op'>&amp;&amp;</span>
+    <span class='fu'><a href='#base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"RSQLite"</span>, quietly = <span class='fl'>TRUE</span>)) {
+  <span class='kw'>my_db</span> <span class='op'>&lt;-</span> <span class='kw'>DBI</span>::<span class='fu'><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></span>(<span class='kw'>RSQLite</span>::<span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
+  <span class='kw'>values</span> <span class='op'>&lt;-</span> <span class='fu'><a href='#base/list.html'>list</a></span>(nums = <span class='fl'>1</span><span class='op'>:</span><span class='fl'>3</span>, lets = <span class='fu'><a href='#base/c.html'>c</a></span>(<span class='st'>"a"</span>, <span class='st'>"b"</span>))
+  <span class='kw'>res</span> <span class='op'>&lt;-</span> <span class='fu'>expand_grid</span>(<span class='kw'>my_db</span>, <span class='kw'>values</span>)
+  <span class='fu'><a href='#base/print.html'>print</a></span>(<span class='kw'>res</span>)
+  <span class='fu'><a href='execute.html'>execute</a></span>(<span class='kw'>my_db</span>, <span class='kw'>res</span>)
+  <span class='kw'>DBI</span>::<span class='fu'><a href='https://dbi.r-dbi.org/reference/dbDisconnect.html'>dbDisconnect</a></span>(<span class='kw'>my_db</span>)
+}
+</div><div class='output co'>#&gt; [1] "mk_td(\"eg_00892937746018721342_0000000000\", c( \"nums\", \"lets\"))"
 #&gt;   nums lets
 #&gt; 1    1    a
 #&gt; 2    1    b
@@ -230,7 +231,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
 </div>
 
       </footer>

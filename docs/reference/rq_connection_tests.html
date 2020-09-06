@@ -155,7 +155,7 @@ the full set of options- but just the ones tested here." />
 the full set of options- but just the ones tested here.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>rq_connection_tests</span>(<span class='no'>db</span>, <span class='no'>...</span>, <span class='kw'>overrides</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>use_advice</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>rq_connection_tests</span>(<span class='kw'>db</span>, <span class='kw'>...</span>, overrides = <span class='kw'>NULL</span>, use_advice = <span class='fl'>TRUE</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -191,15 +191,16 @@ messages as different database capabilities are tested.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='kw'>if</span>(<span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"DBI"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>&amp;&amp;</span> <span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
-  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
-  <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='fu'><a href='rq_connection_name.html'>rq_connection_name</a></span>(<span class='no'>my_db</span>))
-  <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='fu'>rq_connection_tests</span>(<span class='no'>my_db</span>,
-     <span class='kw'>overrides</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"use_DBI_dbExistsTable"</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)))
+<span class='co'>if</span>(<span class='fu'><a href='#base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"DBI"</span>, quietly = <span class='fl'>TRUE</span>) <span class='op'>&amp;&amp;</span> <span class='fu'><a href='#base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"RSQLite"</span>, quietly = <span class='fl'>TRUE</span>)) {
+  <span class='kw'>my_db</span> <span class='op'>&lt;-</span> <span class='kw'>DBI</span>::<span class='fu'><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></span>(<span class='kw'>RSQLite</span>::<span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
+  <span class='fu'><a href='#base/print.html'>print</a></span>(<span class='fu'><a href='rq_connection_name.html'>rq_connection_name</a></span>(<span class='kw'>my_db</span>))
+  <span class='fu'><a href='#base/print.html'>print</a></span>(<span class='fu'>rq_connection_tests</span>(<span class='kw'>my_db</span>,
+     overrides = <span class='fu'><a href='#base/c.html'>c</a></span>(<span class='st'>"use_DBI_dbExistsTable"</span> = <span class='fl'>FALSE</span>)))
   <span class='co'># the following would set options</span>
   <span class='co'># print(options(rq_connection_tests(my_db)))</span>
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbDisconnect.html'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; [1] "SQLiteConnection"
+  <span class='kw'>DBI</span>::<span class='fu'><a href='https://dbi.r-dbi.org/reference/dbDisconnect.html'>dbDisconnect</a></span>(<span class='kw'>my_db</span>)
+}
+</div><div class='output co'>#&gt; [1] "SQLiteConnection"
 #&gt; $rquery.SQLiteConnection.use_DBI_dbListFields
 #&gt; [1] TRUE
 #&gt; 
@@ -303,7 +304,7 @@ messages as different database capabilities are tested.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
 </div>
 
       </footer>

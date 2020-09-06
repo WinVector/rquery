@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Build a <code>relop</code> node simulating a per-row block-<code>if(){}else{}</code>. — if_else_op • rquery</title>
+<title>Build a relop node simulating a per-row block-if(){}else{}. — if_else_op • rquery</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,7 @@
 
 
 
-<meta property="og:title" content="Build a <code>relop</code> node simulating a per-row block-<code>if(){}else{}</code>. — if_else_op" />
+<meta property="og:title" content="Build a relop node simulating a per-row block-if(){}else{}. — if_else_op" />
 <meta property="og:description" content="This device uses expression-ifelse(,,) to simulate the
 more powerful per-row block-if(){}else{}.  The difference is
 expression-ifelse(,,) can choose per-row what value to express,
@@ -161,9 +161,9 @@ RPostgreSQL or sparklyr." />
     </div>
 
     <div class="ref-description">
-    <p>This device uses expression-<code><a href='https://rdrr.io/r/base/ifelse.html'>ifelse(,,)</a></code> to simulate the
+    <p>This device uses expression-<code><a href='#base/ifelse.html'>ifelse(,,)</a></code> to simulate the
 more powerful per-row block-<code>if(){}else{}</code>.  The difference is
-expression-<code><a href='https://rdrr.io/r/base/ifelse.html'>ifelse(,,)</a></code> can choose per-row what value to express,
+expression-<code><a href='#base/ifelse.html'>ifelse(,,)</a></code> can choose per-row what value to express,
 whereas block-<code>if(){}else{}</code> can choose per-row where to assign multiple
 values. By simulation we mean: a sequence of quoted mutate expressions
 are emitted that implement the transform.  These expressions can then
@@ -176,12 +176,12 @@ execution either on <code>data.frame</code>s or at a big data scale using
     </div>
 
     <pre class="usage"><span class='fu'>if_else_op</span>(
-  <span class='no'>source</span>,
-  <span class='no'>testexpr</span>,
-  <span class='no'>...</span>,
-  <span class='kw'>thenexprs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>elseexprs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span>()
+  <span class='kw'>source</span>,
+  <span class='kw'>testexpr</span>,
+  <span class='kw'>...</span>,
+  thenexprs = <span class='kw'>NULL</span>,
+  elseexprs = <span class='kw'>NULL</span>,
+  env = <span class='fu'><a href='#base/sys.parent.html'>parent.frame</a></span>()
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -226,34 +226,35 @@ is a reserved column name for this procedure.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='kw'>if</span> (<span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"DBI"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>&amp;&amp;</span> <span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
+<span class='co'>if</span> (<span class='fu'><a href='#base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"DBI"</span>, quietly = <span class='fl'>TRUE</span>) <span class='op'>&amp;&amp;</span> <span class='fu'><a href='#base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"RSQLite"</span>, quietly = <span class='fl'>TRUE</span>)) {
   <span class='co'># Example: clear one of a or b in any row where both are set.</span>
-  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
-  <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(
-    <span class='no'>my_db</span>,
+  <span class='kw'>my_db</span> <span class='op'>&lt;-</span> <span class='kw'>DBI</span>::<span class='fu'><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></span>(<span class='kw'>RSQLite</span>::<span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
+  <span class='kw'>d</span> <span class='op'>&lt;-</span> <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(
+    <span class='kw'>my_db</span>,
     <span class='st'>'d'</span>,
-    <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='kw'>i</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>3</span>, <span class='fl'>4</span>, <span class='fl'>5</span>, <span class='fl'>6</span>, <span class='fl'>7</span>, <span class='fl'>8</span>, <span class='fl'>9</span>, <span class='fl'>10</span>),
-               <span class='kw'>a</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>),
-               <span class='kw'>b</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>),
-               <span class='kw'>edited</span> <span class='kw'>=</span> <span class='fl'>NA</span>),
-    <span class='kw'>temporary</span><span class='kw'>=</span><span class='fl'>TRUE</span>, <span class='kw'>overwrite</span><span class='kw'>=</span><span class='fl'>TRUE</span>)
+    <span class='fu'><a href='#base/data.frame.html'>data.frame</a></span>(i = <span class='fu'><a href='#base/c.html'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>3</span>, <span class='fl'>4</span>, <span class='fl'>5</span>, <span class='fl'>6</span>, <span class='fl'>7</span>, <span class='fl'>8</span>, <span class='fl'>9</span>, <span class='fl'>10</span>),
+               a = <span class='fu'><a href='#base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>),
+               b = <span class='fu'><a href='#base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>),
+               edited = <span class='fl'>NA</span>),
+    temporary=<span class='fl'>TRUE</span>, overwrite=<span class='fl'>TRUE</span>)
 
-  <span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span>
-    <span class='fu'>if_else_op</span>(<span class='no'>.</span>,
-               <span class='kw'>testexpr</span> <span class='kw'>=</span> <span class='fu'>qe</span>((<span class='no'>a</span>+<span class='no'>b</span>)<span class='kw'>&gt;</span><span class='fl'>1</span>),
-               <span class='kw'>thenexprs</span> <span class='kw'>=</span> <span class='fu'>qae</span>(<span class='no'>a</span> <span class='kw'>%:=%</span> <span class='fl'>0</span>,
-                               <span class='no'>b</span> <span class='kw'>%:=%</span> <span class='fl'>0</span>,
-                               <span class='no'>edited</span> <span class='kw'>%:=%</span> <span class='fl'>1</span>),
-               <span class='kw'>elseexprs</span> <span class='kw'>=</span> <span class='fu'>qae</span>(<span class='no'>edited</span> <span class='kw'>%:=%</span> <span class='fl'>0</span>))
-  <span class='fu'><a href='https://rdrr.io/r/base/cat.html'>cat</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/format.html'>format</a></span>(<span class='no'>optree</span>))
+  <span class='kw'>optree</span> <span class='op'>&lt;-</span> <span class='kw'>d</span> <span class='op'>%.&gt;%</span>
+    <span class='fu'>if_else_op</span>(<span class='kw'>.</span>,
+               testexpr = <span class='fu'>qe</span>((<span class='kw'>a</span><span class='op'>+</span><span class='kw'>b</span>)<span class='op'>&gt;</span><span class='fl'>1</span>),
+               thenexprs = <span class='fu'>qae</span>(<span class='kw'>a</span> <span class='op'>%:=%</span> <span class='fl'>0</span>,
+                               <span class='kw'>b</span> <span class='op'>%:=%</span> <span class='fl'>0</span>,
+                               <span class='kw'>edited</span> <span class='op'>%:=%</span> <span class='fl'>1</span>),
+               elseexprs = <span class='fu'>qae</span>(<span class='kw'>edited</span> <span class='op'>%:=%</span> <span class='fl'>0</span>))
+  <span class='fu'><a href='#base/cat.html'>cat</a></span>(<span class='fu'><a href='#base/format.html'>format</a></span>(<span class='kw'>optree</span>))
 
-  <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>optree</span>, <span class='no'>my_db</span>)
-  <span class='fu'><a href='https://rdrr.io/r/base/cat.html'>cat</a></span>(<span class='no'>sql</span>)
+  <span class='kw'>sql</span> <span class='op'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='kw'>optree</span>, <span class='kw'>my_db</span>)
+  <span class='fu'><a href='#base/cat.html'>cat</a></span>(<span class='kw'>sql</span>)
 
-  <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbGetQuery.html'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
+  <span class='fu'><a href='#base/print.html'>print</a></span>(<span class='kw'>DBI</span>::<span class='fu'><a href='https://dbi.r-dbi.org/reference/dbGetQuery.html'>dbGetQuery</a></span>(<span class='kw'>my_db</span>, <span class='kw'>sql</span>))
 
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbDisconnect.html'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; mk_td("d", c(
+  <span class='kw'>DBI</span>::<span class='fu'><a href='https://dbi.r-dbi.org/reference/dbDisconnect.html'>dbDisconnect</a></span>(<span class='kw'>my_db</span>)
+}
+</div><div class='output co'>#&gt; mk_td("d", c(
 #&gt;   "i",
 #&gt;   "a",
 #&gt;   "b",
@@ -333,7 +334,7 @@ is a reserved column name for this procedure.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
 </div>
 
       </footer>

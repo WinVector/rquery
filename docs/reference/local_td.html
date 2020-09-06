@@ -154,11 +154,11 @@
     </div>
 
     <pre class="usage"><span class='fu'>local_td</span>(
-  <span class='no'>d</span>,
-  <span class='no'>...</span>,
-  <span class='kw'>name</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>name_source</span> <span class='kw'>=</span> <span class='kw pkg'>wrapr</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/wrapr/man/mk_tmp_name_source.html'>mk_tmp_name_source</a></span>(<span class='st'>"rqltd"</span>),
-  <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span>()
+  <span class='kw'>d</span>,
+  <span class='kw'>...</span>,
+  name = <span class='kw'>NULL</span>,
+  name_source = <span class='kw'>wrapr</span>::<span class='fu'><a href='https://winvector.github.io/wrapr//reference/mk_tmp_name_source.html'>mk_tmp_name_source</a></span>(<span class='st'>"rqltd"</span>),
+  env = <span class='fu'><a href='#base/sys.parent.html'>parent.frame</a></span>()
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -195,16 +195,21 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='fl'>1</span>)
-<span class='fu'>local_td</span>(<span class='no'>d</span>)</div><div class='output co'>#&gt; [1] "mk_td(\"d\", c( \"x\"))"
+<span class='kw'>d</span> <span class='op'>&lt;-</span> <span class='fu'><a href='#base/data.frame.html'>data.frame</a></span>(x = <span class='fl'>1</span>)
+<span class='fu'>local_td</span>(<span class='kw'>d</span>)
+</div><div class='output co'>#&gt; [1] "mk_td(\"d\", c( \"x\"))"
 #&gt;   x
-#&gt; 1 1</div><div class='input'><span class='fu'>local_td</span>(<span class='st'>"d"</span>)</div><div class='output co'>#&gt; [1] "mk_td(\"d\", c( \"x\"))"
+#&gt; 1 1</div><div class='input'><span class='fu'>local_td</span>(<span class='st'>"d"</span>)
+</div><div class='output co'>#&gt; [1] "mk_td(\"d\", c( \"x\"))"
 #&gt;   x
-#&gt; 1 1</div><div class='input'><span class='fu'>local_td</span>(<span class='fu'><a href='https://rdrr.io/r/base/name.html'>as.name</a></span>(<span class='st'>"d"</span>))</div><div class='output co'>#&gt; [1] "mk_td(\"d\", c( \"x\"))"
+#&gt; 1 1</div><div class='input'><span class='fu'>local_td</span>(<span class='fu'><a href='#base/name.html'>as.name</a></span>(<span class='st'>"d"</span>))
+</div><div class='output co'>#&gt; [1] "mk_td(\"d\", c( \"x\"))"
 #&gt;   x
-#&gt; 1 1</div><div class='input'><span class='fu'>local_td</span>(<span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='fl'>1</span>))</div><div class='output co'>#&gt; [1] "mk_td(\"rqltd_03271645692519957280_0000000000\", c( \"x\"))"
+#&gt; 1 1</div><div class='input'><span class='fu'>local_td</span>(<span class='fu'><a href='#base/data.frame.html'>data.frame</a></span>(x = <span class='fl'>1</span>))
+</div><div class='output co'>#&gt; [1] "mk_td(\"rqltd_03271645692519957280_0000000000\", c( \"x\"))"
 #&gt;   x
-#&gt; 1 1</div><div class='input'><span class='no'>d</span> <span class='kw'>%.&gt;%</span> <span class='no'>local_td</span> <span class='co'># needs wrapr 1.5.0 or newer to capture name</span></div><div class='output co'>#&gt; [1] "mk_td(\"d\", c( \"x\"))"
+#&gt; 1 1</div><div class='input'><span class='kw'>d</span> <span class='op'>%.&gt;%</span> <span class='kw'>local_td</span> <span class='co'># needs wrapr 1.5.0 or newer to capture name</span>
+</div><div class='output co'>#&gt; [1] "mk_td(\"d\", c( \"x\"))"
 #&gt;   x
 #&gt; 1 1</div><div class='input'>
 </div></pre>
@@ -223,7 +228,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
 </div>
 
       </footer>

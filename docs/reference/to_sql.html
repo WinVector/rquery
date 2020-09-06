@@ -154,15 +154,15 @@
     </div>
 
     <pre class="usage"><span class='fu'>to_sql</span>(
-  <span class='no'>x</span>,
-  <span class='no'>db</span>,
-  <span class='no'>...</span>,
-  <span class='kw'>limit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>source_limit</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>indent_level</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>tnum</span> <span class='kw'>=</span> <span class='fu'>mk_tmp_name_source</span>(<span class='st'>"tsql"</span>),
-  <span class='kw'>append_cr</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>using</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
+  <span class='kw'>x</span>,
+  <span class='kw'>db</span>,
+  <span class='kw'>...</span>,
+  limit = <span class='kw'>NULL</span>,
+  source_limit = <span class='kw'>NULL</span>,
+  indent_level = <span class='fl'>0</span>,
+  tnum = <span class='fu'>mk_tmp_name_source</span>(<span class='st'>"tsql"</span>),
+  append_cr = <span class='fl'>TRUE</span>,
+  using = <span class='kw'>NULL</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -215,17 +215,18 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='kw'>if</span> (<span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"DBI"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>&amp;&amp;</span> <span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
-  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
-  <span class='no'>d1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(<span class='no'>my_db</span>, <span class='st'>'d1'</span>,
-                    <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>0.6</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>0.2</span>))
-  <span class='no'>d2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(<span class='no'>my_db</span>, <span class='st'>'d2'</span>,
-                    <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>0.6</span>, <span class='kw'>D</span> <span class='kw'>=</span> <span class='fl'>0.3</span>))
-  <span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='natural_join.html'>natural_join</a></span>(<span class='no'>d1</span>, <span class='no'>d2</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='st'>"AUC"</span>)
-  <span class='fu'><a href='https://rdrr.io/r/base/cat.html'>cat</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/format.html'>format</a></span>(<span class='no'>optree</span>))
-  <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='fu'>to_sql</span>(<span class='no'>optree</span>, <span class='no'>my_db</span>))
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbDisconnect.html'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; mk_td("d1", c(
+<span class='co'>if</span> (<span class='fu'><a href='#base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"DBI"</span>, quietly = <span class='fl'>TRUE</span>) <span class='op'>&amp;&amp;</span> <span class='fu'><a href='#base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"RSQLite"</span>, quietly = <span class='fl'>TRUE</span>)) {
+  <span class='kw'>my_db</span> <span class='op'>&lt;-</span> <span class='kw'>DBI</span>::<span class='fu'><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></span>(<span class='kw'>RSQLite</span>::<span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
+  <span class='kw'>d1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(<span class='kw'>my_db</span>, <span class='st'>'d1'</span>,
+                    <span class='fu'><a href='#base/data.frame.html'>data.frame</a></span>(AUC = <span class='fl'>0.6</span>, R2 = <span class='fl'>0.2</span>))
+  <span class='kw'>d2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(<span class='kw'>my_db</span>, <span class='st'>'d2'</span>,
+                    <span class='fu'><a href='#base/data.frame.html'>data.frame</a></span>(AUC = <span class='fl'>0.6</span>, D = <span class='fl'>0.3</span>))
+  <span class='kw'>optree</span> <span class='op'>&lt;-</span> <span class='fu'><a href='natural_join.html'>natural_join</a></span>(<span class='kw'>d1</span>, <span class='kw'>d2</span>, by = <span class='st'>"AUC"</span>)
+  <span class='fu'><a href='#base/cat.html'>cat</a></span>(<span class='fu'><a href='#base/format.html'>format</a></span>(<span class='kw'>optree</span>))
+  <span class='fu'><a href='#base/print.html'>print</a></span>(<span class='fu'>to_sql</span>(<span class='kw'>optree</span>, <span class='kw'>my_db</span>))
+  <span class='kw'>DBI</span>::<span class='fu'><a href='https://dbi.r-dbi.org/reference/dbDisconnect.html'>dbDisconnect</a></span>(<span class='kw'>my_db</span>)
+}
+</div><div class='output co'>#&gt; mk_td("d1", c(
 #&gt;   "AUC",
 #&gt;   "R2")) %.&gt;%
 #&gt;  natural_join(.,
@@ -250,7 +251,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
 </div>
 
       </footer>

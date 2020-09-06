@@ -106,7 +106,7 @@
       <h1 data-toc-skip>rquery Many Columns</h1>
                         <h4 class="author">John Mount, Win-Vector LLC</h4>
             
-            <h4 class="date">2020-08-11</h4>
+            <h4 class="date">2020-09-06</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery/blob/master/vignettes/rquery_many_columns.Rmd"><code>vignettes/rquery_many_columns.Rmd</code></a></small>
       <div class="hidden name"><code>rquery_many_columns.Rmd</code></div>
@@ -119,20 +119,21 @@
 <p>In the <a href="https://github.com/WinVector/rquery"><code>rquery</code></a> <a href="https://www.r-project.org"><code>R</code></a> package we strongly recommend using value-oriented (or standard evaluation) for this task.</p>
 <p>Here is what this looks like.</p>
 <p>For our data lets build a simple data set similar to <code>mtcars</code>:</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">wrapr</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">rquery</span>)
-<span class="no">have_rqdatatable</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span>(<span class="st">'rqdatatable'</span>, <span class="kw">quietly</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
+<div class="sourceCode" id="cb1"><pre class="downlit">
+<span class="fu"><a href="#base/library.html">library</a></span>(<span class="kw"><a href="https://github.com/WinVector/wrapr">wrapr</a></span>)
+<span class="fu"><a href="#base/library.html">library</a></span>(<span class="kw"><a href="https://github.com/WinVector/rquery/">rquery</a></span>)
+<span class="kw">have_rqdatatable</span> <span class="op">&lt;-</span> <span class="fu"><a href="#base/ns-load.html">requireNamespace</a></span>(<span class="st">'rqdatatable'</span>, quietly = <span class="fl">TRUE</span>)
 
-<span class="no">example_data</span> <span class="kw">&lt;-</span> <span class="kw pkg">wrapr</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/wrapr/man/build_frame.html">build_frame</a></span>(
-   <span class="st">"mpg"</span>  , <span class="st">"cyl"</span>, <span class="st">"disp"</span>,  <span class="st">"car"</span>               <span class="kw">|</span>
-     <span class="fl">21</span>   , <span class="fl">6</span>    , <span class="fl">160</span>   ,  <span class="st">"Mazda RX4"</span>         <span class="kw">|</span>
-     <span class="fl">21</span>   , <span class="fl">6</span>    , <span class="fl">160</span>   ,  <span class="st">"Mazda RX4 Wag"</span>     <span class="kw">|</span>
-     <span class="fl">22.8</span> , <span class="fl">4</span>    , <span class="fl">108</span>   ,  <span class="st">"Datsun 710"</span>        <span class="kw">|</span>
-     <span class="fl">21.4</span> , <span class="fl">6</span>    , <span class="fl">258</span>   ,  <span class="st">"Hornet 4 Drive"</span>    <span class="kw">|</span>
-     <span class="fl">18.7</span> , <span class="fl">8</span>    , <span class="fl">360</span>   ,  <span class="st">"Hornet Sportabout"</span> <span class="kw">|</span>
+<span class="kw">example_data</span> <span class="op">&lt;-</span> <span class="kw">wrapr</span>::<span class="fu"><a href="https://winvector.github.io/wrapr//reference/build_frame.html">build_frame</a></span>(
+   <span class="st">"mpg"</span>  , <span class="st">"cyl"</span>, <span class="st">"disp"</span>,  <span class="st">"car"</span>               <span class="op">|</span>
+     <span class="fl">21</span>   , <span class="fl">6</span>    , <span class="fl">160</span>   ,  <span class="st">"Mazda RX4"</span>         <span class="op">|</span>
+     <span class="fl">21</span>   , <span class="fl">6</span>    , <span class="fl">160</span>   ,  <span class="st">"Mazda RX4 Wag"</span>     <span class="op">|</span>
+     <span class="fl">22.8</span> , <span class="fl">4</span>    , <span class="fl">108</span>   ,  <span class="st">"Datsun 710"</span>        <span class="op">|</span>
+     <span class="fl">21.4</span> , <span class="fl">6</span>    , <span class="fl">258</span>   ,  <span class="st">"Hornet 4 Drive"</span>    <span class="op">|</span>
+     <span class="fl">18.7</span> , <span class="fl">8</span>    , <span class="fl">360</span>   ,  <span class="st">"Hornet Sportabout"</span> <span class="op">|</span>
      <span class="fl">18.1</span> , <span class="fl">6</span>    , <span class="fl">225</span>   ,  <span class="st">"Valiant"</span>           )
 
-<span class="kw pkg">knitr</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(<span class="no">example_data</span>)</pre></body></html></div>
+<span class="kw">knitr</span>::<span class="fu"><a href="#knitr/kable.html">kable</a></span>(<span class="kw">example_data</span>)</pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">mpg</th>
@@ -181,22 +182,25 @@
 </table>
 <p>Now suppose for a number of columns we wish to perform a calculation, such centering it with respect to the grand average.</p>
 <p>This is easily handled by first specifying the set of variables we wish to work with.</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="no">vars</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html">setdiff</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span>(<span class="no">example_data</span>), <span class="st">'car'</span>)
+<div class="sourceCode" id="cb2"><pre class="downlit">
+<span class="kw">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="#base/sets.html">setdiff</a></span>(<span class="fu"><a href="#base/colnames.html">colnames</a></span>(<span class="kw">example_data</span>), <span class="st">'car'</span>)
 
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">vars</span>)</pre></body></html></div>
+<span class="fu"><a href="#base/print.html">print</a></span>(<span class="kw">vars</span>)</pre></div>
 <pre><code>## [1] "mpg"  "cyl"  "disp"</code></pre>
 <p>Now we build up what we want as a name-vector of strings using the <a href="https://winvector.github.io/wrapr/articles/named_map_builder.html"><code>:=</code> named map builder</a>.</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="no">expressions</span> <span class="kw">&lt;-</span> <span class="no">vars</span> <span class="kw">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="no">vars</span>, <span class="st">' - mean('</span>, <span class="no">vars</span>, <span class="st">')'</span>)
+<div class="sourceCode" id="cb4"><pre class="downlit">
+<span class="kw">expressions</span> <span class="op">&lt;-</span> <span class="kw">vars</span> <span class="op">:=</span> <span class="fu"><a href="#base/paste.html">paste0</a></span>(<span class="kw">vars</span>, <span class="st">' - mean('</span>, <span class="kw">vars</span>, <span class="st">')'</span>)
 
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">expressions</span>)</pre></body></html></div>
+<span class="fu"><a href="#base/print.html">print</a></span>(<span class="kw">expressions</span>)</pre></div>
 <pre><code>##                 mpg                 cyl                disp 
 ##   "mpg - mean(mpg)"   "cyl - mean(cyl)" "disp - mean(disp)"</code></pre>
 <p>The idea is: the <code>:=</code> operator fits into <code>R</code> idiom by looking very much like a vectorized version of “names get assigned expressions”.</p>
 <p>These expressions can then be used in an <code>rquery</code> pipeline using the <code>_se</code>-variant of <code><a href="../reference/extend.html">extend()</a></code>: <code><a href="../reference/extend_se.html">extend_se()</a></code>.</p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="no">ops</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/local_td.html">local_td</a></span>(<span class="no">example_data</span>) <span class="kw">%.&gt;%</span>
-  <span class="fu"><a href="../reference/extend_se.html">extend_se</a></span>(<span class="no">.</span>, <span class="no">expressions</span>)
+<div class="sourceCode" id="cb6"><pre class="downlit">
+<span class="kw">ops</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/local_td.html">local_td</a></span>(<span class="kw">example_data</span>) <span class="op">%.&gt;%</span>
+  <span class="fu"><a href="../reference/extend_se.html">extend_se</a></span>(<span class="kw">.</span>, <span class="kw">expressions</span>)
 
-<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/format.html">format</a></span>(<span class="no">ops</span>))</pre></body></html></div>
+<span class="fu"><a href="#base/cat.html">cat</a></span>(<span class="fu"><a href="#base/format.html">format</a></span>(<span class="kw">ops</span>))</pre></div>
 <pre><code>## mk_td("example_data", c(
 ##   "mpg",
 ##   "cyl",
@@ -207,11 +211,12 @@
 ##   cyl := cyl - mean(cyl),
 ##   disp := disp - mean(disp))</code></pre>
 <p>And this operator pipeline is ready to use (assuming we have <code>rqdatatable</code> available):</p>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="kw">if</span>(<span class="no">have_rqdatatable</span>) {
-  <span class="no">example_data</span> <span class="kw">%.&gt;%</span>
-    <span class="no">ops</span> <span class="kw">%.&gt;%</span>
-    <span class="kw pkg">knitr</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(<span class="no">.</span>)
-}</pre></body></html></div>
+<div class="sourceCode" id="cb8"><pre class="downlit">
+<span class="co">if</span>(<span class="kw">have_rqdatatable</span>) {
+  <span class="kw">example_data</span> <span class="op">%.&gt;%</span>
+    <span class="kw">ops</span> <span class="op">%.&gt;%</span>
+    <span class="kw">knitr</span>::<span class="fu"><a href="#knitr/kable.html">kable</a></span>(<span class="kw">.</span>)
+}</pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">mpg</th>
@@ -259,10 +264,11 @@
 </tbody>
 </table>
 <p>The expression construction can also be done inside the <code><a href="../reference/extend_se.html">extend_se()</a></code> operator.</p>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="no">ops</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/local_td.html">local_td</a></span>(<span class="no">example_data</span>) <span class="kw">%.&gt;%</span>
-  <span class="fu"><a href="../reference/extend_se.html">extend_se</a></span>(<span class="no">.</span>, <span class="no">vars</span> <span class="kw">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="no">vars</span>, <span class="st">' - mean('</span>, <span class="no">vars</span>, <span class="st">')'</span>))
+<div class="sourceCode" id="cb9"><pre class="downlit">
+<span class="kw">ops</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/local_td.html">local_td</a></span>(<span class="kw">example_data</span>) <span class="op">%.&gt;%</span>
+  <span class="fu"><a href="../reference/extend_se.html">extend_se</a></span>(<span class="kw">.</span>, <span class="kw">vars</span> <span class="op">:=</span> <span class="fu"><a href="#base/paste.html">paste0</a></span>(<span class="kw">vars</span>, <span class="st">' - mean('</span>, <span class="kw">vars</span>, <span class="st">')'</span>))
 
-<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/format.html">format</a></span>(<span class="no">ops</span>))</pre></body></html></div>
+<span class="fu"><a href="#base/cat.html">cat</a></span>(<span class="fu"><a href="#base/format.html">format</a></span>(<span class="kw">ops</span>))</pre></div>
 <pre><code>## mk_td("example_data", c(
 ##   "mpg",
 ##   "cyl",
@@ -272,21 +278,23 @@
 ##   mpg := mpg - mean(mpg),
 ##   cyl := cyl - mean(cyl),
 ##   disp := disp - mean(disp))</code></pre>
-<p>Note: the above is only a notional example to demonstrate the operations; for supervised machine learning we would probably use <code><a href="https://rdrr.io/r/base/scale.html">base::scale()</a></code>, which saves the learned centering for later re-use on new data.</p>
+<p>Note: the above is only a notional example to demonstrate the operations; for supervised machine learning we would probably use <code><a href="#base/scale.html">base::scale()</a></code>, which saves the learned centering for later re-use on new data.</p>
 <p>The point is: we use standard <code>R</code> tools to build up the lists of names and operations. We are not restricted to any single argument manipulation grammar.</p>
 <p>For example we could build all interaction terms as follows.</p>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="no">combos</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span>(<span class="fu"><a href="https://rdrr.io/r/utils/combn.html">combn</a></span>(<span class="no">vars</span>, <span class="fl">2</span>))
-<span class="no">interactions</span> <span class="kw">&lt;-</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="no">combos</span>[, <span class="fl">1</span>], <span class="st">'_'</span>, <span class="no">combos</span>[, <span class="fl">2</span>]) <span class="kw">:=</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="no">combos</span>[, <span class="fl">1</span>], <span class="st">' * '</span>, <span class="no">combos</span>[, <span class="fl">2</span>])
+<div class="sourceCode" id="cb11"><pre class="downlit">
+<span class="kw">combos</span> <span class="op">&lt;-</span> <span class="fu"><a href="#base/t.html">t</a></span>(<span class="fu"><a href="#utils/combn.html">combn</a></span>(<span class="kw">vars</span>, <span class="fl">2</span>))
+<span class="kw">interactions</span> <span class="op">&lt;-</span> 
+  <span class="fu"><a href="#base/paste.html">paste0</a></span>(<span class="kw">combos</span>[, <span class="fl">1</span>], <span class="st">'_'</span>, <span class="kw">combos</span>[, <span class="fl">2</span>]) <span class="op">:=</span> 
+  <span class="fu"><a href="#base/paste.html">paste0</a></span>(<span class="kw">combos</span>[, <span class="fl">1</span>], <span class="st">' * '</span>, <span class="kw">combos</span>[, <span class="fl">2</span>])
 
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">interactions</span>)</pre></body></html></div>
+<span class="fu"><a href="#base/print.html">print</a></span>(<span class="kw">interactions</span>)</pre></div>
 <pre><code>##      mpg_cyl     mpg_disp     cyl_disp 
 ##  "mpg * cyl" "mpg * disp" "cyl * disp"</code></pre>
-<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="no">ops</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/local_td.html">local_td</a></span>(<span class="no">example_data</span>) <span class="kw">%.&gt;%</span>
-  <span class="fu"><a href="../reference/extend_se.html">extend_se</a></span>(<span class="no">.</span>, <span class="no">interactions</span>)
+<div class="sourceCode" id="cb13"><pre class="downlit">
+<span class="kw">ops</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/local_td.html">local_td</a></span>(<span class="kw">example_data</span>) <span class="op">%.&gt;%</span>
+  <span class="fu"><a href="../reference/extend_se.html">extend_se</a></span>(<span class="kw">.</span>, <span class="kw">interactions</span>)
 
-<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/format.html">format</a></span>(<span class="no">ops</span>))</pre></body></html></div>
+<span class="fu"><a href="#base/cat.html">cat</a></span>(<span class="fu"><a href="#base/format.html">format</a></span>(<span class="kw">ops</span>))</pre></div>
 <pre><code>## mk_td("example_data", c(
 ##   "mpg",
 ##   "cyl",
@@ -297,13 +305,14 @@
 ##   mpg_disp := mpg * disp,
 ##   cyl_disp := cyl * disp)</code></pre>
 <p>It is a critical advantage to work with sets of variables as standard values. In this case what we can do is limited only by the power of <code>R</code> itself.</p>
-<p>Note: we also supply an alias for <code>:=</code> as <code><a href="https://rdrr.io/pkg/wrapr/man/named_map_builder.html">%:=%</a></code> for those that don’t want to confuse this assignment with how the symbol is used in <code>data.table</code>. Take care that <code>:=</code> has the precedence-level of an assignment and <code><a href="https://rdrr.io/pkg/wrapr/man/named_map_builder.html">%:=%</a></code> has the precedence-level of a user defined operator.</p>
+<p>Note: we also supply an alias for <code>:=</code> as <code><a href="https://winvector.github.io/wrapr//reference/named_map_builder.html">%:=%</a></code> for those that don’t want to confuse this assignment with how the symbol is used in <code>data.table</code>. Take care that <code>:=</code> has the precedence-level of an assignment and <code><a href="https://winvector.github.io/wrapr//reference/named_map_builder.html">%:=%</a></code> has the precedence-level of a user defined operator.</p>
 <p>As, as always, our queries can be used on data.</p>
-<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="kw">if</span>(<span class="no">have_rqdatatable</span>) {
-  <span class="no">example_data</span> <span class="kw">%.&gt;%</span>
-    <span class="no">ops</span> <span class="kw">%.&gt;%</span>
-    <span class="kw pkg">knitr</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(<span class="no">.</span>)
-}</pre></body></html></div>
+<div class="sourceCode" id="cb15"><pre class="downlit">
+<span class="co">if</span>(<span class="kw">have_rqdatatable</span>) {
+  <span class="kw">example_data</span> <span class="op">%.&gt;%</span>
+    <span class="kw">ops</span> <span class="op">%.&gt;%</span>
+    <span class="kw">knitr</span>::<span class="fu"><a href="#knitr/kable.html">kable</a></span>(<span class="kw">.</span>)
+}</pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">mpg</th>
@@ -372,27 +381,28 @@
 </tbody>
 </table>
 <p>Or even in a database.</p>
-<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="no">have_db</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span>(<span class="st">"DBI"</span>, <span class="kw">quietly</span> <span class="kw">=</span> <span class="fl">TRUE</span>) <span class="kw">&amp;&amp;</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span>(<span class="st">"RSQLite"</span>, <span class="kw">quietly</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
+<div class="sourceCode" id="cb16"><pre class="downlit">
+<span class="kw">have_db</span> <span class="op">&lt;-</span> <span class="fu"><a href="#base/ns-load.html">requireNamespace</a></span>(<span class="st">"DBI"</span>, quietly = <span class="fl">TRUE</span>) <span class="op">&amp;&amp;</span> 
+  <span class="fu"><a href="#base/ns-load.html">requireNamespace</a></span>(<span class="st">"RSQLite"</span>, quietly = <span class="fl">TRUE</span>)
 
-<span class="kw">if</span>(<span class="no">have_db</span>) {
-  <span class="no">raw_connection</span> <span class="kw">&lt;-</span> <span class="kw pkg">DBI</span><span class="kw ns">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span>(<span class="kw pkg">RSQLite</span><span class="kw ns">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html">SQLite</a></span>(),
+<span class="co">if</span>(<span class="kw">have_db</span>) {
+  <span class="kw">raw_connection</span> <span class="op">&lt;-</span> <span class="kw">DBI</span>::<span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span>(<span class="kw">RSQLite</span>::<span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html">SQLite</a></span>(), 
                                    <span class="st">":memory:"</span>)
-  <span class="kw pkg">RSQLite</span><span class="kw ns">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/initExtension.html">initExtension</a></span>(<span class="no">raw_connection</span>)
-  <span class="no">db</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/rquery_db_info.html">rquery_db_info</a></span>(
-    <span class="kw">connection</span> <span class="kw">=</span> <span class="no">raw_connection</span>,
-    <span class="kw">is_dbi</span> <span class="kw">=</span> <span class="fl">TRUE</span>,
-    <span class="kw">connection_options</span> <span class="kw">=</span> <span class="fu"><a href="../reference/rq_connection_tests.html">rq_connection_tests</a></span>(<span class="no">raw_connection</span>))
-
-  <span class="fu"><a href="../reference/rq_copy_to.html">rq_copy_to</a></span>(<span class="no">db</span>, <span class="st">'example_data'</span>,
-             <span class="no">example_data</span>,
-             <span class="kw">temporary</span> <span class="kw">=</span> <span class="fl">TRUE</span>,
-             <span class="kw">overwrite</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
-
-  <span class="no">sql</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/to_sql.html">to_sql</a></span>(<span class="no">ops</span>, <span class="no">db</span>)
-
-  <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/format.html">format</a></span>(<span class="no">sql</span>))
-}</pre></body></html></div>
+  <span class="kw">RSQLite</span>::<span class="fu"><a href="https://rsqlite.r-dbi.org/reference/initExtension.html">initExtension</a></span>(<span class="kw">raw_connection</span>)
+  <span class="kw">db</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rquery_db_info.html">rquery_db_info</a></span>(
+    connection = <span class="kw">raw_connection</span>,
+    is_dbi = <span class="fl">TRUE</span>,
+    connection_options = <span class="fu"><a href="../reference/rq_connection_tests.html">rq_connection_tests</a></span>(<span class="kw">raw_connection</span>))
+  
+  <span class="fu"><a href="../reference/rq_copy_to.html">rq_copy_to</a></span>(<span class="kw">db</span>, <span class="st">'example_data'</span>,
+             <span class="kw">example_data</span>,
+             temporary = <span class="fl">TRUE</span>, 
+             overwrite = <span class="fl">TRUE</span>)
+  
+  <span class="kw">sql</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/to_sql.html">to_sql</a></span>(<span class="kw">ops</span>, <span class="kw">db</span>)
+  
+  <span class="fu"><a href="#base/cat.html">cat</a></span>(<span class="fu"><a href="#base/format.html">format</a></span>(<span class="kw">sql</span>))
+}</pre></div>
 <pre><code>## SELECT
 ##  `mpg`,
 ##  `cyl`,
@@ -409,12 +419,13 @@
 ##   `car`
 ##  FROM
 ##   `example_data`
-##  ) tsql_41959849612956842925_0000000000</code></pre>
-<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="kw">if</span>(<span class="no">have_db</span>) {
-  <span class="no">res_table</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/materialize.html">materialize</a></span>(<span class="no">db</span>, <span class="no">ops</span>)
-  <span class="kw pkg">DBI</span><span class="kw ns">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbReadTable.html">dbReadTable</a></span>(<span class="no">raw_connection</span>, <span class="no">res_table</span>$<span class="no">table_name</span>) <span class="kw">%.&gt;%</span>
-    <span class="kw pkg">knitr</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(<span class="no">.</span>)
-}</pre></body></html></div>
+##  ) tsql_92930678723928701116_0000000000</code></pre>
+<div class="sourceCode" id="cb18"><pre class="downlit">
+<span class="co">if</span>(<span class="kw">have_db</span>) {
+  <span class="kw">res_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/materialize.html">materialize</a></span>(<span class="kw">db</span>, <span class="kw">ops</span>)
+  <span class="kw">DBI</span>::<span class="fu"><a href="https://dbi.r-dbi.org/reference/dbReadTable.html">dbReadTable</a></span>(<span class="kw">raw_connection</span>, <span class="kw">res_table</span><span class="op">$</span><span class="kw">table_name</span>) <span class="op">%.&gt;%</span>
+    <span class="kw">knitr</span>::<span class="fu"><a href="#knitr/kable.html">kable</a></span>(<span class="kw">.</span>)
+}</pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">mpg</th>
@@ -482,9 +493,10 @@
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="kw">if</span>(<span class="no">have_db</span>) {
-  <span class="kw pkg">DBI</span><span class="kw ns">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html">dbDisconnect</a></span>(<span class="no">raw_connection</span>)
-}</pre></body></html></div>
+<div class="sourceCode" id="cb19"><pre class="downlit">
+<span class="co">if</span>(<span class="kw">have_db</span>) {
+  <span class="kw">DBI</span>::<span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html">dbDisconnect</a></span>(<span class="kw">raw_connection</span>)
+}</pre></div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -500,7 +512,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
 </div>
 
       </footer>

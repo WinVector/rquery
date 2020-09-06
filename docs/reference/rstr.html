@@ -154,21 +154,21 @@
     </div>
 
     <pre class="usage"><span class='fu'>rstr</span>(
-  <span class='no'>my_db</span>,
-  <span class='no'>tableName</span>,
-  <span class='no'>...</span>,
-  <span class='kw'>displayRows</span> <span class='kw'>=</span> <span class='fl'>10</span>,
-  <span class='kw'>countRows</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
+  <span class='kw'>my_db</span>,
+  <span class='kw'>tableName</span>,
+  <span class='kw'>...</span>,
+  displayRows = <span class='fl'>10</span>,
+  countRows = <span class='fl'>TRUE</span>,
+  qualifiers = <span class='kw'>NULL</span>
 )
 
 <span class='fu'>rlook</span>(
-  <span class='no'>my_db</span>,
-  <span class='no'>tableName</span>,
-  <span class='no'>...</span>,
-  <span class='kw'>displayRows</span> <span class='kw'>=</span> <span class='fl'>10</span>,
-  <span class='kw'>countRows</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
+  <span class='kw'>my_db</span>,
+  <span class='kw'>tableName</span>,
+  <span class='kw'>...</span>,
+  displayRows = <span class='fl'>10</span>,
+  countRows = <span class='fl'>TRUE</span>,
+  qualifiers = <span class='kw'>NULL</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -206,17 +206,18 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='kw'>if</span> ( <span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"DBI"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>&amp;&amp;</span>
-  <span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
-  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbWriteTable.html'>dbWriteTable</a></span>(<span class='no'>my_db</span>,
+<span class='co'>if</span> ( <span class='fu'><a href='#base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"DBI"</span>, quietly = <span class='fl'>TRUE</span>) <span class='op'>&amp;&amp;</span>
+  <span class='fu'><a href='#base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"RSQLite"</span>, quietly = <span class='fl'>TRUE</span>)) {
+  <span class='kw'>my_db</span> <span class='op'>&lt;-</span> <span class='kw'>DBI</span>::<span class='fu'><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></span>(<span class='kw'>RSQLite</span>::<span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
+  <span class='kw'>DBI</span>::<span class='fu'><a href='https://dbi.r-dbi.org/reference/dbWriteTable.html'>dbWriteTable</a></span>(<span class='kw'>my_db</span>,
                     <span class='st'>'d'</span>,
-                    <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='kw'>AUC</span> <span class='kw'>=</span> <span class='fl'>0.6</span>, <span class='kw'>R2</span> <span class='kw'>=</span> <span class='fl'>0.2</span>),
-                    <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-                    <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
-  <span class='fu'>rlook</span>(<span class='no'>my_db</span>, <span class='st'>'d'</span>)
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbDisconnect.html'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt; table `d` SQLiteConnection 
+                    <span class='fu'><a href='#base/data.frame.html'>data.frame</a></span>(AUC = <span class='fl'>0.6</span>, R2 = <span class='fl'>0.2</span>),
+                    overwrite = <span class='fl'>TRUE</span>,
+                    temporary = <span class='fl'>TRUE</span>)
+  <span class='fu'>rlook</span>(<span class='kw'>my_db</span>, <span class='st'>'d'</span>)
+  <span class='kw'>DBI</span>::<span class='fu'><a href='https://dbi.r-dbi.org/reference/dbDisconnect.html'>dbDisconnect</a></span>(<span class='kw'>my_db</span>)
+}
+</div><div class='output co'>#&gt; table `d` SQLiteConnection 
 #&gt;  nrow: 1 
 #&gt; 'data.frame':	1 obs. of  2 variables:
 #&gt;  $ AUC: num 0.6
@@ -237,7 +238,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
 </div>
 
       </footer>

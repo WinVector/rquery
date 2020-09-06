@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Build a sequence of statements simulating an if/else block-<code>if(){}else{}</code>. — if_else_block • rquery</title>
+<title>Build a sequence of statements simulating an if/else block-if(){}else{}. — if_else_block • rquery</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,7 @@
 
 
 
-<meta property="og:title" content="Build a sequence of statements simulating an if/else block-<code>if(){}else{}</code>. — if_else_block" />
+<meta property="og:title" content="Build a sequence of statements simulating an if/else block-if(){}else{}. — if_else_block" />
 <meta property="og:description" content="This device uses expression-ifelse(,,) to simulate the
 more powerful per-row block-if(){}else{}.  The difference is
 expression-ifelse(,,) can choose per-row what value to express,
@@ -161,9 +161,9 @@ RPostgreSQL or sparklyr." />
     </div>
 
     <div class="ref-description">
-    <p>This device uses expression-<code><a href='https://rdrr.io/r/base/ifelse.html'>ifelse(,,)</a></code> to simulate the
+    <p>This device uses expression-<code><a href='#base/ifelse.html'>ifelse(,,)</a></code> to simulate the
 more powerful per-row block-<code>if(){}else{}</code>.  The difference is
-expression-<code><a href='https://rdrr.io/r/base/ifelse.html'>ifelse(,,)</a></code> can choose per-row what value to express,
+expression-<code><a href='#base/ifelse.html'>ifelse(,,)</a></code> can choose per-row what value to express,
 whereas block-<code>if(){}else{}</code> can choose per-row where to assign multiple
 values. By simulation we mean: a sequence of quoted mutate expressions
 are emitted that implement the transform.  These expressions can then
@@ -175,7 +175,7 @@ execution either on <code>data.frame</code>s or at a big data scale using
 <code>RPostgreSQL</code> or <code>sparklyr</code>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>if_else_block</span>(<span class='no'>testexpr</span>, <span class='no'>...</span>, <span class='kw'>thenexprs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>elseexprs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>if_else_block</span>(<span class='kw'>testexpr</span>, <span class='kw'>...</span>, thenexprs = <span class='kw'>NULL</span>, elseexprs = <span class='kw'>NULL</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -211,49 +211,50 @@ is a reserved column name for this procedure.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='kw'>if</span> (<span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"DBI"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>&amp;&amp;</span> <span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
+<span class='co'>if</span> (<span class='fu'><a href='#base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"DBI"</span>, quietly = <span class='fl'>TRUE</span>) <span class='op'>&amp;&amp;</span> <span class='fu'><a href='#base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"RSQLite"</span>, quietly = <span class='fl'>TRUE</span>)) {
   <span class='co'># Example: clear one of a or b in any row where both are set.</span>
   <span class='co'># Land random selections early to avoid SQLite bug.</span>
-  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
-  <span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(
-    <span class='no'>my_db</span>,
+  <span class='kw'>my_db</span> <span class='op'>&lt;-</span> <span class='kw'>DBI</span>::<span class='fu'><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></span>(<span class='kw'>RSQLite</span>::<span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
+  <span class='kw'>d</span> <span class='op'>&lt;-</span> <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(
+    <span class='kw'>my_db</span>,
     <span class='st'>'d'</span>,
-    <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='kw'>i</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>3</span>, <span class='fl'>4</span>, <span class='fl'>5</span>, <span class='fl'>6</span>, <span class='fl'>7</span>, <span class='fl'>8</span>, <span class='fl'>9</span>, <span class='fl'>10</span>),
-               <span class='kw'>a</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>),
-               <span class='kw'>b</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>),
-               <span class='kw'>r</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span>(<span class='fl'>10</span>),
-               <span class='kw'>edited</span> <span class='kw'>=</span> <span class='fl'>0</span>),
-    <span class='kw'>temporary</span><span class='kw'>=</span><span class='fl'>TRUE</span>, <span class='kw'>overwrite</span><span class='kw'>=</span><span class='fl'>TRUE</span>)
+    <span class='fu'><a href='#base/data.frame.html'>data.frame</a></span>(i = <span class='fu'><a href='#base/c.html'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>3</span>, <span class='fl'>4</span>, <span class='fl'>5</span>, <span class='fl'>6</span>, <span class='fl'>7</span>, <span class='fl'>8</span>, <span class='fl'>9</span>, <span class='fl'>10</span>),
+               a = <span class='fu'><a href='#base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>),
+               b = <span class='fu'><a href='#base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>1</span>),
+               r = <span class='fu'><a href='#stats/Uniform.html'>runif</a></span>(<span class='fl'>10</span>),
+               edited = <span class='fl'>0</span>),
+    temporary=<span class='fl'>TRUE</span>, overwrite=<span class='fl'>TRUE</span>)
 
-  <span class='no'>program</span> <span class='kw'>&lt;-</span> <span class='fu'>if_else_block</span>(
-    <span class='kw'>testexpr</span> <span class='kw'>=</span> <span class='fu'>qe</span>((<span class='no'>a</span>+<span class='no'>b</span>)<span class='kw'>&gt;</span><span class='fl'>1</span>),
-    <span class='kw'>thenexprs</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(
+  <span class='kw'>program</span> <span class='op'>&lt;-</span> <span class='fu'>if_else_block</span>(
+    testexpr = <span class='fu'>qe</span>((<span class='kw'>a</span><span class='op'>+</span><span class='kw'>b</span>)<span class='op'>&gt;</span><span class='fl'>1</span>),
+    thenexprs = <span class='fu'><a href='#base/c.html'>c</a></span>(
       <span class='fu'>if_else_block</span>(
-        <span class='kw'>testexpr</span> <span class='kw'>=</span> <span class='fu'>qe</span>(<span class='no'>r</span> <span class='kw'>&gt;=</span> <span class='fl'>0.5</span>),
-        <span class='kw'>thenexprs</span> <span class='kw'>=</span> <span class='fu'>qae</span>(<span class='no'>a</span> <span class='kw'>%:=%</span> <span class='fl'>0</span>),
-        <span class='kw'>elseexprs</span> <span class='kw'>=</span> <span class='fu'>qae</span>(<span class='no'>b</span> <span class='kw'>%:=%</span> <span class='fl'>0</span>)),
-      <span class='fu'>qae</span>(<span class='no'>edited</span> <span class='kw'>%:=%</span> <span class='fl'>1</span>)))
-  <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='no'>program</span>)
+        testexpr = <span class='fu'>qe</span>(<span class='kw'>r</span> <span class='op'>&gt;=</span> <span class='fl'>0.5</span>),
+        thenexprs = <span class='fu'>qae</span>(<span class='kw'>a</span> <span class='op'>%:=%</span> <span class='fl'>0</span>),
+        elseexprs = <span class='fu'>qae</span>(<span class='kw'>b</span> <span class='op'>%:=%</span> <span class='fl'>0</span>)),
+      <span class='fu'>qae</span>(<span class='kw'>edited</span> <span class='op'>%:=%</span> <span class='fl'>1</span>)))
+  <span class='fu'><a href='#base/print.html'>print</a></span>(<span class='kw'>program</span>)
 
-  <span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='extend_se.html'>extend_se</a></span>(<span class='no'>d</span>, <span class='no'>program</span>)
-  <span class='fu'><a href='https://rdrr.io/r/base/cat.html'>cat</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/format.html'>format</a></span>(<span class='no'>optree</span>))
+  <span class='kw'>optree</span> <span class='op'>&lt;-</span> <span class='fu'><a href='extend_se.html'>extend_se</a></span>(<span class='kw'>d</span>, <span class='kw'>program</span>)
+  <span class='fu'><a href='#base/cat.html'>cat</a></span>(<span class='fu'><a href='#base/format.html'>format</a></span>(<span class='kw'>optree</span>))
 
-  <span class='no'>sql</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='no'>optree</span>, <span class='no'>my_db</span>)
-  <span class='fu'><a href='https://rdrr.io/r/base/cat.html'>cat</a></span>(<span class='no'>sql</span>)
+  <span class='kw'>sql</span> <span class='op'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='kw'>optree</span>, <span class='kw'>my_db</span>)
+  <span class='fu'><a href='#base/cat.html'>cat</a></span>(<span class='kw'>sql</span>)
 
-  <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbGetQuery.html'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>sql</span>))
+  <span class='fu'><a href='#base/print.html'>print</a></span>(<span class='kw'>DBI</span>::<span class='fu'><a href='https://dbi.r-dbi.org/reference/dbGetQuery.html'>dbGetQuery</a></span>(<span class='kw'>my_db</span>, <span class='kw'>sql</span>))
 
   <span class='co'># Why we need to land the random selection early</span>
   <span class='co'># for SQLIte:</span>
-  <span class='no'>q</span> <span class='kw'>&lt;-</span> <span class='st'>"SELECT r AS r1, r AS r2 FROM (
+  <span class='kw'>q</span> <span class='op'>&lt;-</span> <span class='st'>"SELECT r AS r1, r AS r2 FROM (
           SELECT random() AS r FROM (
              SELECT * from ( VALUES(1),(2) )
           ) a
        ) b"</span>
-  <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbGetQuery.html'>dbGetQuery</a></span>(<span class='no'>my_db</span>, <span class='no'>q</span>))
+  <span class='fu'><a href='#base/print.html'>print</a></span>(<span class='kw'>DBI</span>::<span class='fu'><a href='https://dbi.r-dbi.org/reference/dbGetQuery.html'>dbGetQuery</a></span>(<span class='kw'>my_db</span>, <span class='kw'>q</span>))
 
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbDisconnect.html'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt;                                             ifebtest_2 
+  <span class='kw'>DBI</span>::<span class='fu'><a href='https://dbi.r-dbi.org/reference/dbDisconnect.html'>dbDisconnect</a></span>(<span class='kw'>my_db</span>)
+}
+</div><div class='output co'>#&gt;                                             ifebtest_2 
 #&gt;                                          "(a + b) &gt; 1" 
 #&gt;                                             ifebtest_1 
 #&gt;                                             "r &gt;= 0.5" 
@@ -315,9 +316,9 @@ is a reserved column name for this procedure.</p>
 #&gt; 8   8 0.029104153          1          0 1 0      1
 #&gt; 9   9 0.437340783          1          0 1 0      1
 #&gt; 10 10 0.530409487          1          1 0 1      1
-#&gt;                     r1                   r2
-#&gt; 1 -2214476268929238701  4302876038596998244
-#&gt; 2  2102955491171328612 -2114100887118013403</div><div class='input'>
+#&gt;                    r1                   r2
+#&gt; 1 -757516255375899901 -6296080398149022289
+#&gt; 2 -964934786353659021 -6446682046319168096</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -334,7 +335,7 @@ is a reserved column name for this procedure.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
 </div>
 
       </footer>

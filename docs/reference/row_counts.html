@@ -153,7 +153,7 @@
     <p>This is an example of building up a desired pre-prepared pipeline fragment from relop nodes.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>row_counts</span>(<span class='no'>source</span>, <span class='no'>...</span>, <span class='kw'>groupby</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/character.html'>character</a></span>(<span class='fl'>0</span>), <span class='kw'>env</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span>())</pre>
+    <pre class="usage"><span class='fu'>row_counts</span>(<span class='kw'>source</span>, <span class='kw'>...</span>, groupby = <span class='fu'><a href='#base/character.html'>character</a></span>(<span class='fl'>0</span>), env = <span class='fu'><a href='#base/sys.parent.html'>parent.frame</a></span>())</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -180,11 +180,12 @@
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
 <span class='co'># by hand logistic regression example</span>
-<span class='no'>d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='mk_td.html'>mk_td</a></span>(<span class='st'>"survey_table"</span>,
-           <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"subjectID"</span>, <span class='st'>"surveyCategory"</span>, <span class='st'>"assessmentTotal"</span>))
-<span class='no'>optree</span> <span class='kw'>&lt;-</span> <span class='no'>d</span> <span class='kw'>%.&gt;%</span>
-  <span class='fu'>row_counts</span>(<span class='no'>.</span>, <span class='kw'>groupby</span> <span class='kw'>=</span> <span class='st'>"subjectID"</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/cat.html'>cat</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/format.html'>format</a></span>(<span class='no'>optree</span>))</div><div class='output co'>#&gt; mk_td("survey_table", c(
+<span class='kw'>d</span> <span class='op'>&lt;-</span> <span class='fu'><a href='mk_td.html'>mk_td</a></span>(<span class='st'>"survey_table"</span>,
+           <span class='fu'><a href='#base/c.html'>c</a></span>(<span class='st'>"subjectID"</span>, <span class='st'>"surveyCategory"</span>, <span class='st'>"assessmentTotal"</span>))
+<span class='kw'>optree</span> <span class='op'>&lt;-</span> <span class='kw'>d</span> <span class='op'>%.&gt;%</span>
+  <span class='fu'>row_counts</span>(<span class='kw'>.</span>, groupby = <span class='st'>"subjectID"</span>)
+<span class='fu'><a href='#base/cat.html'>cat</a></span>(<span class='fu'><a href='#base/format.html'>format</a></span>(<span class='kw'>optree</span>))
+</div><div class='output co'>#&gt; mk_td("survey_table", c(
 #&gt;   "subjectID",
 #&gt;   "surveyCategory",
 #&gt;   "assessmentTotal")) %.&gt;%
@@ -208,7 +209,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
 </div>
 
       </footer>

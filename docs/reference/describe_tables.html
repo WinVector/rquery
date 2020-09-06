@@ -155,7 +155,7 @@ Note: one usually needs to alter the keys column which is just populated with al
 Note: one usually needs to alter the keys column which is just populated with all columns.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>describe_tables</span>(<span class='no'>db</span>, <span class='no'>tablenames</span>, <span class='no'>...</span>, <span class='kw'>keyInspector</span> <span class='kw'>=</span> <span class='no'>key_inspector_all_cols</span>)</pre>
+    <pre class="usage"><span class='fu'>describe_tables</span>(<span class='kw'>db</span>, <span class='kw'>tablenames</span>, <span class='kw'>...</span>, keyInspector = <span class='kw'>key_inspector_all_cols</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -190,13 +190,14 @@ Note: one usually needs to alter the keys column which is just populated with al
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='kw'>if</span> (<span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"DBI"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>&amp;&amp;</span> <span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
-  <span class='no'>my_db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
-  <span class='no'>ex</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='example_employee_date.html'>example_employee_date</a></span>(<span class='no'>my_db</span>)
-  <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='fu'>describe_tables</span>(<span class='no'>my_db</span>, <span class='no'>ex</span>$<span class='no'>tableName</span>,
-                         <span class='kw'>keyInspector</span> <span class='kw'>=</span> <span class='no'>key_inspector_sqlite</span>))
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbDisconnect.html'>dbDisconnect</a></span>(<span class='no'>my_db</span>)
-}</div><div class='output co'>#&gt;         tableName isEmpty               indicatorColumn
+<span class='co'>if</span> (<span class='fu'><a href='#base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"DBI"</span>, quietly = <span class='fl'>TRUE</span>) <span class='op'>&amp;&amp;</span> <span class='fu'><a href='#base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"RSQLite"</span>, quietly = <span class='fl'>TRUE</span>)) {
+  <span class='kw'>my_db</span> <span class='op'>&lt;-</span> <span class='kw'>DBI</span>::<span class='fu'><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></span>(<span class='kw'>RSQLite</span>::<span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
+  <span class='kw'>ex</span> <span class='op'>&lt;-</span> <span class='fu'><a href='example_employee_date.html'>example_employee_date</a></span>(<span class='kw'>my_db</span>)
+  <span class='fu'><a href='#base/print.html'>print</a></span>(<span class='fu'>describe_tables</span>(<span class='kw'>my_db</span>, <span class='kw'>ex</span><span class='op'>$</span><span class='kw'>tableName</span>,
+                         keyInspector = <span class='kw'>key_inspector_sqlite</span>))
+  <span class='kw'>DBI</span>::<span class='fu'><a href='https://dbi.r-dbi.org/reference/dbDisconnect.html'>dbDisconnect</a></span>(<span class='kw'>my_db</span>)
+}
+</div><div class='output co'>#&gt;         tableName isEmpty               indicatorColumn
 #&gt; 1 employeeanddate   FALSE table_employeeanddate_present
 #&gt; 2         revenue   FALSE         table_revenue_present
 #&gt; 3        activity   FALSE        table_activity_present
@@ -228,7 +229,7 @@ Note: one usually needs to alter the keys column which is just populated with al
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
 </div>
 
       </footer>

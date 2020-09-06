@@ -154,14 +154,14 @@
     </div>
 
     <pre class="usage"><span class='fu'>lookup_by_column</span>(
-  <span class='no'>source</span>,
-  <span class='no'>pick</span>,
-  <span class='no'>result</span>,
-  <span class='no'>...</span>,
-  <span class='kw'>tmp_name_source</span> <span class='kw'>=</span> <span class='kw pkg'>wrapr</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/wrapr/man/mk_tmp_name_source.html'>mk_tmp_name_source</a></span>(<span class='st'>"qn"</span>),
-  <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>qualifiers</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>f_dt_factory</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
+  <span class='kw'>source</span>,
+  <span class='kw'>pick</span>,
+  <span class='kw'>result</span>,
+  <span class='kw'>...</span>,
+  tmp_name_source = <span class='kw'>wrapr</span>::<span class='fu'><a href='https://winvector.github.io/wrapr//reference/mk_tmp_name_source.html'>mk_tmp_name_source</a></span>(<span class='st'>"qn"</span>),
+  temporary = <span class='fl'>TRUE</span>,
+  qualifiers = <span class='kw'>NULL</span>,
+  f_dt_factory = <span class='kw'>NULL</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -197,40 +197,41 @@
     </tr>
     <tr>
       <th>f_dt_factory</th>
-      <td><p>optional signature f_dt_factory(pick, result) returns function with signature f_dt(d, nd) where d is a data.table.  The point is the function must come from a data.table enabled package. Please see <code><a href='https://rdrr.io/pkg/rqdatatable/man/make_dt_lookup_by_column.html'>rqdatatable::make_dt_lookup_by_column</a></code> for an example.</p></td>
+      <td><p>optional signature f_dt_factory(pick, result) returns function with signature f_dt(d, nd) where d is a data.table.  The point is the function must come from a data.table enabled package. Please see <code><a href='https://winvector.github.io/rqdatatable//reference/make_dt_lookup_by_column.html'>rqdatatable::make_dt_lookup_by_column</a></code> for an example.</p></td>
     </tr>
     </table>
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='no'>df</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>3</span>, <span class='fl'>4</span>),
-                <span class='kw'>y</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>5</span>, <span class='fl'>6</span>, <span class='fl'>7</span>, <span class='fl'>8</span>),
-                <span class='kw'>choice</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"x"</span>, <span class='st'>"y"</span>, <span class='st'>"x"</span>, <span class='st'>"z"</span>),
-                <span class='kw'>stringsAsFactors</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
+<span class='kw'>df</span> <span class='op'>=</span> <span class='fu'><a href='#base/data.frame.html'>data.frame</a></span>(x = <span class='fu'><a href='#base/c.html'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>3</span>, <span class='fl'>4</span>),
+                y = <span class='fu'><a href='#base/c.html'>c</a></span>(<span class='fl'>5</span>, <span class='fl'>6</span>, <span class='fl'>7</span>, <span class='fl'>8</span>),
+                choice = <span class='fu'><a href='#base/c.html'>c</a></span>(<span class='st'>"x"</span>, <span class='st'>"y"</span>, <span class='st'>"x"</span>, <span class='st'>"z"</span>),
+                stringsAsFactors = <span class='fl'>FALSE</span>)
 
 <span class='co'># library("rqdatatable")</span>
 <span class='co'># df %.&gt;%</span>
 <span class='co'>#   lookup_by_column(., "choice", "derived")</span>
 
-<span class='kw'>if</span> (<span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"DBI"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>) <span class='kw'>&amp;&amp;</span>
-    <span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"RSQLite"</span>, <span class='kw'>quietly</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)) {
-  <span class='no'>db</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></span>(<span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span>(),
+<span class='co'>if</span> (<span class='fu'><a href='#base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"DBI"</span>, quietly = <span class='fl'>TRUE</span>) <span class='op'>&amp;&amp;</span>
+    <span class='fu'><a href='#base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"RSQLite"</span>, quietly = <span class='fl'>TRUE</span>)) {
+  <span class='kw'>db</span> <span class='op'>&lt;-</span> <span class='kw'>DBI</span>::<span class='fu'><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></span>(<span class='kw'>RSQLite</span>::<span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span>(),
                        <span class='st'>":memory:"</span>)
-  <span class='kw pkg'>RSQLite</span><span class='kw ns'>::</span><span class='fu'><a href='https://rsqlite.r-dbi.org/reference/initExtension.html'>initExtension</a></span>(<span class='no'>db</span>)
-  <span class='no'>dr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(<span class='no'>db</span>, <span class='st'>"dRemote"</span>, <span class='no'>df</span>,
-                   <span class='kw'>overwrite</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-                   <span class='kw'>temporary</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+  <span class='kw'>RSQLite</span>::<span class='fu'><a href='https://rsqlite.r-dbi.org/reference/initExtension.html'>initExtension</a></span>(<span class='kw'>db</span>)
+  <span class='kw'>dr</span> <span class='op'>&lt;-</span> <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(<span class='kw'>db</span>, <span class='st'>"dRemote"</span>, <span class='kw'>df</span>,
+                   overwrite = <span class='fl'>TRUE</span>,
+                   temporary = <span class='fl'>TRUE</span>)
 
-  <span class='no'>ops</span> <span class='kw'>&lt;-</span> <span class='no'>dr</span> <span class='kw'>%.&gt;%</span>
-    <span class='fu'>lookup_by_column</span>(<span class='no'>.</span>, <span class='st'>"choice"</span>, <span class='st'>"derived"</span>)
-  <span class='fu'><a href='https://rdrr.io/r/base/cat.html'>cat</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/format.html'>format</a></span>(<span class='no'>ops</span>))
+  <span class='kw'>ops</span> <span class='op'>&lt;-</span> <span class='kw'>dr</span> <span class='op'>%.&gt;%</span>
+    <span class='fu'>lookup_by_column</span>(<span class='kw'>.</span>, <span class='st'>"choice"</span>, <span class='st'>"derived"</span>)
+  <span class='fu'><a href='#base/cat.html'>cat</a></span>(<span class='fu'><a href='#base/format.html'>format</a></span>(<span class='kw'>ops</span>))
 
-  <span class='fu'><a href='execute.html'>execute</a></span>(<span class='no'>db</span>, <span class='no'>ops</span>) <span class='kw'>%.&gt;%</span>
-     <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='no'>.</span>)
+  <span class='fu'><a href='execute.html'>execute</a></span>(<span class='kw'>db</span>, <span class='kw'>ops</span>) <span class='op'>%.&gt;%</span>
+     <span class='fu'><a href='#base/print.html'>print</a></span>(<span class='kw'>.</span>)
 
-  <span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbDisconnect.html'>dbDisconnect</a></span>(<span class='no'>db</span>)
-}</div><div class='output co'>#&gt; mk_td("dRemote", c(
+  <span class='kw'>DBI</span>::<span class='fu'><a href='https://dbi.r-dbi.org/reference/dbDisconnect.html'>dbDisconnect</a></span>(<span class='kw'>db</span>)
+}
+</div><div class='output co'>#&gt; mk_td("dRemote", c(
 #&gt;   "x",
 #&gt;   "y",
 #&gt;   "choice")) %.&gt;%
@@ -257,7 +258,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
 </div>
 
       </footer>

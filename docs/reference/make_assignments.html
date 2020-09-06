@@ -155,7 +155,7 @@ Intended to be used as an argument in extend_se() or project_se()." />
 Intended to be used as an argument in <code><a href='extend_se.html'>extend_se()</a></code> or <code><a href='project_se.html'>project_se()</a></code>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>make_assignments</span>(<span class='no'>columns</span>, <span class='no'>funs</span>, <span class='no'>...</span>, <span class='kw'>sep</span> <span class='kw'>=</span> <span class='st'>"_"</span>, <span class='kw'>prefix</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>make_assignments</span>(<span class='kw'>columns</span>, <span class='kw'>funs</span>, <span class='kw'>...</span>, sep = <span class='st'>"_"</span>, prefix = <span class='fl'>TRUE</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -185,10 +185,12 @@ Intended to be used as an argument in <code><a href='extend_se.html'>extend_se()
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='no'>assignments</span> <span class='kw'>&lt;-</span> <span class='fu'>make_assignments</span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'x'</span>, <span class='st'>'y'</span>), <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'mean'</span>, <span class='kw'>med</span> <span class='kw'>=</span> <span class='st'>'median'</span>))
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='no'>assignments</span>)</div><div class='output co'>#&gt;      mean_x      mean_y       med_x       med_y 
-#&gt;   "mean(x)"   "mean(y)" "median(x)" "median(y)" </div><div class='input'><span class='no'>ops</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='mk_td.html'>mk_td</a></span>(<span class='st'>'d'</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>'x'</span>, <span class='st'>'y'</span>)) <span class='kw'>%.&gt;%</span> <span class='fu'><a href='project_se.html'>project_se</a></span>(<span class='no'>.</span>, <span class='no'>assignments</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/cat.html'>cat</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/format.html'>format</a></span>(<span class='no'>ops</span>))</div><div class='output co'>#&gt; mk_td("d", c(
+<span class='kw'>assignments</span> <span class='op'>&lt;-</span> <span class='fu'>make_assignments</span>(<span class='fu'><a href='#base/c.html'>c</a></span>(<span class='st'>'x'</span>, <span class='st'>'y'</span>), <span class='fu'><a href='#base/c.html'>c</a></span>(<span class='st'>'mean'</span>, med = <span class='st'>'median'</span>))
+<span class='fu'><a href='#base/print.html'>print</a></span>(<span class='kw'>assignments</span>)
+</div><div class='output co'>#&gt;      mean_x      mean_y       med_x       med_y 
+#&gt;   "mean(x)"   "mean(y)" "median(x)" "median(y)" </div><div class='input'><span class='kw'>ops</span> <span class='op'>&lt;-</span> <span class='fu'><a href='mk_td.html'>mk_td</a></span>(<span class='st'>'d'</span>, <span class='fu'><a href='#base/c.html'>c</a></span>(<span class='st'>'x'</span>, <span class='st'>'y'</span>)) <span class='op'>%.&gt;%</span> <span class='fu'><a href='project_se.html'>project_se</a></span>(<span class='kw'>.</span>, <span class='kw'>assignments</span>)
+<span class='fu'><a href='#base/cat.html'>cat</a></span>(<span class='fu'><a href='#base/format.html'>format</a></span>(<span class='kw'>ops</span>))
+</div><div class='output co'>#&gt; mk_td("d", c(
 #&gt;   "x",
 #&gt;   "y")) %.&gt;%
 #&gt;  project(., mean_x := mean(x), mean_y := mean(y), med_x := median(x), med_y := median(y),
@@ -209,7 +211,7 @@ Intended to be used as an argument in <code><a href='extend_se.html'>extend_se()
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
 </div>
 
       </footer>
