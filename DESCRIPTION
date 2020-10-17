@@ -1,8 +1,8 @@
 Package: rquery
 Type: Package
 Title: Relational Query Generator for Data Manipulation at Scale
-Version: 1.4.5
-Date: 2020-08-11
+Version: 1.4.6
+Date: 2020-10-17
 Authors@R: c(
     person("John", "Mount", email = "jmount@win-vector.com", role = c("aut", "cre")),
     person(family = "Win-Vector LLC", role = c("cph"))
@@ -22,23 +22,23 @@ Description: A piped query generator based on Edgar F. Codd's relational
     user visible table modeling step, plus explicit query reasoning and checking.
 License: GPL-2 | GPL-3
 Encoding: UTF-8
-Depends:
+Depends: 
   R (>= 3.4.0),
-  wrapr (>= 2.0.0)
-Imports:
+  wrapr (>= 2.0.2)
+Imports: 
   utils,
   stats,
   methods
-Suggests:
+Suggests: 
     DBI,
     RSQLite,
-    rqdatatable (>= 1.2.7),
+    rqdatatable (>= 1.2.8),
     igraph,
     DiagrammeR,
     knitr,
     rmarkdown,
-    RUnit,
-    yaml
+    yaml, 
+    tinytest
 LazyData: true
 RoxygenNote: 7.1.1
 ByteCompile: true

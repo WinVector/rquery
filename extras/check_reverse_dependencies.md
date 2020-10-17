@@ -8,13 +8,13 @@ package = "rquery"
 date()
 ```
 
-    ## [1] "Tue Aug 11 19:04:07 2020"
+    ## [1] "Sat Oct 17 10:01:12 2020"
 
 ``` r
 packageVersion(package)
 ```
 
-    ## [1] '1.4.5'
+    ## [1] '1.4.6'
 
 ``` r
 parallelCluster <- NULL
@@ -34,7 +34,7 @@ setwd(td)
 print(td)
 ```
 
-    ## [1] "/var/folders/7f/sdjycp_d08n8wwytsbgwqgsw0000gn/T//RtmpyXcBuo"
+    ## [1] "/var/folders/7f/sdjycp_d08n8wwytsbgwqgsw0000gn/T//RtmpHzhEsJ"
 
 ``` r
 options(repos = c(CRAN="https://cloud.r-project.org"))
@@ -65,9 +65,9 @@ if(!is.null(parallelCluster)) {
 summariseQueue(package=package, directory=td)
 ```
 
-    ## Test of rquery 1.4.5 had 3 successes, 0 failures, and 0 skipped packages. 
-    ## Ran from 2020-08-11 19:04:11 to 2020-08-11 19:05:04 for 53 secs 
-    ## Average of 17.667 secs relative to 31.079 secs using 3 runners
+    ## Test of rquery 1.4.6 had 3 successes, 0 failures, and 0 skipped packages. 
+    ## Ran from 2020-10-17 10:01:16 to 2020-10-17 10:02:08 for 52 secs 
+    ## Average of 17.333 secs relative to 29.429 secs using 3 runners
     ## 
     ## Failed packages:   
     ## 
