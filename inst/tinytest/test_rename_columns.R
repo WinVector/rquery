@@ -20,3 +20,6 @@ test_rename <- function() {
 
   invisible(NULL)
 }
+
+test_rename()
+

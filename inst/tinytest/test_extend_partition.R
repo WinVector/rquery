@@ -58,3 +58,5 @@ test_extend_partition <- function() {
 
   invisible(NULL)
 }
+
+test_extend_partition()

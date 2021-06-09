@@ -11,6 +11,8 @@ test_lhs_eval_ad_hoc <- function() {
   invisible(NULL)
 }
 
+test_lhs_eval_ad_hoc()
+
 test_lhs_eval_b <- function() {
   # with the .() notation (the strict form)
   d <- data.frame(x = 1)
@@ -21,6 +23,9 @@ test_lhs_eval_b <- function() {
 
   invisible(NULL)
 }
+
+test_lhs_eval_b()
+
 
 test_lhs_eval_b2 <- function() {
   # with the .() notation (the strict form)
@@ -34,8 +39,10 @@ test_lhs_eval_b2 <- function() {
   invisible(NULL)
 }
 
+test_lhs_eval_b2()
 
-test_lhs_eval_b3 <- function() {
+
+test_lhs_eval_b2b <- function() {
   # with the .() notation (the strict form)
   d <- data.frame(x = 1)
   var <- 'y'
@@ -52,4 +59,5 @@ test_lhs_eval_b3 <- function() {
   invisible(NULL)
 }
 
+test_lhs_eval_b2b()
 

@@ -23,14 +23,17 @@ test_calc_warnings <- function() {
       project(.,
               x := 1,
               x := 2)
-  }, silent = TRUE)
+  })
 
   expect_error({
     ops <- local_td(d) %.>%
       project(.,
               x := 1,
               y := x)
-  }, silent = TRUE)
+  })
 
   invisible(NULL)
 }
+
+test_calc_warnings()
+

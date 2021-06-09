@@ -243,6 +243,7 @@ extend_se <- function(source, assignments,
                       display_form = NULL,
                       env = parent.frame()) {
   force(env)
+  wrapr::stop_if_dot_args(substitute(list(...)), 'extend_se')
   UseMethod("extend_se", source)
 }
 

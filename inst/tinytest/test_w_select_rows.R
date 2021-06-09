@@ -17,3 +17,5 @@ test_w_select_rows <- function() {
 
   invisible(NULL)
 }
+
+test_w_select_rows()

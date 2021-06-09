@@ -72,3 +72,6 @@ test_translation <- function() {
 
   invisible(NULL)
 }
+
+test_translation()
+

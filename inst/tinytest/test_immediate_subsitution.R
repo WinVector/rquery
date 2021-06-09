@@ -30,3 +30,6 @@ test_immediate_substitution <- function() {
   }
   invisible(NULL)
 }
+
+test_immediate_substitution()
+

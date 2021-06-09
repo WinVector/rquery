@@ -10,6 +10,7 @@ test_relop_drop_columns <- function() {
   invisible(NULL)
 }
 
+test_relop_drop_columns()
 
 test_relop_drop_columns_not_strict <- function() {
   rquery_pipeline <- mk_td(table_name = 'd', columns = c('x', 'q')) %.>%
@@ -23,3 +24,6 @@ test_relop_drop_columns_not_strict <- function() {
 
   invisible(NULL)
 }
+
+test_relop_drop_columns_not_strict()
+

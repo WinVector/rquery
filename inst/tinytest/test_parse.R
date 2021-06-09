@@ -76,3 +76,6 @@ test_parse <- function() {
 
   invisible(NULL)
 }
+
+test_parse()
+

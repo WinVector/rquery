@@ -1,4 +1,9 @@
 
+# rquery 1.4.7 2021/06/09
+
+ * Check for empty ... on _se() methods.
+ * re-instate tests (not sure why they got left out).
+ 
 # rquery 1.4.6 2020/10/17
 
  * Move to tinytest.

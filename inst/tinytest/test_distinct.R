@@ -1,3 +1,4 @@
+
 test_distinct <- function() {
 
   table_rep <- mk_td("test_table", c("a", "b", "c", "d"))
@@ -6,3 +7,5 @@ test_distinct <- function() {
 
   invisible(NULL)
 }
+
+test_distinct()

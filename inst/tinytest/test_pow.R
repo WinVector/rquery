@@ -25,3 +25,6 @@ test_pow <- function() {
 
   invisible(NULL)
 }
+
+test_pow()
+

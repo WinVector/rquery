@@ -27,3 +27,6 @@ test_project_narrowing <- function() {
 
   invisible(NULL)
 }
+
+test_project_narrowing()
+

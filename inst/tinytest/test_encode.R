@@ -77,5 +77,4 @@ test_encode_small <- function() {
   invisible(NULL)
 }
 
-
-
+test_encode()

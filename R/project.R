@@ -101,6 +101,7 @@ project_se <- function(source,
                        groupby = c(),
                        env = parent.frame()) {
   force(env)
+  wrapr::stop_if_dot_args(substitute(list(...)), 'project_se')
   UseMethod("project_se", source)
 }
 
@@ -115,6 +116,7 @@ project_se.relop <- function(source,
                              groupby=c(),
                              env = parent.frame()) {
   force(env)
+  wrapr::stop_if_dot_args(substitute(list(...)), 'project_se.relop')
   parsed <- parse_se(source, assignments, env = env, allow_empty = TRUE)
   project_impl(source, groupby = groupby, parsed = parsed)
 }
@@ -126,6 +128,7 @@ project_se.data.frame <- function(source,
                                   groupby=c(),
                                   env = parent.frame()) {
   force(env)
+  wrapr::stop_if_dot_args(substitute(list(...)), 'project_se.data.frame')
   tmp_name <- mk_tmp_name_source("rquery_tmp")()
   dnode <- mk_td(tmp_name, colnames(source))
   enode <- project_se(dnode, assignments,

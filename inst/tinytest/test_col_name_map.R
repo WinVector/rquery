@@ -7,3 +7,5 @@ test_col_name_map <- function() {
 
   invisible(NULL)
 }
+
+test_col_name_map()

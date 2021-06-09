@@ -32,3 +32,5 @@ test_materialize <- function() {
 
   invisible(NULL)
 }
+
+test_materialize()

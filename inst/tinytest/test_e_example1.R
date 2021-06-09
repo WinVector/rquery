@@ -70,3 +70,6 @@ test_e_example1 <- function() {
 
   invisible(NULL)
 }
+
+test_e_example1()
+

@@ -14,3 +14,5 @@ test_parse_issue <- function() {
 
   invisible(NULL)
 }
+
+test_parse_issue()

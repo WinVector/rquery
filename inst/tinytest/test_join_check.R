@@ -78,3 +78,6 @@ test_join_check <- function() {
 
   invisible(NULL)
 }
+
+test_join_check()
+

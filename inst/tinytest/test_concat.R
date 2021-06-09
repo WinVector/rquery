@@ -18,3 +18,5 @@ test_concat <- function() {
 
   invisible(NULL)
 }
+
+test_concat()

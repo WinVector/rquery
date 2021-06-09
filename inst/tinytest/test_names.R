@@ -61,3 +61,6 @@ test_names <- function() {
 
   invisible(NULL)
 }
+
+test_names()
+

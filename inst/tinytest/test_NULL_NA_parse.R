@@ -26,3 +26,6 @@ test_NULL_NA_parse <- function() {
 
   invisible(NULL)
 }
+
+test_NULL_NA_parse()
+

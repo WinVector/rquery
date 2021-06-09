@@ -12,3 +12,4 @@ test_self_join <- function() {
   invisible(NULL)
 }
 
+test_self_join()

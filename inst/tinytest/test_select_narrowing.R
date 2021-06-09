@@ -33,3 +33,6 @@ test_select_narrowing <- function() {
 
   invisible(NULL)
 }
+
+test_select_narrowing()
+

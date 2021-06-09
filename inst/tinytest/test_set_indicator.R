@@ -40,3 +40,5 @@ test_set_indicator <- function() {
 
   invisible(NULL)
 }
+
+test_set_indicator()

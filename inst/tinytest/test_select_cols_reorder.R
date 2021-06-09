@@ -12,3 +12,5 @@ test_multi_arg_fn <- function() {
 
   invisible(NULL)
 }
+
+test_multi_arg_fn()

@@ -31,3 +31,5 @@ test_partial_fn_parse <- function() {
 
   invisible(NULL)
 }
+
+test_partial_fn_parse()

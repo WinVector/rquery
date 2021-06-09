@@ -4,8 +4,9 @@ test_multi_arg_fn <- function() {
   # so we are blocking it for now.
   expect_error(
     ops <- mk_td('d', 'str') %.>%
-      extend(., strs = paste(str, collapse = ', ')),
-    silent = TRUE)
+      extend(., strs = paste(str, collapse = ', ')))
 
   invisible(NULL)
 }
+
+test_multi_arg_fn()

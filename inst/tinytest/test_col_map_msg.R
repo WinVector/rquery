@@ -28,8 +28,10 @@ test_col_map_msg <- function() {
     expect_error({
       d %.>%
         extend(.,
-               xv = mp[x])},
-      silent = TRUE)
+               xv = mp[x])})
   }
   invisible(NULL)
 }
+
+test_col_map_msg()
+

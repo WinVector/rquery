@@ -64,3 +64,6 @@ test_mod <- function() {
 
   invisible(NULL)
 }
+
+test_mod()
+

@@ -19,3 +19,5 @@ test_bquote_name_escape <- function() {
   expect_equal(length(grep('-8', str, fixed = TRUE)), 1)
   invisible(NULL)
 }
+
+test_bquote_name_escape()

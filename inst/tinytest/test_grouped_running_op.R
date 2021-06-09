@@ -44,3 +44,6 @@ test_grouped_running_op <- function() {
 
   invisible(NULL)
 }
+
+test_grouped_running_op()
+

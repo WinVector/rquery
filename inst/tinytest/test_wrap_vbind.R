@@ -32,3 +32,6 @@ test_arrow_vbind <- function() {
 
   invisible(NULL)
 }
+
+test_arrow_vbind()
+

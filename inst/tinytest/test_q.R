@@ -50,3 +50,6 @@ test_q <- function() {
 
   invisible(NULL)
 }
+
+test_q()
+

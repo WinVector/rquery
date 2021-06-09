@@ -42,3 +42,5 @@ test_if_else <- function() {
 
   invisible(NULL)
 }
+
+test_if_else()

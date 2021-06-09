@@ -22,3 +22,6 @@ test_extend_shrink <- function() {
 
   invisible(NULL)
 }
+
+test_extend_shrink()
+

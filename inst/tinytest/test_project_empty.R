@@ -43,3 +43,5 @@ test_project_empty <- function() {
 
   invisible(NULL)
 }
+
+test_project_empty()

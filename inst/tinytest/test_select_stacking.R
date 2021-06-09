@@ -10,3 +10,5 @@ test_select_stacking <- function() {
 
   invisible(NULL)
 }
+
+test_select_stacking()

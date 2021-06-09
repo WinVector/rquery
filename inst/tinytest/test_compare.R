@@ -11,3 +11,5 @@ test_compare <- function() {
   # # 2:  2  FALSE       TRUE
   invisible(NULL)
 }
+
+test_compare()
