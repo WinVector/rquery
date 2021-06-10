@@ -12,19 +12,6 @@ test_q <- function() {
   sql <- to_sql(optree, my_db)
   expect_equal(0, length(grep("NEWVAR", sql, fixed = TRUE)))
 
-  # should throw
-  expect_error({
-    d <- table_source("d", c("AUC", "R2", "z"))
-    TARGETCOL = as.name("AUC")
-    VALUE = 0.5
-    optree <- select_rows(d, TARGETCOL >= VALUE)
-  })
-  # str <- format(optree)
-  # expect_true(length(grep("TARGETCOL", str, fixed = TRUE))>0, "saw TARGETCOL")
-  # sql <- to_sql(optree, my_db)
-  # cat(sql)
-  # expect_true(length(grep("TARGETCOL", sql, fixed = TRUE))>0)
-
   d <- table_source("d", c("AUC", "R2", "z"))
   TARGETCOL = as.name("AUC")
   VALUE = 0.5
@@ -35,18 +22,6 @@ test_q <- function() {
   sql <- to_sql(optree, my_db)
   expect_true(length(grep("TARGETCOL", sql, fixed = TRUE))==0, "saw TARGETCOL")
   expect_true(length(grep("VALUE", sql, fixed = TRUE))==0, "saw VALUE")
-
-  # should throw
-  expect_error({
-    d <- table_source("d", c("AUC", "R2", "z"))
-    TARGETCOL = as.name("AUC")
-    optree <- extend(d, AUC = TARGETCOL)
-  })
-  # str <- format(optree)
-  # expect_true(length(grep("TARGETCOL", str, fixed = TRUE))>0, "saw TARGETCOL")
-  # sql <- to_sql(optree, my_db)
-  # cat(sql)
-  # expect_true(length(grep("TARGETCOL", sql, fixed = TRUE))>0)
 
   invisible(NULL)
 }
