@@ -39,7 +39,6 @@ Suggests:
     rmarkdown,
     yaml, 
     tinytest
-LazyData: true
 RoxygenNote: 7.1.1
 ByteCompile: true
 VignetteBuilder: knitr
