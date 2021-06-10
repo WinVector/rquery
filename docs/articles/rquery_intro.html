@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.7</span>
       </span>
     </div>
 
@@ -39,7 +39,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -100,13 +100,13 @@
 
       
 
-      </header><script src="rquery_intro_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><script src="rquery_intro_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>rquery Introduction</h1>
                         <h4 class="author">John Mount, Win-Vector LLC</h4>
             
-            <h4 class="date">2020-09-06</h4>
+            <h4 class="date">2021-06-10</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery/blob/master/vignettes/rquery_intro.Rmd"><code>vignettes/rquery_intro.Rmd</code></a></small>
       <div class="hidden name"><code>rquery_intro.Rmd</code></div>
@@ -120,46 +120,46 @@
 <a href="#introduction" class="anchor"></a>Introduction</h1>
 <p><a href="https://github.com/WinVector/rquery"><code>rquery</code></a> is a query generator for <a href="https://www.r-project.org"><code>R</code></a>. It is based on <a href="https://en.wikipedia.org/wiki/Relational_algebra">Edgar F. Codd’s relational algebra</a> plus experience using <code>SQL</code> and <a href="https://CRAN.R-project.org/package=dplyr"><code>dplyr</code></a> at big data scale. The design represents an attempt to make <code>SQL</code> more teachable by denoting composition by a sequential pipeline notation instead of nested queries or functions. The implementation delivers reliable high performance data processing on large data systems such as <code>Spark</code> and databases. Package features include: data processing trees or pipelines as observable objects (able to report both columns produced and columns used), optimized <code>SQL</code> generation as an explicit user visible modeling step, convenience methods for applying query trees to in-memory <code>data.frame</code>s, and low direct package dependencies.</p>
 <p>Let’s set up our environment so we can work with examples.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="kw">run_vignette</span> <span class="op">&lt;-</span> <span class="fu"><a href="#base/ns-load.html">requireNamespace</a></span>(<span class="st">"DBI"</span>, quietly = <span class="fl">TRUE</span>) <span class="op">&amp;&amp;</span> 
-  <span class="fu"><a href="#base/ns-load.html">requireNamespace</a></span>(<span class="st">"RSQLite"</span>, quietly = <span class="fl">TRUE</span>)</pre></div>
-<div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="fu"><a href="#base/library.html">library</a></span>(<span class="st"><a href="https://github.com/WinVector/rquery/">"rquery"</a></span>)</pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">run_vignette</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"DBI"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span> 
+  <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"RSQLite"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/WinVector/rquery/">"rquery"</a></span><span class="op">)</span></code></pre></div>
 <pre><code>## Loading required package: wrapr</code></pre>
-<div class="sourceCode" id="cb4"><pre class="downlit">
-<span class="fu"><a href="#base/library.html">library</a></span>(<span class="st"><a href="https://github.com/WinVector/wrapr">"wrapr"</a></span>)</pre></div>
-<div class="sourceCode" id="cb5"><pre class="downlit">
-<span class="co"># example database connection</span>
-<span class="kw">db</span> <span class="op">&lt;-</span> <span class="kw">DBI</span>::<span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span>(<span class="kw">RSQLite</span>::<span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html">SQLite</a></span>(),
-                     <span class="st">":memory:"</span>)
-<span class="kw">RSQLite</span>::<span class="fu"><a href="https://rsqlite.r-dbi.org/reference/initExtension.html">initExtension</a></span>(<span class="kw">db</span>)
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/WinVector/wrapr">"wrapr"</a></span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># example database connection</span>
+<span class="va">db</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span><span class="op">(</span><span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html">SQLite</a></span><span class="op">(</span><span class="op">)</span>,
+                     <span class="st">":memory:"</span><span class="op">)</span>
+<span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/initExtension.html">initExtension</a></span><span class="op">(</span><span class="va">db</span><span class="op">)</span>
 
 <span class="co"># adapt to database</span>
-<span class="kw">dbopts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rq_connection_tests.html">rq_connection_tests</a></span>(<span class="kw">db</span>)
-<span class="fu"><a href="#base/options.html">options</a></span>(<span class="kw">dbopts</span>)
+<span class="va">dbopts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rq_connection_tests.html">rq_connection_tests</a></span><span class="op">(</span><span class="va">db</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span><span class="va">dbopts</span><span class="op">)</span>
 
 <span class="co"># register database</span>
-<span class="kw">old_o</span> <span class="op">&lt;-</span> <span class="fu"><a href="#base/options.html">options</a></span>(<span class="fu"><a href="#base/list.html">list</a></span>(<span class="st">"rquery.rquery_db_executor"</span> = <span class="fu"><a href="#base/list.html">list</a></span>(db = <span class="kw">db</span>)))</pre></div>
+<span class="va">old_o</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"rquery.rquery_db_executor"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>db <span class="op">=</span> <span class="va">db</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="table-descriptions" class="section level1">
 <h1 class="hasAnchor">
 <a href="#table-descriptions" class="anchor"></a>Table descriptions</h1>
 <p><code>rquery</code> table descriptions are simple objects that store only the name of a table and expected columns. Any local data or database table that has at least the set of columns named in the table description can be used in a given <code>rquery</code> pipeline.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit">
-<span class="co"># copy in example data</span>
-<span class="fu"><a href="../reference/rq_copy_to.html">rq_copy_to</a></span>(
-  <span class="kw">db</span>, <span class="st">'d'</span>,
-  <span class="fu"><a href="#base/data.frame.html">data.frame</a></span>(v = <span class="fu"><a href="#base/c.html">c</a></span>(<span class="fl">1</span>, <span class="op">-</span><span class="fl">5</span>, <span class="fl">3</span>)),
-  temporary = <span class="fl">FALSE</span>,
-  overwrite = <span class="fl">TRUE</span>)</pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># copy in example data</span>
+<span class="fu"><a href="../reference/rq_copy_to.html">rq_copy_to</a></span><span class="op">(</span>
+  <span class="va">db</span>, <span class="st">'d'</span>,
+  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>v <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">5</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>,
+  temporary <span class="op">=</span> <span class="cn">FALSE</span>,
+  overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] "mk_td(\"d\", c( \"v\"))"
 ##    v
 ## 1  1
 ## 2 -5
 ## 3  3</code></pre>
-<div class="sourceCode" id="cb8"><pre class="downlit">
-<span class="co"># produce a hande to existing table</span>
-<span class="kw">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_td.html">db_td</a></span>(<span class="kw">db</span>, <span class="st">"d"</span>)</pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># produce a hande to existing table</span>
+<span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_td.html">db_td</a></span><span class="op">(</span><span class="va">db</span>, <span class="st">"d"</span><span class="op">)</span></code></pre></div>
 <p>The table description “<code>d</code>” we have been using in examples was produced as a result of moving data to a database by <a href="https://winvector.github.io/rquery/reference/rq_copy_to.html"><code>rq_copy_to()</code></a>. However we can also create a description of an existing database table with <a href="https://winvector.github.io/rquery/reference/db_td.html"><code>db_td()</code></a> or even build a description by hand with <a href="https://winvector.github.io/rquery/reference/mk_td.html"><code>mk_td()</code></a>. Also one can build descriptions of local or in-memory <code>data.frame</code>s with <a href="https://winvector.github.io/rquery/reference/local_td.html"><code>local_td()</code></a>.</p>
 </div>
 <div id="operators" class="section level1">
@@ -189,13 +189,13 @@
 <li>
 <a href="https://winvector.github.io/rquery/reference/orderby.html"><code>orderby()</code></a>. Row order is not a concept in the relational algebra (and also not maintained in most <code>SQL</code> implementations). This operator is only useful when used with its <code>limit=</code> option, or as the last step as data comes out of the relation store and is moved to <code>R</code> (where row-order is usually maintained).</li>
 </ul>
-<p>The above list (and especially naming) are chosen to first match Codd’s relational concepts (<code>project</code>, <code>select</code>, <code>rename</code>, <code>join</code>, aggregation), <code>SQL</code> naming conventions. Notice this covers the <a href="https://dplyr.tidyverse.org">primary <code>dplyr</code> operators</a> <code>mutate()</code> (Codd’s <code>extend</code>), <code>select()</code> (not relational), <code><a href="#stats/filter.html">filter()</a></code> (Codd’s <code>select</code>, represented in <code>SQL</code> by “<code>WHERE</code>”), <code>summarise()</code> (Codd’s <code>project</code> or aggregate concepts, triggered in <code>SQL</code> by “<code>GROUP BY</code>”), <code>arrange()</code> (not a relational concept, implemented in <code>SQL</code> by “ORDER BY”). This correspondence is due to Codd’s ideas and <code>SQL</code> driving data engineering thinking for almost the last 50 years (both with and without credit or citation).</p>
+<p>The above list (and especially naming) are chosen to first match Codd’s relational concepts (<code>project</code>, <code>select</code>, <code>rename</code>, <code>join</code>, aggregation), <code>SQL</code> naming conventions. Notice this covers the <a href="https://dplyr.tidyverse.org">primary <code>dplyr</code> operators</a> <code>mutate()</code> (Codd’s <code>extend</code>), <code>select()</code> (not relational), <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code> (Codd’s <code>select</code>, represented in <code>SQL</code> by “<code>WHERE</code>”), <code>summarise()</code> (Codd’s <code>project</code> or aggregate concepts, triggered in <code>SQL</code> by “<code>GROUP BY</code>”), <code>arrange()</code> (not a relational concept, implemented in <code>SQL</code> by “ORDER BY”). This correspondence is due to Codd’s ideas and <code>SQL</code> driving data engineering thinking for almost the last 50 years (both with and without credit or citation).</p>
 <p>With relational operators the user can work fast and work further away from syntactic details. For example some <code>R</code> operators (such as <code>is.na</code>) are translated to <code>SQL</code> analogues (in this case <code>IS NULL</code>).</p>
-<div class="sourceCode" id="cb9"><pre class="downlit">
-<span class="kw">d</span> <span class="op">%.&gt;%</span> 
-  <span class="fu"><a href="../reference/extend.html">extend</a></span>(<span class="kw">.</span>, <span class="kw">was_na</span> <span class="op">:=</span> <span class="fu"><a href="#base/ifelse.html">ifelse</a></span>(<span class="fu"><a href="#base/NA.html">is.na</a></span>(<span class="kw">v</span>), <span class="fl">1</span>, <span class="fl">0</span>)) <span class="op">%.&gt;%</span>
-  <span class="fu"><a href="../reference/to_sql.html">to_sql</a></span>(<span class="kw">.</span>, <span class="kw">db</span>) <span class="op">%.&gt;%</span>
-  <span class="fu"><a href="#base/cat.html">cat</a></span>(<span class="kw">.</span>)</pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">d</span> <span class="op">%.&gt;%</span> 
+  <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">was_na</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">v</span><span class="op">)</span>, <span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op">%.&gt;%</span>
+  <span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">db</span><span class="op">)</span> <span class="op">%.&gt;%</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
 <pre><code>## SELECT
 ##  `v`,
 ##  ( CASE WHEN ( ( ( `v` ) IS NULL ) ) THEN ( 1 ) WHEN NOT ( ( ( `v` ) IS NULL ) ) THEN ( 0 ) ELSE NULL END )  AS `was_na`
@@ -204,48 +204,48 @@
 ##   `v`
 ##  FROM
 ##   `d`
-##  ) tsql_40456756430521554023_0000000000</code></pre>
+##  ) tsql_61543014097969182233_0000000000</code></pre>
 <p>The exact translation depends on the database (which is why <code><a href="../reference/to_sql.html">to_sql()</a></code> takes a database argument). Some care has to be taken as <code>SQL</code> types are different than <code>R</code> types (in particular for some databases logical types are not numeric).</p>
 <p>With a database that supplies window functions one can quickly work the “logistic scoring by hand” example from<br>
 from <a href="https://win-vector.com/2017/08/04/lets-have-some-sympathy-for-the-part-time-r-user/">Let’s Have Some Sympathy For The Part-time R User</a>. This example worked with <code>rquery</code> code that works with both <code>PostgreSQL</code> and <code>Spark</code> can be found <a href="https://github.com/WinVector/rquery/blob/master/README.md">here</a>.</p>
 <p>We can demonstrate the pipeline, but the <code>SQLite</code> database we are using in this vignette does not have the window functions required to execute it. <code>PostgreSQL</code>, <code>Spark</code>, and many other databases do have the necessary functionality. The pipeline is a good example of a non-trivial sequence of relational nodes.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit">
-<span class="kw">scale</span> <span class="op">&lt;-</span> <span class="fl">0.237</span>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">scale</span> <span class="op">&lt;-</span> <span class="fl">0.237</span>
 
-<span class="kw">dq</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mk_td.html">mk_td</a></span>(<span class="st">"d3"</span>, 
-                   columns = <span class="fu"><a href="https://winvector.github.io/wrapr//reference/qc.html">qc</a></span>(<span class="kw">subjectID</span>, 
-                                <span class="kw">surveyCategory</span>, 
-                                <span class="kw">assessmentTotal</span>)) <span class="op">%.&gt;%</span>
-  <span class="fu"><a href="../reference/extend.html">extend</a></span>(<span class="kw">.</span>,
-             <span class="kw">probability</span> <span class="op">:=</span>
-               <span class="fu"><a href="#base/Log.html">exp</a></span>(<span class="kw">assessmentTotal</span> <span class="op">*</span> <span class="kw">scale</span>))  <span class="op">%.&gt;%</span> 
-  <span class="fu"><a href="../reference/normalize_cols.html">normalize_cols</a></span>(<span class="kw">.</span>,
+<span class="va">dq</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mk_td.html">mk_td</a></span><span class="op">(</span><span class="st">"d3"</span>, 
+                   columns <span class="op">=</span> <span class="fu"><a href="https://winvector.github.io/wrapr//reference/qc.html">qc</a></span><span class="op">(</span><span class="va">subjectID</span>, 
+                                <span class="va">surveyCategory</span>, 
+                                <span class="va">assessmentTotal</span><span class="op">)</span><span class="op">)</span> <span class="op">%.&gt;%</span>
+  <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,
+             <span class="va">probability</span> <span class="op">:=</span>
+               <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="va">assessmentTotal</span> <span class="op">*</span> <span class="va">scale</span><span class="op">)</span><span class="op">)</span>  <span class="op">%.&gt;%</span> 
+  <span class="fu"><a href="../reference/normalize_cols.html">normalize_cols</a></span><span class="op">(</span><span class="va">.</span>,
                  <span class="st">"probability"</span>,
-                 partitionby = <span class="st">'subjectID'</span>) <span class="op">%.&gt;%</span>
-  <span class="fu"><a href="../reference/pick_top_k.html">pick_top_k</a></span>(<span class="kw">.</span>,
-             partitionby = <span class="st">'subjectID'</span>,
-             orderby = <span class="fu"><a href="#base/c.html">c</a></span>(<span class="st">'probability'</span>, <span class="st">'surveyCategory'</span>),
-             reverse = <span class="fu"><a href="#base/c.html">c</a></span>(<span class="st">'probability'</span>)) <span class="op">%.&gt;%</span> 
-  <span class="fu"><a href="../reference/rename_columns.html">rename_columns</a></span>(<span class="kw">.</span>, <span class="st">'diagnosis'</span> <span class="op">:=</span> <span class="st">'surveyCategory'</span>) <span class="op">%.&gt;%</span>
-  <span class="fu"><a href="../reference/select_columns.html">select_columns</a></span>(<span class="kw">.</span>, <span class="fu"><a href="#base/c.html">c</a></span>(<span class="st">'subjectID'</span>, 
+                 partitionby <span class="op">=</span> <span class="st">'subjectID'</span><span class="op">)</span> <span class="op">%.&gt;%</span>
+  <span class="fu"><a href="../reference/pick_top_k.html">pick_top_k</a></span><span class="op">(</span><span class="va">.</span>,
+             partitionby <span class="op">=</span> <span class="st">'subjectID'</span>,
+             orderby <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'probability'</span>, <span class="st">'surveyCategory'</span><span class="op">)</span>,
+             reverse <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'probability'</span><span class="op">)</span><span class="op">)</span> <span class="op">%.&gt;%</span> 
+  <span class="fu"><a href="../reference/rename_columns.html">rename_columns</a></span><span class="op">(</span><span class="va">.</span>, <span class="st">'diagnosis'</span> <span class="op">:=</span> <span class="st">'surveyCategory'</span><span class="op">)</span> <span class="op">%.&gt;%</span>
+  <span class="fu"><a href="../reference/select_columns.html">select_columns</a></span><span class="op">(</span><span class="va">.</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'subjectID'</span>, 
                       <span class="st">'diagnosis'</span>, 
-                      <span class="st">'probability'</span>)) <span class="op">%.&gt;%</span>
-  <span class="fu"><a href="../reference/orderby.html">orderby</a></span>(<span class="kw">.</span>, <span class="st">'subjectID'</span>)</pre></div>
-<p><a href="https://winvector.github.io/wrapr/reference/qc.html"><code>qc()</code></a> is “quoting concatenate”, a convenience function that lets us skip a few quote marks. No <code><a href="#base/list.html">list()</a></code>, <code><a href="#base/name.html">as.name()</a></code>, or <code><a href="#base/substitute.html">quote()</a></code> steps are needed as the operator nodes are parsed by <code>R</code> to find identifiers. The <code>scale</code> constant was added to the environment as pipelines try to bind constants during pipe construction (else <code>scale</code> would be estimated to be a missing column name).</p>
+                      <span class="st">'probability'</span><span class="op">)</span><span class="op">)</span> <span class="op">%.&gt;%</span>
+  <span class="fu"><a href="../reference/orderby.html">orderby</a></span><span class="op">(</span><span class="va">.</span>, <span class="st">'subjectID'</span><span class="op">)</span></code></pre></div>
+<p><a href="https://winvector.github.io/wrapr/reference/qc.html"><code>qc()</code></a> is “quoting concatenate”, a convenience function that lets us skip a few quote marks. No <code><a href="https://rdrr.io/r/base/list.html">list()</a></code>, <code><a href="https://rdrr.io/r/base/name.html">as.name()</a></code>, or <code><a href="https://rdrr.io/r/base/substitute.html">quote()</a></code> steps are needed as the operator nodes are parsed by <code>R</code> to find identifiers. The <code>scale</code> constant was added to the environment as pipelines try to bind constants during pipe construction (else <code>scale</code> would be estimated to be a missing column name).</p>
 <p>Even though we are not going to run this query here, we can still check some properties of the query.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit">
-<span class="fu"><a href="../reference/tables_used.html">tables_used</a></span>(<span class="kw">dq</span>)</pre></div>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/tables_used.html">tables_used</a></span><span class="op">(</span><span class="va">dq</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] "d3"</code></pre>
-<div class="sourceCode" id="cb14"><pre class="downlit">
-<span class="fu"><a href="../reference/columns_used.html">columns_used</a></span>(<span class="kw">dq</span>)</pre></div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/columns_used.html">columns_used</a></span><span class="op">(</span><span class="va">dq</span><span class="op">)</span></code></pre></div>
 <pre><code>## $d3
 ## [1] "subjectID"       "surveyCategory"  "assessmentTotal"</code></pre>
-<div class="sourceCode" id="cb16"><pre class="downlit">
-<span class="fu"><a href="../reference/column_names.html">column_names</a></span>(<span class="kw">dq</span>)</pre></div>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/column_names.html">column_names</a></span><span class="op">(</span><span class="va">dq</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] "subjectID"   "diagnosis"   "probability"</code></pre>
 <p>The operations can be printed as an operations tree.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit">
-<span class="fu"><a href="#base/cat.html">cat</a></span>(<span class="fu"><a href="#base/format.html">format</a></span>(<span class="kw">dq</span>))</pre></div>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html">format</a></span><span class="op">(</span><span class="va">dq</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## mk_td("d3", c(
 ##   "subjectID",
 ##   "surveyCategory",
@@ -274,8 +274,8 @@ from <a href="https://win-vector.com/2017/08/04/lets-have-some-sympathy-for-the-
 ##   limit = NULL)</code></pre>
 <p>Notice the returned presentation is not exactly the set of nodes we specified. This is because of the nodes we used (<code><a href="../reference/normalize_cols.html">normalize_cols()</a></code> and <code><a href="../reference/pick_top_k.html">pick_top_k()</a></code>) are actually higher-order nodes (implemented in terms of nodes). Also <code><a href="../reference/extend.html">extend()</a></code> nodes are re-factored to be unambiguous in their use and re-use of column names.</p>
 <p>We can also exhibit the <code>SQL</code> this operations tree renders, to (though the <code>SQLite</code> database we are using in vignettes does not have the required window-functions to execute it; we suggest using <code>PostgreSQL</code>).</p>
-<div class="sourceCode" id="cb20"><pre class="downlit">
-<span class="fu"><a href="#base/cat.html">cat</a></span>(<span class="fu"><a href="../reference/to_sql.html">to_sql</a></span>(<span class="kw">dq</span>, <span class="kw">db</span>))</pre></div>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">dq</span>, <span class="va">db</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## SELECT * FROM (
 ##  SELECT
 ##   `subjectID`,
@@ -310,14 +310,14 @@ from <a href="https://win-vector.com/2017/08/04/lets-have-some-sympathy-for-the-
 ##         `assessmentTotal`
 ##        FROM
 ##         `d3`
-##        ) tsql_50503484116730028954_0000000000
-##       ) tsql_50503484116730028954_0000000001
-##      ) tsql_50503484116730028954_0000000002
-##    ) tsql_50503484116730028954_0000000003
+##        ) tsql_25359255884657236901_0000000000
+##       ) tsql_25359255884657236901_0000000001
+##      ) tsql_25359255884657236901_0000000002
+##    ) tsql_25359255884657236901_0000000003
 ##    WHERE `row_number` &lt;= 1
-##   ) tsql_50503484116730028954_0000000004
-##  ) tsql_50503484116730028954_0000000005
-## ) tsql_50503484116730028954_0000000006 ORDER BY `subjectID`</code></pre>
+##   ) tsql_25359255884657236901_0000000004
+##  ) tsql_25359255884657236901_0000000005
+## ) tsql_25359255884657236901_0000000006 ORDER BY `subjectID`</code></pre>
 <p>The above query is long, but actually quite performant.</p>
 <p>To see the query executed, please see <a href="https://github.com/WinVector/rquery/blob/master/README.md">here</a>.</p>
 </div>
@@ -326,10 +326,10 @@ from <a href="https://win-vector.com/2017/08/04/lets-have-some-sympathy-for-the-
 <a href="#non-sql-nodes" class="anchor"></a>Non-<code>SQL</code> nodes</h1>
 <p>Not all data transform steps can conveniently be written as a single <code>SQL</code> statement. To work around this potential limitation <code>rquery</code> supplies a special type of node called <a href="https://winvector.github.io/rquery/reference/non_sql_node.html"><code>non_sql_node()</code></a>. <code><a href="../reference/non_sql_node.html">non_sql_node()</a></code> is used to implement arbitrary table to table transforms as <code>rquery</code> pipeline steps. Two prototypical <code><a href="../reference/non_sql_node.html">non_sql_node()</a></code> is <a href="https://winvector.github.io/rquery/reference/rsummary_node.html"><code>rsummary_node()</code></a>.</p>
 <p><code><a href="../reference/rsummary_node.html">rsummary_node()</a></code> builds a table of summary information about another database table. The format is each column of the original table produces a row of summary information in the result table. Here is a simple example.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit">
-<span class="kw">d</span> <span class="op">%.&gt;%</span>
-  <span class="fu"><a href="../reference/rsummary_node.html">rsummary_node</a></span>(<span class="kw">.</span>) <span class="op">%.&gt;%</span>
-  <span class="fu"><a href="../reference/execute.html">execute</a></span>(<span class="kw">db</span>, <span class="kw">.</span>)</pre></div>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">d</span> <span class="op">%.&gt;%</span>
+  <span class="fu"><a href="../reference/rsummary_node.html">rsummary_node</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span> <span class="op">%.&gt;%</span>
+  <span class="fu"><a href="../reference/execute.html">execute</a></span><span class="op">(</span><span class="va">db</span>, <span class="va">.</span><span class="op">)</span></code></pre></div>
 <pre><code>##   column index   class nrows nna nunique min max       mean       sd lexmin
 ## 1      v     1 numeric     3   0      NA  -5   3 -0.3333333 4.163332     NA
 ##   lexmax
@@ -346,17 +346,17 @@ from <a href="https://win-vector.com/2017/08/04/lets-have-some-sympathy-for-the-
 <a href="#assignment-partitioning" class="anchor"></a>Assignment partitioning</h1>
 <p><code>rquery</code> accepts many assignment in a <code><a href="../reference/sql_node.html">sql_node()</a></code> or in a single <code>extend</code> node. The <code>extend</code> node comes with automatic <a href="#assignment-partitioning">assignment partitioning</a> to ensure correct and performant results. This allows the user to write large <code>extend</code> blocks and know they will be executed correctly.</p>
 <p>Here is an example.</p>
-<div class="sourceCode" id="cb24"><pre class="downlit">
-<span class="kw">ot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mk_td.html">mk_td</a></span>(<span class="st">'d4'</span>,
-                   columns = <span class="fu"><a href="https://winvector.github.io/wrapr//reference/qc.html">qc</a></span>(<span class="st">'a'</span>, <span class="st">'b'</span>, <span class="st">'c'</span>, <span class="st">'d'</span>)) <span class="op">%.&gt;%</span>
-  <span class="fu"><a href="../reference/extend.html">extend</a></span>(<span class="kw">.</span>, 
-             x = <span class="kw">a</span> <span class="op">+</span> <span class="fl">1</span>,
-             y = <span class="kw">x</span> <span class="op">+</span> <span class="fl">1</span>,
-             u = <span class="kw">b</span> <span class="op">+</span> <span class="fl">1</span>,
-             v = <span class="kw">c</span> <span class="op">+</span> <span class="fl">1</span>,
-             w = <span class="kw">d</span> <span class="op">+</span> <span class="fl">1</span>)
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">ot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mk_td.html">mk_td</a></span><span class="op">(</span><span class="st">'d4'</span>,
+                   columns <span class="op">=</span> <span class="fu"><a href="https://winvector.github.io/wrapr//reference/qc.html">qc</a></span><span class="op">(</span><span class="st">'a'</span>, <span class="st">'b'</span>, <span class="st">'c'</span>, <span class="st">'d'</span><span class="op">)</span><span class="op">)</span> <span class="op">%.&gt;%</span>
+  <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>, 
+             x <span class="op">=</span> <span class="va">a</span> <span class="op">+</span> <span class="fl">1</span>,
+             y <span class="op">=</span> <span class="va">x</span> <span class="op">+</span> <span class="fl">1</span>,
+             u <span class="op">=</span> <span class="va">b</span> <span class="op">+</span> <span class="fl">1</span>,
+             v <span class="op">=</span> <span class="va">c</span> <span class="op">+</span> <span class="fl">1</span>,
+             w <span class="op">=</span> <span class="va">d</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>
 
-<span class="fu"><a href="#base/cat.html">cat</a></span>(<span class="fu"><a href="#base/format.html">format</a></span>(<span class="kw">ot</span>))</pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html">format</a></span><span class="op">(</span><span class="va">ot</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## mk_td("d4", c(
 ##   "a",
 ##   "b",
@@ -371,20 +371,20 @@ from <a href="https://win-vector.com/2017/08/04/lets-have-some-sympathy-for-the-
 ##   y := x + 1)</code></pre>
 <p>Notice the dependent assignment was moved into its own extend block. This sort of transform is critical in getting correct results from <code>SQL</code> (<a href="https://win-vector.com/2018/01/21/advisory-on-multiple-assignment-dplyrmutate-on-databases/">here</a> is an example of what can happen when one does not correctly mitigate this issue).</p>
 <p>A node that uses the assignment partitioning and re-ordering is the <a href="https://winvector.github.io/rquery/reference/if_else_block.html"><code>if_else_block()</code></a> which can be used to simulate block-oriented if-else semantics as seen in systems such as <code>SAS</code> (also meaning <code>rquery</code> can be critical porting code from <code>SAS</code> to <code>SQL</code> based <code>R</code>). This allows coordinated assignments such as the following:</p>
-<div class="sourceCode" id="cb26"><pre class="downlit">
-<span class="kw">ifet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mk_td.html">mk_td</a></span>(<span class="st">"d5"</span>,
-                     columns = <span class="st">"test"</span>) <span class="op">%.&gt;%</span>
-  <span class="fu"><a href="../reference/extend_se.html">extend_se</a></span>(<span class="kw">.</span>,
-            <span class="fu"><a href="#base/c.html">c</a></span>(<span class="fu"><a href="https://winvector.github.io/wrapr//reference/qae.html">qae</a></span>(x = <span class="st">''</span>,
-                  y = <span class="st">''</span>),
-              <span class="fu"><a href="../reference/if_else_block.html">if_else_block</a></span>(
-                <span class="fu"><a href="https://winvector.github.io/wrapr//reference/qe.html">qe</a></span>(<span class="kw">test</span> <span class="op">&gt;</span> <span class="fl">5</span>),
-                thenexprs = <span class="fu"><a href="https://winvector.github.io/wrapr//reference/qae.html">qae</a></span>(x = <span class="st">'a'</span>, 
-                                y = <span class="st">'b'</span>),
-                elseexprs = <span class="fu"><a href="https://winvector.github.io/wrapr//reference/qae.html">qae</a></span>(x = <span class="st">'b'</span>, 
-                                y = <span class="st">'a'</span>)
-              )))
-<span class="fu"><a href="#base/cat.html">cat</a></span>(<span class="fu"><a href="#base/format.html">format</a></span>(<span class="kw">ifet</span>))</pre></div>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">ifet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mk_td.html">mk_td</a></span><span class="op">(</span><span class="st">"d5"</span>,
+                     columns <span class="op">=</span> <span class="st">"test"</span><span class="op">)</span> <span class="op">%.&gt;%</span>
+  <span class="fu"><a href="../reference/extend_se.html">extend_se</a></span><span class="op">(</span><span class="va">.</span>,
+            <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://winvector.github.io/wrapr//reference/qae.html">qae</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">''</span>,
+                  y <span class="op">=</span> <span class="st">''</span><span class="op">)</span>,
+              <span class="fu"><a href="../reference/if_else_block.html">if_else_block</a></span><span class="op">(</span>
+                <span class="fu"><a href="https://winvector.github.io/wrapr//reference/qe.html">qe</a></span><span class="op">(</span><span class="va">test</span> <span class="op">&gt;</span> <span class="fl">5</span><span class="op">)</span>,
+                thenexprs <span class="op">=</span> <span class="fu"><a href="https://winvector.github.io/wrapr//reference/qae.html">qae</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">'a'</span>, 
+                                y <span class="op">=</span> <span class="st">'b'</span><span class="op">)</span>,
+                elseexprs <span class="op">=</span> <span class="fu"><a href="https://winvector.github.io/wrapr//reference/qae.html">qae</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">'b'</span>, 
+                                y <span class="op">=</span> <span class="st">'a'</span><span class="op">)</span>
+              <span class="op">)</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html">format</a></span><span class="op">(</span><span class="va">ifet</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## mk_td("d5", c(
 ##   "test")) %.&gt;%
 ##  extend(.,
@@ -410,13 +410,13 @@ from <a href="https://win-vector.com/2017/08/04/lets-have-some-sympathy-for-the-
 </blockquote>
 <p>In addition <code>rquery</code> includes automatic column narrowing: where only columns used to construct the final result are pulled from initial tables. This feature is important in production (where data marts can be quite wide) and has show significant additional performance advantages</p>
 <p>From a coding point of view the automatic narrowing effect looks like this.</p>
-<div class="sourceCode" id="cb28"><pre class="downlit">
-<span class="kw">wp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mk_td.html">mk_td</a></span>(table = <span class="st">'d6'</span>,
-                   columns = <span class="kw">letters</span>[<span class="fl">1</span><span class="op">:</span><span class="fl">5</span>]) <span class="op">%.&gt;%</span>
-  <span class="fu"><a href="../reference/extend.html">extend</a></span>(<span class="kw">.</span>, <span class="kw">res</span> <span class="op">:=</span> <span class="kw">a</span> <span class="op">+</span> <span class="kw">b</span>)
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">wp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mk_td.html">mk_td</a></span><span class="op">(</span>table <span class="op">=</span> <span class="st">'d6'</span>,
+                   columns <span class="op">=</span> <span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span> <span class="op">%.&gt;%</span>
+  <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">res</span> <span class="op">:=</span> <span class="va">a</span> <span class="op">+</span> <span class="va">b</span><span class="op">)</span>
 
 <span class="co"># full query</span>
-<span class="fu"><a href="#base/cat.html">cat</a></span>(<span class="fu"><a href="../reference/to_sql.html">to_sql</a></span>(<span class="kw">wp</span>, <span class="kw">db</span>))</pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">wp</span>, <span class="va">db</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## SELECT
 ##  `a`,
 ##  `b`,
@@ -433,16 +433,16 @@ from <a href="https://win-vector.com/2017/08/04/lets-have-some-sympathy-for-the-
 ##   `e`
 ##  FROM
 ##   `d6`
-##  ) tsql_04279891405613679184_0000000000</code></pre>
-<div class="sourceCode" id="cb30"><pre class="downlit">
-<span class="co"># longer pipeline</span>
-<span class="kw">wn</span> <span class="op">&lt;-</span> <span class="kw">wp</span> <span class="op">%.&gt;%</span>
-  <span class="fu"><a href="../reference/select_columns.html">select_columns</a></span>(<span class="kw">.</span>, <span class="st">"res"</span>)
+##  ) tsql_26409417829153605383_0000000000</code></pre>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># longer pipeline</span>
+<span class="va">wn</span> <span class="op">&lt;-</span> <span class="va">wp</span> <span class="op">%.&gt;%</span>
+  <span class="fu"><a href="../reference/select_columns.html">select_columns</a></span><span class="op">(</span><span class="va">.</span>, <span class="st">"res"</span><span class="op">)</span>
 
 <span class="co"># notice select at end of the pipeline automatically </span>
 <span class="co"># gets propagated back to the beginning of the</span>
 <span class="co"># pipeline</span>
-<span class="fu"><a href="#base/cat.html">cat</a></span>(<span class="fu"><a href="../reference/to_sql.html">to_sql</a></span>(<span class="kw">wn</span>, <span class="kw">db</span>))</pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">wn</span>, <span class="va">db</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## SELECT
 ##  `res`
 ## FROM (
@@ -454,8 +454,8 @@ from <a href="https://win-vector.com/2017/08/04/lets-have-some-sympathy-for-the-
 ##    `b`
 ##   FROM
 ##    `d6`
-##   ) tsql_48396230474577788839_0000000000
-## ) tsql_48396230474577788839_0000000001</code></pre>
+##   ) tsql_88685867293082927327_0000000000
+## ) tsql_88685867293082927327_0000000001</code></pre>
 <p>A graph of the the effects of this kind of narrowing (for <code>dplyr</code> by hand as <code>dplyr</code> currently does not have the above type of automatic query analysis/optimization) shows the sensitivity to this optimization.</p>
 <blockquote>
 <p><img src="present-2.png"></p>
@@ -485,9 +485,9 @@ from <a href="https://win-vector.com/2017/08/04/lets-have-some-sympathy-for-the-
 <div id="appendix-always-clean-up-on-the-way-out" class="section level1">
 <h1 class="hasAnchor">
 <a href="#appendix-always-clean-up-on-the-way-out" class="anchor"></a>Appendix: Always clean up on the way out</h1>
-<div class="sourceCode" id="cb32"><pre class="downlit">
-<span class="fu"><a href="#base/options.html">options</a></span>(<span class="kw">old_o</span>)
-<span class="kw">DBI</span>::<span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html">dbDisconnect</a></span>(<span class="kw">db</span>)</pre></div>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span><span class="va">old_o</span><span class="op">)</span>
+<span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html">dbDisconnect</a></span><span class="op">(</span><span class="va">db</span><span class="op">)</span></code></pre></div>
 </div>
   </div>
 
@@ -506,7 +506,7 @@ from <a href="https://win-vector.com/2017/08/04/lets-have-some-sympathy-for-the-
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

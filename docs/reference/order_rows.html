@@ -73,7 +73,7 @@ limit number of rows in that order." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.7</span>
       </span>
     </div>
 
@@ -81,7 +81,7 @@ limit number of rows in that order." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -155,14 +155,14 @@ limit number of rows in that order." />
 limit number of rows in that order.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>order_rows</span>(
-  <span class='kw'>source</span>,
-  cols = <span class='kw'>NULL</span>,
-  <span class='kw'>...</span>,
-  reverse = <span class='kw'>NULL</span>,
-  limit = <span class='kw'>NULL</span>,
-  env = <span class='fu'><a href='#base/sys.parent.html'>parent.frame</a></span>()
-)</pre>
+    <pre class="usage"><span class='fu'>order_rows</span><span class='op'>(</span>
+  <span class='va'>source</span>,
+  cols <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>...</span>,
+  reverse <span class='op'>=</span> <span class='cn'>NULL</span>,
+  limit <span class='op'>=</span> <span class='cn'>NULL</span>,
+  env <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span><span class='op'>(</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -207,17 +207,17 @@ which does preserve row order).</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='co'>if</span> (<span class='fu'><a href='#base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"DBI"</span>, quietly = <span class='fl'>TRUE</span>) <span class='op'>&amp;&amp;</span> <span class='fu'><a href='#base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"RSQLite"</span>, quietly = <span class='fl'>TRUE</span>)) {
-  <span class='kw'>my_db</span> <span class='op'>&lt;-</span> <span class='kw'>DBI</span>::<span class='fu'><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></span>(<span class='kw'>RSQLite</span>::<span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
-  <span class='kw'>d</span> <span class='op'>&lt;-</span> <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(<span class='kw'>my_db</span>, <span class='st'>'d'</span>,
-                   <span class='fu'><a href='#base/data.frame.html'>data.frame</a></span>(AUC = <span class='fl'>0.6</span>, R2 = <span class='fl'>0.2</span>))
-  <span class='kw'>optree</span> <span class='op'>&lt;-</span> <span class='fu'>order_rows</span>(<span class='kw'>d</span>, cols = <span class='st'>"AUC"</span>, reverse = <span class='st'>"AUC"</span>, limit=<span class='fl'>4</span>)
-  <span class='fu'><a href='#base/cat.html'>cat</a></span>(<span class='fu'><a href='#base/format.html'>format</a></span>(<span class='kw'>optree</span>))
-  <span class='kw'>sql</span> <span class='op'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='kw'>optree</span>, <span class='kw'>my_db</span>)
-  <span class='fu'><a href='#base/cat.html'>cat</a></span>(<span class='kw'>sql</span>)
-  <span class='fu'><a href='#base/print.html'>print</a></span>(<span class='kw'>DBI</span>::<span class='fu'><a href='https://dbi.r-dbi.org/reference/dbGetQuery.html'>dbGetQuery</a></span>(<span class='kw'>my_db</span>, <span class='kw'>sql</span>))
-  <span class='kw'>DBI</span>::<span class='fu'><a href='https://dbi.r-dbi.org/reference/dbDisconnect.html'>dbDisconnect</a></span>(<span class='kw'>my_db</span>)
-}
+<span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span><span class='op'>(</span><span class='st'>"DBI"</span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span> <span class='op'>&amp;&amp;</span> <span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span><span class='op'>(</span><span class='st'>"RSQLite"</span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
+  <span class='va'>my_db</span> <span class='op'>&lt;-</span> <span class='fu'>DBI</span><span class='fu'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></span><span class='op'>(</span><span class='fu'>RSQLite</span><span class='fu'>::</span><span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span><span class='op'>(</span><span class='op'>)</span>, <span class='st'>":memory:"</span><span class='op'>)</span>
+  <span class='va'>d</span> <span class='op'>&lt;-</span> <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span><span class='op'>(</span><span class='va'>my_db</span>, <span class='st'>'d'</span>,
+                   <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>AUC <span class='op'>=</span> <span class='fl'>0.6</span>, R2 <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='va'>optree</span> <span class='op'>&lt;-</span> <span class='fu'>order_rows</span><span class='op'>(</span><span class='va'>d</span>, cols <span class='op'>=</span> <span class='st'>"AUC"</span>, reverse <span class='op'>=</span> <span class='st'>"AUC"</span>, limit<span class='op'>=</span><span class='fl'>4</span><span class='op'>)</span>
+  <span class='fu'><a href='https://rdrr.io/r/base/cat.html'>cat</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/format.html'>format</a></span><span class='op'>(</span><span class='va'>optree</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='va'>sql</span> <span class='op'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span><span class='op'>(</span><span class='va'>optree</span>, <span class='va'>my_db</span><span class='op'>)</span>
+  <span class='fu'><a href='https://rdrr.io/r/base/cat.html'>cat</a></span><span class='op'>(</span><span class='va'>sql</span><span class='op'>)</span>
+  <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='fu'>DBI</span><span class='fu'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbGetQuery.html'>dbGetQuery</a></span><span class='op'>(</span><span class='va'>my_db</span>, <span class='va'>sql</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='fu'>DBI</span><span class='fu'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbDisconnect.html'>dbDisconnect</a></span><span class='op'>(</span><span class='va'>my_db</span><span class='op'>)</span>
+<span class='op'>}</span>
 </div><div class='output co'>#&gt; mk_td("d", c(
 #&gt;   "AUC",
 #&gt;   "R2")) %.&gt;%
@@ -231,7 +231,7 @@ which does preserve row order).</p>
 #&gt;   `R2`
 #&gt;  FROM
 #&gt;   `d`
-#&gt; ) tsql_61290947166991043956_0000000000 ORDER BY `AUC` DESC LIMIT 4
+#&gt; ) tsql_50957799399738224632_0000000000 ORDER BY `AUC` DESC LIMIT 4
 #&gt;   AUC  R2
 #&gt; 1 0.6 0.2</div><div class='input'>
 </div></pre>
@@ -250,7 +250,7 @@ which does preserve row order).</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

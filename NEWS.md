@@ -1,7 +1,7 @@
 
-# rquery 1.4.7 2021/06/09
+# rquery 1.4.7 2021/06/10
 
- * Check for empty ... on _se() methods.
+ * Check for empty ... on more _se() methods.
  * re-instate tests (not sure why they got left out).
  
 # rquery 1.4.6 2020/10/17

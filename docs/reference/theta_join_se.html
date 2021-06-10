@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.7</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -153,15 +153,15 @@
     <p>Theta join is a join on an arbitrary predicate.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>theta_join_se</span>(
-  <span class='kw'>a</span>,
-  <span class='kw'>b</span>,
-  <span class='kw'>expr</span>,
-  <span class='kw'>...</span>,
-  jointype = <span class='st'>"INNER"</span>,
-  suffix = <span class='fu'><a href='#base/c.html'>c</a></span>(<span class='st'>"_a"</span>, <span class='st'>"_b"</span>),
-  env = <span class='fu'><a href='#base/sys.parent.html'>parent.frame</a></span>()
-)</pre>
+    <pre class="usage"><span class='fu'>theta_join_se</span><span class='op'>(</span>
+  <span class='va'>a</span>,
+  <span class='va'>b</span>,
+  <span class='va'>expr</span>,
+  <span class='va'>...</span>,
+  jointype <span class='op'>=</span> <span class='st'>"INNER"</span>,
+  suffix <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"_a"</span>, <span class='st'>"_b"</span><span class='op'>)</span>,
+  env <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span><span class='op'>(</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -202,19 +202,19 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='co'>if</span> (<span class='fu'><a href='#base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"DBI"</span>, quietly = <span class='fl'>TRUE</span>) <span class='op'>&amp;&amp;</span> <span class='fu'><a href='#base/ns-load.html'>requireNamespace</a></span>(<span class='st'>"RSQLite"</span>, quietly = <span class='fl'>TRUE</span>)) {
-  <span class='kw'>my_db</span> <span class='op'>&lt;-</span> <span class='kw'>DBI</span>::<span class='fu'><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></span>(<span class='kw'>RSQLite</span>::<span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span>(), <span class='st'>":memory:"</span>)
-  <span class='kw'>d1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(<span class='kw'>my_db</span>, <span class='st'>'d1'</span>,
-                    <span class='fu'><a href='#base/data.frame.html'>data.frame</a></span>(AUC = <span class='fl'>0.6</span>, R2 = <span class='fl'>0.2</span>))
-  <span class='kw'>d2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span>(<span class='kw'>my_db</span>, <span class='st'>'d2'</span>,
-                    <span class='fu'><a href='#base/data.frame.html'>data.frame</a></span>(AUC2 = <span class='fl'>0.4</span>, R2 = <span class='fl'>0.3</span>))
-  <span class='kw'>optree</span> <span class='op'>&lt;-</span> <span class='fu'>theta_join_se</span>(<span class='kw'>d1</span>, <span class='kw'>d2</span>, <span class='st'>"AUC &gt;= AUC2"</span>)
-  <span class='fu'><a href='#base/cat.html'>cat</a></span>(<span class='fu'><a href='#base/format.html'>format</a></span>(<span class='kw'>optree</span>))
-  <span class='kw'>sql</span> <span class='op'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span>(<span class='kw'>optree</span>, <span class='kw'>my_db</span>)
-  <span class='fu'><a href='#base/cat.html'>cat</a></span>(<span class='kw'>sql</span>)
-  <span class='fu'><a href='#base/print.html'>print</a></span>(<span class='kw'>DBI</span>::<span class='fu'><a href='https://dbi.r-dbi.org/reference/dbGetQuery.html'>dbGetQuery</a></span>(<span class='kw'>my_db</span>, <span class='kw'>sql</span>))
-  <span class='kw'>DBI</span>::<span class='fu'><a href='https://dbi.r-dbi.org/reference/dbDisconnect.html'>dbDisconnect</a></span>(<span class='kw'>my_db</span>)
-}
+<span class='kw'>if</span> <span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span><span class='op'>(</span><span class='st'>"DBI"</span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span> <span class='op'>&amp;&amp;</span> <span class='fu'><a href='https://rdrr.io/r/base/ns-load.html'>requireNamespace</a></span><span class='op'>(</span><span class='st'>"RSQLite"</span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>{</span>
+  <span class='va'>my_db</span> <span class='op'>&lt;-</span> <span class='fu'>DBI</span><span class='fu'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbConnect.html'>dbConnect</a></span><span class='op'>(</span><span class='fu'>RSQLite</span><span class='fu'>::</span><span class='fu'><a href='https://rsqlite.r-dbi.org/reference/SQLite.html'>SQLite</a></span><span class='op'>(</span><span class='op'>)</span>, <span class='st'>":memory:"</span><span class='op'>)</span>
+  <span class='va'>d1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span><span class='op'>(</span><span class='va'>my_db</span>, <span class='st'>'d1'</span>,
+                    <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>AUC <span class='op'>=</span> <span class='fl'>0.6</span>, R2 <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='va'>d2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='rq_copy_to.html'>rq_copy_to</a></span><span class='op'>(</span><span class='va'>my_db</span>, <span class='st'>'d2'</span>,
+                    <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>AUC2 <span class='op'>=</span> <span class='fl'>0.4</span>, R2 <span class='op'>=</span> <span class='fl'>0.3</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='va'>optree</span> <span class='op'>&lt;-</span> <span class='fu'>theta_join_se</span><span class='op'>(</span><span class='va'>d1</span>, <span class='va'>d2</span>, <span class='st'>"AUC &gt;= AUC2"</span><span class='op'>)</span>
+  <span class='fu'><a href='https://rdrr.io/r/base/cat.html'>cat</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/format.html'>format</a></span><span class='op'>(</span><span class='va'>optree</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='va'>sql</span> <span class='op'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span><span class='op'>(</span><span class='va'>optree</span>, <span class='va'>my_db</span><span class='op'>)</span>
+  <span class='fu'><a href='https://rdrr.io/r/base/cat.html'>cat</a></span><span class='op'>(</span><span class='va'>sql</span><span class='op'>)</span>
+  <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='fu'>DBI</span><span class='fu'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbGetQuery.html'>dbGetQuery</a></span><span class='op'>(</span><span class='va'>my_db</span>, <span class='va'>sql</span><span class='op'>)</span><span class='op'>)</span>
+  <span class='fu'>DBI</span><span class='fu'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbDisconnect.html'>dbDisconnect</a></span><span class='op'>(</span><span class='va'>my_db</span><span class='op'>)</span>
+<span class='op'>}</span>
 </div><div class='output co'>#&gt; mk_td("d1", c(
 #&gt;   "AUC",
 #&gt;   "R2")) %.&gt;%
@@ -224,24 +224,24 @@
 #&gt;     "R2")),
 #&gt;   j= INNER; on= rquery_thetajoin_condition_1 := AUC &gt;= AUC2)
 #&gt; SELECT
-#&gt;  `tsql_67709598154854038265_0000000000`.`AUC` AS `AUC`,
-#&gt;  `tsql_67709598154854038265_0000000000`.`R2` AS `R2_a`,
-#&gt;  `tsql_67709598154854038265_0000000001`.`R2` AS `R2_b`,
-#&gt;  `tsql_67709598154854038265_0000000001`.`AUC2` AS `AUC2`
+#&gt;  `tsql_82854626580829878776_0000000000`.`AUC` AS `AUC`,
+#&gt;  `tsql_82854626580829878776_0000000000`.`R2` AS `R2_a`,
+#&gt;  `tsql_82854626580829878776_0000000001`.`R2` AS `R2_b`,
+#&gt;  `tsql_82854626580829878776_0000000001`.`AUC2` AS `AUC2`
 #&gt; FROM (
 #&gt;  SELECT
 #&gt;   `AUC`,
 #&gt;   `R2`
 #&gt;  FROM
 #&gt;   `d1`
-#&gt; ) `tsql_67709598154854038265_0000000000`
+#&gt; ) `tsql_82854626580829878776_0000000000`
 #&gt; INNER JOIN (
 #&gt;  SELECT
 #&gt;   `AUC2`,
 #&gt;   `R2`
 #&gt;  FROM
 #&gt;   `d2`
-#&gt; ) `tsql_67709598154854038265_0000000001` ON AUC &gt;= AUC2
+#&gt; ) `tsql_82854626580829878776_0000000001` ON AUC &gt;= AUC2
 #&gt;   AUC R2_a R2_b AUC2
 #&gt; 1 0.6  0.2  0.3  0.4</div><div class='input'>
 </div></pre>
@@ -260,7 +260,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

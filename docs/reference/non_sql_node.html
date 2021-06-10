@@ -77,7 +77,7 @@ result can only be used once in a pipeline (else they will try to clobber their 
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.7</span>
       </span>
     </div>
 
@@ -85,7 +85,7 @@ result can only be used once in a pipeline (else they will try to clobber their 
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -163,23 +163,23 @@ so can be expensive and should be used sparingly.  Finally their
 result can only be used once in a pipeline (else they will try to clobber their own result).</p>
     </div>
 
-    <pre class="usage"><span class='fu'>non_sql_node</span>(
-  <span class='kw'>source</span>,
-  <span class='kw'>...</span>,
-  f_db = <span class='kw'>NULL</span>,
-  f_df = <span class='kw'>NULL</span>,
-  f_dt = <span class='kw'>NULL</span>,
-  <span class='kw'>incoming_table_name</span>,
-  incoming_qualifiers = <span class='kw'>NULL</span>,
-  <span class='kw'>outgoing_table_name</span>,
-  outgoing_qualifiers = <span class='kw'>NULL</span>,
-  <span class='kw'>columns_produced</span>,
-  display_form = <span class='st'>"non_sql_node"</span>,
-  orig_columns = <span class='fl'>TRUE</span>,
-  temporary = <span class='fl'>TRUE</span>,
-  check_result_details = <span class='fl'>TRUE</span>,
-  env = <span class='fu'><a href='#base/sys.parent.html'>parent.frame</a></span>()
-)</pre>
+    <pre class="usage"><span class='fu'>non_sql_node</span><span class='op'>(</span>
+  <span class='va'>source</span>,
+  <span class='va'>...</span>,
+  f_db <span class='op'>=</span> <span class='cn'>NULL</span>,
+  f_df <span class='op'>=</span> <span class='cn'>NULL</span>,
+  f_dt <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>incoming_table_name</span>,
+  incoming_qualifiers <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>outgoing_table_name</span>,
+  outgoing_qualifiers <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>columns_produced</span>,
+  display_form <span class='op'>=</span> <span class='st'>"non_sql_node"</span>,
+  orig_columns <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  temporary <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  check_result_details <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  env <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sys.parent.html'>parent.frame</a></span><span class='op'>(</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -268,7 +268,7 @@ result can only be used once in a pipeline (else they will try to clobber their 
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
