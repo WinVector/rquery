@@ -8,20 +8,21 @@ package = "rquery"
 date()
 ```
 
-    ## [1] "Sat Oct 17 10:01:12 2020"
+    ## [1] "Thu Jun 10 08:33:52 2021"
 
 ``` r
 packageVersion(package)
 ```
 
-    ## [1] '1.4.6'
+    ## [1] '1.4.7'
 
 ``` r
 parallelCluster <- NULL
 ncores <- parallel::detectCores()
-if(ncores > 1) {
-  parallelCluster <- parallel::makeCluster(ncores)
-}
+# prrd back to bombing out with database locked
+#if(ncores > 1) {
+#  parallelCluster <- parallel::makeCluster(ncores)
+#}
 
 orig_dir <- getwd()
 print(orig_dir)
@@ -34,7 +35,7 @@ setwd(td)
 print(td)
 ```
 
-    ## [1] "/var/folders/7f/sdjycp_d08n8wwytsbgwqgsw0000gn/T//RtmpHzhEsJ"
+    ## [1] "/var/folders/7f/sdjycp_d08n8wwytsbgwqgsw0000gn/T//RtmpPoliP8"
 
 ``` r
 options(repos = c(CRAN="https://cloud.r-project.org"))
@@ -59,15 +60,21 @@ if(!is.null(parallelCluster)) {
 }
 ```
 
-    ## Error in checkForRemoteErrors(val): 2 nodes produced errors; first error: database is locked
+    ## ## Reverse depends check of rquery 1.4.7 
+    ## cdata_1.1.9 started at 2021-06-10 08:33:54 success at 2021-06-10 08:34:15 (1/0/0) 
+    ## rqdatatable_1.2.9 started at 2021-06-10 08:34:15 success at 2021-06-10 08:34:32 (2/0/0) 
+    ## WVPlots_1.3.2 started at 2021-06-10 08:34:32 success at 2021-06-10 08:35:24 (3/0/0)
+
+    ## [1] id     title  status
+    ## <0 rows> (or 0-length row.names)
 
 ``` r
 summariseQueue(package=package, directory=td)
 ```
 
-    ## Test of rquery 1.4.6 had 3 successes, 0 failures, and 0 skipped packages. 
-    ## Ran from 2020-10-17 10:01:16 to 2020-10-17 10:02:08 for 52 secs 
-    ## Average of 17.333 secs relative to 29.429 secs using 3 runners
+    ## Test of rquery 1.4.7 had 3 successes, 0 failures, and 0 skipped packages. 
+    ## Ran from 2021-06-10 08:33:54 to 2021-06-10 08:35:24 for 1.5 mins 
+    ## Average of 30 secs relative to 29.781 secs using 1 runners
     ## 
     ## Failed packages:   
     ## 
