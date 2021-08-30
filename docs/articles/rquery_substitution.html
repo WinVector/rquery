@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.8</span>
       </span>
     </div>
 
@@ -39,7 +39,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -100,13 +100,14 @@
 
       
 
-      </header><script src="rquery_substitution_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
+      </header><script src="rquery_substitution_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="rquery_substitution_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
+<script src="rquery_substitution_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>rquery Substitution</h1>
                         <h4 class="author">John Mount, Win-Vector LLC</h4>
             
-            <h4 class="date">2021-06-10</h4>
+            <h4 class="date">2021-08-30</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery/blob/master/vignettes/rquery_substitution.Rmd"><code>vignettes/rquery_substitution.Rmd</code></a></small>
       <div class="hidden name"><code>rquery_substitution.Rmd</code></div>
@@ -121,36 +122,36 @@
 <h2 class="hasAnchor">
 <a href="#stringscharacter-versus-namessymbols" class="anchor"></a>strings/character versus names/symbols</h2>
 <p>Let’s take a look at this through small examples. First let’s take a look at the difference between strings and symbols in <code>R</code>.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">col_string</span> <span class="op">&lt;-</span> <span class="st">"x"</span>
-<span class="va">col_name</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/name.html">as.name</a></span><span class="op">(</span><span class="va">col_string</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">col_string</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit">
+<span class="va">col_string</span> <span class="op">&lt;-</span> <span class="st">"x"</span>
+<span class="va">col_name</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/name.html">as.name</a></span><span class="op">(</span><span class="va">col_string</span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">col_string</span><span class="op">)</span></pre></div>
 <pre><code>##  chr "x"</code></pre>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">col_name</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">col_name</span><span class="op">)</span></pre></div>
 <pre><code>##  symbol x</code></pre>
 <p>Notice, in <code>R</code> a string is different than a symbol.</p>
 <p>We can see this difference in <code>rquery</code> where an un-quoted <code>x</code> is treated as a symbol (and therefore is translated to a database column) and a quoted entity is treated as a string (and therefore is translated to a literal or constant, not to a column).</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/WinVector/rquery/">"rquery"</a></span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit">
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/WinVector/rquery/">"rquery"</a></span><span class="op">)</span></pre></div>
 <pre><code>## Loading required package: wrapr</code></pre>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'a'</span>, <span class="st">'b'</span><span class="op">)</span>,
+<div class="sourceCode" id="cb8"><pre class="downlit">
+<span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'a'</span>, <span class="st">'b'</span><span class="op">)</span>,
                 stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 
 <span class="va">d_rep</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/local_td.html">local_td</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span>
 
 <span class="va">db_info</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rquery_db_info.html">rquery_db_info</a></span><span class="op">(</span>identifier_quote_char <span class="op">=</span> <span class="st">"__IDENTIFIER__"</span>,
-                          string_quote_char <span class="op">=</span> <span class="st">"__STRING_CONSTANT__"</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># direct use, comparing to a string constant</span>
+                          string_quote_char <span class="op">=</span> <span class="st">"__STRING_CONSTANT__"</span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit">
+<span class="co"># direct use, comparing to a string constant</span>
 <span class="co"># probaly not the query we intend as the</span>
 <span class="co"># result is going to be empty independent</span>
 <span class="co"># of the data.</span>
 <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span>
   <span class="va">d_rep</span> <span class="op">%.&gt;%</span> <span class="fu"><a href="../reference/select_rows.html">select_rows</a></span><span class="op">(</span><span class="va">.</span>, <span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="st">'x'</span><span class="op">)</span><span class="op">)</span>,
-  <span class="va">db_info</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+  <span class="va">db_info</span><span class="op">)</span><span class="op">)</span></pre></div>
 <pre><code>## Warning in warn_about_filter_conditions(parsed): rquery::select_rows: expression
 ## is.na("x") refers to no columns (so is a constant)</code></pre>
 <pre><code>## SELECT * FROM (
@@ -158,34 +159,34 @@
 ##   __IDENTIFIER__x__IDENTIFIER__
 ##  FROM
 ##   __IDENTIFIER__d__IDENTIFIER__
-## ) tsql_19748494202919708744_0000000000
+## ) tsql_68813466850007065454_0000000000
 ## WHERE ( ( __STRING_CONSTANT__x__STRING_CONSTANT__ ) IS NULL )</code></pre>
 <p>We take careful note what is marked as “<code>__IDENTIFIER__</code>”, versus what is marked as “<code>__STRING_CONSTANT__</code>”. Notice “<code>__IDENTIFIER__</code>” is used in the <code>SQL</code> for table names and column name, and “<code>__STRING_CONSTANT__</code>” is used for string constants. The above query is probably not what a user intended as we are checking if a user supplied string constant is <code>NA</code>, which is not interesting.</p>
 <p>Likely the correct query omits the quote marks from the <code>x</code>.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># direct use, comparing to a column</span>
+<div class="sourceCode" id="cb12"><pre class="downlit">
+<span class="co"># direct use, comparing to a column</span>
 <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span>
   <span class="va">d_rep</span> <span class="op">%.&gt;%</span> <span class="fu"><a href="../reference/select_rows.html">select_rows</a></span><span class="op">(</span><span class="va">.</span>, <span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span>,
-  <span class="va">db_info</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+  <span class="va">db_info</span><span class="op">)</span><span class="op">)</span></pre></div>
 <pre><code>## SELECT * FROM (
 ##  SELECT
 ##   __IDENTIFIER__x__IDENTIFIER__
 ##  FROM
 ##   __IDENTIFIER__d__IDENTIFIER__
-## ) tsql_74144932351537916757_0000000000
+## ) tsql_54037631231419361618_0000000000
 ## WHERE ( ( __IDENTIFIER__x__IDENTIFIER__ ) IS NULL )</code></pre>
 <p>In the above query we are now comparing an identifier to <code>NULL</code>, which is how <code>SQL</code> expresses comparing the contents of the column named to <code>NULL</code> in a row by row fashion (a useful query).</p>
 <p>Or combing the two ideas. We check which rows of the column <code>x</code> have the value <code>"a"</code> as follows.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span>
+<div class="sourceCode" id="cb14"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span>
   <span class="va">d_rep</span> <span class="op">%.&gt;%</span> <span class="fu"><a href="../reference/select_rows.html">select_rows</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">x</span> <span class="op">==</span> <span class="st">'a'</span><span class="op">)</span>,
-  <span class="va">db_info</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+  <span class="va">db_info</span><span class="op">)</span><span class="op">)</span></pre></div>
 <pre><code>## SELECT * FROM (
 ##  SELECT
 ##   __IDENTIFIER__x__IDENTIFIER__
 ##  FROM
 ##   __IDENTIFIER__d__IDENTIFIER__
-## ) tsql_37947981806251606939_0000000000
+## ) tsql_61449970997361606615_0000000000
 ## WHERE __IDENTIFIER__x__IDENTIFIER__ = __STRING_CONSTANT__a__STRING_CONSTANT__</code></pre>
 </div>
 <div id="wraprlet-substitution" class="section level2">
@@ -194,47 +195,47 @@
 <p><code><a href="https://winvector.github.io/wrapr//reference/let.html">wrapr::let()</a></code> substitution is designed only to substitute in names as if the user had typed them. It is deliberately not designed to deal with other value substitutions (such as strings, integers, or floating point values). This is intentional and to keep <code><a href="https://winvector.github.io/wrapr//reference/let.html">wrapr::let()</a></code> to one job: adapting NSE (Non-standard interfaces) to accept names as values.</p>
 <p><code><a href="https://winvector.github.io/wrapr//reference/let.html">wrapr::let()</a></code>’s principle is that there is no reason for <code><a href="https://winvector.github.io/wrapr//reference/let.html">wrapr::let()</a></code> to ever substitute in a value (such as a string or an integer) as normal evaluation of variable names in environments already supplies a better way to do that. The only thing that is hard to substitute in are new symbols, so <code><a href="https://winvector.github.io/wrapr//reference/let.html">wrapr::let()</a></code> has code to make sure it is doing only that.</p>
 <p>Accordingly <code><a href="https://winvector.github.io/wrapr//reference/let.html">wrapr::let()</a></code> treats both names/symbols and strings as symbols.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Let substitution treats all substitutions as source-text</span>
+<div class="sourceCode" id="cb16"><pre class="downlit">
+<span class="co"># Let substitution treats all substitutions as source-text</span>
 <span class="co"># so strings and names are as if the user had typed them</span>
 <span class="co"># in and behave as names (becoming the name of a column).</span>
 <span class="fu"><a href="https://winvector.github.io/wrapr//reference/let.html">let</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>COL_STRING <span class="op">=</span> <span class="va">col_string</span><span class="op">)</span>,
     <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">d_rep</span> <span class="op">%.&gt;%</span> <span class="fu"><a href="../reference/select_rows.html">select_rows</a></span><span class="op">(</span><span class="va">.</span>, <span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">COL_STRING</span><span class="op">)</span><span class="op">)</span>,
-               <span class="va">db_info</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+               <span class="va">db_info</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></pre></div>
 <pre><code>## SELECT * FROM (
 ##  SELECT
 ##   __IDENTIFIER__x__IDENTIFIER__
 ##  FROM
 ##   __IDENTIFIER__d__IDENTIFIER__
-## ) tsql_13158691852690783220_0000000000
+## ) tsql_11456481780733109549_0000000000
 ## WHERE ( ( __IDENTIFIER__x__IDENTIFIER__ ) IS NULL )</code></pre>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Let substitution treats all substitutions as source-text</span>
+<div class="sourceCode" id="cb18"><pre class="downlit">
+<span class="co"># Let substitution treats all substitutions as source-text</span>
 <span class="co"># so strings and names are as if the user had typed them</span>
 <span class="co"># in and behave as names (becoming the name of a column).</span>
 <span class="fu"><a href="https://winvector.github.io/wrapr//reference/let.html">let</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>COL_NAME <span class="op">=</span> <span class="va">col_name</span><span class="op">)</span>,
     <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">d_rep</span> <span class="op">%.&gt;%</span> <span class="fu"><a href="../reference/select_rows.html">select_rows</a></span><span class="op">(</span><span class="va">.</span>, <span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">COL_NAME</span><span class="op">)</span><span class="op">)</span>,
-               <span class="va">db_info</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+               <span class="va">db_info</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></pre></div>
 <pre><code>## SELECT * FROM (
 ##  SELECT
 ##   __IDENTIFIER__x__IDENTIFIER__
 ##  FROM
 ##   __IDENTIFIER__d__IDENTIFIER__
-## ) tsql_67631296398168363098_0000000000
+## ) tsql_45891763848225580541_0000000000
 ## WHERE ( ( __IDENTIFIER__x__IDENTIFIER__ ) IS NULL )</code></pre>
 <p><code><a href="https://winvector.github.io/wrapr//reference/let.html">wrapr::let()</a></code>’s operating assumption is: if the user was using <code><a href="https://winvector.github.io/wrapr//reference/let.html">wrapr::let()</a></code> the user was intending a symbol, regardless if they specify that symbol using a string or a symbol type. This means the user doesn’t have to maintain the distinction between string representations of names and symbol representations of names when using <code><a href="https://winvector.github.io/wrapr//reference/let.html">wrapr::let()</a></code>. And again, for substituting string-values in: there are already much better ways, such as <code>R</code> evaluation itself (as we show below).</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">value_we_want</span> <span class="op">&lt;-</span> <span class="st">"a"</span>
+<div class="sourceCode" id="cb20"><pre class="downlit">
+<span class="va">value_we_want</span> <span class="op">&lt;-</span> <span class="st">"a"</span>
 
 <span class="fu"><a href="https://winvector.github.io/wrapr//reference/let.html">let</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>COL_NAME <span class="op">=</span> <span class="va">col_name</span><span class="op">)</span>,
     <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">d_rep</span> <span class="op">%.&gt;%</span> <span class="fu"><a href="../reference/select_rows.html">select_rows</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">COL_NAME</span> <span class="op">==</span> <span class="va">value_we_want</span><span class="op">)</span>,
-               <span class="va">db_info</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+               <span class="va">db_info</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></pre></div>
 <pre><code>## SELECT * FROM (
 ##  SELECT
 ##   __IDENTIFIER__x__IDENTIFIER__
 ##  FROM
 ##   __IDENTIFIER__d__IDENTIFIER__
-## ) tsql_63079608176335200271_0000000000
+## ) tsql_59253152122377915506_0000000000
 ## WHERE __IDENTIFIER__x__IDENTIFIER__ = __STRING_CONSTANT__a__STRING_CONSTANT__</code></pre>
 <p>By assuming more about user intent <code><a href="https://winvector.github.io/wrapr//reference/let.html">wrapr::let()</a></code> can smooth over inessential differences for the user.</p>
 </div>
@@ -245,12 +246,12 @@
 <p>In this case the emergent behavior is: strings are treated as string constants, and names/symbols are treated as column names. That is the consequences of the substitution performed by <code><a href="https://rdrr.io/r/base/bquote.html">bquote()</a></code> is a function of the type of what is being substituted in. This actually makes sense, but it is something the user has to learn.</p>
 <p><code>rquery</code> can use <code><a href="https://rdrr.io/r/base/bquote.html">bquote()</a></code> substitution two ways: through its own NSE methods, or through <a href="https://winvector.github.io/wrapr/reference/qe.html"><code>wrapr:qe()</code></a> (<code>wrapr</code> quote expression). Both work the same: they treat names/symbols as column names, and character/strings as string constants. So users must express their intent by passing in the correct type.</p>
 <p>Here are examples to show the differences. In all cases substitution is triggered by the <code>.()</code>-notation.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># bquote substitution on string type: col_string </span>
+<div class="sourceCode" id="cb22"><pre class="downlit">
+<span class="co"># bquote substitution on string type: col_string </span>
 <span class="co"># is taken to represent a string constant, not</span>
 <span class="co"># the name of a column.</span>
 <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">d_rep</span> <span class="op">%.&gt;%</span> <span class="fu"><a href="../reference/select_rows.html">select_rows</a></span><span class="op">(</span><span class="va">.</span>, <span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="fu">.</span><span class="op">(</span><span class="va">col_string</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,
-           <span class="va">db_info</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+           <span class="va">db_info</span><span class="op">)</span><span class="op">)</span></pre></div>
 <pre><code>## Warning in warn_about_filter_conditions(parsed): rquery::select_rows: expression
 ## is.na("x") refers to no columns (so is a constant)</code></pre>
 <pre><code>## SELECT * FROM (
@@ -258,26 +259,26 @@
 ##   __IDENTIFIER__x__IDENTIFIER__
 ##  FROM
 ##   __IDENTIFIER__d__IDENTIFIER__
-## ) tsql_25332295819315449118_0000000000
+## ) tsql_66774896010176965013_0000000000
 ## WHERE ( ( __STRING_CONSTANT__x__STRING_CONSTANT__ ) IS NULL )</code></pre>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># bquote substitution on name type: col_name </span>
+<div class="sourceCode" id="cb25"><pre class="downlit">
+<span class="co"># bquote substitution on name type: col_name </span>
 <span class="co"># is taken to represent a column name.</span>
 <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">d_rep</span> <span class="op">%.&gt;%</span> <span class="fu"><a href="../reference/select_rows.html">select_rows</a></span><span class="op">(</span><span class="va">.</span>, <span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="fu">.</span><span class="op">(</span><span class="va">col_name</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,
-           <span class="va">db_info</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+           <span class="va">db_info</span><span class="op">)</span><span class="op">)</span></pre></div>
 <pre><code>## SELECT * FROM (
 ##  SELECT
 ##   __IDENTIFIER__x__IDENTIFIER__
 ##  FROM
 ##   __IDENTIFIER__d__IDENTIFIER__
-## ) tsql_14773163767655908681_0000000000
+## ) tsql_04226607254771919986_0000000000
 ## WHERE ( ( __IDENTIFIER__x__IDENTIFIER__ ) IS NULL )</code></pre>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># bquote substitution on string type: col_string </span>
+<div class="sourceCode" id="cb27"><pre class="downlit">
+<span class="co"># bquote substitution on string type: col_string </span>
 <span class="co"># is taken to represent a string constant, not</span>
 <span class="co"># the name of a column.</span>
 <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">d_rep</span> <span class="op">%.&gt;%</span> <span class="fu"><a href="../reference/select_rows_se.html">select_rows_se</a></span><span class="op">(</span><span class="va">.</span>, <span class="fu"><a href="https://winvector.github.io/wrapr//reference/qe.html">qe</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="fu">.</span><span class="op">(</span><span class="va">col_string</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,
-           <span class="va">db_info</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+           <span class="va">db_info</span><span class="op">)</span><span class="op">)</span></pre></div>
 <pre><code>## Warning in warn_about_filter_conditions(parsed): rquery::select_rows: expression
 ## is.na("x") refers to no columns (so is a constant)</code></pre>
 <pre><code>## SELECT * FROM (
@@ -285,19 +286,19 @@
 ##   __IDENTIFIER__x__IDENTIFIER__
 ##  FROM
 ##   __IDENTIFIER__d__IDENTIFIER__
-## ) tsql_45212431241178183875_0000000000
+## ) tsql_23145705594007801248_0000000000
 ## WHERE ( ( __STRING_CONSTANT__x__STRING_CONSTANT__ ) IS NULL )</code></pre>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># bquote substitution on name type: col_name </span>
+<div class="sourceCode" id="cb30"><pre class="downlit">
+<span class="co"># bquote substitution on name type: col_name </span>
 <span class="co"># is taken to represent a column name.</span>
 <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">d_rep</span> <span class="op">%.&gt;%</span> <span class="fu"><a href="../reference/select_rows_se.html">select_rows_se</a></span><span class="op">(</span><span class="va">.</span>, <span class="fu"><a href="https://winvector.github.io/wrapr//reference/qe.html">qe</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="fu">.</span><span class="op">(</span><span class="va">col_name</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,
-           <span class="va">db_info</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+           <span class="va">db_info</span><span class="op">)</span><span class="op">)</span></pre></div>
 <pre><code>## SELECT * FROM (
 ##  SELECT
 ##   __IDENTIFIER__x__IDENTIFIER__
 ##  FROM
 ##   __IDENTIFIER__d__IDENTIFIER__
-## ) tsql_93175510232734143062_0000000000
+## ) tsql_35919169733795202398_0000000000
 ## WHERE ( ( __IDENTIFIER__x__IDENTIFIER__ ) IS NULL )</code></pre>
 </div>
 <div id="conclusion" class="section level2">

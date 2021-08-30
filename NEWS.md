@@ -1,4 +1,8 @@
 
+# rquery 1.4.8 2021/08/30
+
+ * Work on examples and doc.
+
 # rquery 1.4.7 2021/06/10
 
  * Check for empty ... on more _se() methods.
