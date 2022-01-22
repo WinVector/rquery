@@ -39,7 +39,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -100,14 +100,13 @@
 
       
 
-      </header><script src="QueryGeneration_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="QueryGeneration_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
-<script src="QueryGeneration_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
+      </header><script src="QueryGeneration_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Query Generation</h1>
                         <h4 class="author">John Mount</h4>
             
-            <h4 class="date">2021-08-30</h4>
+            <h4 class="date">2022-01-22</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery/blob/master/vignettes/QueryGeneration.Rmd"><code>vignettes/QueryGeneration.Rmd</code></a></small>
       <div class="hidden name"><code>QueryGeneration.Rmd</code></div>
@@ -119,21 +118,23 @@
 <p>This is a very brief place-holder example (not executed, as <code>SQLite</code> does not have the needed window functions). For more details please see the fuller note: <a href="https://winvector.github.io/rquery/index.html"><code>rquery README</code></a>.</p>
 <p>The primary purpose of <code>rquery</code> is <code>SQL</code> query generation. We demonstrate this below.</p>
 <p>Note: in examples we use <code><a href="../reference/rq_copy_to.html">rq_copy_to()</a></code> to create data. This is only for the purpose of having easy portable examples. With big data the data is usually already in the remote database or Spark system. The task is almost always to connect and work with this pre-existing remote data and the method to do this is <a href="https://winvector.github.io/rquery/reference/db_td.html"><code>db_td()</code></a>, which builds a reference to a remote table given the table name.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="co"># produce a hande to existing table</span>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># produce a hande to existing table</span>
 <span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/db_td.html">db_td</a></span><span class="op">(</span><span class="va">my_db</span>, <span class="st">"d"</span><span class="op">)</span>
 
 <span class="va">scale</span> <span class="op">&lt;-</span> <span class="fl">0.237</span>
 
 <span class="va">dq</span> <span class="op">&lt;-</span> <span class="va">d</span> <span class="op">%.&gt;%</span>
   <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,
+         one <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">%.&gt;%</span>
+  <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,
          <span class="va">probability</span> <span class="op">:=</span>
            <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="va">assessmentTotal</span> <span class="op">*</span> <span class="va">scale</span><span class="op">)</span><span class="op">/</span>
            <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="va">assessmentTotal</span> <span class="op">*</span> <span class="va">scale</span><span class="op">)</span><span class="op">)</span>,
-         <span class="va">count</span> <span class="op">:=</span> <span class="fu">count</span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>,
+         <span class="va">count</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">one</span><span class="op">)</span>,
          partitionby <span class="op">=</span> <span class="st">'subjectID'</span><span class="op">)</span> <span class="op">%.&gt;%</span>
   <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,
-         <span class="va">rank</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/rank.html">rank</a></span><span class="op">(</span><span class="op">)</span>,
+         <span class="va">rank</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/cumsum.html">cumsum</a></span><span class="op">(</span><span class="va">one</span><span class="op">)</span>,
          partitionby <span class="op">=</span> <span class="st">'subjectID'</span>,
          orderby <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'probability'</span>, <span class="st">'surveyCategory'</span><span class="op">)</span><span class="op">)</span>  <span class="op">%.&gt;%</span>
   <span class="fu"><a href="../reference/rename_columns.html">rename_columns</a></span><span class="op">(</span><span class="va">.</span>, <span class="st">'diagnosis'</span> <span class="op">:=</span> <span class="st">'surveyCategory'</span><span class="op">)</span> <span class="op">%.&gt;%</span>
@@ -146,7 +147,7 @@
 <span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">my_db</span><span class="op">)</span>
 <span class="co">#&gt; [1] "SQLiteConnection"</span>
 <span class="co">#&gt; attr(,"package")</span>
-<span class="co">#&gt; [1] "RSQLite"</span></pre></div>
+<span class="co">#&gt; [1] "RSQLite"</span></code></pre></div>
 <p>Presentation format (see also <a href="https://winvector.github.io/rquery/reference/op_diagram.html"><code>op_diagram()</code></a>):</p>
 <pre><code>  mk_td("d", c(
     "subjectID",
@@ -155,13 +156,15 @@
     "irrelevantCol1",
     "irrelevantCol2")) %.&gt;%
    extend(.,
+    one := 1) %.&gt;%
+   extend(.,
     probability := exp(assessmentTotal * 0.237) / sum(exp(assessmentTotal * 0.237)),
-    count := count(1),
+    count := sum(one),
     partitionby = c('subjectID'),
     orderby = c(),
     reverse = c()) %.&gt;%
    extend(.,
-    rank := rank(),
+    rank := cumsum(one),
     partitionby = c('subjectID'),
     orderby = c('probability', 'surveyCategory'),
     reverse = c()) %.&gt;%
@@ -195,27 +198,35 @@
        `surveyCategory`,
        `probability`,
        `count`,
-       rank ( ) OVER (  PARTITION BY `subjectID` ORDER BY `probability`, `surveyCategory` ) AS `rank`
+       SUM ( `one` ) OVER (  PARTITION BY `subjectID` ORDER BY `probability`, `surveyCategory` ) AS `rank`
       FROM (
        SELECT
         `subjectID`,
         `surveyCategory`,
+        `one`,
         exp ( `assessmentTotal` * 0.237 ) / sum ( exp ( `assessmentTotal` * 0.237 ) ) OVER (  PARTITION BY `subjectID` ) AS `probability`,
-        count ( 1 ) OVER (  PARTITION BY `subjectID` ) AS `count`
+        sum ( `one` ) OVER (  PARTITION BY `subjectID` ) AS `count`
        FROM (
         SELECT
          `subjectID`,
          `surveyCategory`,
-         `assessmentTotal`
-        FROM
-         `d` LIMIT 1000
-        ) tsql_20029496572269797300_0000000000
-       ) tsql_20029496572269797300_0000000001
-     ) tsql_20029496572269797300_0000000002
-    ) tsql_20029496572269797300_0000000003
+         `assessmentTotal`,
+         1  AS `one`
+        FROM (
+         SELECT
+          `subjectID`,
+          `surveyCategory`,
+          `assessmentTotal`
+         FROM
+          `d` LIMIT 1000
+         ) tsql_25965085475388424128_0000000000
+        ) tsql_25965085475388424128_0000000001
+       ) tsql_25965085475388424128_0000000002
+     ) tsql_25965085475388424128_0000000003
+    ) tsql_25965085475388424128_0000000004
     WHERE `rank` = `count`
-   ) tsql_20029496572269797300_0000000004
-  ) tsql_20029496572269797300_0000000005 ORDER BY `subjectID`</code></pre>
+   ) tsql_25965085475388424128_0000000005
+  ) tsql_25965085475388424128_0000000006 ORDER BY `subjectID`</code></pre>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

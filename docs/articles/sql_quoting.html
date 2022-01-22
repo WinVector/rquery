@@ -39,7 +39,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -100,14 +100,13 @@
 
       
 
-      </header><script src="sql_quoting_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="sql_quoting_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
-<script src="sql_quoting_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
+      </header><script src="sql_quoting_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>SQL quoting</h1>
                         <h4 class="author">John Mount</h4>
             
-            <h4 class="date">2021-08-30</h4>
+            <h4 class="date">2022-01-22</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery/blob/master/vignettes/sql_quoting.Rmd"><code>vignettes/sql_quoting.Rmd</code></a></small>
       <div class="hidden name"><code>sql_quoting.Rmd</code></div>
@@ -117,11 +116,11 @@
     
     
 <p><code>rquery</code> does not parse expression of the <code>SQL</code> node. Thus it does not know which tokens are string-literals, and which are column names. To assist with this user can annotate column names with <code>.[]</code>.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/WinVector/rquery/">"rquery"</a></span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/WinVector/rquery/">"rquery"</a></span><span class="op">)</span></code></pre></div>
 <pre><code>## Loading required package: wrapr</code></pre>
-<div class="sourceCode" id="cb3"><pre class="downlit">
-<span class="va">date_cutoff</span> <span class="op">&lt;-</span> <span class="st">'2017-04-02'</span>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">date_cutoff</span> <span class="op">&lt;-</span> <span class="st">'2017-04-02'</span>
 
 <span class="va">td</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mk_td.html">mk_td</a></span><span class="op">(</span><span class="st">"df"</span>, 
             <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"cust"</span>,
@@ -140,7 +139,7 @@
     mods <span class="op">=</span> <span class="st">"GROUP BY .[cust]"</span>,
     orig_columns <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html">format</a></span><span class="op">(</span><span class="va">ops</span><span class="op">)</span><span class="op">)</span></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html">format</a></span><span class="op">(</span><span class="va">ops</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## mk_td("df", c(
 ##   "cust",
 ##   "trans_date",
@@ -154,12 +153,12 @@
 ##            GROUP BY  "cust",
 ##              *=FALSE)</code></pre>
 <p>Notice how this renders into different <code>SQL</code> for each of our two database descriptions.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit">
-<span class="va">db1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rquery_db_info.html">rquery_db_info</a></span><span class="op">(</span>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">db1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rquery_db_info.html">rquery_db_info</a></span><span class="op">(</span>
   identifier_quote_char <span class="op">=</span> <span class="st">"'"</span>,
   string_quote_char <span class="op">=</span> <span class="st">'"'</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">ops</span>, <span class="va">db1</span><span class="op">)</span><span class="op">)</span></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">ops</span>, <span class="va">db1</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## SELECT
 ##  max( 'trans_date' ) AS 'max_date',
 ##  "a'" AS 'const_col1',
@@ -172,15 +171,15 @@
 ##    'sales'
 ##   FROM
 ##    'df'
-##  ) tsql_29163274052798495336_0000000000
+##  ) tsql_99803465880971454034_0000000000
 ##  WHERE 'trans_date' &lt;= str_to_date ( "2017-04-02" , "%Y-%m-%d" )
-## ) tsql_29163274052798495336_0000000001 GROUP BY  'cust'</code></pre>
-<div class="sourceCode" id="cb7"><pre class="downlit">
-<span class="va">db2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rquery_db_info.html">rquery_db_info</a></span><span class="op">(</span>
+## ) tsql_99803465880971454034_0000000001 GROUP BY  'cust'</code></pre>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">db2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rquery_db_info.html">rquery_db_info</a></span><span class="op">(</span>
   identifier_quote_char <span class="op">=</span> <span class="st">'"'</span>,
   string_quote_char <span class="op">=</span> <span class="st">"'"</span><span class="op">)</span>
   
-<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">ops</span>, <span class="va">db2</span><span class="op">)</span><span class="op">)</span></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">ops</span>, <span class="va">db2</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## SELECT
 ##  max( "trans_date" ) AS "max_date",
 ##  'a'' AS "const_col1",
@@ -193,13 +192,13 @@
 ##    "sales"
 ##   FROM
 ##    "df"
-##  ) tsql_52243122553445768420_0000000000
+##  ) tsql_62943960617514093662_0000000000
 ##  WHERE "trans_date" &lt;= str_to_date ( '2017-04-02' , '%Y-%m-%d' )
-## ) tsql_52243122553445768420_0000000001 GROUP BY  "cust"</code></pre>
+## ) tsql_62943960617514093662_0000000001 GROUP BY  "cust"</code></pre>
 <p>Notice our included quote characters were translated. This is an unwanted side-effect of using the <code><a href="https://winvector.github.io/wrapr//reference/qae.html">qae()</a></code> shortcut which does not tokenize, so it does not know which quotes are in which roles in the expression.</p>
 <p>To override quote translation in the <code><a href="../reference/sql_node.html">sql_node()</a></code> (which is simple string substitution without quote context or escaping) you must use the clunkier “build up a string as a list of tokens” (where sub-listed items are string literals and names are column names).</p>
-<div class="sourceCode" id="cb9"><pre class="downlit">
-<span class="va">ops</span> <span class="op">&lt;-</span> <span class="va">td</span> <span class="op">%.&gt;%</span>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">ops</span> <span class="op">&lt;-</span> <span class="va">td</span> <span class="op">%.&gt;%</span>
   <span class="fu"><a href="../reference/select_rows_se.html">select_rows_se</a></span><span class="op">(</span>
     <span class="va">.</span>, 
     <span class="fu"><a href="https://winvector.github.io/wrapr//reference/qe.html">qe</a></span><span class="op">(</span><span class="va">trans_date</span> <span class="op">&lt;=</span>  <span class="fu">str_to_date</span><span class="op">(</span><span class="fu">.</span><span class="op">(</span><span class="va">date_cutoff</span><span class="op">)</span>, <span class="st">'%Y-%m-%d'</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">%.&gt;%</span>
@@ -212,7 +211,7 @@
     mods <span class="op">=</span> <span class="st">"GROUP BY .[cust]"</span>,
     orig_columns <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html">format</a></span><span class="op">(</span><span class="va">ops</span><span class="op">)</span><span class="op">)</span></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html">format</a></span><span class="op">(</span><span class="va">ops</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## mk_td("df", c(
 ##   "cust",
 ##   "trans_date",
@@ -225,8 +224,8 @@
 ##              const_col2 %:=% list("b\"");
 ##            GROUP BY  "cust",
 ##              *=FALSE)</code></pre>
-<div class="sourceCode" id="cb11"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">ops</span>, <span class="va">db1</span><span class="op">)</span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">ops</span>, <span class="va">db1</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## SELECT
 ##  NA,
 ##  "a'" AS 'const_col1',
@@ -239,11 +238,11 @@
 ##    'sales'
 ##   FROM
 ##    'df'
-##  ) tsql_08748802793844884211_0000000000
+##  ) tsql_40504163592491971709_0000000000
 ##  WHERE 'trans_date' &lt;= str_to_date ( "2017-04-02" , "%Y-%m-%d" )
-## ) tsql_08748802793844884211_0000000001 GROUP BY  'cust'</code></pre>
-<div class="sourceCode" id="cb13"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">ops</span>, <span class="va">db2</span><span class="op">)</span><span class="op">)</span></pre></div>
+## ) tsql_40504163592491971709_0000000001 GROUP BY  'cust'</code></pre>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">ops</span>, <span class="va">db2</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## SELECT
 ##  NA,
 ##  'a\'' AS "const_col1",
@@ -256,9 +255,9 @@
 ##    "sales"
 ##   FROM
 ##    "df"
-##  ) tsql_12656273485357227509_0000000000
+##  ) tsql_24921469549261049926_0000000000
 ##  WHERE "trans_date" &lt;= str_to_date ( '2017-04-02' , '%Y-%m-%d' )
-## ) tsql_12656273485357227509_0000000001 GROUP BY  "cust"</code></pre>
+## ) tsql_24921469549261049926_0000000001 GROUP BY  "cust"</code></pre>
 <p>Quotes within string literals are going to be a nightmare moving from db to db, so our advice is to try to avoid them.</p>
   </div>
 

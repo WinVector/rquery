@@ -57,12 +57,6 @@ if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quiet
   cat(sql)
   print(DBI::dbGetQuery(my_db, sql))
 
-  # SQLite can not run the following query
-  optree2 <- extend_se(d, "v" \%:=\% "rank()",
-                    partitionby = "AUC", orderby = "R2")
-  sql2 <- to_sql(optree2, my_db)
-  cat(sql2)
-
   DBI::dbDisconnect(my_db)
 }
 

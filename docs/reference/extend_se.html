@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -223,12 +223,6 @@ must be non empty.  For this purpose partitionby=1 is allowed and means "single 
   <span class='fu'><a href='https://rdrr.io/r/base/cat.html'>cat</a></span><span class='op'>(</span><span class='va'>sql</span><span class='op'>)</span>
   <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='fu'>DBI</span><span class='fu'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbGetQuery.html'>dbGetQuery</a></span><span class='op'>(</span><span class='va'>my_db</span>, <span class='va'>sql</span><span class='op'>)</span><span class='op'>)</span>
 
-  <span class='co'># SQLite can not run the following query</span>
-  <span class='va'>optree2</span> <span class='op'>&lt;-</span> <span class='fu'>extend_se</span><span class='op'>(</span><span class='va'>d</span>, <span class='st'>"v"</span> <span class='op'>%:=%</span> <span class='st'>"rank()"</span>,
-                    partitionby <span class='op'>=</span> <span class='st'>"AUC"</span>, orderby <span class='op'>=</span> <span class='st'>"R2"</span><span class='op'>)</span>
-  <span class='va'>sql2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='to_sql.html'>to_sql</a></span><span class='op'>(</span><span class='va'>optree2</span>, <span class='va'>my_db</span><span class='op'>)</span>
-  <span class='fu'><a href='https://rdrr.io/r/base/cat.html'>cat</a></span><span class='op'>(</span><span class='va'>sql2</span><span class='op'>)</span>
-
   <span class='fu'>DBI</span><span class='fu'>::</span><span class='fu'><a href='https://dbi.r-dbi.org/reference/dbDisconnect.html'>dbDisconnect</a></span><span class='op'>(</span><span class='va'>my_db</span><span class='op'>)</span>
 <span class='op'>}</span>
 </div><div class='output co'>#&gt; mk_td("d", c(
@@ -254,21 +248,10 @@ must be non empty.  For this purpose partitionby=1 is allowed and means "single 
 #&gt;    `R2`
 #&gt;   FROM
 #&gt;    `d`
-#&gt;   ) tsql_26662150363605981880_0000000000
-#&gt;  ) tsql_26662150363605981880_0000000001
+#&gt;   ) tsql_19673537631902327278_0000000000
+#&gt;  ) tsql_19673537631902327278_0000000001
 #&gt;   AUC  R2   v   x
-#&gt; 1 0.6 0.2 0.8 0.8
-#&gt; SELECT
-#&gt;  `AUC`,
-#&gt;  `R2`,
-#&gt;  rank ( ) OVER (  PARTITION BY `AUC` ORDER BY `R2` ) AS `v`
-#&gt; FROM (
-#&gt;  SELECT
-#&gt;   `AUC`,
-#&gt;   `R2`
-#&gt;  FROM
-#&gt;   `d`
-#&gt;  ) tsql_02298472059817593826_0000000000</div><div class='input'>
+#&gt; 1 0.6 0.2 0.8 0.8</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

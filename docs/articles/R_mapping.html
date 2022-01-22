@@ -39,7 +39,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -100,14 +100,13 @@
 
       
 
-      </header><script src="R_mapping_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="R_mapping_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
-<script src="R_mapping_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
+      </header><script src="R_mapping_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>R mapping</h1>
                         <h4 class="author">John Mount</h4>
             
-            <h4 class="date">2021-08-30</h4>
+            <h4 class="date">2022-01-22</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery/blob/master/vignettes/R_mapping.Rmd"><code>vignettes/R_mapping.Rmd</code></a></small>
       <div class="hidden name"><code>R_mapping.Rmd</code></div>
@@ -118,11 +117,11 @@
     
 <p><code>rquery</code> re-maps a number of symbols during <code>SQL</code> translation.</p>
 <p>During expression parsing the internal <code>rquery</code> function <code>tokenize_call_for_SQL()</code> implements the following re-mappings from <code>R</code> idioms to <code>SQL</code> notation.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/WinVector/rquery/">"rquery"</a></span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/WinVector/rquery/">"rquery"</a></span><span class="op">)</span></code></pre></div>
 <pre><code>## Loading required package: wrapr</code></pre>
-<div class="sourceCode" id="cb3"><pre class="downlit">
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/WinVector/wrapr">"wrapr"</a></span><span class="op">)</span>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/WinVector/wrapr">"wrapr"</a></span><span class="op">)</span>
 
 <span class="va">show_translation</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">strings</span><span class="op">)</span> <span class="op">{</span>
   <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">vapply</a></span><span class="op">(</span><span class="va">strings</span>,
@@ -137,7 +136,7 @@
               <span class="st">'pmin(a, b)'</span>, <span class="st">'pmax(a, b)'</span><span class="op">)</span>,
   stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 <span class="va">mapping_table</span><span class="op">$</span><span class="va">translation</span> <span class="op">&lt;-</span> <span class="fu">show_translation</span><span class="op">(</span><span class="va">mapping_table</span><span class="op">$</span><span class="va">example</span><span class="op">)</span>
-<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">mapping_table</span><span class="op">)</span></pre></div>
+<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">mapping_table</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <colgroup>
 <col width="12%">
@@ -200,10 +199,10 @@
 </table>
 <p>Note: not all possible mappings are implemented. For example we currently do not re-map <code><a href="https://rdrr.io/r/base/match.html">%in%</a></code>, preferring the user to explicitly work with <a href="https://winvector.github.io/rquery/reference/set_indicator.html"><code>set_indicator()</code></a> directly.</p>
 <p>In addition to this the database connectors can specify additional re-mappings. This can be found by building a formal connector and inspecting the re-mappings.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit">
-<span class="va">have_RSQLite</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"RSQLite"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></pre></div>
-<div class="sourceCode" id="cb5"><pre class="downlit">
-<span class="va">raw_RSQLite_connection</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span><span class="op">(</span><span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html">SQLite</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">":memory:"</span><span class="op">)</span>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">have_RSQLite</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"RSQLite"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">raw_RSQLite_connection</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span><span class="op">(</span><span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html">SQLite</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">":memory:"</span><span class="op">)</span>
 <span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/initExtension.html">initExtension</a></span><span class="op">(</span><span class="va">raw_RSQLite_connection</span><span class="op">)</span>
 <span class="va">db</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rquery_db_info.html">rquery_db_info</a></span><span class="op">(</span>
   connection <span class="op">=</span> <span class="va">raw_RSQLite_connection</span>,
@@ -212,12 +211,12 @@
 
 
 <span class="va">fn_name_map</span> <span class="op">&lt;-</span> <span class="va">db</span><span class="op">$</span><span class="va">connection_options</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"rquery."</span>, <span class="fu"><a href="../reference/rq_connection_name.html">rq_connection_name</a></span><span class="op">(</span><span class="va">db</span><span class="op">)</span>, <span class="st">"."</span>, <span class="st">"fn_name_map"</span><span class="op">)</span><span class="op">]</span><span class="op">]</span>
-<span class="va">fn_name_map</span></pre></div>
+<span class="va">fn_name_map</span></code></pre></div>
 <pre><code>## NULL</code></pre>
 <p>We see above that “<code>mean</code>” is re-mapped to “<code>avg</code>”.</p>
 <p>In all cases we can see what re-mappings happen by examining a query.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit">
-<span class="va">d_local</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://winvector.github.io/wrapr//reference/build_frame.html">build_frame</a></span><span class="op">(</span>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">d_local</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://winvector.github.io/wrapr//reference/build_frame.html">build_frame</a></span><span class="op">(</span>
    <span class="st">"subjectID"</span>, <span class="st">"surveyCategory"</span>     , <span class="st">"assessmentTotal"</span>, <span class="st">"irrelevantCol1"</span>, <span class="st">"irrelevantCol2"</span> <span class="op">|</span>
    <span class="fl">1L</span>         , <span class="st">"withdrawal behavior"</span>, <span class="fl">5</span>                , <span class="st">"irrel1"</span>        , <span class="st">"irrel2"</span>         <span class="op">|</span>
    <span class="fl">1L</span>         , <span class="st">"positive re-framing"</span>, <span class="fl">2</span>                , <span class="st">"irrel1"</span>        , <span class="st">"irrel2"</span>         <span class="op">|</span>
@@ -228,7 +227,7 @@
             <span class="va">d_local</span>,
             temporary <span class="op">=</span> <span class="cn">TRUE</span>, 
             overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">table_handle</span><span class="op">)</span></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">table_handle</span><span class="op">)</span></code></pre></div>
 <pre><code>## [1] "mk_td(\"d\", c( \"subjectID\", \"surveyCategory\", \"assessmentTotal\", \"irrelevantCol1\", \"irrelevantCol2\"))"
 ##   subjectID      surveyCategory assessmentTotal irrelevantCol1 irrelevantCol2
 ## 1         1 withdrawal behavior               5         irrel1         irrel2
@@ -236,26 +235,26 @@
 ## 3         3 withdrawal behavior               3         irrel1         irrel2
 ## 4         3 positive re-framing               2         irrel1         irrel2
 ## 5         3               other               1         irrel1         irrel2</code></pre>
-<div class="sourceCode" id="cb9"><pre class="downlit">
-<span class="va">ops</span> <span class="op">&lt;-</span> <span class="va">table_handle</span> <span class="op">%.&gt;%</span> 
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">ops</span> <span class="op">&lt;-</span> <span class="va">table_handle</span> <span class="op">%.&gt;%</span> 
   <span class="fu"><a href="../reference/project.html">project</a></span><span class="op">(</span><span class="va">.</span>, 
           <span class="va">avg_total</span> <span class="op">:=</span> <span class="fu">avg</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">pmax</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">assessmentTotal</span><span class="op">)</span><span class="op">)</span>,
           groupby <span class="op">=</span> <span class="st">"subjectID"</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">ops</span>, <span class="va">db</span><span class="op">)</span><span class="op">)</span></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">ops</span>, <span class="va">db</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## SELECT `subjectID`, avg ( ( CASE WHEN ( 0 ) IS NULL THEN ( `assessmentTotal` ) WHEN ( `assessmentTotal` ) IS NULL THEN ( 0 ) WHEN ( 0 ) &gt;= ( `assessmentTotal` ) THEN ( 0 ) ELSE ( `assessmentTotal` ) END ) ) AS `avg_total` FROM (
 ##  SELECT
 ##   `subjectID`,
 ##   `assessmentTotal`
 ##  FROM
 ##   `d`
-##  ) tsql_28530921253248067316_0000000000
+##  ) tsql_52775883396220709307_0000000000
 ## GROUP BY
 ##  `subjectID`</code></pre>
-<div class="sourceCode" id="cb11"><pre class="downlit">
-<span class="va">ops</span> <span class="op">%.&gt;%</span>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">ops</span> <span class="op">%.&gt;%</span>
   <span class="fu"><a href="../reference/execute.html">execute</a></span><span class="op">(</span><span class="va">db</span>, <span class="va">.</span><span class="op">)</span> <span class="op">%.&gt;%</span>
-  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></pre></div>
+  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">subjectID</th>
@@ -273,9 +272,9 @@
 </tbody>
 </table>
 <p>The basic mappings are stored in database option structures, and depend on the database. For example <code>MOD</code> is re-mapped back to <code>%</code> for <code>RSQLite</code>.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit">
-<span class="fu">rquery</span><span class="fu">::</span><span class="fu"><a href="../reference/rq_function_mappings.html">rq_function_mappings</a></span><span class="op">(</span><span class="va">db</span><span class="op">)</span> <span class="op">%.&gt;%</span>
-  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">rquery</span><span class="fu">::</span><span class="fu"><a href="../reference/rq_function_mappings.html">rq_function_mappings</a></span><span class="op">(</span><span class="va">db</span><span class="op">)</span> <span class="op">%.&gt;%</span>
+  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">fn_name</th>
@@ -312,15 +311,15 @@
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb13"><pre class="downlit">
-<span class="va">ops</span> <span class="op">&lt;-</span> <span class="va">table_handle</span> <span class="op">%.&gt;%</span> 
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">ops</span> <span class="op">&lt;-</span> <span class="va">table_handle</span> <span class="op">%.&gt;%</span> 
   <span class="fu"><a href="../reference/project.html">project</a></span><span class="op">(</span><span class="va">.</span>, groupby <span class="op">=</span> <span class="st">"subjectID"</span>,
           <span class="va">n</span> <span class="op">:=</span> <span class="fl">5</span>, 
           <span class="va">count</span> <span class="op">:=</span> <span class="fu">n</span><span class="op">(</span><span class="op">)</span>,
           <span class="va">mean</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">assessmentTotal</span><span class="op">)</span><span class="op">)</span> <span class="op">%.&gt;%</span> 
   <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">was_n</span> <span class="op">:=</span> <span class="va">n</span><span class="op">)</span>
                  
-<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">ops</span>, <span class="va">db</span><span class="op">)</span><span class="op">)</span></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">ops</span>, <span class="va">db</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## SELECT
 ##  `subjectID`,
 ##  `n`,
@@ -334,14 +333,14 @@
 ##    `assessmentTotal`
 ##   FROM
 ##    `d`
-##   ) tsql_50541463556550058444_0000000000
+##   ) tsql_87386024310871718410_0000000000
 ##  GROUP BY
 ##   `subjectID`
-##  ) tsql_50541463556550058444_0000000001</code></pre>
-<div class="sourceCode" id="cb15"><pre class="downlit">
-<span class="va">ops</span> <span class="op">%.&gt;%</span>
+##  ) tsql_87386024310871718410_0000000001</code></pre>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">ops</span> <span class="op">%.&gt;%</span>
   <span class="fu"><a href="../reference/execute.html">execute</a></span><span class="op">(</span><span class="va">db</span>, <span class="va">.</span><span class="op">)</span> <span class="op">%.&gt;%</span>
-  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></pre></div>
+  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">subjectID</th>
@@ -368,12 +367,12 @@
 </tbody>
 </table>
 <p>Additional function re-mappings can be specified by user code. One such example is re-writing <code>MOD</code> as <code>%</code> for <code>RSQLite</code>.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit">
-<span class="va">ops</span> <span class="op">&lt;-</span> <span class="va">table_handle</span> <span class="op">%.&gt;%</span> 
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">ops</span> <span class="op">&lt;-</span> <span class="va">table_handle</span> <span class="op">%.&gt;%</span> 
   <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">z</span> <span class="op">:=</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">subjectID</span> <span class="op">%%</span> <span class="fl">3</span><span class="op">)</span> <span class="op">%.&gt;%</span>
   <span class="fu"><a href="../reference/select_columns.html">select_columns</a></span><span class="op">(</span><span class="va">.</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"subjectID"</span>, <span class="st">"z"</span><span class="op">)</span><span class="op">)</span>
                  
-<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">ops</span>, <span class="va">db</span><span class="op">)</span><span class="op">)</span></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">ops</span>, <span class="va">db</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <pre><code>## SELECT
 ##  `subjectID`,
 ##  `z`
@@ -386,12 +385,12 @@
 ##    `subjectID`
 ##   FROM
 ##    `d`
-##   ) tsql_52576534040784808799_0000000000
-## ) tsql_52576534040784808799_0000000001</code></pre>
-<div class="sourceCode" id="cb18"><pre class="downlit">
-<span class="va">ops</span> <span class="op">%.&gt;%</span>
+##   ) tsql_92188267906448017162_0000000000
+## ) tsql_92188267906448017162_0000000001</code></pre>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">ops</span> <span class="op">%.&gt;%</span>
   <span class="fu"><a href="../reference/execute.html">execute</a></span><span class="op">(</span><span class="va">db</span>, <span class="va">.</span><span class="op">)</span> <span class="op">%.&gt;%</span>
-  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></pre></div>
+  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">subjectID</th>
@@ -421,8 +420,8 @@
 </tbody>
 </table>
 <p><code>rqdatatable</code> also supplies some re-mappings (described <a href="https://winvector.github.io/rqdatatable/articles/R_mapping.html">here</a>). This can allow us to use a uniform notation for tasks such as random number generation to allow portable pipelines.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit">
-<span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html">dbDisconnect</a></span><span class="op">(</span><span class="va">raw_RSQLite_connection</span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html">dbDisconnect</a></span><span class="op">(</span><span class="va">raw_RSQLite_connection</span><span class="op">)</span></code></pre></div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

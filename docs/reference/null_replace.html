@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -211,11 +211,11 @@
 #&gt;  null_replace(.; A,
 #&gt;   B: 0;  alterations)
 #&gt; SELECT
-#&gt;  CASE WHEN `tsql_29826645765971144924_0000000000`.`A` IS NULL THEN 0 ELSE `tsql_29826645765971144924_0000000000`.`A` END AS `A`,
-#&gt;  CASE WHEN `tsql_29826645765971144924_0000000000`.`B` IS NULL THEN 0 ELSE `tsql_29826645765971144924_0000000000`.`B` END AS `B`,
+#&gt;  CASE WHEN `tsql_49003264259016100656_0000000000`.`A` IS NULL THEN 0 ELSE `tsql_49003264259016100656_0000000000`.`A` END AS `A`,
+#&gt;  CASE WHEN `tsql_49003264259016100656_0000000000`.`B` IS NULL THEN 0 ELSE `tsql_49003264259016100656_0000000000`.`B` END AS `B`,
 #&gt;  0 + 
-#&gt;  ( CASE WHEN `tsql_29826645765971144924_0000000000`.`A` IS NULL THEN 1 ELSE 0 END ) + 
-#&gt;  ( CASE WHEN `tsql_29826645765971144924_0000000000`.`B` IS NULL THEN 1 ELSE 0 END ) AS `alterations`
+#&gt;  ( CASE WHEN `tsql_49003264259016100656_0000000000`.`A` IS NULL THEN 1 ELSE 0 END ) + 
+#&gt;  ( CASE WHEN `tsql_49003264259016100656_0000000000`.`B` IS NULL THEN 1 ELSE 0 END ) AS `alterations`
 #&gt; 
 #&gt; FROM (
 #&gt;  SELECT
@@ -223,7 +223,7 @@
 #&gt;   `B`
 #&gt;  FROM
 #&gt;   `d1`
-#&gt; ) tsql_29826645765971144924_0000000000
+#&gt; ) tsql_49003264259016100656_0000000000
 #&gt;   A B alterations
 #&gt; 1 0 3           1
 #&gt; 2 2 0           1

@@ -1,4 +1,4 @@
-pandoc: 2.7.3
+pandoc: 2.11.4
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
@@ -11,5 +11,5 @@ articles:
   rquery_many_columns: rquery_many_columns.html
   rquery_substitution: rquery_substitution.html
   sql_quoting: sql_quoting.html
-last_built: 2021-08-30T16:24Z
+last_built: 2022-01-22T16:50Z
 
