@@ -61,13 +61,15 @@ scale <- 0.237
 
 dq <- d %.>%
   extend(.,
+         one = 1) %.>%
+  extend(.,
          probability :=
            exp(assessmentTotal * scale)/
            sum(exp(assessmentTotal * scale)),
-         count := count(1),
+         count := sum(one),
          partitionby = 'subjectID') %.>%
   extend(.,
-         rank := rank(),
+         rank := cumsum(one),
          partitionby = 'subjectID',
          orderby = c('probability', 'surveyCategory'))  %.>%
   rename_columns(., 'diagnosis' := 'surveyCategory') %.>%
