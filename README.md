@@ -557,10 +557,10 @@ cat(to_sql(ops, db))
     ##     `z`
     ##    FROM
     ##     `d`
-    ##    ) tsql_23864987081883883673_0000000000
-    ##  ) tsql_23864987081883883673_0000000001
+    ##    ) tsql_25066485525478399465_0000000000
+    ##  ) tsql_25066485525478399465_0000000001
     ##  WHERE `row_number` = 1
-    ## ) tsql_23864987081883883673_0000000002
+    ## ) tsql_25066485525478399465_0000000002
 
 ``` r
 # clean up
@@ -650,6 +650,7 @@ Some related work includes:
 -   [`tidyr`](https://tidyr.tidyverse.org)
 -   [`tidytable`](https://github.com/markfairbanks/tidytable) (formerly
     `gdt`/`tidydt`)
+-   [`data_algebra`](https://github.com/WinVector/data_algebra)
 
 # Installing
 

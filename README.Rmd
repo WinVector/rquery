@@ -398,6 +398,7 @@ Some related work includes:
  * [`tidyquery`](https://github.com/ianmcook/tidyquery)
  * [`tidyr`](https://tidyr.tidyverse.org)
  * [`tidytable`](https://github.com/markfairbanks/tidytable) (formerly `gdt`/`tidydt`)
+ * [`data_algebra`](https://github.com/WinVector/data_algebra)
 
 
 # Installing
