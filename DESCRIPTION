@@ -1,8 +1,8 @@
 Package: rquery
 Type: Package
 Title: Relational Query Generator for Data Manipulation at Scale
-Version: 1.4.8
-Date: 2022-01-22
+Version: 1.4.9
+Date: 2022-02-28
 Authors@R: c(
     person("John", "Mount", email = "jmount@win-vector.com", role = c("aut", "cre")),
     person(family = "Win-Vector LLC", role = c("cph"))
@@ -34,11 +34,10 @@ Suggests:
     RSQLite,
     rqdatatable (>= 1.3.0),
     igraph,
-    DiagrammeR,
     knitr,
     rmarkdown,
     yaml, 
     tinytest
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 ByteCompile: true
 VignetteBuilder: knitr

@@ -514,10 +514,10 @@ topo_sort_tables <- function(columnJoinPlan, leftTableName,
 #'   print(paste('problems:',
 #'               inspect_join_plan(tDesc, columnJoinPlan)))
 #'   diagramSpec <- graph_join_plan(columnJoinPlan)
-#'   # to render as JavaScript:
-#'   if(requireNamespace("DiagrammeR", quietly = TRUE)) {
-#'     print(DiagrammeR::grViz(diagramSpec))
-#'   }
+#'   # # to render as JavaScript:
+#'   # if(requireNamespace("DiagrammeR", quietly = TRUE)) {
+#'   #   print(DiagrammeR::grViz(diagramSpec))
+#'   # }
 #'   DBI::dbDisconnect(my_db)
 #'   my_db <- NULL
 #' }
@@ -896,9 +896,9 @@ strMapToString <- function(m) {
 #'                                 checkColClasses= TRUE)
 #'   cat(format(optree))
 #'   print(execute(my_db, optree))
-#'   if(requireNamespace("DiagrammeR", quietly = TRUE)) {
-#'     DiagrammeR::grViz(op_diagram(optree))
-#'   }
+#'   # if(requireNamespace("DiagrammeR", quietly = TRUE)) {
+#'   #   DiagrammeR::grViz(op_diagram(optree))
+#'   # }
 #'   DBI::dbDisconnect(my_db)
 #' }
 #'

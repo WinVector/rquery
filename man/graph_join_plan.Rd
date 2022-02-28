@@ -44,10 +44,10 @@ if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quiet
   print(paste('problems:',
               inspect_join_plan(tDesc, columnJoinPlan)))
   diagramSpec <- graph_join_plan(columnJoinPlan)
-  # to render as JavaScript:
-  if(requireNamespace("DiagrammeR", quietly = TRUE)) {
-    print(DiagrammeR::grViz(diagramSpec))
-  }
+  # # to render as JavaScript:
+  # if(requireNamespace("DiagrammeR", quietly = TRUE)) {
+  #   print(DiagrammeR::grViz(diagramSpec))
+  # }
   DBI::dbDisconnect(my_db)
   my_db <- NULL
 }

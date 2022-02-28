@@ -94,14 +94,6 @@ We can display the pipeline in various forms.
 cat(format(ops))
 ```
 
-```{r eval=FALSE, message=FALSE, warning=FALSE}
-# draw the pipeline
-ops %.>%
-  op_diagram(.) %.>% 
-  DiagrammeR::grViz(.)
-```
-
-![](parameterized_rquery.png)
 
 The same example in a database.
 

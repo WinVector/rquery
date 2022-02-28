@@ -1,4 +1,11 @@
 
+# rquery 1.4.9 2022/02/28
+
+ * Delete rquery_substitution vignette as CRAN has an unexplained failure on r-release-windows-ix86+x86_64. Proactively doing this to avoid removal threat.
+ * Don't trigger DiagrammeR in examples/vignettes to lower dependencies touched.
+ * Remove DiagrammeR from suggests.
+ * Fixe migrated URL in README.
+ 
 # rquery 1.4.8 2022/01/22
 
  * Work on examples and doc.

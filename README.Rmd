@@ -381,7 +381,7 @@ There are many prior relational algebra inspired specialized query languages.  J
 Some related work includes:
 
  * [`data.table`](https://rdatatable.gitlab.io/data.table/)
- * [`disk.frame`](https://github.com/xiaodaigh/disk.frame)
+ * [`disk.frame`](https://github.com/DiskFrame/disk.frame)
  * [`dbplyr`](https://dbplyr.tidyverse.org)
  * [`dplyr`](https://dplyr.tidyverse.org)
  * [`dtplyr`](https://github.com/tidyverse/dtplyr)

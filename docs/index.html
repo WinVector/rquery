@@ -28,6 +28,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -40,18 +42,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.9</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
@@ -84,9 +80,6 @@
       <a href="articles/rquery_many_columns.html">rquery Many Columns</a>
     </li>
     <li>
-      <a href="articles/rquery_substitution.html">rquery Substitution</a>
-    </li>
-    <li>
       <a href="articles/sql_quoting.html">SQL quoting</a>
     </li>
   </ul>
@@ -97,7 +90,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://win-vector.com/">Sponsor: Win-Vector LLC</a>
+  <a href="https://win-vector.com/" class="external-link">Sponsor: Win-Vector LLC</a>
 </li>
       </ul>
 </div>
@@ -113,16 +106,16 @@
   <div class="contents col-md-9">
 
 
-<div id="rquery" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#rquery" class="anchor"></a><code>rquery</code>
+<div class="section level1">
+<div class="page-header"><h1 id="rquery">
+<code>rquery</code><a class="anchor" aria-label="anchor" href="#rquery"></a>
 </h1></div>
-<p><a href="https://winvector.github.io/rquery/"><code>rquery</code></a> is a piped query generator based on <a href="https://en.wikipedia.org/wiki/Relational_algebra">Codd’s relational algebra</a> (updated to reflect lessons learned from working with <a href="https://www.r-project.org"><code>R</code></a>, <a href="https://en.wikipedia.org/wiki/SQL"><code>SQL</code></a>, and <a href="https://CRAN.R-project.org/package=dplyr"><code>dplyr</code></a> at big data scale in production).</p>
-<div id="introduction" class="section level2">
-<h2 class="hasAnchor">
-<a href="#introduction" class="anchor"></a>Introduction</h2>
-<p><a href="https://github.com/WinVector/rquery"><code>rquery</code></a> is a data wrangling system designed to express complex data manipulation as a series of simple data transforms. This is in the spirit of <code>R</code>’s <code><a href="https://rdrr.io/r/base/transform.html">base::transform()</a></code>, or <code>dplyr</code>’s <code><a href="https://dplyr.tidyverse.org/reference/mutate.html">dplyr::mutate()</a></code> and uses a pipe in the style popularized in <code>R</code> with <code>magrittr</code>. The operators themselves follow the selections in Codd’s relational algebra, with the addition of the traditional <code>SQL</code> “window functions.” More on the background and context of <code>rquery</code> can be found <a href="https://github.com/WinVector/rquery/blob/master/Examples/old_readme/README.md">here</a>.</p>
-<p>The <code>R</code>/<code>rquery</code> version of this introduction is <a href="https://github.com/WinVector/rquery/blob/main/Examples/Introduction/rquery_Introduction.md">here</a>, and the <code>Python</code>/<code>data_algebra</code> version of this introduction is <a href="https://github.com/WinVector/data_algebra/blob/main/Examples/Introduction/data_algebra_Introduction.ipynb">here</a>.</p>
+<p><a href="https://winvector.github.io/rquery/" class="external-link"><code>rquery</code></a> is a piped query generator based on <a href="https://en.wikipedia.org/wiki/Relational_algebra" class="external-link">Codd’s relational algebra</a> (updated to reflect lessons learned from working with <a href="https://www.r-project.org" class="external-link"><code>R</code></a>, <a href="https://en.wikipedia.org/wiki/SQL" class="external-link"><code>SQL</code></a>, and <a href="https://CRAN.R-project.org/package=dplyr" class="external-link"><code>dplyr</code></a> at big data scale in production).</p>
+<div class="section level2">
+<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+</h2>
+<p><a href="https://github.com/WinVector/rquery" class="external-link"><code>rquery</code></a> is a data wrangling system designed to express complex data manipulation as a series of simple data transforms. This is in the spirit of <code>R</code>’s <code><a href="https://rdrr.io/r/base/transform.html" class="external-link">base::transform()</a></code>, or <code>dplyr</code>’s <code><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">dplyr::mutate()</a></code> and uses a pipe in the style popularized in <code>R</code> with <code>magrittr</code>. The operators themselves follow the selections in Codd’s relational algebra, with the addition of the traditional <code>SQL</code> “window functions.” More on the background and context of <code>rquery</code> can be found <a href="https://github.com/WinVector/rquery/blob/master/Examples/old_readme/README.md" class="external-link">here</a>.</p>
+<p>The <code>R</code>/<code>rquery</code> version of this introduction is <a href="https://github.com/WinVector/rquery/blob/main/Examples/Introduction/rquery_Introduction.md" class="external-link">here</a>, and the <code>Python</code>/<code>data_algebra</code> version of this introduction is <a href="https://github.com/WinVector/data_algebra/blob/main/Examples/Introduction/data_algebra_Introduction.ipynb" class="external-link">here</a>.</p>
 <p>In transform formulations data manipulation is written as transformations that produce new <code>data.frame</code>s, instead of as alterations of a primary data structure (as is the case with <code>data.table</code>). Transform system <em>can</em> use more space and time than in-place methods. However, in our opinion, transform systems have a number of pedagogical advantages.</p>
 <p>In <code>rquery</code>’s case the primary set of data operators is as follows:</p>
 <ul>
@@ -135,7 +128,7 @@
 <li><code>project</code></li>
 <li><code>natural_join</code></li>
 <li>
-<code>convert_records</code> (supplied by the <a href="https://github.com/WinVector/cdata"><code>cdata</code> package</a>).</li>
+<code>convert_records</code> (supplied by the <a href="https://github.com/WinVector/cdata" class="external-link"><code>cdata</code> package</a>).</li>
 </ul>
 <p>These operations break into a small number of themes:</p>
 <ul>
@@ -144,17 +137,18 @@
 <li>Creating new columns or replacing columns with new calculated values.</li>
 <li>Aggregating or summarizing data.</li>
 <li>Combining results between two <code>data.frame</code>s.</li>
-<li>General conversion of record layouts (supplied by the <a href="https://github.com/WinVector/cdata"><code>cdata</code> package</a>).</li>
+<li>General conversion of record layouts (supplied by the <a href="https://github.com/WinVector/cdata" class="external-link"><code>cdata</code> package</a>).</li>
 </ul>
 <p>The point is: Codd worked out that a great number of data transformations can be decomposed into a small number of the above steps. <code>rquery</code> supplies a high performance implementation of these methods that scales from in-memory scale up through big data scale (to just about anything that supplies a sufficiently powerful <code>SQL</code> interface, such as PostgreSQL, Apache Spark, or Google BigQuery).</p>
 <p>We will work through simple examples/demonstrations of the <code>rquery</code> data manipulation operators.</p>
 </div>
-<div id="rquery-operators" class="section level2">
-<h2 class="hasAnchor">
-<a href="#rquery-operators" class="anchor"></a><code>rquery</code> operators</h2>
-<div id="simple-column-operations-selecting-and-re-naming-columns" class="section level3">
-<h3 class="hasAnchor">
-<a href="#simple-column-operations-selecting-and-re-naming-columns" class="anchor"></a>Simple column operations (selecting and re-naming columns)</h3>
+<div class="section level2">
+<h2 id="rquery-operators">
+<code>rquery</code> operators<a class="anchor" aria-label="anchor" href="#rquery-operators"></a>
+</h2>
+<div class="section level3">
+<h3 id="simple-column-operations-selecting-and-re-naming-columns">Simple column operations (selecting and re-naming columns)<a class="anchor" aria-label="anchor" href="#simple-column-operations-selecting-and-re-naming-columns"></a>
+</h3>
 <p>The simple column operations are as follows.</p>
 <ul>
 <li><code>drop_columns</code></li>
@@ -164,13 +158,13 @@
 <p>These operations are easy to demonstrate.</p>
 <p>We set up some simple data.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>
-  x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>,
-  y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">4</span>, <span class="fl">3</span><span class="op">)</span>,
-  z <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">7</span>, <span class="fl">8</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>
+  x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>,
+  y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">4</span>, <span class="fl">3</span><span class="op">)</span>,
+  z <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">7</span>, <span class="fl">8</span><span class="op">)</span>
 <span class="op">)</span>
 
-<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></code></pre></div>
+<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">x</th>
@@ -197,22 +191,22 @@
 </table>
 <p>For example: <code>drop_columns</code> works as follows. <code>drop_columns</code> creates a new <code>data.frame</code> without certain columns.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/WinVector/rquery/">rquery</a></span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/WinVector/rquery/" class="external-link">rquery</a></span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Loading required package: wrapr</span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/WinVector/rqdatatable/">rqdatatable</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/WinVector/rqdatatable/" class="external-link">rqdatatable</a></span><span class="op">)</span>
 
-<span class="fu"><a href="reference/drop_columns.html">drop_columns</a></span><span class="op">(</span><span class="va">d</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'y'</span>, <span class="st">'z'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="reference/drop_columns.html">drop_columns</a></span><span class="op">(</span><span class="va">d</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'y'</span>, <span class="st">'z'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb5"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="do">##   x</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 1</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 1</span></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 2</span></span></code></pre></div>
 <p>In all cases the first argument of a <code>rquery</code> operator is either the data to be processed, or an earlier <code>rquery</code> pipeline to be extended. We will take about composing <code>rquery</code> operations after we work through examples of all of the basic operations.</p>
-<p>We can write the above in piped notation (using the <a href="https://journal.r-project.org/archive/2018/RJ-2018-042/index.html"><code>wrapr</code> pipe</a> in this case):</p>
+<p>We can write the above in piped notation (using the <a href="https://journal.r-project.org/archive/2018/RJ-2018-042/index.html" class="external-link"><code>wrapr</code> pipe</a> in this case):</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">d</span> <span class="op">%.&gt;%</span>
-  <span class="fu"><a href="reference/drop_columns.html">drop_columns</a></span><span class="op">(</span><span class="va">.</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'y'</span>, <span class="st">'z'</span><span class="op">)</span><span class="op">)</span> <span class="op">%.&gt;%</span>
-  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">d</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
+  <span class="fu"><a href="reference/drop_columns.html">drop_columns</a></span><span class="op">(</span><span class="va">.</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'y'</span>, <span class="st">'z'</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
+  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">x</th>
@@ -229,12 +223,12 @@
 </tr>
 </tbody>
 </table>
-<p>Notice the first argument is an explicit “dot” in <a href="https://journal.r-project.org/archive/2018/RJ-2018-042/index.html"><code>wrapr</code> pipe notation</a>.</p>
+<p>Notice the first argument is an explicit “dot” in <a href="https://journal.r-project.org/archive/2018/RJ-2018-042/index.html" class="external-link"><code>wrapr</code> pipe notation</a>.</p>
 <p><code>select_columns</code>’s action is also obvious from example.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">d</span> <span class="op">%.&gt;%</span>
-  <span class="fu"><a href="reference/select_columns.html">select_columns</a></span><span class="op">(</span><span class="va">.</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'x'</span>, <span class="st">'y'</span><span class="op">)</span><span class="op">)</span> <span class="op">%.&gt;%</span>
-  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">d</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
+  <span class="fu"><a href="reference/select_columns.html">select_columns</a></span><span class="op">(</span><span class="va">.</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'x'</span>, <span class="st">'y'</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
+  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">x</th>
@@ -257,12 +251,12 @@
 </table>
 <p><code>rename_columns</code> is given as name-assignments of the form <code>'new_name' = 'old_name'</code>:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">d</span> <span class="op">%.&gt;%</span>
+<code class="sourceCode R"><span class="va">d</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
   <span class="fu"><a href="reference/rename_columns.html">rename_columns</a></span><span class="op">(</span><span class="va">.</span>, 
-                 <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'x_new_name'</span> <span class="op">=</span> <span class="st">'x'</span>, 
+                 <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'x_new_name'</span> <span class="op">=</span> <span class="st">'x'</span>, 
                    <span class="st">'y_new_name'</span> <span class="op">=</span> <span class="st">'y'</span><span class="op">)</span>
-                 <span class="op">)</span> <span class="op">%.&gt;%</span>
-  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
+                 <span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
+  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">x_new_name</th>
@@ -288,9 +282,9 @@
 </tbody>
 </table>
 </div>
-<div id="simple-row-operations-selecting-and-re-ordering-rows" class="section level3">
-<h3 class="hasAnchor">
-<a href="#simple-row-operations-selecting-and-re-ordering-rows" class="anchor"></a>Simple row operations (selecting and re-ordering rows)</h3>
+<div class="section level3">
+<h3 id="simple-row-operations-selecting-and-re-ordering-rows">Simple row operations (selecting and re-ordering rows)<a class="anchor" aria-label="anchor" href="#simple-row-operations-selecting-and-re-ordering-rows"></a>
+</h3>
 <p>The simple row operations are:</p>
 <ul>
 <li><code>select_rows</code></li>
@@ -298,9 +292,9 @@
 </ul>
 <p><code>select_rows</code> keeps the set of rows that meet a given predicate expression.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">d</span> <span class="op">%.&gt;%</span>
-  <span class="fu"><a href="reference/select_rows.html">select_rows</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">x</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op">%.&gt;%</span>
-  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">d</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
+  <span class="fu"><a href="reference/select_rows.html">select_rows</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">x</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
+  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">x</th>
@@ -320,14 +314,14 @@
 </tr>
 </tbody>
 </table>
-<p>Notes on how to use a variable to specify column names in <code>select_rows</code> can be found <a href="https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md">here</a>.</p>
+<p>Notes on how to use a variable to specify column names in <code>select_rows</code> can be found <a href="https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md" class="external-link">here</a>.</p>
 <p><code>order_rows</code> re-orders rows by a selection of column names (and allows reverse ordering by naming which columns to reverse in the optional <code>reverse</code> argument). Multiple columns can be selected in the order, each column breaking ties in the earlier comparisons.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">d</span> <span class="op">%.&gt;%</span>
+<code class="sourceCode R"><span class="va">d</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
   <span class="fu"><a href="reference/order_rows.html">order_rows</a></span><span class="op">(</span><span class="va">.</span>, 
-             <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'x'</span>, <span class="st">'y'</span><span class="op">)</span>,
-             reverse <span class="op">=</span> <span class="st">'x'</span><span class="op">)</span> <span class="op">%.&gt;%</span>
-  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
+             <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'x'</span>, <span class="st">'y'</span><span class="op">)</span>,
+             reverse <span class="op">=</span> <span class="st">'x'</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
+  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">x</th>
@@ -354,18 +348,18 @@
 </table>
 <p>General <code>rquery</code> operations do not depend on row-order and are not guaranteed to preserve row-order, so if you do want to order rows you should make it the last step of your pipeline.</p>
 </div>
-<div id="creating-new-columns-or-replacing-columns-with-new-calculated-values" class="section level3">
-<h3 class="hasAnchor">
-<a href="#creating-new-columns-or-replacing-columns-with-new-calculated-values" class="anchor"></a>Creating new columns or replacing columns with new calculated values</h3>
+<div class="section level3">
+<h3 id="creating-new-columns-or-replacing-columns-with-new-calculated-values">Creating new columns or replacing columns with new calculated values<a class="anchor" aria-label="anchor" href="#creating-new-columns-or-replacing-columns-with-new-calculated-values"></a>
+</h3>
 <p>The important create or replace column operation is:</p>
 <ul>
 <li><code>extend</code></li>
 </ul>
 <p><code>extend</code> accepts arbitrary expressions to create new columns (or replace existing ones). For example:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">d</span> <span class="op">%.&gt;%</span>
-  <span class="fu"><a href="reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">zzz</span> <span class="op">:=</span> <span class="va">y</span> <span class="op">/</span> <span class="va">x</span><span class="op">)</span> <span class="op">%.&gt;%</span>
-  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">d</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
+  <span class="fu"><a href="reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">zzz</span> <span class="op">:=</span> <span class="va">y</span> <span class="op">/</span> <span class="va">x</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
+  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">x</th>
@@ -394,20 +388,20 @@
 </tr>
 </tbody>
 </table>
-<p>We can use <code><a href="https://rdrr.io/r/base/assignOps.html">=</a></code> or <code>:=</code> for column assignment. In these examples we will use <code>:=</code> to keep column assignment clearly distinguishable from argument binding.</p>
-<p><code>extend</code> allows for very powerful per-group operations akin to what <a href="https://en.wikipedia.org/wiki/SQL"><code>SQL</code></a> calls <a href="https://en.wikipedia.org/wiki/SQL_window_function">“window functions”</a>. When the optional <code>partitionby</code> argument is set to a vector of column names then aggregate calculations can be performed per-group. For example.</p>
+<p>We can use <code>=</code> or <code>:=</code> for column assignment. In these examples we will use <code>:=</code> to keep column assignment clearly distinguishable from argument binding.</p>
+<p><code>extend</code> allows for very powerful per-group operations akin to what <a href="https://en.wikipedia.org/wiki/SQL" class="external-link"><code>SQL</code></a> calls <a href="https://en.wikipedia.org/wiki/SQL_window_function" class="external-link">“window functions”</a>. When the optional <code>partitionby</code> argument is set to a vector of column names then aggregate calculations can be performed per-group. For example.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">shift</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="va"><a href="https://Rdatatable.gitlab.io/data.table/reference/shift.html">shift</a></span>
+<code class="sourceCode R"><span class="va">shift</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="va"><a href="https://Rdatatable.gitlab.io/data.table/reference/shift.html" class="external-link">shift</a></span>
 
-<span class="va">d</span> <span class="op">%.&gt;%</span>
+<span class="va">d</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
   <span class="fu"><a href="reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,
-         <span class="va">max_y</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span>,
+         <span class="va">max_y</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span>,
          <span class="va">shift_z</span> <span class="op">:=</span> <span class="fu">shift</span><span class="op">(</span><span class="va">z</span><span class="op">)</span>,
          <span class="va">row_number</span> <span class="op">:=</span> <span class="fu">row_number</span><span class="op">(</span><span class="op">)</span>,
-         <span class="va">cumsum_z</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/cumsum.html">cumsum</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span>,
+         <span class="va">cumsum_z</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/cumsum.html" class="external-link">cumsum</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span>,
          partitionby <span class="op">=</span> <span class="st">'x'</span>,
-         orderby <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'y'</span>, <span class="st">'z'</span><span class="op">)</span><span class="op">)</span> <span class="op">%.&gt;%</span>
-  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
+         orderby <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'y'</span>, <span class="st">'z'</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
+  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">x</th>
@@ -449,23 +443,23 @@
 </tbody>
 </table>
 <p>Notice the aggregates were performed per-partition (a set of rows with matching partition key values, specified by <code>partitionby</code>) and in the order determined by the <code>orderby</code> argument (without the <code>orderby</code> argument order is not guaranteed, so always set <code>orderby</code> for windowed operations that depend on row order!).</p>
-<p>More on the window functions can be found <a href="https://github.com/WinVector/rquery/blob/master/Examples/WindowFunctions/WindowFunctions.md">here</a>. Notes on how to use a variable to specify column names in <code>extend</code> can be found <a href="https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md">here</a>.</p>
+<p>More on the window functions can be found <a href="https://github.com/WinVector/rquery/blob/master/Examples/WindowFunctions/WindowFunctions.md" class="external-link">here</a>. Notes on how to use a variable to specify column names in <code>extend</code> can be found <a href="https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md" class="external-link">here</a>.</p>
 </div>
-<div id="aggregating-or-summarizing-data" class="section level3">
-<h3 class="hasAnchor">
-<a href="#aggregating-or-summarizing-data" class="anchor"></a>Aggregating or summarizing data</h3>
+<div class="section level3">
+<h3 id="aggregating-or-summarizing-data">Aggregating or summarizing data<a class="anchor" aria-label="anchor" href="#aggregating-or-summarizing-data"></a>
+</h3>
 <p>The main aggregation method for <code>rquery</code> is:</p>
 <ul>
 <li><code>project</code></li>
 </ul>
 <p><code>project</code> performs per-group calculations, and returns only the grouping columns (specified by <code>groupby</code>) and derived aggregates. For example:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">d</span> <span class="op">%.&gt;%</span>
+<code class="sourceCode R"><span class="va">d</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
   <span class="fu"><a href="reference/project.html">project</a></span><span class="op">(</span><span class="va">.</span>,
-         <span class="va">max_y</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span>,
+         <span class="va">max_y</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span>,
          <span class="va">count</span> <span class="op">:=</span> <span class="fu">n</span><span class="op">(</span><span class="op">)</span>,
-         groupby <span class="op">=</span> <span class="st">'x'</span><span class="op">)</span> <span class="op">%.&gt;%</span>
-  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
+         groupby <span class="op">=</span> <span class="st">'x'</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
+  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">x</th>
@@ -487,11 +481,11 @@
 </table>
 <p>Notice we only get one row for each unique combination of the grouping variables. We can also aggregate into a single row by not specifying any <code>groupby</code> columns.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">d</span> <span class="op">%.&gt;%</span>
+<code class="sourceCode R"><span class="va">d</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
   <span class="fu"><a href="reference/project.html">project</a></span><span class="op">(</span><span class="va">.</span>,
-         <span class="va">max_y</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span>,
-         <span class="va">count</span> <span class="op">:=</span> <span class="fu">n</span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">%.&gt;%</span>
-  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
+         <span class="va">max_y</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span>,
+         <span class="va">count</span> <span class="op">:=</span> <span class="fu">n</span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
+  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">max_y</th>
@@ -502,22 +496,22 @@
 <td align="right">3</td>
 </tr></tbody>
 </table>
-<p>Notes on how to use a variable to specify column names in <code>project</code> can be found <a href="https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md">here</a>.</p>
+<p>Notes on how to use a variable to specify column names in <code>project</code> can be found <a href="https://github.com/WinVector/rquery/blob/master/Examples/Substitution/Substitution.md" class="external-link">here</a>.</p>
 </div>
-<div id="combining-results-between-two-dataframes" class="section level3">
-<h3 class="hasAnchor">
-<a href="#combining-results-between-two-dataframes" class="anchor"></a>Combining results between two <code>data.frame</code>s</h3>
+<div class="section level3">
+<h3 id="combining-results-between-two-dataframes">Combining results between two <code>data.frame</code>s<a class="anchor" aria-label="anchor" href="#combining-results-between-two-dataframes"></a>
+</h3>
 <p>To combine multiple tables in <code>rquery</code> one uses what we call the <code>natural_join</code> operator. In the <code>rquery</code> <code>natural_join</code>, rows are matched by column keys and any two columns with the same name are <em>coalesced</em> (meaning the first table with a non-missing values supplies the answer). This is easiest to demonstrate with an example.</p>
 <p>Let’s set up new example tables.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">d_left</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>
-  k <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'a'</span>, <span class="st">'a'</span>, <span class="st">'b'</span><span class="op">)</span>,
-  x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="cn">NA</span>, <span class="fl">3</span><span class="op">)</span>,
-  y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="cn">NA</span>, <span class="cn">NA</span><span class="op">)</span>,
+<code class="sourceCode R"><span class="va">d_left</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>
+  k <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'a'</span>, <span class="st">'a'</span>, <span class="st">'b'</span><span class="op">)</span>,
+  x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="cn">NA</span>, <span class="fl">3</span><span class="op">)</span>,
+  y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="cn">NA</span>, <span class="cn">NA</span><span class="op">)</span>,
   stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span>
 <span class="op">)</span>
 
-<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">d_left</span><span class="op">)</span></code></pre></div>
+<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">d_left</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">k</th>
@@ -543,13 +537,13 @@
 </tbody>
 </table>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">d_right</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>
-  k <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'a'</span>, <span class="st">'b'</span>, <span class="st">'q'</span><span class="op">)</span>,
-  y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">20</span>, <span class="fl">30</span><span class="op">)</span>,
+<code class="sourceCode R"><span class="va">d_right</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>
+  k <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'a'</span>, <span class="st">'b'</span>, <span class="st">'q'</span><span class="op">)</span>,
+  y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">20</span>, <span class="fl">30</span><span class="op">)</span>,
   stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span>
 <span class="op">)</span>
 
-<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">d_right</span><span class="op">)</span></code></pre></div>
+<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">d_right</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">k</th>
@@ -574,8 +568,8 @@
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="reference/natural_join.html">natural_join</a></span><span class="op">(</span><span class="va">d_left</span>, <span class="va">d_right</span>,
              by <span class="op">=</span> <span class="st">'k'</span>,
-             jointype <span class="op">=</span> <span class="st">'LEFT'</span><span class="op">)</span> <span class="op">%.&gt;%</span>
-  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
+             jointype <span class="op">=</span> <span class="st">'LEFT'</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
+  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">k</th>
@@ -602,27 +596,27 @@
 </table>
 <p>In a left-join (as above) if the right-table has unique keys then we get a table with the same structure as the left-table- but with more information per row. This is a very useful type of join in data science projects. Notice columns with matching names are coalesced into each other, which we interpret as “take the value from the left table, unless it is missing.”</p>
 </div>
-<div id="general-conversion-of-record-layouts" class="section level3">
-<h3 class="hasAnchor">
-<a href="#general-conversion-of-record-layouts" class="anchor"></a>General conversion of record layouts</h3>
-<p>Record transformation is “simple once you get it”. However, we suggest reading up on that as a separate topic <a href="https://github.com/WinVector/cdata">here</a>.</p>
+<div class="section level3">
+<h3 id="general-conversion-of-record-layouts">General conversion of record layouts<a class="anchor" aria-label="anchor" href="#general-conversion-of-record-layouts"></a>
+</h3>
+<p>Record transformation is “simple once you get it”. However, we suggest reading up on that as a separate topic <a href="https://github.com/WinVector/cdata" class="external-link">here</a>.</p>
 </div>
 </div>
-<div id="composing-operations" class="section level2">
-<h2 class="hasAnchor">
-<a href="#composing-operations" class="anchor"></a>Composing operations</h2>
+<div class="section level2">
+<h2 id="composing-operations">Composing operations<a class="anchor" aria-label="anchor" href="#composing-operations"></a>
+</h2>
 <p>We could, of course, perform complicated data manipulation by sequencing <code>rquery</code> operations. For example to select one row with minimal <code>y</code> per-<code>x</code> group we could work in steps as follows.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">.</span> <span class="op">&lt;-</span> <span class="va">d</span>
 <span class="va">.</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,
             <span class="va">row_number</span> <span class="op">:=</span> <span class="fu">row_number</span><span class="op">(</span><span class="op">)</span>,
             partitionby <span class="op">=</span> <span class="st">'x'</span>,
-            orderby <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'y'</span>, <span class="st">'z'</span><span class="op">)</span><span class="op">)</span>
+            orderby <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'y'</span>, <span class="st">'z'</span><span class="op">)</span><span class="op">)</span>
 <span class="va">.</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/select_rows.html">select_rows</a></span><span class="op">(</span><span class="va">.</span>,
                  <span class="va">row_number</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span>
 <span class="va">.</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/drop_columns.html">drop_columns</a></span><span class="op">(</span><span class="va">.</span>,
                   <span class="st">"row_number"</span><span class="op">)</span>
-<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
+<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">x</th>
@@ -642,18 +636,18 @@
 </tr>
 </tbody>
 </table>
-<p>The above discipline has the advantage that it is easy to debug, as we can run line by line and inspect intermediate values. We can even use the <a href="https://win-vector.com/2017/01/29/using-the-bizarro-pipe-to-debug-magrittr-pipelines-in-r/">Bizarro pipe</a> to make this look like a pipeline of operations.</p>
+<p>The above discipline has the advantage that it is easy to debug, as we can run line by line and inspect intermediate values. We can even use the <a href="https://win-vector.com/2017/01/29/using-the-bizarro-pipe-to-debug-magrittr-pipelines-in-r/" class="external-link">Bizarro pipe</a> to make this look like a pipeline of operations.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">d</span> <span class="op">-&gt;</span><span class="va">.</span>;
   <span class="fu"><a href="reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,
          <span class="va">row_number</span> <span class="op">:=</span> <span class="fu">row_number</span><span class="op">(</span><span class="op">)</span>,
          partitionby <span class="op">=</span> <span class="st">'x'</span>,
-         orderby <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'y'</span>, <span class="st">'z'</span><span class="op">)</span><span class="op">)</span> <span class="op">-&gt;</span><span class="va">.</span>;
+         orderby <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'y'</span>, <span class="st">'z'</span><span class="op">)</span><span class="op">)</span> <span class="op">-&gt;</span><span class="va">.</span>;
   <span class="fu"><a href="reference/select_rows.html">select_rows</a></span><span class="op">(</span><span class="va">.</span>,
               <span class="va">row_number</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span>  <span class="op">-&gt;</span><span class="va">.</span>;
   <span class="fu"><a href="reference/drop_columns.html">drop_columns</a></span><span class="op">(</span><span class="va">.</span>,
                <span class="st">"row_number"</span><span class="op">)</span>    <span class="op">-&gt;</span><span class="va">.</span>;
-  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
+  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">x</th>
@@ -673,18 +667,18 @@
 </tr>
 </tbody>
 </table>
-<p>Or we can use the <a href="https://journal.r-project.org/archive/2018/RJ-2018-042/index.html"><code>wrapr</code> pipe</a> on the data, which we call “immediate mode” (for more on modes please see <a href="https://github.com/WinVector/rquery/blob/master/Examples/Modes/Modes.md">here</a>).</p>
+<p>Or we can use the <a href="https://journal.r-project.org/archive/2018/RJ-2018-042/index.html" class="external-link"><code>wrapr</code> pipe</a> on the data, which we call “immediate mode” (for more on modes please see <a href="https://github.com/WinVector/rquery/blob/master/Examples/Modes/Modes.md" class="external-link">here</a>).</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">d</span> <span class="op">%.&gt;%</span>
+<code class="sourceCode R"><span class="va">d</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
   <span class="fu"><a href="reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,
          <span class="va">row_number</span> <span class="op">:=</span> <span class="fu">row_number</span><span class="op">(</span><span class="op">)</span>,
          partitionby <span class="op">=</span> <span class="st">'x'</span>,
-         orderby <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'y'</span>, <span class="st">'z'</span><span class="op">)</span><span class="op">)</span> <span class="op">%.&gt;%</span>
+         orderby <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'y'</span>, <span class="st">'z'</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
   <span class="fu"><a href="reference/select_rows.html">select_rows</a></span><span class="op">(</span><span class="va">.</span>,
-              <span class="va">row_number</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span>  <span class="op">%.&gt;%</span>
+              <span class="va">row_number</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span>  <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
   <span class="fu"><a href="reference/drop_columns.html">drop_columns</a></span><span class="op">(</span><span class="va">.</span>,
-               <span class="st">"row_number"</span><span class="op">)</span>    <span class="op">%.&gt;%</span>
-  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
+               <span class="st">"row_number"</span><span class="op">)</span>    <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
+  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">x</th>
@@ -706,17 +700,17 @@
 </table>
 <p><code>rquery</code> operators can also act on <code>rquery</code> pipelines instead of acting on data. We can write our operations as follows:</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ops</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/local_td.html">local_td</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span> <span class="op">%.&gt;%</span>
+<code class="sourceCode R"><span class="va">ops</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/local_td.html">local_td</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
   <span class="fu"><a href="reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,
          <span class="va">row_number</span> <span class="op">:=</span> <span class="fu">row_number</span><span class="op">(</span><span class="op">)</span>,
          partitionby <span class="op">=</span> <span class="st">'x'</span>,
-         orderby <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'y'</span>, <span class="st">'z'</span><span class="op">)</span><span class="op">)</span> <span class="op">%.&gt;%</span>
+         orderby <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'y'</span>, <span class="st">'z'</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
   <span class="fu"><a href="reference/select_rows.html">select_rows</a></span><span class="op">(</span><span class="va">.</span>,
-              <span class="va">row_number</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span>  <span class="op">%.&gt;%</span>
+              <span class="va">row_number</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span>  <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
   <span class="fu"><a href="reference/drop_columns.html">drop_columns</a></span><span class="op">(</span><span class="va">.</span>,
                <span class="st">"row_number"</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html">format</a></span><span class="op">(</span><span class="va">ops</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">ops</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb22"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="do">## mk_td("d", c(</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="do">##   "x",</span></span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="do">##   "y",</span></span>
@@ -732,9 +726,9 @@
 <span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a><span class="do">##    c('row_number'))</span></span></code></pre></div>
 <p>And we can re-use this pipeline, both on local data and to generate <code>SQL</code> to be run in remote databases. Applying this operator pipeline to our <code>data.frame</code> <code>d</code> is performed as follows.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">d</span> <span class="op">%.&gt;%</span> 
-  <span class="va">ops</span> <span class="op">%.&gt;%</span>
-  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">d</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span> 
+  <span class="va">ops</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
+  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">x</th>
@@ -756,14 +750,14 @@
 </table>
 <p>And for <code>SQL</code> we have the following.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">raw_connection</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span><span class="op">(</span><span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html">SQLite</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">":memory:"</span><span class="op">)</span>
-<span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/initExtension.html">initExtension</a></span><span class="op">(</span><span class="va">raw_connection</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">raw_connection</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html" class="external-link">SQLite</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">":memory:"</span><span class="op">)</span>
+<span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/initExtension.html" class="external-link">initExtension</a></span><span class="op">(</span><span class="va">raw_connection</span><span class="op">)</span>
 <span class="va">db</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/rquery_db_info.html">rquery_db_info</a></span><span class="op">(</span>
   connection <span class="op">=</span> <span class="va">raw_connection</span>,
   is_dbi <span class="op">=</span> <span class="cn">TRUE</span>,
   connection_options <span class="op">=</span> <span class="fu"><a href="reference/rq_connection_tests.html">rq_connection_tests</a></span><span class="op">(</span><span class="va">raw_connection</span><span class="op">)</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">ops</span>, <span class="va">db</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">ops</span>, <span class="va">db</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb25"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="do">## SELECT</span></span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="do">##  `x`,</span></span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="do">##  `y`,</span></span>
@@ -782,143 +776,153 @@
 <span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a><span class="do">##     `z`</span></span>
 <span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a><span class="do">##    FROM</span></span>
 <span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a><span class="do">##     `d`</span></span>
-<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a><span class="do">##    ) tsql_25066485525478399465_0000000000</span></span>
-<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a><span class="do">##  ) tsql_25066485525478399465_0000000001</span></span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a><span class="do">##    ) tsql_85643797925389488634_0000000000</span></span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a><span class="do">##  ) tsql_85643797925389488634_0000000001</span></span>
 <span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a><span class="do">##  WHERE `row_number` = 1</span></span>
-<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a><span class="do">## ) tsql_25066485525478399465_0000000002</span></span></code></pre></div>
+<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a><span class="do">## ) tsql_85643797925389488634_0000000002</span></span></code></pre></div>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># clean up</span>
-<span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html">dbDisconnect</a></span><span class="op">(</span><span class="va">raw_connection</span><span class="op">)</span></code></pre></div>
-<p>For more <code>SQL</code> examples, please see <a href="https://github.com/WinVector/rquery/tree/master/db_examples">here</a>.</p>
+<span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">dbDisconnect</a></span><span class="op">(</span><span class="va">raw_connection</span><span class="op">)</span></code></pre></div>
+<p>For more <code>SQL</code> examples, please see <a href="https://github.com/WinVector/rquery/tree/master/db_examples" class="external-link">here</a>.</p>
 </div>
-<div id="pipeline-principles" class="section level2">
-<h2 class="hasAnchor">
-<a href="#pipeline-principles" class="anchor"></a>Pipeline principles</h2>
+<div class="section level2">
+<h2 id="pipeline-principles">Pipeline principles<a class="anchor" aria-label="anchor" href="#pipeline-principles"></a>
+</h2>
 <p>What we are trying to illustrate above: there is a continuum of notations possible between:</p>
 <ul>
 <li>Working over values with explicit intermediate variables.</li>
 <li>Working over values with a pipeline.</li>
 <li>Working over operators with a pipeline.</li>
 </ul>
-<p>Being able to see these as all related gives some flexibility in decomposing problems into solutions. We have some more advanced notes on the differences in working modalities <a href="https://github.com/WinVector/rquery/blob/master/Examples/Modes/Modes.md">here</a> and <a href="https://github.com/WinVector/rquery/blob/master/Examples/Arrow/Arrow.md">here</a>.</p>
+<p>Being able to see these as all related gives some flexibility in decomposing problems into solutions. We have some more advanced notes on the differences in working modalities <a href="https://github.com/WinVector/rquery/blob/master/Examples/Modes/Modes.md" class="external-link">here</a> and <a href="https://github.com/WinVector/rquery/blob/master/Examples/Arrow/Arrow.md" class="external-link">here</a>.</p>
 </div>
-<div id="conclusion" class="section level2">
-<h2 class="hasAnchor">
-<a href="#conclusion" class="anchor"></a>Conclusion</h2>
-<p><code>rquery</code> supplies a very teachable grammar of data manipulation based on Codd’s relational algebra and experience with pipelined data transforms (such as <code><a href="https://rdrr.io/r/base/transform.html">base::transform()</a></code>, <code>dplyr</code>, and <code>data.table</code>).</p>
+<div class="section level2">
+<h2 id="conclusion">Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a>
+</h2>
+<p><code>rquery</code> supplies a very teachable grammar of data manipulation based on Codd’s relational algebra and experience with pipelined data transforms (such as <code><a href="https://rdrr.io/r/base/transform.html" class="external-link">base::transform()</a></code>, <code>dplyr</code>, and <code>data.table</code>).</p>
 <p>For in-memory situations <code>rquery</code> uses <code>data.table</code> as the implementation provider (through the small adapter package <code>rqdatatable</code>) and is routinely faster than any other <code>R</code> data manipulation system <em>except</em> <code>data.table</code> itself.</p>
 <p>For bigger than memory situations <code>rquery</code> can translate to any sufficiently powerful <code>SQL</code> dialect, allowing <code>rquery</code> pipelines to be executed on PostgreSQL, Apache Spark, or Google BigQuery.</p>
-<p>In addition the <a href="https://github.com/WinVector/data_algebra"><code>data_algebra</code></a> Python package supplies a nearly identical system for working with data in Python. # Background</p>
+<p>In addition the <a href="https://github.com/WinVector/data_algebra" class="external-link"><code>data_algebra</code></a> Python package supplies a nearly identical system for working with data in Python. # Background</p>
 <p>There are many prior relational algebra inspired specialized query languages. Just a few include:</p>
 <ul>
 <li>
-<a href="https://en.wikipedia.org/wiki/Alpha_(programming_language)"><code>Alpha</code></a> ~1971.</li>
+<a href="https://en.wikipedia.org/wiki/Alpha_(programming_language)" class="external-link"><code>Alpha</code></a> ~1971.</li>
 <li>
 <code>ISBL</code> / Information system based language ~1973</li>
 <li>
-<a href="https://en.wikipedia.org/wiki/QUEL_query_languages"><code>QUEL</code></a> ~1974.</li>
+<a href="https://en.wikipedia.org/wiki/QUEL_query_languages" class="external-link"><code>QUEL</code></a> ~1974.</li>
 <li>
-<a href="https://en.wikipedia.org/wiki/IBM_System_R"><code>IBM System R</code></a> ~1974.</li>
+<a href="https://en.wikipedia.org/wiki/IBM_System_R" class="external-link"><code>IBM System R</code></a> ~1974.</li>
 <li>
-<a href="https://en.wikipedia.org/wiki/SQL"><code>SQL</code></a> ~1974.</li>
+<a href="https://en.wikipedia.org/wiki/SQL" class="external-link"><code>SQL</code></a> ~1974.</li>
 <li>
-<a href="https://en.wikipedia.org/wiki/D_(data_language_specification)#Tutorial_D"><code>Tutorial D</code></a> ~1994.</li>
+<a href="https://en.wikipedia.org/wiki/D_(data_language_specification)#Tutorial_D" class="external-link"><code>Tutorial D</code></a> ~1994.</li>
 <li>
-<a href="https://rdatatable.gitlab.io/data.table/"><code>data.table</code></a> ~2006.</li>
+<a href="https://rdatatable.gitlab.io/data.table/" class="external-link"><code>data.table</code></a> ~2006.</li>
 <li>
-<a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/"><code>LINQ</code></a> ~2007.</li>
+<a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/" class="external-link"><code>LINQ</code></a> ~2007.</li>
 <li>
-<a href="https://pandas.pydata.org"><code>pandas</code></a> ~2008.</li>
+<a href="https://pandas.pydata.org" class="external-link"><code>pandas</code></a> ~2008.</li>
 <li>
-<a href="https://dplyr.tidyverse.org"><code>dplyr</code></a> ~2014.</li>
+<a href="https://dplyr.tidyverse.org" class="external-link"><code>dplyr</code></a> ~2014.</li>
 <li>
-<a href="https://calcite.apache.org"><code>Apache Calcite</code></a> ~2014.</li>
+<a href="https://calcite.apache.org" class="external-link"><code>Apache Calcite</code></a> ~2014.</li>
 </ul>
 <p><code>rquery</code> is realized as a thin translation to an underlying <code>SQL</code> provider. We are trying to put the Codd relational operators front and center (using the original naming, and back-porting <code>SQL</code> progress such as window functions to the appropriate relational operator).</p>
 <p>Some related work includes:</p>
 <ul>
-<li><a href="https://rdatatable.gitlab.io/data.table/"><code>data.table</code></a></li>
-<li><a href="https://github.com/xiaodaigh/disk.frame"><code>disk.frame</code></a></li>
-<li><a href="https://dbplyr.tidyverse.org"><code>dbplyr</code></a></li>
-<li><a href="https://dplyr.tidyverse.org"><code>dplyr</code></a></li>
-<li><a href="https://github.com/tidyverse/dtplyr"><code>dtplyr</code></a></li>
-<li><a href="https://github.com/gdemin/maditr"><code>maditr</code></a></li>
-<li><a href="https://github.com/tdhock/nc"><code>nc</code></a></li>
-<li><a href="https://github.com/nathaneastwood/poorman"><code>poorman</code></a></li>
-<li><a href="https://github.com/WinVector/rqdatatable"><code>rqdatatable</code></a></li>
-<li><a href="https://CRAN.R-project.org/package=SparkR"><code>SparkR</code></a></li>
-<li><a href="https://spark.rstudio.com"><code>sparklyr</code></a></li>
-<li><a href="https://github.com/ggrothendieck/sqldf"><code>sqldf</code></a></li>
-<li><a href="https://github.com/asardaes/table.express"><code>table.express</code></a></li>
-<li><a href="https://github.com/TysonStanley/tidyfast"><code>tidyfast</code></a></li>
-<li><a href="https://github.com/hope-data-science/tidyfst"><code>tidyfst</code></a></li>
-<li><a href="https://github.com/ianmcook/tidyquery"><code>tidyquery</code></a></li>
-<li><a href="https://tidyr.tidyverse.org"><code>tidyr</code></a></li>
+<li><a href="https://rdatatable.gitlab.io/data.table/" class="external-link"><code>data.table</code></a></li>
+<li><a href="https://github.com/DiskFrame/disk.frame" class="external-link"><code>disk.frame</code></a></li>
+<li><a href="https://dbplyr.tidyverse.org" class="external-link"><code>dbplyr</code></a></li>
+<li><a href="https://dplyr.tidyverse.org" class="external-link"><code>dplyr</code></a></li>
+<li><a href="https://github.com/tidyverse/dtplyr" class="external-link"><code>dtplyr</code></a></li>
+<li><a href="https://github.com/gdemin/maditr" class="external-link"><code>maditr</code></a></li>
+<li><a href="https://github.com/tdhock/nc" class="external-link"><code>nc</code></a></li>
+<li><a href="https://github.com/nathaneastwood/poorman" class="external-link"><code>poorman</code></a></li>
+<li><a href="https://github.com/WinVector/rqdatatable" class="external-link"><code>rqdatatable</code></a></li>
+<li><a href="https://CRAN.R-project.org/package=SparkR" class="external-link"><code>SparkR</code></a></li>
+<li><a href="https://spark.rstudio.com" class="external-link"><code>sparklyr</code></a></li>
+<li><a href="https://github.com/ggrothendieck/sqldf" class="external-link"><code>sqldf</code></a></li>
+<li><a href="https://github.com/asardaes/table.express" class="external-link"><code>table.express</code></a></li>
+<li><a href="https://github.com/TysonStanley/tidyfast" class="external-link"><code>tidyfast</code></a></li>
+<li><a href="https://github.com/hope-data-science/tidyfst" class="external-link"><code>tidyfst</code></a></li>
+<li><a href="https://github.com/ianmcook/tidyquery" class="external-link"><code>tidyquery</code></a></li>
+<li><a href="https://tidyr.tidyverse.org" class="external-link"><code>tidyr</code></a></li>
 <li>
-<a href="https://github.com/markfairbanks/tidytable"><code>tidytable</code></a> (formerly <code>gdt</code>/<code>tidydt</code>)</li>
-<li><a href="https://github.com/WinVector/data_algebra"><code>data_algebra</code></a></li>
+<a href="https://github.com/markfairbanks/tidytable" class="external-link"><code>tidytable</code></a> (formerly <code>gdt</code>/<code>tidydt</code>)</li>
+<li><a href="https://github.com/WinVector/data_algebra" class="external-link"><code>data_algebra</code></a></li>
 </ul>
 </div>
 </div>
-<div id="installing" class="section level1">
-<h1 class="hasAnchor">
-<a href="#installing" class="anchor"></a>Installing</h1>
-<p>To install <code>rquery</code> please try <code><a href="https://rdrr.io/r/utils/install.packages.html">install.packages("rquery")</a></code>.</p>
+<div class="section level1">
+<h1 id="installing">Installing<a class="anchor" aria-label="anchor" href="#installing"></a>
+</h1>
+<p>To install <code>rquery</code> please try <code>install.packages("rquery")</code>.</p>
 </div>
-<div id="note" class="section level1">
-<h1 class="hasAnchor">
-<a href="#note" class="anchor"></a>Note</h1>
+<div class="section level1">
+<h1 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a>
+</h1>
 <p><code>rquery</code> is intended to work with “tame column names”, that is column names that are legitimate symbols in <code>R</code> and <code>SQL</code>.</p>
-<p>The previous <code>rquery</code> introduction is available <a href="https://github.com/WinVector/rquery/blob/master/Examples/old_readme/README.md">here</a>.</p>
+<p>The previous <code>rquery</code> introduction is available <a href="https://github.com/WinVector/rquery/blob/master/Examples/old_readme/README.md" class="external-link">here</a>.</p>
 </div>
 
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=rquery">https://​cloud.r-project.org/​package=rquery</a>
-</li>
-<li>Browse source code at <br><a href="https://github.com/WinVector/rquery/">https://​github.com/​WinVector/​rquery/​</a>
-</li>
-<li>Report a bug at <br><a href="https://github.com/WinVector/rquery/issues">https://​github.com/​WinVector/​rquery/​issues</a>
-</li>
-</ul>
-</div>
-<div class="license">
-<h2>License</h2>
-<ul class="list-unstyled">
-<li>
-<a href="https://www.r-project.org/Licenses/GPL-2">GPL-2</a> | <a href="https://www.r-project.org/Licenses/GPL-3">GPL-3</a>
-</li>
-</ul>
-</div>
-<div class="developers">
-<h2>Developers</h2>
-<ul class="list-unstyled">
-<li>John Mount <br><small class="roles"> Author, maintainer </small>  </li>
-<li><a href="authors.html">All authors...</a></li>
+<li><a href="https://cloud.r-project.org/package=rquery" class="external-link">View on CRAN</a></li>
+<li><a href="https://github.com/WinVector/rquery/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/WinVector/rquery/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
 
-  <div class="dev-status">
-<h2>Dev status</h2>
+<div class="license">
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
-<li><a href="https://cran.r-project.org/package=rquery"><img src="https://www.r-pkg.org/badges/version/rquery" alt="CRAN_Status_Badge"></a></li>
-<li><a href="https://CRAN.R-project.org/package=rquery"><img src="https://tinyverse.netlify.com/badge/rquery" alt="status"></a></li>
+<li>
+<a href="https://www.r-project.org/Licenses/GPL-2" class="external-link">GPL-2</a> | <a href="https://www.r-project.org/Licenses/GPL-3" class="external-link">GPL-3</a>
+</li>
 </ul>
 </div>
+
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
+<ul class="list-unstyled">
+<li><a href="authors.html#citation">Citing rquery</a></li>
+</ul>
 </div>
+
+<div class="developers">
+<h2 data-toc-skip>Developers</h2>
+<ul class="list-unstyled">
+<li>John Mount <br><small class="roles"> Author, maintainer </small>  </li>
+<li><a href="authors.html">More about authors...</a></li>
+</ul>
+</div>
+
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://cran.r-project.org/package=rquery" class="external-link"><img src="https://www.r-pkg.org/badges/version/rquery" alt="CRAN_Status_Badge"></a></li>
+<li><a href="https://CRAN.R-project.org/package=rquery" class="external-link"><img src="https://tinyverse.netlify.com/badge/rquery" alt="status"></a></li>
+</ul>
+</div>
+
+  </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by John Mount.</p>
+  <p></p>
+<p>Developed by John Mount.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>
@@ -926,6 +930,8 @@
 
   
 
+
+  
 
   </body>
 </html>

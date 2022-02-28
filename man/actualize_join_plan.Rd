@@ -63,9 +63,9 @@ if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quiet
                                 checkColClasses= TRUE)
   cat(format(optree))
   print(execute(my_db, optree))
-  if(requireNamespace("DiagrammeR", quietly = TRUE)) {
-    DiagrammeR::grViz(op_diagram(optree))
-  }
+  # if(requireNamespace("DiagrammeR", quietly = TRUE)) {
+  #   DiagrammeR::grViz(op_diagram(optree))
+  # }
   DBI::dbDisconnect(my_db)
 }
 

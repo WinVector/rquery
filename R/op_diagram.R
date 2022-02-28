@@ -136,19 +136,19 @@ r_optree_diagram <- function(optree,
 #'
 #' cat(op_diagram(optree))
 #'
-#' if(requireNamespace("DiagrammeR", quietly = TRUE)) {
-#'   optree %.>%
-#'     op_diagram(., merge_tables = TRUE) %.>%
-#'     DiagrammeR::grViz(.) %.>%
-#'     print(.)
-#'  # # or to render to png
-#'  # optree %.>%
-#'  #   op_diagram(., merge_tables = TRUE) %.>%
-#'  #   DiagrammeR::DiagrammeR(diagram = ., type = "grViz") %.>%
-#'  #     DiagrammeRsvg::export_svg(.) %.>%
-#'  #     charToRaw(.) %.>%
-#'  #     rsvg::rsvg_png(., file = "diagram1.png")
-#' }
+#' # if(requireNamespace("DiagrammeR", quietly = TRUE)) {
+#' #   optree %.>%
+#' #     op_diagram(., merge_tables = TRUE) %.>%
+#' #     DiagrammeR::grViz(.) %.>%
+#' #     print(.)
+#' #  # # or to render to png
+#' #  # optree %.>%
+#' #  #   op_diagram(., merge_tables = TRUE) %.>%
+#' #  #   DiagrammeR::DiagrammeR(diagram = ., type = "grViz") %.>%
+#' #  #     DiagrammeRsvg::export_svg(.) %.>%
+#' #  #     charToRaw(.) %.>%
+#' #  #     rsvg::rsvg_png(., file = "diagram1.png")
+#' # }
 #'
 #' @export
 #'

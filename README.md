@@ -557,10 +557,10 @@ cat(to_sql(ops, db))
     ##     `z`
     ##    FROM
     ##     `d`
-    ##    ) tsql_25066485525478399465_0000000000
-    ##  ) tsql_25066485525478399465_0000000001
+    ##    ) tsql_85643797925389488634_0000000000
+    ##  ) tsql_85643797925389488634_0000000001
     ##  WHERE `row_number` = 1
-    ## ) tsql_25066485525478399465_0000000002
+    ## ) tsql_85643797925389488634_0000000002
 
 ``` r
 # clean up
@@ -632,7 +632,7 @@ as window functions to the appropriate relational operator).
 Some related work includes:
 
 -   [`data.table`](https://rdatatable.gitlab.io/data.table/)
--   [`disk.frame`](https://github.com/xiaodaigh/disk.frame)
+-   [`disk.frame`](https://github.com/DiskFrame/disk.frame)
 -   [`dbplyr`](https://dbplyr.tidyverse.org)
 -   [`dplyr`](https://dplyr.tidyverse.org)
 -   [`dtplyr`](https://github.com/tidyverse/dtplyr)
