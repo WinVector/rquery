@@ -18,7 +18,7 @@ Please see vignette('DependencySorting', package = 'rquery') and vignette('joinC
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.99</span>
       </span>
     </div>
 
@@ -27,7 +27,7 @@ Please see vignette('DependencySorting', package = 'rquery') and vignette('joinC
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -83,54 +83,61 @@ Please see <code>vignette('DependencySorting', package = 'rquery')</code> and <c
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">topo_sort_tables</span><span class="op">(</span><span class="va">columnJoinPlan</span>, <span class="va">leftTableName</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">topo_sort_tables</span><span class="op">(</span><span class="va">columnJoinPlan</span>, <span class="va">leftTableName</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>columnJoinPlan</dt>
 <dd><p>join plan</p></dd>
+
+
 <dt>leftTableName</dt>
 <dd><p>which table is left</p></dd>
+
+
 <dt>...</dt>
 <dd><p>force later arguments to bind by name</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>list with dependencyGraph and sorted columnJoinPlan</p>
+    
+
+<p>list with dependencyGraph and sorted columnJoinPlan</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"DBI"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"RSQLite"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span></span>
-<span class="r-in">    <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">'igraph'</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="co"># note: employeeanddate is likely built as a cross-product</span></span>
-<span class="r-in">  <span class="co">#       join of an employee table and set of dates of interest</span></span>
-<span class="r-in">  <span class="co">#       before getting to the join controller step.  We call</span></span>
-<span class="r-in">  <span class="co">#       such a table "row control" or "experimental design."</span></span>
-<span class="r-in">  <span class="va">my_db</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html" class="external-link">SQLite</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">":memory:"</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/initExtension.html" class="external-link">initExtension</a></span><span class="op">(</span><span class="va">my_db</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">tDesc</span> <span class="op">&lt;-</span> <span class="fu"><a href="example_employee_date.html">example_employee_date</a></span><span class="op">(</span><span class="va">my_db</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">columnJoinPlan</span> <span class="op">&lt;-</span> <span class="fu"><a href="build_join_plan.html">build_join_plan</a></span><span class="op">(</span><span class="va">tDesc</span>, check<span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span class="r-in">  <span class="co"># unify keys</span></span>
-<span class="r-in">  <span class="va">columnJoinPlan</span><span class="op">$</span><span class="va">resultColumn</span><span class="op">[</span><span class="va">columnJoinPlan</span><span class="op">$</span><span class="va">resultColumn</span><span class="op">==</span><span class="st">'id'</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">'eid'</span></span>
-<span class="r-in">  <span class="co"># look at plan defects</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">'problems:'</span>,</span>
-<span class="r-in">              <span class="fu"><a href="inspect_join_plan.html">inspect_join_plan</a></span><span class="op">(</span><span class="va">tDesc</span>, <span class="va">columnJoinPlan</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="co"># fix plan</span></span>
-<span class="r-in">  <span class="va">sorted</span> <span class="op">&lt;-</span> <span class="fu">topo_sort_tables</span><span class="op">(</span><span class="va">columnJoinPlan</span>, <span class="st">'employeeanddate'</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">'problems:'</span>,</span>
-<span class="r-in">              <span class="fu"><a href="inspect_join_plan.html">inspect_join_plan</a></span><span class="op">(</span><span class="va">tDesc</span>, <span class="va">sorted</span><span class="op">$</span><span class="va">columnJoinPlan</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sorted</span><span class="op">$</span><span class="va">dependencyGraph</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">dbDisconnect</a></span><span class="op">(</span><span class="va">my_db</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">my_db</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"DBI"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"RSQLite"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">'igraph'</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="co"># note: employeeanddate is likely built as a cross-product</span></span></span>
+<span class="r-in"><span>  <span class="co">#       join of an employee table and set of dates of interest</span></span></span>
+<span class="r-in"><span>  <span class="co">#       before getting to the join controller step.  We call</span></span></span>
+<span class="r-in"><span>  <span class="co">#       such a table "row control" or "experimental design."</span></span></span>
+<span class="r-in"><span>  <span class="va">my_db</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html" class="external-link">SQLite</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">":memory:"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/initExtension.html" class="external-link">initExtension</a></span><span class="op">(</span><span class="va">my_db</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">tDesc</span> <span class="op">&lt;-</span> <span class="fu"><a href="example_employee_date.html">example_employee_date</a></span><span class="op">(</span><span class="va">my_db</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">columnJoinPlan</span> <span class="op">&lt;-</span> <span class="fu"><a href="build_join_plan.html">build_join_plan</a></span><span class="op">(</span><span class="va">tDesc</span>, check<span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># unify keys</span></span></span>
+<span class="r-in"><span>  <span class="va">columnJoinPlan</span><span class="op">$</span><span class="va">resultColumn</span><span class="op">[</span><span class="va">columnJoinPlan</span><span class="op">$</span><span class="va">resultColumn</span><span class="op">==</span><span class="st">'id'</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">'eid'</span></span></span>
+<span class="r-in"><span>  <span class="co"># look at plan defects</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">'problems:'</span>,</span></span>
+<span class="r-in"><span>              <span class="fu"><a href="inspect_join_plan.html">inspect_join_plan</a></span><span class="op">(</span><span class="va">tDesc</span>, <span class="va">columnJoinPlan</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># fix plan</span></span></span>
+<span class="r-in"><span>  <span class="va">sorted</span> <span class="op">&lt;-</span> <span class="fu">topo_sort_tables</span><span class="op">(</span><span class="va">columnJoinPlan</span>, <span class="st">'employeeanddate'</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">'problems:'</span>,</span></span>
+<span class="r-in"><span>              <span class="fu"><a href="inspect_join_plan.html">inspect_join_plan</a></span><span class="op">(</span><span class="va">tDesc</span>, <span class="va">sorted</span><span class="op">$</span><span class="va">columnJoinPlan</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sorted</span><span class="op">$</span><span class="va">dependencyGraph</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">dbDisconnect</a></span><span class="op">(</span><span class="va">my_db</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">my_db</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "problems: key col(s) ( dept ) not contained in result cols of previous table(s) for table: revenue"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "problems: "</span>
 <span class="r-plt img"><img src="topo_sort_tables-1.png" alt="" width="700" height="433"></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -145,7 +152,7 @@ Please see <code>vignette('DependencySorting', package = 'rquery')</code> and <c
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

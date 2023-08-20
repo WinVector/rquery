@@ -21,10 +21,7 @@
 #'  \code{rquery} does have a fast in-memory implementation: \code{rqdatatable}
 #'  (thanks to the \code{data.table}, so one can in fact use `rquery` without a database.
 #'
-#' @docType package
-#' @name rquery
-NULL
-
+"_PACKAGE"
 
 #' @importFrom wrapr apply_right
 NULL

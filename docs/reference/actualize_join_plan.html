@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.99</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -81,31 +81,42 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">actualize_join_plan</span><span class="op">(</span>
-  <span class="va">columnJoinPlan</span>,
-  <span class="va">...</span>,
-  jointype <span class="op">=</span> <span class="st">"LEFT"</span>,
-  add_ind_cols <span class="op">=</span> <span class="cn">FALSE</span>,
-  checkColClasses <span class="op">=</span> <span class="cn">FALSE</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">actualize_join_plan</span><span class="op">(</span></span>
+<span>  <span class="va">columnJoinPlan</span>,</span>
+<span>  <span class="va">...</span>,</span>
+<span>  jointype <span class="op">=</span> <span class="st">"LEFT"</span>,</span>
+<span>  add_ind_cols <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  checkColClasses <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>columnJoinPlan</dt>
 <dd><p>columns to join, from <code><a href="build_join_plan.html">build_join_plan</a></code> (and likely altered by user).  Note: no column names must intersect with names of the form <code>table_CLEANEDTABNAME_present</code>.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>force later arguments to bind by name.</p></dd>
+
+
 <dt>jointype</dt>
 <dd><p>character, type of join to perform ("LEFT", "INNER", "RIGHT", ...).</p></dd>
+
+
 <dt>add_ind_cols</dt>
 <dd><p>logical, if TRUE add indicators showing which tables supplied rows.</p></dd>
+
+
 <dt>checkColClasses</dt>
 <dd><p>logical if true check for exact class name matches</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>join optree</p>
+    
+
+<p>join optree</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -114,44 +125,44 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"DBI"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"RSQLite"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="va">my_db</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html" class="external-link">SQLite</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">":memory:"</span><span class="op">)</span></span>
-<span class="r-in">  <span class="co"># example data</span></span>
-<span class="r-in">  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html" class="external-link">dbWriteTable</a></span><span class="op">(</span><span class="va">my_db</span>,</span>
-<span class="r-in">                    <span class="st">"meas1"</span>,</span>
-<span class="r-in">                    <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>id<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span>,</span>
-<span class="r-in">                               weight<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">200</span>, <span class="fl">120</span><span class="op">)</span>,</span>
-<span class="r-in">                               height<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">60</span>, <span class="fl">14</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html" class="external-link">dbWriteTable</a></span><span class="op">(</span><span class="va">my_db</span>,</span>
-<span class="r-in">                    <span class="st">"meas2"</span>,</span>
-<span class="r-in">                    <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>pid<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span>,</span>
-<span class="r-in">                               weight<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">105</span>, <span class="fl">110</span><span class="op">)</span>,</span>
-<span class="r-in">                               width<span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="co"># get the initial description of table defs</span></span>
-<span class="r-in">  <span class="va">tDesc</span> <span class="op">&lt;-</span> <span class="fu"><a href="describe_tables.html">describe_tables</a></span><span class="op">(</span><span class="va">my_db</span>, <span class="fu"><a href="https://winvector.github.io/wrapr//reference/qc.html" class="external-link">qc</a></span><span class="op">(</span><span class="va">meas1</span>, <span class="va">meas2</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="co"># declare keys (and give them consitent names)</span></span>
-<span class="r-in">  <span class="va">tDesc</span><span class="op">$</span><span class="va">keys</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>PatientID<span class="op">=</span> <span class="st">'id'</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">tDesc</span><span class="op">$</span><span class="va">keys</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>PatientID<span class="op">=</span> <span class="st">'pid'</span><span class="op">)</span></span>
-<span class="r-in">  <span class="co"># build the column join plan</span></span>
-<span class="r-in">  <span class="va">columnJoinPlan</span> <span class="op">&lt;-</span> <span class="fu"><a href="build_join_plan.html">build_join_plan</a></span><span class="op">(</span><span class="va">tDesc</span><span class="op">)</span></span>
-<span class="r-in">  <span class="co"># decide we don't want the width column</span></span>
-<span class="r-in">  <span class="va">columnJoinPlan</span><span class="op">$</span><span class="va">want</span><span class="op">[</span><span class="va">columnJoinPlan</span><span class="op">$</span><span class="va">resultColumn</span><span class="op">==</span><span class="st">'width'</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">FALSE</span></span>
-<span class="r-in">  <span class="co"># double check our plan</span></span>
-<span class="r-in">  <span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="fu"><a href="inspect_join_plan.html">inspect_join_plan</a></span><span class="op">(</span><span class="va">tDesc</span>, <span class="va">columnJoinPlan</span>,</span>
-<span class="r-in">                                checkColClasses<span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">    <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"bad join plan"</span><span class="op">)</span></span>
-<span class="r-in">  <span class="op">}</span></span>
-<span class="r-in">  <span class="co"># actualize as left join op_tree</span></span>
-<span class="r-in">  <span class="va">optree</span> <span class="op">&lt;-</span> <span class="fu">actualize_join_plan</span><span class="op">(</span><span class="va">columnJoinPlan</span>,</span>
-<span class="r-in">                                checkColClasses<span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">optree</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="execute.html">execute</a></span><span class="op">(</span><span class="va">my_db</span>, <span class="va">optree</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="co"># if(requireNamespace("DiagrammeR", quietly = TRUE)) {</span></span>
-<span class="r-in">  <span class="co">#   DiagrammeR::grViz(op_diagram(optree))</span></span>
-<span class="r-in">  <span class="co"># }</span></span>
-<span class="r-in">  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">dbDisconnect</a></span><span class="op">(</span><span class="va">my_db</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"DBI"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"RSQLite"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">my_db</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html" class="external-link">SQLite</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">":memory:"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># example data</span></span></span>
+<span class="r-in"><span>  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html" class="external-link">dbWriteTable</a></span><span class="op">(</span><span class="va">my_db</span>,</span></span>
+<span class="r-in"><span>                    <span class="st">"meas1"</span>,</span></span>
+<span class="r-in"><span>                    <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>id<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                               weight<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">200</span>, <span class="fl">120</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                               height<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">60</span>, <span class="fl">14</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html" class="external-link">dbWriteTable</a></span><span class="op">(</span><span class="va">my_db</span>,</span></span>
+<span class="r-in"><span>                    <span class="st">"meas2"</span>,</span></span>
+<span class="r-in"><span>                    <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>pid<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                               weight<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">105</span>, <span class="fl">110</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                               width<span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># get the initial description of table defs</span></span></span>
+<span class="r-in"><span>  <span class="va">tDesc</span> <span class="op">&lt;-</span> <span class="fu"><a href="describe_tables.html">describe_tables</a></span><span class="op">(</span><span class="va">my_db</span>, <span class="fu"><a href="https://winvector.github.io/wrapr//reference/qc.html" class="external-link">qc</a></span><span class="op">(</span><span class="va">meas1</span>, <span class="va">meas2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># declare keys (and give them consitent names)</span></span></span>
+<span class="r-in"><span>  <span class="va">tDesc</span><span class="op">$</span><span class="va">keys</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>PatientID<span class="op">=</span> <span class="st">'id'</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">tDesc</span><span class="op">$</span><span class="va">keys</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>PatientID<span class="op">=</span> <span class="st">'pid'</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># build the column join plan</span></span></span>
+<span class="r-in"><span>  <span class="va">columnJoinPlan</span> <span class="op">&lt;-</span> <span class="fu"><a href="build_join_plan.html">build_join_plan</a></span><span class="op">(</span><span class="va">tDesc</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># decide we don't want the width column</span></span></span>
+<span class="r-in"><span>  <span class="va">columnJoinPlan</span><span class="op">$</span><span class="va">want</span><span class="op">[</span><span class="va">columnJoinPlan</span><span class="op">$</span><span class="va">resultColumn</span><span class="op">==</span><span class="st">'width'</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span>  <span class="co"># double check our plan</span></span></span>
+<span class="r-in"><span>  <span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="fu"><a href="inspect_join_plan.html">inspect_join_plan</a></span><span class="op">(</span><span class="va">tDesc</span>, <span class="va">columnJoinPlan</span>,</span></span>
+<span class="r-in"><span>                                checkColClasses<span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"bad join plan"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">}</span></span></span>
+<span class="r-in"><span>  <span class="co"># actualize as left join op_tree</span></span></span>
+<span class="r-in"><span>  <span class="va">optree</span> <span class="op">&lt;-</span> <span class="fu">actualize_join_plan</span><span class="op">(</span><span class="va">columnJoinPlan</span>,</span></span>
+<span class="r-in"><span>                                checkColClasses<span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">optree</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="execute.html">execute</a></span><span class="op">(</span><span class="va">my_db</span>, <span class="va">optree</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># if(requireNamespace("DiagrammeR", quietly = TRUE)) {</span></span></span>
+<span class="r-in"><span>  <span class="co">#   DiagrammeR::grViz(op_diagram(optree))</span></span></span>
+<span class="r-in"><span>  <span class="co"># }</span></span></span>
+<span class="r-in"><span>  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">dbDisconnect</a></span><span class="op">(</span><span class="va">my_db</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> mk_td("meas1", c(</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   "id",</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   "weight",</span>
@@ -170,7 +181,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span>   PatientID meas1_weight height meas2_weight</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1         1          200     60           NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2         2          120     14          105</span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -185,7 +196,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

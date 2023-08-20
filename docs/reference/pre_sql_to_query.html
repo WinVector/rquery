@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.99</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -81,37 +81,52 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">pre_sql_to_query</span><span class="op">(</span>
-  <span class="va">x</span>,
-  <span class="va">db_info</span>,
-  <span class="va">...</span>,
-  source_table <span class="op">=</span> <span class="cn">NULL</span>,
-  source_limit <span class="op">=</span> <span class="cn">NA_real_</span>,
-  using <span class="op">=</span> <span class="cn">NULL</span>,
-  qualifiers <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">pre_sql_to_query</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  <span class="va">db_info</span>,</span>
+<span>  <span class="va">...</span>,</span>
+<span>  source_table <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  source_limit <span class="op">=</span> <span class="cn">NA_real_</span>,</span>
+<span>  using <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  qualifiers <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>parsed tokens.</p></dd>
+
+
 <dt>db_info</dt>
 <dd><p>DBI connnection or rquery_db_info object</p></dd>
+
+
 <dt>...</dt>
 <dd><p>generic additional arguments (not used).</p></dd>
+
+
 <dt>source_table</dt>
 <dd><p>character if not NULL name of source table.</p></dd>
+
+
 <dt>source_limit</dt>
 <dd><p>numeric if not NULL limit sources to this many rows.</p></dd>
+
+
 <dt>using</dt>
 <dd><p>character, if not NULL set of columns used from above.</p></dd>
+
+
 <dt>qualifiers</dt>
 <dd><p>named ordered vector of strings carrying additional db hierarchy terms, such as schema.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>SQL command</p>
+    
+
+<p>SQL command</p>
     </div>
 
   </div>
@@ -126,7 +141,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

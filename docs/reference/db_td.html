@@ -18,7 +18,7 @@ strategy) needed to represent data from a remote table."><!-- mathjax --><script
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.99</span>
       </span>
     </div>
 
@@ -27,7 +27,7 @@ strategy) needed to represent data from a remote table."><!-- mathjax --><script
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -83,27 +83,38 @@ strategy) needed to represent data from a remote table.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">db_td</span><span class="op">(</span><span class="va">db</span>, <span class="va">table_name</span>, <span class="va">...</span>, qualifiers <span class="op">=</span> <span class="cn">NULL</span>, limit_was <span class="op">=</span> <span class="fl">6L</span><span class="op">)</span>
-
-<span class="fu">dbi_table</span><span class="op">(</span><span class="va">db</span>, <span class="va">table_name</span>, <span class="va">...</span>, qualifiers <span class="op">=</span> <span class="cn">NULL</span>, limit_was <span class="op">=</span> <span class="fl">6L</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">db_td</span><span class="op">(</span><span class="va">db</span>, <span class="va">table_name</span>, <span class="va">...</span>, qualifiers <span class="op">=</span> <span class="cn">NULL</span>, limit_was <span class="op">=</span> <span class="fl">6L</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">dbi_table</span><span class="op">(</span><span class="va">db</span>, <span class="va">table_name</span>, <span class="va">...</span>, qualifiers <span class="op">=</span> <span class="cn">NULL</span>, limit_was <span class="op">=</span> <span class="fl">6L</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>db</dt>
 <dd><p>database connection</p></dd>
+
+
 <dt>table_name</dt>
 <dd><p>name of table</p></dd>
+
+
 <dt>...</dt>
 <dd><p>not used, force later argument to bind by name</p></dd>
+
+
 <dt>qualifiers</dt>
 <dd><p>optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.</p></dd>
+
+
 <dt>limit_was</dt>
 <dd><p>optional, row limit used to produce head_sample.  If NULL no head_sample is produced and rq_colnames is used to get column names.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>a relop representation of the data</p>
+    
+
+<p>a relop representation of the data</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -116,7 +127,7 @@ which builds a reference to a remote table given the table name.</p>
     <div id="functions">
     <h2>Functions</h2>
     
-<ul><li><p><code>dbi_table</code>: old name for db_td</p></li>
+<ul><li><p><code>dbi_table()</code>: old name for db_td</p></li>
 </ul></div>
     <div id="see-also">
     <h2>See also</h2>
@@ -125,27 +136,27 @@ which builds a reference to a remote table given the table name.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"DBI"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"RSQLite"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="va">my_db</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html" class="external-link">SQLite</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">":memory:"</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu"><a href="rq_copy_to.html">rq_copy_to</a></span><span class="op">(</span><span class="va">my_db</span>,</span>
-<span class="r-in">              <span class="st">'d'</span>,</span>
-<span class="r-in">              <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>AUC <span class="op">=</span> <span class="fl">0.6</span>, R2 <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span>,</span>
-<span class="r-in">              overwrite <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span class="r-in">              temporary <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">d</span> <span class="op">&lt;-</span> <span class="fu">db_td</span><span class="op">(</span><span class="va">my_db</span>, <span class="st">'d'</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">sql</span> <span class="op">&lt;-</span> <span class="fu"><a href="to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">d</span>, <span class="va">my_db</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">sql</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">dbGetQuery</a></span><span class="op">(</span><span class="va">my_db</span>, <span class="va">sql</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="columns_used.html">columns_used</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">cols</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="va">sql2</span> <span class="op">&lt;-</span> <span class="fu"><a href="to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">d</span>, <span class="va">my_db</span>, using <span class="op">=</span> <span class="st">"AUC"</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">sql2</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">dbGetQuery</a></span><span class="op">(</span><span class="va">my_db</span>, <span class="va">sql2</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">dbDisconnect</a></span><span class="op">(</span><span class="va">my_db</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"DBI"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"RSQLite"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">my_db</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html" class="external-link">SQLite</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">":memory:"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="rq_copy_to.html">rq_copy_to</a></span><span class="op">(</span><span class="va">my_db</span>,</span></span>
+<span class="r-in"><span>              <span class="st">'d'</span>,</span></span>
+<span class="r-in"><span>              <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>AUC <span class="op">=</span> <span class="fl">0.6</span>, R2 <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>              overwrite <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>              temporary <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">d</span> <span class="op">&lt;-</span> <span class="fu">db_td</span><span class="op">(</span><span class="va">my_db</span>, <span class="st">'d'</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">sql</span> <span class="op">&lt;-</span> <span class="fu"><a href="to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">d</span>, <span class="va">my_db</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">sql</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">dbGetQuery</a></span><span class="op">(</span><span class="va">my_db</span>, <span class="va">sql</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="columns_used.html">columns_used</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">cols</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="va">sql2</span> <span class="op">&lt;-</span> <span class="fu"><a href="to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">d</span>, <span class="va">my_db</span>, using <span class="op">=</span> <span class="st">"AUC"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">sql2</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">dbGetQuery</a></span><span class="op">(</span><span class="va">my_db</span>, <span class="va">sql2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">dbDisconnect</a></span><span class="op">(</span><span class="va">my_db</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "mk_td(\"d\", c( \"AUC\", \"R2\"))"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   AUC  R2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.6 0.2</span>
@@ -165,7 +176,7 @@ which builds a reference to a remote table given the table name.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  `d`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   AUC</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.6</span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -180,7 +191,7 @@ which builds a reference to a remote table given the table name.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

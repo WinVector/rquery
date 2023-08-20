@@ -22,7 +22,7 @@ result can only be used once in a pipeline (else they will try to clobber their 
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.99</span>
       </span>
     </div>
 
@@ -31,7 +31,7 @@ result can only be used once in a pipeline (else they will try to clobber their 
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -91,61 +91,92 @@ result can only be used once in a pipeline (else they will try to clobber their 
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">non_sql_node</span><span class="op">(</span>
-  <span class="va">source</span>,
-  <span class="va">...</span>,
-  f_db <span class="op">=</span> <span class="cn">NULL</span>,
-  f_df <span class="op">=</span> <span class="cn">NULL</span>,
-  f_dt <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">incoming_table_name</span>,
-  incoming_qualifiers <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">outgoing_table_name</span>,
-  outgoing_qualifiers <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">columns_produced</span>,
-  display_form <span class="op">=</span> <span class="st">"non_sql_node"</span>,
-  orig_columns <span class="op">=</span> <span class="cn">TRUE</span>,
-  temporary <span class="op">=</span> <span class="cn">TRUE</span>,
-  check_result_details <span class="op">=</span> <span class="cn">TRUE</span>,
-  env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">non_sql_node</span><span class="op">(</span></span>
+<span>  <span class="va">source</span>,</span>
+<span>  <span class="va">...</span>,</span>
+<span>  f_db <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  f_df <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  f_dt <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">incoming_table_name</span>,</span>
+<span>  incoming_qualifiers <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">outgoing_table_name</span>,</span>
+<span>  outgoing_qualifiers <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">columns_produced</span>,</span>
+<span>  display_form <span class="op">=</span> <span class="st">"non_sql_node"</span>,</span>
+<span>  orig_columns <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  temporary <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  check_result_details <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>source</dt>
 <dd><p>source to work from (data.frame or relop node)</p></dd>
+
+
 <dt>...</dt>
 <dd><p>force later arguments to bind by name</p></dd>
+
+
 <dt>f_db</dt>
 <dd><p>database implementation signature: f_db(db, incoming_table_name, outgoing_table_name, nd, ...) (db being a database handle)</p></dd>
+
+
 <dt>f_df</dt>
 <dd><p>data.frame implementation signature: f_df(data.frame, nd) (NULL defaults to taking from database).</p></dd>
+
+
 <dt>f_dt</dt>
 <dd><p>data.table implementation signature: f_dt(data.table, nd) (NULL defaults f_df).</p></dd>
+
+
 <dt>incoming_table_name</dt>
 <dd><p>character, name of incoming table</p></dd>
+
+
 <dt>incoming_qualifiers</dt>
 <dd><p>optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.</p></dd>
+
+
 <dt>outgoing_table_name</dt>
 <dd><p>character, name of produced table</p></dd>
+
+
 <dt>outgoing_qualifiers</dt>
 <dd><p>optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.</p></dd>
+
+
 <dt>columns_produced</dt>
 <dd><p>character, names of additional columns produced</p></dd>
+
+
 <dt>display_form</dt>
 <dd><p>character, how to print node</p></dd>
+
+
 <dt>orig_columns</dt>
 <dd><p>logical if TRUE select all original columns.</p></dd>
+
+
 <dt>temporary</dt>
 <dd><p>logical, if TRUE mark tables temporary.</p></dd>
+
+
 <dt>check_result_details</dt>
 <dd><p>logical, if TRUE enforce result type and columns.</p></dd>
+
+
 <dt>env</dt>
 <dd><p>environment to look to.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>non-sql node.</p>
+    
+
+<p>non-sql node.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -164,7 +195,7 @@ result can only be used once in a pipeline (else they will try to clobber their 
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

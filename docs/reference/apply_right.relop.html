@@ -20,7 +20,7 @@ be copied into database."><!-- mathjax --><script src="https://cdnjs.cloudflare.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.99</span>
       </span>
     </div>
 
@@ -29,7 +29,7 @@ be copied into database."><!-- mathjax --><script src="https://cdnjs.cloudflare.
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -86,35 +86,48 @@ be copied into database.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co"># S3 method for relop</span>
-<span class="fu"><a href="https://winvector.github.io/wrapr//reference/apply_right.html" class="external-link">apply_right</a></span><span class="op">(</span>
-  <span class="va">pipe_left_arg</span>,
-  <span class="va">pipe_right_arg</span>,
-  <span class="va">pipe_environment</span>,
-  <span class="va">left_arg_name</span>,
-  <span class="va">pipe_string</span>,
-  <span class="va">right_arg_name</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for relop</span></span>
+<span><span class="fu"><a href="https://winvector.github.io/wrapr//reference/apply_right.html" class="external-link">apply_right</a></span><span class="op">(</span></span>
+<span>  <span class="va">pipe_left_arg</span>,</span>
+<span>  <span class="va">pipe_right_arg</span>,</span>
+<span>  <span class="va">pipe_environment</span>,</span>
+<span>  <span class="va">left_arg_name</span>,</span>
+<span>  <span class="va">pipe_string</span>,</span>
+<span>  <span class="va">right_arg_name</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>pipe_left_arg</dt>
 <dd><p>left argument.</p></dd>
+
+
 <dt>pipe_right_arg</dt>
 <dd><p>pipe_right_arg argument.</p></dd>
+
+
 <dt>pipe_environment</dt>
 <dd><p>environment to evaluate in.</p></dd>
+
+
 <dt>left_arg_name</dt>
 <dd><p>name, if not NULL name of left argument.</p></dd>
+
+
 <dt>pipe_string</dt>
 <dd><p>character, name of pipe operator.</p></dd>
+
+
 <dt>right_arg_name</dt>
 <dd><p>name, if not NULL name of right argument.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>data.frame</p>
+    
+
+<p>data.frame</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -123,40 +136,40 @@ be copied into database.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
-<span class="r-in"><span class="co"># WARNING: example tries to change rquery.rquery_db_executor option to RSQLite and back.</span></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"DBI"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"RSQLite"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="co"># set up example database and</span></span>
-<span class="r-in">  <span class="co"># db execution helper</span></span>
-<span class="r-in">  <span class="va">db</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html" class="external-link">SQLite</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span class="r-in">                       <span class="st">":memory:"</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/initExtension.html" class="external-link">initExtension</a></span><span class="op">(</span><span class="va">db</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">old_o</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"rquery.rquery_db_executor"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>db <span class="op">=</span> <span class="va">db</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="co"># operations pipeline/tree</span></span>
-<span class="r-in">  <span class="va">optree</span> <span class="op">&lt;-</span> <span class="fu"><a href="mk_td.html">mk_td</a></span><span class="op">(</span><span class="st">"d"</span>, <span class="st">"x"</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
-<span class="r-in">    <span class="fu"><a href="extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>, y <span class="op">=</span> <span class="va">x</span><span class="op">*</span><span class="va">x</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="co"># wrapr dot pipe apply_right dispatch</span></span>
-<span class="r-in">  <span class="co"># causes this statment to apply optree</span></span>
-<span class="r-in">  <span class="co"># to d.</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span> <span class="va">optree</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="co"># remote example</span></span>
-<span class="r-in">  <span class="fu"><a href="rq_copy_to.html">rq_copy_to</a></span><span class="op">(</span><span class="va">db</span>, <span class="st">"d"</span>,</span>
-<span class="r-in">              <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">7</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span>,</span>
-<span class="r-in">              overwrite <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span class="r-in">              temporary <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="co"># wrapr dot pipe apply_right dispatch</span></span>
-<span class="r-in">  <span class="co"># causes this statment to apply optree</span></span>
-<span class="r-in">  <span class="co"># to db.</span></span>
-<span class="r-in">  <span class="va">db</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span> <span class="va">optree</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="co"># clean up</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="va">old_o</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">dbDisconnect</a></span><span class="op">(</span><span class="va">db</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># WARNING: example tries to change rquery.rquery_db_executor option to RSQLite and back.</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"DBI"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"RSQLite"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="co"># set up example database and</span></span></span>
+<span class="r-in"><span>  <span class="co"># db execution helper</span></span></span>
+<span class="r-in"><span>  <span class="va">db</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html" class="external-link">SQLite</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                       <span class="st">":memory:"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/initExtension.html" class="external-link">initExtension</a></span><span class="op">(</span><span class="va">db</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">old_o</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"rquery.rquery_db_executor"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>db <span class="op">=</span> <span class="va">db</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># operations pipeline/tree</span></span></span>
+<span class="r-in"><span>  <span class="va">optree</span> <span class="op">&lt;-</span> <span class="fu"><a href="mk_td.html">mk_td</a></span><span class="op">(</span><span class="st">"d"</span>, <span class="st">"x"</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>, y <span class="op">=</span> <span class="va">x</span><span class="op">*</span><span class="va">x</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># wrapr dot pipe apply_right dispatch</span></span></span>
+<span class="r-in"><span>  <span class="co"># causes this statment to apply optree</span></span></span>
+<span class="r-in"><span>  <span class="co"># to d.</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span> <span class="va">optree</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># remote example</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="rq_copy_to.html">rq_copy_to</a></span><span class="op">(</span><span class="va">db</span>, <span class="st">"d"</span>,</span></span>
+<span class="r-in"><span>              <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">7</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>              overwrite <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>              temporary <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># wrapr dot pipe apply_right dispatch</span></span></span>
+<span class="r-in"><span>  <span class="co"># causes this statment to apply optree</span></span></span>
+<span class="r-in"><span>  <span class="co"># to db.</span></span></span>
+<span class="r-in"><span>  <span class="va">db</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span> <span class="va">optree</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># clean up</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="va">old_o</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">dbDisconnect</a></span><span class="op">(</span><span class="va">db</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   x y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 1 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2 2 4</span>
@@ -164,7 +177,7 @@ be copied into database.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   x  y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 7 49</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2 8 64</span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -179,7 +192,7 @@ be copied into database.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

@@ -1,4 +1,8 @@
 
+# rquery 1.4.99 2023/08/19
+
+* Work around https://github.com/r-lib/roxygen2/issues/1491
+
 # rquery 1.4.9 2022/02/28
 
  * Delete rquery_substitution vignette as CRAN has an unexplained failure on r-release-windows-ix86+x86_64. Proactively doing this to avoid removal threat.

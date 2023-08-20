@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.99</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -81,23 +81,32 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">rq_colnames</span><span class="op">(</span><span class="va">db</span>, <span class="va">table_name</span>, <span class="va">...</span>, qualifiers <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">rq_colnames</span><span class="op">(</span><span class="va">db</span>, <span class="va">table_name</span>, <span class="va">...</span>, qualifiers <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>db</dt>
 <dd><p>Connection handle</p></dd>
+
+
 <dt>table_name</dt>
 <dd><p>character table name</p></dd>
+
+
 <dt>...</dt>
 <dd><p>not used, force later argument to bind by name</p></dd>
+
+
 <dt>qualifiers</dt>
 <dd><p>optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>character list of column names</p>
+    
+
+<p>character list of column names</p>
     </div>
 
   </div>
@@ -112,7 +121,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

@@ -18,7 +18,7 @@ Intended to be used as an argument in extend_se() or project_se()."><!-- mathjax
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.99</span>
       </span>
     </div>
 
@@ -27,7 +27,7 @@ Intended to be used as an argument in extend_se() or project_se()."><!-- mathjax
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -83,38 +83,47 @@ Intended to be used as an argument in <code><a href="extend_se.html">extend_se()
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">make_assignments</span><span class="op">(</span><span class="va">columns</span>, <span class="va">funs</span>, <span class="va">...</span>, sep <span class="op">=</span> <span class="st">"_"</span>, prefix <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">make_assignments</span><span class="op">(</span><span class="va">columns</span>, <span class="va">funs</span>, <span class="va">...</span>, sep <span class="op">=</span> <span class="st">"_"</span>, prefix <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>columns</dt>
 <dd><p>character, vector of column names to take values from.</p></dd>
+
+
 <dt>funs</dt>
 <dd><p>character, names of functions to apply.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>not used, forced later parameters to bind by name</p></dd>
+
+
 <dt>sep</dt>
 <dd><p>character, naming separator</p></dd>
+
+
 <dt>prefix</dt>
 <dd><p>logical, if TRUE place function names prior, else after in results.</p></dd>
+
 </dl></div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
-<span class="r-in"><span class="va">assignments</span> <span class="op">&lt;-</span> <span class="fu">make_assignments</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'x'</span>, <span class="st">'y'</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'mean'</span>, med <span class="op">=</span> <span class="st">'median'</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">assignments</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">assignments</span> <span class="op">&lt;-</span> <span class="fu">make_assignments</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'x'</span>, <span class="st">'y'</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'mean'</span>, med <span class="op">=</span> <span class="st">'median'</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">assignments</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      mean_x      mean_y       med_x       med_y </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   "mean(x)"   "mean(y)" "median(x)" "median(y)" </span>
-<span class="r-in"><span class="va">ops</span> <span class="op">&lt;-</span> <span class="fu"><a href="mk_td.html">mk_td</a></span><span class="op">(</span><span class="st">'d'</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'x'</span>, <span class="st">'y'</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span> <span class="fu"><a href="project_se.html">project_se</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">assignments</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">ops</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="va">ops</span> <span class="op">&lt;-</span> <span class="fu"><a href="mk_td.html">mk_td</a></span><span class="op">(</span><span class="st">'d'</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'x'</span>, <span class="st">'y'</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span> <span class="fu"><a href="project_se.html">project_se</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">assignments</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">ops</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> mk_td("d", c(</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   "x",</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   "y")) %.&gt;%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  project(., mean_x := mean(x), mean_y := mean(y), med_x := median(x), med_y := median(y),</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   groupby = c())</span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -129,7 +138,7 @@ Intended to be used as an argument in <code><a href="extend_se.html">extend_se()
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

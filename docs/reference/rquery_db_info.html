@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.99</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -81,43 +81,62 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">rquery_db_info</span><span class="op">(</span>
-  <span class="va">...</span>,
-  connection <span class="op">=</span> <span class="cn">NULL</span>,
-  is_dbi <span class="op">=</span> <span class="cn">FALSE</span>,
-  identifier_quote_char <span class="op">=</span> <span class="st">"\""</span>,
-  string_quote_char <span class="op">=</span> <span class="st">"'"</span>,
-  overrides <span class="op">=</span> <span class="cn">NULL</span>,
-  note <span class="op">=</span> <span class="st">""</span>,
-  connection_options <span class="op">=</span> <span class="fu"><a href="rq_connection_advice.html">rq_connection_advice</a></span><span class="op">(</span><span class="va">connection</span><span class="op">)</span>,
-  db_methods <span class="op">=</span> <span class="fu"><a href="rquery_default_methods.html">rquery_default_methods</a></span><span class="op">(</span><span class="op">)</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">rquery_db_info</span><span class="op">(</span></span>
+<span>  <span class="va">...</span>,</span>
+<span>  connection <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  is_dbi <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  identifier_quote_char <span class="op">=</span> <span class="st">"\""</span>,</span>
+<span>  string_quote_char <span class="op">=</span> <span class="st">"'"</span>,</span>
+<span>  overrides <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  note <span class="op">=</span> <span class="st">""</span>,</span>
+<span>  connection_options <span class="op">=</span> <span class="fu"><a href="rq_connection_advice.html">rq_connection_advice</a></span><span class="op">(</span><span class="va">connection</span><span class="op">)</span>,</span>
+<span>  db_methods <span class="op">=</span> <span class="fu"><a href="rquery_default_methods.html">rquery_default_methods</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>...</dt>
 <dd><p>force all arguments to be by name.</p></dd>
+
+
 <dt>connection</dt>
 <dd><p>connection handle to database or Spark.</p></dd>
+
+
 <dt>is_dbi</dt>
 <dd><p>if TRUE the database connection can be used with DBI.</p></dd>
+
+
 <dt>identifier_quote_char</dt>
 <dd><p>character, quote to put around identifiers.</p></dd>
+
+
 <dt>string_quote_char</dt>
 <dd><p>character, quote to put around strings.</p></dd>
+
+
 <dt>overrides</dt>
 <dd><p>named list of functions to place in info.</p></dd>
+
+
 <dt>note</dt>
 <dd><p>character note to add to display form.</p></dd>
+
+
 <dt>connection_options</dt>
 <dd><p>named list of per-connection options.</p></dd>
+
+
 <dt>db_methods</dt>
 <dd><p>named list of to_sql methods.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>rquery_db_info object</p>
+    
+
+<p>rquery_db_info object</p>
     </div>
 
   </div>
@@ -132,7 +151,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

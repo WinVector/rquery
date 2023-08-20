@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.99</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -81,23 +81,32 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">inspect_join_plan</span><span class="op">(</span><span class="va">tDesc</span>, <span class="va">columnJoinPlan</span>, <span class="va">...</span>, checkColClasses <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">inspect_join_plan</span><span class="op">(</span><span class="va">tDesc</span>, <span class="va">columnJoinPlan</span>, <span class="va">...</span>, checkColClasses <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>tDesc</dt>
 <dd><p>description of tables, from <code><a href="describe_tables.html">describe_tables</a></code> (and likely altered by user).</p></dd>
+
+
 <dt>columnJoinPlan</dt>
 <dd><p>columns to join, from <code><a href="build_join_plan.html">build_join_plan</a></code> (and likely altered by user). Note: no column names must intersect with names of the form <code>table_CLEANEDTABNAME_present</code>.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>force later arguments to bind by name.</p></dd>
+
+
 <dt>checkColClasses</dt>
 <dd><p>logical if true check for exact class name matches</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>NULL if okay, else a string</p>
+    
+
+<p>NULL if okay, else a string</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -106,40 +115,40 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"DBI"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"RSQLite"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="va">my_db</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html" class="external-link">SQLite</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">":memory:"</span><span class="op">)</span></span>
-<span class="r-in">  <span class="co"># example data</span></span>
-<span class="r-in">  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html" class="external-link">dbWriteTable</a></span><span class="op">(</span><span class="va">my_db</span>,</span>
-<span class="r-in">                    <span class="st">"d1"</span>,</span>
-<span class="r-in">                    <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>id<span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,</span>
-<span class="r-in">                               weight<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">200</span>, <span class="fl">140</span>, <span class="fl">98</span><span class="op">)</span>,</span>
-<span class="r-in">                               height<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">60</span>, <span class="fl">24</span>, <span class="fl">12</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html" class="external-link">dbWriteTable</a></span><span class="op">(</span><span class="va">my_db</span>,</span>
-<span class="r-in">                    <span class="st">"d2"</span>,</span>
-<span class="r-in">                    <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>pid<span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">3</span>,</span>
-<span class="r-in">                               weight<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">130</span>, <span class="fl">110</span><span class="op">)</span>,</span>
-<span class="r-in">                               width<span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="co"># get the initial description of table defs</span></span>
-<span class="r-in">  <span class="va">tDesc</span> <span class="op">&lt;-</span> <span class="fu"><a href="describe_tables.html">describe_tables</a></span><span class="op">(</span><span class="va">my_db</span>, <span class="fu"><a href="https://winvector.github.io/wrapr//reference/qc.html" class="external-link">qc</a></span><span class="op">(</span><span class="va">d1</span>, <span class="va">d2</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="co"># declare keys (and give them consistent names)</span></span>
-<span class="r-in">  <span class="va">tDesc</span><span class="op">$</span><span class="va">keys</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>PrimaryKey<span class="op">=</span> <span class="st">'id'</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">tDesc</span><span class="op">$</span><span class="va">keys</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>PrimaryKey<span class="op">=</span> <span class="st">'pid'</span><span class="op">)</span></span>
-<span class="r-in">  <span class="co"># build the join plan</span></span>
-<span class="r-in">  <span class="va">columnJoinPlan</span> <span class="op">&lt;-</span> <span class="fu"><a href="build_join_plan.html">build_join_plan</a></span><span class="op">(</span><span class="va">tDesc</span><span class="op">)</span></span>
-<span class="r-in">  <span class="co"># confirm the plan</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">inspect_join_plan</span><span class="op">(</span><span class="va">tDesc</span>, <span class="va">columnJoinPlan</span>,</span>
-<span class="r-in">                          checkColClasses<span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="co"># damage the plan</span></span>
-<span class="r-in">  <span class="va">columnJoinPlan</span><span class="op">$</span><span class="va">sourceColumn</span><span class="op">[</span><span class="va">columnJoinPlan</span><span class="op">$</span><span class="va">sourceColumn</span><span class="op">==</span><span class="st">'width'</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">'wd'</span></span>
-<span class="r-in">  <span class="co"># find a problem</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">inspect_join_plan</span><span class="op">(</span><span class="va">tDesc</span>, <span class="va">columnJoinPlan</span>,</span>
-<span class="r-in">                          checkColClasses<span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">dbDisconnect</a></span><span class="op">(</span><span class="va">my_db</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"DBI"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"RSQLite"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">my_db</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html" class="external-link">SQLite</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">":memory:"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># example data</span></span></span>
+<span class="r-in"><span>  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html" class="external-link">dbWriteTable</a></span><span class="op">(</span><span class="va">my_db</span>,</span></span>
+<span class="r-in"><span>                    <span class="st">"d1"</span>,</span></span>
+<span class="r-in"><span>                    <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>id<span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,</span></span>
+<span class="r-in"><span>                               weight<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">200</span>, <span class="fl">140</span>, <span class="fl">98</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                               height<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">60</span>, <span class="fl">24</span>, <span class="fl">12</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html" class="external-link">dbWriteTable</a></span><span class="op">(</span><span class="va">my_db</span>,</span></span>
+<span class="r-in"><span>                    <span class="st">"d2"</span>,</span></span>
+<span class="r-in"><span>                    <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>pid<span class="op">=</span> <span class="fl">2</span><span class="op">:</span><span class="fl">3</span>,</span></span>
+<span class="r-in"><span>                               weight<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">130</span>, <span class="fl">110</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                               width<span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># get the initial description of table defs</span></span></span>
+<span class="r-in"><span>  <span class="va">tDesc</span> <span class="op">&lt;-</span> <span class="fu"><a href="describe_tables.html">describe_tables</a></span><span class="op">(</span><span class="va">my_db</span>, <span class="fu"><a href="https://winvector.github.io/wrapr//reference/qc.html" class="external-link">qc</a></span><span class="op">(</span><span class="va">d1</span>, <span class="va">d2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># declare keys (and give them consistent names)</span></span></span>
+<span class="r-in"><span>  <span class="va">tDesc</span><span class="op">$</span><span class="va">keys</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>PrimaryKey<span class="op">=</span> <span class="st">'id'</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">tDesc</span><span class="op">$</span><span class="va">keys</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>PrimaryKey<span class="op">=</span> <span class="st">'pid'</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># build the join plan</span></span></span>
+<span class="r-in"><span>  <span class="va">columnJoinPlan</span> <span class="op">&lt;-</span> <span class="fu"><a href="build_join_plan.html">build_join_plan</a></span><span class="op">(</span><span class="va">tDesc</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># confirm the plan</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">inspect_join_plan</span><span class="op">(</span><span class="va">tDesc</span>, <span class="va">columnJoinPlan</span>,</span></span>
+<span class="r-in"><span>                          checkColClasses<span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># damage the plan</span></span></span>
+<span class="r-in"><span>  <span class="va">columnJoinPlan</span><span class="op">$</span><span class="va">sourceColumn</span><span class="op">[</span><span class="va">columnJoinPlan</span><span class="op">$</span><span class="va">sourceColumn</span><span class="op">==</span><span class="st">'width'</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">'wd'</span></span></span>
+<span class="r-in"><span>  <span class="co"># find a problem</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">inspect_join_plan</span><span class="op">(</span><span class="va">tDesc</span>, <span class="va">columnJoinPlan</span>,</span></span>
+<span class="r-in"><span>                          checkColClasses<span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">dbDisconnect</a></span><span class="op">(</span><span class="va">my_db</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "table description d2 refers to non-column(s): wd"</span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -154,7 +163,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.99</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -81,37 +81,52 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">rsummary</span><span class="op">(</span>
-  <span class="va">db</span>,
-  <span class="va">tableName</span>,
-  <span class="va">...</span>,
-  countUniqueNum <span class="op">=</span> <span class="cn">FALSE</span>,
-  quartiles <span class="op">=</span> <span class="cn">FALSE</span>,
-  cols <span class="op">=</span> <span class="cn">NULL</span>,
-  qualifiers <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">rsummary</span><span class="op">(</span></span>
+<span>  <span class="va">db</span>,</span>
+<span>  <span class="va">tableName</span>,</span>
+<span>  <span class="va">...</span>,</span>
+<span>  countUniqueNum <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  quartiles <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  cols <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  qualifiers <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>db</dt>
 <dd><p>database connection.</p></dd>
+
+
 <dt>tableName</dt>
 <dd><p>name of table.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>force additional arguments to be bound by name.</p></dd>
+
+
 <dt>countUniqueNum</dt>
 <dd><p>logical, if TRUE include unique non-NA counts for numeric cols.</p></dd>
+
+
 <dt>quartiles</dt>
 <dd><p>logical, if TRUE add Q1 (25%), median (50%), Q3 (75%) quartiles.</p></dd>
+
+
 <dt>cols</dt>
 <dd><p>if not NULL set of columns to restrict to.</p></dd>
+
+
 <dt>qualifiers</dt>
 <dd><p>optional named ordered vector of strings carrying additional db hierarchy terms, such as schema.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>data.frame summary of columns.</p>
+    
+
+<p>data.frame summary of columns.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -121,23 +136,23 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"DBI"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"RSQLite"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>p<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">FALSE</span>, <span class="cn">NA</span><span class="op">)</span>,</span>
-<span class="r-in">                  s<span class="op">=</span> <span class="cn">NA</span>,</span>
-<span class="r-in">                  w<span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,</span>
-<span class="r-in">                  x<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NA</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span>,</span>
-<span class="r-in">                  y<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>,<span class="fl">5</span>,<span class="cn">NA</span><span class="op">)</span><span class="op">)</span>,</span>
-<span class="r-in">                  z<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'a'</span>,<span class="cn">NA</span>,<span class="st">'a'</span><span class="op">)</span>,</span>
-<span class="r-in">                  stringsAsFactors<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">db</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html" class="external-link">SQLite</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">":memory:"</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/initExtension.html" class="external-link">initExtension</a></span><span class="op">(</span><span class="va">db</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu"><a href="rq_copy_to.html">rq_copy_to</a></span><span class="op">(</span><span class="va">db</span>, <span class="st">"dRemote"</span>, <span class="va">d</span>,</span>
-<span class="r-in">              overwrite <span class="op">=</span> <span class="cn">TRUE</span>, temporary <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">rsummary</span><span class="op">(</span><span class="va">db</span>, <span class="st">"dRemote"</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">dbDisconnect</a></span><span class="op">(</span><span class="va">db</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"DBI"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"RSQLite"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>p<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">FALSE</span>, <span class="cn">NA</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                  s<span class="op">=</span> <span class="cn">NA</span>,</span></span>
+<span class="r-in"><span>                  w<span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,</span></span>
+<span class="r-in"><span>                  x<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NA</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                  y<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>,<span class="fl">5</span>,<span class="cn">NA</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                  z<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'a'</span>,<span class="cn">NA</span>,<span class="st">'a'</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                  stringsAsFactors<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">db</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html" class="external-link">SQLite</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">":memory:"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/initExtension.html" class="external-link">initExtension</a></span><span class="op">(</span><span class="va">db</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="rq_copy_to.html">rq_copy_to</a></span><span class="op">(</span><span class="va">db</span>, <span class="st">"dRemote"</span>, <span class="va">d</span>,</span></span>
+<span class="r-in"><span>              overwrite <span class="op">=</span> <span class="cn">TRUE</span>, temporary <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">rsummary</span><span class="op">(</span><span class="va">db</span>, <span class="st">"dRemote"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">dbDisconnect</a></span><span class="op">(</span><span class="va">db</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   column index     class nrows nna nunique min max mean        sd lexmin lexmax</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1      p     1   integer     3   1      NA   0   1  0.5 0.7071068   &lt;NA&gt;   &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2      s     2   integer     3   3       0  NA  NA   NA        NA   &lt;NA&gt;   &lt;NA&gt;</span>
@@ -145,7 +160,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4      x     4   numeric     3   1      NA   2   3  2.5 0.7071068   &lt;NA&gt;   &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5      y     5 character     3   1       2  NA  NA   NA        NA      3      5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6      z     6 character     3   1       1  NA  NA   NA        NA      a      a</span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -160,7 +175,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

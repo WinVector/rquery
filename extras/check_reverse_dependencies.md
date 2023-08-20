@@ -1,4 +1,4 @@
-check\_reverse\_dependencies
+check_reverse_dependencies
 ================
 
 ``` r
@@ -8,13 +8,13 @@ package = "rquery"
 date()
 ```
 
-    ## [1] "Mon Feb 28 09:04:12 2022"
+    ## [1] "Sat Aug 19 17:38:13 2023"
 
 ``` r
 packageVersion(package)
 ```
 
-    ## [1] '1.4.9'
+    ## [1] '1.4.99'
 
 ``` r
 parallelCluster <- NULL
@@ -35,7 +35,7 @@ setwd(td)
 print(td)
 ```
 
-    ## [1] "/var/folders/7f/sdjycp_d08n8wwytsbgwqgsw0000gn/T//RtmpJG1joV"
+    ## [1] "/var/folders/7f/sdjycp_d08n8wwytsbgwqgsw0000gn/T//RtmpriYBBs"
 
 ``` r
 options(repos = c(CRAN="https://cloud.r-project.org"))
@@ -60,10 +60,10 @@ if(!is.null(parallelCluster)) {
 }
 ```
 
-    ## ## Reverse depends check of rquery 1.4.9 
-    ## cdata_1.2.0 started at 2022-02-28 09:04:13 success at 2022-02-28 09:04:32 (1/0/0) 
-    ## rqdatatable_1.3.1 started at 2022-02-28 09:04:32 success at 2022-02-28 09:04:47 (2/0/0) 
-    ## WVPlots_1.3.2 started at 2022-02-28 09:04:47 success at 2022-02-28 09:05:34 (3/0/0)
+    ## ## Reverse depends check of rquery 1.4.99 
+    ## cdata_1.2.0 started at 2023-08-19 17:38:14 success at 2023-08-19 17:38:35 (1/0/0) 
+    ## rqdatatable_1.3.2 started at 2023-08-19 17:38:35 success at 2023-08-19 17:38:51 (2/0/0) 
+    ## WVPlots_1.3.5 started at 2023-08-19 17:38:51 success at 2023-08-19 17:39:47 (3/0/0)
 
     ## [1] id     title  status
     ## <0 rows> (or 0-length row.names)
@@ -72,9 +72,9 @@ if(!is.null(parallelCluster)) {
 summariseQueue(package=package, directory=td)
 ```
 
-    ## Test of rquery 1.4.9 had 3 successes, 0 failures, and 0 skipped packages. 
-    ## Ran from 2022-02-28 09:04:13 to 2022-02-28 09:05:34 for 1.35 mins 
-    ## Average of 27 secs relative to 27.179 secs using 1 runners
+    ## Test of rquery 1.4.99 had 3 successes, 0 failures, and 0 skipped packages. 
+    ## Ran from 2023-08-19 17:38:14 to 2023-08-19 17:39:47 for 1.55 mins 
+    ## Average of 31 secs relative to 30.808 secs using 1 runners
     ## 
     ## Failed packages:   
     ## 

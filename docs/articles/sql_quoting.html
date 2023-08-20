@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.99</span>
       </span>
     </div>
 
@@ -43,7 +43,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -99,7 +99,7 @@
       <h1 data-toc-skip>SQL quoting</h1>
                         <h4 data-toc-skip class="author">John Mount</h4>
             
-            <h4 data-toc-skip class="date">2022-02-28</h4>
+            <h4 data-toc-skip class="date">2023-08-19</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery/blob/HEAD/vignettes/sql_quoting.Rmd" class="external-link"><code>vignettes/sql_quoting.Rmd</code></a></small>
       <div class="hidden name"><code>sql_quoting.Rmd</code></div>
@@ -108,150 +108,161 @@
 
     
     
-<p><code>rquery</code> does not parse expression of the <code>SQL</code> node. Thus it does not know which tokens are string-literals, and which are column names. To assist with this user can annotate column names with <code>.[]</code>.</p>
+<p><code>rquery</code> does not parse expression of the <code>SQL</code>
+node. Thus it does not know which tokens are string-literals, and which
+are column names. To assist with this user can annotate column names
+with <code>.[]</code>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/WinVector/rquery/" class="external-link">"rquery"</a></span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## Loading required package: wrapr</span></code></pre>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/WinVector/rquery/" class="external-link">"rquery"</a></span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## Loading required package: wrapr</span></span></code></pre>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">date_cutoff</span> <span class="op">&lt;-</span> <span class="st">'2017-04-02'</span>
-
-<span class="va">td</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mk_td.html">mk_td</a></span><span class="op">(</span><span class="st">"df"</span>, 
-            <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cust"</span>,
-              <span class="st">"trans_date"</span>,
-              <span class="st">"sales"</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">ops</span> <span class="op">&lt;-</span> <span class="va">td</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
-  <span class="fu"><a href="../reference/select_rows_se.html">select_rows_se</a></span><span class="op">(</span>
-    <span class="va">.</span>, 
-    <span class="fu"><a href="https://winvector.github.io/wrapr//reference/qe.html" class="external-link">qe</a></span><span class="op">(</span><span class="va">trans_date</span> <span class="op">&lt;=</span>  <span class="fu">str_to_date</span><span class="op">(</span><span class="fu">.</span><span class="op">(</span><span class="va">date_cutoff</span><span class="op">)</span>, <span class="st">'%Y-%m-%d'</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
-  <span class="fu"><a href="../reference/sql_node.html">sql_node</a></span><span class="op">(</span>
-    <span class="va">.</span>,
-    <span class="fu"><a href="https://winvector.github.io/wrapr//reference/qae.html" class="external-link">qae</a></span><span class="op">(</span>max_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">.</span><span class="op">[</span><span class="va">trans_date</span><span class="op">]</span><span class="op">)</span>,
-        const_col1 <span class="op">=</span> <span class="st">"a'"</span>,
-        const_col2 <span class="op">=</span> <span class="st">'a"'</span><span class="op">)</span>,
-    mods <span class="op">=</span> <span class="st">"GROUP BY .[cust]"</span>,
-    orig_columns <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">ops</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## mk_td("df", c(</span>
-<span class="co">##   "cust",</span>
-<span class="co">##   "trans_date",</span>
-<span class="co">##   "sales")) %.&gt;%</span>
-<span class="co">##  select_rows(.,</span>
-<span class="co">##    trans_date &lt;= str_to_date("2017-04-02", "%Y-%m-%d")) %.&gt;%</span>
-<span class="co">##  sql_node(.,</span>
-<span class="co">##           max_date %:=% max( trans_date )</span>
-<span class="co">##              const_col1 %:=% "a'"</span>
-<span class="co">##              const_col2 %:=% "a\"";</span>
-<span class="co">##            GROUP BY  "cust",</span>
-<span class="co">##              *=FALSE)</span></code></pre>
-<p>Notice how this renders into different <code>SQL</code> for each of our two database descriptions.</p>
+<code class="sourceCode R"><span><span class="va">date_cutoff</span> <span class="op">&lt;-</span> <span class="st">'2017-04-02'</span></span>
+<span></span>
+<span><span class="va">td</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mk_td.html">mk_td</a></span><span class="op">(</span><span class="st">"df"</span>, </span>
+<span>            <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cust"</span>,</span>
+<span>              <span class="st">"trans_date"</span>,</span>
+<span>              <span class="st">"sales"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">ops</span> <span class="op">&lt;-</span> <span class="va">td</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/select_rows_se.html">select_rows_se</a></span><span class="op">(</span></span>
+<span>    <span class="va">.</span>, </span>
+<span>    <span class="fu"><a href="https://winvector.github.io/wrapr//reference/qe.html" class="external-link">qe</a></span><span class="op">(</span><span class="va">trans_date</span> <span class="op">&lt;=</span>  <span class="fu">str_to_date</span><span class="op">(</span><span class="fu">.</span><span class="op">(</span><span class="va">date_cutoff</span><span class="op">)</span>, <span class="st">'%Y-%m-%d'</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/sql_node.html">sql_node</a></span><span class="op">(</span></span>
+<span>    <span class="va">.</span>,</span>
+<span>    <span class="fu"><a href="https://winvector.github.io/wrapr//reference/qae.html" class="external-link">qae</a></span><span class="op">(</span>max_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">.</span><span class="op">[</span><span class="va">trans_date</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>        const_col1 <span class="op">=</span> <span class="st">"a'"</span>,</span>
+<span>        const_col2 <span class="op">=</span> <span class="st">'a"'</span><span class="op">)</span>,</span>
+<span>    mods <span class="op">=</span> <span class="st">"GROUP BY .[cust]"</span>,</span>
+<span>    orig_columns <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">ops</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## mk_td("df", c(</span></span>
+<span><span class="co">##   "cust",</span></span>
+<span><span class="co">##   "trans_date",</span></span>
+<span><span class="co">##   "sales")) %.&gt;%</span></span>
+<span><span class="co">##  select_rows(.,</span></span>
+<span><span class="co">##    trans_date &lt;= str_to_date("2017-04-02", "%Y-%m-%d")) %.&gt;%</span></span>
+<span><span class="co">##  sql_node(.,</span></span>
+<span><span class="co">##           max_date %:=% max( trans_date )</span></span>
+<span><span class="co">##              const_col1 %:=% "a'"</span></span>
+<span><span class="co">##              const_col2 %:=% "a\"";</span></span>
+<span><span class="co">##            GROUP BY  "cust",</span></span>
+<span><span class="co">##              *=FALSE)</span></span></code></pre>
+<p>Notice how this renders into different <code>SQL</code> for each of
+our two database descriptions.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">db1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rquery_db_info.html">rquery_db_info</a></span><span class="op">(</span>
-  identifier_quote_char <span class="op">=</span> <span class="st">"'"</span>,
-  string_quote_char <span class="op">=</span> <span class="st">'"'</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">ops</span>, <span class="va">db1</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## SELECT</span>
-<span class="co">##  max( 'trans_date' ) AS 'max_date',</span>
-<span class="co">##  "a'" AS 'const_col1',</span>
-<span class="co">##  "a\"" AS 'const_col2'</span>
-<span class="co">## FROM (</span>
-<span class="co">##  SELECT * FROM (</span>
-<span class="co">##   SELECT</span>
-<span class="co">##    'cust',</span>
-<span class="co">##    'trans_date',</span>
-<span class="co">##    'sales'</span>
-<span class="co">##   FROM</span>
-<span class="co">##    'df'</span>
-<span class="co">##  ) tsql_39051605868657797402_0000000000</span>
-<span class="co">##  WHERE 'trans_date' &lt;= str_to_date ( "2017-04-02" , "%Y-%m-%d" )</span>
-<span class="co">## ) tsql_39051605868657797402_0000000001 GROUP BY  'cust'</span></code></pre>
+<code class="sourceCode R"><span><span class="va">db1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rquery_db_info.html">rquery_db_info</a></span><span class="op">(</span></span>
+<span>  identifier_quote_char <span class="op">=</span> <span class="st">"'"</span>,</span>
+<span>  string_quote_char <span class="op">=</span> <span class="st">'"'</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">ops</span>, <span class="va">db1</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## SELECT</span></span>
+<span><span class="co">##  max( 'trans_date' ) AS 'max_date',</span></span>
+<span><span class="co">##  "a'" AS 'const_col1',</span></span>
+<span><span class="co">##  "a\"" AS 'const_col2'</span></span>
+<span><span class="co">## FROM (</span></span>
+<span><span class="co">##  SELECT * FROM (</span></span>
+<span><span class="co">##   SELECT</span></span>
+<span><span class="co">##    'cust',</span></span>
+<span><span class="co">##    'trans_date',</span></span>
+<span><span class="co">##    'sales'</span></span>
+<span><span class="co">##   FROM</span></span>
+<span><span class="co">##    'df'</span></span>
+<span><span class="co">##  ) tsql_79171912113918218466_0000000000</span></span>
+<span><span class="co">##  WHERE 'trans_date' &lt;= str_to_date ( "2017-04-02" , "%Y-%m-%d" )</span></span>
+<span><span class="co">## ) tsql_79171912113918218466_0000000001 GROUP BY  'cust'</span></span></code></pre>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">db2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rquery_db_info.html">rquery_db_info</a></span><span class="op">(</span>
-  identifier_quote_char <span class="op">=</span> <span class="st">'"'</span>,
-  string_quote_char <span class="op">=</span> <span class="st">"'"</span><span class="op">)</span>
-  
-<span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">ops</span>, <span class="va">db2</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## SELECT</span>
-<span class="co">##  max( "trans_date" ) AS "max_date",</span>
-<span class="co">##  'a'' AS "const_col1",</span>
-<span class="co">##  'a\'' AS "const_col2"</span>
-<span class="co">## FROM (</span>
-<span class="co">##  SELECT * FROM (</span>
-<span class="co">##   SELECT</span>
-<span class="co">##    "cust",</span>
-<span class="co">##    "trans_date",</span>
-<span class="co">##    "sales"</span>
-<span class="co">##   FROM</span>
-<span class="co">##    "df"</span>
-<span class="co">##  ) tsql_28373732259551036882_0000000000</span>
-<span class="co">##  WHERE "trans_date" &lt;= str_to_date ( '2017-04-02' , '%Y-%m-%d' )</span>
-<span class="co">## ) tsql_28373732259551036882_0000000001 GROUP BY  "cust"</span></code></pre>
-<p>Notice our included quote characters were translated. This is an unwanted side-effect of using the <code><a href="https://winvector.github.io/wrapr//reference/qae.html" class="external-link">qae()</a></code> shortcut which does not tokenize, so it does not know which quotes are in which roles in the expression.</p>
-<p>To override quote translation in the <code><a href="../reference/sql_node.html">sql_node()</a></code> (which is simple string substitution without quote context or escaping) you must use the clunkier “build up a string as a list of tokens” (where sub-listed items are string literals and names are column names).</p>
+<code class="sourceCode R"><span><span class="va">db2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rquery_db_info.html">rquery_db_info</a></span><span class="op">(</span></span>
+<span>  identifier_quote_char <span class="op">=</span> <span class="st">'"'</span>,</span>
+<span>  string_quote_char <span class="op">=</span> <span class="st">"'"</span><span class="op">)</span></span>
+<span>  </span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">ops</span>, <span class="va">db2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## SELECT</span></span>
+<span><span class="co">##  max( "trans_date" ) AS "max_date",</span></span>
+<span><span class="co">##  'a'' AS "const_col1",</span></span>
+<span><span class="co">##  'a\'' AS "const_col2"</span></span>
+<span><span class="co">## FROM (</span></span>
+<span><span class="co">##  SELECT * FROM (</span></span>
+<span><span class="co">##   SELECT</span></span>
+<span><span class="co">##    "cust",</span></span>
+<span><span class="co">##    "trans_date",</span></span>
+<span><span class="co">##    "sales"</span></span>
+<span><span class="co">##   FROM</span></span>
+<span><span class="co">##    "df"</span></span>
+<span><span class="co">##  ) tsql_07696711733905883198_0000000000</span></span>
+<span><span class="co">##  WHERE "trans_date" &lt;= str_to_date ( '2017-04-02' , '%Y-%m-%d' )</span></span>
+<span><span class="co">## ) tsql_07696711733905883198_0000000001 GROUP BY  "cust"</span></span></code></pre>
+<p>Notice our included quote characters were translated. This is an
+unwanted side-effect of using the <code><a href="https://winvector.github.io/wrapr//reference/qae.html" class="external-link">qae()</a></code> shortcut which does
+not tokenize, so it does not know which quotes are in which roles in the
+expression.</p>
+<p>To override quote translation in the <code><a href="../reference/sql_node.html">sql_node()</a></code> (which
+is simple string substitution without quote context or escaping) you
+must use the clunkier “build up a string as a list of tokens” (where
+sub-listed items are string literals and names are column names).</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ops</span> <span class="op">&lt;-</span> <span class="va">td</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
-  <span class="fu"><a href="../reference/select_rows_se.html">select_rows_se</a></span><span class="op">(</span>
-    <span class="va">.</span>, 
-    <span class="fu"><a href="https://winvector.github.io/wrapr//reference/qe.html" class="external-link">qe</a></span><span class="op">(</span><span class="va">trans_date</span> <span class="op">&lt;=</span>  <span class="fu">str_to_date</span><span class="op">(</span><span class="fu">.</span><span class="op">(</span><span class="va">date_cutoff</span><span class="op">)</span>, <span class="st">'%Y-%m-%d'</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
-  <span class="fu"><a href="../reference/sql_node.html">sql_node</a></span><span class="op">(</span>
-    <span class="va">.</span>,
-    <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-      <span class="st">"max_date"</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/named_map_builder.html" class="external-link">%:=%</a></span> <span class="st">"max(.[trans_date])"</span>,
-      <span class="st">"const_col1"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"a'"</span><span class="op">)</span><span class="op">)</span>,
-      <span class="st">"const_col2"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">'b"'</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,
-    mods <span class="op">=</span> <span class="st">"GROUP BY .[cust]"</span>,
-    orig_columns <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">ops</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## mk_td("df", c(</span>
-<span class="co">##   "cust",</span>
-<span class="co">##   "trans_date",</span>
-<span class="co">##   "sales")) %.&gt;%</span>
-<span class="co">##  select_rows(.,</span>
-<span class="co">##    trans_date &lt;= str_to_date("2017-04-02", "%Y-%m-%d")) %.&gt;%</span>
-<span class="co">##  sql_node(.,</span>
-<span class="co">##            %:=% max( trans_date )</span>
-<span class="co">##              const_col1 %:=% list("a'")</span>
-<span class="co">##              const_col2 %:=% list("b\"");</span>
-<span class="co">##            GROUP BY  "cust",</span>
-<span class="co">##              *=FALSE)</span></code></pre>
+<code class="sourceCode R"><span><span class="va">ops</span> <span class="op">&lt;-</span> <span class="va">td</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/select_rows_se.html">select_rows_se</a></span><span class="op">(</span></span>
+<span>    <span class="va">.</span>, </span>
+<span>    <span class="fu"><a href="https://winvector.github.io/wrapr//reference/qe.html" class="external-link">qe</a></span><span class="op">(</span><span class="va">trans_date</span> <span class="op">&lt;=</span>  <span class="fu">str_to_date</span><span class="op">(</span><span class="fu">.</span><span class="op">(</span><span class="va">date_cutoff</span><span class="op">)</span>, <span class="st">'%Y-%m-%d'</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/sql_node.html">sql_node</a></span><span class="op">(</span></span>
+<span>    <span class="va">.</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>      <span class="st">"max_date"</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/named_map_builder.html" class="external-link">%:=%</a></span> <span class="st">"max(.[trans_date])"</span>,</span>
+<span>      <span class="st">"const_col1"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"a'"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>      <span class="st">"const_col2"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">'b"'</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    mods <span class="op">=</span> <span class="st">"GROUP BY .[cust]"</span>,</span>
+<span>    orig_columns <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">ops</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## mk_td("df", c(</span></span>
+<span><span class="co">##   "cust",</span></span>
+<span><span class="co">##   "trans_date",</span></span>
+<span><span class="co">##   "sales")) %.&gt;%</span></span>
+<span><span class="co">##  select_rows(.,</span></span>
+<span><span class="co">##    trans_date &lt;= str_to_date("2017-04-02", "%Y-%m-%d")) %.&gt;%</span></span>
+<span><span class="co">##  sql_node(.,</span></span>
+<span><span class="co">##            %:=% max( trans_date )</span></span>
+<span><span class="co">##              const_col1 %:=% list("a'")</span></span>
+<span><span class="co">##              const_col2 %:=% list("b\"");</span></span>
+<span><span class="co">##            GROUP BY  "cust",</span></span>
+<span><span class="co">##              *=FALSE)</span></span></code></pre>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">ops</span>, <span class="va">db1</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## SELECT</span>
-<span class="co">##  NA,</span>
-<span class="co">##  "a'" AS 'const_col1',</span>
-<span class="co">##  "b\"" AS 'const_col2'</span>
-<span class="co">## FROM (</span>
-<span class="co">##  SELECT * FROM (</span>
-<span class="co">##   SELECT</span>
-<span class="co">##    'cust',</span>
-<span class="co">##    'trans_date',</span>
-<span class="co">##    'sales'</span>
-<span class="co">##   FROM</span>
-<span class="co">##    'df'</span>
-<span class="co">##  ) tsql_95607919585418797632_0000000000</span>
-<span class="co">##  WHERE 'trans_date' &lt;= str_to_date ( "2017-04-02" , "%Y-%m-%d" )</span>
-<span class="co">## ) tsql_95607919585418797632_0000000001 GROUP BY  'cust'</span></code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">ops</span>, <span class="va">db1</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## SELECT</span></span>
+<span><span class="co">##  NA,</span></span>
+<span><span class="co">##  "a'" AS 'const_col1',</span></span>
+<span><span class="co">##  "b\"" AS 'const_col2'</span></span>
+<span><span class="co">## FROM (</span></span>
+<span><span class="co">##  SELECT * FROM (</span></span>
+<span><span class="co">##   SELECT</span></span>
+<span><span class="co">##    'cust',</span></span>
+<span><span class="co">##    'trans_date',</span></span>
+<span><span class="co">##    'sales'</span></span>
+<span><span class="co">##   FROM</span></span>
+<span><span class="co">##    'df'</span></span>
+<span><span class="co">##  ) tsql_02896107961753367714_0000000000</span></span>
+<span><span class="co">##  WHERE 'trans_date' &lt;= str_to_date ( "2017-04-02" , "%Y-%m-%d" )</span></span>
+<span><span class="co">## ) tsql_02896107961753367714_0000000001 GROUP BY  'cust'</span></span></code></pre>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">ops</span>, <span class="va">db2</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## SELECT</span>
-<span class="co">##  NA,</span>
-<span class="co">##  'a\'' AS "const_col1",</span>
-<span class="co">##  'b"' AS "const_col2"</span>
-<span class="co">## FROM (</span>
-<span class="co">##  SELECT * FROM (</span>
-<span class="co">##   SELECT</span>
-<span class="co">##    "cust",</span>
-<span class="co">##    "trans_date",</span>
-<span class="co">##    "sales"</span>
-<span class="co">##   FROM</span>
-<span class="co">##    "df"</span>
-<span class="co">##  ) tsql_32978445021045744555_0000000000</span>
-<span class="co">##  WHERE "trans_date" &lt;= str_to_date ( '2017-04-02' , '%Y-%m-%d' )</span>
-<span class="co">## ) tsql_32978445021045744555_0000000001 GROUP BY  "cust"</span></code></pre>
-<p>Quotes within string literals are going to be a nightmare moving from db to db, so our advice is to try to avoid them.</p>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">ops</span>, <span class="va">db2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## SELECT</span></span>
+<span><span class="co">##  NA,</span></span>
+<span><span class="co">##  'a\'' AS "const_col1",</span></span>
+<span><span class="co">##  'b"' AS "const_col2"</span></span>
+<span><span class="co">## FROM (</span></span>
+<span><span class="co">##  SELECT * FROM (</span></span>
+<span><span class="co">##   SELECT</span></span>
+<span><span class="co">##    "cust",</span></span>
+<span><span class="co">##    "trans_date",</span></span>
+<span><span class="co">##    "sales"</span></span>
+<span><span class="co">##   FROM</span></span>
+<span><span class="co">##    "df"</span></span>
+<span><span class="co">##  ) tsql_45777246471763514017_0000000000</span></span>
+<span><span class="co">##  WHERE "trans_date" &lt;= str_to_date ( '2017-04-02' , '%Y-%m-%d' )</span></span>
+<span><span class="co">## ) tsql_45777246471763514017_0000000001 GROUP BY  "cust"</span></span></code></pre>
+<p>Quotes within string literals are going to be a nightmare moving from
+db to db, so our advice is to try to avoid them.</p>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -269,7 +280,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

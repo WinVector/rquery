@@ -36,9 +36,9 @@ which builds a reference to a remote table given the table name.
 }
 \section{Functions}{
 \itemize{
-\item \code{dbi_table}: old name for db_td
-}}
+\item \code{dbi_table()}: old name for db_td
 
+}}
 \examples{
 
 if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {

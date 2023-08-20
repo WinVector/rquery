@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.99</span>
       </span>
     </div>
 
@@ -43,7 +43,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -97,9 +97,10 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Assignment Partitioner</h1>
-                        <h4 data-toc-skip class="author">John Mount, Win-Vector LLC</h4>
+                        <h4 data-toc-skip class="author">John Mount,
+Win-Vector LLC</h4>
             
-            <h4 data-toc-skip class="date">2022-02-28</h4>
+            <h4 data-toc-skip class="date">2023-08-19</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/WinVector/rquery/blob/HEAD/vignettes/AssigmentPartitioner.Rmd" class="external-link"><code>vignettes/AssigmentPartitioner.Rmd</code></a></small>
       <div class="hidden name"><code>AssigmentPartitioner.Rmd</code></div>
@@ -108,30 +109,51 @@
 
     
     
-<p><code><a href="../reference/extend_se.html">rquery::extend_se()</a></code> and <code><a href="../reference/extend.html">rquery::extend()</a></code> each automatically partition a sequence of assignments so that no statement is using any value created in the same partition element or group. This is to eliminate potentially dangerous ambiguity in statements.</p>
-<p>For such a partition: the evaluation result does not depend on the order of execution of the statements in each group (as they are all independent of each other’s left-hand-sides). A no-dependency small number of groups partition is <em>very</em> helpful when executing expressions on <code>SQL</code> based data interfaces (such as <code>Apache Spark</code>).</p>
-<p>The method used to partition expressions is to scan the remaining expressions in order taking any that: have all their values available from earlier groups, do not use a value formed in the current group, and do not overwrite a value formed in the current group.</p>
-<p>This partitioning method ensures safe and correct results, and can lead to far fewer groups (and much more efficient queries) than the straightforward method of breaking up the sequence of expressions at each new-value use.</p>
-<p>Here is a non-trivial database based example (demonstrating methods that might be used in big data work such as with <code>Spark</code>). We are going to assign pairs of items to complimentary treatment (“T”) and control (“C”) groups based on already populated pseudo-random numbers (pre-populating the pseudo-random numbers is to avoid <a href="https://winvector.github.io/rquery/reference/if_else_block.html" class="external-link">known issues in using <code>rand()</code> in <code>RSQlite</code></a>, and would not be necessary with other databases).</p>
+<p><code><a href="../reference/extend_se.html">rquery::extend_se()</a></code> and <code><a href="../reference/extend.html">rquery::extend()</a></code>
+each automatically partition a sequence of assignments so that no
+statement is using any value created in the same partition element or
+group. This is to eliminate potentially dangerous ambiguity in
+statements.</p>
+<p>For such a partition: the evaluation result does not depend on the
+order of execution of the statements in each group (as they are all
+independent of each other’s left-hand-sides). A no-dependency small
+number of groups partition is <em>very</em> helpful when executing
+expressions on <code>SQL</code> based data interfaces (such as
+<code>Apache Spark</code>).</p>
+<p>The method used to partition expressions is to scan the remaining
+expressions in order taking any that: have all their values available
+from earlier groups, do not use a value formed in the current group, and
+do not overwrite a value formed in the current group.</p>
+<p>This partitioning method ensures safe and correct results, and can
+lead to far fewer groups (and much more efficient queries) than the
+straightforward method of breaking up the sequence of expressions at
+each new-value use.</p>
+<p>Here is a non-trivial database based example (demonstrating methods
+that might be used in big data work such as with <code>Spark</code>). We
+are going to assign pairs of items to complimentary treatment (“T”) and
+control (“C”) groups based on already populated pseudo-random numbers
+(pre-populating the pseudo-random numbers is to avoid <a href="https://winvector.github.io/rquery/reference/if_else_block.html" class="external-link">known
+issues in using <code>rand()</code> in <code>RSQlite</code></a>, and
+would not be necessary with other databases).</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">run_vignette</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"DBI"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"RSQLite"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">run_vignette</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"DBI"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"RSQLite"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/WinVector/rquery/" class="external-link">"rquery"</a></span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/WinVector/rquery/" class="external-link">"rquery"</a></span><span class="op">)</span></span></code></pre></div>
 <pre><code>Loading required package: wrapr</code></pre>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># example data</span>
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">3463</span><span class="op">)</span>
-<span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">4</span><span class="op">)</span><span class="op">)</span>
-<span class="kw">for</span><span class="op">(</span><span class="va">group</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'a'</span>, <span class="st">'b'</span>, <span class="st">'c'</span>, <span class="st">'d'</span>, <span class="st">'e'</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">d</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"rand_"</span>, <span class="va">group</span><span class="op">)</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span><span class="op">)</span>
-<span class="op">}</span>
-<span class="va">my_db</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html" class="external-link">SQLite</a></span><span class="op">(</span><span class="op">)</span>, 
-                        <span class="st">":memory:"</span><span class="op">)</span>
-<span class="va">d1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rq_copy_to.html">rq_copy_to</a></span><span class="op">(</span><span class="va">my_db</span>, <span class="st">"example_table"</span>, <span class="va">d</span><span class="op">)</span>
-<span class="va">d1</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
-  <span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">my_db</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
-  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">dbGetQuery</a></span><span class="op">(</span><span class="va">my_db</span>, <span class="va">.</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
-  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># example data</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">3463</span><span class="op">)</span></span>
+<span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="kw">for</span><span class="op">(</span><span class="va">group</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'a'</span>, <span class="st">'b'</span>, <span class="st">'c'</span>, <span class="st">'d'</span>, <span class="st">'e'</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">d</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"rand_"</span>, <span class="va">group</span><span class="op">)</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">my_db</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html" class="external-link">SQLite</a></span><span class="op">(</span><span class="op">)</span>, </span>
+<span>                        <span class="st">":memory:"</span><span class="op">)</span></span>
+<span><span class="va">d1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rq_copy_to.html">rq_copy_to</a></span><span class="op">(</span><span class="va">my_db</span>, <span class="st">"example_table"</span>, <span class="va">d</span><span class="op">)</span></span>
+<span><span class="va">d1</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">my_db</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
+<span>  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">dbGetQuery</a></span><span class="op">(</span><span class="va">my_db</span>, <span class="va">.</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">id</th>
@@ -177,82 +199,88 @@
 </tbody>
 </table>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># design the experiment </span>
-<span class="va">plan</span> <span class="op">&lt;-</span> <span class="va">d1</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
-  <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,
-   choice_a <span class="op">=</span> <span class="va">rand_a</span><span class="op">&gt;=</span><span class="fl">0.5</span>, 
-    a_1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_a</span>, 
-                  <span class="st">'T'</span>, 
-                  <span class="st">'C'</span><span class="op">)</span>,
-    a_2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_a</span>, 
-                  <span class="st">'C'</span>, 
-                  <span class="st">'T'</span><span class="op">)</span>,
-   choice_b <span class="op">=</span> <span class="va">rand_b</span><span class="op">&gt;=</span><span class="fl">0.5</span>, 
-    b_1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_b</span>, 
-                  <span class="st">'T'</span>, 
-                  <span class="st">'C'</span><span class="op">)</span>,
-    b_2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_b</span>, 
-                  <span class="st">'C'</span>, 
-                  <span class="st">'T'</span><span class="op">)</span>,
-   choice_c <span class="op">=</span> <span class="va">rand_c</span><span class="op">&gt;=</span><span class="fl">0.5</span>, 
-    c_1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_c</span>, 
-                  <span class="st">'T'</span>, 
-                  <span class="st">'C'</span><span class="op">)</span>,
-    c_2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_c</span>, 
-                  <span class="st">'C'</span>, 
-                  <span class="st">'T'</span><span class="op">)</span>,
-   choice_d <span class="op">=</span> <span class="va">rand_d</span><span class="op">&gt;=</span><span class="fl">0.5</span>, 
-    d_1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_d</span>, 
-                  <span class="st">'T'</span>, 
-                  <span class="st">'C'</span><span class="op">)</span>,
-    d_2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_d</span>, 
-                  <span class="st">'C'</span>, 
-                  <span class="st">'T'</span><span class="op">)</span>,
-   choice_e <span class="op">=</span> <span class="va">rand_e</span><span class="op">&gt;=</span><span class="fl">0.5</span>, 
-    e_1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_e</span>, 
-                  <span class="st">'T'</span>, 
-                  <span class="st">'C'</span><span class="op">)</span>,
-    e_2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_e</span>, 
-                  <span class="st">'C'</span>, 
-                  <span class="st">'T'</span><span class="op">)</span>
-  <span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
-  <span class="fu"><a href="../reference/select_columns.html">select_columns</a></span><span class="op">(</span><span class="va">.</span>, 
-                 <span class="fu"><a href="https://winvector.github.io/wrapr//reference/qc.html" class="external-link">qc</a></span><span class="op">(</span><span class="va">id</span>,
-                    <span class="va">a_1</span>, <span class="va">a_2</span>, <span class="va">b_1</span>, <span class="va">b_2</span>,
-                    <span class="va">c_1</span>, <span class="va">c_2</span>, <span class="va">d_1</span>, <span class="va">d_2</span>,
-                    <span class="va">e_1</span>, <span class="va">e_2</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">plan</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="fu"><a href="../reference/mk_td.html">mk_td</a></span><span class="op">(</span><span class="st">"example_table"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>
-  <span class="st">"id"</span>,
-  <span class="st">"rand_a"</span>,
-  <span class="st">"rand_b"</span>,
-  <span class="st">"rand_c"</span>,
-  <span class="st">"rand_d"</span>,
-  <span class="st">"rand_e"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
- <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,
-  <span class="va">choice_a</span> <span class="op">:=</span> <span class="va">rand_a</span> <span class="op">&gt;=</span> <span class="fl">0.5</span>,
-  <span class="va">choice_b</span> <span class="op">:=</span> <span class="va">rand_b</span> <span class="op">&gt;=</span> <span class="fl">0.5</span>,
-  <span class="va">choice_c</span> <span class="op">:=</span> <span class="va">rand_c</span> <span class="op">&gt;=</span> <span class="fl">0.5</span>,
-  <span class="va">choice_d</span> <span class="op">:=</span> <span class="va">rand_d</span> <span class="op">&gt;=</span> <span class="fl">0.5</span>,
-  <span class="va">choice_e</span> <span class="op">:=</span> <span class="va">rand_e</span> <span class="op">&gt;=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
- <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,
-  <span class="va">a_1</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_a</span>, <span class="st">"T"</span>, <span class="st">"C"</span><span class="op">)</span>,
-  <span class="va">a_2</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_a</span>, <span class="st">"C"</span>, <span class="st">"T"</span><span class="op">)</span>,
-  <span class="va">b_1</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_b</span>, <span class="st">"T"</span>, <span class="st">"C"</span><span class="op">)</span>,
-  <span class="va">b_2</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_b</span>, <span class="st">"C"</span>, <span class="st">"T"</span><span class="op">)</span>,
-  <span class="va">c_1</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_c</span>, <span class="st">"T"</span>, <span class="st">"C"</span><span class="op">)</span>,
-  <span class="va">c_2</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_c</span>, <span class="st">"C"</span>, <span class="st">"T"</span><span class="op">)</span>,
-  <span class="va">d_1</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_d</span>, <span class="st">"T"</span>, <span class="st">"C"</span><span class="op">)</span>,
-  <span class="va">d_2</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_d</span>, <span class="st">"C"</span>, <span class="st">"T"</span><span class="op">)</span>,
-  <span class="va">e_1</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_e</span>, <span class="st">"T"</span>, <span class="st">"C"</span><span class="op">)</span>,
-  <span class="va">e_2</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_e</span>, <span class="st">"C"</span>, <span class="st">"T"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
- <span class="fu"><a href="../reference/select_columns.html">select_columns</a></span><span class="op">(</span><span class="va">.</span>, 
-    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'id'</span>, <span class="st">'a_1'</span>, <span class="st">'a_2'</span>, <span class="st">'b_1'</span>, <span class="st">'b_2'</span>, <span class="st">'c_1'</span>, <span class="st">'c_2'</span>, <span class="st">'d_1'</span>, <span class="st">'d_2'</span>, <span class="st">'e_1'</span>, <span class="st">'e_2'</span><span class="op">)</span><span class="op">)</span></code></pre>
-<p>Notice <code><a href="../reference/extend_se.html">rquery::extend_se()</a></code> split the work into 3 unambiguous groups. The statements inside each group can now be executed in any order (or even in parallel) with no ambiguity of meaning or risk of error. The goal was: split into a small number of groups such that the observable execution semantics are very close to executing the original statements in order in completely separate groups (which is likely what a user intends).</p>
+<code class="sourceCode R"><span><span class="co"># design the experiment </span></span>
+<span><span class="va">plan</span> <span class="op">&lt;-</span> <span class="va">d1</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,</span>
+<span>   choice_a <span class="op">=</span> <span class="va">rand_a</span><span class="op">&gt;=</span><span class="fl">0.5</span>, </span>
+<span>    a_1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_a</span>, </span>
+<span>                  <span class="st">'T'</span>, </span>
+<span>                  <span class="st">'C'</span><span class="op">)</span>,</span>
+<span>    a_2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_a</span>, </span>
+<span>                  <span class="st">'C'</span>, </span>
+<span>                  <span class="st">'T'</span><span class="op">)</span>,</span>
+<span>   choice_b <span class="op">=</span> <span class="va">rand_b</span><span class="op">&gt;=</span><span class="fl">0.5</span>, </span>
+<span>    b_1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_b</span>, </span>
+<span>                  <span class="st">'T'</span>, </span>
+<span>                  <span class="st">'C'</span><span class="op">)</span>,</span>
+<span>    b_2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_b</span>, </span>
+<span>                  <span class="st">'C'</span>, </span>
+<span>                  <span class="st">'T'</span><span class="op">)</span>,</span>
+<span>   choice_c <span class="op">=</span> <span class="va">rand_c</span><span class="op">&gt;=</span><span class="fl">0.5</span>, </span>
+<span>    c_1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_c</span>, </span>
+<span>                  <span class="st">'T'</span>, </span>
+<span>                  <span class="st">'C'</span><span class="op">)</span>,</span>
+<span>    c_2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_c</span>, </span>
+<span>                  <span class="st">'C'</span>, </span>
+<span>                  <span class="st">'T'</span><span class="op">)</span>,</span>
+<span>   choice_d <span class="op">=</span> <span class="va">rand_d</span><span class="op">&gt;=</span><span class="fl">0.5</span>, </span>
+<span>    d_1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_d</span>, </span>
+<span>                  <span class="st">'T'</span>, </span>
+<span>                  <span class="st">'C'</span><span class="op">)</span>,</span>
+<span>    d_2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_d</span>, </span>
+<span>                  <span class="st">'C'</span>, </span>
+<span>                  <span class="st">'T'</span><span class="op">)</span>,</span>
+<span>   choice_e <span class="op">=</span> <span class="va">rand_e</span><span class="op">&gt;=</span><span class="fl">0.5</span>, </span>
+<span>    e_1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_e</span>, </span>
+<span>                  <span class="st">'T'</span>, </span>
+<span>                  <span class="st">'C'</span><span class="op">)</span>,</span>
+<span>    e_2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_e</span>, </span>
+<span>                  <span class="st">'C'</span>, </span>
+<span>                  <span class="st">'T'</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/select_columns.html">select_columns</a></span><span class="op">(</span><span class="va">.</span>, </span>
+<span>                 <span class="fu"><a href="https://winvector.github.io/wrapr//reference/qc.html" class="external-link">qc</a></span><span class="op">(</span><span class="va">id</span>,</span>
+<span>                    <span class="va">a_1</span>, <span class="va">a_2</span>, <span class="va">b_1</span>, <span class="va">b_2</span>,</span>
+<span>                    <span class="va">c_1</span>, <span class="va">c_2</span>, <span class="va">d_1</span>, <span class="va">d_2</span>,</span>
+<span>                    <span class="va">e_1</span>, <span class="va">e_2</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">plan</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="fu"><a href="../reference/mk_td.html">mk_td</a></span><span class="op">(</span><span class="st">"example_table"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="st">"id"</span>,</span>
+<span>  <span class="st">"rand_a"</span>,</span>
+<span>  <span class="st">"rand_b"</span>,</span>
+<span>  <span class="st">"rand_c"</span>,</span>
+<span>  <span class="st">"rand_d"</span>,</span>
+<span>  <span class="st">"rand_e"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
+<span> <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,</span>
+<span>  <span class="va">choice_a</span> <span class="op">:=</span> <span class="va">rand_a</span> <span class="op">&gt;=</span> <span class="fl">0.5</span>,</span>
+<span>  <span class="va">choice_b</span> <span class="op">:=</span> <span class="va">rand_b</span> <span class="op">&gt;=</span> <span class="fl">0.5</span>,</span>
+<span>  <span class="va">choice_c</span> <span class="op">:=</span> <span class="va">rand_c</span> <span class="op">&gt;=</span> <span class="fl">0.5</span>,</span>
+<span>  <span class="va">choice_d</span> <span class="op">:=</span> <span class="va">rand_d</span> <span class="op">&gt;=</span> <span class="fl">0.5</span>,</span>
+<span>  <span class="va">choice_e</span> <span class="op">:=</span> <span class="va">rand_e</span> <span class="op">&gt;=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
+<span> <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,</span>
+<span>  <span class="va">a_1</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_a</span>, <span class="st">"T"</span>, <span class="st">"C"</span><span class="op">)</span>,</span>
+<span>  <span class="va">a_2</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_a</span>, <span class="st">"C"</span>, <span class="st">"T"</span><span class="op">)</span>,</span>
+<span>  <span class="va">b_1</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_b</span>, <span class="st">"T"</span>, <span class="st">"C"</span><span class="op">)</span>,</span>
+<span>  <span class="va">b_2</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_b</span>, <span class="st">"C"</span>, <span class="st">"T"</span><span class="op">)</span>,</span>
+<span>  <span class="va">c_1</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_c</span>, <span class="st">"T"</span>, <span class="st">"C"</span><span class="op">)</span>,</span>
+<span>  <span class="va">c_2</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_c</span>, <span class="st">"C"</span>, <span class="st">"T"</span><span class="op">)</span>,</span>
+<span>  <span class="va">d_1</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_d</span>, <span class="st">"T"</span>, <span class="st">"C"</span><span class="op">)</span>,</span>
+<span>  <span class="va">d_2</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_d</span>, <span class="st">"C"</span>, <span class="st">"T"</span><span class="op">)</span>,</span>
+<span>  <span class="va">e_1</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_e</span>, <span class="st">"T"</span>, <span class="st">"C"</span><span class="op">)</span>,</span>
+<span>  <span class="va">e_2</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice_e</span>, <span class="st">"C"</span>, <span class="st">"T"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
+<span> <span class="fu"><a href="../reference/select_columns.html">select_columns</a></span><span class="op">(</span><span class="va">.</span>, </span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'id'</span>, <span class="st">'a_1'</span>, <span class="st">'a_2'</span>, <span class="st">'b_1'</span>, <span class="st">'b_2'</span>, <span class="st">'c_1'</span>, <span class="st">'c_2'</span>, <span class="st">'d_1'</span>, <span class="st">'d_2'</span>, <span class="st">'e_1'</span>, <span class="st">'e_2'</span><span class="op">)</span><span class="op">)</span></span></code></pre>
+<p>Notice <code><a href="../reference/extend_se.html">rquery::extend_se()</a></code> split the work into 3
+unambiguous groups. The statements inside each group can now be executed
+in any order (or even in parallel) with no ambiguity of meaning or risk
+of error. The goal was: split into a small number of groups such that
+the observable execution semantics are very close to executing the
+original statements in order in completely separate groups (which is
+likely what a user intends).</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">sql</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">plan</span>, <span class="va">my_db</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">sql</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">sql</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">plan</span>, <span class="va">my_db</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">sql</span><span class="op">)</span></span></code></pre></div>
 <pre><code>SELECT
  `id`,
  `a_1`,
@@ -300,8 +328,8 @@ FROM (
   ) tsql_24400885758306713700_0000000001
 ) tsql_24400885758306713700_0000000002</code></pre>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">dbGetQuery</a></span><span class="op">(</span><span class="va">my_db</span>, <span class="va">sql</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
-  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">dbGetQuery</a></span><span class="op">(</span><span class="va">my_db</span>, <span class="va">sql</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">id</th>
@@ -371,92 +399,99 @@ FROM (
 </tr>
 </tbody>
 </table>
-<p>A straightforward method (with no statement re-ordering) of splitting into non-dependent groups would have to split the mutate at each first use of a new value: yielding more mutate stages. For why a low number of execution stages is important please see <a href="https://winvector.github.io/FluidData/partition_mutate.html" class="external-link">here</a>.</p>
-<p>Note: re-using variable variable names does limit the planner’s ability to efficiently partition the the statement. The planner still emits safe and correct code, but unless it were to be allowed to introduce new variable names it must break sequences in more places. We show this effect below:</p>
+<p>A straightforward method (with no statement re-ordering) of splitting
+into non-dependent groups would have to split the mutate at each first
+use of a new value: yielding more mutate stages. For why a low number of
+execution stages is important please see <a href="https://winvector.github.io/FluidData/partition_mutate.html" class="external-link">here</a>.</p>
+<p>Note: re-using variable variable names does limit the planner’s
+ability to efficiently partition the the statement. The planner still
+emits safe and correct code, but unless it were to be allowed to
+introduce new variable names it must break sequences in more places. We
+show this effect below:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">plan2</span> <span class="op">&lt;-</span> <span class="va">d1</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
-  <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,
-   choice <span class="op">=</span> <span class="va">rand_a</span><span class="op">&gt;=</span><span class="fl">0.5</span>, 
-    a_1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, 
-                  <span class="st">'T'</span>, 
-                  <span class="st">'C'</span><span class="op">)</span>,
-    a_2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, 
-                  <span class="st">'C'</span>, 
-                  <span class="st">'T'</span><span class="op">)</span>,
-   choice <span class="op">=</span> <span class="va">rand_b</span><span class="op">&gt;=</span><span class="fl">0.5</span>, 
-    b_1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, 
-                  <span class="st">'T'</span>, 
-                  <span class="st">'C'</span><span class="op">)</span>,
-    b_2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, 
-                  <span class="st">'C'</span>, 
-                  <span class="st">'T'</span><span class="op">)</span>,
-   choice <span class="op">=</span> <span class="va">rand_c</span><span class="op">&gt;=</span><span class="fl">0.5</span>, 
-    c_1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, 
-                  <span class="st">'T'</span>, 
-                  <span class="st">'C'</span><span class="op">)</span>,
-    c_2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, 
-                  <span class="st">'C'</span>, 
-                  <span class="st">'T'</span><span class="op">)</span>,
-   choice <span class="op">=</span> <span class="va">rand_d</span><span class="op">&gt;=</span><span class="fl">0.5</span>, 
-    d_1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, 
-                  <span class="st">'T'</span>, 
-                  <span class="st">'C'</span><span class="op">)</span>,
-    d_2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, 
-                  <span class="st">'C'</span>, 
-                  <span class="st">'T'</span><span class="op">)</span>,
-   choice <span class="op">=</span> <span class="va">rand_e</span><span class="op">&gt;=</span><span class="fl">0.5</span>, 
-    e_1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, 
-                  <span class="st">'T'</span>, 
-                  <span class="st">'C'</span><span class="op">)</span>,
-    e_2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, 
-                  <span class="st">'C'</span>, 
-                  <span class="st">'T'</span><span class="op">)</span>
-  <span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
-  <span class="fu"><a href="../reference/select_columns.html">select_columns</a></span><span class="op">(</span><span class="va">.</span>, 
-                 <span class="fu"><a href="https://winvector.github.io/wrapr//reference/qc.html" class="external-link">qc</a></span><span class="op">(</span><span class="va">id</span>,
-                    <span class="va">a_1</span>, <span class="va">a_2</span>, <span class="va">b_1</span>, <span class="va">b_2</span>,
-                    <span class="va">c_1</span>, <span class="va">c_2</span>, <span class="va">d_1</span>, <span class="va">d_2</span>,
-                    <span class="va">e_1</span>, <span class="va">e_2</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">plan2</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="fu"><a href="../reference/mk_td.html">mk_td</a></span><span class="op">(</span><span class="st">"example_table"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>
-  <span class="st">"id"</span>,
-  <span class="st">"rand_a"</span>,
-  <span class="st">"rand_b"</span>,
-  <span class="st">"rand_c"</span>,
-  <span class="st">"rand_d"</span>,
-  <span class="st">"rand_e"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
- <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,
-  <span class="va">choice</span> <span class="op">:=</span> <span class="va">rand_a</span> <span class="op">&gt;=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
- <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,
-  <span class="va">a_1</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, <span class="st">"T"</span>, <span class="st">"C"</span><span class="op">)</span>,
-  <span class="va">a_2</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, <span class="st">"C"</span>, <span class="st">"T"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
- <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,
-  <span class="va">choice</span> <span class="op">:=</span> <span class="va">rand_b</span> <span class="op">&gt;=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
- <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,
-  <span class="va">b_1</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, <span class="st">"T"</span>, <span class="st">"C"</span><span class="op">)</span>,
-  <span class="va">b_2</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, <span class="st">"C"</span>, <span class="st">"T"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
- <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,
-  <span class="va">choice</span> <span class="op">:=</span> <span class="va">rand_c</span> <span class="op">&gt;=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
- <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,
-  <span class="va">c_1</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, <span class="st">"T"</span>, <span class="st">"C"</span><span class="op">)</span>,
-  <span class="va">c_2</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, <span class="st">"C"</span>, <span class="st">"T"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
- <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,
-  <span class="va">choice</span> <span class="op">:=</span> <span class="va">rand_d</span> <span class="op">&gt;=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
- <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,
-  <span class="va">d_1</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, <span class="st">"T"</span>, <span class="st">"C"</span><span class="op">)</span>,
-  <span class="va">d_2</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, <span class="st">"C"</span>, <span class="st">"T"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
- <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,
-  <span class="va">choice</span> <span class="op">:=</span> <span class="va">rand_e</span> <span class="op">&gt;=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
- <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,
-  <span class="va">e_1</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, <span class="st">"T"</span>, <span class="st">"C"</span><span class="op">)</span>,
-  <span class="va">e_2</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, <span class="st">"C"</span>, <span class="st">"T"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
- <span class="fu"><a href="../reference/select_columns.html">select_columns</a></span><span class="op">(</span><span class="va">.</span>, 
-    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'id'</span>, <span class="st">'a_1'</span>, <span class="st">'a_2'</span>, <span class="st">'b_1'</span>, <span class="st">'b_2'</span>, <span class="st">'c_1'</span>, <span class="st">'c_2'</span>, <span class="st">'d_1'</span>, <span class="st">'d_2'</span>, <span class="st">'e_1'</span>, <span class="st">'e_2'</span><span class="op">)</span><span class="op">)</span></code></pre>
+<code class="sourceCode R"><span><span class="va">plan2</span> <span class="op">&lt;-</span> <span class="va">d1</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,</span>
+<span>   choice <span class="op">=</span> <span class="va">rand_a</span><span class="op">&gt;=</span><span class="fl">0.5</span>, </span>
+<span>    a_1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, </span>
+<span>                  <span class="st">'T'</span>, </span>
+<span>                  <span class="st">'C'</span><span class="op">)</span>,</span>
+<span>    a_2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, </span>
+<span>                  <span class="st">'C'</span>, </span>
+<span>                  <span class="st">'T'</span><span class="op">)</span>,</span>
+<span>   choice <span class="op">=</span> <span class="va">rand_b</span><span class="op">&gt;=</span><span class="fl">0.5</span>, </span>
+<span>    b_1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, </span>
+<span>                  <span class="st">'T'</span>, </span>
+<span>                  <span class="st">'C'</span><span class="op">)</span>,</span>
+<span>    b_2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, </span>
+<span>                  <span class="st">'C'</span>, </span>
+<span>                  <span class="st">'T'</span><span class="op">)</span>,</span>
+<span>   choice <span class="op">=</span> <span class="va">rand_c</span><span class="op">&gt;=</span><span class="fl">0.5</span>, </span>
+<span>    c_1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, </span>
+<span>                  <span class="st">'T'</span>, </span>
+<span>                  <span class="st">'C'</span><span class="op">)</span>,</span>
+<span>    c_2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, </span>
+<span>                  <span class="st">'C'</span>, </span>
+<span>                  <span class="st">'T'</span><span class="op">)</span>,</span>
+<span>   choice <span class="op">=</span> <span class="va">rand_d</span><span class="op">&gt;=</span><span class="fl">0.5</span>, </span>
+<span>    d_1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, </span>
+<span>                  <span class="st">'T'</span>, </span>
+<span>                  <span class="st">'C'</span><span class="op">)</span>,</span>
+<span>    d_2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, </span>
+<span>                  <span class="st">'C'</span>, </span>
+<span>                  <span class="st">'T'</span><span class="op">)</span>,</span>
+<span>   choice <span class="op">=</span> <span class="va">rand_e</span><span class="op">&gt;=</span><span class="fl">0.5</span>, </span>
+<span>    e_1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, </span>
+<span>                  <span class="st">'T'</span>, </span>
+<span>                  <span class="st">'C'</span><span class="op">)</span>,</span>
+<span>    e_2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, </span>
+<span>                  <span class="st">'C'</span>, </span>
+<span>                  <span class="st">'T'</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
+<span>  <span class="fu"><a href="../reference/select_columns.html">select_columns</a></span><span class="op">(</span><span class="va">.</span>, </span>
+<span>                 <span class="fu"><a href="https://winvector.github.io/wrapr//reference/qc.html" class="external-link">qc</a></span><span class="op">(</span><span class="va">id</span>,</span>
+<span>                    <span class="va">a_1</span>, <span class="va">a_2</span>, <span class="va">b_1</span>, <span class="va">b_2</span>,</span>
+<span>                    <span class="va">c_1</span>, <span class="va">c_2</span>, <span class="va">d_1</span>, <span class="va">d_2</span>,</span>
+<span>                    <span class="va">e_1</span>, <span class="va">e_2</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">plan2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="fu"><a href="../reference/mk_td.html">mk_td</a></span><span class="op">(</span><span class="st">"example_table"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="st">"id"</span>,</span>
+<span>  <span class="st">"rand_a"</span>,</span>
+<span>  <span class="st">"rand_b"</span>,</span>
+<span>  <span class="st">"rand_c"</span>,</span>
+<span>  <span class="st">"rand_d"</span>,</span>
+<span>  <span class="st">"rand_e"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
+<span> <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,</span>
+<span>  <span class="va">choice</span> <span class="op">:=</span> <span class="va">rand_a</span> <span class="op">&gt;=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
+<span> <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,</span>
+<span>  <span class="va">a_1</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, <span class="st">"T"</span>, <span class="st">"C"</span><span class="op">)</span>,</span>
+<span>  <span class="va">a_2</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, <span class="st">"C"</span>, <span class="st">"T"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
+<span> <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,</span>
+<span>  <span class="va">choice</span> <span class="op">:=</span> <span class="va">rand_b</span> <span class="op">&gt;=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
+<span> <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,</span>
+<span>  <span class="va">b_1</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, <span class="st">"T"</span>, <span class="st">"C"</span><span class="op">)</span>,</span>
+<span>  <span class="va">b_2</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, <span class="st">"C"</span>, <span class="st">"T"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
+<span> <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,</span>
+<span>  <span class="va">choice</span> <span class="op">:=</span> <span class="va">rand_c</span> <span class="op">&gt;=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
+<span> <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,</span>
+<span>  <span class="va">c_1</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, <span class="st">"T"</span>, <span class="st">"C"</span><span class="op">)</span>,</span>
+<span>  <span class="va">c_2</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, <span class="st">"C"</span>, <span class="st">"T"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
+<span> <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,</span>
+<span>  <span class="va">choice</span> <span class="op">:=</span> <span class="va">rand_d</span> <span class="op">&gt;=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
+<span> <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,</span>
+<span>  <span class="va">d_1</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, <span class="st">"T"</span>, <span class="st">"C"</span><span class="op">)</span>,</span>
+<span>  <span class="va">d_2</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, <span class="st">"C"</span>, <span class="st">"T"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
+<span> <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,</span>
+<span>  <span class="va">choice</span> <span class="op">:=</span> <span class="va">rand_e</span> <span class="op">&gt;=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
+<span> <span class="fu"><a href="../reference/extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>,</span>
+<span>  <span class="va">e_1</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, <span class="st">"T"</span>, <span class="st">"C"</span><span class="op">)</span>,</span>
+<span>  <span class="va">e_2</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">choice</span>, <span class="st">"C"</span>, <span class="st">"T"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
+<span> <span class="fu"><a href="../reference/select_columns.html">select_columns</a></span><span class="op">(</span><span class="va">.</span>, </span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'id'</span>, <span class="st">'a_1'</span>, <span class="st">'a_2'</span>, <span class="st">'b_1'</span>, <span class="st">'b_2'</span>, <span class="st">'c_1'</span>, <span class="st">'c_2'</span>, <span class="st">'d_1'</span>, <span class="st">'d_2'</span>, <span class="st">'e_1'</span>, <span class="st">'e_2'</span><span class="op">)</span><span class="op">)</span></span></code></pre>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">sql2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">plan2</span>, <span class="va">my_db</span><span class="op">)</span>
-<span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">dbGetQuery</a></span><span class="op">(</span><span class="va">my_db</span>, <span class="va">sql2</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span>
-  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">sql2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">plan2</span>, <span class="va">my_db</span><span class="op">)</span></span>
+<span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">dbGetQuery</a></span><span class="op">(</span><span class="va">my_db</span>, <span class="va">sql2</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">id</th>
@@ -526,9 +561,10 @@ FROM (
 </tr>
 </tbody>
 </table>
-<p>Notice the returned tables are identical (as they should be, <a href="https://github.com/WinVector/rquery/blob/master/extras/AssigmentPartitioner.md#dplyr-example" class="external-link">which is not always the case for database backed <code>dplyr</code></a>).</p>
+<p>Notice the returned tables are identical (as they should be, <a href="https://github.com/WinVector/rquery/blob/master/extras/AssigmentPartitioner.md#dplyr-example" class="external-link">which
+is not always the case for database backed <code>dplyr</code></a>).</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">dbDisconnect</a></span><span class="op">(</span><span class="va">my_db</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">dbDisconnect</a></span><span class="op">(</span><span class="va">my_db</span><span class="op">)</span></span></code></pre></div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -546,7 +582,7 @@ FROM (
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

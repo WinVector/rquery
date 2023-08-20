@@ -54,9 +54,9 @@ SQL optimizers likely make this zero-cost anyway.
 }
 \section{Functions}{
 \itemize{
-\item \code{table_source}: old name for mk_td
-}}
+\item \code{table_source()}: old name for mk_td
 
+}}
 \examples{
 
 if (requireNamespace("DBI", quietly = TRUE) && requireNamespace("RSQLite", quietly = TRUE)) {

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.99</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -81,37 +81,46 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">op_diagram</span><span class="op">(</span><span class="va">optree</span>, <span class="va">...</span>, merge_tables <span class="op">=</span> <span class="cn">FALSE</span>, show_table_columns <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">op_diagram</span><span class="op">(</span><span class="va">optree</span>, <span class="va">...</span>, merge_tables <span class="op">=</span> <span class="cn">FALSE</span>, show_table_columns <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>optree</dt>
 <dd><p>operation tree pipeline (or list of such).</p></dd>
+
+
 <dt>...</dt>
 <dd><p>force other argument to be by name.</p></dd>
+
+
 <dt>merge_tables</dt>
 <dd><p>logical, if TRUE merge all same table references into one node.  rel_op nodes that declare a materialize_as name will be cross-linked.</p></dd>
+
+
 <dt>show_table_columns</dt>
 <dd><p>logical, if TRUE show table columns.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>character DiagrammeR::grViz() ready text.</p>
+    
+
+<p>character DiagrammeR::grViz() ready text.</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
-<span class="r-in"><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="mk_td.html">mk_td</a></span><span class="op">(</span><span class="st">'d'</span>,</span>
-<span class="r-in">             columns <span class="op">=</span> <span class="fu"><a href="https://winvector.github.io/wrapr//reference/qc.html" class="external-link">qc</a></span><span class="op">(</span><span class="va">AUC</span>, <span class="va">R2</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">optree</span> <span class="op">&lt;-</span> <span class="va">d</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
-<span class="r-in">  <span class="fu"><a href="extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">v</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/named_map_builder.html" class="external-link">%:=%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">AUC</span><span class="op">&gt;</span><span class="fl">0.5</span>, <span class="va">R2</span>, <span class="fl">1.0</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
-<span class="r-in">  <span class="fu"><a href="quantile_node.html">quantile_node</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
-<span class="r-in">  <span class="fu"><a href="natural_join.html">natural_join</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">d</span>, jointype <span class="op">=</span> <span class="st">"LEFT"</span>, by <span class="op">=</span> <span class="st">"AUC"</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
-<span class="r-in">  <span class="fu"><a href="orderby.html">orderby</a></span><span class="op">(</span><span class="va">.</span>, <span class="st">"AUC"</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">optree</span><span class="op">)</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="mk_td.html">mk_td</a></span><span class="op">(</span><span class="st">'d'</span>,</span></span>
+<span class="r-in"><span>             columns <span class="op">=</span> <span class="fu"><a href="https://winvector.github.io/wrapr//reference/qc.html" class="external-link">qc</a></span><span class="op">(</span><span class="va">AUC</span>, <span class="va">R2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">optree</span> <span class="op">&lt;-</span> <span class="va">d</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">v</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/named_map_builder.html" class="external-link">%:=%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">AUC</span><span class="op">&gt;</span><span class="fl">0.5</span>, <span class="va">R2</span>, <span class="fl">1.0</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="quantile_node.html">quantile_node</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="natural_join.html">natural_join</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">d</span>, jointype <span class="op">=</span> <span class="st">"LEFT"</span>, by <span class="op">=</span> <span class="st">"AUC"</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="orderby.html">orderby</a></span><span class="op">(</span><span class="va">.</span>, <span class="st">"AUC"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">optree</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> mk_td("d", c(</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   "AUC",</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   "R2")) %.&gt;%</span>
@@ -127,8 +136,8 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span>   c('AUC'),</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   reverse = c(),</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   limit = NULL)</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu">op_diagram</span><span class="op">(</span><span class="va">optree</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu">op_diagram</span><span class="op">(</span><span class="va">optree</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> digraph rquery_optree {</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   graph [ layout = dot, rankdir = TB, overlap = prism, compound = true, nodesep = .5, ranksep = .25]</span>
@@ -152,21 +161,21 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> node_4 -&gt; node_5 [ label = '.2']</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> node_5 -&gt; node_6 [ label = '.']</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># if(requireNamespace("DiagrammeR", quietly = TRUE)) {</span></span>
-<span class="r-in"><span class="co">#   optree %.&gt;%</span></span>
-<span class="r-in"><span class="co">#     op_diagram(., merge_tables = TRUE) %.&gt;%</span></span>
-<span class="r-in"><span class="co">#     DiagrammeR::grViz(.) %.&gt;%</span></span>
-<span class="r-in"><span class="co">#     print(.)</span></span>
-<span class="r-in"><span class="co">#  # # or to render to png</span></span>
-<span class="r-in"><span class="co">#  # optree %.&gt;%</span></span>
-<span class="r-in"><span class="co">#  #   op_diagram(., merge_tables = TRUE) %.&gt;%</span></span>
-<span class="r-in"><span class="co">#  #   DiagrammeR::DiagrammeR(diagram = ., type = "grViz") %.&gt;%</span></span>
-<span class="r-in"><span class="co">#  #     DiagrammeRsvg::export_svg(.) %.&gt;%</span></span>
-<span class="r-in"><span class="co">#  #     charToRaw(.) %.&gt;%</span></span>
-<span class="r-in"><span class="co">#  #     rsvg::rsvg_png(., file = "diagram1.png")</span></span>
-<span class="r-in"><span class="co"># }</span></span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># if(requireNamespace("DiagrammeR", quietly = TRUE)) {</span></span></span>
+<span class="r-in"><span><span class="co">#   optree %.&gt;%</span></span></span>
+<span class="r-in"><span><span class="co">#     op_diagram(., merge_tables = TRUE) %.&gt;%</span></span></span>
+<span class="r-in"><span><span class="co">#     DiagrammeR::grViz(.) %.&gt;%</span></span></span>
+<span class="r-in"><span><span class="co">#     print(.)</span></span></span>
+<span class="r-in"><span><span class="co">#  # # or to render to png</span></span></span>
+<span class="r-in"><span><span class="co">#  # optree %.&gt;%</span></span></span>
+<span class="r-in"><span><span class="co">#  #   op_diagram(., merge_tables = TRUE) %.&gt;%</span></span></span>
+<span class="r-in"><span><span class="co">#  #   DiagrammeR::DiagrammeR(diagram = ., type = "grViz") %.&gt;%</span></span></span>
+<span class="r-in"><span><span class="co">#  #     DiagrammeRsvg::export_svg(.) %.&gt;%</span></span></span>
+<span class="r-in"><span><span class="co">#  #     charToRaw(.) %.&gt;%</span></span></span>
+<span class="r-in"><span><span class="co">#  #     rsvg::rsvg_png(., file = "diagram1.png")</span></span></span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -181,7 +190,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

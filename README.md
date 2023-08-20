@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-[![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/rquery)](https://cran.r-project.org/package=rquery)
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/rquery)](https://cran.r-project.org/package=rquery)
 [![status](https://tinyverse.netlify.com/badge/rquery)](https://CRAN.R-project.org/package=rquery)
 
 # `rquery`
@@ -41,27 +41,26 @@ number of pedagogical advantages.
 
 In `rquery`’s case the primary set of data operators is as follows:
 
--   `drop_columns`
--   `select_columns`
--   `rename_columns`
--   `select_rows`
--   `order_rows`
--   `extend`
--   `project`
--   `natural_join`
--   `convert_records` (supplied by the [`cdata`
-    package](https://github.com/WinVector/cdata)).
+- `drop_columns`
+- `select_columns`
+- `rename_columns`
+- `select_rows`
+- `order_rows`
+- `extend`
+- `project`
+- `natural_join`
+- `convert_records` (supplied by the [`cdata`
+  package](https://github.com/WinVector/cdata)).
 
 These operations break into a small number of themes:
 
--   Simple column operations (selecting and re-naming columns).
--   Simple row operations (selecting and re-ordering rows).
--   Creating new columns or replacing columns with new calculated
-    values.
--   Aggregating or summarizing data.
--   Combining results between two `data.frame`s.
--   General conversion of record layouts (supplied by the [`cdata`
-    package](https://github.com/WinVector/cdata)).
+- Simple column operations (selecting and re-naming columns).
+- Simple row operations (selecting and re-ordering rows).
+- Creating new columns or replacing columns with new calculated values.
+- Aggregating or summarizing data.
+- Combining results between two `data.frame`s.
+- General conversion of record layouts (supplied by the [`cdata`
+  package](https://github.com/WinVector/cdata)).
 
 The point is: Codd worked out that a great number of data
 transformations can be decomposed into a small number of the above
@@ -79,9 +78,9 @@ manipulation operators.
 
 The simple column operations are as follows.
 
--   `drop_columns`
--   `select_columns`
--   `rename_columns`
+- `drop_columns`
+- `select_columns`
+- `rename_columns`
 
 These operations are easy to demonstrate.
 
@@ -173,18 +172,18 @@ d %.>%
   knitr::kable(.)
 ```
 
-| x\_new\_name | y\_new\_name |   z |
-|-------------:|-------------:|----:|
-|            1 |            5 |   6 |
-|            1 |            4 |   7 |
-|            2 |            3 |   8 |
+| x_new_name | y_new_name |   z |
+|-----------:|-----------:|----:|
+|          1 |          5 |   6 |
+|          1 |          4 |   7 |
+|          2 |          3 |   8 |
 
 ### Simple row operations (selecting and re-ordering rows)
 
 The simple row operations are:
 
--   `select_rows`
--   `order_rows`
+- `select_rows`
+- `order_rows`
 
 `select_rows` keeps the set of rows that meet a given predicate
 expression.
@@ -231,7 +230,7 @@ should make it the last step of your pipeline.
 
 The important create or replace column operation is:
 
--   `extend`
+- `extend`
 
 `extend` accepts arbitrary expressions to create new columns (or replace
 existing ones). For example:
@@ -272,11 +271,11 @@ d %.>%
   knitr::kable(.)
 ```
 
-|   x |   y |   z | max\_y | shift\_z | row\_number | cumsum\_z |
-|----:|----:|----:|-------:|---------:|------------:|----------:|
-|   1 |   4 |   7 |      5 |       NA |           1 |         7 |
-|   1 |   5 |   6 |      5 |        7 |           2 |        13 |
-|   2 |   3 |   8 |      3 |       NA |           1 |         8 |
+|   x |   y |   z | max_y | shift_z | row_number | cumsum_z |
+|----:|----:|----:|------:|--------:|-----------:|---------:|
+|   1 |   4 |   7 |     5 |      NA |          1 |        7 |
+|   1 |   5 |   6 |     5 |       7 |          2 |       13 |
+|   2 |   3 |   8 |     3 |      NA |          1 |        8 |
 
 Notice the aggregates were performed per-partition (a set of rows with
 matching partition key values, specified by `partitionby`) and in the
@@ -294,7 +293,7 @@ be found
 
 The main aggregation method for `rquery` is:
 
--   `project`
+- `project`
 
 `project` performs per-group calculations, and returns only the grouping
 columns (specified by `groupby`) and derived aggregates. For example:
@@ -308,10 +307,10 @@ d %.>%
   knitr::kable(.)
 ```
 
-|   x | max\_y | count |
-|----:|-------:|------:|
-|   1 |      5 |     2 |
-|   2 |      3 |     1 |
+|   x | max_y | count |
+|----:|------:|------:|
+|   1 |     5 |     2 |
+|   2 |     3 |     1 |
 
 Notice we only get one row for each unique combination of the grouping
 variables. We can also aggregate into a single row by not specifying any
@@ -325,9 +324,9 @@ d %.>%
   knitr::kable(.)
 ```
 
-| max\_y | count |
-|-------:|------:|
-|      5 |     3 |
+| max_y | count |
+|------:|------:|
+|     5 |     3 |
 
 Notes on how to use a variable to specify column names in `project` can
 be found
@@ -557,10 +556,10 @@ cat(to_sql(ops, db))
     ##     `z`
     ##    FROM
     ##     `d`
-    ##    ) tsql_85643797925389488634_0000000000
-    ##  ) tsql_85643797925389488634_0000000001
+    ##    ) tsql_87263209472242564970_0000000000
+    ##  ) tsql_87263209472242564970_0000000001
     ##  WHERE `row_number` = 1
-    ## ) tsql_85643797925389488634_0000000002
+    ## ) tsql_87263209472242564970_0000000002
 
 ``` r
 # clean up
@@ -575,9 +574,9 @@ For more `SQL` examples, please see
 What we are trying to illustrate above: there is a continuum of
 notations possible between:
 
--   Working over values with explicit intermediate variables.
--   Working over values with a pipeline.
--   Working over operators with a pipeline.
+- Working over values with explicit intermediate variables.
+- Working over values with a pipeline.
+- Working over operators with a pipeline.
 
 Being able to see these as all related gives some flexibility in
 decomposing problems into solutions. We have some more advanced notes on
@@ -609,20 +608,19 @@ Python. \# Background
 There are many prior relational algebra inspired specialized query
 languages. Just a few include:
 
--   [`Alpha`](https://en.wikipedia.org/wiki/Alpha_(programming_language))
-    \~1971.
--   `ISBL` / Information system based language \~1973
--   [`QUEL`](https://en.wikipedia.org/wiki/QUEL_query_languages) \~1974.
--   [`IBM System R`](https://en.wikipedia.org/wiki/IBM_System_R) \~1974.
--   [`SQL`](https://en.wikipedia.org/wiki/SQL) \~1974.
--   [`Tutorial D`](https://en.wikipedia.org/wiki/D_(data_language_specification)#Tutorial_D)
-    \~1994.
--   [`data.table`](https://rdatatable.gitlab.io/data.table/) \~2006.
--   [`LINQ`](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/)
-    \~2007.
--   [`pandas`](https://pandas.pydata.org) \~2008.
--   [`dplyr`](https://dplyr.tidyverse.org) \~2014.
--   [`Apache Calcite`](https://calcite.apache.org) \~2014.
+- [`Alpha`](https://en.wikipedia.org/wiki/Alpha_(programming_language))
+  ~1971.
+- `ISBL` / Information system based language ~1973
+- [`QUEL`](https://en.wikipedia.org/wiki/QUEL_query_languages) ~1974.
+- [`IBM System R`](https://en.wikipedia.org/wiki/IBM_System_R) ~1974.
+- [`SQL`](https://en.wikipedia.org/wiki/SQL) ~1974.
+- `Tutorial D` ~1994.
+- [`data.table`](https://rdatatable.gitlab.io/data.table/) ~2006.
+- [`LINQ`](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/)
+  ~2007.
+- [`pandas`](https://pandas.pydata.org) ~2008.
+- [`dplyr`](https://dplyr.tidyverse.org) ~2014.
+- [`Apache Calcite`](https://calcite.apache.org) ~2014.
 
 `rquery` is realized as a thin translation to an underlying `SQL`
 provider. We are trying to put the Codd relational operators front and
@@ -631,26 +629,26 @@ as window functions to the appropriate relational operator).
 
 Some related work includes:
 
--   [`data.table`](https://rdatatable.gitlab.io/data.table/)
--   [`disk.frame`](https://github.com/DiskFrame/disk.frame)
--   [`dbplyr`](https://dbplyr.tidyverse.org)
--   [`dplyr`](https://dplyr.tidyverse.org)
--   [`dtplyr`](https://github.com/tidyverse/dtplyr)
--   [`maditr`](https://github.com/gdemin/maditr)
--   [`nc`](https://github.com/tdhock/nc)
--   [`poorman`](https://github.com/nathaneastwood/poorman)
--   [`rqdatatable`](https://github.com/WinVector/rqdatatable)
--   [`SparkR`](https://CRAN.R-project.org/package=SparkR)
--   [`sparklyr`](https://spark.rstudio.com)
--   [`sqldf`](https://github.com/ggrothendieck/sqldf)
--   [`table.express`](https://github.com/asardaes/table.express)
--   [`tidyfast`](https://github.com/TysonStanley/tidyfast)
--   [`tidyfst`](https://github.com/hope-data-science/tidyfst)
--   [`tidyquery`](https://github.com/ianmcook/tidyquery)
--   [`tidyr`](https://tidyr.tidyverse.org)
--   [`tidytable`](https://github.com/markfairbanks/tidytable) (formerly
-    `gdt`/`tidydt`)
--   [`data_algebra`](https://github.com/WinVector/data_algebra)
+- [`data.table`](https://rdatatable.gitlab.io/data.table/)
+- [`disk.frame`](https://github.com/DiskFrame/disk.frame)
+- [`dbplyr`](https://dbplyr.tidyverse.org)
+- [`dplyr`](https://dplyr.tidyverse.org)
+- [`dtplyr`](https://github.com/tidyverse/dtplyr)
+- [`maditr`](https://github.com/gdemin/maditr)
+- [`nc`](https://github.com/tdhock/nc)
+- [`poorman`](https://github.com/nathaneastwood/poorman)
+- [`rqdatatable`](https://github.com/WinVector/rqdatatable)
+- [`SparkR`](https://CRAN.R-project.org/package=SparkR)
+- [`sparklyr`](https://spark.rstudio.com)
+- [`sqldf`](https://github.com/ggrothendieck/sqldf)
+- [`table.express`](https://github.com/asardaes/table.express)
+- [`tidyfast`](https://github.com/TysonStanley/tidyfast)
+- [`tidyfst`](https://github.com/hope-data-science/tidyfst)
+- [`tidyquery`](https://github.com/ianmcook/tidyquery)
+- [`tidyr`](https://tidyr.tidyverse.org)
+- [`tidytable`](https://github.com/markfairbanks/tidytable) (formerly
+  `gdt`/`tidydt`)
+- [`data_algebra`](https://github.com/WinVector/data_algebra)
 
 # Installing
 

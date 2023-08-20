@@ -9,7 +9,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-[`rquery`](https://CRAN.R-project.org/package=rquery) `1.2.0` now incorporates [`bquote()`](https://www.rdocumentation.org/packages/base/versions/3.5.1/topics/bquote) [quasi-quotation](https://en.wikipedia.org/wiki/Quasi-quotation).
+[`rquery`](https://CRAN.R-project.org/package=rquery) `1.2.0` now incorporates `bquote()`  [quasi-quotation](https://en.wikipedia.org/wiki/Quasi-quotation).
 
 In fact this is enough to allow `rqdatatable` to directly work the indirect column names example from our `bquote()` articles ([1](https://win-vector.com/2018/09/16/parameterizing-with-bquote/), [2](https://win-vector.com/2018/10/16/quasiquotation-in-r-via-bquote/)).
 

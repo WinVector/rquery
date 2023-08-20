@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.99</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -81,77 +81,82 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">complete_design</span><span class="op">(</span><span class="va">design_table</span>, <span class="va">data_table</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">complete_design</span><span class="op">(</span><span class="va">design_table</span>, <span class="va">data_table</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>design_table</dt>
 <dd><p>optree or for experimental design.</p></dd>
+
+
 <dt>data_table</dt>
 <dd><p>optree for data.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>joined and annotated table optree.</p>
+    
+
+<p>joined and annotated table optree.</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"DBI"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span></span>
-<span class="r-in">    <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"RSQLite"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="va">my_db</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html" class="external-link">SQLite</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">":memory:"</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="co"># example experimental design</span></span>
-<span class="r-in">  <span class="va">values</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>nums <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, lets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"b"</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">design</span> <span class="op">&lt;-</span> <span class="fu"><a href="expand_grid.html">expand_grid</a></span><span class="op">(</span><span class="va">my_db</span>, <span class="va">values</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="co"># not quite matching data</span></span>
-<span class="r-in">  <span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://winvector.github.io/wrapr//reference/build_frame.html" class="external-link">build_frame</a></span><span class="op">(</span></span>
-<span class="r-in">    <span class="st">"nums"</span>, <span class="st">"lets"</span>   <span class="op">|</span></span>
-<span class="r-in">      <span class="fl">1L</span>    , <span class="st">"a"</span>    <span class="op">|</span></span>
-<span class="r-in">      <span class="fl">1L</span>    , <span class="st">"b"</span>    <span class="op">|</span></span>
-<span class="r-in">      <span class="fl">77L</span>   , <span class="st">"a"</span>    <span class="op">|</span>  <span class="co"># out of place ID</span></span>
-<span class="r-in">      <span class="fl">2L</span>    , <span class="st">"b"</span>    <span class="op">|</span></span>
-<span class="r-in">      <span class="fl">3L</span>    , <span class="st">"a"</span>    <span class="op">|</span></span>
-<span class="r-in">      <span class="fl">3L</span>    , <span class="st">"a"</span>    <span class="op">|</span> <span class="co"># duplicated</span></span>
-<span class="r-in">      <span class="fl">3L</span>    , <span class="st">"b"</span>    <span class="op">)</span></span>
-<span class="r-in">  <span class="va">data</span><span class="op">$</span><span class="va">row_number</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="rq_copy_to.html">rq_copy_to</a></span><span class="op">(</span><span class="va">my_db</span>, <span class="st">"data"</span>, <span class="va">data</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="co"># compare/augment</span></span>
-<span class="r-in">  <span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">complete_design</span><span class="op">(</span><span class="va">design</span>, <span class="va">data</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="materialize.html">materialize</a></span><span class="op">(</span><span class="va">my_db</span>, <span class="va">res</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="st">"completed data design"</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="execute.html">execute</a></span><span class="op">(</span><span class="va">my_db</span>, <span class="va">res</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="co"># look for dups (can use extende_se(partation) on</span></span>
-<span class="r-in">  <span class="co"># databases with window fns.</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="st">"duplicate key rows:"</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">res</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
-<span class="r-in">    <span class="fu"><a href="project_se.html">project_se</a></span><span class="op">(</span><span class="va">.</span>,</span>
-<span class="r-in">               groupby <span class="op">=</span> <span class="fu"><a href="column_names.html">column_names</a></span><span class="op">(</span><span class="va">design</span><span class="op">)</span>,</span>
-<span class="r-in">               <span class="st">"count"</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/named_map_builder.html" class="external-link">%:=%</a></span> <span class="st">"SUM(1)"</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
-<span class="r-in">    <span class="fu"><a href="select_rows_se.html">select_rows_se</a></span><span class="op">(</span><span class="va">.</span>, <span class="st">"count&gt;1"</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
-<span class="r-in">    <span class="fu"><a href="execute.html">execute</a></span><span class="op">(</span><span class="va">my_db</span>, <span class="va">.</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
-<span class="r-in">    <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="co"># look for data that was not in design</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="st">"data rows not in design:"</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">data</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
-<span class="r-in">    <span class="fu"><a href="natural_join.html">natural_join</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">res</span>,</span>
-<span class="r-in">                 jointype <span class="op">=</span> <span class="st">"LEFT"</span>,</span>
-<span class="r-in">                 by <span class="op">=</span> <span class="fu"><a href="column_names.html">column_names</a></span><span class="op">(</span><span class="va">design</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
-<span class="r-in">    <span class="fu"><a href="select_rows_se.html">select_rows_se</a></span><span class="op">(</span><span class="va">.</span>, <span class="st">"is.na(row_in_design_table)"</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
-<span class="r-in">    <span class="fu"><a href="execute.html">execute</a></span><span class="op">(</span><span class="va">my_db</span>, <span class="va">.</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
-<span class="r-in">    <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">dbDisconnect</a></span><span class="op">(</span><span class="va">my_db</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> mk_td("eg_81725467761235468742_0000000000", c(</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"DBI"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"RSQLite"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">my_db</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html" class="external-link">SQLite</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">":memory:"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># example experimental design</span></span></span>
+<span class="r-in"><span>  <span class="va">values</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>nums <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, lets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"b"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">design</span> <span class="op">&lt;-</span> <span class="fu"><a href="expand_grid.html">expand_grid</a></span><span class="op">(</span><span class="va">my_db</span>, <span class="va">values</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># not quite matching data</span></span></span>
+<span class="r-in"><span>  <span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://winvector.github.io/wrapr//reference/build_frame.html" class="external-link">build_frame</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="st">"nums"</span>, <span class="st">"lets"</span>   <span class="op">|</span></span></span>
+<span class="r-in"><span>      <span class="fl">1L</span>    , <span class="st">"a"</span>    <span class="op">|</span></span></span>
+<span class="r-in"><span>      <span class="fl">1L</span>    , <span class="st">"b"</span>    <span class="op">|</span></span></span>
+<span class="r-in"><span>      <span class="fl">77L</span>   , <span class="st">"a"</span>    <span class="op">|</span>  <span class="co"># out of place ID</span></span></span>
+<span class="r-in"><span>      <span class="fl">2L</span>    , <span class="st">"b"</span>    <span class="op">|</span></span></span>
+<span class="r-in"><span>      <span class="fl">3L</span>    , <span class="st">"a"</span>    <span class="op">|</span></span></span>
+<span class="r-in"><span>      <span class="fl">3L</span>    , <span class="st">"a"</span>    <span class="op">|</span> <span class="co"># duplicated</span></span></span>
+<span class="r-in"><span>      <span class="fl">3L</span>    , <span class="st">"b"</span>    <span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">data</span><span class="op">$</span><span class="va">row_number</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="rq_copy_to.html">rq_copy_to</a></span><span class="op">(</span><span class="va">my_db</span>, <span class="st">"data"</span>, <span class="va">data</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># compare/augment</span></span></span>
+<span class="r-in"><span>  <span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">complete_design</span><span class="op">(</span><span class="va">design</span>, <span class="va">data</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="materialize.html">materialize</a></span><span class="op">(</span><span class="va">my_db</span>, <span class="va">res</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="st">"completed data design"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="execute.html">execute</a></span><span class="op">(</span><span class="va">my_db</span>, <span class="va">res</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># look for dups (can use extende_se(partation) on</span></span></span>
+<span class="r-in"><span>  <span class="co"># databases with window fns.</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="st">"duplicate key rows:"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">res</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="project_se.html">project_se</a></span><span class="op">(</span><span class="va">.</span>,</span></span>
+<span class="r-in"><span>               groupby <span class="op">=</span> <span class="fu"><a href="column_names.html">column_names</a></span><span class="op">(</span><span class="va">design</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>               <span class="st">"count"</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/named_map_builder.html" class="external-link">%:=%</a></span> <span class="st">"SUM(1)"</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="select_rows_se.html">select_rows_se</a></span><span class="op">(</span><span class="va">.</span>, <span class="st">"count&gt;1"</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="execute.html">execute</a></span><span class="op">(</span><span class="va">my_db</span>, <span class="va">.</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># look for data that was not in design</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="st">"data rows not in design:"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">data</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="natural_join.html">natural_join</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">res</span>,</span></span>
+<span class="r-in"><span>                 jointype <span class="op">=</span> <span class="st">"LEFT"</span>,</span></span>
+<span class="r-in"><span>                 by <span class="op">=</span> <span class="fu"><a href="column_names.html">column_names</a></span><span class="op">(</span><span class="va">design</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="select_rows_se.html">select_rows_se</a></span><span class="op">(</span><span class="va">.</span>, <span class="st">"is.na(row_in_design_table)"</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="execute.html">execute</a></span><span class="op">(</span><span class="va">my_db</span>, <span class="va">.</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">dbDisconnect</a></span><span class="op">(</span><span class="va">my_db</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> mk_td("eg_94539510986991312440_0000000000", c(</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   "nums",</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   "lets")) %.&gt;%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  extend(.,</span>
@@ -181,7 +186,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "data rows not in design:"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   nums lets row_number row_in_design_table row_in_data_table</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1   77    a          3                  NA                NA</span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -196,7 +201,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

@@ -369,7 +369,7 @@ There are many prior relational algebra inspired specialized query languages.  J
   * [`QUEL`](https://en.wikipedia.org/wiki/QUEL_query_languages) ~1974.
   * [`IBM System R`](https://en.wikipedia.org/wiki/IBM_System_R) ~1974.
   * [`SQL`](https://en.wikipedia.org/wiki/SQL) ~1974.
-  * [`Tutorial D`](https://en.wikipedia.org/wiki/D_(data_language_specification)#Tutorial_D) ~1994.
+  * `Tutorial D` ~1994.
   * [`data.table`](https://rdatatable.gitlab.io/data.table/) ~2006.
   * [`LINQ`](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/) ~2007.
   * [`pandas`](https://pandas.pydata.org) ~2008.

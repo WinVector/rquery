@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.99</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -81,31 +81,42 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">rsummary_node</span><span class="op">(</span>
-  <span class="va">source</span>,
-  <span class="va">...</span>,
-  quartiles <span class="op">=</span> <span class="cn">FALSE</span>,
-  tmp_name_source <span class="op">=</span> <span class="fu">wrapr</span><span class="fu">::</span><span class="fu"><a href="https://winvector.github.io/wrapr//reference/mk_tmp_name_source.html" class="external-link">mk_tmp_name_source</a></span><span class="op">(</span><span class="st">"sn"</span><span class="op">)</span>,
-  temporary <span class="op">=</span> <span class="cn">TRUE</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">rsummary_node</span><span class="op">(</span></span>
+<span>  <span class="va">source</span>,</span>
+<span>  <span class="va">...</span>,</span>
+<span>  quartiles <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  tmp_name_source <span class="op">=</span> <span class="fu">wrapr</span><span class="fu">::</span><span class="fu"><a href="https://winvector.github.io/wrapr//reference/mk_tmp_name_source.html" class="external-link">mk_tmp_name_source</a></span><span class="op">(</span><span class="st">"sn"</span><span class="op">)</span>,</span>
+<span>  temporary <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>source</dt>
 <dd><p>incoming source (relop node or data.frame).</p></dd>
+
+
 <dt>...</dt>
 <dd><p>force later arguments to be by name</p></dd>
+
+
 <dt>quartiles</dt>
 <dd><p>logical, if TRUE add Q1 (25%), median (50%), Q3 (75%) quartiles.</p></dd>
+
+
 <dt>tmp_name_source</dt>
 <dd><p>wrapr::mk_tmp_name_source(), temporary name generator.</p></dd>
+
+
 <dt>temporary</dt>
 <dd><p>logical, if TRUE use temporary tables</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>rsummary node</p>
+    
+
+<p>rsummary node</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -114,33 +125,33 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"DBI"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"RSQLite"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>p<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">FALSE</span>, <span class="cn">NA</span><span class="op">)</span>,</span>
-<span class="r-in">                  s<span class="op">=</span> <span class="cn">NA</span>,</span>
-<span class="r-in">                  w<span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,</span>
-<span class="r-in">                  x<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NA</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span>,</span>
-<span class="r-in">                  y<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>,<span class="fl">5</span>,<span class="cn">NA</span><span class="op">)</span><span class="op">)</span>,</span>
-<span class="r-in">                  z<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'a'</span>,<span class="cn">NA</span>,<span class="st">'a'</span><span class="op">)</span>,</span>
-<span class="r-in">                  stringsAsFactors<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">db</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html" class="external-link">SQLite</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">":memory:"</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/initExtension.html" class="external-link">initExtension</a></span><span class="op">(</span><span class="va">db</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu"><a href="rq_copy_to.html">rq_copy_to</a></span><span class="op">(</span><span class="va">db</span>, <span class="st">"dRemote"</span>, <span class="va">d</span>,</span>
-<span class="r-in">              overwrite <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span class="r-in">              temporary <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="va">ops</span> <span class="op">&lt;-</span> <span class="fu"><a href="db_td.html">db_td</a></span><span class="op">(</span><span class="va">db</span>, <span class="st">"dRemote"</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
-<span class="r-in">    <span class="fu"><a href="extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">v</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/named_map_builder.html" class="external-link">%:=%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">x</span><span class="op">&gt;</span><span class="fl">2</span>, <span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
-<span class="r-in">    <span class="fu">rsummary_node</span><span class="op">(</span><span class="va">.</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">ops</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">ops</span>, <span class="va">db</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="va">reshdl</span> <span class="op">&lt;-</span> <span class="fu"><a href="materialize.html">materialize</a></span><span class="op">(</span><span class="va">db</span>, <span class="va">ops</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">dbGetQuery</a></span><span class="op">(</span><span class="va">db</span>, <span class="fu"><a href="to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">reshdl</span>, <span class="va">db</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">dbDisconnect</a></span><span class="op">(</span><span class="va">db</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"DBI"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"RSQLite"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>p<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">FALSE</span>, <span class="cn">NA</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                  s<span class="op">=</span> <span class="cn">NA</span>,</span></span>
+<span class="r-in"><span>                  w<span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,</span></span>
+<span class="r-in"><span>                  x<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NA</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                  y<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>,<span class="fl">5</span>,<span class="cn">NA</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                  z<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'a'</span>,<span class="cn">NA</span>,<span class="st">'a'</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                  stringsAsFactors<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">db</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html" class="external-link">SQLite</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">":memory:"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/initExtension.html" class="external-link">initExtension</a></span><span class="op">(</span><span class="va">db</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="rq_copy_to.html">rq_copy_to</a></span><span class="op">(</span><span class="va">db</span>, <span class="st">"dRemote"</span>, <span class="va">d</span>,</span></span>
+<span class="r-in"><span>              overwrite <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>              temporary <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="va">ops</span> <span class="op">&lt;-</span> <span class="fu"><a href="db_td.html">db_td</a></span><span class="op">(</span><span class="va">db</span>, <span class="st">"dRemote"</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="extend.html">extend</a></span><span class="op">(</span><span class="va">.</span>, <span class="va">v</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/named_map_builder.html" class="external-link">%:=%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">x</span><span class="op">&gt;</span><span class="fl">2</span>, <span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span></span>
+<span class="r-in"><span>    <span class="fu">rsummary_node</span><span class="op">(</span><span class="va">.</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">ops</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">ops</span>, <span class="va">db</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="va">reshdl</span> <span class="op">&lt;-</span> <span class="fu"><a href="materialize.html">materialize</a></span><span class="op">(</span><span class="va">db</span>, <span class="va">ops</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">dbGetQuery</a></span><span class="op">(</span><span class="va">db</span>, <span class="fu"><a href="to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">reshdl</span>, <span class="va">db</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">dbDisconnect</a></span><span class="op">(</span><span class="va">db</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> mk_td("dRemote", c(</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   "p",</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   "s",</span>
@@ -152,13 +163,13 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span>   v := ifelse(x &gt; 2, "x", "y")) %.&gt;%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  non_sql_node(., rsummary_node(.))</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CREATE TEMPORARY TABLE `sn_66746963297845067563_0000000000`  AS  SELECT\n  `p`,\n  `s`,\n  `w`,\n  `x`,\n  `y`,\n  `z`,\n  ( CASE WHEN ( `x` &gt; 2 ) THEN ( 'x' ) WHEN NOT ( `x` &gt; 2 ) THEN ( 'y' ) ELSE NULL END )  AS `v`\n FROM (\n  SELECT\n   `p`,\n   `s`,\n   `w`,\n   `x`,\n   `y`,\n   `z`\n  FROM\n   `dRemote`\n  ) tsql_41653485877800587172_0000000000\n"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CREATE TEMPORARY TABLE `sn_24431360869548363303_0000000000`  AS  SELECT\n  `p`,\n  `s`,\n  `w`,\n  `x`,\n  `y`,\n  `z`,\n  ( CASE WHEN ( `x` &gt; 2 ) THEN ( 'x' ) WHEN NOT ( `x` &gt; 2 ) THEN ( 'y' ) ELSE NULL END )  AS `v`\n FROM (\n  SELECT\n   `p`,\n   `s`,\n   `w`,\n   `x`,\n   `y`,\n   `z`\n  FROM\n   `dRemote`\n  ) tsql_78528726904048914645_0000000000\n"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "non SQL step:  rsummary_node(.)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[3]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] " SELECT\n  `column`,\n  `index`,\n  `class`,\n  `nrows`,\n  `nna`,\n  `nunique`,\n  `min`,\n  `max`,\n  `mean`,\n  `sd`,\n  `lexmin`,\n  `lexmax`\n FROM\n  `sn_66746963297845067563_0000000001`\n"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] " SELECT\n  `column`,\n  `index`,\n  `class`,\n  `nrows`,\n  `nna`,\n  `nunique`,\n  `min`,\n  `max`,\n  `mean`,\n  `sd`,\n  `lexmin`,\n  `lexmax`\n FROM\n  `sn_24431360869548363303_0000000001`\n"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   column index     class nrows nna nunique min max mean        sd lexmin lexmax</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1      p     1   integer     3   1      NA   0   1  0.5 0.7071068   &lt;NA&gt;   &lt;NA&gt;</span>
@@ -168,7 +179,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5      y     5 character     3   1       2  NA  NA   NA        NA      3      5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6      z     6 character     3   1       1  NA  NA   NA        NA      a      a</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 7      v     7   logical     3   1       2   0   0  0.0 0.0000000  FALSE  FALSE</span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -183,7 +194,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

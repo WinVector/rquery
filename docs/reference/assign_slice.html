@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rquery</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.99</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -81,25 +81,36 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">assign_slice</span><span class="op">(</span><span class="va">source</span>, <span class="va">testexpr</span>, <span class="va">columns</span>, <span class="va">value</span>, env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">assign_slice</span><span class="op">(</span><span class="va">source</span>, <span class="va">testexpr</span>, <span class="va">columns</span>, <span class="va">value</span>, env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">parent.frame</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>source</dt>
 <dd><p>optree relop node or data.frame.</p></dd>
+
+
 <dt>testexpr</dt>
 <dd><p>character containing the test expression.</p></dd>
+
+
 <dt>columns</dt>
 <dd><p>character vector of column names to alter.</p></dd>
+
+
 <dt>value</dt>
 <dd><p>value to set in matching rows and columns (scalar).</p></dd>
+
+
 <dt>env</dt>
 <dd><p>environment to look to.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>optree or data.frame.</p>
+    
+
+<p>optree or data.frame.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -109,32 +120,32 @@ is a reserved column name for this procedure.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
-<span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"DBI"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"RSQLite"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="va">my_db</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html" class="external-link">SQLite</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">":memory:"</span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="rq_copy_to.html">rq_copy_to</a></span><span class="op">(</span></span>
-<span class="r-in">    <span class="va">my_db</span>,</span>
-<span class="r-in">    <span class="st">'d'</span>,</span>
-<span class="r-in">    <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>i <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">6</span>, <span class="fl">7</span>, <span class="fl">8</span>, <span class="fl">9</span>, <span class="fl">10</span><span class="op">)</span>,</span>
-<span class="r-in">               a <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>,</span>
-<span class="r-in">               b <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>,</span>
-<span class="r-in">               r <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span><span class="op">)</span>,</span>
-<span class="r-in">    temporary<span class="op">=</span><span class="cn">TRUE</span>, overwrite<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="va">optree</span> <span class="op">&lt;-</span> <span class="va">d</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span>
-<span class="r-in">    <span class="fu">assign_slice</span><span class="op">(</span><span class="va">.</span>,</span>
-<span class="r-in">                 testexpr <span class="op">=</span> <span class="fu"><a href="https://winvector.github.io/wrapr//reference/qe.html" class="external-link">qe</a></span><span class="op">(</span><span class="va">r</span><span class="op">&lt;</span><span class="fl">0.5</span><span class="op">)</span>,</span>
-<span class="r-in">                 columns <span class="op">=</span> <span class="fu"><a href="https://winvector.github.io/wrapr//reference/qc.html" class="external-link">qc</a></span><span class="op">(</span><span class="va">a</span>, <span class="va">b</span><span class="op">)</span>,</span>
-<span class="r-in">                 value <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">optree</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="va">sql</span> <span class="op">&lt;-</span> <span class="fu"><a href="to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">optree</span>, <span class="va">my_db</span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">sql</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">dbGetQuery</a></span><span class="op">(</span><span class="va">my_db</span>, <span class="va">sql</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">dbDisconnect</a></span><span class="op">(</span><span class="va">my_db</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"DBI"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"RSQLite"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">my_db</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html" class="external-link">SQLite</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">":memory:"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="rq_copy_to.html">rq_copy_to</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">my_db</span>,</span></span>
+<span class="r-in"><span>    <span class="st">'d'</span>,</span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>i <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">6</span>, <span class="fl">7</span>, <span class="fl">8</span>, <span class="fl">9</span>, <span class="fl">10</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>               a <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>               b <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>               r <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    temporary<span class="op">=</span><span class="cn">TRUE</span>, overwrite<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="va">optree</span> <span class="op">&lt;-</span> <span class="va">d</span> <span class="op"><a href="https://winvector.github.io/wrapr//reference/dot_arrow.html" class="external-link">%.&gt;%</a></span></span></span>
+<span class="r-in"><span>    <span class="fu">assign_slice</span><span class="op">(</span><span class="va">.</span>,</span></span>
+<span class="r-in"><span>                 testexpr <span class="op">=</span> <span class="fu"><a href="https://winvector.github.io/wrapr//reference/qe.html" class="external-link">qe</a></span><span class="op">(</span><span class="va">r</span><span class="op">&lt;</span><span class="fl">0.5</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                 columns <span class="op">=</span> <span class="fu"><a href="https://winvector.github.io/wrapr//reference/qc.html" class="external-link">qc</a></span><span class="op">(</span><span class="va">a</span>, <span class="va">b</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                 value <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">optree</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="va">sql</span> <span class="op">&lt;-</span> <span class="fu"><a href="to_sql.html">to_sql</a></span><span class="op">(</span><span class="va">optree</span>, <span class="va">my_db</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">sql</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">dbGetQuery</a></span><span class="op">(</span><span class="va">my_db</span>, <span class="va">sql</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">dbDisconnect</a></span><span class="op">(</span><span class="va">my_db</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> mk_td("d", c(</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   "i",</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   "a",</span>
@@ -173,21 +184,21 @@ is a reserved column name for this procedure.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     `r`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    FROM</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     `d`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    ) tsql_49108401696977695962_0000000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ) tsql_49108401696977695962_0000000001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ) tsql_49108401696977695962_0000000002</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     i a b         r</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1   1 2 2 0.4441498</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2   2 2 2 0.2817941</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3   3 2 2 0.2347658</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4   4 1 1 0.8467117</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5   5 1 1 0.6910752</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6   6 2 2 0.4171049</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7   7 1 1 0.9734707</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8   8 1 1 0.8595053</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9   9 1 1 0.6510097</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10 10 1 1 0.8288511</span>
-<span class="r-in"></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    ) tsql_80884544203984290559_0000000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ) tsql_80884544203984290559_0000000001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ) tsql_80884544203984290559_0000000002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     i a b          r</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   1 0 0 0.66569077</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2   2 0 1 0.61544374</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3   3 1 0 0.64988040</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4   4 1 1 0.83583076</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5   5 1 1 0.60748160</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6   6 1 1 0.68192312</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7   7 2 2 0.36583385</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8   8 2 2 0.23160832</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9   9 1 1 0.71805230</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 10 2 2 0.03467573</span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -202,7 +213,7 @@ is a reserved column name for this procedure.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>
