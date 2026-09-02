@@ -17,7 +17,7 @@ ex(ops, ..., env = parent.frame())
 data.frame result
 }
 \description{
-Execute a ops-dag using `code{wrap()}` data as values.
+Execute a ops-dag using `wrap()` data as values.
 }
 \examples{
 

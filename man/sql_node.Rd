@@ -26,7 +26,7 @@ sql_node(
 
 \item{orig_columns}{logical if TRUE select all original columns.}
 
-\item{expand_braces}{logical if TRUE use {col} notation to ensure {col} is a column name.}
+\item{expand_braces}{logical if TRUE use \{col\} notation to ensure \{col\} is a column name.}
 
 \item{translate_quotes}{logical if TRUE translate quotes to SQL choice (simple replacement, no escaping).}
 
