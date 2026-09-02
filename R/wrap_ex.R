@@ -317,7 +317,7 @@ wrap.data.frame <- function(d,
 
 #' Execute a wrapped execution pipeline.
 #'
-#' Execute a ops-dag using `code{wrap()}` data as values.
+#' Execute a ops-dag using `wrap()` data as values.
 #'
 #' @param ops rquery pipeline with tables formed by `wrap()`.
 #' @param ... not used, force later argument to be referred by name

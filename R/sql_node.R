@@ -20,7 +20,7 @@ order_names <- function(old_names, new_names) {
 #' @param ... force later arguments to bind by name
 #' @param mods SQL modifiers (GROUP BY, ORDER BY, and so on)
 #' @param orig_columns logical if TRUE select all original columns.
-#' @param expand_braces logical if TRUE use {col} notation to ensure {col} is a column name.
+#' @param expand_braces logical if TRUE use \{col\} notation to ensure \{col\} is a column name.
 #' @param translate_quotes logical if TRUE translate quotes to SQL choice (simple replacement, no escaping).
 #' @param env environment to look to.
 #' @return sql node.
