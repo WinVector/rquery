@@ -38,6 +38,11 @@ Useful links:
 \author{
 \strong{Maintainer}: John Mount \email{jmount@win-vector.com}
 
+Authors:
+\itemize{
+  \item John Mount \email{jmount@win-vector.com}
+}
+
 Other contributors:
 \itemize{
   \item  Win-Vector LLC [copyright holder]

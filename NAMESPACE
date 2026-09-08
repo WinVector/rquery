@@ -256,16 +256,20 @@ export(topo_sort_tables)
 export(unionall)
 export(wrap)
 exportMethods(apply_right_S4)
-importFrom(methods,is)
-importFrom(methods,new)
-importFrom(methods,setClass)
-importFrom(methods,setMethod)
-importFrom(methods,show)
-importFrom(methods,signature)
+importFrom(methods,
+  is,
+  new,
+  setClass,
+  setMethod,
+  show,
+  signature
+)
 importFrom(stats,sd)
-importFrom(wrapr,"%.>%")
-importFrom(wrapr,"%:=%")
-importFrom(wrapr,apply_left)
-importFrom(wrapr,apply_right)
-importFrom(wrapr,mk_tmp_name_source)
+importFrom(wrapr,
+  "%.>%",
+  "%:=%",
+  apply_left,
+  apply_right,
+  mk_tmp_name_source
+)
 importMethodsFrom(wrapr,apply_right_S4)

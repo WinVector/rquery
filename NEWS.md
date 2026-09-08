@@ -1,7 +1,11 @@
 
+# rquery 1.5.01 2026/09/08
+
+ * Fix brace issue in docs.
+
 # rquery 1.4.99 2023/08/19
 
-* Work around https://github.com/r-lib/roxygen2/issues/1491
+ * Work around https://github.com/r-lib/roxygen2/issues/1491
 
 # rquery 1.4.9 2022/02/28
 
