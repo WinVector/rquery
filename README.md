@@ -111,6 +111,13 @@ library(rquery)
 
     ## Loading required package: wrapr
 
+    ## 
+    ## Attaching package: 'wrapr'
+
+    ## The following object is masked from 'package:base':
+    ## 
+    ##     grepv
+
 ``` r
 library(rqdatatable)
 
@@ -128,8 +135,8 @@ will take about composing `rquery` operations after we work through
 examples of all of the basic operations.
 
 We can write the above in piped notation (using the [`wrapr`
-pipe](https://journal.r-project.org/archive/2018/RJ-2018-042/index.html)
-in this case):
+pipe](https://journal.r-project.org/articles/RJ-2018-042/index.html) in
+this case):
 
 ``` r
 d %.>%
@@ -144,7 +151,7 @@ d %.>%
 |   2 |
 
 Notice the first argument is an explicit “dot” in [`wrapr` pipe
-notation](https://journal.r-project.org/archive/2018/RJ-2018-042/index.html).
+notation](https://journal.r-project.org/articles/RJ-2018-042/index.html).
 
 `select_columns`’s action is also obvious from example.
 
@@ -456,9 +463,8 @@ d ->.;
 |   2 |   3 |   8 |
 
 Or we can use the [`wrapr`
-pipe](https://journal.r-project.org/archive/2018/RJ-2018-042/index.html)
-on the data, which we call “immediate mode” (for more on modes please
-see
+pipe](https://journal.r-project.org/articles/RJ-2018-042/index.html) on
+the data, which we call “immediate mode” (for more on modes please see
 [here](https://github.com/WinVector/rquery/blob/master/Examples/Modes/Modes.md)).
 
 ``` r
@@ -556,10 +562,10 @@ cat(to_sql(ops, db))
     ##     `z`
     ##    FROM
     ##     `d`
-    ##    ) tsql_87263209472242564970_0000000000
-    ##  ) tsql_87263209472242564970_0000000001
+    ##    ) tsql_83043677120327795837_0000000000
+    ##  ) tsql_83043677120327795837_0000000001
     ##  WHERE `row_number` = 1
-    ## ) tsql_87263209472242564970_0000000002
+    ## ) tsql_83043677120327795837_0000000002
 
 ``` r
 # clean up
@@ -616,7 +622,7 @@ languages. Just a few include:
 - [`SQL`](https://en.wikipedia.org/wiki/SQL) ~1974.
 - `Tutorial D` ~1994.
 - [`data.table`](https://rdatatable.gitlab.io/data.table/) ~2006.
-- [`LINQ`](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/)
+- [`LINQ`](https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/)
   ~2007.
 - [`pandas`](https://pandas.pydata.org) ~2008.
 - [`dplyr`](https://dplyr.tidyverse.org) ~2014.
@@ -639,7 +645,7 @@ Some related work includes:
 - [`poorman`](https://github.com/nathaneastwood/poorman)
 - [`rqdatatable`](https://github.com/WinVector/rqdatatable)
 - [`SparkR`](https://CRAN.R-project.org/package=SparkR)
-- [`sparklyr`](https://spark.rstudio.com)
+- [`sparklyr`](https://spark.posit.co/)
 - [`sqldf`](https://github.com/ggrothendieck/sqldf)
 - [`table.express`](https://github.com/asardaes/table.express)
 - [`tidyfast`](https://github.com/TysonStanley/tidyfast)

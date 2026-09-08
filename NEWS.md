@@ -1,5 +1,5 @@
 
-# rquery 1.5.01 2026/09/08
+# rquery 1.5.1 2026/09/08
 
  * Fix brace issue in docs.
 

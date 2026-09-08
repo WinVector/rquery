@@ -82,7 +82,7 @@ drop_columns(d, c('y', 'z'))
 
 In all cases the first argument of a `rquery` operator is either the data to be processed, or an earlier `rquery` pipeline to be extended.  We will take about composing `rquery` operations after we work through examples of all of the basic operations.
 
-We can write the above in piped notation (using the [`wrapr` pipe](https://journal.r-project.org/archive/2018/RJ-2018-042/index.html) in this case):
+We can write the above in piped notation (using the [`wrapr` pipe](https://journal.r-project.org/articles/RJ-2018-042/index.html) in this case):
 
 ```{r}
 d %.>%
@@ -90,7 +90,7 @@ d %.>%
   knitr::kable(.)
 ```
 
-Notice the first argument is an explicit "dot" in [`wrapr` pipe notation](https://journal.r-project.org/archive/2018/RJ-2018-042/index.html).
+Notice the first argument is an explicit "dot" in [`wrapr` pipe notation](https://journal.r-project.org/articles/RJ-2018-042/index.html).
 
 `select_columns`'s action is also obvious from example.
 
@@ -283,7 +283,7 @@ d ->.;
   knitr::kable(.)
 ```
 
-Or we can use the [`wrapr` pipe](https://journal.r-project.org/archive/2018/RJ-2018-042/index.html) on the data, which we call "immediate mode" (for more on modes please see [here](https://github.com/WinVector/rquery/blob/master/Examples/Modes/Modes.md)).
+Or we can use the [`wrapr` pipe](https://journal.r-project.org/articles/RJ-2018-042/index.html) on the data, which we call "immediate mode" (for more on modes please see [here](https://github.com/WinVector/rquery/blob/master/Examples/Modes/Modes.md)).
 
 ```{r}
 d %.>%
@@ -371,7 +371,7 @@ There are many prior relational algebra inspired specialized query languages.  J
   * [`SQL`](https://en.wikipedia.org/wiki/SQL) ~1974.
   * `Tutorial D` ~1994.
   * [`data.table`](https://rdatatable.gitlab.io/data.table/) ~2006.
-  * [`LINQ`](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/) ~2007.
+  * [`LINQ`](https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/linq/) ~2007.
   * [`pandas`](https://pandas.pydata.org) ~2008.
   * [`dplyr`](https://dplyr.tidyverse.org) ~2014.
   * [`Apache Calcite`](https://calcite.apache.org) ~2014.
@@ -390,7 +390,7 @@ Some related work includes:
  * [`poorman`](https://github.com/nathaneastwood/poorman)
  * [`rqdatatable`](https://github.com/WinVector/rqdatatable)
  * [`SparkR`]( https://CRAN.R-project.org/package=SparkR)
- * [`sparklyr`](https://spark.rstudio.com)
+ * [`sparklyr`](https://spark.posit.co/)
  * [`sqldf`](https://github.com/ggrothendieck/sqldf)
  * [`table.express`](https://github.com/asardaes/table.express)
  * [`tidyfast`](https://github.com/TysonStanley/tidyfast)
