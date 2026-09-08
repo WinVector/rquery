@@ -8,7 +8,7 @@ package = "rquery"
 date()
 ```
 
-    ## [1] "Tue Sep  8 08:05:29 2026"
+    ## [1] "Tue Sep  8 08:13:18 2026"
 
 ``` r
 packageVersion(package)
@@ -35,7 +35,7 @@ setwd(td)
 print(td)
 ```
 
-    ## [1] "/var/folders/7f/sdjycp_d08n8wwytsbgwqgsw0000gn/T//RtmplHRlSi"
+    ## [1] "/var/folders/7f/sdjycp_d08n8wwytsbgwqgsw0000gn/T//RtmpAlJtv4"
 
 ``` r
 options(repos = c(CRAN="https://cloud.r-project.org"))
@@ -61,9 +61,9 @@ if(!is.null(parallelCluster)) {
 ```
 
     ## ## Reverse depends check of rquery 1.5.1 
-    ## cdata_1.2.1 started at 2026-09-08 08:05:30 success at 2026-09-08 08:05:54 (1/0/0) 
-    ## rqdatatable_1.3.3 started at 2026-09-08 08:05:54 success at 2026-09-08 08:06:14 (2/0/0) 
-    ## WVPlots_1.3.9 started at 2026-09-08 08:06:14 failure at 2026-09-08 08:06:16 (2/0/1)
+    ## cdata_1.2.1 started at 2026-09-08 08:13:19 success at 2026-09-08 08:13:42 (1/0/0) 
+    ## rqdatatable_1.3.3 started at 2026-09-08 08:13:44 success at 2026-09-08 08:14:24 (2/0/0) 
+    ## WVPlots_1.3.9 started at 2026-09-08 08:14:24 success at 2026-09-08 08:15:32 (3/0/0)
 
     ## [1] id     title  status
     ## <0 rows> (or 0-length row.names)
@@ -72,11 +72,11 @@ if(!is.null(parallelCluster)) {
 summariseQueue(package=package, directory=td)
 ```
 
-    ## Test of rquery 1.5.1 had 2 successes, 1 failures, and 0 skipped packages. 
-    ## Ran from 2026-09-08 08:05:30 to 2026-09-08 08:06:16 for 46 secs 
-    ## Average of 15.333 secs relative to 15.438 secs using 1 runners
+    ## Test of rquery 1.5.1 had 3 successes, 0 failures, and 0 skipped packages. 
+    ## Ran from 2026-09-08 08:13:19 to 2026-09-08 08:15:32 for 2.217 mins 
+    ## Average of 44.333 secs relative to 43.988 secs using 1 runners
     ## 
-    ## Failed packages:  WVPlots 
+    ## Failed packages:   
     ## 
     ## Skipped packages:   
     ## 
